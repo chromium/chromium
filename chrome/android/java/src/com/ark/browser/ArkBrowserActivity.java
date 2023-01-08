@@ -2,6 +2,7 @@ package com.ark.browser;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.KeyguardUtil;
 import com.zpj.fragmentation.anim.DefaultHorizontalAnimator;
 import com.zpj.fragmentation.anim.FragmentAnimator;
 import com.zpj.skin.SkinEngine;
@@ -238,6 +240,14 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         } else {
             getOnBackPressedDispatcher().onBackPressed();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (KeyguardUtil.shouldHandleActivityResult(requestCode, resultCode)) {
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     static void translucentStatusBar(Activity activity, boolean hideStatusBarBackground) {

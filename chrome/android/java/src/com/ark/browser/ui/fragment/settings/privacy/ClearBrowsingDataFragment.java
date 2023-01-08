@@ -3,7 +3,6 @@ package com.ark.browser.ui.fragment.settings.privacy;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,18 +11,15 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
 
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.ui.widget.CheckBoxItem;
-import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.fragmentation.dialog.impl.LoadingDialogFragment;
 import com.zpj.toast.ZToast;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
@@ -198,9 +194,6 @@ public class ClearBrowsingDataFragment extends BaseSwipeBackFragment
 
             mCheckbox.setEnabled(enabled);
             Log.d(TAG, "selected=" + selected);
-//            if (selected) {
-//                checkbox.performClick();
-//            }
             mCheckbox.setOnCheckedChangeListener((checkLayout, isChecked) -> {
                 TextView clearButton = mParent.findViewById(R.id.btn_clear);
                 clearButton.setEnabled(!mParent.getSelectedOptions().isEmpty());
@@ -300,11 +293,6 @@ public class ClearBrowsingDataFragment extends BaseSwipeBackFragment
         }
 
         int itemLayout;
-//        if (mSingleLine) {
-//            itemLayout = R.layout.preference_spinner_single_line_item;
-//        } else {
-//            itemLayout = android.R.layout.simple_spinner_item;
-//        }
         itemLayout = android.R.layout.simple_spinner_item;
         mAdapter = new ArrayAdapter<>(getContext(), itemLayout, spinnerOptions);
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -427,15 +415,6 @@ public class ClearBrowsingDataFragment extends BaseSwipeBackFragment
     }
 
     private void showImportantDialogThenClear() {
-//        ZDialog.alert()
-//                .setTitle("确定清除？")
-//                .setContent("这将清除所选中网站的数据！")
-//                .setPositiveButton((fragment, which) -> {
-//                    clearBrowsingData(getSelectedOptions(), null, null, null, null);
-//                })
-//                .show(context);
-
-
         ConfirmImportantSitesDialogFragment fragment = ConfirmImportantSitesDialogFragment.newInstance(
                 mFetcher.getSortedImportantDomains(), mFetcher.getSortedImportantDomainReasons(),
                 mFetcher.getSortedExampleOrigins());
@@ -564,25 +543,6 @@ public class ClearBrowsingDataFragment extends BaseSwipeBackFragment
 
     private TimePeriodSpinnerOption[] getTimePeriodSpinnerOptions() {
         Activity activity = getActivity();
-
-//        List<TimePeriodSpinnerOption> options = new ArrayList<>();
-//        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_HOUR,
-//                activity.getString(R.string.clear_browsing_data_tab_period_hour)));
-//        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_DAY,
-//                activity.getString(R.string.clear_browsing_data_tab_period_24_hours)));
-//        options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_WEEK,
-//                activity.getString(R.string.clear_browsing_data_tab_period_7_days)));
-//        options.add(new TimePeriodSpinnerOption(TimePeriod.FOUR_WEEKS,
-//                activity.getString(R.string.clear_browsing_data_tab_period_four_weeks)));
-//        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLEAR_OLD_BROWSING_DATA)) {
-//            options.add(new TimePeriodSpinnerOption(TimePeriod.OLDER_THAN_30_DAYS,
-//                    activity.getString(
-//                            R.string.clear_browsing_data_tab_period_older_than_30_days)));
-//        }
-//        options.add(new TimePeriodSpinnerOption(TimePeriod.ALL_TIME,
-//                activity.getString(R.string.clear_browsing_data_tab_period_everything)));
-//        return options.toArray(new TimePeriodSpinnerOption[0]);
-
         List<TimePeriodSpinnerOption> options = new ArrayList<>();
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_HOUR,
                 activity.getString(R.string.clear_browsing_data_tab_period_hour)));

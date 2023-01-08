@@ -388,6 +388,8 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_browser_engine_sougou.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_browser_engine_sougou_logo.png",
 
+    "//chrome/android/java/res_app/menu/password_entry_editor_action_bar_menu.xml",
+
     "//chrome/android/java/res_app/values/attrs.xml",
     "//chrome/android/java/res_app/values/colors.xml",
     "//chrome/android/java/res_app/values/strings.xml",

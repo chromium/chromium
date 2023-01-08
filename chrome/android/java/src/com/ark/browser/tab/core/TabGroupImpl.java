@@ -470,11 +470,13 @@ public class TabGroupImpl implements ITabGroup {
 
         saveGroupFile();
 
-        ThreadPool.executeIO(() -> {
-            for (ITab tab : changes) {
-                tab.saveTabInfo();
-            }
-        });
+        start = System.currentTimeMillis();
+        for (ITab tab : changes) {
+            tab.saveTabInfo();
+        }
+        ArkLogger.e(TAG, "saveTabPosition chagesSize=" + changes.size()
+                + " saveTabInfo deltaTime=" + (System.currentTimeMillis() - start));
+
 
     }
 

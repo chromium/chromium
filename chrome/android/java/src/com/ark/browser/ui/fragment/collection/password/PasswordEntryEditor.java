@@ -23,6 +23,7 @@ import androidx.annotation.StringRes;
 
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.utils.KeyguardUtil;
+import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.skin.SkinEngine;
 import com.zpj.toast.ZToast;
 
@@ -85,6 +86,8 @@ public class PasswordEntryEditor extends BaseSwipeBackFragment {
     private boolean mViewButtonPressed;
     private boolean mCopyButtonPressed;
 
+    private Runnable mRemoveRunnable;
+
 
     public static PasswordEntryEditor newInstance(SavedPasswordEntry entry) {
         Bundle args = new Bundle();
@@ -96,10 +99,17 @@ public class PasswordEntryEditor extends BaseSwipeBackFragment {
         return fragment;
     }
 
+    public void setRemoveRunnable(Runnable runnable) {
+        mRemoveRunnable = runnable;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        if (mRemoveRunnable == null) {
+            popThis();
+        }
     }
 
     @Override
@@ -118,6 +128,10 @@ public class PasswordEntryEditor extends BaseSwipeBackFragment {
 
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
+        if (mRemoveRunnable == null) {
+            popThis();
+            return;
+        }
         mView = view;
         View urlRowsView = view.findViewById(R.id.url_row);
         TextView dataView = urlRowsView.findViewById(R.id.password_entry_editor_row_data);
@@ -188,59 +202,31 @@ public class PasswordEntryEditor extends BaseSwipeBackFragment {
         return true;
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.password_entry_editor_action_bar_menu, menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_delete_saved_password) {
-//            removeItem();
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.password_entry_editor_action_bar_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_delete_saved_password) {
+            removeItem();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     // TODO Delete was clicked.
     private void removeItem() {
-//        final PasswordListObserver passwordDeleter = new PasswordListObserver() {
-//            @Override
-//            public void passwordListAvailable(int count) {
-//                if (!mException) {
-//                    RecordHistogram.recordEnumeratedHistogram(
-//                            "PasswordManager.Android.PasswordCredentialEntry",
-//                            PASSWORD_ENTRY_ACTION_DELETED, PASSWORD_ENTRY_ACTION_BOUNDARY);
-//                    PasswordManagerHandlerProvider.getInstance()
-//                            .getPasswordManagerHandler()
-//                            .removeSavedPasswordEntry(mID);
-//                    PasswordManagerHandlerProvider.getInstance().removeObserver(this);
-//                    ZToast.success(R.string.deleted);
-//                    pop();
-//                }
-//            }
-//
-//            @Override
-//            public void passwordExceptionListAvailable(int count) {
-//                if (mException) {
-//                    RecordHistogram.recordEnumeratedHistogram(
-//                            "PasswordManager.Android.PasswordExceptionEntry",
-//                            PASSWORD_ENTRY_ACTION_DELETED, PASSWORD_ENTRY_ACTION_BOUNDARY);
-//                    PasswordManagerHandlerProvider.getInstance()
-//                            .getPasswordManagerHandler()
-//                            .removeSavedPasswordException(mID);
-//                    PasswordManagerHandlerProvider.getInstance().removeObserver(this);
-//                    ZToast.success(R.string.deleted);
-//                    pop();
-//                }
-//            }
-//        };
-//
-//        PasswordManagerHandlerProvider.getInstance().addObserver(passwordDeleter);
-//        PasswordManagerHandlerProvider.getInstance()
-//                .getPasswordManagerHandler()
-//                .updatePasswordLists();
+        ZDialog.alert()
+                .setTitle("确定删除?")
+                .setContent("你将删除" + mUrl + "保存的密码")
+                .setPositiveButton((fragment1, which) -> {
+                    mRemoveRunnable.run();
+                    popThis();
+                })
+                .show(context);
     }
 
     private void hookupCopyUsernameButton(View usernameView) {

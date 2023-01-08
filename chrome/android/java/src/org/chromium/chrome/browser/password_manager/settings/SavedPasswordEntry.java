@@ -14,14 +14,24 @@ package org.chromium.chrome.browser.password_manager.settings;
  * solution is to move the nested class to top-level.
  */
 public final class SavedPasswordEntry {
+
     private final String mUrl;
     private final String mName;
     private final String mPassword;
+    private int mId;
 
     public SavedPasswordEntry(String url, String name, String password) {
         mUrl = url;
         mName = name;
         mPassword = password;
+    }
+
+    public void setId(int id) {
+        mId = id;
+    }
+
+    public int getId() {
+        return mId;
     }
 
     public String getUrl() {

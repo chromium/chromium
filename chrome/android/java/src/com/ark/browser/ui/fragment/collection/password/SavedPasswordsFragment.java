@@ -18,6 +18,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import com.ark.browser.ui.fragment.collection.CollectionChildFragment;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.KeyguardUtil;
+import com.ark.browser.utils.ThreadPool;
 import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.IEasy;
@@ -38,6 +39,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.chrome.R;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SavedPasswordsFragment extends CollectionChildFragment
@@ -228,13 +230,6 @@ public class SavedPasswordsFragment extends CollectionChildFragment
                         ZToast.normal("TODO 删除");
                     })
                     .show(context);
-//            ZPopup.alert(getActivity())
-//                    .setTitle("确定删除？")
-//                    .setContent("你将删除" + recyclerLayout.getSelectedCount() + "个书签")
-//                    .setConfirmButton(popup -> {
-//                        ZToast.normal("TODO 删除");
-//                    })
-//                    .show();
         }
     }
 
@@ -253,20 +248,17 @@ public class SavedPasswordsFragment extends CollectionChildFragment
 
     @Override
     public void passwordListAvailable(int count) {
-        postOnEnterAnimationEnd(new Runnable() {
-            @Override
-            public void run() {
-                mRecycler.clearItems();
-
-
-                for (int i = 0; i < count; i++) {
-                    SavedPasswordEntry saved = mPasswordUIView.getSavedPasswordEntry(i);
-//                    saved.setId(i);
-                    mRecycler.addItem(saved);
-                    mRecycler.notifyItemInserted(i);
-                }
-                mRecycler.notifyDataSetChanged();
+        ThreadPool.executeIO(() -> {
+            List<SavedPasswordEntry> items = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                SavedPasswordEntry saved = mPasswordUIView.getSavedPasswordEntry(i);
+                saved.setId(i);
+                items.add(saved);
             }
+            postOnEnterAnimationEnd(() -> {
+                mRecycler.setItems(items);
+                mRecycler.notifyDataSetChanged();
+            });
         });
     }
 
@@ -302,7 +294,15 @@ public class SavedPasswordsFragment extends CollectionChildFragment
             }
         });
 
-        holder.setOnItemClickListener(v -> start(PasswordEntryEditor.newInstance(item)));
+        holder.setOnItemClickListener(v -> {
+            PasswordEntryEditor editor = PasswordEntryEditor.newInstance(item);
+            editor.setRemoveRunnable(() -> {
+                mRecycler.showLoading();
+                mPasswordUIView.removeSavedPasswordEntry(item.getId());
+                mPasswordUIView.updatePasswordLists();
+            });
+            _mActivity.start(editor);
+        });
 
         ClickHelper.with(holder.getItemView())
                 .setOnLongClickListener((v, x, y) -> {
@@ -310,12 +310,6 @@ public class SavedPasswordsFragment extends CollectionChildFragment
                     return true;
                 });
     }
-
-//    void rebuildPasswordLists() {
-//        PasswordManagerHandlerProvider.getInstance()
-//                .getPasswordManagerHandler()
-//                .updatePasswordLists();
-//    }
 
     private void showMenu(EasyViewHolder holder, SavedPasswordEntry item, float x, float y) {
         ZDialog.attach()
@@ -343,7 +337,11 @@ public class SavedPasswordsFragment extends CollectionChildFragment
                             ZDialog.alert()
                                     .setTitle("确定删除?")
                                     .setContent("你将删除" + item.getUrl() + "保存的密码")
-                                    .setPositiveButton((fragment1, which) -> ZToast.normal("TODO 删除"))
+                                    .setPositiveButton((fragment1, which) -> {
+                                        mRecycler.showLoading();
+                                        mPasswordUIView.removeSavedPasswordEntry(item.getId());
+                                        mPasswordUIView.updatePasswordLists();
+                                    })
                                     .show(context);
                             break;
                     }
@@ -357,6 +355,7 @@ public class SavedPasswordsFragment extends CollectionChildFragment
         Clipboard.getInstance().setTextFromUser(password);
         tempCopyStr = "";
         copyPassword = false;
+        ZToast.success("已复制密码");
     }
 
     @Override

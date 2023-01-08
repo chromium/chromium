@@ -90,8 +90,6 @@ public class BookmarkFragment extends CollectionChildFragment
     private TextView deleteBtn;
     private TextView completeBtn;
 
-//    private CollectionFragment.OnFragmentListener mOnFragmentListener;
-
     private RoundedIconGenerator mIconGenerator;
     private int mMinIconSize;
     private int mDisplayedIconSize;
@@ -114,6 +112,8 @@ public class BookmarkFragment extends CollectionChildFragment
         bookmarkModel = new BookmarkModel();
         bookmarkModel.addDeleteObserver(this);
         bookmarkModel.addObserver(observer);
+        bookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+
         mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile().getOriginalProfile());
         ActivityManager activityManager = ((ActivityManager) ContextUtils
                 .getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE));
@@ -175,12 +175,10 @@ public class BookmarkFragment extends CollectionChildFragment
                 .onBindViewHolder(this)
                 .build();
         mRecycler.showLoading();
-    }
 
-    @Override
-    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
-        super.onLazyInitView(savedInstanceState);
-        addScrollChild(bookmarkModel.getDefaultFolder(), "我的书签");
+        bookmarkModel.finishLoadingBookmarkModel(() -> {
+            postOnLazyInit(() -> addScrollChild(bookmarkModel.getDefaultFolder(), "我的书签"));
+        });
     }
 
     @Override
