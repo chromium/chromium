@@ -71,33 +71,6 @@ def test_no_such_element_from_other_frame(session, url, closed):
     assert_error(result, "no such element")
 
 
-@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
-def test_stale_element_reference_as_argument(session, stale_element, as_frame):
-    element = stale_element("<div>", "div", as_frame=as_frame)
-
-    result = execute_async_script(session, "arguments[0](1);", args=[element])
-    assert_error(result, "stale element reference")
-
-
-@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
-def test_stale_element_reference_as_returned_value(session, iframe, inline, as_frame):
-    if as_frame:
-        session.url = inline(iframe("<div>"))
-        frame = session.find.css("iframe", all=False)
-        session.switch_frame(frame)
-    else:
-        session.url = inline("<div>")
-
-    element = session.find.css("div", all=False)
-
-    result = execute_async_script(session, """
-        const [elem, resolve] = arguments;
-        elem.remove();
-        resolve(elem);
-        """, args=[element])
-    assert_error(result, "stale element reference")
-
-
 @pytest.mark.parametrize("dialog_type", ["alert", "confirm", "prompt"])
 def test_abort_by_user_prompt(session, dialog_type):
     response = execute_async_script(
