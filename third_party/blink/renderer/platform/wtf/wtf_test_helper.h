@@ -91,7 +91,6 @@ struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
   // optimization.
   static const bool kEmptyValueIsZero = false;
 
-  static const bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const MoveOnlyHashValue& value) {
     return value.Value() == MoveOnlyHashValue::kEmpty;
   }
@@ -146,7 +145,6 @@ class CountCopy final {
 
 struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
   static const bool kEmptyValueIsZero = false;
-  static const bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const CountCopy& value) { return !value.Counter(); }
   static void ConstructDeletedValue(CountCopy& slot, bool) {
     slot = CountCopy(CountCopy::kDeletedValue);
@@ -214,7 +212,6 @@ template <typename T>
 struct ValueInstanceCountHashTraits
     : public GenericHashTraits<ValueInstanceCount<T>> {
   static const bool kEmptyValueIsZero = false;
-  static const bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const ValueInstanceCount<T>& value) {
     return !value.Counter();
   }

@@ -24,11 +24,8 @@ struct HashTraits<viz::ResourceId> : GenericHashTraits<viz::ResourceId> {
   static viz::ResourceId EmptyValue() {
     return viz::ResourceId(std::numeric_limits<uint32_t>::max());
   }
-  static void ConstructDeletedValue(viz::ResourceId& slot, bool) {
-    slot = viz::ResourceId(std::numeric_limits<uint32_t>::max() - 1);
-  }
-  static bool IsDeletedValue(const viz::ResourceId& value) {
-    return value.GetUnsafeValue() == std::numeric_limits<uint32_t>::max() - 1;
+  static viz::ResourceId DeletedValue() {
+    return viz::ResourceId(std::numeric_limits<uint32_t>::max() - 1);
   }
 };
 

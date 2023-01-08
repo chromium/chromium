@@ -852,7 +852,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
 
   auto it_id = layout_object_mapping_.find(layout_object);
   AXID ax_id = it_id != layout_object_mapping_.end() ? it_id->value : 0;
-  DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
+  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
 
   Node* node = layout_object->GetNode();
 
@@ -976,7 +976,7 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
   auto it_ax = inline_text_box_object_mapping_.find(inline_text_box);
   AXID ax_id =
       it_ax != inline_text_box_object_mapping_.end() ? it_ax->value : 0;
-  DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
+  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
   if (!ax_id)
     return nullptr;
 
@@ -1028,7 +1028,7 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
 
   auto it_ax = accessible_node_mapping_.find(accessible_node);
   AXID ax_id = it_ax != accessible_node_mapping_.end() ? it_ax->value : 0;
-  DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
+  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
   if (!ax_id)
     return nullptr;
 
@@ -1679,7 +1679,7 @@ AXID AXObjectCacheImpl::GenerateAXID() const {
   AXID obj_id = last_used_id;
   do {
     ++obj_id;
-  } while (!obj_id || HashTraits<AXID>::IsDeletedValue(obj_id) ||
+  } while (!obj_id || WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(obj_id) ||
            objects_.Contains(obj_id));
 
   last_used_id = obj_id;
@@ -1723,7 +1723,7 @@ void AXObjectCacheImpl::RemoveAXID(AXObject* object) {
   AXID obj_id = object->AXObjectID();
   if (!obj_id)
     return;
-  DCHECK(!HashTraits<AXID>::IsDeletedValue(obj_id));
+  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(obj_id));
   object->SetAXObjectID(0);
   // Clear AXIDs from maps. Note: do not need to erase id from
   // changed_bounds_ids_, a set which is cleared each time
@@ -2283,11 +2283,11 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
       layout_id = it->value;
     }
   }
-  DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
+  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(layout_id));
 
   auto it = node_object_mapping_.find(node);
   AXID node_id = it != node_object_mapping_.end() ? it->value : 0;
-  DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
+  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(node_id));
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
 
   ChildrenChangedWithCleanLayout(node, Get(node));
@@ -3443,7 +3443,7 @@ void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
 
   auto it = layout_object_mapping_.find(layout_object);
   AXID ax_id = it != layout_object_mapping_.end() ? it->value : 0;
-  DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
+  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
 
   // Only update if the accessibility object already exists and it's
   // not already marked as dirty.

@@ -49,8 +49,7 @@ class XRFrameRequestCallbackCollection final
  private:
   bool IsValidCallbackId(int id) {
     using Traits = HashTraits<CallbackId>;
-    return !Traits::IsDeletedValue(id) &&
-           !WTF::IsHashTraitsEmptyValue<Traits, CallbackId>(id);
+    return !WTF::IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
   }
 
   using CallbackFrameRequestMap =

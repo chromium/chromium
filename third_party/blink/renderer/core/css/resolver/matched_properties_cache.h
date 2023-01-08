@@ -83,8 +83,7 @@ class CORE_EXPORT MatchedPropertiesCache {
     bool IsValid() const {
       // If hash_ happens to compute to the empty value or the deleted value,
       // the corresponding MatchResult can't be cached.
-      return hash_ != HashTraits<unsigned>::EmptyValue() &&
-             !HashTraits<unsigned>::IsDeletedValue(hash_);
+      return !WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<unsigned>>(hash_);
     }
 
    private:

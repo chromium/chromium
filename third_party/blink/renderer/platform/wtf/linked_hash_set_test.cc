@@ -817,14 +817,9 @@ struct Complicated {
 };
 
 struct ComplicatedHashTraits : GenericHashTraits<Complicated> {
-  static const bool kEmptyValueIsZero = false;
-  static const Complicated EmptyValue() { return static_cast<Complicated>(0); }
-  static void ConstructDeletedValue(Complicated& slot, bool) {
-    slot = static_cast<Complicated>(-1);
-  }
-  static bool IsDeletedValue(const Complicated value) {
-    return value == static_cast<Complicated>(-1);
-  }
+  static constexpr bool kEmptyValueIsZero = false;
+  static Complicated EmptyValue() { return static_cast<Complicated>(0); }
+  static Complicated DeletedValue() { return static_cast<Complicated>(-1); }
 };
 
 struct ComplicatedHashFunctions {

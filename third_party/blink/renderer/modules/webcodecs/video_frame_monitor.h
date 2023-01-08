@@ -108,7 +108,6 @@ class MODULES_EXPORT VideoFrameMonitor {
   struct VideoFrameIDHashTraits
       : WTF::GenericHashTraits<media::VideoFrame::ID> {
     static const bool kEmptyValueIsZero = false;
-    static const bool kHasIsEmptyValueFunction = false;
 
     static media::VideoFrame::ID EmptyValue() {
       return media::VideoFrame::ID();

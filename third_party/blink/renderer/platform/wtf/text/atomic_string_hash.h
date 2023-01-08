@@ -60,7 +60,6 @@ struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
   static const AtomicString& EmptyValue() { return g_null_atom; }
   static PeekOutType Peek(const AtomicString& value) { return value; }
 
-  static const bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const AtomicString& value) { return value.IsNull(); }
 
   static bool IsDeletedValue(const AtomicString& value) {

@@ -312,7 +312,6 @@ class HashMap<KeyArg,
 template <typename KeyTraits, typename MappedTraits>
 struct HashMapValueTraits : KeyValuePairHashTraits<KeyTraits, MappedTraits> {
   STATIC_ONLY(HashMapValueTraits);
-  static const bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(
       const typename KeyValuePairHashTraits<KeyTraits, MappedTraits>::TraitType&
           value) {
@@ -645,18 +644,7 @@ template <typename T,
           typename Y>
 template <typename IncomingKeyType>
 inline bool HashMap<T, U, V, W, X, Y>::IsValidKey(const IncomingKeyType& key) {
-  if (KeyTraits::IsDeletedValue(key))
-    return false;
-
-  if (HashFunctions::safe_to_compare_to_empty_or_deleted) {
-    if (key == KeyTraits::EmptyValue())
-      return false;
-  } else {
-    if (IsHashTraitsEmptyValue<KeyTraits>(key))
-      return false;
-  }
-
-  return true;
+  return !IsHashTraitsEmptyOrDeletedValue<KeyTraits>(key);
 }
 
 template <typename T,

@@ -138,7 +138,6 @@ struct DefaultHash<blink::BlinkSchemefulSite> {
 template <>
 struct HashTraits<blink::BlinkSchemefulSite>
     : SimpleClassHashTraits<blink::BlinkSchemefulSite> {
-  static const bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const blink::BlinkSchemefulSite& value) {
     return !value.site_as_origin_;
   }

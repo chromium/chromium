@@ -26,7 +26,7 @@ class LineLayoutItem {
       : layout_object_(layout_object) {}
 
   explicit LineLayoutItem(WTF::HashTableDeletedValueType) {
-    WTF::HashTraits<decltype(layout_object_)>::ConstructDeletedValue(
+    WTF::ConstructHashTraitsDeletedValue<HashTraits<decltype(layout_object_)>>(
         layout_object_, false);
   }
 
@@ -266,7 +266,7 @@ class LineLayoutItem {
   }
 
   bool IsHashTableDeletedValue() const {
-    return WTF::HashTraits<decltype(layout_object_)>::IsDeletedValue(
+    return WTF::IsHashTraitsDeletedValue<HashTraits<decltype(layout_object_)>>(
         layout_object_);
   }
 

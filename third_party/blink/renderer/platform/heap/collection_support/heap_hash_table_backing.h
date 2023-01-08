@@ -237,8 +237,8 @@ struct TraceHashTableBackingInCollectionTrait {
     for (size_t i = 0; i < length; ++i) {
       internal::ConcurrentBucket<Value> concurrent_bucket(
           array[i], Extractor::ExtractSafe);
-      if (!HashTableHelper<Value, Extractor, typename Table::KeyTraitsType>::
-              IsEmptyOrDeletedBucketForKey(*concurrent_bucket.key())) {
+      if (!WTF::IsHashTraitsEmptyOrDeletedValue<typename Table::KeyTraitsType>(
+              *concurrent_bucket.key())) {
         blink::TraceCollectionIfEnabled<
             weak_handling,
             typename internal::ConcurrentBucket<Value>::BucketType,

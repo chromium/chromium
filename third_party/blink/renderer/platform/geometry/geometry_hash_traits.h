@@ -28,18 +28,10 @@ struct DefaultHash<gfx::SizeF> {
 template <>
 struct HashTraits<gfx::SizeF> : GenericHashTraits<gfx::SizeF> {
   STATIC_ONLY(HashTraits);
-  static const bool kEmptyValueIsZero = false;
-  static gfx::SizeF EmptyValue() {
+  static constexpr bool kEmptyValueIsZero = false;
+  static constexpr gfx::SizeF EmptyValue() {
     return gfx::SizeF(std::numeric_limits<float>::infinity(), 0);
   }
-  static void ConstructDeletedValue(gfx::SizeF& slot, bool) {
-    slot = DeletedValue();
-  }
-  static bool IsDeletedValue(const gfx::SizeF& value) {
-    return value == DeletedValue();
-  }
-
- private:
   static constexpr gfx::SizeF DeletedValue() {
     return gfx::SizeF(0, std::numeric_limits<float>::infinity());
   }
@@ -59,17 +51,9 @@ struct DefaultHash<SkIRect> {
 template <>
 struct HashTraits<SkIRect> : GenericHashTraits<SkIRect> {
   STATIC_ONLY(HashTraits);
-  static const bool kEmptyValueIsZero = false;
+  static constexpr bool kEmptyValueIsZero = false;
   static SkIRect EmptyValue() { return SkIRect::MakeWH(-1, 0); }
-  static void ConstructDeletedValue(SkIRect& slot, bool) {
-    slot = DeletedValue();
-  }
-  static bool IsDeletedValue(const SkIRect& value) {
-    return value == DeletedValue();
-  }
-
- private:
-  static constexpr SkIRect DeletedValue() { return SkIRect::MakeWH(0, -1); }
+  static SkIRect DeletedValue() { return SkIRect::MakeWH(0, -1); }
 };
 
 }  // namespace WTF

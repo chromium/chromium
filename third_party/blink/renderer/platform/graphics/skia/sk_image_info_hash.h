@@ -36,15 +36,9 @@ struct HashTraits<SkImageInfo> : GenericHashTraits<SkImageInfo> {
     return SkImageInfo::Make(0, 0, kUnknown_SkColorType, kUnknown_SkAlphaType,
                              nullptr);
   }
-  static void ConstructDeletedValue(SkImageInfo& slot, bool) {
-    slot = SkImageInfo::Make(-1, -1, kUnknown_SkColorType, kUnknown_SkAlphaType,
+  static SkImageInfo DeletedValue() {
+    return SkImageInfo::Make(-1, -1, kUnknown_SkColorType, kUnknown_SkAlphaType,
                              nullptr);
-  }
-  static bool IsDeletedValue(const SkImageInfo& value) {
-    return value.width() == -1 && value.height() == -1 &&
-           value.colorType() == kUnknown_SkColorType &&
-           value.alphaType() == kUnknown_SkAlphaType &&
-           value.colorSpace() == nullptr;
   }
 };
 

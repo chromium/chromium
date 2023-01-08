@@ -102,8 +102,7 @@ class CORE_EXPORT ScriptedIdleTaskController
 
   bool IsValidCallbackId(int id) {
     using Traits = HashTraits<CallbackId>;
-    return !Traits::IsDeletedValue(id) &&
-           !WTF::IsHashTraitsEmptyValue<Traits, CallbackId>(id);
+    return !WTF::IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
   }
 
   void RunCallback(CallbackId,

@@ -56,7 +56,6 @@ struct ClearMemoryAtomicallyIfNeeded<T, true> {
 template <typename T>
 struct GenericHashTraitsBase {
   using TraitType = T;
-  using EmptyValueType = T;
 
   // Type for functions that do not take ownership, such as contains.
   using PeekInType = const T&;
@@ -77,23 +76,55 @@ struct GenericHashTraitsBase {
   using PeekOutType = T;
   static const T& Peek(const T& value) { return value; }
 
+  // Defines the empty value which is used to fill unused slots in the hash
+  // table. A hash traits type must define this function if its
+  // kEmptyValueIsZero is false or IsEmptyValue() is not defined.
+  // This function is preferred to IsEmptyValue() when the empty value can be
+  // represented with a value that can be safely and trivially compared/assigned
+  // to another value.
+  static T EmptyValue() = delete;
+
+  // Checks if a given value is an empty value. If this is defined, the hash
+  // table will call this function (through IsHashTraitsEmptyValue()) to check
+  // if a slot is empty. Otherwise `v == EmptyValue()` will be used.
+  // TODO(wangxianzhu): Make clear the requirement of this function when
+  // HashFunctions::safe_to_compare_to_empty_or_deleted is false.
+  static void IsEmptyValue(const T& v) = delete;
+
   // This flag can be set to true if any of the following conditions is true:
-  // 1. All bytes of EmptyValue() are zero.
-  // 2. kHasEmptyValueFunction is true and IsEmptyValue() returns true for a
-  //    value containing all zero bytes.
+  // 1. EmptyValue() is defined and all bytes of the return value are zero.
+  // 2. IsEmptyValue() is defined and it returns true for a value containing all
+  //    zero bytes.
+  // Otherwise this flag must be set to false.
   // When this is true, the hash table can optimize allocation of empty hash
   // slots with zeroed memory without calling EmptyValue().
   static constexpr bool kEmptyValueIsZero = false;
 
-  // If this flag is true, the hash table will call function
-  //   static bool IsEmptyValue(const T&);
-  // to check if an entry is an empty value. Otherwise the hash table will
-  // check for the empty value with the equality operator.
-  // See IsHashTraitsEmptyValue().
-  static constexpr bool kHasIsEmptyValueFunction = false;
+  // Defines the deleted value which is used to fill the slot for a hash entry
+  // when the entry is deleted from the hash table. A hash traits type must
+  // define either this function or both IsDeletedValue() and
+  // ConstructDeletedValue(). This function is preferred to IsDeletedValue()
+  // and ConstructDeletedValue() when the deleted value can be represented with
+  // a value that can be safely and trivially compared/assigned to another
+  // value.
+  static T DeletedValue() = delete;
 
-// The starting table size. Can be overridden when we know beforehand that a
-// hash table will have at least N entries.
+  // Checks if a given value is a deleted value. If this is defined, the hash
+  // table will call this function (through IsHashTraitsDeletedValue()) to check
+  // if a slot is deleted. Otherwise `v == DeletedValue()` will be used.
+  // TODO(wangxianzhu): Make clear the requirement of this function when
+  // HashFunctions::safe_to_compare_to_empty_or_deleted is false.
+  static bool IsDeletedValue(const T& v) = delete;
+
+  // Constructs a deleted value in-place in the given memory space.
+  // |zero_value| is true if the memory has been filled with zero.
+  // This must be defined if IsDeletedValue() is defined, and will be called
+  // through ConstructHashTraitsDeletedValue(). Otherwise
+  // `slot = DeletedValue()` will be used.
+  static void ConstructDeletedValue(T& slot, bool zero_value) = delete;
+
+  // The starting table size. Can be overridden when we know beforehand that a
+  // hash table will have at least N entries.
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   // The allocation pool for nodes is one big chunk that ASAN has no insight
   // into, so it can cloak errors. Make it as small as possible to force nodes
@@ -135,12 +166,7 @@ struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
   static constexpr bool kEmptyValueIsZero =
       static_cast<int64_t>(empty_value) == 0;
   static constexpr T EmptyValue() { return static_cast<T>(empty_value); }
-  static void ConstructDeletedValue(T& slot, bool) {
-    slot = static_cast<T>(deleted_value);
-  }
-  static constexpr bool IsDeletedValue(T value) {
-    return value == static_cast<T>(deleted_value);
-  }
+  static constexpr T DeletedValue() { return static_cast<T>(deleted_value); }
 };
 
 }  // namespace internal
@@ -181,12 +207,9 @@ struct HashTraits : GenericHashTraits<T> {};
 
 template <typename T>
 struct FloatHashTraits : GenericHashTraits<T> {
-  static T EmptyValue() { return std::numeric_limits<T>::infinity(); }
-  static void ConstructDeletedValue(T& slot, bool) {
-    slot = -std::numeric_limits<T>::infinity();
-  }
-  static bool IsDeletedValue(T value) {
-    return value == -std::numeric_limits<T>::infinity();
+  static constexpr T EmptyValue() { return std::numeric_limits<T>::infinity(); }
+  static constexpr T DeletedValue() {
+    return -std::numeric_limits<T>::infinity();
   }
 };
 
@@ -206,12 +229,7 @@ struct IntWithZeroKeyHashTraits
 template <typename P>
 struct HashTraits<P*> : GenericHashTraits<P*> {
   static constexpr bool kEmptyValueIsZero = true;
-  static void ConstructDeletedValue(P*& slot, bool) {
-    slot = reinterpret_cast<P*>(-1);
-  }
-  static bool IsDeletedValue(const P* value) {
-    return value == reinterpret_cast<P*>(-1);
-  }
+  static constexpr P* DeletedValue() { return reinterpret_cast<P*>(-1); }
 };
 
 template <typename T>
@@ -255,10 +273,6 @@ struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
     P* ptr_;
   };
 
-  typedef std::nullptr_t EmptyValueType;
-  static EmptyValueType EmptyValue() { return nullptr; }
-
-  static constexpr bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const scoped_refptr<P>& value) { return !value; }
 
   static bool IsDeletedValue(const scoped_refptr<P>& value) {
@@ -287,10 +301,6 @@ struct HashTraits<scoped_refptr<P>> : SimpleClassHashTraits<scoped_refptr<P>> {
 template <typename T>
 struct HashTraits<std::unique_ptr<T>>
     : SimpleClassHashTraits<std::unique_ptr<T>> {
-  using EmptyValueType = std::nullptr_t;
-  static EmptyValueType EmptyValue() { return nullptr; }
-
-  static constexpr bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const std::unique_ptr<T>& value) { return !value; }
 
   using PeekInType = T*;
@@ -317,35 +327,91 @@ struct HashTraits<std::unique_ptr<T>>
 
 template <>
 struct HashTraits<String> : SimpleClassHashTraits<String> {
-  static constexpr bool kHasIsEmptyValueFunction = true;
   static bool IsEmptyValue(const String&);
   static bool IsDeletedValue(const String& value);
   static void ConstructDeletedValue(String& slot, bool zero_value);
 };
 
-// This struct template is an implementation detail of the
-// isHashTraitsEmptyValue function, which selects either the emptyValue function
-// or the isEmptyValue function to check for empty values.
-template <typename Traits, bool hasEmptyValueFunction>
-struct HashTraitsEmptyValueChecker;
-template <typename Traits>
-struct HashTraitsEmptyValueChecker<Traits, true> {
-  template <typename T>
-  static bool IsEmptyValue(const T& value) {
-    return Traits::IsEmptyValue(value);
-  }
-};
-template <typename Traits>
-struct HashTraitsEmptyValueChecker<Traits, false> {
+namespace internal {
+
+template <typename Traits, typename Enabled = void>
+struct HashTraitsEmptyValueChecker {
   template <typename T>
   static bool IsEmptyValue(const T& value) {
     return value == Traits::EmptyValue();
   }
 };
+template <typename Traits>
+struct HashTraitsEmptyValueChecker<
+    Traits,
+    std::enable_if_t<
+        std::is_same_v<decltype(Traits::IsEmptyValue(
+                           std::declval<typename Traits::TraitType>())),
+                       bool>>> {
+  template <typename T>
+  static bool IsEmptyValue(const T& value) {
+    return Traits::IsEmptyValue(value);
+  }
+};
+
+template <typename Traits, typename Enabled = void>
+struct HashTraitsDeletedValueHelper {
+  template <typename T>
+  static bool IsDeletedValue(const T& value) {
+    return value == Traits::DeletedValue();
+  }
+  template <typename T>
+  static void ConstructDeletedValue(T& slot, bool) {
+    slot = Traits::DeletedValue();
+  }
+};
+template <typename Traits>
+struct HashTraitsDeletedValueHelper<
+    Traits,
+    std::enable_if_t<
+        std::is_same_v<decltype(Traits::IsDeletedValue(
+                           std::declval<typename Traits::TraitType>())),
+                       bool>>> {
+  template <typename T>
+  static bool IsDeletedValue(const T& value) {
+    return Traits::IsDeletedValue(value);
+  }
+  // Traits must also define ConstructDeletedValue() if it defines
+  // IsDeletedValue().
+  template <typename T>
+  static void ConstructDeletedValue(T& slot, bool zero_value) {
+    Traits::ConstructDeletedValue(slot, zero_value);
+  }
+};
+
+}  // namespace internal
+
+// This function selects either the EmptyValue() function or the IsEmptyValue()
+// function to check for empty values.
 template <typename Traits, typename T>
 inline bool IsHashTraitsEmptyValue(const T& value) {
-  return HashTraitsEmptyValueChecker<
-      Traits, Traits::kHasIsEmptyValueFunction>::IsEmptyValue(value);
+  return internal::HashTraitsEmptyValueChecker<Traits>::IsEmptyValue(value);
+}
+
+// This function selects either the DeletedValue() function or the
+// IsDeletedValue() function to check for deleted values.
+template <typename Traits, typename T>
+inline bool IsHashTraitsDeletedValue(const T& value) {
+  return internal::HashTraitsDeletedValueHelper<Traits>::IsDeletedValue(value);
+}
+
+// This function selects either the DeletedValue() function or the
+// ConstructDeletedValue() function to construct a deleted value.
+template <typename Traits, typename T>
+inline void ConstructHashTraitsDeletedValue(T& slot, bool zero_value) {
+  internal::HashTraitsDeletedValueHelper<Traits>::ConstructDeletedValue(
+      slot, zero_value);
+}
+
+template <typename Traits, typename T>
+inline bool IsHashTraitsEmptyOrDeletedValue(const T& value) {
+  return IsHashTraitsEmptyValue<Traits, T>(value) ||
+         IsHashTraitsDeletedValue<Traits, T>(value);
 }
 
 namespace internal {
@@ -360,19 +426,13 @@ struct PairHashTraitsBase
                           typename SecondTraits::TraitType>> {
   using TraitType =
       T<typename FirstTraits::TraitType, typename SecondTraits::TraitType>;
-  using EmptyValueType = T<typename FirstTraits::EmptyValueType,
-                           typename SecondTraits::EmptyValueType>;
 
   static constexpr bool kEmptyValueIsZero =
       FirstTraits::kEmptyValueIsZero && SecondTraits::kEmptyValueIsZero;
-  static EmptyValueType EmptyValue() {
-    return EmptyValueType(FirstTraits::EmptyValue(),
-                          SecondTraits::EmptyValue());
+  static TraitType EmptyValue() {
+    return TraitType(FirstTraits::EmptyValue(), SecondTraits::EmptyValue());
   }
 
-  static constexpr bool kHasIsEmptyValueFunction =
-      FirstTraits::kHasIsEmptyValueFunction ||
-      SecondTraits::kHasIsEmptyValueFunction;
   static bool IsEmptyValue(const TraitType& value) {
     return IsHashTraitsEmptyValue<FirstTraits>(value.*first_field) &&
            IsHashTraitsEmptyValue<SecondTraits>(value.*second_field);
@@ -381,7 +441,7 @@ struct PairHashTraitsBase
   static constexpr unsigned kMinimumTableSize = FirstTraits::kMinimumTableSize;
 
   static void ConstructDeletedValue(TraitType& slot, bool zero_value) {
-    FirstTraits::ConstructDeletedValue(slot.*first_field, zero_value);
+    ConstructHashTraitsDeletedValue<FirstTraits>(slot.*first_field, zero_value);
     // For GC collections the memory for the backing is zeroed when it is
     // allocated, and the constructors may take advantage of that,
     // especially if a GC occurs during insertion of an entry into the
@@ -395,7 +455,7 @@ struct PairHashTraitsBase
     }
   }
   static bool IsDeletedValue(const TraitType& value) {
-    return FirstTraits::IsDeletedValue(value.*first_field);
+    return IsHashTraitsDeletedValue<FirstTraits>(value.*first_field);
   }
 
   template <typename U = void>
@@ -480,19 +540,12 @@ template <typename Key, typename Value>
 struct HashTraits<KeyValuePair<Key, Value>>
     : public KeyValuePairHashTraits<HashTraits<Key>, HashTraits<Value>> {};
 
-template <typename T>
-struct NullableHashTraits : public HashTraits<T> {
-  static constexpr bool kEmptyValueIsZero = false;
-  static T EmptyValue() { return reinterpret_cast<T>(1); }
-};
-
 }  // namespace WTF
 
 using WTF::EnumHashTraits;
 using WTF::HashTraits;
 using WTF::IntHashTraits;
 using WTF::IntWithZeroKeyHashTraits;
-using WTF::NullableHashTraits;
 using WTF::PairHashTraits;
 using WTF::SimpleClassHashTraits;
 

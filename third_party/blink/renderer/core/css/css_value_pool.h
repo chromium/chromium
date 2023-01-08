@@ -68,12 +68,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   struct ColorHashTraitsForCSSValuePool : WTF::GenericHashTraits<Color> {
     STATIC_ONLY(ColorHashTraitsForCSSValuePool);
     static Color EmptyValue() { return Color::kTransparent; }
-    static void ConstructDeletedValue(Color& slot, bool) {
-      slot = Color::kWhite;
-    }
-    static bool IsDeletedValue(const Color& value) {
-      return value == Color::kWhite;
-    }
+    static Color DeletedValue() { return Color::kWhite; }
   };
   using ColorValueCache = HeapHashMap<Color,
                                       Member<CSSColor>,

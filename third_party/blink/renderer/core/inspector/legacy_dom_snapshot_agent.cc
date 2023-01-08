@@ -91,7 +91,6 @@ struct LegacyDOMSnapshotAgent::VectorStringHashTraits
 
   static const bool kEmptyValueIsZero = false;
   static const bool safe_to_compare_to_empty_or_deleted = false;
-  static const bool kHasIsEmptyValueFunction = true;
 };
 
 LegacyDOMSnapshotAgent::LegacyDOMSnapshotAgent(

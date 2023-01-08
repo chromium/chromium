@@ -75,8 +75,6 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   struct SchemeAndRegistrableDomainTraits
       : SimpleClassHashTraits<SchemeAndRegistrableDomain> {
     STATIC_ONLY(SchemeAndRegistrableDomainTraits);
-    static const bool kHasIsEmptyValueFunction = true;
-
     static bool IsEmptyValue(const SchemeAndRegistrableDomain&);
     static bool IsDeletedValue(const SchemeAndRegistrableDomain& value);
     static void ConstructDeletedValue(SchemeAndRegistrableDomain& slot,

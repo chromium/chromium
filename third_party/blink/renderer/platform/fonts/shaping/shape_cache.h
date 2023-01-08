@@ -198,7 +198,6 @@ class ShapeCache {
 
   struct SmallStringKeyHashTraits : WTF::SimpleClassHashTraits<SmallStringKey> {
     STATIC_ONLY(SmallStringKeyHashTraits);
-    static const bool kHasIsEmptyValueFunction = true;
     static const bool kEmptyValueIsZero = false;
     static bool IsEmptyValue(const SmallStringKey& key) {
       return key.IsHashTableEmptyValue();

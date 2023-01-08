@@ -643,35 +643,6 @@ struct HashTableAddResult final {
 #endif
 };
 
-template <typename Value, typename Extractor, typename KeyTraits>
-struct HashTableHelper {
-  template <typename T>
-  struct AddConstToPtrType {
-    using type = T;
-  };
-  template <typename T>
-  struct AddConstToPtrType<T*> {
-    using type = const T*;
-  };
-
-  using Key = typename AddConstToPtrType<typename KeyTraits::TraitType>::type;
-
-  STATIC_ONLY(HashTableHelper);
-  static bool IsEmptyBucket(const Key& key) {
-    return IsHashTraitsEmptyValue<KeyTraits>(key);
-  }
-  static bool IsDeletedBucket(const Key& key) {
-    return KeyTraits::IsDeletedValue(key);
-  }
-  static bool IsEmptyOrDeletedBucketForKey(const Key& key) {
-    return IsEmptyBucket(key) || IsDeletedBucket(key);
-  }
-  static bool IsEmptyOrDeletedBucket(const Value& value) {
-    const Key& key = Extractor::Extract(value);
-    return IsEmptyOrDeletedBucketForKey(key);
-  }
-};
-
 template <typename HashTranslator,
           typename KeyTraits,
           bool safeToCompareToEmptyOrDeleted>
@@ -840,11 +811,11 @@ class HashTable final
     return IsHashTraitsEmptyValue<KeyTraits>(Extractor::Extract(value));
   }
   static bool IsDeletedBucket(const ValueType& value) {
-    return KeyTraits::IsDeletedValue(Extractor::Extract(value));
+    return IsHashTraitsDeletedValue<KeyTraits>(Extractor::Extract(value));
   }
   static bool IsEmptyOrDeletedBucket(const ValueType& value) {
-    return HashTableHelper<ValueType, Extractor,
-                           KeyTraits>::IsEmptyOrDeletedBucket(value);
+    return IsHashTraitsEmptyOrDeletedValue<KeyTraits>(
+        Extractor::Extract(value));
   }
 
   ValueType* Lookup(KeyPeekInType key) {
@@ -938,8 +909,8 @@ class HashTable final
   static void ReinitializeBucket(ValueType& bucket);
   static void DeleteBucket(const ValueType& bucket) {
     bucket.~ValueType();
-    Traits::ConstructDeletedValue(const_cast<ValueType&>(bucket),
-                                  Allocator::kIsGarbageCollected);
+    ConstructHashTraitsDeletedValue<Traits>(const_cast<ValueType&>(bucket),
+                                            Allocator::kIsGarbageCollected);
   }
 
   FullLookupType MakeLookupResult(ValueType* position,
@@ -1305,11 +1276,11 @@ struct HashTableBucketInitializer<
     Value* result =
         Allocator::template AllocateHashTableBacking<Value, HashTable>(
             alloc_size);
-    ReinitializeTable(result, size);
+    InitializeTable(result, size);
     return result;
   }
 
-  static void ReinitializeTable(Value* table, unsigned size) {
+  static void InitializeTable(Value* table, unsigned size) {
     for (unsigned i = 0; i < size; i++) {
       Initialize(table[i]);
     }
@@ -1354,7 +1325,7 @@ struct HashTableBucketInitializer<Traits,
     return result;
   }
 
-  static void ReinitializeTable(Value* table, unsigned size) {
+  static void InitializeTable(Value* table, unsigned size) {
     AtomicMemzero(table, size * sizeof(Value));
     CheckEmptyValues(table, size);
   }
@@ -1862,7 +1833,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   table_ = temporary_table;
   Allocator::template BackingWriteBarrier(&table_);
 
-  HashTableBucketInitializer<Traits, Allocator, Value>::ReinitializeTable(
+  HashTableBucketInitializer<Traits, Allocator, Value>::InitializeTable(
       original_table, new_table_size);
   new_entry = RehashTo(original_table, new_table_size, new_entry);
 

@@ -44,14 +44,9 @@ struct DefaultHash<SkSize> {
 template <>
 struct HashTraits<SkSize> : GenericHashTraits<SkSize> {
   STATIC_ONLY(HashTraits);
-  static const bool kEmptyValueIsZero = true;
+  static constexpr bool kEmptyValueIsZero = true;
   static SkSize EmptyValue() { return SkSize::Make(0, 0); }
-  static void ConstructDeletedValue(SkSize& slot, bool) {
-    slot = SkSize::Make(-1, -1);
-  }
-  static bool IsDeletedValue(const SkSize& value) {
-    return value.width() == -1 && value.height() == -1;
-  }
+  static SkSize DeletedValue() { return SkSize::Make(-1, -1); }
 };
 
 template <>
@@ -67,14 +62,9 @@ struct DefaultHash<SkISize> {
 template <>
 struct HashTraits<SkISize> : GenericHashTraits<SkISize> {
   STATIC_ONLY(HashTraits);
-  static const bool kEmptyValueIsZero = true;
+  static constexpr bool kEmptyValueIsZero = true;
   static SkISize EmptyValue() { return SkISize::Make(0, 0); }
-  static void ConstructDeletedValue(SkISize& slot, bool) {
-    slot = SkISize::Make(-1, -1);
-  }
-  static bool IsDeletedValue(const SkISize& value) {
-    return value.width() == -1 && value.height() == -1;
-  }
+  static SkISize DeletedValue() { return SkISize::Make(-1, -1); }
 };
 
 }  // namespace WTF
