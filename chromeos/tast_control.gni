@@ -316,9 +316,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1236234
   "lacros.AudioPlay",
 
-  # http://b/262773281
-  "lockscreen.CloseLid.finch_on",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
