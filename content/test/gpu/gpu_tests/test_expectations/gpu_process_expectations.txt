@@ -115,12 +115,12 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Dual-GPU problem with SkiaRenderer.
-crbug.com/1170840 [ mac amd renderer-skia-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
+crbug.com/1170840 [ amd-0x6821 mac renderer-skia-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
 
 # Fuchsia flakes.
 
 # Started crashing with passthrough field trial.
-crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
+crbug.com/1099576 [ amd-0x6821 mac ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 
 crbug.com/1384930 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFailure ]
 
