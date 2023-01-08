@@ -70,9 +70,6 @@ class FileSystemAccessAccessHandleHostImpl
   // The FileSystemAccessManagerImpl that owns this instance.
   const raw_ptr<FileSystemAccessManagerImpl> manager_;
 
-  // Exclusive write lock on the file. It is released on destruction.
-  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_;
-
   mojo::Receiver<blink::mojom::FileSystemAccessAccessHandleHost> receiver_;
 
   std::unique_ptr<FileSystemAccessFileDelegateHostImpl> incognito_host_;
@@ -108,6 +105,12 @@ class FileSystemAccessAccessHandleHostImpl
   // will run when `this` is destroyed, which errs on the side of not running
   // the callback too early, before the file is actually closed.
   base::ScopedClosureRunner on_close_callback_;
+
+  // Exclusive write lock on the file. It is released on destruction. This
+  // member must be declared after `close_callback_` to ensure that the lock is
+  // released before the FileSystemSyncAccessHandle.close() method returns. See
+  // https://github.com/whatwg/fs/issues/83.
+  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

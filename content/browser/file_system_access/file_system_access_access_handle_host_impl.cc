@@ -4,7 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -25,10 +25,10 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
     int64_t file_size,
     base::ScopedClosureRunner on_close_callback)
     : manager_(manager),
-      lock_(std::move(lock)),
       receiver_(this, std::move(receiver)),
       url_(url),
-      on_close_callback_(std::move(on_close_callback)) {
+      on_close_callback_(std::move(on_close_callback)),
+      lock_(std::move(lock)) {
   DCHECK(manager_);
   DCHECK_EQ(lock_->type(),
             FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
