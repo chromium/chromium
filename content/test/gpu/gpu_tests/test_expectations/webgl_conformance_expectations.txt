@@ -283,16 +283,21 @@ crbug.com/1378476 [ mac mac-arm64 angle-swiftshader ] conformance/rendering/gl-d
 # ========================
 
 # The validating command decoder suppressions here will not be fixed.
-crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
-crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
+crbug.com/angleproject/6245 [ android-chromium android-pie android-shield-android-tv mobile no-passthrough nvidia oop-c renderer-skia-gl target-cpu-32 ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
+crbug.com/angleproject/6245 [ desktop no-passthrough renderer-skia-gl target-cpu-64 ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
+crbug.com/angleproject/6245 [ android-chromium android-pie android-shield-android-tv mobile no-passthrough nvidia oop-c renderer-skia-gl target-cpu-32 ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
+crbug.com/angleproject/6245 [ desktop no-passthrough renderer-skia-gl target-cpu-64 ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
+crbug.com/angleproject/6245 [ android-chromium android-pie android-shield-android-tv mobile no-passthrough nvidia oop-c renderer-skia-gl target-cpu-32 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/angleproject/6245 [ desktop no-passthrough renderer-skia-gl target-cpu-64 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/angleproject/6245 [ android-chromium android-pie android-shield-android-tv mobile no-passthrough nvidia oop-c renderer-skia-gl target-cpu-32 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
+crbug.com/angleproject/6245 [ desktop no-passthrough renderer-skia-gl target-cpu-64 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
 # Failing on most platforms. Only runs with passthrough.
-crbug.com/1175371 [ android ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ chromeos ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]  # finder:disable-unused May still be relevant once WebGL is run with passthrough on ChromeOS
+crbug.com/1175371 [ android angle-opengles passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ angle-opengles chromeos passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ linux ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ mac ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ angle-metal monterey no-asan oop-c release ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/1175371 [ angle-opengl mac ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
@@ -304,7 +309,7 @@ crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-ant
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
 crbug.com/849572 [ win angle-d3d11 passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-crbug.com/849572 [ angle-opengl passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+crbug.com/849572 [ angle-opengl display-server-x no-asan oop-c passthrough ubuntu ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/849572 [ angle-vulkan passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/849572 [ angle-swiftshader passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
@@ -389,7 +394,7 @@ crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/m
 # Mac failures     #
 ####################
 
-crbug.com/844311 [ mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
+crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
@@ -447,14 +452,15 @@ crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL
 # Android failures #
 ####################
 
-crbug.com/903903 [ android qualcomm ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
-crbug.com/478572 [ android qualcomm ] conformance/glsl/bugs/sequence-operator-evaluation-order.html [ Failure ]
+crbug.com/903903 [ android-nexus-5x android-nougat qualcomm target-cpu-64 ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
+crbug.com/478572 [ android-nexus-5x android-nougat qualcomm target-cpu-64 ] conformance/glsl/bugs/sequence-operator-evaluation-order.html [ Failure ]
 
 # Need to investigate failure on basically all devices with passthrough on Android.
 crbug.com/angleproject/5038 [ android passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Failure on validating command decoder only; won't fix.
-crbug.com/angleproject/5038 [ android no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/angleproject/5038 [ android no-passthrough qualcomm renderer-skia-gl ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/angleproject/5038 [ android-pie android-shield-android-tv no-passthrough nvidia renderer-skia-gl target-cpu-32 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Was too difficult to suppress these failures on individual bots.
 crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
@@ -467,7 +473,8 @@ crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constru
 # crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 
 # These video tests are flakey on many configurations.
-crbug.com/1347077 [ android ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1347077 [ android-s android-sm-a235m angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 # Nexus 5X
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
@@ -476,7 +483,7 @@ crbug.com/609883 [ android android-nexus-5x ] conformance/glsl/bugs/sampler-stru
 crbug.com/951628 [ android android-nexus-5x no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 # Timing out on this device for unknown reasons.
-crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Failure ]
+crbug.com/1122644 [ android android-nexus-5x angle-opengles passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for pixels in video related tests
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
 
@@ -540,7 +547,7 @@ crbug.com/1383609 [ android android-sm-a235m ] WebglExtension_* [ RetryOnFailure
 # ChromeOS: affecting all devices.
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/957807 [ angle-opengles chromeos passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 
 # finder:disable-unused Reported by Intel but not currently testable in Chromium
 crbug.com/1237319 [ chromeos chromeos-board-eve passthrough intel ] conformance/textures/misc/texture-size-limit.html [ Failure ]
