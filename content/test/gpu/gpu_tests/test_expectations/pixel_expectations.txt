@@ -394,12 +394,16 @@ crbug.com/1373965 [ fuchsia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaste
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 # Pixel_MediaRecorderFromVideoElement fails on several FYI bots
-crbug.com/1382332 [ win10 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ amd-0x7340 release-x64 target-cpu-64 win10 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ mac ] Pixel_MediaRecorderFromVideoElement [ Failure ]
-crbug.com/1382332 [ mac ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ amd-0x6821 asan mac-x86_64 monterey release ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ android android-webview-instrumentation angle-disabled no-passthrough ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ android-chromium android-nexus-5x android-nougat angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ android-chromium android-pixel-4 android-r angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ fuchsia ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
