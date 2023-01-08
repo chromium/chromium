@@ -1436,7 +1436,7 @@
   {
     "name": "disable-virtual-keyboard",
     "owners": [ "dvallet", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "disable-webrtc-hw-decoding",
@@ -1906,7 +1906,7 @@
   {
     "name": "enable-cros-autocorrect-params-tuning",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "enable-cros-autocorrect-toggle",
@@ -1921,7 +1921,7 @@
   {
     "name": "enable-cros-diacritics-on-physical-keyboard-longpress",
     "owners": ["jhtin", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "enable-cros-first-party-vietnamese-input",
@@ -1961,12 +1961,12 @@
   {
     "name": "enable-cros-ime-stylus-handwriting",
     "owners": ["jopalmer", "essential-inputs-team@google.com"],
-    "expiry_milestone" : 110
+    "expiry_milestone" : 116
   },
   {
     "name": "enable-cros-ime-system-emoji-picker-clipboard",
     "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "enable-cros-ime-system-emoji-picker-extension",
@@ -1981,7 +1981,7 @@
   {
     "name": "enable-cros-ime-system-emoji-picker-search-extension",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "enable-cros-ime-tray-hide-voice-button",
@@ -1991,12 +1991,12 @@
   {
     "name": "enable-cros-multilingual-typing",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "enable-cros-on-device-grammar-check",
     "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "enable-cros-privacy-hub",
@@ -2026,7 +2026,7 @@
   {
     "name": "enable-cros-virtual-keyboard-new-header",
     "owners": ["jopalmer", "essential-inputs-team@google.com"],
-    "expiry_milestone" : 110
+    "expiry_milestone" : 116
   },
   {
     "name": "enable-cros-virtual-keyboard-round-corners",
@@ -3968,17 +3968,17 @@
   {
     "name": "handwriting-legacy-recognition",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "handwriting-legacy-recognition-all-lang",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "handwriting-library-dlc",
     "owners": [ "shend@google.com", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "happiness-tracking-surveys-for-desktop-demo",
