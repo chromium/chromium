@@ -248,14 +248,21 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                 if os.path.isdir(self._upstream_dir):
                     shutil.rmtree(self._upstream_dir, ignore_errors=True)
                 # make a temp directory and git pull into it
-                clone_cmd = [
+                self.host.executive.run_command([
                     'git', 'clone', UPSTREAM_GIT_URL, self._upstream_dir,
-                    '--depth=1'
-                ]
-                common.run_command(clone_cmd)
+                    '--depth=25'
+                ])
+                self._checkout_3h_epoch_commit()
 
             self._create_extra_run_info()
             return super().run_test(self.path_finder.web_tests_dir())
+
+    def _checkout_3h_epoch_commit(self):
+        output = self.host.executive.run_command(
+            [self.wpt_binary, 'rev-list', '--epoch', '3h'])
+        commit = output.splitlines()[0]
+        self.host.executive.run_command(['git', 'checkout', commit],
+                                        cwd=self._upstream_dir)
 
     def _create_extra_run_info(self):
         run_info = {
