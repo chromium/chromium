@@ -770,7 +770,7 @@ deps = {
 
   'src/clank': {
     'url': 'https://chrome-internal.googlesource.com/clank/internal/apps.git' + '@' +
-    'f240c2db287c88859606c7260c208b22cf504308',
+    '045136595bcb63d20fdf5b1c9e6f2eff3b7e8f7c',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
