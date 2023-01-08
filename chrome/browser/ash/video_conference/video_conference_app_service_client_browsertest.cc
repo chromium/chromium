@@ -6,6 +6,7 @@
 
 #include <cstdlib>
 
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
@@ -28,7 +29,6 @@
 
 namespace ash {
 
-using aura::test::CreateTestWindowWithId;
 using AppIdString = std::string;
 
 constexpr char kAppId1[] = "random_app_id_1";
@@ -40,6 +40,7 @@ constexpr char kAppName2[] = "random_app_name_2";
 apps::AppPtr MakeApp(const AppIdString& app_id, const std::string& name) {
   apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
   app->name = name;
+  app->publisher_id = app_id;
   return app;
 }
 
@@ -47,6 +48,61 @@ apps::mojom::OptionalBool MojomOptionalBool(bool value) {
   return value ? apps::mojom::OptionalBool::kTrue
                : apps::mojom::OptionalBool::kFalse;
 }
+
+// This fake instance class simulates the creation, destruction, hiding and
+// showing an app instance.
+class FakeAppInstance {
+ public:
+  FakeAppInstance(Profile* profile, const AppIdString& app_id) {
+    instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
+                              ->InstanceRegistry();
+    window_ = std::unique_ptr<aura::Window>(
+        aura::test::CreateTestWindowWithId(/*id=*/++next_window_id_, nullptr));
+    instance_ = std::make_unique<apps::Instance>(
+        app_id, base::UnguessableToken::Create(), window_.get());
+  }
+
+  aura::Window* window() { return window_.get(); }
+
+  void Start() {
+    auto instance = instance_->Clone();
+    instance->UpdateState(apps::InstanceState::kStarted, base::Time::Now());
+    instance_registry_->OnInstance(std::move(instance));
+  }
+
+  void Close() {
+    auto instance = instance_->Clone();
+    instance->UpdateState(apps::InstanceState::kDestroyed, base::Time::Now());
+    instance_registry_->OnInstance(std::move(instance));
+  }
+
+  void Show() {
+    window_->Show();
+    // Ideally, the following should be automatically triggered by showing the
+    // window_; but that is not the case for now.
+    auto instance = instance_->Clone();
+    instance->UpdateState(apps::InstanceState::kVisible, base::Time::Now());
+    instance_registry_->OnInstance(std::move(instance));
+  }
+
+  void Hide() {
+    window_->Hide();
+    // Ideally, the following should be automatically triggered by hiding the
+    // window_; but that is not the case for now.
+    auto instance = instance_->Clone();
+    instance->UpdateState(apps::InstanceState::kHidden, base::Time::Now());
+    instance_registry_->OnInstance(std::move(instance));
+  }
+
+ private:
+  std::unique_ptr<aura::Window> window_;
+  std::unique_ptr<apps::Instance> instance_;
+  base::raw_ptr<apps::InstanceRegistry> instance_registry_;
+
+  static int next_window_id_;
+};
+
+int FakeAppInstance::next_window_id_ = 0;
 
 class VideoConferenceAppServiceClientTest : public LoginManagerTest {
  public:
@@ -85,19 +141,6 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
     deltas.push_back(MakeApp(app_id, app_name));
     cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
                  /* should_notify_initialized = */ false);
-  }
-
-  // This function creates an Instance for current app and returns its window.
-  aura::Window* AddInstanceForApp(const std::string& app_id) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-
-    aura::Window* window = CreateTestWindowWithId(++next_window_id_, nullptr);
-    apps::InstanceParams params(app_id, window);
-    params.state =
-        std::make_pair(apps::InstanceState::kStarted, base::Time::Now());
-    proxy->InstanceRegistry().CreateOrUpdateInstance(std::move(params));
-
-    return window;
   }
 
   // Set the camera/michrophone accessing info for app with `app_id`.
@@ -194,9 +237,14 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, ReturnToApp) {
   // Add two instance for kAppId1.
-  std::unique_ptr<aura::Window> window1(AddInstanceForApp(kAppId1));
+  FakeAppInstance instance1(profile_, kAppId1);
+  instance1.Start();
+  FakeAppInstance instance2(profile_, kAppId1);
+  instance2.Start();
+
+  aura::Window* window1 = instance1.window();
+  aura::Window* window2 = instance2.window();
   window1->Hide();
-  std::unique_ptr<aura::Window> window2(AddInstanceForApp(kAppId1));
   window2->Hide();
 
   const base::UnguessableToken token1 = base::UnguessableToken::Create();
@@ -275,6 +323,88 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
   ASSERT_EQ(media_app_info.size(), 1u);
   expected_media_app_info->is_capturing_microphone = false;
   EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, LastActivityTime) {
+  // Start an instance of kAppId1.
+  InstallApp(kAppId1, kAppName1);
+  FakeAppInstance instance1(profile_, kAppId1);
+  instance1.Start();
+
+  // has-camera, has-mic should start tracking of the kAppId1.
+  SetAppCapabilityAccess(kAppId1, true, true);
+
+  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> media_app_info;
+
+  media_app_info = GetMediaApps();
+  crosapi::mojom::VideoConferenceMediaAppInfoPtr expected_media_app_info =
+      crosapi::mojom::VideoConferenceMediaAppInfo::New(
+          /*id=*/media_app_info[0]->id,
+          /*last_activity_time=*/media_app_info[0]->last_activity_time,
+          /*is_capturing_camera=*/true,
+          /*is_capturing_microphone=*/true,
+          /*is_capturing_screen=*/false,
+          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt);
+  ASSERT_EQ(media_app_info.size(), 1u);
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+
+  // Hide should not update last activity time.
+  instance1.Hide();
+  media_app_info = GetMediaApps();
+  ASSERT_EQ(media_app_info.size(), 1u);
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+
+  // Show should update last activity time.
+  instance1.Show();
+  media_app_info = GetMediaApps();
+  ASSERT_EQ(media_app_info.size(), 1u);
+  EXPECT_GT(media_app_info[0]->last_activity_time,
+            expected_media_app_info->last_activity_time);
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, CloseApp) {
+  // Start two instance of kAppId1.
+  InstallApp(kAppId1, kAppName1);
+  FakeAppInstance instance1(profile_, kAppId1);
+  instance1.Start();
+  FakeAppInstance instance2(profile_, kAppId1);
+  instance2.Start();
+
+  // No media app should be recorded till now.
+  EXPECT_TRUE(GetMediaApps().empty());
+
+  // has-camera, has-mic should start a tracking of the app.
+  SetAppCapabilityAccess(kAppId1, true, true);
+
+  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> media_app_info;
+
+  media_app_info = GetMediaApps();
+  crosapi::mojom::VideoConferenceMediaAppInfoPtr expected_media_app_info =
+      crosapi::mojom::VideoConferenceMediaAppInfo::New(
+          /*id=*/media_app_info[0]->id,
+          /*last_activity_time=*/media_app_info[0]->last_activity_time,
+          /*is_capturing_camera=*/true,
+          /*is_capturing_microphone=*/true,
+          /*is_capturing_screen=*/false,
+          /*title=*/media_app_info[0]->title, /*url=*/absl::nullopt);
+  ASSERT_EQ(media_app_info.size(), 1u);
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+
+  // Closing instance1 should not remove tracking of kAppId1.
+  instance1.Close();
+  // Wait for the VideoConferenceAppServiceClient::MaybeRemoveApp to be called
+  // in the PostTask.
+  base::RunLoop().RunUntilIdle();
+  media_app_info = GetMediaApps();
+  ASSERT_EQ(media_app_info.size(), 1u);
+  EXPECT_TRUE(media_app_info[0].Equals(expected_media_app_info));
+
+  // Closing instance2 should remove trackingg of kAppId1.
+  instance2.Close();
+  // Wait for the VideoConferenceAppServiceClient::MaybeRemoveApp to be called
+  // in the PostTask.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetMediaApps().empty());
 }
 
 }  // namespace ash

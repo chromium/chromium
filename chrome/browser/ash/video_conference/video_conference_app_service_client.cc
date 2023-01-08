@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -132,6 +131,36 @@ void VideoConferenceAppServiceClient::OnAppCapabilityAccessCacheWillBeDestroyed(
   capability_cache_ = nullptr;
 }
 
+void VideoConferenceAppServiceClient::OnInstanceUpdate(
+    const apps::InstanceUpdate& update) {
+  const AppIdString& app_id = update.AppId();
+
+  // An instance of app_id is about to be destructed.
+  if (update.IsDestruction() &&
+      instance_registry_->GetInstances(app_id).size() <= 1) {
+    // The last instance maybe removed after the OnInstanceUpdate, so we post a
+    // task to also remove the app_id if the instance is indeed removed.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
+        FROM_HERE,
+        base::BindOnce(&VideoConferenceAppServiceClient::MaybeRemoveApp,
+                       weak_ptr_factory_.GetWeakPtr(), app_id));
+    return;
+  }
+
+  if (update.StateChanged() &&
+      update.State() == apps::InstanceState::kVisible &&
+      base::Contains(id_to_app_state_, app_id)) {
+    id_to_app_state_[app_id].last_activity_time = update.LastUpdatedTime();
+    return;
+  }
+}
+
+void VideoConferenceAppServiceClient::OnInstanceRegistryWillBeDestroyed(
+    apps::InstanceRegistry* cache) {
+  instance_registry_observation_.Reset();
+  instance_registry_ = nullptr;
+}
+
 void VideoConferenceAppServiceClient::ActiveUserChanged(
     user_manager::User* active_user) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
@@ -139,6 +168,9 @@ void VideoConferenceAppServiceClient::ActiveUserChanged(
   DCHECK(ash_proxy);
   instance_registry_ = &ash_proxy->InstanceRegistry();
   app_registry_ = &ash_proxy->AppRegistryCache();
+
+  instance_registry_observation_.Reset();
+  instance_registry_observation_.Observe(instance_registry_);
 
   capability_cache_ =
       apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
@@ -164,5 +196,15 @@ VideoConferenceAppServiceClient::GetOrAddAppState(const std::string& app_id) {
                                         base::Time::Now(), false, false};
   }
   return id_to_app_state_[app_id];
+}
+
+void VideoConferenceAppServiceClient::MaybeRemoveApp(
+    const AppIdString& app_id) {
+  // The app_id should also be removed if:
+  // (1) all running instances of app_id are destructed.
+  // (2) in an extreme case, the instance_registry_ is reset.
+  if (!instance_registry_ || !instance_registry_->ContainsAppId(app_id)) {
+    id_to_app_state_.erase(app_id);
+  }
 }
 }  // namespace ash
