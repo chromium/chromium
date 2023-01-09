@@ -272,18 +272,6 @@ source_set("preferred_apps") {
   ]
 }
 
-source_set("publisher") {
-  sources = [
-    "publisher_base.cc",
-    "publisher_base.h",
-  ]
-
-  deps = [
-    ":app_types",
-    "//components/services/app_service/public/mojom",
-  ]
-}
-
 source_set("test_support") {
   testonly = true
 
@@ -351,7 +339,6 @@ source_set("unit_tests") {
     ":intents",
     ":preferred_app",
     ":preferred_apps",
-    ":publisher",
     ":run_on_os_login",
     ":test_support",
     ":types",

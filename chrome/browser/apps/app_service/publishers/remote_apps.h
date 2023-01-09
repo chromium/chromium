@@ -17,7 +17,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
 
 class Profile;
 

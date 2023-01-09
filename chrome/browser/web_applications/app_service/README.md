@@ -2,7 +2,7 @@
 
 This directory contains the App Service publisher classes for web apps (Desktop PWAs and shortcut apps).
 
-App Service [publishers](../../../../components/services/app_service/public/cpp/publisher_base.h) keep the App Service [updates](../../../../components/services/app_service/public/cpp/app_update.h) with the set of installed apps, and implement commands such as launching.
+App Service [publishers](../../../../chrome/browser/apps/app_service/public/app_publisher.h) keep the App Service [updates](../../../../components/services/app_service/public/cpp/app_update.h) with the set of installed apps, and implement commands such as launching.
 
 For Ash, Linux, Mac and Windows, the publisher is [WebApps](web_apps.h). (This is currently also used to support the chrome://apps page in the Lacros browser.)
 

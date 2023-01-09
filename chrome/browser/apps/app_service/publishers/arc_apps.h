@@ -43,7 +43,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

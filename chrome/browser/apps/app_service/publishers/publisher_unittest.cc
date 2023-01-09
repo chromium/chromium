@@ -32,7 +32,6 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "components/services/app_service/public/cpp/publisher_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
