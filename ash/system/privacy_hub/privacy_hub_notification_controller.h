@@ -5,15 +5,15 @@
 #ifndef ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_CONTROLLER_H_
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "base/containers/enum_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-
-class MicrophoneMuteNotificationController;
 
 // A class managing when to show notifications for microphone, camera and
 // geolocation to the user or combining them if necessary.
@@ -29,9 +29,7 @@ class ASH_EXPORT PrivacyHubNotificationController {
 
   using SensorEnumSet = base::EnumSet<Sensor, Sensor::kMin, Sensor::kMax>;
 
-  explicit PrivacyHubNotificationController(
-      MicrophoneMuteNotificationController*
-          microphone_mute_notification_controller);
+  PrivacyHubNotificationController();
 
   PrivacyHubNotificationController(const PrivacyHubNotificationController&) =
       delete;
@@ -89,9 +87,8 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // them new notifications of sensors that can be combined or the combined
   // notification until the number of active uses falls to 0.
   bool ignore_new_combinable_notifications_{false};
-  const base::raw_ptr<MicrophoneMuteNotificationController>
-      microphone_mute_notification_controller_;
   SensorEnumSet sensors_;
+  std::unique_ptr<PrivacyHubNotification> microphone_notification_;
   base::WeakPtrFactory<PrivacyHubNotificationController> weak_ptr_factory_{
       this};
 };

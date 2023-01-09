@@ -652,6 +652,7 @@ Shell::~Shell() {
 
   // Observes `SessionController` and must be destroyed before it.
   privacy_hub_controller_.reset();
+  microphone_privacy_switch_controller_.reset();
 
   for (auto& observer : shell_observers_)
     observer.OnShellDestroying();
@@ -1452,6 +1453,11 @@ void Shell::Init(
   if (features::IsCrosPrivacyHubEnabled()) {
     // One of the subcontrollers accesses the SystemNotificationController.
     privacy_hub_controller_ = std::make_unique<PrivacyHubController>();
+  } else if (features::IsMicMuteNotificationsEnabled()) {
+    // TODO(b/264388354) Until PrivacyHub is enabled for all keep this around
+    // for the already existing microphone notifications to continue working.
+    microphone_privacy_switch_controller_ =
+        std::make_unique<MicrophonePrivacySwitchController>();
   }
 
   // WmModeController should be created before initializing the window tree

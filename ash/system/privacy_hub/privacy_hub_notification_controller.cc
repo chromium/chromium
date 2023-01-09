@@ -11,9 +11,9 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "components/vector_icons/vector_icons.h"
@@ -21,12 +21,30 @@
 #include "ui/message_center/message_center.h"
 
 namespace ash {
+namespace {
 
-PrivacyHubNotificationController::PrivacyHubNotificationController(
-    MicrophoneMuteNotificationController*
-        microphone_mute_notification_controller)
-    : microphone_mute_notification_controller_(
-          microphone_mute_notification_controller) {}
+void SetAndLogMicrophoneMute(const bool muted) {
+  CrasAudioHandler::Get()->SetInputMute(
+      muted, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  privacy_hub_metrics::LogMicrophoneEnabledFromNotification(!muted);
+}
+
+}  // namespace
+
+PrivacyHubNotificationController::PrivacyHubNotificationController()
+    : microphone_notification_(std::make_unique<PrivacyHubNotification>(
+          MicrophonePrivacySwitchController::kNotificationId,
+          IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE,
+          PrivacyHubNotification::MessageIds{
+              IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE,
+              IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+              IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+          PrivacyHubNotification::SensorSet{
+              SensorDisabledNotificationDelegate::Sensor::kMicrophone},
+          base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+              base::BindRepeating([]() { SetAndLogMicrophoneMute(false); })),
+          ash::NotificationCatalogName::kMicrophoneMute,
+          IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON)) {}
 
 PrivacyHubNotificationController::~PrivacyHubNotificationController() = default;
 
@@ -64,11 +82,9 @@ void PrivacyHubNotificationController::ShowCameraDisabledNotification() const {
 
 void PrivacyHubNotificationController::ShowMicrophoneDisabledNotification()
     const {
-  if (microphone_mute_notification_controller_) {
-    microphone_mute_notification_controller_->MaybeShowNotification(
-        message_center::NotificationPriority::DEFAULT_PRIORITY,
-        /*recreate=*/true);
-  }
+  // TODO(cschlosser) Clean this up in the follow up CL to be consistent across
+  // sensors.
+  microphone_notification_->Show();
 }
 
 void PrivacyHubNotificationController::ShowLocationDisabledNotification()
@@ -154,9 +170,7 @@ void PrivacyHubNotificationController::ShowAllActiveNotifications(
     if (sensors_.HasAll(combinable_sensors_)) {
       message_center->RemoveNotification(kPrivacyHubCameraOffNotificationId,
                                          /*by_user=*/false);
-      message_center->RemoveNotification(
-          MicrophoneMuteNotificationController::kNotificationId,
-          /*by_user=*/false);
+      microphone_notification_->Hide();
 
       ShowMicrophoneAndCameraDisabledNotification();
 
@@ -178,9 +192,7 @@ void PrivacyHubNotificationController::ShowAllActiveNotifications(
       // TODO(b/242684137) Remove location notification as well.
       break;
     case Sensor::kMicrophone:
-      message_center->RemoveNotification(
-          MicrophoneMuteNotificationController::kNotificationId,
-          /*by_user=*/false);
+      microphone_notification_->Hide();
       break;
   }
 
@@ -207,7 +219,7 @@ void PrivacyHubNotificationController::HandleNotificationClicked(
     return;
   }
 
-  MicrophoneMuteNotificationController::SetAndLogMicrophoneMute(false);
+  SetAndLogMicrophoneMute(false);
   CameraPrivacySwitchController::SetAndLogCameraPreferenceFromNotification(
       true);
 }

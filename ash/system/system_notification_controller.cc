@@ -9,7 +9,6 @@
 #include "ash/system/cast/cast_notification_controller.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
-#include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
 #include "ash/system/network/cellular_setup_notifier.h"
 #include "ash/system/network/managed_sim_lock_notifier.h"
@@ -49,17 +48,12 @@ SystemNotificationController::SystemNotificationController()
       power_(std::make_unique<PowerNotificationController>(
           message_center::MessageCenter::Get())),
       power_sounds_(MaybeCreatePowerSoundsController()),
+      privacy_hub_(std::make_unique<PrivacyHubNotificationController>()),
       screen_security_(std::make_unique<ScreenSecurityController>()),
       session_limit_(std::make_unique<SessionLimitNotificationController>()),
       tracing_(std::make_unique<TracingNotificationController>()),
       update_(std::make_unique<UpdateNotificationController>()),
       wifi_toggle_(std::make_unique<WifiToggleNotificationController>()) {
-  if (features::IsMicMuteNotificationsEnabled()) {
-    microphone_mute_ = std::make_unique<MicrophoneMuteNotificationController>();
-  }
-  privacy_hub_ = std::make_unique<PrivacyHubNotificationController>(
-      microphone_mute_.get());
-
   if (features::IsSimLockPolicyEnabled()) {
     managed_sim_lock_notifier_ =
         std::make_unique<ash::ManagedSimLockNotifier>();

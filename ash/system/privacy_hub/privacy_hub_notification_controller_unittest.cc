@@ -12,8 +12,8 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
@@ -51,8 +51,6 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    microphone_mute_controller_ =
-        Shell::Get()->system_notification_controller()->microphone_mute_.get();
     controller_ =
         Shell::Get()->system_notification_controller()->privacy_hub_.get();
   }
@@ -85,8 +83,11 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
   void ShowNotification(Sensor sensor) {
     if (sensor == Sensor::kMicrophone) {
-      microphone_mute_controller()->OnInputMuteChanged(
-          true, CrasAudioHandler::InputMuteChangeMethod::kOther);
+      Shell::Get()
+          ->privacy_hub_controller()
+          ->microphone_controller()
+          .OnInputMuteChanged(true,
+                              CrasAudioHandler::InputMuteChangeMethod::kOther);
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 1}});
     } else {
@@ -96,8 +97,11 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
   void RemoveNotification(Sensor sensor) {
     if (sensor == Sensor::kMicrophone) {
-      microphone_mute_controller()->OnInputMuteChanged(
-          false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+      Shell::Get()
+          ->privacy_hub_controller()
+          ->microphone_controller()
+          .OnInputMuteChanged(false,
+                              CrasAudioHandler::InputMuteChangeMethod::kOther);
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 0}});
     } else {
@@ -110,15 +114,11 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     controller_->ShowSensorDisabledNotification(Sensor::kMicrophone);
   }
 
-  MicrophoneMuteNotificationController* microphone_mute_controller() const {
-    return microphone_mute_controller_;
-  }
-
   void ExpectNoNotificationActive() const {
     EXPECT_FALSE(GetNotification());
     EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
     EXPECT_FALSE(
-        GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+        GetNotification(MicrophonePrivacySwitchController::kNotificationId));
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -129,8 +129,6 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   base::raw_ptr<PrivacyHubNotificationController> controller_;
   const FakeSensorDisabledNotificationDelegate delegate_;
   const base::HistogramTester histogram_tester_;
-  base::raw_ptr<MicrophoneMuteNotificationController>
-      microphone_mute_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -145,11 +143,11 @@ TEST_F(PrivacyHubNotificationControllerTest, ShowMicrophoneNotification) {
 
   ShowNotification(Sensor::kMicrophone);
   EXPECT_TRUE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
   RemoveNotification(Sensor::kMicrophone);
   EXPECT_FALSE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 }
 
 TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationActive) {
@@ -159,7 +157,7 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationActive) {
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 }
 
 TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationBuilding) {
@@ -169,20 +167,20 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationBuilding) {
   EXPECT_FALSE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_TRUE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
   ShowNotification(Sensor::kCamera);
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
   // Enable microphone from elsewhere.
   RemoveNotification(Sensor::kMicrophone);
   EXPECT_FALSE(GetNotification());
   EXPECT_TRUE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
   // Remove the camera notification as well.
   RemoveNotification(Sensor::kCamera);
@@ -197,7 +195,7 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
   EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -232,7 +230,7 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetNotification(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(
-      GetNotification(MicrophoneMuteNotificationController::kNotificationId));
+      GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 }
 
 TEST_F(PrivacyHubNotificationControllerTest, ClickOnNotificationButton) {
