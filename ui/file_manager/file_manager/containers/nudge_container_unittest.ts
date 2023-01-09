@@ -159,7 +159,7 @@ export async function testAriaDescribedByElementIsAdded() {
 
   assertNotEquals(describedByElement, null);
   assertEquals(
-      describedByElement!.innerText, nudgeInfo[NudgeType.TEST_NUDGE].content);
+      describedByElement!.innerText, nudgeInfo[NudgeType.TEST_NUDGE].content());
 }
 
 /**
