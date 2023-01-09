@@ -3084,31 +3084,80 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
+// Exercise rejection path in the renderer for promise-delivered auction
+// signals.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionRejectPromiseAuctionSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      auctionSignals: new Promise((resolve, reject) => { setTimeout(
+          () => { reject('boo'); }, 10) }),
+      interestGroupBuyers: [$1]
+  })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      auctionSignals: new Promise((resolve, reject) => { setTimeout(
-          () => { reject('boo'); }, 10) })
-  })"));
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   WaitForAccessObserved({});
 }
 
+// Exercise error-handling path in the renderer for promise-delivered auction
+// signals.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionResolvePromiseInvalidAuctionSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
       auctionSignals: new Promise((resolve, reject) => { setTimeout(
-          () => { resolve(function() {}); }, 10) })
-  })"));
+          () => { resolve(function() {}); }, 10) }),
+      interestGroupBuyers: [$1]
+  })";
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   WaitForAccessObserved({});
 }
 
@@ -3128,31 +3177,80 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
+// Exercise rejection path in the renderer for promise-delivered seller signals.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionRejectPromiseSellerSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      sellerSignals: new Promise((resolve, reject) => { setTimeout(
+          () => { reject('boo'); }, 10) }),
+      interestGroupBuyers: [$1]
+  })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      sellerSignals: new Promise((resolve, reject) => { setTimeout(
-          () => { reject('boo'); }, 10) })
-  })"));
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   WaitForAccessObserved({});
 }
 
+// Exercise error-handling path in the renderer for promise-delivered seller
+// signals.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionResolvePromiseInvalidSellerSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      sellerSignals: new Promise((resolve, reject) => { setTimeout(
+          () => { resolve(function() {}); }, 10) }),
+      interestGroupBuyers: [$1]
+  })";
 
   EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      sellerSignals: new Promise((resolve, reject) => { setTimeout(
-          () => { resolve(function() {}); }, 10) })
-  })"));
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   WaitForAccessObserved({});
 }
 

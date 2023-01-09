@@ -81,7 +81,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
       std::move(auction_config), std::move(client_security_state),
       std::move(is_interest_group_api_allowed_callback),
       std::move(abort_receiver), std::move(callback)));
-  instance->StartAuctionIfReady();
+  instance->StartAuction();
   return instance;
 }
 
@@ -97,6 +97,7 @@ void AuctionRunner::ResolvedPromiseParam(
 
   blink::AuctionConfig* config = LookupAuction(*owned_auction_config_, auction);
   if (!config) {
+    // TODO(morlovich): Abort on these.
     mojo::ReportBadMessage("Invalid auction ID in ResolvedPromiseParam");
     return;
   }
@@ -111,7 +112,6 @@ void AuctionRunner::ResolvedPromiseParam(
         return;
       }
       config->non_shared_params.auction_signals = std::move(new_val);
-      --promise_fields_in_auction_config_;
       break;
 
     case blink::mojom::AuctionAdConfigField::kSellerSignals:
@@ -120,10 +120,22 @@ void AuctionRunner::ResolvedPromiseParam(
         return;
       }
       config->non_shared_params.seller_signals = std::move(new_val);
-      --promise_fields_in_auction_config_;
       break;
   }
-  StartAuctionIfReady();
+  --promise_fields_in_auction_config_;
+  DCHECK_EQ(promise_fields_in_auction_config_,
+            owned_auction_config_->non_shared_params.NumPromises());
+
+  if (!auction->is_main_auction() &&
+      config->non_shared_params.NumPromises() == 0) {
+    auction_.NotifyComponentConfigPromisesResolved(
+        auction->get_component_auction());
+  }
+
+  // This may happen when updating a component auction as well.
+  if (promise_fields_in_auction_config_ == 0) {
+    auction_.NotifyConfigPromisesResolved();
+  }
 }
 
 void AuctionRunner::Abort() {
@@ -189,10 +201,7 @@ AuctionRunner::AuctionRunner(
                interest_group_manager,
                /*auction_start_time=*/base::Time::Now()) {}
 
-void AuctionRunner::StartAuctionIfReady() {
-  if (promise_fields_in_auction_config_ > 0) {
-    return;
-  }
+void AuctionRunner::StartAuction() {
   auction_.StartLoadInterestGroupsPhase(
       is_interest_group_api_allowed_callback_,
       base::BindOnce(&AuctionRunner::OnLoadInterestGroupsComplete,

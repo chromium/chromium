@@ -507,6 +507,12 @@ class InterestGroupAuction::BuyerHelper
     }
   }
 
+  void NotifyConfigPromisesResolved() {
+    for (const auto& bid_state : bid_states_) {
+      FinishGenerateBidIfReady(bid_state.get());
+    }
+  }
+
  private:
   // Sorts by descending priority, also grouping entries within each priority
   // band to permit context reuse if the executionMode allows it.
@@ -631,8 +637,6 @@ class InterestGroupAuction::BuyerHelper
 
     mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
         pending_remote;
-    mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
-        bid_finalizer;
     bid_state->generate_bid_client_receiver_id =
         generate_bid_client_receiver_set_.Add(
             this, pending_remote.InitWithNewEndpointAndPassReceiver(),
@@ -660,7 +664,7 @@ class InterestGroupAuction::BuyerHelper
         bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, *bid_state->trace_id,
         std::move(pending_remote),
-        bid_finalizer.BindNewEndpointAndPassReceiver());
+        bid_state->bid_finalizer.BindNewEndpointAndPassReceiver());
 
     // Invoke SendPendingSignalsRequests() asynchronously, if necessary. Do this
     // asynchronously so that all BeginGenerateBid() calls that share a
@@ -676,11 +680,26 @@ class InterestGroupAuction::BuyerHelper
                          weak_ptr_factory_.GetWeakPtr(), bid_state));
     }
 
-    bid_finalizer->FinishGenerateBid(
+    FinishGenerateBidIfReady(bid_state);
+  }
+
+  void FinishGenerateBidIfReady(BidState* bid_state) {
+    if (!auction_->config_promises_resolved_) {
+      return;
+    }
+
+    if (!bid_state->bid_finalizer.is_bound()) {
+      // This can happen if the promise resolves while the worklet process is
+      // still being launched.
+      return;
+    }
+
+    bid_state->bid_finalizer->FinishGenerateBid(
         auction_->config_->non_shared_params.auction_signals.maybe_json(),
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder->interest_group.owner),
         auction_->PerBuyerTimeout(bid_state));
+    bid_state->bid_finalizer.reset();
   }
 
   // Invoked when OnBiddingSignalsReceived() has been called for `state`, or
@@ -1055,6 +1074,7 @@ class InterestGroupAuction::BuyerHelper
       generate_bid_client_receiver_set_.Remove(
           *state.generate_bid_client_receiver_id);
       state.generate_bid_client_receiver_id.reset();
+      state.bid_finalizer.reset();
     }
   }
 
@@ -1104,6 +1124,7 @@ InterestGroupAuction::InterestGroupAuction(
       auction_worklet_manager_(auction_worklet_manager),
       interest_group_manager_(interest_group_manager),
       config_(config),
+      config_promises_resolved_(config_->non_shared_params.NumPromises() == 0),
       parent_(parent),
       auction_start_time_(auction_start_time),
       creation_time_(base::TimeTicks::Now()),
@@ -1113,13 +1134,17 @@ InterestGroupAuction::InterestGroupAuction(
                                     "decision_logic_url",
                                     config_->decision_logic_url);
 
+  uint32_t child_pos = 0;
   for (const auto& component_auction_config :
        config->non_shared_params.component_auctions) {
     // Nested component auctions are not supported.
     DCHECK(!parent_);
-    component_auctions_.emplace_back(std::make_unique<InterestGroupAuction>(
-        kanon_mode_, &component_auction_config, /*parent=*/this,
-        auction_worklet_manager, interest_group_manager, auction_start_time));
+    component_auctions_.emplace(
+        child_pos, std::make_unique<InterestGroupAuction>(
+                       kanon_mode_, &component_auction_config, /*parent=*/this,
+                       auction_worklet_manager, interest_group_manager,
+                       auction_start_time));
+    ++child_pos;
   }
 }
 
@@ -1192,11 +1217,10 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
 
   for (auto component_auction = component_auctions_.begin();
        component_auction != component_auctions_.end(); ++component_auction) {
-    (*component_auction)
-        ->StartLoadInterestGroupsPhase(
-            is_interest_group_api_allowed_callback,
-            base::BindOnce(&InterestGroupAuction::OnComponentInterestGroupsRead,
-                           weak_ptr_factory_.GetWeakPtr(), component_auction));
+    component_auction->second->StartLoadInterestGroupsPhase(
+        is_interest_group_api_allowed_callback,
+        base::BindOnce(&InterestGroupAuction::OnComponentInterestGroupsRead,
+                       weak_ptr_factory_.GetWeakPtr(), component_auction));
     ++num_pending_loads_;
   }
 
@@ -1259,13 +1283,15 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
     // component auctions before invoking StartBiddingAndScoringPhase() on any
     // component auction.
     pending_component_seller_worklet_requests_ = component_auctions_.size();
-    for (auto& component_auction : component_auctions_) {
+    for (auto& component_auction_info : component_auctions_) {
+      InterestGroupAuction* component_auction =
+          component_auction_info.second.get();
       component_auction->StartBiddingAndScoringPhase(
           base::BindOnce(
               &InterestGroupAuction::OnComponentSellerWorkletReceived,
               base::Unretained(this)),
           base::BindOnce(&InterestGroupAuction::OnComponentAuctionComplete,
-                         base::Unretained(this), component_auction.get()));
+                         base::Unretained(this), component_auction));
     }
   }
 
@@ -1368,6 +1394,30 @@ InterestGroupAuction::CreateReporter(
       TakePrivateAggregationRequests());
 }
 
+void InterestGroupAuction::NotifyConfigPromisesResolved() {
+  DCHECK(!config_promises_resolved_);
+  DCHECK_EQ(0, config_->non_shared_params.NumPromises());
+  config_promises_resolved_ = true;
+  for (const auto& buyer_helper : buyer_helpers_) {
+    buyer_helper->NotifyConfigPromisesResolved();
+  }
+
+  ScoreQueuedBidsIfReady();
+}
+
+void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
+  DCHECK(!parent_);  // Should not be called on a component.
+  auto it = component_auctions_.find(pos);
+
+  if (it == component_auctions_.end()) {
+    // It's OK if the component auction isn't found; that means it got dropped
+    // at database loading stage.
+    return;
+  }
+
+  it->second->NotifyConfigPromisesResolved();
+}
+
 void InterestGroupAuction::ClosePipes() {
   // This is needed in addition to closing worklet pipes since the callbacks
   // passed to Mojo pipes this class doesn't own aren't cancellable.
@@ -1381,8 +1431,8 @@ void InterestGroupAuction::ClosePipes() {
   seller_worklet_handle_.reset();
 
   // Close pipes for component auctions as well.
-  for (auto& component_auction : component_auctions_) {
-    component_auction->ClosePipes();
+  for (auto& component_auction_info : component_auctions_) {
+    component_auction_info.second->ClosePipes();
   }
 }
 
@@ -1391,8 +1441,8 @@ size_t InterestGroupAuction::NumPotentialBidders() const {
   for (const auto& buyer_helper : buyer_helpers_) {
     num_interest_groups += buyer_helper->num_potential_bidders();
   }
-  for (auto& component_auction : component_auctions_) {
-    num_interest_groups += component_auction->NumPotentialBidders();
+  for (const auto& component_auction_info : component_auctions_) {
+    num_interest_groups += component_auction_info.second->NumPotentialBidders();
   }
   return num_interest_groups;
 }
@@ -1407,8 +1457,8 @@ void InterestGroupAuction::GetInterestGroupsThatBid(
   }
 
   // Retrieve data from component auctions as well.
-  for (auto& component_auction : component_auctions_) {
-    component_auction->GetInterestGroupsThatBid(interest_groups);
+  for (const auto& component_auction_info : component_auctions_) {
+    component_auction_info.second->GetInterestGroupsThatBid(interest_groups);
   }
 }
 
@@ -1594,17 +1644,17 @@ void InterestGroupAuction::TakeDebugReportUrls(
   }
 
   // Retrieve data from component auctions as well.
-  for (auto& component_auction : component_auctions_) {
-    component_auction->TakeDebugReportUrls(debug_win_report_urls,
-                                           debug_loss_report_urls);
+  for (auto& component_auction_info : component_auctions_) {
+    component_auction_info.second->TakeDebugReportUrls(debug_win_report_urls,
+                                                       debug_loss_report_urls);
   }
 }
 
 std::map<url::Origin, InterestGroupAuction::PrivateAggregationRequests>
 InterestGroupAuction::TakePrivateAggregationRequests() {
-  for (auto& component_auction : component_auctions_) {
+  for (auto& component_auction_info : component_auctions_) {
     std::map<url::Origin, PrivateAggregationRequests> requests_map =
-        component_auction->TakePrivateAggregationRequests();
+        component_auction_info.second->TakePrivateAggregationRequests();
     for (auto& [origin, requests] : requests_map) {
       DCHECK(!requests.empty());
       PrivateAggregationRequests& destination_vector =
@@ -1618,8 +1668,9 @@ InterestGroupAuction::TakePrivateAggregationRequests() {
 }
 
 std::vector<std::string> InterestGroupAuction::TakeErrors() {
-  for (auto& component_auction : component_auctions_) {
-    std::vector<std::string> errors = component_auction->TakeErrors();
+  for (auto& component_auction_info : component_auctions_) {
+    std::vector<std::string> errors =
+        component_auction_info.second->TakeErrors();
     errors_.insert(errors_.begin(), errors.begin(), errors.end());
   }
   return std::move(errors_);
@@ -1631,8 +1682,8 @@ void InterestGroupAuction::TakePostAuctionUpdateOwners(
     owners.emplace_back(std::move(owner));
   }
 
-  for (auto& component_auction : component_auctions_) {
-    component_auction->TakePostAuctionUpdateOwners(owners);
+  for (auto& component_auction_info : component_auctions_) {
+    component_auction_info.second->TakePostAuctionUpdateOwners(owners);
   }
 }
 
@@ -1808,17 +1859,18 @@ void InterestGroupAuction::OnInterestGroupRead(
 }
 
 void InterestGroupAuction::OnComponentInterestGroupsRead(
-    AuctionList::iterator component_auction,
+    AuctionMap::iterator component_auction,
     bool success) {
-  num_owners_loaded_ += (*component_auction)->num_owners_loaded_;
+  num_owners_loaded_ += component_auction->second->num_owners_loaded_;
   num_owners_with_interest_groups_ +=
-      (*component_auction)->num_owners_with_interest_groups_;
+      component_auction->second->num_owners_with_interest_groups_;
 
   // Erase component auctions that failed to load anything, so they won't be
   // invoked in the generate bid phase. This is not a problem in the reporting
   // phase, as the top-level auction knows which component auction, if any, won.
-  if (!success)
+  if (!success) {
     component_auctions_.erase(component_auction);
+  }
   OnOneLoadCompleted();
 }
 
@@ -1930,6 +1982,13 @@ void InterestGroupAuction::OnSellerWorkletReceived() {
     std::move(on_seller_receiver_callback_).Run();
 
   seller_worklet_received_ = true;
+  ScoreQueuedBidsIfReady();
+}
+
+void InterestGroupAuction::ScoreQueuedBidsIfReady() {
+  if (!ReadyToScoreBids() || unscored_bids_.empty()) {
+    return;
+  }
 
   auto unscored_bids = std::move(unscored_bids_);
   for (auto& unscored_bid : unscored_bids) {
@@ -2022,11 +2081,11 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
 void InterestGroupAuction::OnBidSourceDone() {
   --outstanding_bid_sources_;
 
-  // If this is the only bid that yet to be sent to the seller worklet, and
-  // the seller worklet has loaded, then tell the seller worklet to send any
+  // If we issued the final set of bids to a seller worklet, tell it to send any
   // pending scoring signals request to complete the auction more quickly.
-  if (outstanding_bid_sources_ == 0 && seller_worklet_received_)
+  if (outstanding_bid_sources_ == 0 && ReadyToScoreBids()) {
     seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
+  }
 
   MaybeCompleteBiddingAndScoringPhase();
 }
@@ -2037,9 +2096,11 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
 
   any_bid_made_ = true;
 
-  // If seller worklet hasn't been received yet, wait until it is.
+  // If seller worklet hasn't been received yet, or configuration is still
+  // waiting on some promises, wait till everything is ready.
+  // TODO(morlovich): Tracing doesn't reflect config wait here.
   uint64_t bid_trace_id = bid->TraceId();
-  if (!seller_worklet_received_) {
+  if (!ReadyToScoreBids()) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_for_seller_worklet",
                                       bid_trace_id);
     unscored_bids_.emplace_back(std::move(bid));
@@ -2056,6 +2117,7 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient> score_ad_remote;
   score_ad_receivers_.Add(
       this, score_ad_remote.InitWithNewPipeAndPassReceiver(), std::move(bid));
+  DCHECK_EQ(0, config_->non_shared_params.NumPromises());
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
       GetDirectFromSellerSellerSignals(*subresource_url_builder_),
@@ -2407,12 +2469,15 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   // If this is a top-level auction with component auction, update final state
   // of all successfully completed component auctions with bids that did not win
   // to reflect a loss.
-  for (auto& component_auction : component_auctions_) {
+  for (auto& component_auction_info : component_auctions_) {
+    InterestGroupAuction* component_auction =
+        component_auction_info.second.get();
     // Leave the state of the winning component auction alone, if the winning
     // bid is from a component auction.
     ScoredBid* winner = top_bid();
-    if (winner && winner->bid->auction == component_auction.get())
+    if (winner && winner->bid->auction == component_auction) {
       continue;
+    }
     if (component_auction->final_auction_result_)
       continue;
     component_auction->final_auction_result_ =

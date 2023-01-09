@@ -219,6 +219,11 @@ class CONTENT_EXPORT InterestGroupAuction
     // generateBid() is running.
     absl::optional<mojo::ReceiverId> generate_bid_client_receiver_id;
 
+    // Mojo pipe to use to fill in potentially promise-provided arguments.
+    // Only populated in between BeginGenerateBid and FinishGenerateBid().
+    mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
+        bid_finalizer;
+
     // True when OnBiddingSignalsReceived() has been invoked. Needed to
     // correctly handle the case the bidder worklet pipe is closed before
     // OnBiddingSignalsReceived() is invoked.
@@ -415,6 +420,19 @@ class CONTENT_EXPORT InterestGroupAuction
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
       std::unique_ptr<blink::AuctionConfig> auction_config);
 
+  // Called by AuctionRunner (for component auctions, indirectly via
+  // NotifyComponentConfigPromisesResolved) when all promises relevant to this
+  // particular auction have been resolved (not called when there were no
+  // promises to wait for to start with).
+  void NotifyConfigPromisesResolved();
+
+  // Called by AuctionRunner when all promises relevant to component auction
+  // with position `pos` in the original configuration have been resolved.
+  //
+  // Assumes that `pos` has already been range-checked, and that this is
+  // a parent auction.
+  void NotifyComponentConfigPromisesResolved(uint32_t pos);
+
   // Close all Mojo pipes and release all weak pointers. Called when an
   // auction fails and on auction complete.
   void ClosePipes();
@@ -502,7 +520,9 @@ class CONTENT_EXPORT InterestGroupAuction
       const SubresourceUrlBuilder& subresource_url_builder);
 
  private:
-  using AuctionList = std::list<std::unique_ptr<InterestGroupAuction>>;
+  // Note: this needs to be a type with iterator stability, since we both pass
+  // iterators around and remove things from here.
+  using AuctionMap = std::map<uint32_t, std::unique_ptr<InterestGroupAuction>>;
 
   // BuyerHelpers create and own the BidStates for a particular buyer, to
   // better handle per-buyer cross-interest-group behavior (e.g., enforcing
@@ -550,7 +570,7 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Invoked when the interest groups for an entire component auction have
   // loaded. If `success` is false, removes the component auction.
-  void OnComponentInterestGroupsRead(AuctionList::iterator component_auction,
+  void OnComponentInterestGroupsRead(AuctionMap::iterator component_auction,
                                      bool success);
 
   // Invoked when the interest groups for a buyer or for an entire component
@@ -579,9 +599,19 @@ class CONTENT_EXPORT InterestGroupAuction
   // Requests a seller worklet from the AuctionWorkletManager.
   void RequestSellerWorklet();
 
+  // True if all async prerequisites for calling ScoreBid on the SellerWorklet
+  // are done.
+  bool ReadyToScoreBids() const {
+    return seller_worklet_received_ && config_promises_resolved_;
+  }
+
   // Called when RequestSellerWorklet() returns. Starts scoring bids, if there
-  // are any.
+  // are any and config has been resolved.
   void OnSellerWorkletReceived();
+
+  // Score bids if both the seller worklet and config with all promises resolved
+  // are ready.
+  void ScoreQueuedBidsIfReady();
 
   // Invoked by the AuctionWorkletManager on fatal errors, at any point after
   // a SellerWorklet has been provided. Results in auction immediately
@@ -739,15 +769,25 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Configuration of this auction.
   raw_ptr<const blink::AuctionConfig> config_;
+
+  // True once all promises in this and component auction's configuration have
+  // been resolved. (Note that if `this` is a component auction, it only looks
+  // at itself; while main auctions do look at their components recursively).
+  bool config_promises_resolved_ = false;
+
   // If this is a component auction, the parent Auction. Null, otherwise.
   const raw_ptr<const InterestGroupAuction> parent_;
 
   // Component auctions that are part of this auction. This auction manages
   // their state transition, and their bids may participate in this auction as
   // well. Component auctions that fail in the load phase are removed from
-  // this list, to avoid trying to load their worklets during the scoring
+  // this map, to avoid trying to load their worklets during the scoring
   // phase.
-  AuctionList component_auctions_;
+  //
+  // The key of the map is the original index of the auction's AuctionConfig
+  // in `config_->non_shared_params.component_auctions`; there may be
+  // discontinuities if some entries got removed in the load phase.
+  AuctionMap component_auctions_;
 
   // Final result of the auction, once completed. Null before completion.
   absl::optional<AuctionResult> final_auction_result_;
