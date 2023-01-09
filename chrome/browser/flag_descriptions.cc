@@ -3332,12 +3332,6 @@ const char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
-const char kExtensionWorkflowJustificationName[] =
-    "Extension request justification";
-const char kExtensionWorkflowJustificationDescription[] =
-    "Enables users to justify their extension requests by causing a text field "
-    "to appear on the extension request dialog.";
-
 const char kDurableClientHintsCacheName[] = "Persistent client hints";
 const char kDurableClientHintsCacheDescription[] =
     "Persist the client hints cache beyond browser restarts.";

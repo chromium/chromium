@@ -1900,9 +1900,6 @@ extern const char kSanitizerApiv0Description[];
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
-extern const char kExtensionWorkflowJustificationName[];
-extern const char kExtensionWorkflowJustificationDescription[];
-
 extern const char kDurableClientHintsCacheName[];
 extern const char kDurableClientHintsCacheDescription[];
 

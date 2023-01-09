@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/extensions/expandable_container_view.h"
 #include "chrome/browser/ui/views/extensions/extension_permissions_view.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -535,8 +534,7 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
 
   bool expect_justification =
       prompt_->type() ==
-          ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT &&
-      base::FeatureList::IsEnabled(features::kExtensionWorkflowJustification);
+      ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT;
   DCHECK(expect_justification == !!justification_view_);
 
   UpdateInstallResultHistogram(true);
@@ -673,11 +671,9 @@ void ExtensionInstallDialogView::CreateContents() {
                         std::make_unique<ExpandableContainerView>(details)});
   }
 
-  const bool is_justification_field_enabled =
-      prompt_->type() ==
-          ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT &&
-      base::FeatureList::IsEnabled(features::kExtensionWorkflowJustification);
-  if (sections.empty() && !is_justification_field_enabled) {
+  if (sections.empty() &&
+      prompt_->type() !=
+          ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT) {
     // Use a smaller margin between the title area and buttons, since there
     // isn't any content.
     set_margins(
@@ -705,7 +701,8 @@ void ExtensionInstallDialogView::CreateContents() {
   // Add separate section for user justification. This section isn't added to
   // the |sections| vector since it is later referenced to extract the textfield
   // string.
-  if (is_justification_field_enabled) {
+  if (prompt_->type() ==
+      ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT) {
     justification_view_ =
         extension_info_and_justification_container->AddChildView(
             std::make_unique<ExtensionJustificationView>(this));

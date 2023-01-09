@@ -8145,11 +8145,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kUnifiedPasswordManagerReenrollment)},
 #endif
 
-    {"extension-workflow-justification",
-     flag_descriptions::kExtensionWorkflowJustificationName,
-     flag_descriptions::kExtensionWorkflowJustificationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kExtensionWorkflowJustification)},
-
     {"tab-search-fuzzy-search", flag_descriptions::kTabSearchFuzzySearchName,
      flag_descriptions::kTabSearchFuzzySearchDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabSearchFuzzySearch,

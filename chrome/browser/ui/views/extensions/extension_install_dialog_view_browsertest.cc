@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -777,10 +776,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
 class ExtensionInstallDialogViewRequestTest
     : public ExtensionInstallDialogViewTestBase {
  public:
-  ExtensionInstallDialogViewRequestTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kExtensionWorkflowJustification);
-  }
+  ExtensionInstallDialogViewRequestTest() = default;
   ExtensionInstallDialogViewRequestTest(
       const ExtensionInstallDialogViewRequestTest&) = delete;
   ExtensionInstallDialogViewRequestTest& operator=(
@@ -809,9 +805,6 @@ class ExtensionInstallDialogViewRequestTest
 
     return delegate_view;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewRequestTest, NotifyDelegate) {

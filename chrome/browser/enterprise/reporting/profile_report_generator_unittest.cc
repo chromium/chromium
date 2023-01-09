@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -146,11 +144,8 @@ class ProfileReportGeneratorTest : public ::testing::Test {
       request_data.SetKey(
           extension_misc::kExtensionRequestTimestamp,
           ::base::TimeToValue(base::Time::FromJavaTime(kFakeTime)));
-      if (base::FeatureList::IsEnabled(
-              features::kExtensionWorkflowJustification)) {
-        request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
-                            base::Value(kJustification));
-      }
+      request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
+                          base::Value(kJustification));
       id_values->SetKey(id, std::move(request_data));
     }
     profile()->GetTestingPrefService()->SetUserPref(
@@ -172,8 +167,6 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 
   PlatformReportingDelegateFactory reporting_delegate_factory_;
   ProfileReportGenerator generator_;
-
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -258,23 +251,6 @@ TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {
 }
 
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {
-  feature_list_.InitAndDisableFeature(
-      features::kExtensionWorkflowJustification);
-
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kCloudExtensionRequestEnabled,
-      std::make_unique<base::Value>(true));
-  std::vector<std::string> ids = {kExtensionId};
-  SetExtensionToPendingList(ids);
-
-  auto report = GenerateReport();
-  ASSERT_EQ(1, report->extension_requests_size());
-  EXPECT_EQ(kExtensionId, report->extension_requests(0).id());
-  EXPECT_EQ(kFakeTime, report->extension_requests(0).request_timestamp());
-  EXPECT_EQ(std::string(), report->extension_requests(0).justification());
-}
-
-TEST_F(ProfileReportGeneratorTest, PendingRequest_Justification) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled,
       std::make_unique<base::Value>(true));

@@ -409,12 +409,6 @@ BASE_FEATURE(kExtensionDeferredIndividualSettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Controls whether the user justification text field is visible on the
-// extension request dialog.
-BASE_FEATURE(kExtensionWorkflowJustification,
-             "ExtensionWorkflowJustification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
 // parameter value controls which |ExternalInstallBubbleAlert| button is the
 // default.
