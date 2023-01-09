@@ -8,6 +8,9 @@
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BaseLog, LogType, SerializableLog} from '../common/log_types.js';
 
+const FILTER_CLASS = 'log-filter';
+const FILTER_CONTAINER_ID = 'logFilters';
+
 /** Class to manage the log page. */
 export class LogPage {
   constructor() {
@@ -16,40 +19,63 @@ export class LogPage {
      * @private {Object<!LogType, boolean>}
      */
     this.isLogEnabled_ = {};
+
+    this.initPage_();
   }
 
   static async init() {
     LogPage.instance = new LogPage();
-    /** Create filter checkboxes. */
+    await LogPage.instance.update();
+  }
+
+  /**
+   * @param {!LogType} type
+   * @return {string}
+   * @private
+   */
+  checkboxId_(type) {
+    return type + 'Filter';
+  }
+
+  /**
+   * @param {!LogType} type
+   * @private
+   */
+  createFilterCheckbox_(type) {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.id = this.checkboxId_(type);
+    input.type = 'checkbox';
+    input.classList.add(FILTER_CLASS);
+    label.appendChild(input);
+
+    const span = document.createElement('span');
+    span.textContent = type;
+    label.appendChild(span);
+
+    document.getElementById(FILTER_CONTAINER_ID).appendChild(label);
+  }
+
+  /** @private */
+  initPage_() {
     for (const type of Object.values(LogType)) {
-      const label = document.createElement('label');
-      const input = document.createElement('input');
-      input.id = checkboxId(type);
-      input.type = 'checkbox';
-      input.classList.add('log-filter');
-      label.appendChild(input);
-
-      const span = document.createElement('span');
-      span.textContent = type;
-      label.appendChild(span);
-
-      document.getElementById('logFilters').appendChild(label);
+      this.createFilterCheckbox_(type);
     }
 
     const clearLogButton = document.getElementById('clearLog');
-    clearLogButton.onclick = async function(event) {
-      await BackgroundBridge.LogStore.clearLog();
-      location.reload();
-    };
+    clearLogButton.onclick = () => this.onClear_();
 
+    // Set whether the checkboxes are enabled/disabled.
     const params = new URLSearchParams(location.search);
     for (const type of Object.values(LogType)) {
       LogPage.setFilterTypeEnabled(type, params.get(type));
     }
-    const saveLogButton = document.getElementById('saveLog');
-    saveLogButton.onclick = LogPage.saveLogEvent;
 
-    const checkboxes = document.getElementsByClassName('log-filter');
+    const saveLogButton = document.getElementById('saveLog');
+    saveLogButton.onclick = event => this.onSaveLog_(event);
+
+    // Add click listeners to the checkboxes.
+    const checkboxes = document.getElementsByClassName(FILTER_CLASS);
     const filterEventListener = function(event) {
       const target = event.target;
       LogPage.setFilterTypeEnabled(
@@ -59,16 +85,21 @@ export class LogPage {
     for (let i = 0; i < checkboxes.length; i++) {
       checkboxes[i].onclick = filterEventListener;
     }
+  }
 
-    await LogPage.update();
+  /** @private */
+  async onClear_() {
+    await BackgroundBridge.LogStore.clearLog();
+    location.reload();
   }
 
   /**
    * When saveLog button is clicked this function runs.
    * Save the current log appeared in the page as a plain text.
    * @param {Event} event
+   * @private
    */
-  static saveLogEvent(event) {
+  onSaveLog_(event) {
     let outputText = '';
     const logs = document.querySelectorAll('#logList p');
     for (let i = 0; i < logs.length; i++) {
@@ -96,22 +127,23 @@ export class LogPage {
   }
 
   /** Update the states of checkboxes and update logs. */
-  static async update() {
+  async update() {
     for (const type of Object.values(LogType)) {
       const element = document.getElementById(checkboxId(type));
-      element.checked = LogPage.instance.isLogEnabled_[type];
+      element.checked = this.isLogEnabled_[type];
     }
 
     const log = await BackgroundBridge.LogStore.getLogs();
-    LogPage.updateLog(log, document.getElementById('logList'));
+    this.updateLog_(log, document.getElementById('logList'));
   }
 
   /**
    * Updates the log section.
    * @param {Array<!SerializableLog>} log Array of logs to record.
    * @param {Element} div
+   * @private
    */
-  static updateLog(log, div) {
+  updateLog_(log, div) {
     for (let i = 0; i < log.length; i++) {
       if (!LogPage.instance.isLogEnabled_[log[i].logType]) {
         continue;
