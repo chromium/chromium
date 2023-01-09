@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_request_id.h"
@@ -50,6 +51,21 @@ bool IsImplicitOutcome(CookieRequestOutcome outcome) {
   return outcome == CookieRequestOutcome::kGrantedByAllowance ||
          outcome == CookieRequestOutcome::kGrantedByFirstPartySet ||
          outcome == CookieRequestOutcome::kDeniedByFirstPartySet;
+}
+
+content_settings::ContentSettingConstraints ComputeConstraints(
+    CookieRequestOutcome outcome,
+    bool implicit_result) {
+  if (!implicit_result) {
+    return {content_settings::GetConstraintExpiration(kExplicitGrantDuration),
+            content_settings::SessionModel::Durable};
+  }
+  if (outcome == CookieRequestOutcome::kGrantedByFirstPartySet) {
+    return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
+            content_settings::SessionModel::NonRestorableUserSession};
+  }
+  return {content_settings::GetConstraintExpiration(kImplicitGrantDuration),
+          content_settings::SessionModel::UserSession};
 }
 
 // Converts a ContentSetting to the corresponding CookieRequestOutcome. This
@@ -300,13 +316,6 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   DCHECK(settings_map);
   DCHECK(persist);
 
-  static const content_settings::ContentSettingConstraints ephemeral_grant = {
-      content_settings::GetConstraintExpiration(kImplicitGrantDuration),
-      content_settings::SessionModel::UserSession};
-  static const content_settings::ContentSettingConstraints durable_grant = {
-      content_settings::GetConstraintExpiration(kExplicitGrantDuration),
-      content_settings::SessionModel::Durable};
-
   // This permission was allowed so store it either ephemerally or more
   // permanently depending on if the allow came from a prompt or automatic
   // grant.
@@ -323,7 +332,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
       secondary_site_pattern, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_setting, implicit_result ? ephemeral_grant : durable_grant);
+      content_setting, ComputeConstraints(outcome, implicit_result));
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(

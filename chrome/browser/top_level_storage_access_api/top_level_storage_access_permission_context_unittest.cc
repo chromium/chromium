@@ -6,15 +6,24 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/version.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
+#include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -444,4 +453,81 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram, CookieRequestOutcome::kGrantedByUser),
             1);
+}
+
+class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
+    : public TopLevelStorageAccessPermissionContextTestAPIEnabledTest {
+ public:
+  TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest() {
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kFirstPartySets, {}},
+         {net::features::kStorageAccessAPI,
+          {
+              {
+                  "storage_access_api_auto_grant_in_fps",
+                  "true",
+              },
+              {
+                  "storage_access_api_auto_deny_outside_fps",
+                  "false",
+              },
+          }}},
+        /*disabled_features=*/{});
+  }
+  void SetUp() override {
+    TopLevelStorageAccessPermissionContextTestAPIEnabledTest::SetUp();
+
+    // Create a FPS with https://requester.example.com as the member and
+    // https://embedder.example.com as the primary.
+    first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets(
+        base::Version("1.2.3"),
+        /*entries=*/
+        {{net::SchemefulSite(GetRequesterURL()),
+          {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                   net::SiteType::kAssociated, 0)}}},
+        /*aliases=*/{}));
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
+};
+
+TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
+       ImplicitGrant_AutograntedWithinFPS) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+  permissions::PermissionRequestID fake_id = CreateFakeID();
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  DCHECK(settings_map);
+
+  // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
+  ContentSettingsForOneType non_restorable_grants;
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(0u, non_restorable_grants.size());
+
+  base::test::TestFuture<ContentSetting> future;
+  permission_context.DecidePermissionForTesting(
+      fake_id, GetRequesterURL(), GetTopLevelURL(),
+      /*user_gesture=*/true, future.GetCallback());
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram,
+                CookieRequestOutcome::kGrantedByFirstPartySet),
+            1);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 1);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 1);
+
+  DCHECK(settings_map);
+  // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
+  settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+      content_settings::SessionModel::NonRestorableUserSession);
+  EXPECT_EQ(1u, non_restorable_grants.size());
 }
