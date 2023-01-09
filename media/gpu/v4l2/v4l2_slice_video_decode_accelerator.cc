@@ -578,9 +578,9 @@ bool V4L2SliceVideoDecodeAccelerator::CreateImageProcessor() {
 
   image_processor_ = v4l2_vda_helpers::CreateImageProcessor(
       *output_format_fourcc_, *gl_image_format_fourcc_, coded_size_,
-      coded_size_, decoder_->GetVisibleRect(),
-      VideoFrame::StorageType::STORAGE_DMABUFS, output_buffer_map_.size(),
-      image_processor_device_, image_processor_output_mode,
+      coded_size_, visible_rect_, VideoFrame::StorageType::STORAGE_DMABUFS,
+      output_buffer_map_.size(), image_processor_device_,
+      image_processor_output_mode,
       // Unretained(this) is safe for ErrorCB because |decoder_thread_| is owned
       // by this V4L2VideoDecodeAccelerator and |this| must be valid when
       // ErrorCB is executed.
@@ -661,7 +661,7 @@ bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {
   DCHECK_EQ(coded_size_.width() % 16, 0);
   DCHECK_EQ(coded_size_.height() % 16, 0);
 
-  if (!gfx::Rect(coded_size_).Contains(decoder_->GetVisibleRect())) {
+  if (!gfx::Rect(coded_size_).Contains(visible_rect_)) {
     VLOGF(1) << "The visible rectangle is not contained in the coded size";
     NOTIFY_ERROR(UNREADABLE_INPUT);
     return false;
@@ -707,8 +707,8 @@ bool V4L2SliceVideoDecodeAccelerator::CreateOutputBuffers() {
       FROM_HERE,
       base::BindOnce(
           &VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect,
-          client_, num_pictures, pixel_format, 1, gl_image_size_,
-          decoder_->GetVisibleRect(), device_->GetTextureTarget()));
+          client_, num_pictures, pixel_format, 1, gl_image_size_, visible_rect_,
+          device_->GetTextureTarget()));
 
   // Go into kAwaitingPictureBuffers to prevent us from doing any more decoding
   // or event handling while we are waiting for AssignPictureBuffers(). Not
@@ -1145,6 +1145,9 @@ bool V4L2SliceVideoDecodeAccelerator::FinishSurfaceSetChange() {
 
   image_processor_ = nullptr;
 
+  // Update the visible rect.
+  visible_rect_ = decoder_->GetVisibleRect();
+
   // Dequeued decoded surfaces may be pended in pending_picture_ready_ if they
   // are waiting for some pictures to be cleared. We should post them right away
   // because they are about to be dismissed and destroyed for surface set
@@ -1273,7 +1276,7 @@ void V4L2SliceVideoDecodeAccelerator::AssignPictureBuffersTask(
   const gfx::Size pic_size_received_from_client = buffers[0].size();
   const gfx::Size pic_size_expected_from_client =
       output_mode_ == Config::OutputMode::ALLOCATE
-          ? GetRectSizeFromOrigin(decoder_->GetVisibleRect())
+          ? GetRectSizeFromOrigin(visible_rect_)
           : coded_size_;
   if (output_mode_ == Config::OutputMode::ALLOCATE &&
       pic_size_expected_from_client != pic_size_received_from_client) {
@@ -1608,9 +1611,8 @@ void V4L2SliceVideoDecodeAccelerator::ImportBufferForPictureTask(
       NOTIFY_ERROR(INVALID_ARGUMENT);
       return;
     }
-    const gfx::Rect visible_rect = decoder_->GetVisibleRect();
     iter->output_frame = VideoFrame::WrapExternalDmabufs(
-        *layout, visible_rect, visible_rect.size(), std::move(duped_fds),
+        *layout, visible_rect_, visible_rect_.size(), std::move(duped_fds),
         base::TimeDelta());
   }
 
@@ -1627,8 +1629,7 @@ void V4L2SliceVideoDecodeAccelerator::ImportBufferForPictureTask(
         base::BindOnce(&V4L2SliceVideoDecodeAccelerator::CreateGLImageFor,
                        weak_this_, device_, index, picture_buffer_id,
                        std::move(handle), iter->client_texture_id,
-                       iter->texture_id,
-                       GetRectSizeFromOrigin(decoder_->GetVisibleRect()),
+                       iter->texture_id, GetRectSizeFromOrigin(visible_rect_),
                        *gl_image_format_fourcc_));
   }
 
@@ -2314,8 +2315,7 @@ void V4L2SliceVideoDecodeAccelerator::FrameProcessed(
             ip_output_record.picture_id,
             CreateGpuMemoryBufferHandle(frame.get()).native_pixmap_handle,
             ip_output_record.client_texture_id, ip_output_record.texture_id,
-            GetRectSizeFromOrigin(decoder_->GetVisibleRect()),
-            *gl_image_format_fourcc_));
+            GetRectSizeFromOrigin(visible_rect_), *gl_image_format_fourcc_));
   }
 
   DCHECK(!surfaces_at_ip_.empty());

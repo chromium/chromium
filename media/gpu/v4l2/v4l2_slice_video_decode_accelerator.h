@@ -455,6 +455,9 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   // Codec-specific software decoder in use.
   std::unique_ptr<AcceleratedVideoDecoder> decoder_;
 
+  // The visible rect of the frames in the output queue.
+  gfx::Rect visible_rect_;
+
   // Surfaces queued to device to keep references to them while decoded.
   std::queue<scoped_refptr<V4L2DecodeSurface>> surfaces_at_device_;
 
