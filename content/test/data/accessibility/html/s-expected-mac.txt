@@ -1,3 +1,4 @@
 AXWebArea
 ++AXGroup
-++++AXStaticText AXValue='My car is blue.'
+++++AXGroup AXSubrole=AXDeleteStyleGroup
+++++++AXStaticText AXValue='My car is blue.'

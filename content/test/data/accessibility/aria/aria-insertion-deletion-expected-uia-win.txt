@@ -1,0 +1,9 @@
+Document LocalizedControlType='document'
+++Group LocalizedControlType='group' IsControlElement=false
+++++Text LocalizedControlType='text' Name='My favorite browser is '
+++++Group LocalizedControlType='deletion'
+++++++Text LocalizedControlType='text' Name='ABC'
+++++Text LocalizedControlType='text' Name=' '
+++++Group LocalizedControlType='insertion'
+++++++Text LocalizedControlType='text' Name='Chrome'
+++++Text LocalizedControlType='text' Name='!'

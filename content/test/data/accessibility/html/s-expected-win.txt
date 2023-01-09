@@ -1,1 +1,4 @@
-#<skip - Doesn't have an accessible>
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_CONTENT_DELETION
+++++++ROLE_SYSTEM_STATICTEXT name='My car is blue.'

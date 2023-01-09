@@ -1,2 +1,3 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.TextView name='My car is blue.'
+++android.view.View
+++++android.view.View role_description='deletion' name='My car is blue.'
