@@ -50,9 +50,6 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
 
   std::vector<scoped_refptr<AuctionV8Helper>> AuctionV8HelpersForTesting();
 
-  int NumBidderWorkletsForTesting() const { return bidder_worklets_.size(); }
-  int NumSellerWorkletsForTesting() const { return seller_worklets_.size(); }
-
   // mojom::AuctionWorkletService implementation:
   void LoadBidderWorklet(
       mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
