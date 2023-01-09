@@ -104,8 +104,12 @@ TEST_F(SearchSessionMetricsManagerTest, LaunchResult) {
   histogram_tester()->ExpectTotalCount(HomeButtonHistogram, 0);
   histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 0);
 
-  // No metrics should be recorded until the search session ends.
   metrics_manager()->OnLaunch(location, launched_result, results, query);
+  // No metrics should be recorded until the search session ends.
+  histogram_tester()->ExpectTotalCount(HomeButtonHistogram, 0);
+  histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 0);
+
+  metrics_manager()->OnSearchSessionEnded();
   histogram_tester()->ExpectTotalCount(HomeButtonHistogram, 0);
   histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 1);
   histogram_tester()->ExpectUniqueSample(SearchKeyHistogram,

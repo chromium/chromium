@@ -66,7 +66,6 @@ void SearchSessionMetricsManager::OnLaunch(Location location,
     DCHECK(session_active_);
     session_result_ = ash::SearchSessionResult::kLaunch;
   }
-  EndSearchSession();
 }
 
 }  // namespace app_list
