@@ -189,29 +189,14 @@ SkImageInfo RecordPaintCanvas::imageInfo() const {
   return SkImageInfo();
 }
 
-SkRect RecordPaintCanvas::getLocalClipBounds() const {
-  NOTREACHED();
-  return SkRect();
-}
-
 bool RecordPaintCanvas::getLocalClipBounds(SkRect* bounds) const {
   NOTREACHED();
   return false;
 }
 
-SkIRect RecordPaintCanvas::getDeviceClipBounds() const {
-  NOTREACHED();
-  return SkIRect();
-}
-
 bool RecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
   NOTREACHED();
   return false;
-}
-
-bool RecordPaintCanvas::isClipEmpty() const {
-  NOTREACHED();
-  return true;
 }
 
 SkM44 RecordPaintCanvas::getLocalToDevice() const {
@@ -445,24 +430,12 @@ SkImageInfo InspectableRecordPaintCanvas::imageInfo() const {
   return canvas_.imageInfo();
 }
 
-SkRect InspectableRecordPaintCanvas::getLocalClipBounds() const {
-  return canvas_.getLocalClipBounds();
-}
-
 bool InspectableRecordPaintCanvas::getLocalClipBounds(SkRect* bounds) const {
   return canvas_.getLocalClipBounds(bounds);
 }
 
-SkIRect InspectableRecordPaintCanvas::getDeviceClipBounds() const {
-  return canvas_.getDeviceClipBounds();
-}
-
 bool InspectableRecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
   return canvas_.getDeviceClipBounds(bounds);
-}
-
-bool InspectableRecordPaintCanvas::isClipEmpty() const {
-  return canvas_.isClipEmpty();
 }
 
 SkM44 InspectableRecordPaintCanvas::getLocalToDevice() const {

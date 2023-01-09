@@ -93,9 +93,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                 SkClipOp op,
                 bool do_anti_alias,
                 UsePaintCache) override;
-  SkRect getLocalClipBounds() const override;
   bool getLocalClipBounds(SkRect* bounds) const override;
-  SkIRect getDeviceClipBounds() const override;
   bool getDeviceClipBounds(SkIRect* bounds) const override;
   void drawColor(SkColor4f color, SkBlendMode mode) override;
   void clear(SkColor4f color) override;
@@ -148,7 +146,6 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
 
   void drawPicture(PaintRecord record) override;
 
-  bool isClipEmpty() const override;
   SkM44 getLocalToDevice() const override;
 
   bool NeedsFlush() const override;

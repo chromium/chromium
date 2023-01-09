@@ -50,12 +50,9 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     SkClipOp op,
                     bool do_anti_alias,
                     cc::UsePaintCache use_paint_cache));
-  MOCK_CONST_METHOD0(getLocalClipBounds, SkRect());
   MOCK_CONST_METHOD1(getLocalClipBounds, bool(SkRect* bounds));
-  MOCK_CONST_METHOD0(getDeviceClipBounds, SkIRect());
   MOCK_CONST_METHOD1(getDeviceClipBounds, bool(SkIRect* bounds));
   MOCK_METHOD2(drawColor, void(SkColor4f color, SkBlendMode mode));
-  MOCK_METHOD1(clearInt, void(SkColor color));
   MOCK_METHOD1(clear, void(SkColor4f color));
   MOCK_METHOD5(drawLine,
                void(SkScalar x0,
@@ -120,9 +117,6 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     const cc::PaintFlags& flags));
 
   MOCK_METHOD1(drawPicture, void(PaintRecord record));
-  MOCK_CONST_METHOD0(isClipEmpty, bool());
-  MOCK_CONST_METHOD0(isClipRect, bool());
-  MOCK_CONST_METHOD0(getTotalMatrix, SkMatrix());
   MOCK_CONST_METHOD0(getLocalToDevice, SkM44());
 
   MOCK_METHOD3(Annotate,

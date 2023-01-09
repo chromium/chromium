@@ -126,9 +126,7 @@ class CC_PAINT_EXPORT PaintCanvas {
              UsePaintCache::kEnabled);
   }
 
-  virtual SkRect getLocalClipBounds() const = 0;
   virtual bool getLocalClipBounds(SkRect* bounds) const = 0;
-  virtual SkIRect getDeviceClipBounds() const = 0;
   virtual bool getDeviceClipBounds(SkIRect* bounds) const = 0;
   virtual void drawColor(SkColor4f color, SkBlendMode mode) = 0;
   void drawColor(SkColor4f color) { drawColor(color, SkBlendMode::kSrcOver); }
@@ -207,7 +205,6 @@ class CC_PAINT_EXPORT PaintCanvas {
   // not add an additional clip.  This is closer to SkPicture::playback.
   virtual void drawPicture(PaintRecord record) = 0;
 
-  virtual bool isClipEmpty() const = 0;
   virtual SkM44 getLocalToDevice() const = 0;
 
   virtual bool NeedsFlush() const = 0;

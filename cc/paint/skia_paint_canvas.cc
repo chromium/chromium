@@ -142,16 +142,8 @@ void SkiaPaintCanvas::clipPath(const SkPath& path,
   canvas_->clipPath(path, op, do_anti_alias);
 }
 
-SkRect SkiaPaintCanvas::getLocalClipBounds() const {
-  return canvas_->getLocalClipBounds();
-}
-
 bool SkiaPaintCanvas::getLocalClipBounds(SkRect* bounds) const {
   return canvas_->getLocalClipBounds(bounds);
-}
-
-SkIRect SkiaPaintCanvas::getDeviceClipBounds() const {
-  return canvas_->getDeviceClipBounds();
 }
 
 bool SkiaPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
@@ -369,10 +361,6 @@ void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
 
 void SkiaPaintCanvas::drawPicture(PaintRecord record) {
   drawPicture(record, PlaybackParams::CustomDataRasterCallback());
-}
-
-bool SkiaPaintCanvas::isClipEmpty() const {
-  return canvas_->isClipEmpty();
 }
 
 SkM44 SkiaPaintCanvas::getLocalToDevice() const {

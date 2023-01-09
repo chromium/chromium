@@ -69,11 +69,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   // the constructor. With this restriction, we don't need to create
   // SkNoDrawCanvas for clients that only need recording.
   SkImageInfo imageInfo() const override;
-  SkRect getLocalClipBounds() const override;
   bool getLocalClipBounds(SkRect* bounds) const override;
-  SkIRect getDeviceClipBounds() const override;
   bool getDeviceClipBounds(SkIRect* bounds) const override;
-  bool isClipEmpty() const override;
   SkM44 getLocalToDevice() const override;
 
   void drawColor(SkColor4f color, SkBlendMode mode) override;
@@ -221,11 +218,8 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   void clipRect(const SkRect& rect, SkClipOp op, bool antialias) override;
 
   SkImageInfo imageInfo() const override;
-  SkRect getLocalClipBounds() const override;
   bool getLocalClipBounds(SkRect* bounds) const override;
-  SkIRect getDeviceClipBounds() const override;
   bool getDeviceClipBounds(SkIRect* bounds) const override;
-  bool isClipEmpty() const override;
   SkM44 getLocalToDevice() const override;
 
   // Don't shadow non-virtual helper functions.
