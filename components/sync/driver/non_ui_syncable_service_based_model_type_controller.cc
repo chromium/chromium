@@ -138,7 +138,7 @@ NonUiSyncableServiceBasedModelTypeController::
         SyncableServiceProvider syncable_service_provider,
         const base::RepeatingClosure& dump_stack,
         scoped_refptr<base::SequencedTaskRunner> task_runner,
-        bool allow_transport_mode)
+        DelegateMode delegate_mode)
     : ModelTypeController(type) {
   auto full_sync_mode_delegate =
       std::make_unique<ProxyModelTypeControllerDelegate>(
@@ -150,7 +150,7 @@ NonUiSyncableServiceBasedModelTypeController::
   // the same thread-proxying delegate, which shares the BridgeBuilder, which
   // shares the underlying ModelTypeSyncBridge.
   auto transport_mode_delegate =
-      allow_transport_mode
+      delegate_mode == DelegateMode::kTransportModeWithSingleModel
           ? std::make_unique<ForwardingModelTypeControllerDelegate>(
                 full_sync_mode_delegate.get())
           : nullptr;

@@ -30,6 +30,8 @@ class NonUiSyncableServiceBasedModelTypeController
   using SyncableServiceProvider =
       base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>;
 
+  enum class DelegateMode { kFullSyncModeOnly, kTransportModeWithSingleModel };
+
   // |syncable_service_provider| and |store_factory| will be run on the backend
   // sequence, i.e. |task_runner|.
   // |allow_transport_mode| will sync the data in both full-sync mode and in
@@ -40,7 +42,7 @@ class NonUiSyncableServiceBasedModelTypeController
       SyncableServiceProvider syncable_service_provider,
       const base::RepeatingClosure& dump_stack,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      bool allow_transport_mode = false);
+      DelegateMode delegate_mode);
 
   NonUiSyncableServiceBasedModelTypeController(
       const NonUiSyncableServiceBasedModelTypeController&) = delete;

@@ -27,6 +27,7 @@ class ExtensionSettingModelTypeController
       syncer::OnceModelTypeStoreFactory store_factory,
       SyncableServiceProvider syncable_service_provider,
       const base::RepeatingClosure& dump_stack,
+      DelegateMode delegate_mode,
       Profile* profile);
 
   ExtensionSettingModelTypeController(

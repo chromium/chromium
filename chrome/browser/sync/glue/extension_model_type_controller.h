@@ -23,6 +23,7 @@ class ExtensionModelTypeController
       syncer::OnceModelTypeStoreFactory store_factory,
       base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
+      DelegateMode delegate_mode,
       Profile* profile);
 
   ExtensionModelTypeController(const ExtensionModelTypeController&) = delete;

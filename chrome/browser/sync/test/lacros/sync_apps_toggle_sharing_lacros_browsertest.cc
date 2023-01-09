@@ -23,23 +23,25 @@ namespace {
 // exposed by SyncService crosapi).
 const uint32_t kMinCrosapiVersionWithSyncUserSettingsClient = 80;
 
-class WebAppsSyncActiveStateChecker : public SingleClientStatusChangeChecker {
+class DatatypeSyncActiveStateChecker : public SingleClientStatusChangeChecker {
  public:
-  WebAppsSyncActiveStateChecker(bool expected_state,
-                                syncer::SyncServiceImpl* sync_service)
+  DatatypeSyncActiveStateChecker(syncer::ModelType type,
+                                 bool expected_state,
+                                 syncer::SyncServiceImpl* sync_service)
       : SingleClientStatusChangeChecker(sync_service),
+        type_(type),
         expected_state_(expected_state) {}
-  ~WebAppsSyncActiveStateChecker() override = default;
+  ~DatatypeSyncActiveStateChecker() override = default;
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for WebApps sync active state to become: "
-        << expected_state_;
-    return service()->GetActiveDataTypes().Has(syncer::WEB_APPS) ==
-           expected_state_;
+    *os << "Waiting for " << syncer::ModelTypeToDebugString(type_)
+        << " sync active state to become: " << expected_state_;
+    return service()->GetActiveDataTypes().Has(type_) == expected_state_;
   }
 
  private:
-  bool expected_state_;
+  const syncer::ModelType type_;
+  const bool expected_state_;
 };
 
 class SyncAppsToggleSharingLacrosBrowserTest : public SyncTest {
@@ -134,18 +136,18 @@ IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
   }
   ASSERT_TRUE(SetupSync());
   client_ash().SetAppsSyncIsEnabled(/*enabled=*/true);
-  EXPECT_TRUE(
-      WebAppsSyncActiveStateChecker(/*expected_state=*/true, GetSyncService(0))
-          .Wait());
+  EXPECT_TRUE(DatatypeSyncActiveStateChecker(
+                  syncer::WEB_APPS, /*expected_state=*/true, GetSyncService(0))
+                  .Wait());
 
   client_ash().SetAppsSyncIsEnabled(/*enabled=*/false);
-  EXPECT_TRUE(
-      WebAppsSyncActiveStateChecker(/*expected_state=*/false, GetSyncService(0))
-          .Wait());
+  EXPECT_TRUE(DatatypeSyncActiveStateChecker(
+                  syncer::WEB_APPS, /*expected_state=*/false, GetSyncService(0))
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
-                       ShouldEnableWebAppsInTransportOnlyMode) {
+                       ShouldEnableAppsTypeInTransportOnlyMode) {
   if (!IsServiceAvailable()) {
     GTEST_SKIP() << "Unsupported Ash version.";
   }
@@ -158,12 +160,19 @@ IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
 
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  // By enabling apps sync in ash settings, WEB_APPS should become enabled even
-  // in transport-only mode.
+  // By enabling apps sync in ash settings, apps types should become enabled
+  // even in transport-only mode.
   client_ash().SetAppsSyncIsEnabled(/*enabled=*/true);
-  EXPECT_TRUE(
-      WebAppsSyncActiveStateChecker(/*expected_state=*/true, GetSyncService(0))
-          .Wait());
+  EXPECT_TRUE(DatatypeSyncActiveStateChecker(
+                  syncer::WEB_APPS, /*expected_state=*/true, GetSyncService(0))
+                  .Wait());
+  EXPECT_TRUE(DatatypeSyncActiveStateChecker(
+                  syncer::APPS, /*expected_state=*/true, GetSyncService(0))
+                  .Wait());
+  EXPECT_TRUE(DatatypeSyncActiveStateChecker(syncer::APP_SETTINGS,
+                                             /*expected_state=*/true,
+                                             GetSyncService(0))
+                  .Wait());
 }
 
 }  // namespace
