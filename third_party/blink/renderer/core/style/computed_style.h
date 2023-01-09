@@ -2700,7 +2700,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   ComputedStyleBuilder& operator=(ComputedStyleBuilder&&) = default;
 
   // TODO(crbug.com/1377295): Eventually remove these functions.
-  ComputedStyle* MutableInternalStyle() const { return style_.get(); }
   const ComputedStyle* InternalStyle() const { return style_.get(); }
 
   scoped_refptr<ComputedStyle> TakeStyle() { return std::move(style_); }

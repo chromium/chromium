@@ -2705,7 +2705,6 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
   // Set up our initial style properties based on either the `default_font` or
   // `parent_style`.
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  ComputedStyle* style = builder.MutableInternalStyle();
   if (default_font) {
     builder.SetFontDescription(*default_font);
   } else {  // parent_style
@@ -2713,27 +2712,30 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
   }
   builder.SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
 
-  // Apply any properties in the `css_property_value_set`.
-  if (css_property_value_set) {
-    // Use a dummy/disconnected element when resolving the styles so that we
-    // don't inherit anything from existing elements.
-    StyleResolverState state(
-        GetDocument(), EnsureElementForFormattedText(),
-        nullptr /* StyleRecalcContext */,
-        StyleRequest{parent_style ? parent_style : &InitialStyle()});
-    state.SetStyle(style);
-
-    // Use StyleCascade to apply inheritance in the correct order.
-    STACK_UNINITIALIZED StyleCascade cascade(state);
-    cascade.MutableMatchResult().AddMatchedProperties(
-        css_property_value_set,
-        AddMatchedPropertiesOptions::Builder().SetIsInlineStyle(true).Build());
-    cascade.Apply();
-
-    StyleAdjuster::AdjustComputedStyle(state, nullptr);
+  if (!css_property_value_set) {
+    return builder.TakeStyle();
   }
 
-  return builder.TakeStyle();
+  // Apply any properties in the `css_property_value_set`.
+
+  // Use a dummy/disconnected element when resolving the styles so that we
+  // don't inherit anything from existing elements.
+  StyleResolverState state(
+      GetDocument(), EnsureElementForFormattedText(),
+      nullptr /* StyleRecalcContext */,
+      StyleRequest{parent_style ? parent_style : &InitialStyle()});
+  state.SetStyle(builder.TakeStyle());
+
+  // Use StyleCascade to apply inheritance in the correct order.
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+  cascade.MutableMatchResult().AddMatchedProperties(
+      css_property_value_set,
+      AddMatchedPropertiesOptions::Builder().SetIsInlineStyle(true).Build());
+  cascade.Apply();
+
+  StyleAdjuster::AdjustComputedStyle(state, nullptr);
+
+  return state.TakeStyle();
 }
 
 static Font ComputeInitialLetterFont(const ComputedStyle& style,
