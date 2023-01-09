@@ -75,9 +75,6 @@ class TouchInjector : public ui::EventRewriter {
   void RegisterEventRewriter();
   // Unregister the EventRewriter.
   void UnRegisterEventRewriter();
-  // Update info for touch injector. For example, update transform information
-  // if there is screen rotation.
-  void Update();
   // Change bindings. This could be from user editing from display overlay
   // (|mode| = DisplayMode::kEdit) or from customized protobuf data (|mode| =
   // DisplayMode::kView).
@@ -105,8 +102,8 @@ class TouchInjector : public ui::EventRewriter {
 
   // Update |content_bounds_| and touch positions for each |actions_| for
   // different reasons.
-  void UpdateForDisplayMetricsChanged();
-  void UpdateForWindowBoundsChanged();
+  void UpdatePositionsForRegister();
+  void UpdateForOverlayBoundsChanged(const gfx::RectF& new_bounds);
 
   // Add or delete an Action.
   // Return an action ID (> kMaxDefaultActionID) for adding a new action.

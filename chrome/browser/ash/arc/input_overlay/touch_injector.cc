@@ -211,7 +211,7 @@ void TouchInjector::RegisterEventRewriter() {
   if (observation_.IsObserving())
     return;
   observation_.Observe(window_->GetHost()->GetEventSource());
-  Update();
+  UpdatePositionsForRegister();
 }
 
 void TouchInjector::UnRegisterEventRewriter() {
@@ -223,11 +223,6 @@ void TouchInjector::UnRegisterEventRewriter() {
   for (auto& action : actions_)
     action->ResetPendingBind();
   OnSaveProtoFile();
-}
-
-void TouchInjector::Update() {
-  UpdateForDisplayMetricsChanged();
-  UpdateForWindowBoundsChanged();
 }
 
 void TouchInjector::OnInputBindingChange(
@@ -395,28 +390,26 @@ void TouchInjector::SaveMenuEntryLocation(
       1.0 * menu_entry_location_point.y() / content_bounds().height());
 }
 
-void TouchInjector::UpdateForDisplayMetricsChanged() {
+void TouchInjector::UpdatePositionsForRegister() {
   if (rotation_transform_)
     rotation_transform_.reset();
 
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
   // No need to transform if there is no rotation.
-  if (display.panel_rotation() == display::Display::ROTATE_0)
-    return;
-
-  rotation_transform_ =
-      std::make_unique<gfx::Transform>(ash::CreateRotationTransform(
-          display::Display::ROTATE_0, display.panel_rotation(),
-          gfx::SizeF(display.GetSizeInPixel())));
-
-  UpdateForWindowBoundsChanged();
+  if (display.panel_rotation() != display::Display::ROTATE_0) {
+    rotation_transform_ =
+        std::make_unique<gfx::Transform>(ash::CreateRotationTransform(
+            display::Display::ROTATE_0, display.panel_rotation(),
+            gfx::SizeF(display.GetSizeInPixel())));
+  }
+  UpdateForOverlayBoundsChanged(CalculateWindowContentBounds(window_));
 }
 
-void TouchInjector::UpdateForWindowBoundsChanged() {
-  content_bounds_ = CalculateWindowContentBounds(window_);
-  for (auto& action : actions_) {
+void TouchInjector::UpdateForOverlayBoundsChanged(
+    const gfx::RectF& new_bounds) {
+  content_bounds_ = new_bounds;
+  for (auto& action : actions_)
     action->UpdateTouchDownPositions();
-  }
 }
 
 void TouchInjector::CleanupTouchEvents() {

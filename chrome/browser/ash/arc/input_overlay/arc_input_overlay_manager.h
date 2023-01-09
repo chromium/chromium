@@ -67,10 +67,6 @@ class ArcInputOverlayManager : public KeyedService,
   void OnWindowAddedToRootWindow(aura::Window* window) override;
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
 
   // KeyedService:
   void Shutdown() override;
