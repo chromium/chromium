@@ -90,6 +90,10 @@ declare_args() {
 
   # Use probe-on-destruct unowned ptr detection with ASAN.
   use_asan_unowned_ptr = false
+
+  # Use the version of raw_ptr<T> that allows the embedder to implement custom
+  # logic.
+  use_hookable_raw_ptr = false
 }
 
 declare_args() {
@@ -145,6 +149,7 @@ if (!use_partition_alloc) {
   enable_mte_checked_ptr_support = false
   use_asan_backup_ref_ptr = false
   use_asan_unowned_ptr = false
+  use_hookable_raw_ptr = false
   put_ref_count_in_previous_slot = false
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
@@ -194,6 +199,21 @@ assert(
 # BackupRefPtr and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
 assert(!enable_backup_ref_ptr_support || !use_asan_unowned_ptr,
        "Both BackupRefPtr and AsanUnownedPtr can't be enabled at the same time")
+
+# HookableRawPtrImpl and BackupRefPtr are mutually exclusive variants of raw_ptr.
+assert(
+    !use_hookable_raw_ptr || !enable_backup_ref_ptr_support,
+    "Both HookableRawPtrImpl and BackupRefPtr can't be enabled at the same time")
+
+# HookableRawPtrImpl and AsanBackupRefPtr are mutually exclusive variants of raw_ptr.
+assert(
+    !use_hookable_raw_ptr || !use_asan_backup_ref_ptr,
+    "Both HookableRawPtrImpl and AsanBackupRefPtr can't be enabled at the same time")
+
+# HookableRawPtrImpl and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
+assert(
+    !use_hookable_raw_ptr || !use_asan_unowned_ptr,
+    "Both HookableRawPtrImpl and AsanUnownedPtr can't be enabled at the same time")
 
 assert(!use_asan_backup_ref_ptr || is_asan,
        "AsanBackupRefPtr requires AddressSanitizer")

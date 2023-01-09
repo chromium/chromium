@@ -938,6 +938,114 @@ struct AsanUnownedPtrImpl {
 
 #endif  // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
+#if BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+
+struct RawPtrHooks {
+  using WrapPtr = void(uintptr_t address);
+  using ReleaseWrappedPtr = void(uintptr_t address);
+  using SafelyUnwrapForDereference = void(uintptr_t address);
+  using SafelyUnwrapForExtraction = void(uintptr_t address);
+  using UnsafelyUnwrapForComparison = void(uintptr_t address);
+  using Advance = void(uintptr_t old_address, uintptr_t new_address);
+  using Duplicate = void(uintptr_t address);
+
+  WrapPtr* wrap_ptr;
+  ReleaseWrappedPtr* release_wrapped_ptr;
+  SafelyUnwrapForDereference* safely_unwrap_for_dereference;
+  SafelyUnwrapForExtraction* safely_unwrap_for_extraction;
+  UnsafelyUnwrapForComparison* unsafely_unwrap_for_comparison;
+  Advance* advance;
+  Duplicate* duplicate;
+};
+
+const RawPtrHooks* GetRawPtrHooks();
+void InstallRawPtrHooks(const RawPtrHooks*);
+void ResetRawPtrHooks();
+
+struct RawPtrHookableImpl {
+  // Wraps a pointer.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+    GetRawPtrHooks()->wrap_ptr(reinterpret_cast<uintptr_t>(ptr));
+    return ptr;
+  }
+
+  // Notifies the allocator when a wrapped pointer is being removed or replaced.
+  template <typename T>
+  static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* ptr) {
+    GetRawPtrHooks()->release_wrapped_ptr(reinterpret_cast<uintptr_t>(ptr));
+  }
+
+  // Unwraps the pointer, while asserting that memory hasn't been freed. The
+  // function is allowed to crash on nullptr.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+    GetRawPtrHooks()->safely_unwrap_for_dereference(
+        reinterpret_cast<uintptr_t>(wrapped_ptr));
+    return wrapped_ptr;
+  }
+
+  // Unwraps the pointer, while asserting that memory hasn't been freed. The
+  // function must handle nullptr gracefully.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+    GetRawPtrHooks()->safely_unwrap_for_extraction(
+        reinterpret_cast<uintptr_t>(wrapped_ptr));
+    return wrapped_ptr;
+  }
+
+  // Unwraps the pointer, without making an assertion on whether memory was
+  // freed or not.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+    GetRawPtrHooks()->unsafely_unwrap_for_comparison(
+        reinterpret_cast<uintptr_t>(wrapped_ptr));
+    return wrapped_ptr;
+  }
+
+  // Upcasts the wrapped pointer.
+  template <typename To, typename From>
+  static PA_ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
+    static_assert(std::is_convertible<From*, To*>::value,
+                  "From must be convertible to To.");
+    // Note, this cast may change the address if upcasting to base that lies in
+    // the middle of the derived object.
+    return wrapped_ptr;
+  }
+
+  // Advance the wrapped pointer by `delta_elems`.
+  template <typename T,
+            typename Z,
+            typename = std::enable_if_t<offset_type<Z>, void>>
+  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+    GetRawPtrHooks()->advance(
+        reinterpret_cast<uintptr_t>(wrapped_ptr),
+        reinterpret_cast<uintptr_t>(wrapped_ptr + delta_elems));
+    return wrapped_ptr + delta_elems;
+  }
+
+  template <typename T>
+  static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                                  T* wrapped_ptr2) {
+    return wrapped_ptr1 - wrapped_ptr2;
+  }
+
+  // Returns a copy of a wrapped pointer, without making an assertion on whether
+  // memory was freed or not.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+    GetRawPtrHooks()->duplicate(reinterpret_cast<uintptr_t>(wrapped_ptr));
+    return wrapped_ptr;
+  }
+
+  // This is for accounting only, used by unit tests.
+  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
+  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
+};
+
+#endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+
 template <class Super>
 struct RawPtrCountingImplWrapperForTest
     : public raw_ptr_traits::RawPtrTypeToImpl<Super>::Impl {
@@ -1113,6 +1221,8 @@ struct RawPtrTypeToImpl<RawPtrMayDangle> {
 #elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   using Impl = internal::MTECheckedPtrImpl<
       internal::MTECheckedPtrImplPartitionAllocSupport>;
+#elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+  using Impl = internal::RawPtrHookableImpl;
 #else
   using Impl = internal::RawPtrNoOpImpl;
 #endif
@@ -1134,6 +1244,8 @@ struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
 #elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   using Impl = internal::MTECheckedPtrImpl<
       internal::MTECheckedPtrImplPartitionAllocSupport>;
+#elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+  using Impl = internal::RawPtrHookableImpl;
 #else
   using Impl = internal::RawPtrNoOpImpl;
 #endif
@@ -1192,7 +1304,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
   constexpr PA_ALWAYS_INLINE raw_ptr() noexcept : wrapped_ptr_(nullptr) {}
 
@@ -1236,7 +1349,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-       // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+       // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
   // raw_ptr can be trivially default constructed (leaving |wrapped_ptr_|
   // uninitialized).  This is needed for compatibility with raw pointers.

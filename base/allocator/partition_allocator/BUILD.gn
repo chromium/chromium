@@ -394,6 +394,7 @@ buildflag_header("partition_alloc_buildflags") {
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$put_ref_count_in_previous_slot",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
+    "USE_HOOKABLE_RAW_PTR=$use_hookable_raw_ptr",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
 
     # Not to be used directly - instead use
