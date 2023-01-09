@@ -106,3 +106,17 @@ var AshCommonResourcesTypescriptUtilsStrictQueryTest =
 TEST_F('AshCommonResourcesTypescriptUtilsStrictQueryTest', 'All', function() {
   mocha.run();
 });
+
+var AshCommonResourcesTypescriptUtilsStrictQueryMixinTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=chromeos/ash_common/' +
+        'typescript_utils/strict_query_mixin_test.js'
+  }
+};
+
+TEST_F(
+    'AshCommonResourcesTypescriptUtilsStrictQueryMixinTest', 'All', function() {
+      mocha.run();
+    });

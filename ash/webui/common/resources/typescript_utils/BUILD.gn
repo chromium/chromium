@@ -10,7 +10,10 @@ assert(is_chromeos_ash)
 
 preprocessed_dir = "preprocessed"
 
-ts_files = [ "strict_query.ts" ]
+ts_files = [
+  "strict_query.ts",
+  "strict_query_mixin.ts",
+]
 
 preprocess_if_expr("preprocess") {
   in_folder = "."

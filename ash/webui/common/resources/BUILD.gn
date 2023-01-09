@@ -208,6 +208,7 @@ preprocess_if_expr("preprocess_ts_generated") {
     "hotspot/fake_hotspot_config.js",
     "hotspot/cros_hotspot_config.mojom-webui.js",
     "typescript_utils/strict_query.js",
+    "typescript_utils/strict_query_mixin.js",
   ]
 }
 
@@ -223,7 +224,10 @@ copy("copy_generated_dts_files_hotspot") {
 
 copy("copy_generated_dts_files_typescript_utils") {
   deps = [ "typescript_utils:build_ts" ]
-  sources = [ "$target_gen_dir/typescript_utils/strict_query.d.ts" ]
+  sources = [
+    "$target_gen_dir/typescript_utils/strict_query.d.ts",
+    "$target_gen_dir/typescript_utils/strict_query_mixin.d.ts",
+  ]
   outputs = [
     "$target_gen_dir/$preprocessed_dir/typescript_utils/{{source_file_part}}",
   ]
