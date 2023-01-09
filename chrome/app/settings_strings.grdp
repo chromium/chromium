@@ -1881,24 +1881,13 @@
     Disabled Vivamus id lacus et lacus porttitor vulputate. Sed semper egestas orci vel maximus.
   </message>
 
-  <!-- Privacy Sandbox Settings 4 - Topics Page -->
-  <message name="IDS_SETTINGS_TOPICS_PAGE_TITLE" translateable="false" desc="Title for the Topics preferences page.">
-    Mauris interdum lectus vitae lacinia
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL" translateable="false" desc="Label for the toggle in the Topics preferences page.">
-    Nunc gravida condimentum consectetur
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Subabel for the toggle in the Topics preferences page.">
-    Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING" translateable="false" desc="Section title for the current Topics list underneath toggle in the Topics preferences page.">
-    Mauris at lectus
-  </message>
+  <!-- Privacy Sandbox v4 - Topics Page -->
+  <!-- Where possible, these strings have been unified on Desktop & Android in privacy_sandox_strings.grdp. The strings here either only appear on one platform, or have platform specific requirements, e.g. the format of placeholders, and so cannot be unified. For the latter case, they have corresponding _CANONICAL representations used when consent is recorded on either platform, and so they must stay in sync -->
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" translateable="false" desc="Section description for the current Topics list in the Topics preferences page.">
     Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit.
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE" translateable="false" desc="Text for the clickable section of the description ('Learn more') for the current Topics list in the Topics preferences page.">
-    Eget bibendum neque.
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_A11Y_LABEL" translateable="false" desc="A11y label for the clickable section of the description ('Learn more') for the current Topics list in the Topics preferences page.">
+    A11y label. Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" translateable="false" desc="Section description for the current Topics list when Topics is disabled in the Topics preferences page.">
     Sed porta viverra lacus ut euismod. Integer a cursus metus, ac ultricies libero.
@@ -1906,38 +1895,11 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current Topics list when the Topics list is empty in the Topics preferences page.">
     Curabitur sagittis sapien ut turpis interdum, vitae porttitor sem pretium. Vestibulum sem mauris, ultrices ac massa sit amet, sodales aliquet est.
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" translateable="false" desc="String on the button to block a topic in the Topics preferences page.">
-    Pellent
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING" translateable="false" desc="Section title for the blocked topics list in the Topics preferences page.">
-    Integer faucibus metus
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION" translateable="false" desc="Section description for the blocked topics list in the Topics preferences page.">
-    Donec fringilla justo vel ligula finibus, ut rutrum lectus vestibulum. Suspendisse vestibulum lorem lacinia nulla consequat auctor.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the blocked topics list when there are no blocked topics in the Topics preferences page.">
-    Donec commodo sem non augue blandit, ullamcorper aliquam enim fermentum
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC" translateable="false" desc="String on the button to re-allow a topic in the Topics preferences page.">
-    Aenean
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_LINK" translateable="false" desc="Text for the clickable section of the description ('Learn more') for the current Topics list in the Topics preferences page.">
+    Eget bibendum neque.
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" translateable="false" desc="Footer with more information at the bottom of the Topics preferences page.">
     Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>justo nec ultricies semper<ph name="LINK_END1">&lt;/a&gt;</ph>, eros mauris varius nibh, <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>sit amet molestie quam<ph name="LINK_END2">&lt;/a&gt;</ph> arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the Topics preferences page.">
-    Suspendisse sit amet consectetur sapien
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1" translateable="false" desc="First bullet on 'Learn more' dialog in the Topics preferences page.">
-    Vestibulum arcu elit, pulvinar eu orci at, semper finibus metus. Donec sollicitudin, risus eu congue ullamcorper, nisl lorem consectetur risus, nec vulputate risus eros quis diam.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2" translateable="false" desc="Second bullet on 'Learn more' dialog in the Topics preferences page.">
-    Aenean vel turpis id arcu viverra aliquet. Donec convallis, felis eget dictum venenatis, odio orci bibendum neque, quis egestas sem turpis et dui.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="Third bullet on 'Learn more' dialog in the Topics preferences page.">
-    Integer convallis congue ex non vehicula. Nam vel vestibulum ante, ut consectetur ex. Duis semper lectus velit, id porttitor massa mattis sit amet. Integer pulvinar non nisi et tincidunt. Proin aliquam turpis massa, eget tincidunt orci vulputate vitae.
-  </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_A11Y_LABEL" translateable="false" desc="A11y label for the clickable section of the description ('Learn more') for the current Topics list in the Topics preferences page.">
-    A11y label. Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit.
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Fledge Page -->

@@ -177,6 +177,58 @@
     More
   </message>
 
+  <!-- Privacy Sandbox v4 - Topics settings page. -->
+  <!-- Privacy Sandbox Settings 4 - Topics Page -->
+  <message name="IDS_SETTINGS_TOPICS_PAGE_TITLE" translateable="false" desc="Title for the Topics preferences page." formatter_data="android_java">
+    Mauris interdum lectus vitae lacinia
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL" translateable="false" desc="Label for the toggle in the Topics preferences page." formatter_data="android_java">
+    Nunc gravida condimentum consectetur
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Subabel for the toggle in the Topics preferences page." formatter_data="android_java">
+    Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING" translateable="false" desc="Section title for the current Topics list underneath toggle in the Topics preferences page." formatter_data="android_java">
+    Mauris at lectus
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL" translateable="false" desc="Section description for the current Topics list.">
+    Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit, eget bibendum neque. Learn More.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED_CANONICAL" translateable="false" desc="Section description for the current Topics list when Topics is disabled in the Topics preferences page.">
+    Sed porta viverra lacus ut euismod. Integer a cursus metus, ac ultricies libero. Learn More.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_CANONICAL" translateable="false" desc="Section description for the current Topics list when the Topics list is empty in the Topics preferences page.">
+    Curabitur sagittis sapien ut turpis interdum, vitae porttitor sem pretium. Vestibulum sem mauris, ultrices ac massa sit amet, sodales aliquet est. Learn more.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" translateable="false" desc="String on the button to block a topic in the Topics preferences page.">
+    Pellent
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING" translateable="false" desc="Section title for the blocked topics list in the Topics preferences page." formatter_data="android_java">
+    Integer faucibus metus
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION" translateable="false" desc="Section description for the blocked topics list in the Topics preferences page." formatter_data="android_java">
+    Donec fringilla justo vel ligula finibus, ut rutrum lectus vestibulum. Suspendisse vestibulum lorem lacinia nulla consequat auctor.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the blocked topics list when there are no blocked topics in the Topics preferences page." formatter_data="android_java">
+    Donec commodo sem non augue blandit, ullamcorper aliquam enim fermentum
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC" translateable="false" desc="String on the button to re-allow a topic in the Topics preferences page.">
+    Aenean
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" translateable="false" desc="Heading on 'Learn more' dialog in the Topics preferences page." formatter_data="android_java">
+    Suspendisse sit amet consectetur sapien
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1" translateable="false" desc="First bullet on 'Learn more' dialog in the Topics preferences page." formatter_data="android_java">
+    Vestibulum arcu elit, pulvinar eu orci at, semper finibus metus. Donec sollicitudin, risus eu congue ullamcorper, nisl lorem consectetur risus, nec vulputate risus eros quis diam.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2" translateable="false" desc="Second bullet on 'Learn more' dialog in the Topics preferences page." formatter_data="android_java">
+    Aenean vel turpis id arcu viverra aliquet. Donec convallis, felis eget dictum venenatis, odio orci bibendum neque, quis egestas sem turpis et dui.
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="Third bullet on 'Learn more' dialog in the Topics preferences page." formatter_data="android_java">
+    Integer convallis congue ex non vehicula. Nam vel vestibulum ante, ut consectetur ex. Duis semper lectus velit, id porttitor massa mattis sit amet. Integer pulvinar non nisi et tincidunt. Proin aliquam turpis massa, eget tincidunt orci vulputate vitae.
+  </message>
+
+
   <!-- Topics API Taxonomy -->
   <!-- These entries have been script generated to ensure consistent mappings. If you are editing these directly, you are likely doing something wrong -->
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_INVALID_TOPIC" desc="Shown when an unknown Topic has been provided by the categorization service. This is indicative of an error state that is not expected to occur">
