@@ -185,10 +185,11 @@ file with `file://...`. This example indicates that only the people listed in
 ```
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS
+```
 
 File globbing is supported using the
-[simple path expression format](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/path-expressions.md#simplePathExpressions)
-```
+[simple path expression](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/path-expressions.md#simple-path-expressions)
+format.
 
 ### Owners-Override
 
