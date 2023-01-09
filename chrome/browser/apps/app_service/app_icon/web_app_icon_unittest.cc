@@ -433,7 +433,7 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
   gfx::ImageSkia src_image_skia;
   gfx::ImageSkia dst_image_skia;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(
       icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
 
@@ -479,7 +479,7 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
   apps::IconValuePtr icon;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   icon_effect |= apps::IconEffects::kCrOsStandardBackground |
                  apps::IconEffects::kCrOsStandardMask;
   ASSERT_TRUE(

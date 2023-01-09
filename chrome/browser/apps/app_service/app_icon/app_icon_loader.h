@@ -207,6 +207,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   const bool is_placeholder_icon_ = false;
   apps::IconEffects icon_effects_;
+  bool is_maskable_icon_ = false;
 
   // If |fallback_favicon_url_| is populated, then the favicon service is the
   // first fallback method attempted in MaybeLoadFallbackOrCompleteEmpty().

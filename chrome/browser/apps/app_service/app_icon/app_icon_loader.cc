@@ -128,7 +128,7 @@ absl::optional<IconPurpose> GetIconPurpose(
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::MASKABLE},
                                    max_icon_size_in_px)) {
     return absl::make_optional(IconPurpose::MASKABLE);
@@ -340,6 +340,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
     icon_effects_ &= ~apps::IconEffects::kCrOsStandardIcon;
     icon_effects_ |= apps::IconEffects::kCrOsStandardBackground;
     icon_effects_ |= apps::IconEffects::kCrOsStandardMask;
+    is_maskable_icon_ = true;
   }
 
   switch (icon_type_) {
@@ -844,6 +845,7 @@ void AppIconLoader::CompleteWithCompressed(bool is_maskable_icon,
 void AppIconLoader::CompleteWithUncompressed(IconValuePtr iv) {
   DCHECK_NE(icon_type_, IconType::kCompressed);
   DCHECK_NE(icon_type_, IconType::kUnknown);
+  iv->is_maskable_icon = is_maskable_icon_;
   if (iv->uncompressed.isNull()) {
     MaybeLoadFallbackOrCompleteEmpty();
     return;
@@ -864,7 +866,7 @@ void AppIconLoader::CompleteWithIconValue(IconValuePtr iv) {
     // the icon might be null. Return early here if the image is null, to
     // prevent calling MakeThreadSafe, which might cause the system crash due to
     // DCHECK error on image.
-    CompleteWithCompressed(/*is_maskable_icon=*/false, std::vector<uint8_t>());
+    CompleteWithCompressed(is_maskable_icon_, std::vector<uint8_t>());
     return;
   }
 
@@ -874,7 +876,7 @@ void AppIconLoader::CompleteWithIconValue(IconValuePtr iv) {
       base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
                      icon_scale_for_compressed_response_),
       base::BindOnce(&AppIconLoader::CompleteWithCompressed,
-                     base::WrapRefCounted(this), /*is_maskable_icon=*/false));
+                     base::WrapRefCounted(this), is_maskable_icon_));
 }
 
 // Callback for reading uncompressed web app icons.
