@@ -433,15 +433,14 @@ bool PermissionsPolicy::InheritedValueForFeature(
   if (!parent_policy)
     return true;
 
-  // 9.8 2: If policy’s inherited policy for feature is "Disabled", return
-  // "Disabled".
+  // 9.8 2: If feature was inherited and (if declared) the allowlist for the
+  // feature does not match the parent's origin, then return "Disabled".
   if (!parent_policy->GetFeatureValueForOrigin(feature.first,
                                                parent_policy->origin_))
     return false;
 
-  // 9.8 3: If feature is present in policy’s declared policy, and the allowlist
-  // for feature in policy’s declared policy does not match origin, then return
-  // "Disabled".
+  // 9.8 3: If feature was inherited and (if declared) the allowlist for the
+  // feature does not match origin, then return "Disabled".
   if (!parent_policy->GetFeatureValueForOrigin(feature.first, origin_))
     return false;
 
