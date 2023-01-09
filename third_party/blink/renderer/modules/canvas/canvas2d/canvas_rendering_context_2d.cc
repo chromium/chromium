@@ -1012,7 +1012,6 @@ void CanvasRenderingContext2D::DrawTextInternal(
   DCHECK(font_data);
   if (!font_data)
     return;
-  const FontMetrics& font_metrics = font_data->GetFontMetrics();
 
   // FIXME: Need to turn off font smoothing.
 
@@ -1029,7 +1028,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x),
                        ClampTo<float>(y + GetFontBaseline(*font_data)));
-  double font_width = font.Width(text_run);
+  gfx::RectF bounds;
+  double font_width = font.Width(text_run, nullptr, &bounds);
 
   bool use_max_width = (max_width && *max_width < font_width);
   double width = use_max_width ? *max_width : font_width;
@@ -1051,11 +1051,6 @@ void CanvasRenderingContext2D::DrawTextInternal(
       break;
   }
 
-  gfx::RectF bounds(
-      location.x() - font_metrics.Height() / 2,
-      location.y() - font_metrics.Ascent() - font_metrics.LineGap(),
-      ClampTo<float>(width + font_metrics.Height()),
-      font_metrics.LineSpacing());
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
     InflateStrokeRect(bounds);
 
@@ -1069,6 +1064,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
     c->scale(ClampTo<float>(width / font_width), 1);
     location.set_x(location.x() / ClampTo<float>(width / font_width));
   }
+
+  bounds.Offset(location.x(), location.y());
 
   Draw<OverdrawOp::kNone>(
       [this, text = std::move(text), direction, bidi_override, location](
