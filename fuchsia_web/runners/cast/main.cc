@@ -31,7 +31,7 @@
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_runner_switches.h"
 #include "fuchsia_web/runners/cast/cast_runner_v1.h"
-#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
+#include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
       resolver_binding(outgoing_directory, &resolver);
 
   // Publish the fuchsia.component.runner.ComponentRunner for Cast apps.
-  WebInstanceHostV1 web_instance_host;
+  WebInstanceHost web_instance_host;
   CastRunner runner(
       web_instance_host,
       {.headless = command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
 
   // Allow web containers to be debugged, by end-to-end tests.
   base::ScopedServiceBinding<fuchsia::web::Debug> debug_binding(
-      outgoing_directory, web_instance_host.debug_api());
+      outgoing_directory, &web_instance_host.debug_api());
 
   if (command_line->HasSwitch(kDisableVulkanForTestsSwitch)) {
     runner.set_disable_vulkan_for_test();  // IN-TEST
