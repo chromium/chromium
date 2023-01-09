@@ -6404,13 +6404,6 @@ FragmentDirective& Document::fragmentDirective() const {
   return *fragment_directive_;
 }
 
-ScriptPromise Document::hasTrustToken(ScriptState* script_state,
-                                      const String& issuer,
-                                      ExceptionState& exception_state) {
-  return hasPrivateToken(script_state, issuer, "private-state-token",
-                         exception_state);
-}
-
 ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
                                         const String& issuer,
                                         const String& type,

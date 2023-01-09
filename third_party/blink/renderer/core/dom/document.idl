@@ -199,7 +199,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [MeasureAs=PrefixedPageVisibility, ImplementedAs=hidden] readonly attribute boolean webkitHidden;
 
     // Private Token API (https://github.com/wicg/trust-token-api)
-    [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=PrivateStateTokens] Promise<boolean> hasTrustToken(USVString issuer);
     [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=PrivateStateTokens] Promise<boolean> hasPrivateToken(USVString issuer, USVString type);
 
     [CallWith=ScriptState, Measure, RaisesException, NewObject, SecureContext, RuntimeEnabled=PrivateStateTokens] Promise<boolean> hasRedemptionRecord(USVString issuer, USVString type);

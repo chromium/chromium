@@ -1213,11 +1213,6 @@ class CORE_EXPORT Document : public ContainerNode,
                                 const String& issuer,
                                 const String& type,
                                 ExceptionState&);
-  // Being renamed to hasPrivateToken, will remove after all users have
-  // changed to new name.
-  ScriptPromise hasTrustToken(ScriptState* script_state,
-                              const String& issuer,
-                              ExceptionState&);
 
   // Sends a query via Mojo to ask whether the user has a redemption record.
   // This can reject on permissions errors (e.g. associating |issuer| with the
