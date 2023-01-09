@@ -92,10 +92,10 @@ ShoppingListHandler::ShoppingListHandler(
       pref_service_(prefs),
       tracker_(tracker),
       locale_(locale) {
-  if (base::FeatureList::IsEnabled(kShoppingList)) {
-    scoped_observation_.Observe(bookmark_model);
-    shopping_service_->ScheduleSavedProductUpdate();
-  }
+  // It is safe to schedule updates and observe bookmarks. If the feature is
+  // disabled, no new information will be fetched or provided to the frontend.
+  scoped_observation_.Observe(bookmark_model);
+  shopping_service_->ScheduleSavedProductUpdate();
 }
 
 ShoppingListHandler::~ShoppingListHandler() = default;

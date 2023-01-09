@@ -273,9 +273,6 @@ const ProductInfo* ShoppingService::GetFromProductInfoCache(const GURL& url) {
 }
 
 void ShoppingService::UpdateProductInfoCacheForRemoval(const GURL& url) {
-  if (!IsProductInfoApiEnabled())
-    return;
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check if the previously navigated URL cache needs to be cleared. If more
@@ -410,9 +407,6 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     ProductInfoCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  if (!IsProductInfoApiEnabled())
-    return;
-
   // If optimization guide returns negative, return a negative signal with an
   // empty data object.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {

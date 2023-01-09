@@ -80,10 +80,8 @@ bool IsEnabledContextualPageActions() {
   if (!base::FeatureList::IsEnabled(features::kContextualPageActions))
     return false;
 
-  bool is_price_tracking_enabled =
-      base::FeatureList::IsEnabled(
-          features::kContextualPageActionPriceTracking) &&
-      base::FeatureList::IsEnabled(commerce::kShoppingList);
+  bool is_price_tracking_enabled = base::FeatureList::IsEnabled(
+      features::kContextualPageActionPriceTracking);
 
   bool is_reader_mode_enabled =
       base::FeatureList::IsEnabled(features::kContextualPageActionReaderMode);

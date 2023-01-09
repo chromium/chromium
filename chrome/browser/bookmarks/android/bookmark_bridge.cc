@@ -43,7 +43,6 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
-#include "components/commerce/core/commerce_feature_list.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -752,24 +751,21 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
   power_bookmarks::PowerBookmarkQueryFields query;
   query.word_phrase_query = std::make_unique<std::u16string>(
       base::android::ConvertJavaStringToUTF16(env, j_query));
-  if (query.word_phrase_query->empty())
+  if (query.word_phrase_query->empty()) {
     query.word_phrase_query.reset();
-
-  if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-    if (!j_tags.is_null()) {
-      base::android::AppendJavaStringArrayToStringVector(env, j_tags,
-                                                         &query.tags);
-    }
-
-    if (type >= 0)
-      query.type = static_cast<power_bookmarks::PowerBookmarkType>(type);
-
-    power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query,
-                                                    max_results, &results);
-  } else {
-    GetBookmarksMatchingProperties(bookmark_model_, query, max_results,
-                                   &results);
   }
+
+  if (!j_tags.is_null()) {
+    base::android::AppendJavaStringArrayToStringVector(env, j_tags,
+                                                       &query.tags);
+  }
+
+  if (type >= 0) {
+    query.type = static_cast<power_bookmarks::PowerBookmarkType>(type);
+  }
+
+  power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query,
+                                                  max_results, &results);
 
   reading_list_manager_->GetMatchingNodes(query, max_results, &results);
   if (partner_bookmarks_shim_->HasPartnerBookmarks() &&

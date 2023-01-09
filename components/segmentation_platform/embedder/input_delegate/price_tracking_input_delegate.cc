@@ -45,7 +45,7 @@ void PriceTrackingInputDelegate::Process(
 
   auto url = *iter->second.url.get();
   commerce::ShoppingService* shopping_service = shopping_service_getter_.Run();
-  if (!shopping_service) {
+  if (!shopping_service || !shopping_service->IsShoppingListEligible()) {
     std::move(callback).Run(/*error=*/true, Tensor());
     return;
   }

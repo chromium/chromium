@@ -72,8 +72,20 @@ ShoppingListUiTabHelper::ShoppingListUiTabHelper(
   } else {
     CHECK_IS_TEST();
   }
-  scoped_observation_.Observe(
-      BookmarkModelFactory::GetForBrowserContext(content->GetBrowserContext()));
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(content->GetBrowserContext());
+
+  if (bookmark_model) {
+    scoped_observation_.Observe(BookmarkModelFactory::GetForBrowserContext(
+        content->GetBrowserContext()));
+  } else {
+    CHECK_IS_TEST();
+  }
+
+  if (!shopping_service_) {
+    CHECK_IS_TEST();
+  }
 }
 
 ShoppingListUiTabHelper::~ShoppingListUiTabHelper() = default;
@@ -136,7 +148,7 @@ void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
 }
 
 bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
-  return shopping_service_->IsShoppingListEligible() &&
+  return shopping_service_ && shopping_service_->IsShoppingListEligible() &&
          !last_fetched_image_.IsEmpty();
 }
 

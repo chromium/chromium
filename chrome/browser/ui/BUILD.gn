@@ -455,6 +455,7 @@ static_library("ui") {
     "//components/client_hints/browser",
     "//components/commerce/content/browser",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
     "//components/consent_auditor/",
     "//components/content_settings/browser",
     "//components/content_settings/common:mojom",

@@ -109,6 +109,7 @@
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
@@ -552,11 +553,15 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (user_notes::IsUserNotesEnabled() && !profile->IsOffTheRecord()) {
     user_notes::UserNotesTabHelper::CreateForWebContents(web_contents);
   }
-  if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetInstance()->GetForBrowserContext(
+          profile);
+  // The shopping service can be null in tests and is critical for the tab
+  // helper to be functional. If there's no service, don't create the helper.
+  if (shopping_service) {
     commerce::ShoppingListUiTabHelper::CreateForWebContents(
-        web_contents,
-        commerce::ShoppingServiceFactory::GetInstance()->GetForBrowserContext(
-            profile),
+        web_contents, shopping_service,
         ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey()),
         profile->GetPrefs());
   }
