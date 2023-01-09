@@ -164,6 +164,7 @@ DeviceActivityController::DeviceActivityController(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerConstructor);
 
+  DCHECK(local_state);
   DCHECK(!g_ash_device_activity_controller);
   g_ash_device_activity_controller = this;
 

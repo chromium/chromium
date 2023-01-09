@@ -425,8 +425,15 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
               GetUseCasePtr(psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE);
           break;
         default:
-          VLOG(1) << "PSM use case is not supported yet.";
+          LOG(ERROR) << "PSM use case is not supported yet.";
           continue;
+      }
+
+      // Crashes may occur due to device_active_use_case_ptr not being defined
+      // at this point.
+      if (device_active_use_case_ptr == nullptr) {
+        LOG(ERROR) << "Device active use case is not defined.";
+        return;
       }
 
       if (!device_active_use_case_ptr->IsLastKnownPingTimestampSet()) {

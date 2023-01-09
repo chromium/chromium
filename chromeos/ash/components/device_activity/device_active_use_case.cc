@@ -40,6 +40,7 @@ DeviceActiveUseCase::DeviceActiveUseCase(
       statistics_provider_(
           chromeos::system::StatisticsProvider::GetInstance()) {
   DCHECK(psm_delegate_);
+  DCHECK(local_state_);
 }
 
 DeviceActiveUseCase::~DeviceActiveUseCase() = default;
