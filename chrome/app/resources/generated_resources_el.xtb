@@ -2747,6 +2747,7 @@
 <translation id="3469583217479686109">Εργαλείο επιλογής</translation>
 <translation id="3470392222765168737">Ακολουθήστε τον ιστότοπο</translation>
 <translation id="3471876058939596279">Οι θύρες HDMI και USB Type-C δεν μπορούν να χρησιμοποιηθούν ταυτόχρονα για βίντεο. Χρησιμοποιήστε μια διαφορετική θύρα βίντεο.</translation>
+<translation id="3472469028191701821">Ανοίγει σε νέα καρτέλα</translation>
 <translation id="3473241910002674503">Πλοήγηση στην αρχική οθόνη, μετάβαση πίσω και εναλλαγή εφαρμογών με τα κουμπιά σε λειτουργία tablet.</translation>
 <translation id="3473479545200714844">Μεγεθυντής οθόνης</translation>
 <translation id="3474218480460386727">Χρησιμοποιήστε έως 99 γράμματα για τις νέες λέξεις.</translation>
@@ -3134,6 +3135,7 @@
 <translation id="3820749202859700794">Ελλειπτική καμπύλη SECG secp521r1 (επίσης γνωστή ως NIST P-521)</translation>
 <translation id="3821074617718452587">Ειδοποιήσεις Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Μια επέκταση εγκρίθηκε}other{# επεκτάσεις εγκρίθηκαν}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Για το Linux συνιστώνται τουλάχιστον <ph name="INSTALL_SIZE" /> αποθηκευτικού χώρου.</translation>
 <translation id="3824621460022590830">Το διακριτικό εγγραφής συσκευής δεν είναι έγκυρο. Επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Απομνημόνευση της επιλογής μου για αυτόν τον τύπο αρχείου: <ph name="FILE_TYPES" />}other{Απομνημόνευση της επιλογής μου για αυτούς τους τύπους αρχείων: <ph name="FILE_TYPES" />}}</translation>
@@ -4052,6 +4054,7 @@
 <translation id="4675828034887792601">Δημιουργία συντομεύσεων για την αναζήτηση ιστοτόπων και τη διαχείριση της μηχανής αναζήτησής σας</translation>
 <translation id="4676595058027112862">Phone Hub, Μάθετε περισσότερα</translation>
 <translation id="4677772697204437347">Μνήμη GPU</translation>
+<translation id="4678848110205818817">Πιστωτική/Χρεωστική κάρτα</translation>
 <translation id="4680105648806843642">Έγινε σίγαση του ήχου σε αυτήν τη σελίδα</translation>
 <translation id="4680112532510845139">Αποθέστε μια εικόνα εδώ.</translation>
 <translation id="4681453295291708042">Απενεργοποίηση Κοινοποίησης κοντά</translation>

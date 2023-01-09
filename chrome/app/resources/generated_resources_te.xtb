@@ -927,6 +927,7 @@
 <translation id="1819721979226826163">యాప్ నోటిఫికేషన్‌లు &gt; Google Play సేవలను నొక్కండి.</translation>
 <translation id="1820028137326691631">నిర్వాహకులు అందించిన పాస్‌వర్డ్‌ని నమోదు చేయండి</translation>
 <translation id="1822140782238030981">ఇప్పటికే Chrome వినియోగదారా? సైన్ ఇన్ చేయండి</translation>
+<translation id="1823781806707127806">మేనేజ్ చేయబడే ప్రొఫైల్‌కు ఇప్పుడు ఉన్న బ్రౌజింగ్ డేటాను జోడించండి</translation>
 <translation id="18245044880483936">బ్యాకప్ డేటా మీ చిన్నారి డిస్క్ స్టోరేజ్ కోటాలో లెక్కించబడదు.</translation>
 <translation id="1825565032302550710">పోర్ట్ 1024, 65535 మధ్య ఉండాలి</translation>
 <translation id="182577151972096764">ఇటీవల చూసిన రెసిపీలు</translation>
@@ -1088,6 +1089,7 @@
 <translation id="1963976881984600709">ప్రామాణిక రక్షణ</translation>
 <translation id="1965624977906726414">ప్రత్యేక అనుమతులు లేవు.</translation>
 <translation id="1966649499058910679">ప్రతి పదాన్ని చదివినప్పుడు దానిని హైలైట్ చేయి</translation>
+<translation id="1967970931040389207">హాట్‌స్పాట్‌ను ఆన్ చేయండి</translation>
 <translation id="1969654639948595766">WebRTC వచన లాగ్ లు( <ph name="WEBRTC_TEXT_LOG_COUNT" /> )</translation>
 <translation id="1972325230031091483">మీరు ప్రస్తుతం సందర్శించిన వెబ్‌పేజీ ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడింది, కాబట్టి మీరు వేగంగా బ్రౌజ్ చేయగలరు</translation>
 <translation id="197288927597451399">ఉంచు</translation>
@@ -1176,6 +1178,7 @@
 <translation id="2048554637254265991">కంటైనర్ మేనేజర్‌ను ప్రారంభించడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2048653237708779538">చర్య అందుబాటులో లేదు</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
+<translation id="2051555741181591333">హాట్‌స్పాట్‌ను ఆటోమేటిక్‌గా డిజేబుల్ చేయండి</translation>
 <translation id="2052572566310583903">మీ ఇతర పరికరాలలో ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="2053105195397337973">యాడ్ స్పామ్, మోసాన్ని ఆపివేసేలా సైట్‌లను ఎనేబుల్ చేస్తూ, ట్రాకింగ్‌ను పరిమితం చేసే మార్గాల కోసం మేము అన్వేషిస్తున్నాము.</translation>
 <translation id="2053312383184521053">నిష్క్రియ స్థితి డేటా</translation>
@@ -1284,6 +1287,7 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> నుండి నోటిఫికేషన్‌లను అనుమతించవద్దు</translation>
 <translation id="2139919072249842737">సెటప్ బటన్</translation>
 <translation id="2140788884185208305">బ్యాటరీ సామర్థ్యం</translation>
+<translation id="2140902257485550046">ఈ సైట్‌లోని అన్ని ఎక్స్‌టెన్షన్‌లను బ్లాక్ చేయడానికి ఎంచుకోండి</translation>
 <translation id="2142328300403846845">లింక్‌ను దీని తరపున తెరువు</translation>
 <translation id="2142582065325732898">ఇటీవలి Chrome ట్యాబ్‌లను చూడటానికి, <ph name="LINK1_BEGIN" />Chrome సింక్<ph name="LINK1_END" />ను ఆన్ చేయండి. <ph name="LINK2_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">ఫుల్-స్క్రీన్‌లో ఎల్లప్పుడూ సాధన బార్‌ను చూపు</translation>
@@ -2018,6 +2022,7 @@
 <translation id="2778471504622896352">ChromeOS లాంచర్‌కు రిమోట్ యాప్‌లను జోడించండి</translation>
 <translation id="2781120507965857989">సింక్‌ను ఆన్ చేసి, ఈ పరికరంలో, మీరు సింక్ చేసే మరెక్కడైనా మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, హిస్టరీ, ఇంకా మరిన్నింటిని పొందండి. Search, అలాగే ఇతర Google సర్వీస్‌లను వ్యక్తిగతీకరించడం కోసం Google మీ హిస్టరీని ఉపయోగించవచ్చు.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">ఈ సైట్‌లోని ఎక్స్‌టెన్షన్‌లు అనుమతించబడతాయి</translation>
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="2783298271312924866">డౌన్‌లోడ్ చేయబడింది</translation>
 <translation id="2783321960289401138">షార్ట్‌కట్‌ను క్రియేట్ చేయండి...</translation>
@@ -3221,6 +3226,7 @@
 <translation id="3898233949376129212">పరికర భాష</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> వీటిని చేయాలనుకుంటోంది: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322"><ph name="WEBSITE" />‌కు సంబంధించిన మీ పాస్‌వర్డ్ ఈ పరికరంలో, మీ Google ఖాతాలో సేవ్ చేయబడింది. మీరు దేన్ని తొలగించాలనుకొంటున్నారు?</translation>
+<translation id="3898768766145818464">వీడియోను ప్లే చేయండి లేదా పాజ్ చేయండి</translation>
 <translation id="389901847090970821">కీబోర్డ్‌ను ఎంచుకోండి</translation>
 <translation id="3900966090527141178">పాస్‌వర్డ్‌లను ఎగుమతి చేయండి</translation>
 <translation id="3902789559055749153"><ph name="APP_NAME" /> కోసం పాస్-కీని మీరు ఎలా క్రియేట్ చేయాలనుకుంటున్నారో ఎంచుకోండి</translation>
@@ -3842,6 +3848,7 @@
 <translation id="449126573531210296">సింక్ చేయబడిన పాస్‌వర్డ్‌లను మీ Google ఖాతాతో ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="449232563137139956">ఆన్‌లైన్ స్టోర్‌లు లేదా వార్తా కథనాల ఫోటోలు వంటి వాటిని ఉదాహరణగా అందించడానికి సాధారణంగా సైట్‌లు ఇమేజ్‌లను చూపిస్తాయి</translation>
 <translation id="4492698018379445570">మీరు షాపింగ్ కార్ట్‌లలో ఏం జోడించారో కనుగొని, మీరు సిద్ధంగా ఉన్నప్పుడు చెక్ అవుట్ చేయండి</translation>
+<translation id="4493167769966437077">ఎప్పుడూ ఆఫర్ చేయని అనువాద భాషల నుండి <ph name="LANGUAGE_NAME" />ని తీసివేయండి</translation>
 <translation id="4493468155686877504">సిఫార్సు చేయబడినది (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180"><ph name="SITE" />‌లో ఈ ఎక్స్‌టెన్షన్‌ను అనుమతించాలా?</translation>
 <translation id="4495419450179050807">ఈ పేజీని చూపవద్దు</translation>
@@ -4413,6 +4420,7 @@
 <translation id="5026874946691314267">దీన్ని మళ్లీ చూపవద్దు</translation>
 <translation id="5027550639139316293">ఈమెయిల్‌ సర్టిఫికెట్</translation>
 <translation id="5027562294707732951">ఎక్స్‌టెన్షన్‌ని జోడించండి</translation>
+<translation id="5028445315206872221">ఈ సైట్‌లోని ఎక్స్‌టెన్షన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5029568752722684782">కాపీని తీసివేయండి</translation>
 <translation id="5029873138381728058">వర్చువల్ మెషీన్‌లను చెక్ చేయడం విఫలమైంది</translation>
 <translation id="503155457707535043">యాప్‌లు డౌన్‌లోడ్ చేయబడుతున్నాయి</translation>
@@ -4976,6 +4984,7 @@
 <translation id="5554866693883022680">ఈ లింక్‌ను తెరవడానికి మీ <ph name="DEVICE_TYPE" />‌లో యాప్‌ను ఎంచుకోండి</translation>
 <translation id="5555363196923735206">కెమెరాను తిప్పండి</translation>
 <translation id="5555525474779371165">మీ సురక్షిత బ్రౌజింగ్ రక్షణను ఎంచుకోండి</translation>
+<translation id="5555639311269196631">హాట్‌స్పాట్‌ను ఆఫ్ చేయండి</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5558129378926964177">దగ్గరికి జూమ్ చేయి</translation>
 <translation id="55601339223879446">డిస్‌ప్లేలో మీ డెస్క్‌టాప్ సరిహద్దులను సర్దుబాటు చేయండి</translation>
@@ -6636,6 +6645,7 @@
 <translation id="7088960765736518739">స్విచ్ యాక్సెస్</translation>
 <translation id="7089253021944603172">ట్యాబ్ మళ్లీ యాక్టివేట్ చేయబడింది</translation>
 <translation id="7090160970140261931">వెబ్‌సైట్‌లు, Android యాప్‌లతో ఉపయోగించడానికి మీరు మీ <ph name="DEVICE_TYPE" />కు అదనపు ఖాతాలను జోడించవచ్చు. Android యాప్‌లతో ఏ ఖాతాలను ఉపయోగించాలో కూడా మీరు కంట్రోల్ చేయవచ్చు.</translation>
+<translation id="7090714929377281710">హాట్‌స్పాట్‌ను ఆటోమేటిక్‌గా ఆఫ్ చేయండి</translation>
 <translation id="7093220653036489319">క్విక్ ఆన్సర్స్</translation>
 <translation id="7093416310351037609">డేటా భద్రత, సెక్యూరిటీ కోసం, మీ సంస్థ అవసరాల ప్రకారం అర్హత ఉన్న డౌన్‌లోడ్‌లు సంస్థకు సంబంధించిన <ph name="WEB_DRIVE" />లో సేవ్ అవ్వాలి.</translation>
 <translation id="7093866338626856921">ఈ పేర్లు గల పరికరాలతో డేటాను ఇచ్చిపుచ్చుకోవడానికి అనుమతి: <ph name="HOSTNAMES" /></translation>
@@ -7256,6 +7266,7 @@
 <translation id="7684718995427157417">మీ యాప్‌లను సృష్టించి, పరీక్షించడానికి Android డీబగ్ బ్రిడ్జ్ (ADB)ను ప్రారంభించండి. ఈ చర్య వలన Google ద్వారా ధృవీకరించబడని Android యాప్‌ల ఇన్‌స్టాలేషన్ అనుమతించబడుతుందని, దీనిని నిలిపివేయడానికి ఫ్యాక్టరీ రీసెట్ చేయాల్సి ఉంటుందని గుర్తుంచుకోండి.</translation>
 <translation id="7685049629764448582">JavaScript మెమరీ</translation>
 <translation id="7685087414635069102">పిన్ అవసరం</translation>
+<translation id="7686581688229391955">ఈ సైట్‌లో ఎక్స్‌టెన్షన్‌లను అనుమతించడానికి ఎంచుకోండి</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7690378713476594306">లిస్ట్‌ నుండి ఎంచుకోండి</translation>
@@ -8065,6 +8076,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (కేస్)</translation>
 <translation id="8417548266957501132">తల్లి/తండ్రి పాస్‌వర్డ్‌</translation>
 <translation id="8418445294933751433">&amp;ట్యాబ్ లాగా చూపండి</translation>
+<translation id="8418675848396538775"><ph name="LANGUAGE_NAME" />ను జోడించండి</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' కోసం శోధన ఫలితాలు</translation>
 <translation id="8420308167132684745">నిఘంటువు నమోదులను ఎడిట్ చేయండి</translation>
 <translation id="8421361468937925547">లైవ్ క్యాప్షన్ (ఇంగ్లీష్‌లో మాత్రమే)</translation>
@@ -8835,6 +8847,7 @@
 <translation id="9121814364785106365">పిన్ చేసిన ట్యాబ్‌ లాగా తెరువు</translation>
 <translation id="9123287046453017203">మీ పరికరం అప్‌డేట్ అయ్యి లేదు</translation>
 <translation id="9124003689441359348">సేవ్ చేసిన పాస్‌వర్డ్‌లు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="9125910124977405374">ఆటోమేటిక్‌గా అనువదించబడిన భాషల నుండి <ph name="LANGUAGE_NAME" />ని తీసివేయండి</translation>
 <translation id="9126149354162942022">కర్సర్ రంగు</translation>
 <translation id="9128317794749765148">సెటప్‌ను పూర్తి చేయలేకపోయింది</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> కోసం సెట్టింగ్‌ల పేజీని తెరవండి</translation>

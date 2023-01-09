@@ -1236,6 +1236,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> berkitilgan</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefon raqami}other{# ta telefon raqami}}</translation>
 <translation id="2110941575868943054">Bluetooth qurilmalarni qidirishi mumkin</translation>
+<translation id="2111158890826137380">Xatolik yuz berdi. Fikr-mulohaza yuborish orqali bizga xabar bering. Uning tavsifiga #bruschetta tegini qoʻshing. Xatolik kodi: <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Turlarni tozalash</translation>
 <translation id="2111670510994270194">Oʻng tomonda yangi varaq ochish</translation>
 <translation id="2112554630428445878">Xush kelibsiz, <ph name="USERNAME" /></translation>
@@ -1780,6 +1781,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2575713839157415345">{YEARS,plural, =1{Bu qurilma 1 yil davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}other{Bu qurilma {YEARS} yil davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}}</translation>
 <translation id="257779572837908839">Video muloqotlar uchun Chromebox sifatida foydalanish</translation>
 <translation id="2579309488038515659">Hotspotni yoqish</translation>
+<translation id="2579596474754516455">Kerak boʻlganda PDF rasmlarni skanerlang va ularni skrin rider uchun matnga aylantiring</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> saytidan har doim birdaniga bir nechta fayl yuklab olishga ruxsat berilsin</translation>
 <translation id="258095186877893873">Uzoq</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> platformasi) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2881,6 +2883,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616741288025931835">Brauzer tarixini &amp;tozalash...</translation>
 <translation id="3617891479562106823">Fon rasmlari mavjud emas. Keyinroq qaytadan urining.</translation>
+<translation id="3618286417582819036">Kechirasiz, xatolik yuz berdi.</translation>
 <translation id="3619115746895587757">Kappuchino</translation>
 <translation id="3620136223548713675">Geolokatsiya</translation>
 <translation id="362023940451053340">Google hisobingizda (<ph name="ACCOUNT" />)</translation>
@@ -6673,6 +6676,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7149839598364933473">Bu qurilmani <ph name="DEVICE_OS" /> qurilmasiga aylantiring.</translation>
 <translation id="7149893636342594995">Oxirgi 24 soat</translation>
 <translation id="7152478047064750137">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi</translation>
+<translation id="7153309176431047193">Rasmlarni matnga oʻgirish</translation>
 <translation id="7154130902455071009">Boshlash sahifani quyidagisiga almashtirish: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Rasmni matnga oʻgirish</translation>
 <translation id="7159953856712257647">Standart oʻrnatildi</translation>

@@ -2748,6 +2748,7 @@
 <translation id="3469583217479686109">선택 도구</translation>
 <translation id="3470392222765168737">사이트 팔로우</translation>
 <translation id="3471876058939596279">HDMI 및 USB 타입-C 포트를 동시에 비디오용으로 사용할 수 없습니다. 다른 비디오 포트를 사용하세요.</translation>
+<translation id="3472469028191701821">새 탭에서 열기</translation>
 <translation id="3473241910002674503">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다.</translation>
 <translation id="3473479545200714844">화면 돋보기</translation>
 <translation id="3474218480460386727">새 단어는 99자 이하(영문 기준)여야 합니다.</translation>
@@ -3135,6 +3136,7 @@
 <translation id="3820749202859700794">SECG 타원 곡선 secp521r1(또는 NIST P-521)</translation>
 <translation id="3821074617718452587">휴대전화 허브 알림</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 승인됨}other{확장 프로그램 #개 승인됨}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux를 사용하려면 최소 <ph name="INSTALL_SIZE" />의 여유 공간이 권장됩니다.</translation>
 <translation id="3824621460022590830">기기 등록 토큰이 잘못되었습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}other{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}}</translation>
@@ -4051,6 +4053,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4675828034887792601">검색 사이트 바로가기를 만들고 검색엔진을 관리합니다.</translation>
 <translation id="4676595058027112862">휴대전화 허브, 자세히 알아보기</translation>
 <translation id="4677772697204437347">GPU 메모리</translation>
+<translation id="4678848110205818817">신용카드/체크카드</translation>
 <translation id="4680105648806843642">이 페이지가 음소거됨</translation>
 <translation id="4680112532510845139">이미지를 여기에 드롭하세요.</translation>
 <translation id="4681453295291708042">Nearby Share 사용 중지</translation>

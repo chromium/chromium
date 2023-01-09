@@ -2731,6 +2731,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3469583217479686109">Herramienta de selección</translation>
 <translation id="3470392222765168737">Seguir sitio</translation>
 <translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB tipo C para vídeo al mismo tiempo. Usa otro puerto de vídeo.</translation>
+<translation id="3472469028191701821">Se abre en una nueva pestaña</translation>
 <translation id="3473241910002674503">Desplázate al menú de aplicaciones, vuelve atrás y cambia de aplicación con botones en el modo tablet.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Las palabras nuevas deben tener 99 letras o menos</translation>
@@ -3117,6 +3118,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3820749202859700794">Curva elíptica SECG secp521r1 (también denominada NIST P-521)</translation>
 <translation id="3821074617718452587">Notificaciones de Mi teléfono</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Se ha aprobado 1 extensión}other{Se han aprobado # extensiones}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Se recomienda un mínimo de <ph name="INSTALL_SIZE" /> de espacio para Linux.</translation>
 <translation id="3824621460022590830">El token de registro de dispositivos no es válido. Ponte en contacto con el propietario o el administrador del dispositivo Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Recordar mi elección para este tipo de archivo: <ph name="FILE_TYPES" />}other{Recordar mi elección para estos tipos de archivos: <ph name="FILE_TYPES" />}}</translation>
@@ -4033,6 +4035,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4675828034887792601">Crea accesos directos para buscar en sitios y gestionar tu buscador</translation>
 <translation id="4676595058027112862">Mi teléfono, Más información</translation>
 <translation id="4677772697204437347">Memoria de la GPU</translation>
+<translation id="4678848110205818817">Tarjeta de crédito o débito</translation>
 <translation id="4680105648806843642">Se ha silenciado el sonido en esta página</translation>
 <translation id="4680112532510845139">Suelta una imagen aquí</translation>
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>

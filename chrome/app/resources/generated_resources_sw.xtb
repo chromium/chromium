@@ -2742,6 +2742,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3469583217479686109">Zana ya Kuchagua</translation>
 <translation id="3470392222765168737">Fuatilia tovuti</translation>
 <translation id="3471876058939596279">Milango ya USB Aina ya C na HDMI haiwezi kutumika kuonyesha video kwa wakati mmoja. Tumia mlango tofauti wa video.</translation>
+<translation id="3472469028191701821">Hufunguka katika kichupo kipya</translation>
 <translation id="3473241910002674503">Nenda kwenye kifungua programu, rudi nyuma na ubadilishe programu ukitumia vitufe katika hali ya kompyuta kibao.</translation>
 <translation id="3473479545200714844">Kikuza skrini</translation>
 <translation id="3474218480460386727">Tumia herufi 99 au chache kwa maneno mapya</translation>
@@ -3128,6 +3129,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3820749202859700794">SECG kizingo cha mviringo secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">Arifa za Kituo cha Kudhibiti Simu</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Kiendelezi kimeidhinishwa}other{Viendelezi # vimeidhinishwa}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Angalau nafasi ya <ph name="INSTALL_SIZE" /> inapendekezwa kwenye Linux.</translation>
 <translation id="3824621460022590830">Tokeni ya usajili wa kifaa si sahihi. Tafadhali wasiliana na mmiliki au msimamizi wa kifaa chako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Kumbuka chaguo langu kwa aina hii ya faili: <ph name="FILE_TYPES" />}other{Kumbuka chaguo langu kwa aina hizi za faili: <ph name="FILE_TYPES" />}}</translation>
@@ -4044,6 +4046,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4675828034887792601">Weka njia za mkato za kutafuta tovuti na udhibiti mtambo wako wa kutafuta</translation>
 <translation id="4676595058027112862">Kituo cha Kudhibiti Simu, Pata Maelezo Zaidi</translation>
 <translation id="4677772697204437347">Hifadhi ya GPU</translation>
+<translation id="4678848110205818817">Kadi ya Malipo au Mkopo</translation>
 <translation id="4680105648806843642">Sauti imezimwa kwenye ukurasa huu</translation>
 <translation id="4680112532510845139">Buruta picha hapa</translation>
 <translation id="4681453295291708042">Zima kipengele cha Uhamishaji wa Karibu</translation>

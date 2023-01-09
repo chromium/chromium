@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 個月}other{# 個月}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/秒</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 小時 }other{# 小時 }}</translation>
+<translation id="185013357618350178">選取(&amp;S)</translation>
 <translation id="1859234291848436338">文字方向</translation>
 <translation id="1860796786778352021">通知關閉</translation>
 <translation id="186476001994626254">Web Smart Paste 內容</translation>

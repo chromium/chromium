@@ -239,6 +239,7 @@
 <translation id="2224075387478458881">Қорғалған контент көрініп тұрғанда, экранды жазуға болмайды.</translation>
 <translation id="2227179592712503583">Ұсынысты өшіру</translation>
 <translation id="225680501294068881">Құрылғылар ізделуде…</translation>
+<translation id="225716114209817872">Максимум</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> файлын жүктеп алу кезінде бірдеңе дұрыс болмады.</translation>
 <translation id="2258734398699965611">Ұсынылған файлдар</translation>
 <translation id="2268130516524549846">Bluetooth өшірілген</translation>
@@ -1015,6 +1016,7 @@
 <translation id="6537924328260219877">Сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефон батареясы: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Жүктеп алынған <ph name="FILENAME" /> файлы сканерленіп жатыр</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
+<translation id="6548693220024099658">Фонды бұлдырату</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Жаңадан орнатылды</translation>
 <translation id="6559976592393364813">Әкімшіден сұраңыз.</translation>
@@ -1421,6 +1423,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, қолданба орнатылған, бөгелген</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> желісіне қосылу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Көп</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> қалтасы</translation>
 <translation id="880709030178078220">"Анықтама"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

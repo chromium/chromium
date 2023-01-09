@@ -2727,6 +2727,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3469583217479686109">Herramienta de selección</translation>
 <translation id="3470392222765168737">Seguir el sitio</translation>
 <translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB tipo C al mismo tiempo para transmitir video. Usa otro puerto de video.</translation>
+<translation id="3472469028191701821">Se abrirá en una pestaña nueva</translation>
 <translation id="3473241910002674503">Con los botones del modo tablet, puedes navegar hacia la pantalla de inicio, regresar y cambiar de apps.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Las palabras nuevas pueden tener un máximo de 99 letras.</translation>
@@ -3113,6 +3114,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3820749202859700794">Curva elíptica SECG secp521r1 (también conocido como NIST P-521)</translation>
 <translation id="3821074617718452587">Notificaciones de Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Se aprobó una extensión}other{Se aprobaron # extensiones}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Se recomienda tener al menos <ph name="INSTALL_SIZE" /> de espacio para Linux.</translation>
 <translation id="3824621460022590830">El token de inscripción del dispositivo no es válido. Comunícate con el administrador o el propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Recordar mi selección para este tipo de archivo: <ph name="FILE_TYPES" />}other{Recordar mi selección para estos tipos de archivo: <ph name="FILE_TYPES" />}}</translation>
@@ -4030,6 +4032,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4675828034887792601">Crea atajos para realizar búsquedas en sitios y administra tu motor de búsqueda.</translation>
 <translation id="4676595058027112862">Phone Hub, más información</translation>
 <translation id="4677772697204437347">Memoria de la GPU</translation>
+<translation id="4678848110205818817">Tarjeta de crédito o débito</translation>
 <translation id="4680105648806843642">El sonido está silenciado en esta página</translation>
 <translation id="4680112532510845139">Arrastra una imagen hasta aquí</translation>
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>

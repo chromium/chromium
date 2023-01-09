@@ -2746,6 +2746,7 @@
 <translation id="3469583217479686109">ເຄື່ອງມືການເລືອກ</translation>
 <translation id="3470392222765168737">ຕິດຕາມເວັບໄຊ</translation>
 <translation id="3471876058939596279">ບໍ່ສາມາດໃຊ້ຜອດ HDMI ແລະ USB ປະເພດ C ສຳລັບວິດີໂອໃນເວລາພ້ອມກັນໄດ້. ໃຊ້ຜອດວິດີໂອອື່ນ.</translation>
+<translation id="3472469028191701821">ເປີດໃນແຖບໃໝ່</translation>
 <translation id="3473241910002674503">ໄປຫາໜ້າຫຼັກ, ກັບຄືນ ແລະ ສະຫຼັບແອັບດ້ວຍປຸ່ມໃນໂໝດແທັບເລັດ.</translation>
 <translation id="3473479545200714844">ເຄື່ອງຂະຫຍາຍໜ້າຈໍ</translation>
 <translation id="3474218480460386727">ໃຊ້ຕົວອັກສອນ 99 ຕົວລົງມາສຳລັບຄຳໃໝ່</translation>
@@ -3133,6 +3134,7 @@
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">ການແຈ້ງເຕືອນ Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ອະນຸມັດສ່ວນຂະຫຍາຍໜຶ່ງລາຍການແລ້ວ}other{ອະນຸມັດສ່ວນຂະຫຍາຍ # ລາຍການແລ້ວ}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">ຂໍແນະນຳພື້ນທີ່ຫວ່າງຢ່າງໜ້ອຍ <ph name="INSTALL_SIZE" /> ສຳລັບ Linux.</translation>
 <translation id="3824621460022590830">ໂທເຄັນການລົງທະບຽນອຸປະກອນບໍ່ຖືກຕ້ອງ. ກະລຸນາຕິດຕໍ່ເຈົ້າຂອງ ຫຼື ຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ຈື່ຕົວເລືອກຂອງຂ້ອຍສຳລັບປະເພດໄຟລ໌ນີ້: <ph name="FILE_TYPES" />}other{ຈື່ຕົວເລືອກຂອງຂ້ອຍສຳລັບປະເພດໄຟລ໌ເຫຼົ່ານີ້: <ph name="FILE_TYPES" />}}</translation>
@@ -4052,6 +4054,7 @@
 <translation id="4675828034887792601">ສ້າງທາງລັດສຳລັບເວັບໄຊການຊອກຫາ ແລະ ຈັດການໂປຣແກຣມຊອກຫາຂອງທ່ານ</translation>
 <translation id="4676595058027112862">Phone Hub, ສຶກສາເພີ່ມເຕີມ</translation>
 <translation id="4677772697204437347">ຄວາມ​ຈໍາ GPU</translation>
+<translation id="4678848110205818817">ບັດເຄຣດິດ/ບັດເດບິດ</translation>
 <translation id="4680105648806843642">ປິດສຽງໄວ້ແລ້ວໃນໜ້ານີ້</translation>
 <translation id="4680112532510845139">ລາກຮູບມາບ່ອນນີ້</translation>
 <translation id="4681453295291708042">ປິດການນຳໃຊ້ການແບ່ງປັນໃກ້ຄຽງ</translation>

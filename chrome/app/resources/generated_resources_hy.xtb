@@ -1239,6 +1239,7 @@
 <translation id="2105809836724866556">Թաքցված է՝ <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Հեռախոսահամար}one{# հեռախոսահամար}other{# հեռախոսահամար}}</translation>
 <translation id="2110941575868943054">Bluetooth սարքեր որոնելու թույլտվություն ունեցող կայքեր</translation>
+<translation id="2111158890826137380">Սխալ առաջացավ։ Կարծիք հայտնեք՝ նկարագրության մեջ ավելացնելով #bruschetta։ Սխալի կոդ՝ <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Մաքրել տեսակների նշավանդակները</translation>
 <translation id="2111670510994270194">Նոր ներդիր աջ կողմում</translation>
 <translation id="2112554630428445878">Բարի գալուստ, <ph name="USERNAME" /></translation>
@@ -1780,6 +1781,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{Այս սարքը կպահվի 1 տարով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}one{Այս սարքը կպահվի {YEARS} տարով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}other{Այս սարքը կպահվի {YEARS} տարով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}}</translation>
 <translation id="257779572837908839">Կարգավորել «Chromebox տեսաժողովների համար» ռեժիմը</translation>
 <translation id="2579309488038515659">Միացնել/անջատել թեժ կետը</translation>
+<translation id="2579596474754516455">Սկանավորեք PDF պատկերները, որպեսզի անհրաժեշտության դեպքում փոխարկեք դրանք էկրանից հեշտ ընթերցվող տեքստի</translation>
 <translation id="2580889980133367162">Միշտ թույլ տալ <ph name="HOST" />-ին ներբեռնել մի քանի ֆայլ</translation>
 <translation id="258095186877893873">Երկար</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (հենք՝ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2881,6 +2883,7 @@
 <translation id="3616113530831147358">Աուդիո</translation>
 <translation id="3616741288025931835">&amp;Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="3617891479562106823">Ֆոնային պատկերները հասանելի չեն: Փորձեք ավելի ուշ:</translation>
+<translation id="3618286417582819036">Սխալ առաջացավ</translation>
 <translation id="3619115746895587757">Կապուչինո</translation>
 <translation id="3620136223548713675">Աշխարհագրական դիրք</translation>
 <translation id="362023940451053340">Ձեր Google հաշվում, <ph name="ACCOUNT" />-ի համար</translation>
@@ -6674,6 +6677,7 @@
 <translation id="7149839598364933473">Տեղադրել <ph name="DEVICE_OS" />-ն այս սարքում</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
 <translation id="7152478047064750137">Այս ընդլայնումը հատուկ թույլտվություն չի պահանջում</translation>
+<translation id="7153309176431047193">Պատկերների փոխարկում տեքստի</translation>
 <translation id="7154130902455071009">Դարձնել <ph name="START_PAGE" />-ը սկզբնական էջը</translation>
 <translation id="7156231244155528270">Պատկերը վերածել տեքստի</translation>
 <translation id="7159953856712257647">Տեղադրված է ըստ կանխադրման</translation>

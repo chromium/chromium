@@ -2729,6 +2729,7 @@
 <translation id="3469583217479686109">Таңдау құралы</translation>
 <translation id="3470392222765168737">Сайтқа жазылу</translation>
 <translation id="3471876058939596279">HDMI және USB Type-C порттарын бір уақытта бейне үшін қолдануға болмайды. Басқа бейне ұяшығын қолданыңыз.</translation>
+<translation id="3472469028191701821">Жаңа қойындыда ашылады.</translation>
 <translation id="3473241910002674503">Планшет режимінде түймелердің көмегімен негізгі экранға, артқа өтіңіз және қолданбалар арасында ауысыңыз.</translation>
 <translation id="3473479545200714844">Экран ұлғайтқыш</translation>
 <translation id="3474218480460386727">Жаңа сөздер үшін 99 немесе одан аз әріп пайдаланыңыз.</translation>
@@ -3116,6 +3117,7 @@
 <translation id="3820749202859700794">SECG эллипстік қисық сызығы secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">Phone Hub хабарландырулары</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Кеңейтім мақұлданды.}other{# кеңейтім мақұлданды.}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux үшін кемінде <ph name="INSTALL_SIZE" /> орын қажет.</translation>
 <translation id="3824621460022590830">Құрылғыны тіркеу токені жарамсыз. Құрылғының иесіне немесе әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Мына файл түріне қатысты таңдау есте сақталсын: <ph name="FILE_TYPES" />}other{Мына файл түрлеріне қатысты таңдау есте сақталсын: <ph name="FILE_TYPES" />}}</translation>
@@ -4033,6 +4035,7 @@
 <translation id="4675828034887792601">Сайттар іздеуге және іздеу жүйесін басқаруға арналған таңбашалар жасауға болады.</translation>
 <translation id="4676595058027112862">Phone Hub, толығырақ</translation>
 <translation id="4677772697204437347">GPU жады</translation>
+<translation id="4678848110205818817">Несиелік/дебеттік карта</translation>
 <translation id="4680105648806843642">Бұл бетте дыбыс өшірілген</translation>
 <translation id="4680112532510845139">Суретті осы жерге әкеліңіз.</translation>
 <translation id="4681453295291708042">Nearby Share функциясын өшіру</translation>

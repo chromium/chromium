@@ -1241,6 +1241,7 @@
 <translation id="2105809836724866556">تم إخفاء <ph name="MODULE_TITLE" />.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
 <translation id="2110941575868943054">المواقع الإلكترونية التي يُسمح لها بالبحث عن أجهزة تتضمّن بلوتوث</translation>
+<translation id="2111158890826137380">‏حدث خطأ. يُرجى إرسال ملاحظاتك وإضافة عبارة ‎#bruschetta في الوصف، علمًا بأنّ رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="211144231511833662">محو الأنواع</translation>
 <translation id="2111670510994270194">إضافة علامة تبويب جديدة على اليمين</translation>
 <translation id="2112554630428445878">مرحبًا، <ph name="USERNAME" /></translation>
@@ -1783,6 +1784,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{سيتم حفظ بيانات هذا الجهاز لمدة سنة واحدة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}zero{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}two{سيتم حفظ بيانات هذا الجهاز لمدة سنتَين ({YEARS}) ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}few{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنوات ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}many{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}other{سيتم حفظ بيانات هذا الجهاز لمدة {YEARS} سنة ويمكنك توصيله بدون استخدام رمز في المرة القادمة. تم ضبط هذا الإعداد من قِبل المشرف.}}</translation>
 <translation id="257779572837908839">‏الإعداد كجهاز Chromebox للاجتماعات</translation>
 <translation id="2579309488038515659">تفعيل نقطة الاتصال</translation>
+<translation id="2579596474754516455">‏يمكنك مسح صور PDF ضوئيًا لتحويل النص فيها إلى كلام لقراءته باستخدام قارئ الشاشة عند الضرورة.</translation>
 <translation id="2580889980133367162">السماح دائمًا لـ <ph name="HOST" /> بتنزيل عدة ملفات</translation>
 <translation id="258095186877893873">طويل</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (النظام الأساسي <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2736,6 +2738,7 @@
 <translation id="3469583217479686109">أداة التحديد</translation>
 <translation id="3470392222765168737">متابعة الموقع الإلكتروني</translation>
 <translation id="3471876058939596279">‏لا يمكن استخدام منافذ USB من نوع C وHDMI لهذا الفيديو في الوقت نفسه. عليك استخدام منفذ فيديو مختلف.</translation>
+<translation id="3472469028191701821">يتم فتح الرابط في علامة تبويب جديدة.</translation>
 <translation id="3473241910002674503">يمكنك الانتقال إلى الصفحة الرئيسية والصفحة السابقة والتبديل بين التطبيقات باستخدام أزرار التنقل في وضع الجهاز اللوحي.</translation>
 <translation id="3473479545200714844">مكبّر الشاشة</translation>
 <translation id="3474218480460386727">يجب استخدام ما لا يزيد عن 99 حرفًا للكلمات الجديدة.</translation>
@@ -2884,6 +2887,7 @@
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3616741288025931835">&amp;محو بيانات التصفح...</translation>
 <translation id="3617891479562106823">الخلفيات غير متاحة. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="3618286417582819036">حدث خطأ</translation>
 <translation id="3619115746895587757">كابتشينو</translation>
 <translation id="3620136223548713675">رصد الموقع الجغرافي</translation>
 <translation id="362023940451053340">‏سيتم حفظ التعديل في حسابك <ph name="ACCOUNT" /> على Google.</translation>
@@ -3123,6 +3127,7 @@
 <translation id="3820749202859700794">‏منحنى SECG ناقص المقطع secp521r1‏ (aka NIST P-521)</translation>
 <translation id="3821074617718452587">إشعارات "مركز التحكم بالهاتف"</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{تمت الموافقة على إضافة واحدة.}zero{تمّت الموافقة على # إضافة.}two{تمت الموافقة على إضافتَين.}few{تمت الموافقة على # إضافات.}many{تمت الموافقة على # إضافةً.}other{تمت الموافقة على # إضافة.}}</translation>
+<translation id="3823019343150397277">‏رقم الحساب بصيغة IBAN</translation>
 <translation id="3823310065043511710">‏يُنصَح بتوفير <ph name="INSTALL_SIZE" /> على الأقل من المساحة لنظام التشغيل Linux.</translation>
 <translation id="3824621460022590830">الرمز المميز لتسجيل الجهاز غير صالح. يُرجى التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{تذكّر اختياري لنوع الملف هذا: <ph name="FILE_TYPES" />}zero{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}two{تذكّر اختياري لهذين النوعين من الملفات: <ph name="FILE_TYPES" />}few{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}many{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}other{تذكّر اختياري لأنواع الملفات هذه: <ph name="FILE_TYPES" />}}</translation>
@@ -4037,6 +4042,7 @@
 <translation id="4675828034887792601">يمكنك إنشاء اختصارات للبحث في المواقع الإلكتروني وإدارة محرك البحث الخاص بك.</translation>
 <translation id="4676595058027112862">ميزة "مركز التحكم بالهاتف"، مزيد من المعلومات</translation>
 <translation id="4677772697204437347">ذاكرة وحدة معالج الرسومات</translation>
+<translation id="4678848110205818817">بطاقة الائتمان أو بطاقة السحب الآلي</translation>
 <translation id="4680105648806843642">تم كتم الصوت في هذه الصفحة.</translation>
 <translation id="4680112532510845139">يمكنك إسقاط صورة هنا.</translation>
 <translation id="4681453295291708042">إيقاف ميزة "المشاركة عن قرب"</translation>
@@ -6680,6 +6686,7 @@
 <translation id="7149839598364933473">تحويل هذا الجهاز إلى جهاز متوافق مع نظام التشغيل <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
 <translation id="7152478047064750137">لا تتطلب هذه الإضافة أذونات خاصة</translation>
+<translation id="7153309176431047193">تحويل الصور إلى نص</translation>
 <translation id="7154130902455071009">تغيير الصفحة الرئيسية إلى: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">تحويل الصورة إلى نص</translation>
 <translation id="7159953856712257647">مُثبَّتة تلقائيًا</translation>

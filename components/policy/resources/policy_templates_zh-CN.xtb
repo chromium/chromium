@@ -411,6 +411,7 @@
       在 <ph name="PRODUCT_OS_NAME" /> 上，此政策仅适用于已关联的用户。
 
       此政策会覆盖 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和用户的偏好设置。</translation>
+<translation id="1413768951234456918">清除浏览记录</translation>
 <translation id="1413936351612032792">报告有关 Linux 应用使用情况的信息</translation>
 <translation id="1417888712677507140">屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="1418387035898607074">不对从可信来源下载的文件执行安全浏览检查</translation>
@@ -2720,6 +2721,7 @@
 
       如果此政策未设置，系统将不会应用任何限制条件。</translation>
 <translation id="3531084733660068324">家长监督设置</translation>
+<translation id="3532827558833318911">清除密码登录信息</translation>
 <translation id="353611922042274900">始终在登录屏幕上显示系统信息</translation>
 <translation id="3536263244905016305">停用网络代理自动发现 (WPAD) 优化设置</translation>
 <translation id="3538869107794555625">为平板电脑模式启用屏幕键盘</translation>
@@ -4312,6 +4314,7 @@
 
       <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> 是一项相关政策，也可用来停用 DNS 拦截检查功能；这版政策更灵活，可另行控制内网重定向信息栏，在未来可能会被扩展。
       如果 <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> 或此政策请求停用拦截检查功能，系统便会停用该功能。</translation>
+<translation id="5210133032276211845">清除缓存的图片和文件</translation>
 <translation id="5212118847531454979">您可以设置一个时间段（以毫秒为单位），在该时间段内，系统会通知用户必须重新启动 <ph name="PRODUCT_NAME" /> 或重启 <ph name="PRODUCT_OS_NAME" />设备以安装更新。
 
       在该时间段内，系统会反复通知用户需要更新。对于 <ph name="PRODUCT_OS_NAME" />设备，系统会根据 <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" /> 政策在系统任务栏中显示重启通知。对于 <ph name="PRODUCT_NAME" /> 浏览器，在通知时间段过去三分之一后，应用菜单会发生变化，示意需要重启浏览器。此通知会在通知时间段过去三分之二后改变颜色，并会在时间段结束后再次改变颜色。由 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 政策引发的其他通知也会遵循这一规律。
@@ -4668,6 +4671,7 @@
       如果此列表为空，系统将不会分阶段进行更新，而是会根据其他设备政策应用更新。
 
       此政策不适用于版本切换。</translation>
+<translation id="5517825566262498086">清除托管的应用数据</translation>
 <translation id="5519331583722582543">一个布尔值标记，用于表明屏幕键盘能否提供基于手写识别的输入功能。</translation>
 <translation id="5519619299971727565">停用 Linux 应用使用情况报告</translation>
 <translation id="5521035900165046997">启用设备蓝牙信息报告功能</translation>
@@ -4931,6 +4935,7 @@
 
       如果“安全浏览”功能已（无论是被政策还是被用户）停用，此行为便不会触发。若要强制开启“安全浏览”功能，请使用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策或 <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> 政策。</translation>
 <translation id="5835312413892670446">屏幕截取设置</translation>
+<translation id="5835674781974810379">清除 Cookie 和其他网站数据</translation>
 <translation id="5836064773277134605">限制远程访问主机使用的UDP端口范围</translation>
 <translation id="583627479140113555">允许在首次运行时导入已保存的密码</translation>
 <translation id="5837898601525273156">如果您设置了 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />，并且 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 已启用，高级电池充电模式电源管理政策会保持开启状态（如果相应设备支持的话）。在此模式下，系统可以在非工作时间使用标准充电算法和其他技术来最大限度地延长电池寿命。在工作时间，系统会使用快速充电，以加快充电速度。您应通过开始时间和持续时间指定每天系统使用量最大的时段。
@@ -5081,6 +5086,7 @@
 <translation id="5997543603646547632">默认情况下，使用24小时制</translation>
 <translation id="5997846976342452720">指定是否应停用插件查找器（已弃用）</translation>
 <translation id="5998198091336830580">此政策是下面这个原子政策组的一部分（系统仅会应用该组中来源优先级最高的政策）：</translation>
+<translation id="6001621991816939414">清除下载记录</translation>
 <translation id="600402562436559989">允许在 <ph name="PRODUCT_OS_NAME" /> 设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置</translation>
 <translation id="6004575267180297869">
       指定能否跨源将 WebAssembly 模块发送到另一窗口或工作器。为了弃用 document.domain，我们采取了诸多举措，其中一项举措便是即将弃用跨源 WebAssembly 模块共享功能。请参见 https://github.com/mikewest/deprecating-document-domain。此政策允许重新启用跨源 WebAssembly 模块共享功能，以延长弃用过程中的过渡期。
@@ -6693,6 +6699,7 @@
 <translation id="7519218194072744342">协议处理程序的网址。</translation>
 <translation id="7519251620064708155">允许在这些网站上使用密钥生成功能</translation>
 <translation id="7521864460386999758">禁止在 Chrome 中注入第三方代码</translation>
+<translation id="7524983116584990314">清除自动填充数据</translation>
 <translation id="7529144158022474049">自动更新分配因素</translation>
 <translation id="7529332889403151669">指定当设备从睡眠状态或暗屏幕恢复时是否应显示全屏提醒。
 
@@ -7850,6 +7857,7 @@
 <translation id="8657543427358173663">允许从 Google 服务收集 WebRTC 事件日志</translation>
 <translation id="8659843732895043951">允许这些网站使用剪贴板</translation>
 <translation id="8661297125441579970">禁止数据迁移和 ARC。</translation>
+<translation id="8661538142776716004">清除网站设置</translation>
 <translation id="8661980316738569557">启用高对比度模式</translation>
 <translation id="8664285601317301180">此政策旨在控制打印任务中<ph name="CLIENT_INFO_IPP_ATTRIBUTE" /><ph name="IPP_PROTOCOL" />（<ph name="INTERNET_PRINTING_PROTOCOL" />）<ph name="IPP_ATTRIBUTE" />的值。
 
@@ -8096,6 +8104,21 @@
 <translation id="8882307005437314052">为登录屏幕启用屏幕键盘，并允许用户暂时停用它</translation>
 <translation id="8883577480680089760">停用<ph name="PRODUCT_NAME" /> V2 服务，且登录时不启动远程桌面</translation>
 <translation id="8887709920496070892">系统应在设备闲置多久（以毫秒为单位）后显示警告对话框</translation>
+<translation id="8887847586787956456">以列表形式指定在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
+
+      如果 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策未设置，此政策将不会产生任何效力。
+
+      达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后，<ph name="PRODUCT_NAME" /> 会运行此政策中配置的操作。
+
+      如果此政策为空或未设置，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策将不会产生任何效力。
+
+      支持的操作如下：
+
+      “<ph name="CLOSE_BROWSERS_ACTION" />”：关闭该个人资料的所有浏览器窗口和 PWA。
+
+      “<ph name="SHOW_PROFILE_PICKER_ACTION" />”：显示“个人资料选择器”窗口。
+
+      “<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />”“<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />”“<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”“<ph name="CLEAR_SITE_SETTINGS_ACTION" />”“<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />”：清除相应的浏览数据。有关详情，请参阅 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 政策。</translation>
 <translation id="8890438048579188548">隐藏 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="8891334958985336685">停用设备系统信息报告功能</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间</translation>

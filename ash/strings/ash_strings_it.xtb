@@ -239,6 +239,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2224075387478458881">La funzionalità Registrazione dello schermo non è consentita se sono visibili contenuti protetti</translation>
 <translation id="2227179592712503583">Rimuovi suggerimento</translation>
 <translation id="225680501294068881">Ricerca dispositivi in corso...</translation>
+<translation id="225716114209817872">Massima</translation>
 <translation id="2257486738914982088">Si è verificato un errore durante il download del file <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">File suggeriti</translation>
 <translation id="2268130516524549846">Bluetooth disattivato</translation>
@@ -1015,6 +1016,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6537924328260219877">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Scansione del file <ph name="FILENAME" /> per il download in corso…</translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
+<translation id="6548693220024099658">Sfocatura sfondo</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nuova installazione</translation>
 <translation id="6559976592393364813">Rivolgiti all'amministratore</translation>
@@ -1420,6 +1422,7 @@ Nuova installazione</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Intensa</translation>
 <translation id="8806053966018712535">Cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Guida"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

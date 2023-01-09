@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 buwan}one{# buwan}other{# na buwan}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> (na) MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 oras at }one{# oras at }other{# na oras at }}</translation>
+<translation id="185013357618350178">&amp;Piliin</translation>
 <translation id="1859234291848436338">Pagsulat ng Direksyon</translation>
 <translation id="1860796786778352021">Isara ang notification</translation>
 <translation id="186476001994626254">Content mula sa Web Smart Paste</translation>

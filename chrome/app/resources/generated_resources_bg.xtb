@@ -1245,6 +1245,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2105809836724866556">„<ph name="MODULE_TITLE" />“ бе скрито</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонен номер}other{# телефонни номера}}</translation>
 <translation id="2110941575868943054">Сайтове с разрешение за търсене на устройства с Bluetooth</translation>
+<translation id="2111158890826137380">За съжаление, нещо се обърка. Моля, изпратете отзиви, като включите #bruschetta в описанието. Кодът на грешката е <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Изчистване на типовете</translation>
 <translation id="2111670510994270194">Нов раздел отдясно</translation>
 <translation id="2112554630428445878">Добре дошли, <ph name="USERNAME" />,</translation>
@@ -1789,6 +1790,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2575713839157415345">{YEARS,plural, =1{Това устройство ще бъде запазено за 1 година. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}other{Това устройство ще бъде запазено за {YEARS} години. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}}</translation>
 <translation id="257779572837908839">Настройване като Chromebox за срещи</translation>
 <translation id="2579309488038515659">Активиране на точката за достъп</translation>
+<translation id="2579596474754516455">Сканирайте изображенията в PDF формат, така че при необходимост да ги преобразувате в текст, подходящ за екранен четец</translation>
 <translation id="2580889980133367162">Винаги да е разрешено на <ph name="HOST" /> да изтегля няколко файла</translation>
 <translation id="258095186877893873">Дълго</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2890,6 +2892,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3616741288025931835">&amp;Изчистване на данните за сърфирането...</translation>
 <translation id="3617891479562106823">Фоновете не са налице. Опитайте отново по-късно.</translation>
+<translation id="3618286417582819036">За съжаление, възникна грешка</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3620136223548713675">Геолокация</translation>
 <translation id="362023940451053340">В профила ви в Google за <ph name="ACCOUNT" /></translation>
@@ -6684,6 +6687,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7149839598364933473">Преобразуване на това устройство в такова с <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Последните 24 часа</translation>
 <translation id="7152478047064750137">Това разширение не изисква специални разрешения</translation>
+<translation id="7153309176431047193">Преобразуване на изображенията в текст</translation>
 <translation id="7154130902455071009">Промяна на началната ви страница на <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Преобразуване на изображението в текст</translation>
 <translation id="7159953856712257647">Инсталирано по подразбиране</translation>

@@ -240,6 +240,7 @@
 <translation id="2224075387478458881">Η εγγραφή οθόνης δεν επιτρέπεται όταν είναι ορατό προστατευμένο περιεχόμενο.</translation>
 <translation id="2227179592712503583">Κατάργηση πρότασης</translation>
 <translation id="225680501294068881">Σάρωση για συσκευές…</translation>
+<translation id="225716114209817872">Μέγιστο</translation>
 <translation id="2257486738914982088">Παρουσιάστηκε κάποιο πρόβλημα κατά τη λήψη του αρχείου <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Προτεινόμενα αρχεία</translation>
 <translation id="2268130516524549846">Το Bluetooth έχει απενεργοποιηθεί</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6537924328260219877">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Σάρωση του αρχείου <ph name="FILENAME" /> για λήψη</translation>
 <translation id="6542521951477560771">Μετάδοση στη συσκευή <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Θάμπωμα φόντου</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Νέα εγκατάσταση</translation>
 <translation id="6559976592393364813">Απευθυνθείτε στον διαχειριστή</translation>
@@ -1422,6 +1424,7 @@
 <translation id="878215960996152260"><ph name="APP_NAME" />, Εγκατεστημένη εφαρμογή, Αποκλείστηκε</translation>
 <translation id="8785070478575117577">Σύνδεση στο δίκτυο <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Έντονo</translation>
 <translation id="8806053966018712535">Φάκελος <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Βοήθεια"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

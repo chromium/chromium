@@ -1230,6 +1230,7 @@
 <translation id="2105809836724866556">已隐藏<ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{电话号码}other{# 个电话号码}}</translation>
 <translation id="2110941575868943054">可以寻找蓝牙设备</translation>
+<translation id="2111158890826137380">抱歉，出了点问题。请在说明中提交反馈并附上 #bruschetta。错误代码为 <ph name="ERROR" /></translation>
 <translation id="211144231511833662">清除类型</translation>
 <translation id="2111670510994270194">在右侧新增标签页</translation>
 <translation id="2112554630428445878">欢迎您，<ph name="USERNAME" /></translation>
@@ -1770,6 +1771,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{此设备将被保存 1 年，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {YEARS} 年，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="257779572837908839">设为 Chromebox 会易设备</translation>
 <translation id="2579309488038515659">热点启用</translation>
+<translation id="2579596474754516455">必要时扫描 PDF 图片以转换成文字供屏幕阅读器读取</translation>
 <translation id="2580889980133367162">始终允许 <ph name="HOST" /> 下载多个文件</translation>
 <translation id="258095186877893873">长</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（平台：<ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2871,6 +2873,7 @@
 <translation id="3616113530831147358">音频</translation>
 <translation id="3616741288025931835">清除浏览数据(&amp;C)...</translation>
 <translation id="3617891479562106823">背景不可用。请稍后重试。</translation>
+<translation id="3618286417582819036">抱歉，出错了</translation>
 <translation id="3619115746895587757">卡布奇诺</translation>
 <translation id="3620136223548713675">地理定位</translation>
 <translation id="362023940451053340">在您的 Google 帐号中，<ph name="ACCOUNT" /></translation>
@@ -3196,6 +3199,7 @@
 <translation id="3898233949376129212">设备语言</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />和<ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">您在 <ph name="WEBSITE" /> 上使用的密码已保存到此设备上和您的 Google 帐号中。您想删除哪个位置存储的密码？</translation>
+<translation id="3898768766145818464">播放或暂停视频</translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3900966090527141178">导出密码</translation>
 <translation id="3902789559055749153">选择您希望以何种方式为<ph name="APP_NAME" />创建通行密钥</translation>
@@ -6656,6 +6660,7 @@
 <translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
+<translation id="7153309176431047193">将图片转换成文字</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">将图片转换为文字</translation>
 <translation id="7159953856712257647">默认安装</translation>

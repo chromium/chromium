@@ -509,6 +509,7 @@
 <translation id="3713734891607377840">下载完成后打开</translation>
 <translation id="3726171378575546917">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />以及另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 个应用。</translation>
 <translation id="3735740477244556633">排序依据</translation>
+<translation id="3738664582935948253">现在，您可在录制的屏幕内容中显示点击操作和键盘快捷键</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3765841986579723851">今天修改过</translation>
 <translation id="3773700760453577392">管理员已禁止 <ph name="USER_EMAIL" /> 使用多帐号登录功能。所有用户都必须先退出帐号才能继续。</translation>
@@ -695,6 +696,7 @@
 <translation id="4740516757091333363">要删除已保存的桌面吗？</translation>
 <translation id="4752784485658729358">最多只能保存 6 个桌面。若要保存一个新桌面，请先移除一个已存桌面。</translation>
 <translation id="4759238208242260848">下载内容</translation>
+<translation id="4762573482154983647">隐藏应用</translation>
 <translation id="4774338217796918551">您需要等到明天<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
 <translation id="4777825441726637019">Play 商店</translation>

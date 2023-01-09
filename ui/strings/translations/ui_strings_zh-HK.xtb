@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 個月}other{# 個月}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/秒</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 小時}other{# 小時}}</translation>
+<translation id="185013357618350178">選取(&amp;S)</translation>
 <translation id="1859234291848436338">文字方向</translation>
 <translation id="1860796786778352021">通知關閉</translation>
 <translation id="186476001994626254">網絡智能貼上內容</translation>
@@ -206,7 +207,7 @@
 <translation id="8772073294905169192">{HOURS,plural, =1{1 小時}other{# 小時}}</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8841375032071747811">[返回] 按鈕</translation>
-<translation id="8867568208303837180">傳送中… </translation>
+<translation id="8867568208303837180">正在傳送…</translation>
 <translation id="8876215549894133151">格式：</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="8996630695507351249">請確定 <ph name="TARGET_DEVICE_NAME" /> 已連接互聯網。</translation>

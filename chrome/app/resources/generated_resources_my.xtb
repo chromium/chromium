@@ -1247,6 +1247,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ကို ဖျောက်လိုက်ပါပြီ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ဖုန်းနံပါတ်}other{ဖုန်းနံပါတ် # ခု}}</translation>
 <translation id="2110941575868943054">ဘလူးတုသ်သုံးစက်များ ရှာရန် ခွင့်ပြုထားသည်</translation>
+<translation id="2111158890826137380">တစ်ခုခု မှားသွားသည်။ ဖော်ပြချက်တွင် #bruschetta ဖြင့် အကြံပြုချက်တင်ပါ။ အမှားကုဒ်မှာ <ph name="ERROR" /> ဖြစ်သည်</translation>
 <translation id="211144231511833662">ရိုက်ထားသည်များကို ရှင်းထုတ်ရန်</translation>
 <translation id="2111670510994270194">ညာဘက်တွင် တဘ်အသစ်</translation>
 <translation id="2112554630428445878">ကြိုဆိုပါသည် <ph name="USERNAME" /></translation>
@@ -1791,6 +1792,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{ဤစက်ကို ၁ နှစ် သိမ်းပေးမည်ဖြစ်ပြီး နောက်တစ်ကြိမ်တွင် ကုဒ်မပါဘဲ ချိတ်ဆက်နိုင်သည်။ ၎င်းကို သင်၏စီမံခန့်ခွဲသူက သတ်မှတ်ထားသည်။}other{ဤစက်ကို {YEARS} နှစ် သိမ်းပေးမည်ဖြစ်ပြီး နောက်တစ်ကြိမ်တွင် ကုဒ်မပါဘဲ ချိတ်ဆက်နိုင်သည်။ ၎င်းကို သင်၏စီမံခန့်ခွဲသူက သတ်မှတ်ထားသည်။}}</translation>
 <translation id="257779572837908839">အစည်းအဝေးများအတွက် Chromebox အဖြစ် စနစ်ထည့်သွင်းရန်</translation>
 <translation id="2579309488038515659">ဟော့စပေါ့ ဖွင့်ရန်</translation>
+<translation id="2579596474754516455">ဖန်သားပြင်ဖတ် အက်ပ်အတွက် လိုအပ်သောအခါတွင် စာသားအဖြစ်ပြောင်းလဲရန် PDF ပုံများကို စကင်ဖတ်ပါ</translation>
 <translation id="2580889980133367162"><ph name="HOST" />အား ဖိုင် အများအပြား ဒေါင်းလုဒ် လုပ်မှုကို အမြဲတမ်း ခွင့်ပြုရန်</translation>
 <translation id="258095186877893873">ရှည်</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2743,6 +2745,7 @@
 <translation id="3469583217479686109">ရွေးဆွဲမှတ်ရန် တူးလ်</translation>
 <translation id="3470392222765168737">ဝဘ်ဆိုက်ကို လိုက်ကြည့်ရန်</translation>
 <translation id="3471876058939596279">ဗီဒီယိုအတွက် HDMI နှင့် USB Type-C ပို့တ်များကို တစ်ပြိုင်နက် အသုံးပြု၍မရပါ။ အခြား ဗီဒီယိုပို့တ်ကို အသုံးပြုပါ။</translation>
+<translation id="3472469028191701821">တဘ်အသစ်တွင် ဖွင့်ပေးသည်</translation>
 <translation id="3473241910002674503">တက်ဘလက်မုဒ်တွင် ခလုတ်များဖြင့် ပင်မစာမျက်နှာသို့ သွားခြင်း၊ နောက်ပြန်သွားခြင်းနှင့် အက်ပ်များပြောင်းခြင်းတို့ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="3473479545200714844">မျက်နှာပြင် ပုံချဲ့ပေးသူ</translation>
 <translation id="3474218480460386727">စာလုံးအသစ်များအတွက် အက္ခရာ ၉၉ လုံးနှင့်အောက် အသုံးပြုပါ</translation>
@@ -2891,6 +2894,7 @@
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3616741288025931835">ဘရောက်လုပ်ထားသည့် အချက်လက်များ ရှင်းလင်းရန်...</translation>
 <translation id="3617891479562106823">နောက်ခံပုံများ မရရှိနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="3618286417582819036">အမှားတစ်ခုဖြစ်သွားသည်</translation>
 <translation id="3619115746895587757">ကာပူချီနို</translation>
 <translation id="3620136223548713675">ပထဝီတည်နေရာ</translation>
 <translation id="362023940451053340">သင်၏ Google Account တွင်၊ <ph name="ACCOUNT" /> အတွက်</translation>
@@ -3129,6 +3133,7 @@
 <translation id="3820749202859700794">SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">ဖုန်းစင်တာ အကြောင်းကြားချက်များ</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{နောက်ဆက်တွဲကို ခွင့်ပြုလိုက်သည်}other{နောက်ဆက်တွဲ # ခုကို ခွင့်ပြုလိုက်သည်}}</translation>
+<translation id="3823019343150397277">အိုင်ဘီအေအန် (IBAN)</translation>
 <translation id="3823310065043511710">Linux အတွက် အနည်းဆုံး နေရာ <ph name="INSTALL_SIZE" /> ရှိရန် အကြံပြုပါသည်။</translation>
 <translation id="3824621460022590830">စက်စာရင်းသွင်းရန် တိုကင်နံပါတ် မမှန်ကန်ပါ။ သင့်စက်ပိုင်ရှင် သို့မဟုတ် စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ် - <ph name="ERROR_CODE" />။</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ဤဖိုင်အမျိုးအစားအတွက် ကျွန်ုပ်၏ရွေးချယ်မှုကို မှတ်ထားရန်- <ph name="FILE_TYPES" />}other{ဤဖိုင်အမျိုးအစားများအတွက် ကျွန်ုပ်၏ရွေးချယ်မှုကို မှတ်ထားရန်- <ph name="FILE_TYPES" />}}</translation>
@@ -4046,6 +4051,7 @@
 <translation id="4675828034887792601">ဝဘ်ဆိုက်များ ရှာဖွေရန်နှင့် သင်၏ရှာဖွေရေး အင်ဂျင်ကို စီမံရန် ဖြတ်လမ်းလင့်ခ်များ ပြုလုပ်ပါ</translation>
 <translation id="4676595058027112862">ဖုန်းစင်တာ၊ ပိုမိုလေ့လာရန်</translation>
 <translation id="4677772697204437347">GPU မှတ်ဉာဏ်</translation>
+<translation id="4678848110205818817">ခရက်ဒစ်/ဒက်ဘစ်ကတ်</translation>
 <translation id="4680105648806843642">ဤစာမျက်နှာပေါ်တွင် အသံတိတ်ထားသည်</translation>
 <translation id="4680112532510845139">ဤနေရာသို့ ပုံကိုဖိဆွဲပါ</translation>
 <translation id="4681453295291708042">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကို ပိတ်ရန်</translation>
@@ -6678,6 +6684,7 @@
 <translation id="7149839598364933473">ဤစက်ကို <ph name="DEVICE_OS" /> စက်တစ်ခုအဖြစ် ပြောင်းလဲပါ။</translation>
 <translation id="7149893636342594995">ပြီးခဲ့သည့် ၂၄ နာရီ</translation>
 <translation id="7152478047064750137">ဤနောက်ဆက်တွဲသည် အထူးခွင့်ပြုချက်များ မလိုအပ်ပါ</translation>
+<translation id="7153309176431047193">ပုံများကို စာသားသို့ပြောင်းသည်</translation>
 <translation id="7154130902455071009">သင်၏ စတင်မှု စာမျက်နှာကို ...<ph name="START_PAGE" />သို့ ပြောင်းပါ</translation>
 <translation id="7156231244155528270">ပုံကို စာသားအဖြစ် ပြောင်းလဲရန်</translation>
 <translation id="7159953856712257647">ပုံမှန်အားဖြင့် ထည့်သွင်းထားသည်</translation>

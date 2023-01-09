@@ -2730,6 +2730,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3469583217479686109">Strumento Selezione</translation>
 <translation id="3470392222765168737">Segui sito</translation>
 <translation id="3471876058939596279">Non è possibile usare contemporaneamente le porte HDMI e USB Type-C per i video. Usa una porta video diversa.</translation>
+<translation id="3472469028191701821">Si apre in una nuova scheda</translation>
 <translation id="3473241910002674503">Torna alla schermata Home, vai indietro e cambia app usando i pulsanti in modalità tablet.</translation>
 <translation id="3473479545200714844">Ingrandimento dello schermo</translation>
 <translation id="3474218480460386727">Usa al massimo 99 lettere per le nuove parole</translation>
@@ -3116,6 +3117,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3820749202859700794">Curva ellittica SECG secp521r1 (anche nota come NIST P-521)</translation>
 <translation id="3821074617718452587">Notifiche di Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Un'estensione è stata approvata}other{# estensioni sono state approvate}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sono consigliati almeno <ph name="INSTALL_SIZE" /> di spazio libero per Linux.</translation>
 <translation id="3824621460022590830">Token di registrazione dei dispositivi non valido. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ricorda la mia scelta per questo tipo di file: <ph name="FILE_TYPES" />}other{Ricorda la mia scelta per questi tipi di file: <ph name="FILE_TYPES" />}}</translation>
@@ -4033,6 +4035,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4675828034887792601">Crea scorciatoie per cercare nei siti e gestire i motori di ricerca</translation>
 <translation id="4676595058027112862">Phone Hub, scopri di più</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
+<translation id="4678848110205818817">Carta di credito/debito</translation>
 <translation id="4680105648806843642">L'audio è stato disattivato in questa pagina</translation>
 <translation id="4680112532510845139">Trascina un'immagine qui</translation>
 <translation id="4681453295291708042">Disattiva Condivisione nelle vicinanze</translation>

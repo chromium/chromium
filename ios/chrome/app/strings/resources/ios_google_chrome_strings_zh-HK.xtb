@@ -20,7 +20,7 @@
 <translation id="2313070403598893276">Google Chrome 不但簡便安全，速度更勝從前</translation>
 <translation id="2339201583852607431">密碼將會儲存在您的 Google 帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="2342919707875585281">Chrome 會與您允許的網站分享您的位置資訊。</translation>
-<translation id="2347208864470321755">開啟這項功能後，Chrome 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="2347208864470321755">啟用此功能後，Chrome 會使用「Google 翻譯」來翻譯其他語言的頁面。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">使用 Chrome 作為預設瀏覽器可保護您免受危險網站威脅，同時確保密碼安全</translation>
@@ -55,7 +55,7 @@
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 之前曾在此裝置上使用 Chrome，並儲存書籤、密碼和其他設定。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4249068189593983585">Chrome 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
-<translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
+<translation id="4523886039239821078">部份外掛程式造成 Chrome 當機。請解除安裝以下程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
 <translation id="4636900170638246267">登入此網站和 Chrome。</translation>
 <translation id="4698415050768537821">Chrome 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
@@ -116,7 +116,7 @@
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8357607116237445042">選擇要從此裝置上清除 Chrome 資料，還是要保留資料</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
-<translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
+<translation id="840168496893712993">部份外掛程式導致 Chrome 當機，請嘗試解除安裝。</translation>
 <translation id="8414886616817913619">您的機構要求您登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">所選資料已從 Chrome 和已同步的裝置中移除。不過，您仍可前往 history.google.com 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
 <translation id="850555388806794946">如何將 Chrome 設定為預設瀏覽器：

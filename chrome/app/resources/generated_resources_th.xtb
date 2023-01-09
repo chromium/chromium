@@ -917,6 +917,7 @@
 <translation id="1819721979226826163">แตะ "การแจ้งเตือนของแอป" &gt; บริการ Google Play</translation>
 <translation id="1820028137326691631">ป้อนรหัสผ่านที่ผู้ดูแลระบบให้</translation>
 <translation id="1822140782238030981">หากเป็นผู้ใช้ Chrome แล้วก็ลงชื่อเข้าใช้เลย</translation>
+<translation id="1823781806707127806">เพิ่มข้อมูลการท่องเว็บที่มีอยู่ลงในโปรไฟล์ที่มีการจัดการ</translation>
 <translation id="18245044880483936">ข้อมูลสำรองจะไม่นับรวมในโควต้าพื้นที่เก็บข้อมูล Google ไดรฟ์ของบุตรหลาน</translation>
 <translation id="1825565032302550710">หมายเลขพอร์ตต้องอยู่ระหว่าง 1024 ถึง 65535</translation>
 <translation id="182577151972096764">สูตรอาหารที่ดูล่าสุด</translation>
@@ -1077,6 +1078,7 @@
 <translation id="1963976881984600709">การปกป้องแบบมาตรฐาน</translation>
 <translation id="1965624977906726414">ไม่มีสิทธิ์พิเศษใดๆ</translation>
 <translation id="1966649499058910679">ไฮไลต์แต่ละคำในขณะที่พูด</translation>
+<translation id="1967970931040389207">เปิดฮอตสปอต</translation>
 <translation id="1969654639948595766">บันทึกข้อความ WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
 <translation id="197288927597451399">เก็บไว้</translation>
@@ -1165,6 +1167,7 @@
 <translation id="2048554637254265991">เกิดข้อผิดพลาดขณะเริ่มต้นตัวจัดการคอนเทนเนอร์ โปรดลองอีกครั้ง</translation>
 <translation id="2048653237708779538">การดำเนินการไม่พร้อมให้ใช้งาน</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
+<translation id="2051555741181591333">ปิดใช้ฮอตสปอตโดยอัตโนมัติ</translation>
 <translation id="2052572566310583903">ติดตั้งอยู่ในอุปกรณ์อื่น</translation>
 <translation id="2053105195397337973">เรากำลังพัฒนาวิธีจำกัดการติดตาม ในขณะเดียวกันก็ช่วยให้เว็บไซต์สามารถหยุดสแปมโฆษณาและการประพฤติมิชอบ</translation>
 <translation id="2053312383184521053">ข้อมูลของสถานะไม่มีการใช้งาน</translation>
@@ -1273,6 +1276,7 @@
 <translation id="2137128126782078222">ไม่อนุญาตการแจ้งเตือนจาก <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">ปุ่มตั้งค่า</translation>
 <translation id="2140788884185208305">ประสิทธิภาพของแบตเตอรี่</translation>
+<translation id="2140902257485550046">เลือกเพื่อบล็อกส่วนขยายทั้งหมดในเว็บไซต์นี้</translation>
 <translation id="2142328300403846845">เปิดลิงก์ในฐานะ</translation>
 <translation id="2142582065325732898">เปิด<ph name="LINK1_BEGIN" />การซิงค์ของ Chrome<ph name="LINK1_END" /> เพื่อดูแท็บ Chrome ล่าสุด <ph name="LINK2_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">แสดงแถบเครื่องมือทุกครั้งในโหมดเต็มหน้าจอ</translation>
@@ -2004,6 +2008,7 @@
 <translation id="2778471504622896352">เพิ่มแอประยะไกลลงใน Launcher ของ Chrome OS</translation>
 <translation id="2781120507965857989">เปิดการซิงค์เพื่อดูบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์นี้รวมถึงทุกที่ที่ซิงค์อยู่ Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เหมาะกับคุณ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">ส่วนขยายใช้ได้ในเว็บไซต์นี้</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2783298271312924866">ดาวน์โหลดแล้ว</translation>
 <translation id="2783321960289401138">สร้างทางลัด...</translation>
@@ -3826,6 +3831,7 @@
 <translation id="449126573531210296">เข้ารหัสรหัสผ่านที่ซิงค์กับบัญชี Google ของคุณ</translation>
 <translation id="449232563137139956">โดยปกติแล้วเว็บไซต์จะแสดงรูปภาพประกอบ เช่น รูปภาพสำหรับร้านค้าออนไลน์หรือบทความข่าว</translation>
 <translation id="4492698018379445570">หาสิ่งที่คุณใส่ไว้ในรถเข็นช็อปปิ้งและชำระเงินเมื่อพร้อม</translation>
+<translation id="4493167769966437077">นําภาษา<ph name="LANGUAGE_NAME" />ออกจากภาษาที่ไม่ต้องเสนอการแปล</translation>
 <translation id="4493468155686877504">แนะนำ (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">อนุญาตให้ใช้ส่วนขยายนี้ใน <ph name="SITE" /> ไหม</translation>
 <translation id="4495419450179050807">ไม่แสดงในหน้านี้อีก</translation>
@@ -4395,6 +4401,7 @@
 <translation id="5026874946691314267">ไม่ต้องแสดงข้อความนี้อีก</translation>
 <translation id="5027550639139316293">ใบรับรองอีเมล</translation>
 <translation id="5027562294707732951">เพิ่มส่วนขยาย</translation>
+<translation id="5028445315206872221">ส่วนขยายถูกบล็อกในเว็บไซต์นี้</translation>
 <translation id="5029568752722684782">ล้างสำเนา</translation>
 <translation id="5029873138381728058">ตรวจสอบ VM ไม่สำเร็จ</translation>
 <translation id="503155457707535043">กำลังดาวน์โหลดแอป</translation>
@@ -4958,6 +4965,7 @@
 <translation id="5554866693883022680">เลือกแอปใน <ph name="DEVICE_TYPE" /> เพื่อเปิดลิงก์นี้</translation>
 <translation id="5555363196923735206">พลิกกล้อง</translation>
 <translation id="5555525474779371165">เลือกระดับการปกป้องด้วย Google Safe Browsing</translation>
+<translation id="5555639311269196631">ปิดฮอตสปอต</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5558129378926964177">ขยาย&amp;</translation>
 <translation id="55601339223879446">ปรับขอบของเดสก์ท็อปให้อยู่ในหน้าจอแสดงผล</translation>
@@ -6615,6 +6623,7 @@
 <translation id="7088960765736518739">การเข้าถึงด้วยสวิตช์</translation>
 <translation id="7089253021944603172">แท็บกลับมาทำงานอีกครั้ง</translation>
 <translation id="7090160970140261931">คุณเพิ่มบัญชีเสริมใน <ph name="DEVICE_TYPE" /> เพื่อใช้กับเว็บไซต์และแอป Android นอกจากนี้ยังควบคุมได้ว่าจะใช้บัญชีใดกับแอป Android</translation>
+<translation id="7090714929377281710">ปิดฮอตสปอตโดยอัตโนมัติ</translation>
 <translation id="7093220653036489319">คำตอบด่วน</translation>
 <translation id="7093416310351037609">องค์กรของคุณกำหนดให้บันทึกไฟล์ดาวน์โหลดที่มีสิทธิ์ทั้งหมดลงในบัญชี <ph name="WEB_DRIVE" /> ขององค์กร เพื่อความปลอดภัยของข้อมูลและการรักษาความปลอดภัย</translation>
 <translation id="7093866338626856921">แลกเปลี่ยนข้อมูลกับอุปกรณ์ชื่อ <ph name="HOSTNAMES" /></translation>
@@ -7235,6 +7244,7 @@
 <translation id="7684718995427157417">หากต้องการสร้างและทดสอบแอป ให้เปิดใช้ Android Debug Bridge (ADB) โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>
 <translation id="7685049629764448582">หน่วยความจำ JavaScript</translation>
 <translation id="7685087414635069102">ต้องระบุ PIN</translation>
+<translation id="7686581688229391955">เลือกเพื่ออนุญาตส่วนขยายในเว็บไซต์นี้</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
 <translation id="7690378713476594306">เลือกจากรายการ</translation>
@@ -8048,6 +8058,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
 <translation id="8417548266957501132">รหัสผ่านสำหรับผู้ปกครอง</translation>
 <translation id="8418445294933751433">แ&amp;สดงเป็นแถบ</translation>
+<translation id="8418675848396538775">เพิ่มภาษา<ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">ผลการค้นหาของ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">แก้ไขรายการในพจนานุกรม</translation>
 <translation id="8421361468937925547">คำบรรยายสด (ภาษาอังกฤษเท่านั้น)</translation>
@@ -8818,6 +8829,7 @@
 <translation id="9121814364785106365">เปิดเป็นแท็บที่ปักหมุดไว้</translation>
 <translation id="9123287046453017203">อุปกรณ์ของคุณไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="9124003689441359348">รหัสผ่านที่บันทึกไว้จะแสดงที่นี่</translation>
+<translation id="9125910124977405374">นําภาษา<ph name="LANGUAGE_NAME" />ออกจากภาษาที่แปลโดยอัตโนมัติ</translation>
 <translation id="9126149354162942022">สีของเคอร์เซอร์</translation>
 <translation id="9128317794749765148">ตั้งค่าไม่สำเร็จ</translation>
 <translation id="9128335130883257666">เปิดหน้าการตั้งค่าของ<ph name="INPUT_METHOD_NAME" /></translation>

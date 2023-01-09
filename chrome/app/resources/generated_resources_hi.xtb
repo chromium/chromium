@@ -2746,6 +2746,7 @@
 <translation id="3469583217479686109">कोई खास हिस्सा चुनने का टूल</translation>
 <translation id="3470392222765168737">साइट को फ़ॉलो करें</translation>
 <translation id="3471876058939596279">वीडियो के लिए एचडीएमआई पोर्ट और यूएसबी टाइप-सी पोर्ट को एक ही समय में इस्तेमाल नहीं किया जा सकता. कोई अलग पोर्ट इस्तेमाल करें.</translation>
+<translation id="3472469028191701821">लिंक नए टैब में खुलेगा</translation>
 <translation id="3473241910002674503">टैबलेट मोड में बटन की मदद से, होम पेज पर जाएं, वापस जाएं, और एक ऐप्लिकेशन से दूसरे पर जाएं.</translation>
 <translation id="3473479545200714844">स्क्रीन पर मौजूद कॉन्टेंट को बड़ा करके दिखाने की सुविधा</translation>
 <translation id="3474218480460386727">नए शब्दों के लिए 99 अक्षरों या उससे कम का इस्तेमाल करें</translation>
@@ -3132,6 +3133,7 @@
 <translation id="3820749202859700794">SECG अंडाकार वक्र secp521r1 (अर्थात NIST P-521)</translation>
 <translation id="3821074617718452587">फ़ोन हब से जुड़ी सूचनाएं</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एक्सटेंशन को मंज़ूरी दी गई}one{# एक्सटेंशन को मंज़ूरी दी गई}other{# एक्सटेंशन को मंज़ूरी दी गई}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux के लिए कम से कम <ph name="INSTALL_SIZE" /> खाली जगह होनी चाहिए.</translation>
 <translation id="3824621460022590830">डिवाइस का नाम दर्ज करने वाला टोकन अमान्य है. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}one{इस फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}other{इन फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_TYPES" />}}</translation>
@@ -4049,6 +4051,7 @@
 <translation id="4675828034887792601">साइट खोजने के लिए शॉर्टकट बनाएं और अपने सर्च इंजन को मैनेज करें</translation>
 <translation id="4676595058027112862">फ़ोन हब, ज़्यादा जानें</translation>
 <translation id="4677772697204437347">GPU मेमोरी</translation>
+<translation id="4678848110205818817">क्रेडिट/डेबिट कार्ड</translation>
 <translation id="4680105648806843642">इस पेज पर आवाज़ बंद कर दी गई थी</translation>
 <translation id="4680112532510845139">यहां कोई इमेज खींचें और छोड़ें</translation>
 <translation id="4681453295291708042">आस-पास शेयर करने की सुविधा बंद करें</translation>

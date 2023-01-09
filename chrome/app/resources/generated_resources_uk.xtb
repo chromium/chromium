@@ -2750,6 +2750,7 @@
 <translation id="3469583217479686109">Інструмент вибору</translation>
 <translation id="3470392222765168737">Підписатися на сайт</translation>
 <translation id="3471876058939596279">Порти HDMI та USB Type-C не можна використовувати для відео одночасно. Скористайтесь іншим відеопортом.</translation>
+<translation id="3472469028191701821">Відкриється на новій вкладці</translation>
 <translation id="3473241910002674503">Переходьте на головну сторінку й назад і перемикайте додатки за допомогою кнопок у режимі планшета.</translation>
 <translation id="3473479545200714844">Лупа</translation>
 <translation id="3474218480460386727">Максимальна кількість літер для нових слів – 99</translation>
@@ -3137,6 +3138,7 @@
 <translation id="3820749202859700794">Еліптична крива SECG secp521r1 (також відома як NIST P-521)</translation>
 <translation id="3821074617718452587">Сповіщення функції "Керування телефоном"</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Розширення схвалено}one{# розширення схвалено}few{# розширення схвалено}many{# розширень схвалено}other{# розширення схвалено}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Для Linux потрібно принаймні <ph name="INSTALL_SIZE" /> вільного місця.</translation>
 <translation id="3824621460022590830">Маркер реєстрації пристрою недійсний. Зв'яжіться з адміністратором або власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запам’ятати мій вибір для цього типу файлу: <ph name="FILE_TYPES" />}one{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}few{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}many{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}other{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}}</translation>
@@ -4055,6 +4057,7 @@
 <translation id="4675828034887792601">Створити команди для пошуку на веб-сайтах і керування пошуковою системою</translation>
 <translation id="4676595058027112862">Докладніше про функцію "Керування телефоном"</translation>
 <translation id="4677772697204437347">Пам’ять GPU</translation>
+<translation id="4678848110205818817">Кредитна чи дебетова картка</translation>
 <translation id="4680105648806843642">На цій сторінці вимкнено звук</translation>
 <translation id="4680112532510845139">Перетягніть зображення сюди</translation>
 <translation id="4681453295291708042">Вимкнути функцію "Передавання поблизу"</translation>

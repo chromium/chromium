@@ -3206,6 +3206,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3898233949376129212">Jazyk zařízení</translation>
 <translation id="3898327728850887246">Web <ph name="SITE_NAME" /> žádá o tato oprávnění: <ph name="FIRST_PERMISSION" /> a <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Vaše heslo pro web <ph name="WEBSITE" /> je uloženo v tomto zařízení i v účtu Google. Odkud ho chcete smazat?</translation>
+<translation id="3898768766145818464">Přehrát nebo pozastavit video</translation>
 <translation id="389901847090970821">Vybrat klávesnici</translation>
 <translation id="3900966090527141178">Export hesel</translation>
 <translation id="3902789559055749153">Zvolte, jak chcete vytvořit přístupový klíč pro <ph name="APP_NAME" /></translation>

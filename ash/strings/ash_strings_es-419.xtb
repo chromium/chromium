@@ -239,6 +239,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2224075387478458881">No se permite la grabación de pantalla cuando hay contenido protegido a la vista.</translation>
 <translation id="2227179592712503583">Quitar sugerencia</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
+<translation id="225716114209817872">Máximo</translation>
 <translation id="2257486738914982088">Ocurrió un error al descargar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Archivos sugeridos</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
@@ -1015,6 +1016,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6537924328260219877">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, nivel de batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Análisis de descargas: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Transmitiendo a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Desenfoque del fondo</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
 <translation id="6559976592393364813">Pregúntale al administrador</translation>
@@ -1421,6 +1423,7 @@ Nueva instalación</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Intenso</translation>
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Ayuda"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
