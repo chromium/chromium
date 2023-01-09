@@ -470,6 +470,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.fledgeToggle));
     assertFalse(page.$.fledgeToggle.checked);
+    assertFalse(page.$.fledgeToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('fledgePageToggleSubLabel'),
         page.$.fledgeToggle.subLabel);
@@ -481,6 +482,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.fledgeToggle));
     assertTrue(page.$.fledgeToggle.checked);
+    assertFalse(page.$.fledgeToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('fledgePageToggleSubLabel'),
         page.$.fledgeToggle.subLabel);
@@ -500,6 +502,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.fledgeToggle));
     assertTrue(page.$.fledgeToggle.checked);
+    assertFalse(page.$.fledgeToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('fledgePageToggleSubLabel'),
         page.$.fledgeToggle.subLabel);
@@ -513,6 +516,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.fledgeToggle));
     assertFalse(page.$.fledgeToggle.checked);
+    assertFalse(page.$.fledgeToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('fledgePageToggleSubLabel'),
         page.$.fledgeToggle.subLabel);
@@ -673,6 +677,19 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('fledgePageBlockedSitesDescriptionEmpty'),
         blockedSitesDescription.innerText);
+  });
+
+  test('fledgeManaged', async function() {
+    page.set('prefs.privacy_sandbox.m1.fledge_enabled', {
+      ...page.get('prefs.privacy_sandbox.m1.fledge_enabled'),
+      value: false,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    await flushTasks();
+    assertFalse(page.$.fledgeToggle.checked);
+    assertTrue(page.$.fledgeToggle.controlDisabled());
+    assertFalse(isChildVisible(page, '#currentSitesSection'));
   });
 
   test('footerLinks', async function() {

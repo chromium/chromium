@@ -74,55 +74,59 @@
     sub-label="$i18n{fledgePageToggleSubLabel}"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
-<div id="currentSitesSection">
-  <div id="currentSitesSectionWrapper" class="hr">
-    <h2 id="currentSitesHeading">
-      $i18n{fledgePageCurrentSitesHeading}
-    </h2>
-    <template is="dom-if" if="[[isFledgeEnabledAndLoaded_(
-        prefs.privacy_sandbox.m1.fledge_enabled.value, isSitesListLoaded_)]]"
-        restamp>
-      <div id="currentSitesDescription" class="cr-secondary-text"
-          hidden="[[isSitesListEmpty_(sitesList_.length)]]">
-        $i18n{fledgePageCurrentSitesDescription}
-        <!-- TODO(b/264024469): Add "Learn more" into current sites description
-             string. -->
-        <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
-            "$i18n{fledgePageCurrentSitesDescriptionLearnMoreA11yLabel}">
-          $i18n{fledgePageCurrentSitesDescriptionLearnMore}
-        </button>
-      </div>
-      <template is="dom-repeat" items="[[mainSitesList_]]">
-        <privacy-sandbox-interest-item interest="[[item]]"
-            on-interest-changed="onInterestChanged_">
-        </privacy-sandbox-interest-item>
+<template is="dom-if" if="[[!isFledgePrefManaged_(
+    prefs.privacy_sandbox.m1.fledge_enabled.enforcement)]]" restamp>
+  <div id="currentSitesSection">
+    <div id="currentSitesSectionWrapper" class="hr">
+      <h2 id="currentSitesHeading">
+        $i18n{fledgePageCurrentSitesHeading}
+      </h2>
+      <template is="dom-if" if="[[isFledgeEnabledAndLoaded_(
+          prefs.privacy_sandbox.m1.fledge_enabled.value, isSitesListLoaded_)]]"
+          restamp>
+        <div id="currentSitesDescription" class="cr-secondary-text"
+            hidden="[[isSitesListEmpty_(sitesList_.length)]]">
+          $i18n{fledgePageCurrentSitesDescription}
+          <!-- TODO(b/264024469): Add "Learn more" into current sites
+               description string. -->
+          <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
+              "$i18n{fledgePageCurrentSitesDescriptionLearnMoreA11yLabel}">
+            $i18n{fledgePageCurrentSitesDescriptionLearnMore}
+          </button>
+        </div>
+        <template is="dom-repeat" items="[[mainSitesList_]]">
+          <privacy-sandbox-interest-item interest="[[item]]"
+              on-interest-changed="onInterestChanged_">
+          </privacy-sandbox-interest-item>
+        </template>
+        <template is="dom-if" if="[[!isRemainingSitesListEmpty_(
+            remainingSitesList_.length)]]" restamp>
+          <cr-expand-button id="seeAllSites"
+              expanded="{{seeAllSitesExpanded_}}">
+            $i18n{fledgePageSeeAllSitesLabel}
+          </cr-expand-button>
+          <iron-collapse opened="[[seeAllSitesExpanded_]]">
+            <template is="dom-repeat" items="[[remainingSitesList_]]">
+              <privacy-sandbox-interest-item interest="[[item]]"
+                  on-interest-changed="onInterestChanged_">
+              </privacy-sandbox-interest-item>
+            </template>
+          </iron-collapse>
+        </template>
+        <div id="currentSitesDescriptionEmpty"
+            class="no-sites cr-secondary-text"
+            hidden="[[!isSitesListEmpty_(sitesList_.length)]]">
+          $i18n{fledgePageCurrentSitesDescriptionEmpty}
+        </div>
       </template>
-      <template is="dom-if" if="[[!isRemainingSitesListEmpty_(
-          remainingSitesList_.length)]]" restamp>
-        <cr-expand-button id="seeAllSites" expanded="{{seeAllSitesExpanded_}}">
-          $i18n{fledgePageSeeAllSitesLabel}
-        </cr-expand-button>
-        <iron-collapse opened="[[seeAllSitesExpanded_]]">
-          <template is="dom-repeat" items="[[remainingSitesList_]]">
-            <privacy-sandbox-interest-item interest="[[item]]"
-                on-interest-changed="onInterestChanged_">
-            </privacy-sandbox-interest-item>
-          </template>
-        </iron-collapse>
-      </template>
-      <div id="currentSitesDescriptionEmpty"
+      <div id="currentSitesDescriptionDisabled"
           class="no-sites cr-secondary-text"
-          hidden="[[!isSitesListEmpty_(sitesList_.length)]]">
-        $i18n{fledgePageCurrentSitesDescriptionEmpty}
+          hidden="[[prefs.privacy_sandbox.m1.fledge_enabled.value]]">
+        $i18n{fledgePageCurrentSitesDescriptionDisabled}
       </div>
-    </template>
-    <div id="currentSitesDescriptionDisabled"
-        class="no-sites cr-secondary-text"
-        hidden="[[prefs.privacy_sandbox.m1.fledge_enabled.value]]">
-      $i18n{fledgePageCurrentSitesDescriptionDisabled}
     </div>
   </div>
-</div>
+</template>
 <cr-expand-button id="blockedSitesRow" class="cr-row"
     expanded="{{blockedSitesExpanded_}}">
   $i18n{fledgePageBlockedSitesHeading}

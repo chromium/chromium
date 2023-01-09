@@ -145,6 +145,16 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         state => this.onFledgeStateChanged_(state));
   }
 
+  private isFledgePrefManaged_(): boolean {
+    const fledgeEnabledPref = this.getPref('privacy_sandbox.m1.fledge_enabled');
+    if (fledgeEnabledPref.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      assert(!fledgeEnabledPref.value);
+      return true;
+    }
+    return false;
+  }
+
   private onFledgeStateChanged_(state: FledgeState) {
     this.sitesList_ = state.joiningSites.map(site => {
       return {site, removed: false};
