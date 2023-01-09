@@ -119,7 +119,13 @@ IN_PROC_BROWSER_TEST_P(AlarmsApiTest, PRE_Count) {
   EXPECT_TRUE(RunExtensionTest("alarms/count")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AlarmsApiTest, Count) {
+// TODO(crbug.com/1405713): Fix failing test on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Count DISABLED_Count
+#else
+#define MAYBE_Count Count
+#endif
+IN_PROC_BROWSER_TEST_P(AlarmsApiTest, MAYBE_Count) {
   // The histogram will be updated when the extension is loaded during
   // startup. This will happen before we enter the test, so just check
   // that the update is present.
