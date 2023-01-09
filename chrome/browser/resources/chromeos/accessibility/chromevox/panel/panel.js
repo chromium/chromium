@@ -5,6 +5,7 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {constants} from '../../common/constants.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
@@ -334,10 +335,8 @@ export class Panel extends PanelInterface {
 
       // Add a menu item that opens the full list of ChromeBook keyboard
       // shortcuts. We want this to be at the top of the ChromeVox menu.
-      let localizedSlash = await new Promise(
-          resolve =>
-              chrome.accessibilityPrivate.getLocalizedDomKeyStringForKeyCode(
-                  KeyCode.OEM_2, resolve));
+      let localizedSlash =
+          await AsyncUtil.getLocalizedDomKeyStringForKeyCode(KeyCode.OEM_2);
       if (!localizedSlash) {
         localizedSlash = '/';
       }

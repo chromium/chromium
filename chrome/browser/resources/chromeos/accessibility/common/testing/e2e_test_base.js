@@ -25,6 +25,9 @@ E2ETestBase = class extends AccessibilityTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
+
+    // Alphabetical by file path.
+    await importModule('AsyncUtil', '/common/async_util.js');
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
     await importModule('constants', '/common/constants.js');
@@ -247,7 +250,7 @@ E2ETestBase = class extends AccessibilityTestBase {
     return new Promise(this.newCallback(async resolve => {
       // Make sure the test doesn't finish until this function has resolved.
       let callback = this.newCallback(resolve);
-      this.desktop_ = await new Promise(r => chrome.automation.getDesktop(r));
+      this.desktop_ = await AsyncUtil.getDesktop();
       const url = opt_params.url || DocUtils.createUrlForDoc(doc);
 
       const hasLacrosChromePath = await new Promise(
@@ -267,7 +270,7 @@ E2ETestBase = class extends AccessibilityTestBase {
           // We have yet to request navigation in the Lacros tab. Do so now by
           // getting the default focus (the address bar), setting the value to
           // the url and then performing do default on the auto completion node.
-          const focus = await new Promise(r => chrome.automation.getFocus(r));
+          const focus = await AsyncUtil.getFocus();
           // It's possible focus is elsewhere; wait until it lands on the
           // address bar text field.
           if (focus.role !== chrome.automation.RoleType.TEXT_FIELD) {

@@ -7,6 +7,7 @@ const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;
 
 import {AutomationPredicate} from '../../common/automation_predicate.js';
+import {AsyncUtil} from '../../common/async_util.js';
 import {EventHandler} from '../../common/event_handler.js';
 
 export class FocusHandler {
@@ -52,11 +53,8 @@ export class FocusHandler {
       return;
     }
 
-    const desktop =
-        await new Promise(resolve => chrome.automation.getDesktop(resolve));
-
-    const focus =
-        await new Promise(resolve => chrome.automation.getFocus(resolve));
+    const desktop = await AsyncUtil.getDesktop();
+    const focus = await AsyncUtil.getFocus();
     if (focus && AutomationPredicate.editText(focus)) {
       this.editableNode_ = focus;
     }

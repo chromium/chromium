@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation from a desktop automation node.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
@@ -138,8 +139,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     this.addListener_(EventType.VALUE_CHANGED, this.onValueChanged);
 
     await AutomationObjectConstructorInstaller.init(node);
-    const focus =
-        await new Promise(resolve => chrome.automation.getFocus(resolve));
+    const focus = await AsyncUtil.getFocus();
     if (focus) {
       const event = new CustomAutomationEvent(
           EventType.FOCUS, focus,
@@ -914,8 +914,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       throw new Error('DesktopAutomationInterface.instance already exists.');
     }
 
-    const desktop =
-        await new Promise(resolve => chrome.automation.getDesktop(resolve));
+    const desktop = await AsyncUtil.getDesktop();
     DesktopAutomationInterface.instance = new DesktopAutomationHandler(desktop);
   }
 }

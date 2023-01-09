@@ -6,6 +6,7 @@
  * @fileoverview A collection of JavaScript utilities used to simplify working
  * with keyboard events.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {KeyCode} from '../../common/key_code.js';
 
 import {KeySequence} from './key_sequence.js';
@@ -384,10 +385,8 @@ export class KeyUtil {
             }
 
             // First, try using Chrome OS's localized DOM key string conversion.
-            let domKeyString = await new Promise(
-                resolve =>
-                    chrome.accessibilityPrivate
-                        .getLocalizedDomKeyStringForKeyCode(keyCode, resolve));
+            let domKeyString =
+                await AsyncUtil.getLocalizedDomKeyStringForKeyCode(keyCode);
             if (!domKeyString) {
               tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
               break;

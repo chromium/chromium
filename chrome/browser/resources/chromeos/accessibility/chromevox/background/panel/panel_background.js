@@ -6,6 +6,7 @@
  * @fileoverview Handles logic for the ChromeVox panel that requires state from
  * the background context.
  */
+import {AsyncUtil} from '../../../common/async_util.js';
 import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
@@ -268,8 +269,7 @@ export class PanelBackground {
    * @private
    */
   async setPanelCollapseWatcher_() {
-    const desktop =
-        await new Promise((resolve) => chrome.automation.getDesktop(resolve));
+    const desktop = await AsyncUtil.getDesktop();
     let notifyPanelCollapsed;
     this.resolvePanelCollapsed_ = new Promise(resolve => {
       notifyPanelCollapsed = resolve;

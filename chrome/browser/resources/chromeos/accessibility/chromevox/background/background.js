@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
@@ -354,8 +355,7 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   async setCurrentRangeToFocus_() {
-    const focus =
-        await new Promise(resolve => chrome.automation.getFocus(resolve));
+    const focus = await AsyncUtil.getFocus();
     if (focus) {
       this.setCurrentRange(CursorRange.fromNode(focus));
     } else {

@@ -10,6 +10,8 @@ AccessibilityExtensionRepeatedEventHandlerTest =
     class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
+
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
     await importModule(

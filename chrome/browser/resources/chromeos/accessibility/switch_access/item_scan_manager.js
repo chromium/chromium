@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AsyncUtil} from '../common/async_util.js';
 import {AutomationUtil} from '../common/automation_util.js';
 import {EventGenerator} from '../common/event_generator.js';
 import {EventHandler} from '../common/event_handler.js';
@@ -123,8 +124,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
       this.exitGroup_();
     }
 
-    const focus =
-        await new Promise(resolve => chrome.automation.getFocus(resolve));
+    const focus = await AsyncUtil.getFocus();
     // First, try to move back to the focused node.
     if (focus) {
       this.moveTo_(focus);

@@ -5,6 +5,7 @@
 /**
  * @fileoverview Creates event stream logger.
  */
+import {AsyncUtil} from '../../../common/async_util.js';
 import {LocalStorage} from '../../../common/local_storage.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
@@ -29,8 +30,7 @@ export class EventStreamLogger {
 
   /** Initializes global state for EventStreamLogger. */
   static async init() {
-    const desktop =
-        await new Promise(resolve => chrome.automation.getDesktop(resolve));
+    const desktop = await AsyncUtil.getDesktop();
     EventStreamLogger.instance = new EventStreamLogger(desktop);
     EventStreamLogger.instance.updateAllFilters(
         LocalStorage.getBoolean('enableEventStreamLogging'));
