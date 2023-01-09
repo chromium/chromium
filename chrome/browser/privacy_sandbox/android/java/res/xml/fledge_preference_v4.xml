@@ -15,21 +15,21 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="current_fledge_sites"
         android:title="@string/settings_fledge_page_current_sites_heading"
-        android:summary="@string/settings_fledge_page_current_sites_description"
-        app:allowDividerAbove="false"
-        app:allowDividerBelow="false" />
+        android:summary="@string/settings_fledge_page_current_sites_description" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
+    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="fledge_disabled"
-        android:layout="@layout/centered_image_preference"
+        android:title="@string/settings_fledge_page_current_sites_heading"
         android:summary="@string/settings_fledge_page_current_sites_description_disabled"
-        android:icon="@drawable/ic_motion_photos_off_24dp" />
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
+    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
         android:key="fledge_empty"
-        android:layout="@layout/centered_image_preference"
+        android:title="@string/settings_fledge_page_current_sites_heading"
         android:summary="@string/settings_fledge_page_current_sites_description_empty"
-        android:icon="@drawable/ic_hourglass_empty_24dp" />
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_all_sites"
