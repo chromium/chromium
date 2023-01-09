@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
@@ -375,7 +374,7 @@ PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocIfNeededToFit() {
   return ReallocBuffer(used_);
 }
 
-bool PaintOpBuffer::EqualsForTesting(const PaintOpBuffer& other) const {
+bool PaintOpBuffer::operator==(const PaintOpBuffer& other) const {
   // Check status fields first, which is faster than checking equality of
   // paint operations. This doesn't need to be complete, and should not check
   // data buffer capacity related fields because they don't affect equality.
@@ -392,10 +391,17 @@ bool PaintOpBuffer::EqualsForTesting(const PaintOpBuffer& other) const {
     return false;
   }
 
-  return base::ranges::equal(*this, other,
-                             [](const PaintOp& a, const PaintOp& b) {
-                               return a.EqualsForTesting(b);  // IN-TEST
-                             });
+  Iterator left_iter(*this);
+  Iterator right_iter(other);
+
+  for (; left_iter != left_iter.end(); ++left_iter, ++right_iter) {
+    if (*left_iter != *right_iter)
+      return false;
+  }
+
+  DCHECK(left_iter == left_iter.end());
+  DCHECK(right_iter == right_iter.end());
+  return true;
 }
 
 bool PaintOpBuffer::NeedsAdditionalInvalidationForLCDText(

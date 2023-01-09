@@ -49,21 +49,32 @@ PaintImage::~PaintImage() = default;
 PaintImage& PaintImage::operator=(const PaintImage& other) = default;
 PaintImage& PaintImage::operator=(PaintImage&& other) = default;
 
-bool PaintImage::IsSameForTesting(const PaintImage& other) const {
-  return sk_image_ == other.sk_image_ &&
-         !!paint_record_ == !!other.paint_record_ &&
-         (!paint_record_ ||
-          &paint_record_->GetFirstOp() == &other.paint_record_->GetFirstOp()) &&
-         paint_record_rect_ == other.paint_record_rect_ &&
-         content_id_ == other.content_id_ &&
-         paint_image_generator_ == other.paint_image_generator_ &&
-         id_ == other.id_ && animation_type_ == other.animation_type_ &&
-         completion_state_ == other.completion_state_ &&
-         is_multipart_ == other.is_multipart_ &&
-         texture_backing_ == other.texture_backing_ &&
-         paint_worklet_input_ == other.paint_worklet_input_;
+bool PaintImage::operator==(const PaintImage& other) const {
+  if (sk_image_ != other.sk_image_)
+    return false;
+  if (paint_record_ != other.paint_record_)
+    return false;
+  if (paint_record_rect_ != other.paint_record_rect_)
+    return false;
+  if (content_id_ != other.content_id_)
+    return false;
+  if (paint_image_generator_ != other.paint_image_generator_)
+    return false;
+  if (id_ != other.id_)
+    return false;
+  if (animation_type_ != other.animation_type_)
+    return false;
+  if (completion_state_ != other.completion_state_)
+    return false;
+  if (is_multipart_ != other.is_multipart_)
+    return false;
+  if (texture_backing_ != other.texture_backing_)
+    return false;
+  if (paint_worklet_input_ != other.paint_worklet_input_)
+    return false;
   // Do not check may_be_lcp_candidate_ as it should not affect any rendering
   // operation, only metrics collection.
+  return true;
 }
 
 // static

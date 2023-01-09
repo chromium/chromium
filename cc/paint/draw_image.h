@@ -53,10 +53,7 @@ class CC_PAINT_EXPORT DrawImage {
   DrawImage& operator=(DrawImage&& other);
   DrawImage& operator=(const DrawImage& other);
 
-  // For testing only. Checks if `this` and `other` are the same image, i.e.
-  // share the same underlying image. `a.IsSameForTesting(b)` will be true after
-  // `DrawImage b = a;`.
-  bool IsSameForTesting(const DrawImage& other) const;
+  bool operator==(const DrawImage& other) const;
 
   const PaintImage& paint_image() const { return paint_image_; }
   bool use_dark_mode() const { return use_dark_mode_; }

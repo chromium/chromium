@@ -226,11 +226,10 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
     TargetColorParams target_color_params;
     std::vector<const DrawImage*> images;
     raster->GetDiscardableImagesInRect(gfx::Rect(0, 0, 256, 256), &images);
-    ASSERT_EQ(1u, images.size());
+    EXPECT_EQ(1u, images.size());
     DrawImage image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
                     target_color_params);
-    EXPECT_TRUE(
-        discardable_image[0][0].IsSameForTesting(images[0]->paint_image()));
+    EXPECT_EQ(discardable_image[0][0], images[0]->paint_image());
     EXPECT_EQ(target_color_params.color_space, image.target_color_space());
   }
   // Shifted tile sized iterators. These should find only one pixel ref.
@@ -239,11 +238,10 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
     target_color_params.color_space = gfx::ColorSpace::CreateXYZD50();
     std::vector<const DrawImage*> images;
     raster->GetDiscardableImagesInRect(gfx::Rect(260, 260, 256, 256), &images);
-    ASSERT_EQ(1u, images.size());
+    EXPECT_EQ(1u, images.size());
     DrawImage image(*images[0], 1.f, PaintImage::kDefaultFrameIndex,
                     target_color_params);
-    EXPECT_TRUE(
-        discardable_image[1][1].IsSameForTesting(images[0]->paint_image()));
+    EXPECT_EQ(discardable_image[1][1], images[0]->paint_image());
     EXPECT_EQ(target_color_params.color_space, image.target_color_space());
   }
   // Ensure there's no discardable pixel refs in the empty cell
@@ -256,13 +254,10 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
   {
     std::vector<const DrawImage*> images;
     raster->GetDiscardableImagesInRect(gfx::Rect(0, 0, 512, 512), &images);
-    ASSERT_EQ(3u, images.size());
-    EXPECT_TRUE(
-        discardable_image[0][0].IsSameForTesting(images[0]->paint_image()));
-    EXPECT_TRUE(
-        discardable_image[0][1].IsSameForTesting(images[1]->paint_image()));
-    EXPECT_TRUE(
-        discardable_image[1][1].IsSameForTesting(images[2]->paint_image()));
+    EXPECT_EQ(3u, images.size());
+    EXPECT_EQ(discardable_image[0][0], images[0]->paint_image());
+    EXPECT_EQ(discardable_image[0][1], images[1]->paint_image());
+    EXPECT_EQ(discardable_image[1][1], images[2]->paint_image());
   }
 }
 

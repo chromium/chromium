@@ -23,7 +23,6 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/lottie_test_data.h"
-#include "cc/test/paint_image_matchers.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_paint_worklet_input.h"
 #include "skia/buildflags.h"
@@ -95,8 +94,8 @@ class DiscardableImageMapTest : public testing::Test {
 
     EXPECT_EQ(draw_images.size(), position_draw_images.size());
     for (size_t i = 0; i < draw_images.size(); ++i) {
-      EXPECT_TRUE(draw_images[i].paint_image().IsSameForTesting(
-          position_draw_images[i].image));
+      EXPECT_TRUE(draw_images[i].paint_image() ==
+                  position_draw_images[i].image);
       EXPECT_EQ(draw_images[i].target_color_space(),
                 target_color_params.color_space);
     }
@@ -155,7 +154,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
       std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
       if ((x + y) & 1) {
         EXPECT_EQ(1u, images.size()) << x << " " << y;
-        EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image[y][x]))
+        EXPECT_TRUE(images[0].image == discardable_image[y][x])
             << x << " " << y;
         EXPECT_EQ(gfx::Rect(x * 512 + 6, y * 512 + 6, 500, 500),
                   inset_rects[0]);
@@ -171,16 +170,16 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(4u, images.size());
 
-  EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image[1][2]));
+  EXPECT_TRUE(images[0].image == discardable_image[1][2]);
   EXPECT_EQ(gfx::Rect(2 * 512 + 6, 512 + 6, 500, 500), inset_rects[0]);
 
-  EXPECT_TRUE(images[1].image.IsSameForTesting(discardable_image[2][1]));
+  EXPECT_TRUE(images[1].image == discardable_image[2][1]);
   EXPECT_EQ(gfx::Rect(512 + 6, 2 * 512 + 6, 500, 500), inset_rects[1]);
 
-  EXPECT_TRUE(images[2].image.IsSameForTesting(discardable_image[2][3]));
+  EXPECT_TRUE(images[2].image == discardable_image[2][3]);
   EXPECT_EQ(gfx::Rect(3 * 512 + 6, 2 * 512 + 6, 500, 500), inset_rects[2]);
 
-  EXPECT_TRUE(images[3].image.IsSameForTesting(discardable_image[3][2]));
+  EXPECT_TRUE(images[3].image == discardable_image[3][2]);
   EXPECT_EQ(gfx::Rect(2 * 512 + 6, 3 * 512 + 6, 500, 500), inset_rects[3]);
 }
 
@@ -226,7 +225,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
       std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
       if ((x + y) & 1) {
         EXPECT_EQ(1u, images.size()) << x << " " << y;
-        EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image[y][x]))
+        EXPECT_TRUE(images[0].image == discardable_image[y][x])
             << x << " " << y;
         EXPECT_EQ(gfx::Rect(1024 + x * 512 + 6, y * 512 + 6, 500, 500),
                   inset_rects[0]);
@@ -242,17 +241,17 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
     std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
     EXPECT_EQ(4u, images.size());
 
-    EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image[1][2]));
+    EXPECT_TRUE(images[0].image == discardable_image[1][2]);
     EXPECT_EQ(gfx::Rect(1024 + 2 * 512 + 6, 512 + 6, 500, 500), inset_rects[0]);
 
-    EXPECT_TRUE(images[1].image.IsSameForTesting(discardable_image[2][1]));
+    EXPECT_TRUE(images[1].image == discardable_image[2][1]);
     EXPECT_EQ(gfx::Rect(1024 + 512 + 6, 2 * 512 + 6, 500, 500), inset_rects[1]);
 
-    EXPECT_TRUE(images[2].image.IsSameForTesting(discardable_image[2][3]));
+    EXPECT_TRUE(images[2].image == discardable_image[2][3]);
     EXPECT_EQ(gfx::Rect(1024 + 3 * 512 + 6, 2 * 512 + 6, 500, 500),
               inset_rects[2]);
 
-    EXPECT_TRUE(images[3].image.IsSameForTesting(discardable_image[3][2]));
+    EXPECT_TRUE(images[3].image == discardable_image[3][2]);
     EXPECT_EQ(gfx::Rect(1024 + 2 * 512 + 6, 3 * 512 + 6, 500, 500),
               inset_rects[3]);
   }
@@ -325,7 +324,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectOnePixelQuery) {
       std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
       if ((x + y) & 1) {
         EXPECT_EQ(1u, images.size()) << x << " " << y;
-        EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image[y][x]))
+        EXPECT_TRUE(images[0].image == discardable_image[y][x])
             << x << " " << y;
         EXPECT_EQ(gfx::Rect(x * 512 + 6, y * 512 + 6, 500, 500),
                   inset_rects[0]);
@@ -355,7 +354,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMassiveImage) {
       GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(1u, images.size());
-  EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
+  EXPECT_TRUE(images[0].image == discardable_image);
   EXPECT_EQ(gfx::Rect(0, 0, 2048, 2048), inset_rects[0]);
 }
 
@@ -381,7 +380,7 @@ TEST_F(DiscardableImageMapTest, PaintDestroyedWhileImageIsDrawn) {
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
   EXPECT_EQ(1u, images.size());
-  EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
+  EXPECT_TRUE(images[0].image == discardable_image);
 }
 
 // Check if SkNoDrawCanvas does not crash for large layers.
@@ -466,7 +465,7 @@ TEST_F(DiscardableImageMapTest, NullPaintOnSaveLayer) {
   std::vector<PositionScaleDrawImage> images =
       GetDiscardableImagesInRect(image_map, gfx::Rect(0, 0, 1, 1));
   EXPECT_EQ(1u, images.size());
-  EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
+  EXPECT_TRUE(images[0].image == discardable_image);
 }
 
 TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImage) {
@@ -490,7 +489,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectMaxImage) {
       GetDiscardableImagesInRect(image_map, gfx::Rect(42, 42, 1, 1));
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(1u, images.size());
-  EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
+  EXPECT_TRUE(images[0].image == discardable_image);
   EXPECT_EQ(gfx::Rect(42, 42, 2006, 2006), inset_rects[0]);
 }
 
@@ -645,8 +644,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
           gfx::Rect(x * 512, y * 512, 500, 500), &draw_images);
       if ((x + y) & 1) {
         EXPECT_EQ(1u, draw_images.size()) << x << " " << y;
-        EXPECT_TRUE(draw_images[0]->paint_image().IsSameForTesting(
-            discardable_image[y][x]))
+        EXPECT_TRUE(draw_images[0]->paint_image() == discardable_image[y][x])
             << x << " " << y;
         EXPECT_EQ(std::max(x * 0.5f, kMinScale),
                   draw_images[0]->scale().fWidth);
@@ -663,14 +661,10 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
   image_map.GetDiscardableImagesInRect(gfx::Rect(512, 512, 2048, 2048),
                                        &draw_images);
   EXPECT_EQ(4u, draw_images.size());
-  EXPECT_TRUE(
-      draw_images[0]->paint_image().IsSameForTesting(discardable_image[1][2]));
-  EXPECT_TRUE(
-      draw_images[1]->paint_image().IsSameForTesting(discardable_image[2][1]));
-  EXPECT_TRUE(
-      draw_images[2]->paint_image().IsSameForTesting(discardable_image[2][3]));
-  EXPECT_TRUE(
-      draw_images[3]->paint_image().IsSameForTesting(discardable_image[3][2]));
+  EXPECT_TRUE(draw_images[0]->paint_image() == discardable_image[1][2]);
+  EXPECT_TRUE(draw_images[1]->paint_image() == discardable_image[2][1]);
+  EXPECT_TRUE(draw_images[2]->paint_image() == discardable_image[2][3]);
+  EXPECT_TRUE(draw_images[3]->paint_image() == discardable_image[3][2]);
 }
 
 TEST_F(DiscardableImageMapTest, ClipsImageRects) {
@@ -696,7 +690,7 @@ TEST_F(DiscardableImageMapTest, ClipsImageRects) {
       GetDiscardableImagesInRect(image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(images);
   EXPECT_EQ(1u, images.size());
-  EXPECT_TRUE(images[0].image.IsSameForTesting(discardable_image));
+  EXPECT_TRUE(images[0].image == discardable_image);
   EXPECT_EQ(gfx::Rect(250, 250), inset_rects[0]);
 }
 
@@ -725,12 +719,12 @@ TEST_F(DiscardableImageMapTest, GathersDiscardableImagesFromNestedOps) {
   std::vector<const DrawImage*> images;
   image_map.GetDiscardableImagesInRect(gfx::Rect(0, 0, 5, 95), &images);
   EXPECT_EQ(1u, images.size());
-  EXPECT_TRUE(discardable_image.IsSameForTesting(images[0]->paint_image()));
+  EXPECT_TRUE(discardable_image == images[0]->paint_image());
 
   images.clear();
   image_map.GetDiscardableImagesInRect(gfx::Rect(105, 105, 5, 95), &images);
   EXPECT_EQ(1u, images.size());
-  EXPECT_TRUE(discardable_image2.IsSameForTesting(images[0]->paint_image()));
+  EXPECT_TRUE(discardable_image2 == images[0]->paint_image());
 }
 
 TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
@@ -774,12 +768,11 @@ TEST_F(DiscardableImageMapTest, GathersAnimatedImages) {
   display_list->discardable_image_map().GetDiscardableImagesInRect(visible_rect,
                                                                    &images);
   ASSERT_EQ(images.size(), 3u);
-  EXPECT_TRUE(images[0]->paint_image().IsSameForTesting(static_image));
+  EXPECT_EQ(images[0]->paint_image(), static_image);
   EXPECT_DCHECK_DEATH(images[0]->frame_index());
-  EXPECT_TRUE(images[1]->paint_image().IsSameForTesting(animated_loop_none));
+  EXPECT_EQ(images[1]->paint_image(), animated_loop_none);
   EXPECT_DCHECK_DEATH(images[1]->frame_index());
-  EXPECT_TRUE(
-      images[2]->paint_image().IsSameForTesting(animation_loop_infinite));
+  EXPECT_EQ(images[2]->paint_image(), animation_loop_infinite);
   EXPECT_DCHECK_DEATH(images[2]->frame_index());
 }
 
@@ -811,7 +804,7 @@ TEST_F(DiscardableImageMapTest, GathersPaintWorklets) {
   std::vector<PositionScaleDrawImage> images = GetDiscardableImagesInRect(
       display_list->discardable_image_map(), visible_rect);
   ASSERT_EQ(images.size(), 1u);
-  EXPECT_TRUE(images[0].image.IsSameForTesting(static_image));
+  EXPECT_EQ(images[0].image, static_image);
 }
 
 TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
@@ -854,7 +847,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintRecordShaders) {
       GetDiscardableImagesInRect(image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(draw_images);
   ASSERT_EQ(draw_images.size(), 1u);
-  EXPECT_TRUE(draw_images[0].image.IsSameForTesting(animated_image));
+  EXPECT_EQ(draw_images[0].image, animated_image);
   // The position of the image is the position of the DrawRectOp that uses the
   // shader.
   EXPECT_EQ(gfx::Rect(400, 400), inset_rects[0]);
@@ -899,7 +892,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInPaintFilters) {
       GetDiscardableImagesInRect(image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(draw_images);
   ASSERT_EQ(draw_images.size(), 1u);
-  EXPECT_TRUE(draw_images[0].image.IsSameForTesting(animated_image));
+  EXPECT_EQ(draw_images[0].image, animated_image);
   // The position of the image is the position of the DrawRectOp that uses the
   // filter. Since the bounds of the filter does not depend on the source/input,
   // the resulting bounds is that of the RecordPaintFilter.
@@ -928,7 +921,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInSaveLayers) {
       GetDiscardableImagesInRect(image_map, visible_rect);
   std::vector<gfx::Rect> inset_rects = InsetImageRects(draw_images);
   ASSERT_EQ(draw_images.size(), 1u);
-  EXPECT_TRUE(draw_images[0].image.IsSameForTesting(image));
+  EXPECT_EQ(draw_images[0].image, image);
   EXPECT_EQ(gfx::Rect(500, 500), inset_rects[0]);
   EXPECT_EQ(SkSize::Make(1.f, 1.f), draw_images[0].scale);
 }
@@ -1234,10 +1227,10 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectSkottieWithImages) {
   std::vector<PositionScaleDrawImage> images_out =
       GetDiscardableImagesInRect(image_map, gfx::Rect(1024, 0, 1024, 2048));
   ASSERT_THAT(images_out, SizeIs(2));
-  EXPECT_THAT(images_out, Contains(Field(&PositionScaleDrawImage::image,
-                                         ImageIsSame(image_0))));
-  EXPECT_THAT(images_out, Contains(Field(&PositionScaleDrawImage::image,
-                                         ImageIsSame(image_1))));
+  EXPECT_THAT(images_out,
+              Contains(Field(&PositionScaleDrawImage::image, Eq(image_0))));
+  EXPECT_THAT(images_out,
+              Contains(Field(&PositionScaleDrawImage::image, Eq(image_1))));
 }
 
 TEST_F(DiscardableImageMapTest,

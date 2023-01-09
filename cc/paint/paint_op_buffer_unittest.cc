@@ -218,7 +218,7 @@ TEST_F(PaintOpAppendTest, MoveThenReappend) {
   // Should be possible to reappend to the original and get the same result.
   PushOps(&original);
   VerifyOps(&original);
-  EXPECT_TRUE(original.EqualsForTesting(destination));
+  EXPECT_EQ(original, destination);
 }
 
 TEST_F(PaintOpAppendTest, MoveThenReappendOperatorEq) {
@@ -231,7 +231,7 @@ TEST_F(PaintOpAppendTest, MoveThenReappendOperatorEq) {
   // Should be possible to reappend to the original and get the same result.
   PushOps(&original);
   VerifyOps(&original);
-  EXPECT_TRUE(original.EqualsForTesting(destination));
+  EXPECT_EQ(original, destination);
 }
 
 // Verify that a SaveLayerAlpha / Draw / Restore can be optimized to just
@@ -1938,8 +1938,10 @@ TEST_P(PaintOpSerializationTest, SmokeTest) {
   for (const PaintOp& base_written : DeserializerIterator(
            output_.get(), serializer.TotalBytesWritten(),
            serializer.options_provider()->deserialize_options())) {
+    SCOPED_TRACE(base::StringPrintf(
+        "%s #%zu", PaintOpTypeToString(GetParamType()).c_str(), i));
     ASSERT_TRUE(iter);
-    EXPECT_THAT(base_written, PaintOpEq(std::ref(*iter))) << "i: " << i;
+    EXPECT_EQ(*iter, base_written);
     ++iter;
     ++i;
   }
@@ -2107,7 +2109,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
         output_.get(), bytes_written, deserialized.get(), deserialized_size,
         &bytes_read, options_provider.deserialize_options());
     ASSERT_TRUE(written) << PaintOpTypeToString(GetParamType());
-    EXPECT_THAT(op, PaintOpEq<const PaintOp&>(*written));
+    EXPECT_EQ(op, *written);
     written->DestroyThis();
     written = nullptr;
 
@@ -2717,7 +2719,7 @@ MATCHER(NonLazyImage, "") {
 }
 
 MATCHER_P(MatchesPaintImage, paint_image, "") {
-  return arg.paint_image().IsSameForTesting(paint_image);
+  return arg.paint_image() == paint_image;
 }
 
 MATCHER_P2(MatchesRect, rect, scale, "") {
@@ -3205,7 +3207,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
         EXPECT_THAT(actual.record(), PaintOpsAreEq(ScaleOp(scale_x, scale_y)));
       }
     } else {
-      EXPECT_TRUE(filter->EqualsForTesting(*deserialized_filter));
+      EXPECT_TRUE(*filter == *deserialized_filter);
     }
   }
 }
@@ -3477,8 +3479,7 @@ TEST(PaintOpBufferTest, CustomData) {
 
     PaintOpBuffer buffer2;
     buffer2.push<CustomDataOp>(1234u);
-    EXPECT_THAT(new_buffer.GetFirstOp(),
-                PaintOpEq(std::ref(buffer2.GetFirstOp())));
+    EXPECT_EQ(new_buffer.GetFirstOp(), buffer2.GetFirstOp());
   }
 
   // Push and verify.
@@ -3524,7 +3525,7 @@ TEST(PaintOpBufferTest, SecurityConstrainedImageSerialization) {
                        options_provider.deserialize_options(),
                        enable_security_constraints);
   reader.Read(&out_filter);
-  EXPECT_TRUE(filter->EqualsForTesting(*out_filter));
+  EXPECT_TRUE(*filter == *out_filter);
 }
 
 TEST(PaintOpBufferTest, DrawImageRectSerializeScaledImages) {
@@ -3909,7 +3910,9 @@ TEST(PaintOpBufferTest, SetMatrixOpWithNonIdentityPlaybackParams) {
       PlaybackParams params(nullptr, original_ctm);
       SetMatrixOp op(matrix);
       SetMatrixOp::Raster(&op, canvas, params);
-      EXPECT_TRUE(canvas->getLocalToDevice() == SkM44(original_ctm, matrix));
+
+      EXPECT_TRUE(AnnotateOp::AreSkM44sEqual(canvas->getLocalToDevice(),
+                                             SkM44(original_ctm, matrix)));
     }
   }
 }

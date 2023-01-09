@@ -563,7 +563,6 @@ cc_test_static_library("test_support") {
     "test/mock_layer_tree_mutator.cc",
     "test/mock_layer_tree_mutator.h",
     "test/mock_occlusion_tracker.h",
-    "test/paint_image_matchers.h",
     "test/paint_op_helper.h",
     "test/paint_op_matchers.h",
     "test/pixel_comparator.cc",

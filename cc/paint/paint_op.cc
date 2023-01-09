@@ -106,6 +106,20 @@ void DrawImageRect(SkCanvas* canvas,
   canvas->drawImageRect(image, src, dst, options, paint, constraint);
 }
 
+bool GrSlugAreEqual(sk_sp<GrSlug> left, sk_sp<GrSlug> right) {
+  if (!left && !right) {
+    return true;
+  }
+  if (left && right) {
+    auto left_data = left->serialize();
+    auto right_data = right->serialize();
+    return left_data->equals(right_data.get());
+  }
+  return false;
+}
+
+}  // namespace
+
 #define TYPES(M)      \
   M(AnnotateOp)       \
   M(ClipPathOp)       \
@@ -264,12 +278,8 @@ static const DeserializeFunction g_deserialize_functions[kNumOpTypes] = {
     TYPES(M)};
 #undef M
 
-using EqualsFunction = bool (*)(const PaintOp& left, const PaintOp& right);
-#define M(T)                                             \
-  [](const PaintOp& left, const PaintOp& right) {        \
-    return static_cast<const T&>(left).EqualsForTesting( \
-        static_cast<const T&>(right));                   \
-  },
+using EqualsFunction = bool (*)(const PaintOp* left, const PaintOp* right);
+#define M(T) &T::AreEqual,
 static const EqualsFunction g_equals_operator[kNumOpTypes] = {TYPES(M)};
 #undef M
 
@@ -313,8 +323,6 @@ static const AnalyzeOpFunc g_analyze_op_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
 #undef TYPES
-
-}  // namespace
 
 const SkRect PaintOp::kUnsetRect = {SK_ScalarInfinity, 0, 0, 0};
 const size_t PaintOp::kMaxSkip;
@@ -1452,154 +1460,478 @@ void TranslateOp::Raster(const TranslateOp* op,
   canvas->translate(op->dx, op->dy);
 }
 
-bool AnnotateOp::EqualsForTesting(const AnnotateOp& other) const {
-  return annotation_type == other.annotation_type && rect == other.rect &&
-         !data == !other.data && (!data || data->equals(other.data.get()));
-}
-
-bool ClipPathOp::EqualsForTesting(const ClipPathOp& other) const {
-  return path == other.path && op == other.op && antialias == other.antialias;
-}
-
-bool ClipRectOp::EqualsForTesting(const ClipRectOp& other) const {
-  return rect == other.rect && op == other.op && antialias == other.antialias;
-}
-
-bool ClipRRectOp::EqualsForTesting(const ClipRRectOp& other) const {
-  return rrect == other.rrect && op == other.op && antialias == other.antialias;
-}
-
-bool ConcatOp::EqualsForTesting(const ConcatOp& other) const {
-  return matrix == other.matrix;
-}
-
-bool CustomDataOp::EqualsForTesting(const CustomDataOp& other) const {
-  return id == other.id;
-}
-
-bool DrawColorOp::EqualsForTesting(const DrawColorOp& other) const {
-  return color == other.color;
-}
-
-bool DrawDRRectOp::EqualsForTesting(const DrawDRRectOp& other) const {
-  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         outer == other.outer && inner == other.inner;
-}
-
-bool DrawImageOp::EqualsForTesting(const DrawImageOp& other) const {
-  // For now image, sampling and constraint are not compared.
-  // scale_adjustment intentionally omitted because it is added during
-  // serialization based on raster scale.
-  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         top == other.top && left == other.left;
-}
-
-bool DrawImageRectOp::EqualsForTesting(const DrawImageRectOp& other) const {
-  // For now image, sampling and constraint are not compared.
-  // scale_adjustment intentionally omitted because it is added during
-  // serialization based on raster scale.
-  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         src == other.src && dst == other.dst;
-}
-
-bool DrawIRectOp::EqualsForTesting(const DrawIRectOp& other) const {
-  return flags.EqualsForTesting(other.flags) && rect == other.rect;  // IN-TEST
-}
-
-bool DrawLineOp::EqualsForTesting(const DrawLineOp& other) const {
-  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         x0 == other.x0 && y0 == other.y0 && x1 == other.x1 && y1 == other.y1;
-}
-
-bool DrawOvalOp::EqualsForTesting(const DrawOvalOp& other) const {
-  return flags.EqualsForTesting(other.flags) && oval == other.oval;  // IN-TEST
-}
-
-bool DrawPathOp::EqualsForTesting(const DrawPathOp& other) const {
-  return flags.EqualsForTesting(other.flags) && path == other.path;  // IN-TEST
-}
-
-bool DrawRecordOp::EqualsForTesting(const DrawRecordOp& other) const {
-  return record.EqualsForTesting(other.record);  // IN-TEST
-}
-
-bool DrawRectOp::EqualsForTesting(const DrawRectOp& other) const {
-  return flags.EqualsForTesting(other.flags) && rect == other.rect;  // IN-TEST
-}
-
-bool DrawRRectOp::EqualsForTesting(const DrawRRectOp& other) const {
-  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         rrect == other.rrect;
-}
-
-bool DrawSkottieOp::EqualsForTesting(const DrawSkottieOp& other) const {
-  // TODO(malaykeshav): Verify the skottie objects of each PaintOb are equal
-  // bsed on the serialized bytes.
-  if (t != other.t || dst != other.dst || color_map != other.color_map ||
-      text_map != other.text_map) {
+// static
+bool PaintOp::AreSkPointsEqual(const SkPoint& left, const SkPoint& right) {
+  if (!AreEqualEvenIfNaN(left.fX, right.fX))
     return false;
+  if (!AreEqualEvenIfNaN(left.fY, right.fY))
+    return false;
+  return true;
+}
+
+// static
+bool PaintOp::AreSkPoint3sEqual(const SkPoint3& left, const SkPoint3& right) {
+  if (!AreEqualEvenIfNaN(left.fX, right.fX))
+    return false;
+  if (!AreEqualEvenIfNaN(left.fY, right.fY))
+    return false;
+  if (!AreEqualEvenIfNaN(left.fZ, right.fZ))
+    return false;
+  return true;
+}
+
+// static
+bool PaintOp::AreSkRectsEqual(const SkRect& left, const SkRect& right) {
+  if (!AreEqualEvenIfNaN(left.fLeft, right.fLeft))
+    return false;
+  if (!AreEqualEvenIfNaN(left.fTop, right.fTop))
+    return false;
+  if (!AreEqualEvenIfNaN(left.fRight, right.fRight))
+    return false;
+  if (!AreEqualEvenIfNaN(left.fBottom, right.fBottom))
+    return false;
+  return true;
+}
+
+// static
+bool PaintOp::AreSkRRectsEqual(const SkRRect& left, const SkRRect& right) {
+  char left_buffer[SkRRect::kSizeInMemory];
+  left.writeToMemory(left_buffer);
+  char right_buffer[SkRRect::kSizeInMemory];
+  right.writeToMemory(right_buffer);
+  return !memcmp(left_buffer, right_buffer, SkRRect::kSizeInMemory);
+}
+
+// static
+bool PaintOp::AreSkMatricesEqual(const SkMatrix& left, const SkMatrix& right) {
+  for (int i = 0; i < 9; ++i) {
+    if (!AreEqualEvenIfNaN(left.get(i), right.get(i)))
+      return false;
   }
-  return base::ranges::equal(
-      images, other.images, [](const auto& a, const auto& b) {
-        return a.first == b.first &&
-               // PaintImage::IsSameForTesting() returns false in cases where
-               // the
-               // image's content may be the same, but it got realloacted to a
-               // different spot somewhere in memory via the transfer cache. The
-               // next best thing is to just compare the dimensions of the
-               // PaintImage.
-               a.second.image.width() == b.second.image.width() &&
-               a.second.image.height() == b.second.image.height() &&
-               a.second.quality == b.second.quality;
-      });
-}
 
-bool DrawTextBlobOp::EqualsForTesting(const DrawTextBlobOp& other) const {
-  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         x == other.x && y == other.y && node_id == other.node_id &&
-         !slug == !other.slug &&
-         (!slug || slug->serialize()->equals(other.slug->serialize().get()));
-}
+  // If a serialized matrix says it is identity, then the original must have
+  // those values, as the serialization process clobbers the matrix values.
+  if (left.isIdentity()) {
+    if (SkMatrix::I() != left)
+      return false;
+    if (SkMatrix::I() != right)
+      return false;
+  }
 
-bool NoopOp::EqualsForTesting(const NoopOp& other) const {
+  if (left.getType() != right.getType())
+    return false;
+
   return true;
 }
 
-bool RestoreOp::EqualsForTesting(const RestoreOp& other) const {
+// static
+bool PaintOp::AreSkM44sEqual(const SkM44& left, const SkM44& right) {
+  for (int r = 0; r < 4; ++r) {
+    for (int c = 0; c < 4; ++c) {
+      if (!AreEqualEvenIfNaN(left.rc(r, c), right.rc(r, c)))
+        return false;
+    }
+  }
+
   return true;
 }
 
-bool RotateOp::EqualsForTesting(const RotateOp& other) const {
-  return degrees == other.degrees;
-}
+// static
+bool PaintOp::AreSkFlattenablesEqual(SkFlattenable* left,
+                                     SkFlattenable* right) {
+  if (!right || !left)
+    return !right && !left;
 
-bool SaveOp::EqualsForTesting(const SaveOp& other) const {
+  sk_sp<SkData> left_data = left->serialize();
+  sk_sp<SkData> right_data = right->serialize();
+  if (left_data->size() != right_data->size())
+    return false;
+  if (!left_data->equals(right_data.get()))
+    return false;
   return true;
 }
 
-bool SaveLayerOp::EqualsForTesting(const SaveLayerOp& other) const {
-  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         bounds == other.bounds;
+bool AnnotateOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const AnnotateOp*>(base_left);
+  auto* right = static_cast<const AnnotateOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->annotation_type != right->annotation_type)
+    return false;
+  if (!AreSkRectsEqual(left->rect, right->rect))
+    return false;
+  if (!left->data != !right->data)
+    return false;
+  if (left->data) {
+    if (left->data->size() != right->data->size())
+      return false;
+    if (0 !=
+        memcmp(left->data->data(), right->data->data(), right->data->size()))
+      return false;
+  }
+  return true;
 }
 
-bool SaveLayerAlphaOp::EqualsForTesting(const SaveLayerAlphaOp& other) const {
-  return bounds == other.bounds && alpha == other.alpha;
+bool ClipPathOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const ClipPathOp*>(base_left);
+  auto* right = static_cast<const ClipPathOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->path != right->path)
+    return false;
+  if (left->op != right->op)
+    return false;
+  if (left->antialias != right->antialias)
+    return false;
+  return true;
 }
 
-bool ScaleOp::EqualsForTesting(const ScaleOp& other) const {
-  return sx == other.sx && sy == other.sy;
+bool ClipRectOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const ClipRectOp*>(base_left);
+  auto* right = static_cast<const ClipRectOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (!AreSkRectsEqual(left->rect, right->rect))
+    return false;
+  if (left->op != right->op)
+    return false;
+  if (left->antialias != right->antialias)
+    return false;
+  return true;
 }
 
-bool SetMatrixOp::EqualsForTesting(const SetMatrixOp& other) const {
-  return matrix == other.matrix;
+bool ClipRRectOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const ClipRRectOp*>(base_left);
+  auto* right = static_cast<const ClipRRectOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (!AreSkRRectsEqual(left->rrect, right->rrect))
+    return false;
+  if (left->op != right->op)
+    return false;
+  if (left->antialias != right->antialias)
+    return false;
+  return true;
 }
 
-bool SetNodeIdOp::EqualsForTesting(const SetNodeIdOp& other) const {
-  return node_id == other.node_id;
+bool ConcatOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const ConcatOp*>(base_left);
+  auto* right = static_cast<const ConcatOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  return AreSkM44sEqual(left->matrix, right->matrix);
 }
 
-bool TranslateOp::EqualsForTesting(const TranslateOp& other) const {
-  return dx == other.dx && dy == other.dy;
+bool CustomDataOp::AreEqual(const PaintOp* base_left,
+                            const PaintOp* base_right) {
+  auto* left = static_cast<const CustomDataOp*>(base_left);
+  auto* right = static_cast<const CustomDataOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  return left->id == right->id;
+}
+
+bool DrawColorOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const DrawColorOp*>(base_left);
+  auto* right = static_cast<const DrawColorOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  return left->color == right->color;
+}
+
+bool DrawDRRectOp::AreEqual(const PaintOp* base_left,
+                            const PaintOp* base_right) {
+  auto* left = static_cast<const DrawDRRectOp*>(base_left);
+  auto* right = static_cast<const DrawDRRectOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (!AreSkRRectsEqual(left->outer, right->outer))
+    return false;
+  if (!AreSkRRectsEqual(left->inner, right->inner))
+    return false;
+  return true;
+}
+
+bool DrawImageOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const DrawImageOp*>(base_left);
+  auto* right = static_cast<const DrawImageOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  // TODO(enne): Test PaintImage equality once implemented
+  if (!AreEqualEvenIfNaN(left->left, right->left))
+    return false;
+  if (!AreEqualEvenIfNaN(left->top, right->top))
+    return false;
+
+  // scale_adjustment intentionally omitted because it is added during
+  // serialization based on raster scale.
+  return true;
+}
+
+bool DrawImageRectOp::AreEqual(const PaintOp* base_left,
+                               const PaintOp* base_right) {
+  auto* left = static_cast<const DrawImageRectOp*>(base_left);
+  auto* right = static_cast<const DrawImageRectOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  // TODO(enne): Test PaintImage equality once implemented
+  if (!AreSkRectsEqual(left->src, right->src))
+    return false;
+  if (!AreSkRectsEqual(left->dst, right->dst))
+    return false;
+
+  // scale_adjustment intentionally omitted because it is added during
+  // serialization based on raster scale.
+  return true;
+}
+
+bool DrawIRectOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const DrawIRectOp*>(base_left);
+  auto* right = static_cast<const DrawIRectOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (left->rect != right->rect)
+    return false;
+  return true;
+}
+
+bool DrawLineOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const DrawLineOp*>(base_left);
+  auto* right = static_cast<const DrawLineOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (!AreEqualEvenIfNaN(left->x0, right->x0))
+    return false;
+  if (!AreEqualEvenIfNaN(left->y0, right->y0))
+    return false;
+  if (!AreEqualEvenIfNaN(left->x1, right->x1))
+    return false;
+  if (!AreEqualEvenIfNaN(left->y1, right->y1))
+    return false;
+  return true;
+}
+
+bool DrawOvalOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const DrawOvalOp*>(base_left);
+  auto* right = static_cast<const DrawOvalOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (!AreSkRectsEqual(left->oval, right->oval))
+    return false;
+  return true;
+}
+
+bool DrawPathOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const DrawPathOp*>(base_left);
+  auto* right = static_cast<const DrawPathOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (left->path != right->path)
+    return false;
+  return true;
+}
+
+bool DrawRecordOp::AreEqual(const PaintOp* base_left,
+                            const PaintOp* base_right) {
+  auto* left = static_cast<const DrawRecordOp*>(base_left);
+  auto* right = static_cast<const DrawRecordOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  return left->record == right->record;
+}
+
+bool DrawRectOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const DrawRectOp*>(base_left);
+  auto* right = static_cast<const DrawRectOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (!AreSkRectsEqual(left->rect, right->rect))
+    return false;
+  return true;
+}
+
+bool DrawRRectOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const DrawRRectOp*>(base_left);
+  auto* right = static_cast<const DrawRRectOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (!AreSkRRectsEqual(left->rrect, right->rrect))
+    return false;
+  return true;
+}
+
+bool DrawSkottieOp::AreEqual(const PaintOp* base_left,
+                             const PaintOp* base_right) {
+  auto* left = static_cast<const DrawSkottieOp*>(base_left);
+  auto* right = static_cast<const DrawSkottieOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  // TODO(malaykeshav): Verify the skottie objects of each PaintOb are equal
+  // based on the serialized bytes.
+  if (left->t != right->t)
+    return false;
+  if (!AreSkRectsEqual(left->dst, right->dst))
+    return false;
+  if (left->images.size() != right->images.size())
+    return false;
+
+  auto left_iter = left->images.begin();
+  auto right_iter = right->images.begin();
+  for (; left_iter != left->images.end(); ++left_iter, ++right_iter) {
+    if (left_iter->first != right_iter->first ||
+        // PaintImage's comparison operator compares the underlying SkImage's
+        // pointer address. This does not necessarily hold in cases where the
+        // image's content may be the same, but it got realloacted to a
+        // different spot somewhere in memory via the transfer cache. The next
+        // best thing is to just compare the dimensions of the PaintImage.
+        left_iter->second.image.width() != right_iter->second.image.width() ||
+        left_iter->second.image.height() != right_iter->second.image.height() ||
+        left_iter->second.quality != right_iter->second.quality) {
+      return false;
+    }
+  }
+
+  if (left->color_map != right->color_map)
+    return false;
+
+  if (left->text_map != right->text_map)
+    return false;
+
+  return true;
+}
+
+bool DrawTextBlobOp::AreEqual(const PaintOp* base_left,
+                              const PaintOp* base_right) {
+  auto* left = static_cast<const DrawTextBlobOp*>(base_left);
+  auto* right = static_cast<const DrawTextBlobOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (!AreEqualEvenIfNaN(left->x, right->x))
+    return false;
+  if (!AreEqualEvenIfNaN(left->y, right->y))
+    return false;
+  if (left->node_id != right->node_id)
+    return false;
+  return GrSlugAreEqual(left->slug, right->slug);
+}
+
+bool NoopOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  return true;
+}
+
+bool RestoreOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  return true;
+}
+
+bool RotateOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const RotateOp*>(base_left);
+  auto* right = static_cast<const RotateOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (!AreEqualEvenIfNaN(left->degrees, right->degrees))
+    return false;
+  return true;
+}
+
+bool SaveOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  return true;
+}
+
+bool SaveLayerOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const SaveLayerOp*>(base_left);
+  auto* right = static_cast<const SaveLayerOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (left->flags != right->flags)
+    return false;
+  if (!AreSkRectsEqual(left->bounds, right->bounds))
+    return false;
+  return true;
+}
+
+bool SaveLayerAlphaOp::AreEqual(const PaintOp* base_left,
+                                const PaintOp* base_right) {
+  auto* left = static_cast<const SaveLayerAlphaOp*>(base_left);
+  auto* right = static_cast<const SaveLayerAlphaOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (!AreSkRectsEqual(left->bounds, right->bounds))
+    return false;
+  if (left->alpha != right->alpha)
+    return false;
+  return true;
+}
+
+bool ScaleOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const ScaleOp*>(base_left);
+  auto* right = static_cast<const ScaleOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (!AreEqualEvenIfNaN(left->sx, right->sx))
+    return false;
+  if (!AreEqualEvenIfNaN(left->sy, right->sy))
+    return false;
+  return true;
+}
+
+bool SetMatrixOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const SetMatrixOp*>(base_left);
+  auto* right = static_cast<const SetMatrixOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (!AreSkM44sEqual(left->matrix, right->matrix))
+    return false;
+  return true;
+}
+
+bool SetNodeIdOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const SetNodeIdOp*>(base_left);
+  auto* right = static_cast<const SetNodeIdOp*>(base_right);
+
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  return left->node_id == right->node_id;
+}
+
+bool TranslateOp::AreEqual(const PaintOp* base_left,
+                           const PaintOp* base_right) {
+  auto* left = static_cast<const TranslateOp*>(base_left);
+  auto* right = static_cast<const TranslateOp*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  if (!AreEqualEvenIfNaN(left->dx, right->dx))
+    return false;
+  if (!AreEqualEvenIfNaN(left->dy, right->dy))
+    return false;
+  return true;
 }
 
 bool PaintOp::IsDrawOp() const {
@@ -1610,10 +1942,10 @@ bool PaintOp::IsPaintOpWithFlags() const {
   return g_has_paint_flags[type];
 }
 
-bool PaintOp::EqualsForTesting(const PaintOp& other) const {
+bool PaintOp::operator==(const PaintOp& other) const {
   if (GetType() != other.GetType())
     return false;
-  return g_equals_operator[type](*this, other);
+  return g_equals_operator[type](this, &other);
 }
 
 // static

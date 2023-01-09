@@ -83,7 +83,7 @@ TEST_F(AcceleratedStaticBitmapImageTest, SkImageCached) {
 
   cc::PaintImage stored_image = bitmap->PaintImageForCurrentFrame();
   auto stored_image2 = bitmap->PaintImageForCurrentFrame();
-  EXPECT_TRUE(stored_image.IsSameForTesting(stored_image2));
+  EXPECT_EQ(stored_image, stored_image2);
 }
 
 TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {

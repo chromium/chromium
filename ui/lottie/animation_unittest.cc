@@ -22,7 +22,6 @@
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/test/lottie_test_data.h"
-#include "cc/test/paint_image_matchers.h"
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +45,7 @@ using ::testing::IsEmpty;
 using ::testing::NotNull;
 using ::testing::Pair;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // A skottie animation with solid green color for the first 2.5 seconds and then
 // a solid blue color for the next 2.5 seconds.
@@ -1338,7 +1338,8 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
   const cc::DrawSkottieOp* op =
       paint_record.GetOpAtForTesting<cc::DrawSkottieOp>(0);
   ASSERT_THAT(op, NotNull());
-  EXPECT_THAT(op->images, ElementsAre(cc::SkottieImageIs("image_0", frame_0)));
+  EXPECT_THAT(op->images, UnorderedElementsAre(Pair(
+                              cc::HashSkottieResourceId("image_0"), frame_0)));
 
   AdvanceClock(animation_->GetAnimationDuration() * .75);
 
@@ -1348,7 +1349,8 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
   ASSERT_THAT(paint_record.size(), Eq(1u));
   op = paint_record.GetOpAtForTesting<cc::DrawSkottieOp>(0);
   ASSERT_THAT(op, NotNull());
-  EXPECT_THAT(op->images, ElementsAre(cc::SkottieImageIs("image_1", frame_1)));
+  EXPECT_THAT(op->images, UnorderedElementsAre(Pair(
+                              cc::HashSkottieResourceId("image_1"), frame_1)));
 }
 
 TEST_F(AnimationWithImageAssetsTest, GracefullyHandlesNullImages) {
@@ -1363,8 +1365,9 @@ TEST_F(AnimationWithImageAssetsTest, GracefullyHandlesNullImages) {
   const cc::DrawSkottieOp* op =
       paint_record.GetOpAtForTesting<cc::DrawSkottieOp>(0);
   ASSERT_THAT(op, NotNull());
-  EXPECT_THAT(op->images, ElementsAre(cc::SkottieImageIs(
-                              "image_0", cc::SkottieFrameData())));
+  EXPECT_THAT(op->images,
+              UnorderedElementsAre(Pair(cc::HashSkottieResourceId("image_0"),
+                                        cc::SkottieFrameData())));
 }
 
 TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {

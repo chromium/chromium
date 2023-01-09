@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_image_builder.h"
-#include "cc/test/paint_image_matchers.h"
 #include "cc/test/skia_common.h"
 #include "cc/tiles/image_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -193,10 +192,8 @@ TEST_F(CheckerImageTrackerTest, UpdatesImagesAtomically) {
       BuildImageDecodeQueue(draw_images, WhichTree::PENDING_TREE);
 
   ASSERT_EQ(2u, image_decode_queue.size());
-  EXPECT_TRUE(checkerable_image.paint_image().IsSameForTesting(
-      image_decode_queue[0].paint_image));
-  EXPECT_TRUE(checkerable_image.paint_image().IsSameForTesting(
-      image_decode_queue[1].paint_image));
+  EXPECT_EQ(checkerable_image.paint_image(), image_decode_queue[0].paint_image);
+  EXPECT_EQ(checkerable_image.paint_image(), image_decode_queue[1].paint_image);
 
   checker_image_tracker_->ScheduleImageDecodeQueue(image_decode_queue);
   EXPECT_EQ(image_controller_.num_of_locked_images(), 1);
@@ -435,8 +432,7 @@ TEST_F(CheckerImageTrackerTest, CheckersOnlyStaticCompletedImages) {
   CheckerImageTracker::ImageDecodeQueue image_decode_queue =
       BuildImageDecodeQueue(draw_images, WhichTree::PENDING_TREE);
   EXPECT_EQ(image_decode_queue.size(), 1U);
-  EXPECT_TRUE(image_decode_queue[0].paint_image.IsSameForTesting(
-      static_image.paint_image()));
+  EXPECT_EQ(image_decode_queue[0].paint_image, static_image.paint_image());
 
   // Change the partial image to complete and try again. It should sstill not
   // be checkered.
@@ -534,15 +530,18 @@ TEST_F(CheckerImageTrackerTest, RespectsDecodePriority) {
   checker_image_tracker_->SetMaxDecodePriorityAllowed(
       CheckerImageTracker::DecodeType::kRaster);
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(image_controller_.decoded_images(),
-              ImagesAreSame({image1, image2}));
+  EXPECT_EQ(image_controller_.decoded_images().size(), 2u);
+  EXPECT_EQ(image_controller_.decoded_images()[0], image1);
+  EXPECT_EQ(image_controller_.decoded_images()[1], image2);
 
   // All decodes allowed. The complete queue should be flushed.
   checker_image_tracker_->SetMaxDecodePriorityAllowed(
       CheckerImageTracker::DecodeType::kPreDecode);
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(image_controller_.decoded_images(),
-              ImagesAreSame({image1, image2, image3, image4}));
+  EXPECT_EQ(image_controller_.decoded_images()[0], image1);
+  EXPECT_EQ(image_controller_.decoded_images()[1], image2);
+  EXPECT_EQ(image_controller_.decoded_images()[2], image3);
+  EXPECT_EQ(image_controller_.decoded_images()[3], image4);
 }
 
 TEST_F(CheckerImageTrackerTest, UseSrcRectForSize) {

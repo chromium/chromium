@@ -35,25 +35,23 @@ sk_sp<SkPicture> ToSkPicture(const PaintRecord& record,
   return recorder.finishRecordingAsPicture();
 }
 
-bool CompareMatricesForTesting(const SkMatrix& a,  // IN-TEST
-                               const SkMatrix& b,
-                               bool ignore_scaling_differences) {
-  if (!ignore_scaling_differences) {
-    return a == b;
-  }
+bool CompareMatrices(const SkMatrix& a,
+                     const SkMatrix& b,
+                     bool ignore_scaling_differences) {
+  if (!ignore_scaling_differences)
+    return PaintOp::AreSkMatricesEqual(a, b);
 
   SkSize scale;
   SkMatrix a_without_scale;
   SkMatrix b_without_scale;
 
   const bool decomposes = a.decomposeScale(&scale, &a_without_scale);
-  if (decomposes != b.decomposeScale(&scale, &b_without_scale)) {
+  if (decomposes != b.decomposeScale(&scale, &b_without_scale))
     return false;
-  }
-  if (!decomposes) {
+
+  if (!decomposes)
     return true;
-  }
-  return a_without_scale == b_without_scale;
+  return PaintOp::AreSkMatricesEqual(a_without_scale, b_without_scale);
 }
 
 }  // namespace
@@ -585,7 +583,7 @@ bool PaintShader::IsValid() const {
   return false;
 }
 
-bool PaintShader::EqualsForTesting(const PaintShader& other) const {
+bool PaintShader::operator==(const PaintShader& other) const {
   if (shader_type_ != other.shader_type_)
     return false;
 
@@ -598,19 +596,23 @@ bool PaintShader::EqualsForTesting(const PaintShader& other) const {
   const SkMatrix& local_matrix = local_matrix_ ? *local_matrix_ : SkMatrix::I();
   const SkMatrix& other_local_matrix =
       other.local_matrix_ ? *other.local_matrix_ : SkMatrix::I();
-  if (!CompareMatricesForTesting(local_matrix, other_local_matrix,  // IN-TEST
-                                 ignore_scaling_differences)) {
+  if (!CompareMatrices(local_matrix, other_local_matrix,
+                       ignore_scaling_differences)) {
     return false;
   }
 
-  if (fallback_color_ != other.fallback_color_ || flags_ != other.flags_ ||
-      tx_ != other.tx_ || ty_ != other.ty_) {
+  if (fallback_color_ != other.fallback_color_)
     return false;
-  }
+  if (flags_ != other.flags_)
+    return false;
+  if (tx_ != other.tx_)
+    return false;
+  if (ty_ != other.ty_)
+    return false;
+
   if (!ignore_scaling_differences &&
-      scaling_behavior_ != other.scaling_behavior_) {
+      scaling_behavior_ != other.scaling_behavior_)
     return false;
-  }
 
   // Variables that only some shaders use.
   switch (shader_type_) {
@@ -618,20 +620,31 @@ bool PaintShader::EqualsForTesting(const PaintShader& other) const {
     case Type::kColor:
       break;
     case Type::kSweepGradient:
-      if (start_degrees_ != other.start_degrees_ ||
-          end_degrees_ != other.end_degrees_) {
+      if (!PaintOp::AreEqualEvenIfNaN(start_degrees_, other.start_degrees_))
         return false;
-      }
+      if (!PaintOp::AreEqualEvenIfNaN(end_degrees_, other.end_degrees_))
+        return false;
       [[fallthrough]];
     case Type::kLinearGradient:
     case Type::kRadialGradient:
     case Type::kTwoPointConicalGradient:
-      if (start_radius_ != other.start_radius_ ||
-          end_radius_ != other.end_radius_ || center_ != other.center_ ||
-          start_point_ != other.start_point_ ||
-          end_point_ != other.end_point_ || colors_ != other.colors_ ||
-          positions_ != other.positions_) {
+      if (!PaintOp::AreEqualEvenIfNaN(start_radius_, other.start_radius_))
         return false;
+      if (!PaintOp::AreEqualEvenIfNaN(end_radius_, other.end_radius_))
+        return false;
+      if (!PaintOp::AreSkPointsEqual(center_, other.center_))
+        return false;
+      if (!PaintOp::AreSkPointsEqual(start_point_, other.start_point_))
+        return false;
+      if (!PaintOp::AreSkPointsEqual(end_point_, other.end_point_))
+        return false;
+      if (colors_ != other.colors_)
+        return false;
+      if (positions_.size() != other.positions_.size())
+        return false;
+      for (size_t i = 0; i < positions_.size(); ++i) {
+        if (!PaintOp::AreEqualEvenIfNaN(positions_[i], other.positions_[i]))
+          return false;
       }
       break;
     case Type::kImage:
