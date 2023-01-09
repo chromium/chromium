@@ -12,6 +12,7 @@ found in the LICENSE file.
     <dimen name="clear_text_button_end_padding">10dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
     <dimen name="card_rounded_corner_radius">16dp</dimen>
+    <dimen name="card_rounded_corner_small_radius">4dp</dimen>
     <dimen name="dialog_corner_radius">24dp</dimen>
     <dimen name="sheet_background_elev">@dimen/default_elevation_0</dimen>
 
