@@ -33,6 +33,7 @@ enum AndroidActivityType {
   TRUSTED_WEB_ACTIVITY = 2;
   WEB_APP = 3;
   WEB_APK = 4;
+  PRE_FIRST_TAB = 5;
 }
 
 // This signifies if the reported source is a navigation to the same origin as
