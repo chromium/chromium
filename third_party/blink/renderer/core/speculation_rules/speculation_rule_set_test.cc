@@ -159,12 +159,17 @@ class SpeculationRuleSetTest : public ::testing::Test {
 };
 
 TEST_F(SpeculationRuleSetTest, Empty) {
-  auto* rule_set = CreateRuleSet(
-
-      "{}", KURL("https://example.com/"), execution_context());
+  auto* rule_set =
+      CreateRuleSet("{}", KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, CommentsAreInvalid) {
+  auto* rule_set = CreateRuleSet(
+      "{ /* comments! */ }", KURL("https://example.com/"), execution_context());
+  EXPECT_FALSE(rule_set);
 }
 
 TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
