@@ -804,25 +804,6 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
 
 namespace win {
 
-bool SetAsDefaultBrowserUsingIntentPicker() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED() << "Error getting app exe path";
-    return false;
-  }
-
-  if (!ShellUtil::ShowMakeChromeDefaultSystemUI(chrome_exe)) {
-    LOG(ERROR) << "Failed to launch the set-default-browser Windows UI.";
-    return false;
-  }
-
-  VLOG(1) << "Set-default-browser Windows UI completed.";
-  return true;
-}
-
 void SetAsDefaultBrowserUsingSystemSettings(
     base::OnceClosure on_finished_callback) {
   base::FilePath chrome_exe;
@@ -846,27 +827,6 @@ void SetAsDefaultBrowserUsingSystemSettings(
   OpenSystemSettingsHelper::Begin(
       kSchemes, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
                                std::move(on_finished_callback)));
-}
-
-bool SetAsDefaultClientForSchemeUsingIntentPicker(const std::string& scheme) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED() << "Error getting app exe path";
-    return false;
-  }
-
-  std::wstring wscheme(base::UTF8ToWide(scheme));
-  if (!ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe,
-                                                              wscheme)) {
-    LOG(ERROR) << "Failed to launch the set-default-client Windows UI.";
-    return false;
-  }
-
-  VLOG(1) << "Set-default-client Windows UI completed.";
-  return true;
 }
 
 void SetAsDefaultClientForSchemeUsingSystemSettings(

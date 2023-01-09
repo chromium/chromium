@@ -12,7 +12,6 @@
 #include <objbase.h>
 #include <shlobj.h>
 #include <shobjidl.h>
-#include <windows.h>
 #include <wrl/client.h>
 
 #include <algorithm>
@@ -68,7 +67,6 @@
 #include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/registry_entry.h"
 #include "chrome/installer/util/registry_util.h"
-#include "chrome/installer/util/scoped_user_protocol_entry.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
@@ -713,26 +711,6 @@ bool ElevateAndRegisterChrome(
       return true;
   }
   return false;
-}
-
-// Launches the Windows 7 and Windows 8 dialog for picking the application to
-// handle the given protocol. Most importantly, this is used to set the default
-// handler for http (and, implicitly with it, https). In that case it is also
-// known as the 'how do you want to open webpages' dialog.
-// It is required that Chrome be already *registered* for the given protocol.
-bool LaunchSelectDefaultProtocolHandlerDialog(const wchar_t* protocol) {
-  DCHECK(protocol);
-  OPENASINFO open_as_info = {};
-  open_as_info.pcszFile = protocol;
-  open_as_info.oaifInFlags =
-      OAIF_URL_PROTOCOL | OAIF_FORCE_REGISTRATION | OAIF_REGISTER_EXT;
-  HRESULT hr = SHOpenWithDialog(nullptr, &open_as_info);
-  DLOG_IF(WARNING, FAILED(hr)) << "Failed to set as default " << protocol
-                               << " handler; hr=0x" << std::hex << hr;
-  if (FAILED(hr))
-    return false;
-  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-  return true;
 }
 
 // Returns true if |chrome_exe| has been registered with |suffix| for |mode|.
@@ -2221,17 +2199,6 @@ bool ShellUtil::CanMakeChromeDefaultUnattended() {
   return base::win::GetVersion() < base::win::Version::WIN8;
 }
 
-// static
-ShellUtil::InteractiveSetDefaultMode ShellUtil::GetInteractiveSetDefaultMode() {
-  DCHECK(!CanMakeChromeDefaultUnattended());
-  // TODO(crbug.com/1385856): Remove all code associated with INTENT_PICKER,
-  // including InteractiveSetDefaultMode and GetInteractiveSetDefaultMode().
-  if (base::win::GetVersion() >= base::win::Version::WIN10)
-    return InteractiveSetDefaultMode::SYSTEM_SETTINGS;
-
-  return InteractiveSetDefaultMode::INTENT_PICKER;
-}
-
 bool ShellUtil::MakeChromeDefault(int shell_change,
                                   const base::FilePath& chrome_exe,
                                   bool elevate_if_not_admin) {
@@ -2399,26 +2366,8 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
   bool succeeded = true;
   bool is_default = (GetChromeDefaultState() == IS_DEFAULT);
   if (!is_default) {
-    switch (GetInteractiveSetDefaultMode()) {
-      case INTENT_PICKER: {
-        // On Windows 8, you can't set yourself as the default handler
-        // programmatically. In other words IApplicationAssociationRegistration
-        // has been rendered useless. What you can do is to launch
-        // "Set Program Associations" section of the "Default Programs"
-        // control panel, which is a mess, or pop the concise "How you want to
-        // open webpages?" dialog.  We choose the latter.
-        ScopedUserProtocolEntry user_protocol_entry(L"http");
-        succeeded = LaunchSelectDefaultProtocolHandlerDialog(L"http");
-      } break;
-      case SYSTEM_SETTINGS:
-        // On Windows 10, you can't even launch the associations dialog.
-        // So we launch the settings dialog. Quoting from MSDN: "The Open With
-        // dialog box can no longer be used to change the default program used
-        // to open a file extension. You can only use SHOpenWithDialog to open
-        // a single file."
-        succeeded = base::win::LaunchDefaultAppsSettingsModernDialog(L"http");
-        break;
-    }
+    // Launch the Windows Apps Settings dialog.
+    succeeded = base::win::LaunchDefaultAppsSettingsModernDialog(L"http");
     is_default = (succeeded && GetChromeDefaultState() == IS_DEFAULT);
   }
   if (succeeded && is_default)
@@ -2490,25 +2439,9 @@ bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
   bool is_default =
       (GetChromeDefaultProtocolClientState(protocol) == IS_DEFAULT);
   if (!is_default) {
-    switch (GetInteractiveSetDefaultMode()) {
-      case INTENT_PICKER: {
-        // On Windows 8, you can't set yourself as the default handler
-        // programmatically. In other words IApplicationAssociationRegistration
-        // has been rendered useless. What you can do is to launch
-        // "Set Program Associations" section of the "Default Programs"
-        // control panel, which is a mess, or pop the concise "How you want to
-        // open
-        // links of this type (protocol)?" dialog.  We choose the latter.
-        ScopedUserProtocolEntry user_protocol_entry(protocol.c_str());
-        succeeded = LaunchSelectDefaultProtocolHandlerDialog(protocol.c_str());
-      } break;
-      case SYSTEM_SETTINGS:
-        // On Windows 10, you can't even launch the associations dialog.
-        // So we launch the settings dialog.
-        succeeded =
-            base::win::LaunchDefaultAppsSettingsModernDialog(protocol.c_str());
-        break;
-    }
+    // Launch the Windows settings dialog.
+    succeeded =
+        base::win::LaunchDefaultAppsSettingsModernDialog(protocol.c_str());
     is_default = (succeeded &&
                   GetChromeDefaultProtocolClientState(protocol) == IS_DEFAULT);
   }

@@ -495,19 +495,6 @@ class ShellUtil {
   // Windows prior to Windows 8.
   static bool CanMakeChromeDefaultUnattended();
 
-  enum InteractiveSetDefaultMode {
-    // The intent picker is opened with the different choices available to the
-    // user.
-    INTENT_PICKER,
-    // The Windows default apps settings page is opened with the current default
-    // app focused.
-    SYSTEM_SETTINGS,
-  };
-
-  // Returns the interactive mode that should be used to set the default browser
-  // or default protocol client on Windows 8+.
-  static InteractiveSetDefaultMode GetInteractiveSetDefaultMode();
-
   // Returns the DefaultState of Chrome for HTTP and HTTPS and updates the
   // default browser beacons as appropriate.
   static DefaultState GetChromeDefaultState();

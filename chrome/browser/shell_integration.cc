@@ -279,17 +279,11 @@ void DefaultBrowserWorker::SetAsDefaultImpl(
     case SET_DEFAULT_INTERACTIVE:
 #if BUILDFLAG(IS_WIN)
       if (interactive_permitted_) {
-        switch (ShellUtil::GetInteractiveSetDefaultMode()) {
-          case ShellUtil::INTENT_PICKER:
-            win::SetAsDefaultBrowserUsingIntentPicker();
-            break;
-          case ShellUtil::SYSTEM_SETTINGS:
-            win::SetAsDefaultBrowserUsingSystemSettings(
-                std::move(on_finished_callback));
-            // Early return because the function above takes care of calling
-            // |on_finished_callback|.
-            return;
-        }
+        win::SetAsDefaultBrowserUsingSystemSettings(
+            std::move(on_finished_callback));
+        // Early return because the function above takes care of calling
+        // `on_finished_callback`.
+        return;
       }
 #endif  // BUILDFLAG(IS_WIN)
       break;
@@ -372,17 +366,11 @@ void DefaultSchemeClientWorker::SetAsDefaultImpl(
     case SET_DEFAULT_INTERACTIVE:
 #if BUILDFLAG(IS_WIN)
       if (interactive_permitted_) {
-        switch (ShellUtil::GetInteractiveSetDefaultMode()) {
-          case ShellUtil::INTENT_PICKER:
-            win::SetAsDefaultClientForSchemeUsingIntentPicker(scheme_);
-            break;
-          case ShellUtil::SYSTEM_SETTINGS:
-            win::SetAsDefaultClientForSchemeUsingSystemSettings(
-                scheme_, std::move(on_finished_callback));
-            // Early return because the function above takes care of calling
-            // |on_finished_callback|.
-            return;
-        }
+        win::SetAsDefaultClientForSchemeUsingSystemSettings(
+            scheme_, std::move(on_finished_callback));
+        // Early return because the function above takes care of calling
+        // `on_finished_callback`.
+        return;
       }
 #endif  // BUILDFLAG(IS_WIN)
       break;
