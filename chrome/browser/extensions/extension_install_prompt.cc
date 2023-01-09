@@ -54,8 +54,7 @@ namespace {
 
 bool AllowWebstoreData(ExtensionInstallPrompt::PromptType type) {
   return type == ExtensionInstallPrompt::EXTERNAL_INSTALL_PROMPT ||
-         type == ExtensionInstallPrompt::REPAIR_PROMPT ||
-         type == ExtensionInstallPrompt::WEBSTORE_WIDGET_PROMPT;
+         type == ExtensionInstallPrompt::REPAIR_PROMPT;
 }
 
 // Returns bitmap for the default icon with size equal to the default icon's
@@ -121,7 +120,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case WEBSTORE_WIDGET_PROMPT:
       id = IDS_EXTENSION_INSTALL_PROMPT_TITLE;
       break;
     case RE_ENABLE_PROMPT:
@@ -188,7 +186,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAcceptButtonLabel() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case WEBSTORE_WIDGET_PROMPT:
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       if (requires_parent_permission())
         id = IDS_EXTENSION_INSTALL_PROMPT_ASK_A_PARENT_BUTTON;
@@ -263,7 +260,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case WEBSTORE_WIDGET_PROMPT:
     case RE_ENABLE_PROMPT:
     case REMOTE_INSTALL_PROMPT:
     case REPAIR_PROMPT:
@@ -293,7 +289,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsHeading() const {
   int id = -1;
   switch (type_) {
     case INSTALL_PROMPT:
-    case WEBSTORE_WIDGET_PROMPT:
     case EXTERNAL_INSTALL_PROMPT:
     case REMOTE_INSTALL_PROMPT:
     case DELEGATED_PERMISSIONS_PROMPT:

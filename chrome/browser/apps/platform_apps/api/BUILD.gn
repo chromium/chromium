@@ -77,22 +77,11 @@ source_set("api") {
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",
-      "webstore_widget_private/app_installer.cc",
-      "webstore_widget_private/app_installer.h",
-      "webstore_widget_private/webstore_widget_private_api.cc",
-      "webstore_widget_private/webstore_widget_private_api.h",
     ]
 
     deps += [
-      "//chrome:strings",
       "//chrome/browser/ash/crosapi",
-      "//chromeos/ash/components/multidevice/logging",
-      "//chromeos/ash/components/proximity_auth",
-      "//components/account_id",
-      "//components/strings:components_strings_grit",
-      "//components/user_manager",
-      "//device/bluetooth",
-      "//ui/chromeos",
+      "//ui/events:event_constants",
     ]
   }
 

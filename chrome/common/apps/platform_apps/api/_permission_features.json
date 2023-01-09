@@ -80,15 +80,5 @@
   "syncFileSystem": {
     "channel": "stable",
     "extension_types": ["platform_app"]
-  },
-  "webstoreWidgetPrivate": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "A948368FC53BE437A55FEB414106E207925482F5",  // Files app
-      "8C726564C6DBE7380BAB388DE6CC7EC93EB44B06",  // Video player
-      "5065C83E84321221675D20FBE4DC43C655CC8C6F"   // Files app tests
-    ]
   }
 }

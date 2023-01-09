@@ -480,21 +480,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_FromWebstore) {
-  set_type(ExtensionInstallPrompt::WEBSTORE_WIDGET_PROMPT);
-  set_from_webstore();
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_FromWebstoreWithPermission) {
-  set_type(ExtensionInstallPrompt::WEBSTORE_WIDGET_PROMPT);
-  set_from_webstore();
-  AddPermission("Example permission");
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        InvokeUi_MultilinePermission) {
   AddPermission(
       "In the shade of the house, in the sunshine of the riverbank "

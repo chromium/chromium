@@ -37,8 +37,6 @@ constexpr extensions::APIPermissionInfo::InitInfo permissions_to_register[] = {
          kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kEnterpriseRemoteApps, "enterprise.remoteApps"},
     {APIPermissionID::kSyncFileSystem, "syncFileSystem"},
-    {APIPermissionID::kWebstoreWidgetPrivate, "webstoreWidgetPrivate",
-     extensions::APIPermissionInfo::kFlagCannotBeOptional},
 };
 
 }  // namespace

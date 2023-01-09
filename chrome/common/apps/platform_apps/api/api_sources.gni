@@ -12,10 +12,6 @@ chrome_apps_api_schema_files_ = [
   "browser.idl",
   "media_galleries.idl",
   "sync_file_system.idl",
-
-  # TODO(devlin): This API is only available on ChromeOS. We should only
-  # generate sources for it on CrOS as well.
-  "webstore_widget_private.idl",
 ]
 
 if (is_chromeos_ash) {

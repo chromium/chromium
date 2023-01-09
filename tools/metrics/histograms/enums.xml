@@ -34815,7 +34815,7 @@ Called by update_extension_histograms.py.-->
   <int value="1027" label="DELETED_SEARCHENGINESPRIVATE_REMOVESEARCHENGINE"/>
   <int value="1028" label="DELETED_SEARCHENGINESPRIVATE_UPDATESEARCHENGINE"/>
   <int value="1029" label="DELETED_SEARCHENGINESPRIVATE_OPTINTOHOTWORDING"/>
-  <int value="1030" label="WEBSTOREWIDGETPRIVATE_INSTALLWEBSTOREITEM"/>
+  <int value="1030" label="DELETED_WEBSTOREWIDGETPRIVATE_INSTALLWEBSTOREITEM"/>
   <int value="1031" label="DELETED_WEBSTOREWIDGETPRIVATE_GETSTRINGS"/>
   <int value="1032" label="WEBRTCDESKTOPCAPTUREPRIVATE_CHOOSEDESKTOPMEDIA"/>
   <int value="1033"
@@ -36125,7 +36125,7 @@ Called by update_extension_permission.py.-->
   <int value="161" label="kWebrtcDesktopCapturePrivate"/>
   <int value="162" label="kWebrtcLoggingPrivate"/>
   <int value="163" label="kWebstorePrivate"/>
-  <int value="164" label="kWebstoreWidgetPrivate"/>
+  <int value="164" label="kDeleted_WebstoreWidgetPrivate"/>
   <int value="165" label="kWebView"/>
   <int value="166" label="kWindowShape"/>
   <int value="167" label="kDeleted_ScreenlockPrivate"/>

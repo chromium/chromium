@@ -188,7 +188,7 @@ enum APIPermissionID {
   kWebrtcDesktopCapturePrivate = 161,
   kWebrtcLoggingPrivate = 162,
   kWebstorePrivate = 163,
-  kWebstoreWidgetPrivate = 164,
+  kDeleted_WebstoreWidgetPrivate = 164,
   kWebView = 165,
   kWindowShape = 166,
   kDeleted_ScreenlockPrivate = 167,
