@@ -1261,7 +1261,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/gemmlowp.git' + '@' + '13d57703abca3005d97b19df1f2db731607a7dc2',
 
   'src/third_party/grpc/src': {
-      'url': Var('chromium_git') + '/external/github.com/grpc/grpc.git' + '@' + '38b9254a790320d2eaf8ac3ae4c3f3050d1ff106',
+      'url': Var('chromium_git') + '/external/github.com/grpc/grpc.git' + '@' + 'a017e9b7f20743c69627b94d7d101e4e6baadb44',
   },
 
   'src/third_party/freetype/src':

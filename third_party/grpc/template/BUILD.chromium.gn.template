@@ -98,6 +98,7 @@
       "-Wno-unreachable-code",
       "-Wno-unused-variable",
       "-Wno-unused-result",
+      "-Wno-deprecated-copy",
     ]
 
     # TODO(b/260740023): Remove when gRPC has CFI checks enabled.

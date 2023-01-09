@@ -1,8 +1,8 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
 License: Apache 2.0
-Version: v1.51.0-dev
-Revision: 38b9254a790320d2eaf8ac3ae4c3f3050d1ff106
+Version: v1.52.0-dev
+Revision: a017e9b7f20743c69627b94d7d101e4e6baadb44
 Security Critical: yes
 CPEPrefix: cpe:/a:grpc:grpc:1.49
 
