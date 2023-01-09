@@ -61,3 +61,6 @@ ExtensionsMenuSitePermissionsPage::ExtensionsMenuSitePermissionsPage(
                               base::Unretained(navigation_handler))))))
       .BuildChildren();
 }
+
+// TODO(crbug.com/1390952): Update content once content is added to this page.
+void ExtensionsMenuSitePermissionsPage::Update() {}

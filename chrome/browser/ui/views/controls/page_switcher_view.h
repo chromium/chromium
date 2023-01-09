@@ -21,6 +21,9 @@ class PageSwitcherView : public views::View {
   // Removes all child views and adds `page` instead.
   void SwitchToPage(std::unique_ptr<views::View> page);
 
+  // Returns the current page shown.
+  views::View* GetCurrentPage();
+
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
 

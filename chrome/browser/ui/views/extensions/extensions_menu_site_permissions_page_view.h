@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_
 
-#include "ui/views/view.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 
 class ExtensionsMenuNavigationHandler;
 
-class ExtensionsMenuSitePermissionsPage : public views::View {
+class ExtensionsMenuSitePermissionsPage : public ExtensionsMenuPageView {
  public:
   explicit ExtensionsMenuSitePermissionsPage(
       ExtensionsMenuNavigationHandler* navigation_handler);
@@ -18,11 +18,14 @@ class ExtensionsMenuSitePermissionsPage : public views::View {
   const ExtensionsMenuSitePermissionsPage& operator=(
       const ExtensionsMenuSitePermissionsPage&) = delete;
   ~ExtensionsMenuSitePermissionsPage() override = default;
+
+  // ExtensionsMenuPageView:
+  void Update() override;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
                    ExtensionsMenuSitePermissionsPage,
-                   views::View)
+                   ExtensionsMenuPageView)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuSitePermissionsPage)

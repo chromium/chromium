@@ -21,6 +21,10 @@ void PageSwitcherView::SwitchToPage(std::unique_ptr<views::View> page) {
   PreferredSizeChanged();
 }
 
+views::View* PageSwitcherView::GetCurrentPage() {
+  return current_page_;
+}
+
 void PageSwitcherView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }

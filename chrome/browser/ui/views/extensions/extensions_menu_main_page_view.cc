@@ -195,8 +195,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 
   // Update toggle button text after it's build, as it depends on its state.
   UpdateSiteSettingToggleText(site_settings_toggle_);
-
-  browser_->tab_strip_model()->AddObserver(this);
 }
 
 void ExtensionsMenuMainPageView::Update() {
@@ -215,19 +213,6 @@ void ExtensionsMenuMainPageView::Update() {
 void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
   // TODO(crbug.com/1390952): Update user site setting and add test.
   UpdateSiteSettingToggleText(site_settings_toggle_);
-}
-
-void ExtensionsMenuMainPageView::TabChangedAt(content::WebContents* contents,
-                                              int index,
-                                              TabChangeType change_type) {
-  Update();
-}
-
-void ExtensionsMenuMainPageView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  Update();
 }
 
 content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
