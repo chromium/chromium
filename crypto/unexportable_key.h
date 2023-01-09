@@ -17,6 +17,9 @@ namespace crypto {
 // that support it. Current support is:
 //   Windows: RSA_PKCS1_SHA256 via TPM 1.2+ and ECDSA_SHA256 via TPM 2.0.
 //   Tests: ECDSA_SHA256 via ScopedMockUnexportableSigningKeyForTesting.
+//
+// See also //components/unexportable_keys for a higher-level key management
+// API.
 class CRYPTO_EXPORT UnexportableSigningKey {
  public:
   virtual ~UnexportableSigningKey();

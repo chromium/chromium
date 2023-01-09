@@ -1,0 +1,5 @@
+team_email: "chrome-signin@chromium.org"
+
+monorail {
+  component: "Services>SignIn"
+}

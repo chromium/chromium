@@ -1,0 +1,124 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/unexportable_keys/unexportable_key_task_manager.h"
+
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace unexportable_keys {
+
+class UnexportableKeyTaskManagerTest : public testing::Test {
+ public:
+  UnexportableKeyTaskManagerTest() = default;
+  ~UnexportableKeyTaskManagerTest() override = default;
+
+  UnexportableKeyTaskManager& task_manager() { return task_manager_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  UnexportableKeyTaskManager task_manager_;
+};
+
+TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
+  base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
+      future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  task_manager().GenerateSigningKeySlowlyAsync(
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      future.GetCallback());
+  EXPECT_NE(future.Get(), nullptr);
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync_Failure) {
+  base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
+      future;
+  // RSA is not supported by the mock key provider, so the key generation should
+  // fail.
+  auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+  task_manager().GenerateSigningKeySlowlyAsync(
+      unsupported_algorithm, BackgroundTaskPriority::kBestEffort,
+      future.GetCallback());
+  EXPECT_EQ(future.Get(), nullptr);
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
+  // First, generate a new signing key.
+  base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
+      generate_key_future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  task_manager().GenerateSigningKeySlowlyAsync(
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      generate_key_future.GetCallback());
+  auto key = generate_key_future.Get();
+  std::vector<uint8_t> wrapped_key = key->key().GetWrappedKey();
+
+  // Second, unwrap the newly generated key.
+  base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
+      unwrap_key_future;
+  task_manager().FromWrappedSigningKeySlowlyAsync(
+      wrapped_key, BackgroundTaskPriority::kBestEffort,
+      unwrap_key_future.GetCallback());
+  auto unwrapped_key = unwrap_key_future.Get();
+  EXPECT_NE(unwrapped_key, nullptr);
+  // Keys should have different ids since they point to different objects.
+  EXPECT_NE(key->id(), unwrapped_key->id());
+  // Public key should be the same for both keys.
+  EXPECT_EQ(key->key().GetSubjectPublicKeyInfo(),
+            unwrapped_key->key().GetSubjectPublicKeyInfo());
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync_Failure) {
+  base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
+      future;
+  std::vector<const uint8_t> empty_wrapped_key;
+  task_manager().FromWrappedSigningKeySlowlyAsync(
+      empty_wrapped_key, BackgroundTaskPriority::kBestEffort,
+      future.GetCallback());
+  EXPECT_EQ(future.Get(), nullptr);
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
+  // First, generate a new signing key.
+  base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
+      generate_key_future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  task_manager().GenerateSigningKeySlowlyAsync(
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      generate_key_future.GetCallback());
+  auto key = generate_key_future.Get();
+
+  // Second, sign some data with the key.
+  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> sign_future;
+  std::vector<const uint8_t> data = {4, 8, 15, 16, 23, 42};
+  task_manager().SignSlowlyAsync(key, data, BackgroundTaskPriority::kBestEffort,
+                                 sign_future.GetCallback());
+  const auto& signed_data = sign_future.Get();
+  ASSERT_TRUE(signed_data.has_value());
+
+  // Also verify that the signature was generated correctly.
+  crypto::SignatureVerifier verifier;
+  ASSERT_TRUE(verifier.VerifyInit(key->key().Algorithm(), signed_data.value(),
+                                  key->key().GetSubjectPublicKeyInfo()));
+  verifier.VerifyUpdate(data);
+  EXPECT_TRUE(verifier.VerifyFinal());
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, SignAsync_NullKey) {
+  base::test::TestFuture<absl::optional<std::vector<uint8_t>>> sign_future;
+  std::vector<const uint8_t> data = {4, 8, 15, 16, 23, 42};
+  task_manager().SignSlowlyAsync(nullptr, data,
+                                 BackgroundTaskPriority::kBestEffort,
+                                 sign_future.GetCallback());
+  EXPECT_FALSE(sign_future.Get().has_value());
+}
+
+}  // namespace unexportable_keys
