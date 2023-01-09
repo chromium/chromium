@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/udp_socket.mojom-blink.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
