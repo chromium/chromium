@@ -11,8 +11,6 @@
 
 #include "base/feature_list.h"
 
-BASE_DECLARE_FEATURE(kContextualSearchDebug);
-
 // Manages the Contextual Search field trials for native classes.
 class ContextualSearchFieldTrial {
  public:

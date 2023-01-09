@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
@@ -69,6 +70,10 @@ const int kContextualSearchMaxSelection = 1000;
 const char kXssiEscape[] = ")]}'\n";
 const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 const char kDoPreventPreloadValue[] = "1";
+
+// A commandline switch to enable debugging information to be sent and returned.
+const char kContextualSearchDebugCommandlineSwitch[] =
+    "contextual-search-debug";
 
 // Populates and returns the discourse context.
 const net::HttpRequestHeaders GetDiscourseContext(
@@ -316,8 +321,9 @@ std::string ContextualSearchDelegateImpl::BuildRequestUrl(
   // This is based on our current active feature.
   int contextual_cards_version =
       contextual_search::kContextualCardsTranslationsIntegration;
-  // Mixin the debug setting.
-  if (base::FeatureList::IsEnabled(kContextualSearchDebug)) {
+  // Mixin the debug setting if a commandline switch has been set.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kContextualSearchDebugCommandlineSwitch)) {
     contextual_cards_version +=
         contextual_search::kContextualCardsServerDebugMixin;
   }

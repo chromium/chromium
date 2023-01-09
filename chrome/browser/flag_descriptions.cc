@@ -3549,11 +3549,6 @@ const char kContextMenuPopupForAllScreenSizesDescription[] =
     "devices; when enabled, context menu will be shown as a pop-up window "
     "for all form factors regardless of the screen sizes.";
 
-const char kContextualSearchDebugName[] = "Contextual Search debug";
-const char kContextualSearchDebugDescription[] =
-    "Enables internal debugging of Contextual Search behavior on the client "
-    "and server.";
-
 const char kContextualSearchForceCaptionName[] =
     "Contextual Search force a caption";
 const char kContextualSearchForceCaptionDescription[] =
