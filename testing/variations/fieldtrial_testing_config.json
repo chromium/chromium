@@ -945,6 +945,8 @@
         {
             "platforms": [
                 "android",
+                "android_weblayer",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
@@ -955,7 +957,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210922",
+                    "name": "Enabled_20221212",
                     "enable_features": [
                         "AutofillAcrossIframes"
                     ]
