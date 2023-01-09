@@ -308,8 +308,10 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
 
   entries_.erase(url);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
+    observer.ReadingListDidRemoveEntry(this, url);
     observer.ReadingListDidApplyChanges(this);
+  }
 }
 
 void ReadingListModelImpl::SyncDeleteAllEntriesAndSyncMetadata() {

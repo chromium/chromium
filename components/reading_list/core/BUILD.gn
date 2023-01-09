@@ -44,6 +44,8 @@ static_library("test_support") {
   sources = [
     "fake_reading_list_model_storage.cc",
     "fake_reading_list_model_storage.h",
+    "mock_reading_list_model_observer.cc",
+    "mock_reading_list_model_observer.h",
     "reading_list_test_utils.cc",
     "reading_list_test_utils.h",
   ]
@@ -51,6 +53,7 @@ static_library("test_support") {
   public_deps = [
     ":core",
     "//base",
+    "//testing/gmock",
   ]
 }
 

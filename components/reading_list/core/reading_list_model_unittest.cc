@@ -4,15 +4,20 @@
 
 #include "components/reading_list/core/reading_list_model.h"
 
-#include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
+#include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/storage_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using testing::_;
+
+MATCHER_P(HasUrl, expected_url, "") {
+  return arg.URL() == expected_url;
+}
 
 base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   clock->Advance(base::Milliseconds(10));
@@ -54,8 +59,7 @@ std::vector<ReadingListEntry> PopulateSampleEntries(
   return entries;
 }
 
-class ReadingListModelTest : public ReadingListModelObserver,
-                             public FakeReadingListModelStorage::Observer,
+class ReadingListModelTest : public FakeReadingListModelStorage::Observer,
                              public testing::Test {
  public:
   ReadingListModelTest() {
@@ -66,7 +70,6 @@ class ReadingListModelTest : public ReadingListModelObserver,
 
   base::WeakPtr<FakeReadingListModelStorage> ResetStorage() {
     model_.reset();
-    ClearCounts();
 
     auto storage =
         std::make_unique<FakeReadingListModelStorage>(/*observer=*/this);
@@ -75,93 +78,15 @@ class ReadingListModelTest : public ReadingListModelObserver,
 
     model_ = std::make_unique<ReadingListModelImpl>(
         std::move(storage), syncer::StorageType::kUnspecified, &clock_);
-    model_->AddObserver(this);
+    model_->AddObserver(&observer_);
 
     return storage_ptr;
   }
 
   void ClearCounts() {
-    observer_loaded_ = observer_started_batch_update_ =
-        observer_completed_batch_update_ = observer_deleted_ =
-            observer_remove_ = observer_move_ = observer_add_ =
-                observer_did_add_ = observer_update_ = observer_did_update_ =
-                    observer_did_apply_ = storage_saved_ = storage_removed_ = 0;
-  }
-
-  void AssertObserverCount(int expected_observer_loaded,
-                           int expected_observer_started_batch_update,
-                           int expected_observer_completed_batch_update,
-                           int expected_observer_deleted,
-                           int expected_observer_remove,
-                           int expected_observer_move,
-                           int expected_observer_add,
-                           int expected_observer_update,
-                           int expected_observer_did_update,
-                           int expected_observer_did_apply) {
-    ASSERT_EQ(expected_observer_loaded, observer_loaded_);
-    ASSERT_EQ(expected_observer_started_batch_update,
-              observer_started_batch_update_);
-    ASSERT_EQ(expected_observer_completed_batch_update,
-              observer_completed_batch_update_);
-    ASSERT_EQ(expected_observer_deleted, observer_deleted_);
-    ASSERT_EQ(expected_observer_remove, observer_remove_);
-    ASSERT_EQ(expected_observer_move, observer_move_);
-    // Add and did_add should be the same.
-    ASSERT_EQ(expected_observer_add, observer_add_);
-    ASSERT_EQ(expected_observer_add, observer_did_add_);
-    ASSERT_EQ(expected_observer_update, observer_update_);
-    ASSERT_EQ(expected_observer_did_update, observer_did_update_);
-    ASSERT_EQ(expected_observer_did_apply, observer_did_apply_);
-  }
-
-  void AssertStorageCount(int expected_storage_saved,
-                          int expected_storage_removed) {
-    ASSERT_EQ(expected_storage_saved, storage_saved_);
-    ASSERT_EQ(expected_storage_removed, storage_removed_);
-  }
-
-  // ReadingListModelObserver
-  void ReadingListModelLoaded(const ReadingListModel* model) override {
-    observer_loaded_ += 1;
-  }
-  void ReadingListModelBeganBatchUpdates(
-      const ReadingListModel* model) override {
-    observer_started_batch_update_ += 1;
-  }
-  void ReadingListModelCompletedBatchUpdates(
-      const ReadingListModel* model) override {
-    observer_completed_batch_update_ += 1;
-  }
-  void ReadingListModelBeingDeleted(const ReadingListModel* model) override {
-    observer_deleted_ += 1;
-  }
-  void ReadingListWillRemoveEntry(const ReadingListModel* model,
-                                  const GURL& url) override {
-    observer_remove_ += 1;
-  }
-  void ReadingListWillMoveEntry(const ReadingListModel* model,
-                                const GURL& url) override {
-    observer_move_ += 1;
-  }
-  void ReadingListWillAddEntry(const ReadingListModel* model,
-                               const ReadingListEntry& entry) override {
-    observer_add_ += 1;
-  }
-  void ReadingListDidAddEntry(const ReadingListModel* model,
-                              const GURL& url,
-                              reading_list::EntrySource entry_source) override {
-    observer_did_add_ += 1;
-  }
-  void ReadingListWillUpdateEntry(const ReadingListModel* model,
-                                  const GURL& url) override {
-    observer_update_ += 1;
-  }
-  void ReadingListDidUpdateEntry(const ReadingListModel* model,
-                                 const GURL& url) override {
-    observer_did_update_ += 1;
-  }
-  void ReadingListDidApplyChanges(ReadingListModel* model) override {
-    observer_did_apply_ += 1;
+    testing::Mock::VerifyAndClearExpectations(&observer_);
+    storage_saved_ = 0;
+    storage_removed_ = 0;
   }
 
   // FakeReadingListModelStorage::Observer implementation.
@@ -192,36 +117,24 @@ class ReadingListModelTest : public ReadingListModelObserver,
   }
 
  protected:
-  int observer_loaded_;
-  int observer_started_batch_update_;
-  int observer_completed_batch_update_;
-  int observer_deleted_;
-  int observer_remove_;
-  int observer_move_;
-  int observer_add_;
-  int observer_did_add_;
-  int observer_update_;
-  int observer_did_update_;
-  int observer_did_apply_;
-  int storage_saved_;
-  int storage_removed_;
+  int storage_saved_ = 0;
+  int storage_removed_ = 0;
 
+  testing::NiceMock<MockReadingListModelObserver> observer_;
   std::unique_ptr<ReadingListModelImpl> model_;
   base::SimpleTestClock clock_;
 };
 
 // Tests creating an empty model.
 TEST_F(ReadingListModelTest, EmptyLoaded) {
+  EXPECT_CALL(observer_, ReadingListModelLoaded(_)).Times(0);
+  base::WeakPtr<FakeReadingListModelStorage> storage = ResetStorage();
+  // ReadingListModelLoaded() should only be called upon load completion.
+  EXPECT_CALL(observer_, ReadingListModelLoaded(model_.get()));
+  EXPECT_TRUE(storage->TriggerLoadCompletion());
   EXPECT_TRUE(model_->loaded());
-  AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
-  model_->Shutdown();
-  EXPECT_FALSE(model_->loaded());
-  // Shutdown() does not delete the model observer. Verify that deleting the
-  // model will delete the model observer.
-  model_.reset();
-  AssertObserverCount(1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
 }
 
 // Tests successful load model.
@@ -229,7 +142,6 @@ TEST_F(ReadingListModelTest, ModelLoadSuccess) {
   ASSERT_TRUE(
       ResetStorage()->TriggerLoadCompletion(PopulateSampleEntries(&clock_)));
 
-  AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   std::map<GURL, std::string> loaded_entries;
   int size = 0;
   for (const auto& url : model_->GetKeys()) {
@@ -249,10 +161,9 @@ TEST_F(ReadingListModelTest, ModelLoadSuccess) {
 
 // Tests errors during load model.
 TEST_F(ReadingListModelTest, ModelLoadFailure) {
+  EXPECT_CALL(observer_, ReadingListModelLoaded(_)).Times(0);
   ASSERT_TRUE(
       ResetStorage()->TriggerLoadCompletion(base::unexpected("Fake error")));
-
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
   EXPECT_TRUE(model_->GetSyncBridgeForTest()
                   ->change_processor()
@@ -260,100 +171,159 @@ TEST_F(ReadingListModelTest, ModelLoadFailure) {
                   .has_value());
 }
 
+// Tests the model's behavior during shutdown and destruction.
+TEST_F(ReadingListModelTest, Shutdown) {
+  ASSERT_TRUE(model_->loaded());
+
+  // Shutdown() causes ReadingListModelBeingShutdown().
+  EXPECT_CALL(observer_, ReadingListModelBeingShutdown(model_.get()));
+  model_->Shutdown();
+  EXPECT_FALSE(model_->loaded());
+
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Destruction shouldn't notify again, but should instead notify with
+  // ReadingListModelBeingDeleted().
+  EXPECT_CALL(observer_, ReadingListModelBeingShutdown(_)).Times(0);
+  EXPECT_CALL(observer_, ReadingListModelBeingDeleted(model_.get()));
+  model_.reset();
+}
+
 // Tests adding entry.
 TEST_F(ReadingListModelTest, AddEntry) {
-  ClearCounts();
+  const GURL url("http://example.com");
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillAddEntry(model_.get(), HasUrl(url)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(model_.get(), url,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
-      GURL("http://example.com"), "\n  \tsample Test ",
-      reading_list::ADDED_VIA_CURRENT_APP,
+      url, "\n  \tsample Test ", reading_list::ADDED_VIA_CURRENT_APP,
       /*estimated_read_time=*/base::TimeDelta());
-  EXPECT_EQ(GURL("http://example.com"), entry.URL());
+
+  EXPECT_EQ(url, entry.URL());
   EXPECT_EQ("sample Test", entry.Title());
 
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 1, 0, 0, 1);
-  AssertStorageCount(1, 0);
+  EXPECT_EQ(1, storage_saved_);
+  EXPECT_EQ(0, storage_removed_);
   EXPECT_EQ(1ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
 
-  const ReadingListEntry* other_entry =
-      model_->GetEntryByURL(GURL("http://example.com"));
+  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_FALSE(other_entry->IsRead());
-  EXPECT_EQ(GURL("http://example.com"), other_entry->URL());
+  EXPECT_EQ(url, other_entry->URL());
   EXPECT_EQ("sample Test", other_entry->Title());
 }
 
 // Tests adding an entry that already exists.
 TEST_F(ReadingListModelTest, AddExistingEntry) {
-  GURL url = GURL("http://example.com");
-  std::string title = "\n  \tsample Test ";
+  const GURL url("http://example.com");
+  const std::string title = "\n  \tsample Test ";
+
   model_->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   ClearCounts();
 
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+  EXPECT_CALL(observer_, ReadingListWillAddEntry(model_.get(), HasUrl(url)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(model_.get(), url,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
   const ReadingListEntry& entry =
       model_->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
                                 /*estimated_read_time=*/base::TimeDelta());
-  EXPECT_EQ(GURL("http://example.com"), entry.URL());
+  EXPECT_EQ(url, entry.URL());
   EXPECT_EQ("sample Test", entry.Title());
 
-  AssertObserverCount(0, 1, 1, 0, 1, 0, 1, 0, 0, 2);
-  AssertStorageCount(1, 1);
+  EXPECT_EQ(1, storage_saved_);
+  EXPECT_EQ(1, storage_removed_);
   EXPECT_EQ(1ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
 
-  const ReadingListEntry* other_entry =
-      model_->GetEntryByURL(GURL("http://example.com"));
+  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_FALSE(other_entry->IsRead());
-  EXPECT_EQ(GURL("http://example.com"), other_entry->URL());
+  EXPECT_EQ(url, other_entry->URL());
   EXPECT_EQ("sample Test", other_entry->Title());
 }
 
 // Tests addin entry from sync.
 TEST_F(ReadingListModelTest, SyncAddEntry) {
+  const GURL url("http://example.com");
+
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = model_->BeginBatchUpdates();
 
-  auto entry = std::make_unique<ReadingListEntry>(
-      GURL("http://example.com"), "sample", AdvanceAndGetTime(&clock_));
+  auto entry = std::make_unique<ReadingListEntry>(url, "sample",
+                                                  AdvanceAndGetTime(&clock_));
   entry->SetRead(true, AdvanceAndGetTime(&clock_));
   ClearCounts();
 
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillAddEntry(model_.get(), HasUrl(url)));
+  EXPECT_CALL(observer_, ReadingListDidAddEntry(model_.get(), url,
+                                                reading_list::ADDED_VIA_SYNC));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
   model_->SyncAddEntry(std::move(entry));
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 1, 0, 0, 1);
-  AssertStorageCount(1, 0);
+
+  EXPECT_EQ(1, storage_saved_);
+  EXPECT_EQ(0, storage_removed_);
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(1ul, ReadSize());
-  ClearCounts();
 }
 
 // Tests updating entry from sync.
 TEST_F(ReadingListModelTest, SyncMergeEntry) {
-  model_->AddOrReplaceEntry(GURL("http://example.com"), "sample",
-                            reading_list::ADDED_VIA_CURRENT_APP,
+  const GURL url("http://example.com");
+
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
   int64_t size = 50;
   int64_t time = 100;
-  model_->SetEntryDistilledInfoIfExists(GURL("http://example.com"),
-                                        distilled_path, distilled_url, size,
-                                        base::Time::FromTimeT(time));
-  const ReadingListEntry* local_entry =
-      model_->GetEntryByURL(GURL("http://example.com"));
+  model_->SetEntryDistilledInfoIfExists(url, distilled_path, distilled_url,
+                                        size, base::Time::FromTimeT(time));
+  const ReadingListEntry* local_entry = model_->GetEntryByURL(url);
   int64_t local_update_time = local_entry->UpdateTime();
 
   auto sync_entry = std::make_unique<ReadingListEntry>(
-      GURL("http://example.com"), "sample", AdvanceAndGetTime(&clock_));
+      url, "sample", AdvanceAndGetTime(&clock_));
   sync_entry->SetRead(true, AdvanceAndGetTime(&clock_));
   ASSERT_GT(sync_entry->UpdateTime(), local_update_time);
   int64_t sync_update_time = sync_entry->UpdateTime();
-  EXPECT_TRUE(sync_entry->DistilledPath().empty());
+  ASSERT_TRUE(sync_entry->DistilledPath().empty());
 
-  EXPECT_EQ(1ul, UnreadSize());
-  EXPECT_EQ(0ul, ReadSize());
+  ASSERT_EQ(1ul, UnreadSize());
+  ASSERT_EQ(0ul, ReadSize());
+
+  // It's questionable but the current implementation notifies merged entries as
+  // moves.
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = model_->BeginBatchUpdates();
@@ -370,97 +340,136 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
             merged_entry->DistillationTime());
 }
 
-// Tests deleting entry.
-TEST_F(ReadingListModelTest, RemoveEntryByUrl) {
-  model_->AddOrReplaceEntry(GURL("http://example.com"), "sample",
-                            reading_list::ADDED_VIA_CURRENT_APP,
+// Tests deleting entry when the read status is unread.
+TEST_F(ReadingListModelTest, RemoveEntryByUrlWhenUnread) {
+  const GURL url("http://example.com");
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   ClearCounts();
-  EXPECT_NE(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
-  EXPECT_EQ(1ul, UnreadSize());
-  EXPECT_EQ(0ul, ReadSize());
-  model_->RemoveEntryByURL(GURL("http://example.com"));
-  AssertObserverCount(0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  AssertStorageCount(0, 1);
-  EXPECT_EQ(0ul, UnreadSize());
-  EXPECT_EQ(0ul, ReadSize());
-  EXPECT_EQ(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
+  ASSERT_NE(model_->GetEntryByURL(url), nullptr);
+  ASSERT_EQ(1ul, UnreadSize());
+  ASSERT_EQ(0ul, ReadSize());
 
-  model_->AddOrReplaceEntry(GURL("http://example.com"), "sample",
-                            reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
-  model_->SetReadStatusIfExists(GURL("http://example.com"), true);
-  ClearCounts();
-  EXPECT_NE(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
-  EXPECT_EQ(0ul, UnreadSize());
-  EXPECT_EQ(1ul, ReadSize());
-  model_->RemoveEntryByURL(GURL("http://example.com"));
-  AssertObserverCount(0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  AssertStorageCount(0, 1);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->RemoveEntryByURL(url);
+
+  EXPECT_EQ(0, storage_saved_);
+  EXPECT_EQ(1, storage_removed_);
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
-  EXPECT_EQ(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
+  EXPECT_EQ(model_->GetEntryByURL(url), nullptr);
 }
 
-// Tests deleting entry from sync.
-TEST_F(ReadingListModelTest, RemoveSyncEntryByUrl) {
+// Tests deleting entry when the read status is read.
+TEST_F(ReadingListModelTest, RemoveEntryByUrlWhenRead) {
+  const GURL url("http://example.com");
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
+  model_->SetReadStatusIfExists(url, true);
+  ClearCounts();
+  ASSERT_NE(model_->GetEntryByURL(url), nullptr);
+  ASSERT_EQ(0ul, UnreadSize());
+  ASSERT_EQ(1ul, ReadSize());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->RemoveEntryByURL(url);
+
+  EXPECT_EQ(0, storage_saved_);
+  EXPECT_EQ(1, storage_removed_);
+  EXPECT_EQ(0ul, UnreadSize());
+  EXPECT_EQ(0ul, ReadSize());
+  EXPECT_EQ(model_->GetEntryByURL(url), nullptr);
+}
+
+// Tests deleting entry from sync when the read status is unread.
+TEST_F(ReadingListModelTest, RemoveSyncEntryByUrlWhenUnread) {
+  const GURL url("http://example.com");
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = model_->BeginBatchUpdates();
-  model_->AddOrReplaceEntry(GURL("http://example.com"), "sample",
-                            reading_list::ADDED_VIA_CURRENT_APP,
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   ClearCounts();
-  EXPECT_NE(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
-  EXPECT_EQ(1ul, UnreadSize());
-  EXPECT_EQ(0ul, ReadSize());
-  model_->SyncRemoveEntry(GURL("http://example.com"));
-  AssertObserverCount(0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  AssertStorageCount(0, 1);
-  EXPECT_EQ(0ul, UnreadSize());
-  EXPECT_EQ(0ul, ReadSize());
-  EXPECT_EQ(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
+  ASSERT_NE(model_->GetEntryByURL(url), nullptr);
+  ASSERT_EQ(1ul, UnreadSize());
+  ASSERT_EQ(0ul, ReadSize());
 
-  model_->AddOrReplaceEntry(GURL("http://example.com"), "sample",
-                            reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
-  model_->SetReadStatusIfExists(GURL("http://example.com"), true);
-  ClearCounts();
-  EXPECT_NE(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
-  EXPECT_EQ(0ul, UnreadSize());
-  EXPECT_EQ(1ul, ReadSize());
-  model_->SyncRemoveEntry(GURL("http://example.com"));
-  AssertObserverCount(0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  AssertStorageCount(0, 1);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->SyncRemoveEntry(url);
+
+  EXPECT_EQ(0, storage_saved_);
+  EXPECT_EQ(1, storage_removed_);
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
-  EXPECT_EQ(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
+  EXPECT_EQ(model_->GetEntryByURL(url), nullptr);
+}
+
+// Tests deleting entry from sync when the read status is read.
+TEST_F(ReadingListModelTest, RemoveSyncEntryByUrlWhenRead) {
+  const GURL url("http://example.com");
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = model_->BeginBatchUpdates();
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+                            /*estimated_read_time=*/base::TimeDelta());
+  model_->SetReadStatusIfExists(url, true);
+  ClearCounts();
+  ASSERT_NE(model_->GetEntryByURL(url), nullptr);
+  ASSERT_EQ(0ul, UnreadSize());
+  ASSERT_EQ(1ul, ReadSize());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->SyncRemoveEntry(url);
+
+  EXPECT_EQ(0, storage_saved_);
+  EXPECT_EQ(1, storage_removed_);
+  EXPECT_EQ(0ul, UnreadSize());
+  EXPECT_EQ(0ul, ReadSize());
+  EXPECT_EQ(model_->GetEntryByURL(url), nullptr);
 }
 
 // Tests marking entry read.
 TEST_F(ReadingListModelTest, ReadEntry) {
-  model_->AddOrReplaceEntry(GURL("http://example.com"), "sample",
-                            reading_list::ADDED_VIA_CURRENT_APP,
+  const GURL url("http://example.com");
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
 
-  ClearCounts();
-  model_->SetReadStatusIfExists(GURL("http://example.com"), true);
-  AssertObserverCount(0, 0, 0, 0, 0, 1, 0, 0, 0, 1);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->SetReadStatusIfExists(url, true);
+
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(1ul, ReadSize());
   EXPECT_EQ(0ul, model_->unseen_size());
 
-  const ReadingListEntry* other_entry =
-      model_->GetEntryByURL(GURL("http://example.com"));
+  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_TRUE(other_entry->IsRead());
-  EXPECT_EQ(GURL("http://example.com"), other_entry->URL());
+  EXPECT_EQ(url, other_entry->URL());
   EXPECT_EQ("sample", other_entry->Title());
 }
 
 // Tests accessing existing entry.
 TEST_F(ReadingListModelTest, EntryFromURL) {
-  GURL url1("http://example.com");
-  GURL url2("http://example2.com");
+  const GURL url1("http://example.com");
+  const GURL url2("http://example2.com");
   std::string entry1_title = "foo bar qux";
   model_->AddOrReplaceEntry(url1, entry1_title,
                             reading_list::ADDED_VIA_CURRENT_APP,
@@ -487,115 +496,135 @@ TEST_F(ReadingListModelTest, EntryFromURL) {
 
 // Tests mark entry unread.
 TEST_F(ReadingListModelTest, UnreadEntry) {
-  // Setup.
-  model_->AddOrReplaceEntry(GURL("http://example.com"), "sample",
-                            reading_list::ADDED_VIA_CURRENT_APP,
+  const GURL url("http://example.com");
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
-  model_->SetReadStatusIfExists(GURL("http://example.com"), true);
+  model_->SetReadStatusIfExists(url, true);
   ClearCounts();
-  EXPECT_EQ(0ul, UnreadSize());
-  EXPECT_EQ(1ul, ReadSize());
+  ASSERT_EQ(0ul, UnreadSize());
+  ASSERT_EQ(1ul, ReadSize());
 
-  // Action.
-  model_->SetReadStatusIfExists(GURL("http://example.com"), false);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
-  // Tests.
-  AssertObserverCount(0, 0, 0, 0, 0, 1, 0, 0, 0, 1);
+  model_->SetReadStatusIfExists(url, false);
+
   EXPECT_EQ(1ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
 
-  const ReadingListEntry* other_entry =
-      model_->GetEntryByURL(GURL("http://example.com"));
+  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_FALSE(other_entry->IsRead());
-  EXPECT_EQ(GURL("http://example.com"), other_entry->URL());
+  EXPECT_EQ(url, other_entry->URL());
   EXPECT_EQ("sample", other_entry->Title());
 }
 
 // Tests batch updates observers are called.
 TEST_F(ReadingListModelTest, BatchUpdates) {
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(model_.get()));
   auto token = model_->BeginBatchUpdates();
-  AssertObserverCount(1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
   EXPECT_TRUE(model_->IsPerformingBatchUpdates());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
 
-  delete token.release();
-  AssertObserverCount(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates(model_.get()));
+  token.reset();
   EXPECT_FALSE(model_->IsPerformingBatchUpdates());
 }
 
 // Tests batch updates are reentrant.
 TEST_F(ReadingListModelTest, BatchUpdatesReentrant) {
-  // When two updates happen at the same time, the notification is only sent
-  // for beginning of first update and completion of last update.
+  // ReadingListModelCompletedBatchUpdates() should be invoked at the very end
+  // only, and once.
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates(_)).Times(0);
+
   EXPECT_FALSE(model_->IsPerformingBatchUpdates());
 
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(model_.get()));
   auto token = model_->BeginBatchUpdates();
-  AssertObserverCount(1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // When two updates happen at the same time, the notification is only sent
+  // for beginning of first update and completion of last update.
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(_)).Times(0);
+
   EXPECT_TRUE(model_->IsPerformingBatchUpdates());
 
   auto second_token = model_->BeginBatchUpdates();
-  AssertObserverCount(1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
   EXPECT_TRUE(model_->IsPerformingBatchUpdates());
 
-  delete token.release();
-  AssertObserverCount(1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+  token.reset();
   EXPECT_TRUE(model_->IsPerformingBatchUpdates());
 
-  delete second_token.release();
-  AssertObserverCount(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates(model_.get()));
+  second_token.reset();
   EXPECT_FALSE(model_->IsPerformingBatchUpdates());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
 
   // Consequent updates send notifications.
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(model_.get()));
   auto third_token = model_->BeginBatchUpdates();
-  AssertObserverCount(1, 2, 1, 0, 0, 0, 0, 0, 0, 0);
   EXPECT_TRUE(model_->IsPerformingBatchUpdates());
 
-  delete third_token.release();
-  AssertObserverCount(1, 2, 2, 0, 0, 0, 0, 0, 0, 0);
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates(model_.get()));
+  third_token.reset();
   EXPECT_FALSE(model_->IsPerformingBatchUpdates());
 }
 
 // Tests setting title on unread entry.
 TEST_F(ReadingListModelTest, UpdateEntryTitle) {
-  const GURL gurl("http://example.com");
+  const GURL url("http://example.com");
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
-      gurl, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+      url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
       /*estimated_read_time=*/base::TimeDelta());
-  ClearCounts();
 
-  model_->SetEntryTitleIfExists(gurl, "ping");
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->SetEntryTitleIfExists(url, "ping");
+
   EXPECT_EQ("ping", entry.Title());
 }
+
 // Tests setting distillation state on unread entry.
 TEST_F(ReadingListModelTest, UpdateEntryDistilledState) {
-  const GURL gurl("http://example.com");
+  const GURL url("http://example.com");
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
-      gurl, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+      url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
       /*estimated_read_time=*/base::TimeDelta());
-  ClearCounts();
 
-  model_->SetEntryDistilledStateIfExists(gurl, ReadingListEntry::PROCESSING);
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->SetEntryDistilledStateIfExists(url, ReadingListEntry::PROCESSING);
+
   EXPECT_EQ(ReadingListEntry::PROCESSING, entry.DistilledState());
 }
 
 // Tests setting distillation info on unread entry.
 TEST_F(ReadingListModelTest, UpdateDistilledInfo) {
-  const GURL gurl("http://example.com");
+  const GURL url("http://example.com");
   const ReadingListEntry& entry = model_->AddOrReplaceEntry(
-      gurl, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+      url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
       /*estimated_read_time=*/base::TimeDelta());
-  ClearCounts();
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
   int64_t size = 50;
   int64_t time = 100;
-  model_->SetEntryDistilledInfoIfExists(GURL("http://example.com"),
-                                        distilled_path, distilled_url, size,
-                                        base::Time::FromTimeT(time));
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
+  model_->SetEntryDistilledInfoIfExists(url, distilled_path, distilled_url,
+                                        size, base::Time::FromTimeT(time));
+
   EXPECT_EQ(ReadingListEntry::PROCESSED, entry.DistilledState());
   EXPECT_EQ(distilled_path, entry.DistilledPath());
   EXPECT_EQ(distilled_url, entry.DistilledURL());
@@ -606,49 +635,63 @@ TEST_F(ReadingListModelTest, UpdateDistilledInfo) {
 
 // Tests setting title on read entry.
 TEST_F(ReadingListModelTest, UpdateReadEntryTitle) {
-  const GURL gurl("http://example.com");
-  model_->AddOrReplaceEntry(gurl, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+  const GURL url("http://example.com");
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
-  model_->SetReadStatusIfExists(gurl, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(gurl);
+  model_->SetReadStatusIfExists(url, true);
+  const ReadingListEntry* entry = model_->GetEntryByURL(url);
   ClearCounts();
 
-  model_->SetEntryTitleIfExists(gurl, "ping");
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->SetEntryTitleIfExists(url, "ping");
+
   EXPECT_EQ("ping", entry->Title());
 }
 
 // Tests setting distillation state on read entry.
 TEST_F(ReadingListModelTest, UpdateReadEntryState) {
-  const GURL gurl("http://example.com");
-  model_->AddOrReplaceEntry(gurl, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+  const GURL url("http://example.com");
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
-  model_->SetReadStatusIfExists(gurl, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(gurl);
+  model_->SetReadStatusIfExists(url, true);
+  const ReadingListEntry* entry = model_->GetEntryByURL(url);
   ClearCounts();
 
-  model_->SetEntryDistilledStateIfExists(gurl, ReadingListEntry::PROCESSING);
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
+
+  model_->SetEntryDistilledStateIfExists(url, ReadingListEntry::PROCESSING);
+
   EXPECT_EQ(ReadingListEntry::PROCESSING, entry->DistilledState());
 }
 
 // Tests setting distillation info on read entry.
 TEST_F(ReadingListModelTest, UpdateReadDistilledInfo) {
-  const GURL gurl("http://example.com");
-  model_->AddOrReplaceEntry(gurl, "sample", reading_list::ADDED_VIA_CURRENT_APP,
+  const GURL url("http://example.com");
+  model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
-  model_->SetReadStatusIfExists(gurl, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(gurl);
+  model_->SetReadStatusIfExists(url, true);
+  const ReadingListEntry* entry = model_->GetEntryByURL(url);
   ClearCounts();
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
   int64_t size = 50;
   int64_t time = 100;
-  model_->SetEntryDistilledInfoIfExists(GURL("http://example.com"),
-                                        distilled_path, distilled_url, size,
-                                        base::Time::FromTimeT(time));
-  AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 1, 1, 1);
+  model_->SetEntryDistilledInfoIfExists(url, distilled_path, distilled_url,
+                                        size, base::Time::FromTimeT(time));
+
   EXPECT_EQ(ReadingListEntry::PROCESSED, entry->DistilledState());
   EXPECT_EQ(distilled_path, entry->DistilledPath());
   EXPECT_EQ(distilled_url, entry->DistilledURL());
@@ -657,25 +700,18 @@ TEST_F(ReadingListModelTest, UpdateReadDistilledInfo) {
             entry->DistillationTime());
 }
 
-// Tests that ReadingListModel calls CallbackModelBeingDeleted when destroyed.
-TEST_F(ReadingListModelTest, CallbackModelBeingDeleted) {
-  AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  model_.reset();
-  AssertObserverCount(1, 0, 0, 1, 0, 0, 0, 0, 0, 0);
-}
-
 // Tests that new line characters and spaces are collapsed in title.
 TEST_F(ReadingListModelTest, TestTrimmingTitle) {
-  const GURL gurl("http://example.com");
+  const GURL url("http://example.com");
   std::string title = "\n  This\ttitle \n contains new     line \n characters ";
-  model_->AddOrReplaceEntry(gurl, title, reading_list::ADDED_VIA_CURRENT_APP,
+  model_->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
-  model_->SetReadStatusIfExists(gurl, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(gurl);
+  model_->SetReadStatusIfExists(url, true);
+  const ReadingListEntry* entry = model_->GetEntryByURL(url);
   EXPECT_EQ(entry->Title(), "This title contains new line characters");
-  model_->SetEntryTitleIfExists(gurl, "test");
+  model_->SetEntryTitleIfExists(url, "test");
   EXPECT_EQ(entry->Title(), "test");
-  model_->SetEntryTitleIfExists(gurl, title);
+  model_->SetEntryTitleIfExists(url, title);
   EXPECT_EQ(entry->Title(), "This title contains new line characters");
 }
 
