@@ -1088,19 +1088,8 @@ export class Output {
     const eventBlock = OutputRule.RULES[rule.event];
     const parentRole =
         (OutputRoleInfo[node.role] || {}).inherits || CustomRole.NO_ROLE;
-    /**
-     * Use OutputRule.RULES for node.role if exists.
-     * If not, use OutputRule.RULES for parentRole if exists.
-     * If not, use OutputRule.RULES for CustomRole.DEFAULT.
-     */
-    if (node.role && (eventBlock[node.role] || {}).speak !== undefined) {
-      rule.role = node.role;
-    } else if ((eventBlock[parentRole] || {}).speak !== undefined) {
-      rule.role = parentRole;
-    } else {
-      rule.role = CustomRole.DEFAULT;
-    }
     rule.output = outputTypes.OutputFormatType.SPEAK;
+    rule.populateRole(node.role, parentRole, rule.output);
     if (this.formatOptions_.braille) {
       // Overwrite rule by braille rule if exists.
       if (node.role && (eventBlock[node.role] || {}).braille !== undefined) {
