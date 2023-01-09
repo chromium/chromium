@@ -25,6 +25,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
     kMaxValue
   };
 
+  enum class AuthenticationSurface { kLogin, kLock };
+  enum class AuthenticationOutcome {
+    // User successfully logged in.
+    kSuccess,
+    // User exited the login screen without successfully logging in.
+    kFailure,
+  };
+
   AuthMetricsRecorder(const AuthMetricsRecorder&) = delete;
   AuthMetricsRecorder& operator=(const AuthMetricsRecorder&) = delete;
   AuthMetricsRecorder(AuthMetricsRecorder&&) = delete;
@@ -49,19 +57,35 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   void OnGuestLoginSuccess();
 
   // Set the total number of regular users on the lock screen.
+  // May log the values to UMA if all information is available.
   void OnUserCount(int user_count);
 
   // Set the policy setting whether to show users on sign in or not.
+  // May log the values to UMA if all information is available.
   void OnShowUsersOnSignin(bool show_users_on_signin);
 
   // Set the policy setting if ephemeral login are enforced.
+  // May log the values to UMA if all information is available.
   void OnEnableEphemeralUsers(bool enable_ephemeral_users);
 
   // Set whether the last successful login is a new user or not.
+  // May log the values to UMA if all information is available.
   void OnIsUserNew(bool is_new_user);
 
   // Set whether the last successful login is offline or not.
+  // May log the values to UMA if all information is available.
   void OnIsLoginOffline(bool is_login_offline);
+
+  // Set the current authentication surface (e.g. login screen, lock screen).
+  void OnAuthenticationSurfaceChange(AuthenticationSurface surface);
+
+  // Report how the user exits the login screen and the number of login
+  // attempts.
+  // `OnAuthenticationSurfaceChange` must be called before this method.
+  // Nothing will be recorded if the `exit_type` is `kFailure` and
+  // `num_login_attempts` is 0.
+  void OnExistingUserLoginExit(AuthenticationOutcome exit_type,
+                               int num_login_attempts) const;
 
  private:
   friend class ChromeBrowserMainPartsAsh;
@@ -90,6 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   absl::optional<bool> is_new_user_;
   absl::optional<bool> is_login_offline_;
   absl::optional<UserLoginType> user_login_type_;
+  absl::optional<AuthenticationSurface> auth_surface_;
 };
 
 }  // namespace ash

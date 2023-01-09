@@ -115,4 +115,59 @@ TEST_F(AuthMetricsRecorderTest, LoginFlowHideUsers) {
       static_cast<int>(AuthMetricsRecorder::kOnlineNew), 1);
 }
 
+TEST_F(AuthMetricsRecorderTest, OnExistingUserLoginExit) {
+  base::HistogramTester histogram_tester;
+
+  int two_attempts = 2;
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthMetricsRecorder::AuthenticationSurface::kLogin);
+  recorder_->OnExistingUserLoginExit(
+      AuthMetricsRecorder::AuthenticationOutcome::kSuccess, two_attempts);
+  histogram_tester.ExpectTotalCount(
+      "Ash.OSAuth.Login.NbPasswordAttempts.UntilSuccess", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.NbPasswordAttempts.UntilSuccess", two_attempts, 1);
+
+  int three_attempts = 3;
+  recorder_->OnExistingUserLoginExit(
+      AuthMetricsRecorder::AuthenticationOutcome::kFailure, three_attempts);
+  histogram_tester.ExpectTotalCount(
+      "Ash.OSAuth.Login.NbPasswordAttempts.UntilFailure", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.NbPasswordAttempts.UntilFailure", three_attempts, 1);
+
+  int five_attempts = 5;
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthMetricsRecorder::AuthenticationSurface::kLock);
+  recorder_->OnExistingUserLoginExit(
+      AuthMetricsRecorder::AuthenticationOutcome::kSuccess, five_attempts);
+  histogram_tester.ExpectTotalCount(
+      "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", five_attempts, 1);
+
+  int seven_attempts = 7;
+  recorder_->OnExistingUserLoginExit(
+      AuthMetricsRecorder::AuthenticationOutcome::kFailure, seven_attempts);
+  histogram_tester.ExpectTotalCount(
+      "Ash.OSAuth.Lock.NbPasswordAttempts.UntilFailure", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Lock.NbPasswordAttempts.UntilFailure", seven_attempts, 1);
+}
+
+// User exits the login/lock screen without any failed attempts.
+TEST_F(AuthMetricsRecorderTest, OnExistingUserLoginExitWithNoFailure) {
+  base::HistogramTester histogram_tester;
+
+  int zero_attempts = 0;
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthMetricsRecorder::AuthenticationSurface::kLock);
+  recorder_->OnExistingUserLoginExit(
+      AuthMetricsRecorder::AuthenticationOutcome::kSuccess, zero_attempts);
+  histogram_tester.ExpectTotalCount(
+      "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", zero_attempts, 1);
+}
+
 }  // namespace ash

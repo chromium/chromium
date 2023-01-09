@@ -197,6 +197,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon()
           &LoginDisplayHostCommon::OnAppTerminating, base::Unretained(this)));
   BrowserList::AddObserver(this);
   AuthMetricsRecorder::Get()->ResetLoginData();
+  AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(
+      AuthMetricsRecorder::AuthenticationSurface::kLogin);
 }
 
 LoginDisplayHostCommon::~LoginDisplayHostCommon() {

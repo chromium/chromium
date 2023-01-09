@@ -25,6 +25,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/capture_controller.h"
@@ -35,6 +36,20 @@ namespace {
 // Global lock screen instance. There can only ever be on lock screen at a
 // time.
 LockScreen* instance_ = nullptr;
+
+// Record screen type for metrics.
+void RecordScreenType(LockScreen::ScreenType type) {
+  AuthMetricsRecorder::AuthenticationSurface screen_type;
+  switch (type) {
+    case LockScreen::ScreenType::kLogin:
+      screen_type = AuthMetricsRecorder::AuthenticationSurface::kLogin;
+      break;
+    case LockScreen::ScreenType::kLock:
+      screen_type = AuthMetricsRecorder::AuthenticationSurface::kLock;
+      break;
+  }
+  AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(screen_type);
+}
 
 }  // namespace
 
@@ -118,6 +133,7 @@ void LockScreen::Show(ScreenType type) {
   ::wm::CaptureController::Get()->SetCapture(nullptr);
 
   instance_ = new LockScreen(type);
+  RecordScreenType(type);
 
   aura::Window* parent = nullptr;
   if (Shell::HasInstance()) {

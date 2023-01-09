@@ -2802,6 +2802,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilFailure"
     units="attempts" expires_after="2023-06-18">
+  <obsolete>
+    Deprecated in M111 and replaced with
+    &quot;Ash.OSAuth.Login/Lock.NbPasswordAttempts.UntilFailure&quot;.
+  </obsolete>
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -2813,6 +2817,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilSuccess"
     units="attempts" expires_after="2023-06-18">
+  <obsolete>
+    Deprecated in M111 and replaced with
+    &quot;Ash.OSAuth.Login/Lock.NbPasswordAttempts.UntilSuccess&quot;.
+  </obsolete>
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -3518,6 +3526,27 @@ chromium-metrics-reviews@google.com.
   <token key="UnpinnedOrPinned">
     <variant name=""/>
     <variant name="Pinned"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.OSAuth.{AuthenticationSurface}.NbPasswordAttempts.{AuthenticationOutcome}"
+    units="attempts" expires_after="2023-06-18">
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    The number of incorrect passwords entered in Chrome OS
+    {AuthenticationSurface} screen until a successful/failed attempt. For
+    previous data (grouped for login and lock screen together) see
+    &quot;Ash.Login.Lock.NbPasswordAttempts.{AuthenticationOutcome}&quot;.
+  </summary>
+  <token key="AuthenticationSurface">
+    <variant name="Lock"/>
+    <variant name="Login"/>
+  </token>
+  <token key="AuthenticationOutcome">
+    <variant name="UntilFailure"/>
+    <variant name="UntilSuccess"/>
   </token>
 </histogram>
 

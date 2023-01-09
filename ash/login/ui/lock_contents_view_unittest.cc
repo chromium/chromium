@@ -56,6 +56,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -82,9 +83,9 @@ namespace ash {
 namespace {
 
 constexpr char kNbPasswordAttemptsUntilSuccessHistogramName[] =
-    "Ash.Login.Lock.NbPasswordAttempts.UntilSuccess";
+    "Ash.OSAuth.Login.NbPasswordAttempts.UntilSuccess";
 constexpr char kNbPasswordAttemptsUntilFailureHistogramName[] =
-    "Ash.Login.Lock.NbPasswordAttempts.UntilFailure";
+    "Ash.OSAuth.Login.NbPasswordAttempts.UntilFailure";
 
 void PressAndReleasePowerButton() {
   base::SimpleTestTickClock tick_clock;
@@ -132,7 +133,11 @@ using LockContentsViewKeyboardUnitTest = LoginKeyboardTestBase;
 
 class LockContentsViewUnitTest : public LoginTestBase {
  public:
-  LockContentsViewUnitTest() { set_start_session(true); }
+  LockContentsViewUnitTest() {
+    set_start_session(true);
+    AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(
+        AuthMetricsRecorder::AuthenticationSurface::kLogin);
+  }
   LockContentsViewUnitTest(LockContentsViewUnitTest&) = delete;
   LockContentsViewUnitTest& operator=(LockContentsViewUnitTest&) = delete;
   ~LockContentsViewUnitTest() override = default;

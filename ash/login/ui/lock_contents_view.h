@@ -483,6 +483,10 @@ class ASH_EXPORT LockContentsView
   // kiosk_license_mode_ is true.
   void UpdateKioskDefaultMessageVisibility();
 
+  // Record the number of password attempts for the given account id to UMA.
+  // Afterwards reset the number of attempts.
+  void RecordAndResetPasswordAttempts(bool success, AccountId account_id);
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;

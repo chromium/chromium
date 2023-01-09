@@ -60,6 +60,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -739,8 +740,12 @@ LockContentsView::~LockContentsView() {
 
   // Times a password was incorrectly entered until view is destroyed.
   for (auto& unlock_attempt : unlock_attempt_by_user_) {
-    Shell::Get()->metrics()->login_metrics_recorder()->RecordNumLoginAttempts(
-        false /*success*/, &unlock_attempt.second);
+    // If the user recorded a successful attempt already, the number of attempts
+    // was reset to 0. Therefore, we will not record it the second time
+    // here.
+    if (unlock_attempt.second > 0) {
+      RecordAndResetPasswordAttempts(/*success=*/false, unlock_attempt.first);
+    }
   }
 
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
@@ -2144,8 +2149,7 @@ void LockContentsView::OnAuthenticate(bool auth_success,
     }
 
     // Times a password was incorrectly entered until user succeeds.
-    Shell::Get()->metrics()->login_metrics_recorder()->RecordNumLoginAttempts(
-        true /*success*/, &unlock_attempt_by_user_[account_id]);
+    RecordAndResetPasswordAttempts(/*success=*/true, account_id);
   } else {
     ++unlock_attempt_by_user_[account_id];
     if (authenticated_by_pin) {
@@ -2812,6 +2816,16 @@ void LockContentsView::SetKioskLicenseModeForTesting(
   // OnDeviceEnterpriseInfoChanged, it updates the visibility of Kiosk default
   // meesage too.
   UpdateKioskDefaultMessageVisibility();
+}
+
+void LockContentsView::RecordAndResetPasswordAttempts(bool success,
+                                                      AccountId account_id) {
+  AuthMetricsRecorder::AuthenticationOutcome exit_type =
+      success ? AuthMetricsRecorder::AuthenticationOutcome::kSuccess
+              : AuthMetricsRecorder::AuthenticationOutcome::kFailure;
+  AuthMetricsRecorder::Get()->OnExistingUserLoginExit(
+      exit_type, unlock_attempt_by_user_[account_id]);
+  unlock_attempt_by_user_[account_id] = 0;
 }
 
 BEGIN_METADATA(LockContentsView, NonAccessibleView)

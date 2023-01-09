@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/strings/strcat.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "components/user_manager/known_user.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -24,6 +25,9 @@ namespace ash {
 LoginTestBase::LoginTestBase()
     : NoSessionAshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   user_manager::KnownUser::RegisterPrefs(local_state()->registry());
+  auth_metrics_recorder_ = ash::AuthMetricsRecorder::CreateForTesting();
+  AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(
+      AuthMetricsRecorder::AuthenticationSurface::kLogin);
 }
 
 LoginTestBase::~LoginTestBase() = default;

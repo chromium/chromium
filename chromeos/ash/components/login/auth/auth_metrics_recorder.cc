@@ -10,11 +10,15 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
 namespace {
+
+using AuthenticationSurface = AuthMetricsRecorder::AuthenticationSurface;
+using AuthenticationOutcome = AuthMetricsRecorder::AuthenticationOutcome;
 
 // Histogram for tracking the reason of auth failure
 constexpr char kFailureReasonHistogramName[] = "Login.FailureReason";
@@ -25,6 +29,12 @@ constexpr char kSuccessReasonHistogramName[] = "Login.SuccessReason";
 // Histogram prefix for tracking login flow. The format:
 // "Login.Flow.{HideUsers,ShowUsers}.{0,1,2,Few,Many}"
 constexpr char kLoginFlowHistogramPrefix[] = "Login.Flow.";
+
+// Histogram for the number of password attempts on the login/lock screen exit.
+// The format:
+// "Ash.OSAuth.{Login,Lock}.NbPasswordAttempts.{UntilFailure,UntilSuccess}"
+constexpr char kNbPasswordAttemptsHistogramName[] =
+    "Ash.OSAuth.%s.NbPasswordAttempts.%s";
 
 // Limit definition of "many users"
 constexpr int kManyUserLimit = 5;
@@ -54,12 +64,49 @@ std::string UserCountSuffix(int user_count) {
   return "Many";
 }
 
+// Suffix for grouping by screen type. Should match suffixes of the
+// Ash.OSAuth.{Login,Lock}.NbPasswordAttempts.{UntilFailure,UntilSuccess}
+// metrics in metadata/ash/histograms.xml
+std::string GetAuthenticationSurfaceSuffix(AuthenticationSurface screen) {
+  switch (screen) {
+    case AuthenticationSurface::kLock:
+      return "Lock";
+    case AuthenticationSurface::kLogin:
+      return "Login";
+  }
+  NOTREACHED();
+  return "";
+}
+
+// Suffix for grouping by screen exit type. Should match suffixes of the
+// Ash.OSAuth.{Login,Lock}.NbPasswordAttempts.{UntilFailure,UntilSuccess}
+// metrics in metadata/ash/histograms.xml
+std::string GetAuthenticationOutcomeSuffix(AuthenticationOutcome exit_type) {
+  switch (exit_type) {
+    case AuthenticationOutcome::kSuccess:
+      return "UntilSuccess";
+    case AuthenticationOutcome::kFailure:
+      return "UntilFailure";
+  }
+  NOTREACHED();
+  return "";
+}
+
 // Complete name of the login flow histogram.
 std::string GetLoginFlowHistogramName(bool show_users_on_signin,
                                       int user_count) {
   return base::StrCat({kLoginFlowHistogramPrefix,
                        ShowUserPrefix(show_users_on_signin),
                        UserCountSuffix(user_count)});
+}
+
+// Complete name of the number of password attempts histogram.
+std::string GetNbPasswordAttemptsHistogramName(
+    AuthenticationSurface screen,
+    AuthenticationOutcome exit_type) {
+  return base::StringPrintf(kNbPasswordAttemptsHistogramName,
+                            GetAuthenticationSurfaceSuffix(screen).c_str(),
+                            GetAuthenticationOutcomeSuffix(exit_type).c_str());
 }
 
 }  // namespace
@@ -135,6 +182,25 @@ void AuthMetricsRecorder::OnIsLoginOffline(bool is_login_offline) {
   MaybeUpdateUserLoginType();
 }
 
+void AuthMetricsRecorder::OnAuthenticationSurfaceChange(
+    AuthenticationSurface surface) {
+  auth_surface_ = surface;
+}
+
+void AuthMetricsRecorder::OnExistingUserLoginExit(
+    AuthenticationOutcome exit_type,
+    int num_login_attempts) const {
+  CHECK(auth_surface_);
+  CHECK_GE(num_login_attempts, 0);
+  if (exit_type == AuthenticationOutcome::kFailure) {
+    CHECK_NE(num_login_attempts, 0);
+  }
+
+  base::UmaHistogramCounts100(
+      GetNbPasswordAttemptsHistogramName(auth_surface_.value(), exit_type),
+      num_login_attempts);
+}
+
 void AuthMetricsRecorder::MaybeUpdateUserLoginType() {
   if (!is_login_offline_.has_value() || !is_new_user_.has_value() ||
       !enable_ephemeral_users_.has_value())
@@ -173,6 +239,7 @@ void AuthMetricsRecorder::Reset() {
   is_new_user_ = absl::nullopt;
   is_login_offline_ = absl::nullopt;
   user_login_type_ = absl::nullopt;
+  auth_surface_ = absl::nullopt;
 }
 
 }  // namespace ash
