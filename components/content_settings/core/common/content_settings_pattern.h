@@ -227,10 +227,6 @@ class ContentSettingsPattern {
   // Returns the host of a pattern.
   const std::string& GetHost() const;
 
-  // True if this pattern has a non-empty path.  Can only be used for patterns
-  // with file: schemes.
-  bool HasPath() const;
-
   // Compares the pattern with a given |other| pattern and returns the
   // |Relation| of the two patterns.
   Relation Compare(const ContentSettingsPattern& other) const;

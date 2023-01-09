@@ -182,54 +182,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.ExceptionScheme" enum="ContentSettingScheme"
-    expires_after="M94">
-  <owner>alexmos@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    Records the schemes of content setting exceptions at browser start. Each
-    exception provides one sample.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.ExceptionSchemeFile.HasPath"
-    enum="BooleanHasPath" expires_after="M94">
-  <owner>alexmos@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    Records how often a content settings exception for the file: scheme has a
-    non-empty path. Recorded once per exception at browser start.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.ExceptionSchemeFile.Type.WithoutPath"
-    enum="ContentType" expires_after="M94">
-  <owner>alexmos@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type has a content settings exception
-    defined for a file: scheme with no path (i.e., wildcard path). Recorded once
-    per exception at browser start.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="ContentSettings.ExceptionSchemeFile.Type.WithPath"
-    enum="ContentType" expires_after="M94">
-  <owner>alexmos@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type has a content settings exception
-    defined for a file: scheme with a valid, non-empty path. Recorded once per
-    exception at browser start.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.ExtensionEmbeddedSettingSet"
     enum="ContentType" expires_after="2023-05-01">
   <owner>engedy@chromium.org</owner>

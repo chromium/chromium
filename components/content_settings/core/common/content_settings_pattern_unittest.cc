@@ -898,13 +898,6 @@ TEST(ContentSettingsPatternTest, Schemes) {
             Pattern("devtools://devtools/").GetScheme());
 }
 
-TEST(ContentSettingsPatternTest, FileSchemeHasPath) {
-  EXPECT_FALSE(Pattern("file:///*").HasPath());
-  EXPECT_TRUE(Pattern("file:///foo").HasPath());
-  EXPECT_TRUE(Pattern("file:///foo/bar/").HasPath());
-  EXPECT_TRUE(Pattern("file:///foo/bar/test.html").HasPath());
-}
-
 TEST(ContentSettingsPatternTest, MatchesSingleOrigin) {
   EXPECT_FALSE(Pattern("*").MatchesSingleOrigin());
   EXPECT_FALSE(Pattern("*://example.com:443").MatchesSingleOrigin());

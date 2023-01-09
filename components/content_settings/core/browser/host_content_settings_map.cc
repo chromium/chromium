@@ -628,28 +628,6 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
         continue;
       }
 
-      ContentSettingsPattern::SchemeType scheme =
-          setting_entry.primary_pattern.GetScheme();
-      base::UmaHistogramEnumeration("ContentSettings.ExceptionScheme", scheme,
-                                    ContentSettingsPattern::SCHEME_MAX);
-
-      if (scheme == ContentSettingsPattern::SCHEME_FILE) {
-        base::UmaHistogramBoolean("ContentSettings.ExceptionSchemeFile.HasPath",
-                                  setting_entry.primary_pattern.HasPath());
-        size_t num_values;
-        int histogram_value =
-            ContentSettingTypeToHistogramValue(content_type, &num_values);
-        if (setting_entry.primary_pattern.HasPath()) {
-          base::UmaHistogramExactLinear(
-              "ContentSettings.ExceptionSchemeFile.Type.WithPath",
-              histogram_value, num_values);
-        } else {
-          base::UmaHistogramExactLinear(
-              "ContentSettings.ExceptionSchemeFile.Type.WithoutPath",
-              histogram_value, num_values);
-        }
-      }
-
       if (setting_entry.source == "preference") {
         // |content_info| will be non-nullptr iff |content_type| is a content
         // setting rather than a website setting.

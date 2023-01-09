@@ -619,11 +619,6 @@ const std::string& ContentSettingsPattern::GetHost() const {
   return parts_.host;
 }
 
-bool ContentSettingsPattern::HasPath() const {
-  DCHECK_EQ(GetScheme(), SCHEME_FILE);
-  return !parts_.is_path_wildcard && !parts_.path.empty();
-}
-
 ContentSettingsPattern::Relation ContentSettingsPattern::Compare(
     const ContentSettingsPattern& other) const {
   // Two invalid patterns are identical in the way they behave. They don't match
