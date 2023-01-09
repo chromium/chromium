@@ -5,6 +5,7 @@
 """Update WPT metadata from builder results."""
 
 from concurrent.futures import ThreadPoolExecutor
+import collections
 import contextlib
 import io
 import json
@@ -13,6 +14,7 @@ import pathlib
 import optparse
 import re
 from typing import (
+    ClassVar,
     Collection,
     Iterable,
     Iterator,
@@ -444,6 +446,11 @@ TestFileMap = Mapping[str, metadata.TestFileData]
 
 
 class MetadataUpdater:
+    # When using wptreports from builds, only update expectations for tests
+    # that exhaust all retries. Unexpectedly passing tests and occasional
+    # flakes/timeouts will not cause an update.
+    min_results_for_update: ClassVar[int] = 4
+
     def __init__(
             self,
             test_files: TestFileMap,
@@ -517,12 +524,26 @@ class MetadataUpdater:
         updater = metadata.ExpectedUpdater(self._test_files)
         test_ids = set()
         for report in reports:
-            for retry_report in map(json.loads, report):
-                test_ids.update(result['test']
-                                for result in retry_report['results']
-                                if 'test' in result)
-                updater.update_from_wptreport_log(retry_report)
+            report = self._merge_retry_reports(map(json.loads, report))
+            test_ids.update(result['test'] for result in report['results'])
+            updater.update_from_wptreport_log(report)
         return test_ids
+
+    def _merge_retry_reports(self, retry_reports):
+        report, results_by_test = {}, collections.defaultdict(list)
+        for retry_report in retry_reports:
+            run_info = report.get('run_info', retry_report['run_info'])
+            if run_info != retry_report['run_info']:
+                raise ValueError('run info values should be identical '
+                                 'across retries')
+            report.update(retry_report)
+            for result in retry_report['results']:
+                results_by_test[result['test']].append(result)
+        report['results'] = []
+        for test_id, results in results_by_test.items():
+            if len(results) >= self.min_results_for_update:
+                report['results'].extend(results)
+        return report
 
     def test_files_to_update(self) -> List[metadata.TestFileData]:
         test_files = {

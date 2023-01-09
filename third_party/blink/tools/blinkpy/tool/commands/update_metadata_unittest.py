@@ -31,6 +31,8 @@ class BaseUpdateMetadataTest(LoggingTestCase):
     def setUp(self):
         super().setUp()
         self.maxDiff = None
+        # Lower this threshold so that test results do not need to be repeated.
+        MetadataUpdater.min_results_for_update = 1
 
         self.tool = MockBlinkTool()
         self.finder = path_finder.PathFinder(self.tool.filesystem)
@@ -684,6 +686,34 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             'external/wpt/fail.html.ini', """\
             [fail.html]
               expected: [FAIL, CRASH]
+            """)
+
+    def test_no_change_without_enough_results(self):
+        """The updater does not modify metadata without enough test results.
+
+        A single test run cannot surface flakiness, and therefore does not
+        suffice to update or remove existing expectations confidently. In
+        Chromium/Blink, a WPT test is not retried when it runs as expected or
+        unexpectedly passes. Unexpected passes should be removed separately
+        using long-term test history.
+        """
+        MetadataUpdater.min_results_for_update = 2
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: FAIL
+            """)
+        self.update({
+            'results': [{
+                'test': '/fail.html',
+                'status': 'PASS',
+                'expected': 'FAIL',
+            }],
+        })
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: FAIL
             """)
 
     def test_remove_stale_expectation(self):
