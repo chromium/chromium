@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -56,49 +55,6 @@ apps::AppPtr CreateApp(const app_list::InternalApp& internal_app) {
   app->handles_intents = app->show_in_launcher;
   app->allow_uninstall = false;
 
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
-  return app;
-}
-
-apps::mojom::AppPtr Convert(const app_list::InternalApp& internal_app) {
-  if ((internal_app.app_id == nullptr) ||
-      (internal_app.name_string_resource_id == 0) ||
-      (internal_app.icon_resource_id <= 0)) {
-    return apps::mojom::AppPtr();
-  }
-
-  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      apps::mojom::AppType::kBuiltIn, internal_app.app_id,
-      apps::mojom::Readiness::kReady,
-      l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
-      apps::mojom::InstallReason::kSystem);
-
-  app->install_source = apps::mojom::InstallSource::kSystem;
-
-  if (internal_app.searchable_string_resource_id != 0) {
-    app->additional_search_terms.push_back(
-        l10n_util::GetStringUTF8(internal_app.searchable_string_resource_id));
-  }
-
-  app->icon_key = apps::mojom::IconKey::New(
-      apps::mojom::IconKey::kDoesNotChangeOverTime,
-      internal_app.icon_resource_id, apps::IconEffects::kNone);
-
-  app->recommendable = internal_app.recommendable
-                           ? apps::mojom::OptionalBool::kTrue
-                           : apps::mojom::OptionalBool::kFalse;
-  app->searchable = internal_app.searchable ? apps::mojom::OptionalBool::kTrue
-                                            : apps::mojom::OptionalBool::kFalse;
-  app->show_in_launcher = internal_app.show_in_launcher
-                              ? apps::mojom::OptionalBool::kTrue
-                              : apps::mojom::OptionalBool::kFalse;
-  app->show_in_shelf = app->show_in_search =
-      internal_app.searchable ? apps::mojom::OptionalBool::kTrue
-                              : apps::mojom::OptionalBool::kFalse;
-  app->show_in_management = apps::mojom::OptionalBool::kFalse;
-  app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
-  app->handles_intents = app->show_in_launcher;
-
   return app;
 }
 
@@ -112,9 +68,6 @@ BuiltInChromeOsApps::BuiltInChromeOsApps(AppServiceProxy* proxy)
 BuiltInChromeOsApps::~BuiltInChromeOsApps() = default;
 
 void BuiltInChromeOsApps::Initialize() {
-  PublisherBase::Initialize(proxy()->AppService(),
-                            apps::mojom::AppType::kBuiltIn);
-
   RegisterPublisher(AppType::kBuiltIn);
 
   std::vector<AppPtr> apps;
@@ -179,32 +132,6 @@ void BuiltInChromeOsApps::GetMenuModel(
   }
 
   std::move(callback).Run(std::move(menu_items));
-}
-
-void BuiltInChromeOsApps::Connect(
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-    apps::mojom::ConnectOptionsPtr opts) {
-  std::vector<apps::mojom::AppPtr> apps;
-  if (profile_) {
-    // TODO(crbug.com/826982): move source of truth for built-in apps from
-    // ui/app_list to here when the AppService feature is enabled by default.
-    for (const auto& internal_app : app_list::GetInternalAppList(profile_)) {
-      apps::mojom::AppPtr app = Convert(internal_app);
-      if (!app.is_null()) {
-        apps.push_back(std::move(app));
-      }
-    }
-  }
-  mojo::Remote<apps::mojom::Subscriber> subscriber(
-      std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kBuiltIn,
-                     true /* should_notify_initialized */);
-
-  // Unlike other apps::mojom::Publisher implementations, we don't need to
-  // retain the subscriber (e.g. add it to a
-  // mojo::RemoteSet<apps::mojom::Subscriber> subscribers_) after this
-  // function returns. The list of built-in Chrome OS apps is fixed for the
-  // lifetime of the Chrome OS session. There won't be any further updates.
 }
 
 }  // namespace apps
