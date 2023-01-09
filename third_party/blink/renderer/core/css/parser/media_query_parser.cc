@@ -27,13 +27,9 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
   STACK_ALLOCATED();
 
  public:
-  explicit MediaQueryFeatureSet(CSSParserMode parser_mode)
-      : parser_mode_(parser_mode) {}
+  MediaQueryFeatureSet() = default;
 
   bool IsAllowed(const String& feature) const override {
-    if (feature == media_feature_names::kImmersiveMediaFeature) {
-      return parser_mode_ == kUASheetMode;
-    }
     if (feature == media_feature_names::kInlineSizeMediaFeature ||
         feature == media_feature_names::kMinInlineSizeMediaFeature ||
         feature == media_feature_names::kMaxInlineSizeMediaFeature ||
@@ -73,7 +69,6 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            feature == media_feature_names::kDisplayModeMediaFeature ||
            feature == media_feature_names::kScanMediaFeature ||
            feature == media_feature_names::kColorGamutMediaFeature ||
-           feature == media_feature_names::kImmersiveMediaFeature ||
            feature == media_feature_names::kPrefersColorSchemeMediaFeature ||
            feature == media_feature_names::kPrefersContrastMediaFeature ||
            feature == media_feature_names::kPrefersReducedMotionMediaFeature ||
@@ -98,9 +93,6 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
 
   bool IsCaseSensitive(const String& feature) const override { return false; }
   bool SupportsRange() const override { return true; }
-
- private:
-  CSSParserMode parser_mode_;
 };
 
 }  // namespace
@@ -485,7 +477,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeInParens(
 
     // ( <media-feature> )
     const MediaQueryExpNode* feature =
-        ConsumeFeature(block, MediaQueryFeatureSet(mode_));
+        ConsumeFeature(block, MediaQueryFeatureSet());
     if (feature && block.AtEnd()) {
       return MediaQueryExpNode::Nested(feature);
     }

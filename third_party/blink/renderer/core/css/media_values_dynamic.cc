@@ -191,10 +191,6 @@ bool MediaValuesDynamic::ThreeDEnabled() const {
   return CalculateThreeDEnabled(frame_);
 }
 
-bool MediaValuesDynamic::InImmersiveMode() const {
-  return CalculateInImmersiveMode(frame_);
-}
-
 const String MediaValuesDynamic::MediaType() const {
   return CalculateMediaType(frame_);
 }

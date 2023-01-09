@@ -884,14 +884,6 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // TODO(crbug.com/779126): add support for handling payment requests in
-  // immersive mode.
-  if (local_frame->GetSettings()->GetImmersiveModeEnabled()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Page popups are suppressed");
-    return ScriptPromise();
-  }
-
   VLOG(2) << "Renderer: PaymentRequest (" << id_.Utf8() << "): show()";
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestShow);

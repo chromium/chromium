@@ -55,7 +55,6 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     float ic_size = 16.f;
     float line_height = 0;
     bool three_d_enabled = false;
-    bool immersive_mode = false;
     bool strict_mode = true;
     String media_type;
     mojom::blink::DisplayMode display_mode =
@@ -96,7 +95,6 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.ch_size = ch_size;
       data.ch_size = ic_size;
       data.three_d_enabled = three_d_enabled;
-      data.immersive_mode = immersive_mode;
       data.strict_mode = strict_mode;
       data.media_type = media_type;
       data.display_mode = display_mode;
@@ -131,7 +129,6 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   mojom::blink::HoverType PrimaryHoverType() const override;
   int AvailableHoverTypes() const override;
   bool ThreeDEnabled() const override;
-  bool InImmersiveMode() const override;
   bool StrictMode() const override;
   Document* GetDocument() const override;
   bool HasValues() const override;

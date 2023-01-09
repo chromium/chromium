@@ -26,9 +26,6 @@
     "device-height",
     "device-width",
     "display-mode",
-    // This has not been standardized and is only available to UA style sheets.
-    // See crbug.com/809165
-    "immersive",
     "inline-size",
     "max-color",
     "max-color-index",

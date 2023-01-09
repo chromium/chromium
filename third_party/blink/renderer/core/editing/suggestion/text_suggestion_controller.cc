@@ -218,9 +218,6 @@ void TextSuggestionController::HandlePotentialSuggestionTap(
     NOTREACHED();
     return;
   }
-  // TODO(crbug.com/779126): add support for suggestions in immersive mode.
-  if (GetFrame().GetSettings()->GetImmersiveModeEnabled())
-    return;
 
   // It's theoretically possible, but extremely unlikely, that the user has
   // managed to tap on some text after TextSuggestionController has told the

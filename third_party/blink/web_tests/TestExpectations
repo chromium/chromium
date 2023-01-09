@@ -6686,7 +6686,6 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/control
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/controls-page-zoom-out.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/doubletap-on-play-button.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/doubletap-to-toggle-fullscreen.html [ Failure Skip ]
-crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/immersive-doubletap.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-button-disabled-no-source.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-always-visible.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-click-item.html [ Failure Skip ]

@@ -305,38 +305,6 @@ class PagePopupSuppressionTest : public testing::Test {
   Persistent<HTMLSelectElement> select_;
 };
 
-TEST_F(PagePopupSuppressionTest, SuppressColorChooser) {
-  // Some platforms don't support PagePopups so just return.
-  if (!RuntimeEnabledFeatures::PagePopupEnabled())
-    return;
-  // By default, the popup should be shown.
-  EXPECT_TRUE(CanOpenColorChooser());
-
-  Settings* settings = GetSettings();
-  settings->SetImmersiveModeEnabled(true);
-
-  EXPECT_FALSE(CanOpenColorChooser());
-
-  settings->SetImmersiveModeEnabled(false);
-  EXPECT_TRUE(CanOpenColorChooser());
-}
-
-TEST_F(PagePopupSuppressionTest, SuppressDateTimeChooser) {
-  // Some platforms don't support PagePopups so just return.
-  if (!RuntimeEnabledFeatures::PagePopupEnabled())
-    return;
-  // By default, the popup should be shown.
-  EXPECT_TRUE(CanOpenDateTimeChooser());
-
-  Settings* settings = GetSettings();
-  settings->SetImmersiveModeEnabled(true);
-
-  EXPECT_FALSE(CanOpenDateTimeChooser());
-
-  settings->SetImmersiveModeEnabled(false);
-  EXPECT_TRUE(CanOpenDateTimeChooser());
-}
-
 // A FileChooserClient which makes FileChooser::OpenFileChooser() success.
 class MockFileChooserClient : public GarbageCollected<MockFileChooserClient>,
                               public FileChooserClient {

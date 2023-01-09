@@ -232,7 +232,6 @@
     {
       name: "immersiveModeEnabled",
       initial: false,
-      invalidate: ["MediaControls"],
     },
 
     // Only affects main thread scrolling

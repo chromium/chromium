@@ -183,8 +183,7 @@ static inline bool FeatureExpectingInteger(const String& media_feature) {
       media_feature == media_feature_names::kMinColorIndexMediaFeature ||
       media_feature == media_feature_names::kMonochromeMediaFeature ||
       media_feature == media_feature_names::kMaxMonochromeMediaFeature ||
-      media_feature == media_feature_names::kMinMonochromeMediaFeature ||
-      media_feature == media_feature_names::kImmersiveMediaFeature) {
+      media_feature == media_feature_names::kMinMonochromeMediaFeature) {
     return true;
   }
 

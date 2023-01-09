@@ -34,7 +34,6 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   mojom::blink::HoverType PrimaryHoverType() const override;
   int AvailableHoverTypes() const override;
   bool ThreeDEnabled() const override;
-  bool InImmersiveMode() const override;
   bool StrictMode() const override;
   const String MediaType() const override;
   blink::mojom::DisplayMode DisplayMode() const override;

@@ -130,7 +130,6 @@ const char kShowDefaultPosterCSSClass[] = "use-default-poster";
 const char kActAsAudioControlsCSSClass[] = "audio-only";
 const char kScrubbingMessageCSSClass[] = "scrubbing-message";
 const char kTestModeCSSClass[] = "test-mode";
-const char kImmersiveModeCSSClass[] = "immersive-mode";
 
 // The delay between two taps to be recognized as a double tap gesture.
 constexpr base::TimeDelta kDoubleTapDelay = base::Milliseconds(300);
@@ -180,14 +179,11 @@ bool ShouldShowCastButton(HTMLMediaElement& media_element) {
   if (media_element.FastHasAttribute(html_names::kDisableremoteplaybackAttr))
     return false;
 
-  // Explicitly do not show cast button when:
-  // - the mediaControlsEnabled setting is false, to make sure the overlay does
-  //   not appear;
-  // - the immersiveModeEnabled setting is true.
+  // Explicitly do not show cast button when the mediaControlsEnabled setting is
+  // false, to make sure the overlay does not appear.
   Document& document = media_element.GetDocument();
   if (document.GetSettings() &&
-      (!document.GetSettings()->GetMediaControlsEnabled() ||
-       document.GetSettings()->GetImmersiveModeEnabled())) {
+      (!document.GetSettings()->GetMediaControlsEnabled())) {
     return false;
   }
 
@@ -758,13 +754,6 @@ void MediaControlsImpl::UpdateCSSClassFromState() {
     toAdd.push_back(kShowDefaultPosterCSSClass);
   } else {
     toRemove.push_back(kShowDefaultPosterCSSClass);
-  }
-
-  if (ShouldShowVideoControls() && GetDocument().GetSettings() &&
-      GetDocument().GetSettings()->GetImmersiveModeEnabled()) {
-    toAdd.push_back(kImmersiveModeCSSClass);
-  } else {
-    toRemove.push_back(kImmersiveModeCSSClass);
   }
 
   classList().add(toAdd, ASSERT_NO_EXCEPTION);
@@ -1630,15 +1619,6 @@ void MediaControlsImpl::HandleTouchEvent(Event* event) {
     // Since handling the gesturetap event will prevent the click event from
     // happening, we need to manually hide any popups.
     HidePopupMenu();
-
-    // In immersive mode we don't use double-tap features, so instead of
-    // waiting 300 ms for a potential second tap, we just immediately toggle
-    // controls visibility.
-    if (GetDocument().GetSettings() &&
-        GetDocument().GetSettings()->GetImmersiveModeEnabled()) {
-      MaybeToggleControlsFromTap();
-      return;
-    }
 
     if (tap_timer_.IsActive()) {
       // Cancel the visibility toggle event.

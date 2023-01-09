@@ -283,12 +283,6 @@ bool MediaValues::CalculateThreeDEnabled(LocalFrame* frame) {
   return frame->GetPage()->GetSettings().GetAcceleratedCompositingEnabled();
 }
 
-bool MediaValues::CalculateInImmersiveMode(LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->GetSettings());
-  return frame->GetSettings()->GetImmersiveModeEnabled();
-}
-
 mojom::blink::PointerType MediaValues::CalculatePrimaryPointerType(
     LocalFrame* frame) {
   DCHECK(frame);

@@ -703,10 +703,6 @@ ColorChooser* ChromeClientImpl::OpenColorChooser(
   NotifyPopupOpeningObservers();
   ColorChooserUIController* controller = nullptr;
 
-  // TODO(crbug.com/779126): add support for the chooser in immersive mode.
-  if (frame->GetDocument()->GetSettings()->GetImmersiveModeEnabled())
-    return nullptr;
-
   if (RuntimeEnabledFeatures::PagePopupEnabled()) {
     controller = MakeGarbageCollected<ColorChooserPopupUIController>(
         frame, this, chooser_client);
@@ -725,13 +721,6 @@ DateTimeChooser* ChromeClientImpl::OpenDateTimeChooser(
     LocalFrame* frame,
     DateTimeChooserClient* picker_client,
     const DateTimeChooserParameters& parameters) {
-  // TODO(crbug.com/779126): add support for the chooser in immersive mode.
-  if (picker_client->OwnerElement()
-          .GetDocument()
-          .GetSettings()
-          ->GetImmersiveModeEnabled())
-    return nullptr;
-
   NotifyPopupOpeningObservers();
   if (RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled()) {
     return MakeGarbageCollected<DateTimeChooserImpl>(frame, picker_client,
