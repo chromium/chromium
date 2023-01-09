@@ -155,14 +155,6 @@ class SiteEngagementService : public KeyedService,
   // performance-critical code.
   std::vector<mojom::SiteEngagementDetails> GetAllDetails() const;
 
-  // Return an array of engagement score details for all origins which have
-  // had engagement since the specified time.
-  //
-  // Note that this method is quite expensive, so try to avoid calling it in
-  // performance-critical code.
-  std::vector<mojom::SiteEngagementDetails> GetAllDetailsEngagedInTimePeriod(
-      browsing_data::TimePeriod time_period) const;
-
   // Update the engagement score of |url| for a notification interaction.
   void HandleNotificationInteraction(const GURL& url);
 

@@ -347,49 +347,6 @@ void PopulateInfoMapWithBookmarks(
   }
 }
 
-// WebAppRegistrar is desktop specific, but Android does not warn users
-// about clearing data for installed apps, so this and any functions explicitly
-// used to warn about clearing data for installed apps can be excluded from the
-// Android build.
-#if !BUILDFLAG(IS_ANDROID)
-void PopulateInfoMapWithInstalledEngagedInTimePeriod(
-    browsing_data::TimePeriod time_period,
-    Profile* profile,
-    std::map<std::string, ImportantDomainInfo>* output) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile);
-  std::vector<mojom::SiteEngagementDetails> engagement_details =
-      service->GetAllDetailsEngagedInTimePeriod(time_period);
-  std::set<GURL> content_origins;
-
-  // Check with WebAppRegistrar to make sure the apps have not yet been
-  // uninstalled.
-  std::map<std::string, std::string> installed_origins_map;
-  if (web_app::AreWebAppsUserInstallable(profile)) {
-    const web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
-    auto app_ids = registrar.GetAppIds();
-    for (auto& app_id : app_ids) {
-      GURL scope = registrar.GetAppScope(app_id);
-      DCHECK(scope.is_valid());
-      auto app_name = registrar.GetAppShortName(app_id);
-      installed_origins_map.emplace(
-          std::make_pair(scope.DeprecatedGetOriginAsURL().spec(), app_name));
-    }
-  }
-
-  for (const auto& detail : engagement_details) {
-    if (detail.installed_bonus > 0) {
-      auto origin_pair = installed_origins_map.find(detail.origin.spec());
-      if (origin_pair != installed_origins_map.end()) {
-        MaybePopulateImportantInfoForReason(detail.origin, &content_origins,
-                                            ImportantReason::HOME_SCREEN,
-                                            origin_pair->second, output);
-      }
-    }
-  }
-}
-#endif
-
 }  // namespace
 
 ImportantDomainInfo::ImportantDomainInfo() = default;
@@ -481,36 +438,6 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
 
   return final_list;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-std::vector<ImportantDomainInfo>
-ImportantSitesUtil::GetInstalledRegisterableDomains(
-    browsing_data::TimePeriod time_period,
-    Profile* profile,
-    size_t max_results) {
-  std::vector<ImportantDomainInfo> installed_domains;
-  std::map<std::string, ImportantDomainInfo> installed_app_info;
-  PopulateInfoMapWithInstalledEngagedInTimePeriod(time_period, profile,
-                                                  &installed_app_info);
-
-  std::unordered_set<std::string> excluded_domains =
-      GetSuppressedImportantDomains(profile);
-
-  std::vector<std::pair<std::string, ImportantDomainInfo>> items;
-  for (auto& item : installed_app_info)
-    items.emplace_back(std::move(item));
-  std::sort(items.begin(), items.end(), &CompareDescendingImportantInfo);
-
-  for (std::pair<std::string, ImportantDomainInfo>& domain_info : items) {
-    if (installed_domains.size() >= max_results)
-      break;
-    if (excluded_domains.find(domain_info.first) != excluded_domains.end())
-      continue;
-    installed_domains.push_back(std::move(domain_info.second));
-  }
-  return installed_domains;
-}
-#endif
 
 void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
     Profile* profile,
