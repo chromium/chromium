@@ -1172,7 +1172,7 @@ static_library("quiche_test_support") {
     "src/quiche/spdy/test_tools/mock_spdy_framer_visitor.h",
     "src/quiche/spdy/test_tools/spdy_test_utils.cc",
     "src/quiche/spdy/test_tools/spdy_test_utils.h",
-    "src/quiche/web_transport/mock_web_transport.h",
+    "src/quiche/web_transport/test_tools/mock_web_transport.h",
   ]
 
   configs += [ ":quiche_internal_config" ]

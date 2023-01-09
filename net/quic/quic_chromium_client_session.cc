@@ -835,7 +835,7 @@ void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
   session_->connection()->OnPathValidationFailureAtClient(
-      /*is_multi_port=*/false);
+      /*is_multi_port=*/false, *context);
   // Note that socket, packet writer, and packet reader in |context| will be
   // discarded.
   auto* chrome_context =
@@ -864,7 +864,7 @@ void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
   session_->connection()->OnPathValidationFailureAtClient(
-      /*is_multi_port=*/false);
+      /*is_multi_port=*/false, *context);
   // Note that socket, packet writer, and packet reader in |context| will be
   // discarded.
   auto* chrome_context =
