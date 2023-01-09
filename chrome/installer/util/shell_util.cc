@@ -790,49 +790,6 @@ bool QuickIsChromeRegisteredForMode(
   return false;
 }
 
-// Returns the installation suffix for |mode| at the system or user level based
-// on |system_install|.
-std::wstring GetInstallationSuffixForModeAtLevel(
-    const install_static::InstallConstants& mode,
-    bool system_install) {
-  // Search based on the existing install location. If no existing install
-  // found, uses the default install location for the mode.
-  const base::FilePath chrome_exe =
-      installer::GetChromeInstallPath(system_install)
-          .Append(installer::kChromeExe);
-
-  // See the comment in ShellUtil::GetCurrentInstallationSuffix for details on
-  // what's going on here.
-  std::wstring tested_suffix;
-  if (!system_install &&
-      (!ShellUtil::GetUserSpecificRegistrySuffix(&tested_suffix) ||
-       !QuickIsChromeRegisteredForMode(chrome_exe, tested_suffix, mode,
-                                       CONFIRM_PROGID_REGISTRATION)) &&
-      (!ShellUtil::GetOldUserSpecificRegistrySuffix(&tested_suffix) ||
-       !QuickIsChromeRegisteredForMode(chrome_exe, tested_suffix, mode,
-                                       CONFIRM_PROGID_REGISTRATION)) &&
-      !QuickIsChromeRegisteredForMode(chrome_exe, tested_suffix.erase(), mode,
-                                      CONFIRM_PROGID_REGISTRATION)) {
-    // If Chrome is not registered under any of the possible suffixes (e.g.
-    // tests, Canary, etc.): use the new-style suffix at run-time.
-    if (!ShellUtil::GetUserSpecificRegistrySuffix(&tested_suffix))
-      NOTREACHED();
-  }
-  return tested_suffix;
-}
-
-// Returns |mode|'s application name at the system or user level based on
-// |system_install|. This application name will be suffixed as is appropriate
-// for the install. This is the name that is registered with Default Programs on
-// Windows and that should thus be used to "make chrome default" and such.
-std::wstring GetApplicationNameForModeAtLevel(
-    const install_static::InstallConstants& mode,
-    bool system_install) {
-  return base::StrCat(
-      {std::wstring(mode.base_app_name),
-       GetInstallationSuffixForModeAtLevel(mode, system_install)});
-}
-
 // Returns true if the current install's |chrome_exe| has been registered with
 // |suffix|.
 // |confirmation_level| is the level of verification desired as described in
@@ -1091,70 +1048,6 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
                                : ShellUtil::IS_DEFAULT;
 }
 
-// Probe using IApplicationAssociationRegistration::QueryAppIsDefault (Vista and
-// Windows 7); see ProbeProtocolHandlers.
-ShellUtil::DefaultState ProbeAppIsDefaultHandlers(
-    const base::FilePath& chrome_exe,
-    const wchar_t* const* protocols,
-    size_t num_protocols) {
-  Microsoft::WRL::ComPtr<IApplicationAssociationRegistration> registration;
-  HRESULT hr =
-      ::CoCreateInstance(CLSID_ApplicationAssociationRegistration, nullptr,
-                         CLSCTX_INPROC, IID_PPV_ARGS(&registration));
-  if (FAILED(hr))
-    return ShellUtil::UNKNOWN_DEFAULT;
-
-  std::wstring app_name(GetApplicationName(chrome_exe));
-
-  // Generate the app names for this brand's other install modes at both user
-  // and system levels.
-  const int current_install_mode_index =
-      install_static::InstallDetails::Get().install_mode_index();
-  std::wstring other_app_names[install_static::NUM_INSTALL_MODES * 2];
-  for (int mode_index = 0; mode_index < install_static::NUM_INSTALL_MODES;
-       ++mode_index) {
-    if (mode_index == current_install_mode_index)
-      continue;  // Leave the entry for the current mode empty.
-    other_app_names[mode_index * 2] = GetApplicationNameForModeAtLevel(
-        install_static::kInstallModes[mode_index], false);
-    other_app_names[mode_index * 2 + 1] = GetApplicationNameForModeAtLevel(
-        install_static::kInstallModes[mode_index], true);
-  }
-
-  // Now check each protocol to see if this brand is default for all. This loop
-  // terminates when this brand is the default handler for the protocols.
-  bool other_mode_is_default = false;
-  for (size_t i = 0; i < num_protocols; ++i) {
-    const wchar_t* protocol = protocols[i];
-    BOOL result = TRUE;
-    // Check the current app name. This will fail (e.g., ERROR_FILE_NOT_FOUND)
-    // if |app_name| isn't registered.
-    hr = registration->QueryAppIsDefault(protocol, AT_URLPROTOCOL, AL_EFFECTIVE,
-                                         app_name.c_str(), &result);
-    if (SUCCEEDED(hr) && result)
-      continue;
-
-    // Search for a different install mode that is the default handler.
-    if (base::ranges::none_of(
-            other_app_names,
-            [&registration, protocol](const std::wstring& app_name) {
-              if (app_name.empty())
-                return false;
-              BOOL result = TRUE;
-              HRESULT hr = registration->QueryAppIsDefault(
-                  protocol, AT_URLPROTOCOL, AL_EFFECTIVE, app_name.c_str(),
-                  &result);
-              return SUCCEEDED(hr) && result;
-            })) {
-      return ShellUtil::NOT_DEFAULT;
-    }
-    other_mode_is_default = true;
-  }
-
-  return other_mode_is_default ? ShellUtil::OTHER_MODE_IS_DEFAULT
-                               : ShellUtil::IS_DEFAULT;
-}
-
 // A helper function that probes default protocol handler registration (in a
 // manner appropriate for the current version of Windows) to determine if
 // Chrome is the default handler for |protocols|.  Returns IS_DEFAULT
@@ -1167,13 +1060,7 @@ ShellUtil::DefaultState ProbeProtocolHandlers(const base::FilePath& chrome_exe,
   for (size_t i = 0; i < num_protocols; ++i)
     DCHECK(protocols[i] && *protocols[i]);
 #endif
-
-  const base::win::Version windows_version = base::win::GetVersion();
-
-  if (windows_version >= base::win::Version::WIN8)
-    return ProbeCurrentDefaultHandlers(chrome_exe, protocols, num_protocols);
-
-  return ProbeAppIsDefaultHandlers(chrome_exe, protocols, num_protocols);
+  return ProbeCurrentDefaultHandlers(chrome_exe, protocols, num_protocols);
 }
 
 // Finds and stores an app shortcuts folder path in *`path`.
