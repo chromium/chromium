@@ -2616,7 +2616,7 @@ void AutofillTable::SetVirtualCardUsageData(
     insert_data.BindString(0, usage_data_id);
     insert_data.BindInt64(1, data.instrument_id.value());
     insert_data.BindString(2, data.merchant_origin.Serialize());
-    insert_data.BindString(3, data.virtual_card_last_four);
+    insert_data.BindString(3, data.virtual_card_last_four.value());
     insert_data.Run();
     insert_data.Reset(true);
   }
@@ -2640,7 +2640,8 @@ bool AutofillTable::GetVirtualCardUsageData(
 
     auto data = std::make_unique<VirtualCardUsageData>();
     data->instrument_id = VirtualCardUsageData::InstrumentId(instrument_id);
-    data->virtual_card_last_four = last_four;
+    data->virtual_card_last_four =
+        VirtualCardUsageData::VirtualCardLastFour(last_four);
     data->merchant_origin = url::Origin::Create(GURL(merchant_domain));
 
     virtual_card_usage_data->push_back(std::move(data));

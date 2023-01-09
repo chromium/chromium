@@ -3240,9 +3240,12 @@ TEST_F(AutofillTableTest, SetAndGetVirtualCardUsageData) {
       VirtualCardUsageData::InstrumentId(345);
 
   // Set VCN last four.
-  virtual_card_usage_data_1.virtual_card_last_four = "1111";
-  virtual_card_usage_data_2.virtual_card_last_four = "2222";
-  virtual_card_usage_data_3.virtual_card_last_four = "3333";
+  virtual_card_usage_data_1.virtual_card_last_four =
+      VirtualCardUsageData::VirtualCardLastFour("1111");
+  virtual_card_usage_data_2.virtual_card_last_four =
+      VirtualCardUsageData::VirtualCardLastFour("2222");
+  virtual_card_usage_data_3.virtual_card_last_four =
+      VirtualCardUsageData::VirtualCardLastFour("3333");
 
   // Set merchant origin.
   virtual_card_usage_data_1.merchant_origin =
@@ -3275,7 +3278,8 @@ TEST_F(AutofillTableTest, SetAndGetVirtualCardUsageData) {
 
     // All corresponding fields must be equal.
     EXPECT_EQ(data.instrument_id.value(), (*it)->instrument_id.value());
-    EXPECT_EQ(data.virtual_card_last_four, (*it)->virtual_card_last_four);
+    EXPECT_EQ(data.virtual_card_last_four.value(),
+              (*it)->virtual_card_last_four.value());
     EXPECT_EQ(data.merchant_origin.Serialize(),
               (*it)->merchant_origin.Serialize());
   }

@@ -765,7 +765,8 @@ AutofillWalletUsageData GetAutofillWalletUsageDataForVirtualCard() {
   VirtualCardUsageData virtual_card_usage_data;
   virtual_card_usage_data.instrument_id =
       VirtualCardUsageData::InstrumentId(12345);
-  virtual_card_usage_data.virtual_card_last_four = "1234";
+  virtual_card_usage_data.virtual_card_last_four =
+      VirtualCardUsageData::VirtualCardLastFour("1234");
   virtual_card_usage_data.merchant_origin =
       url::Origin::Create(GURL("https://www.google.com"));
   virtual_card_usage_data.merchant_app_package = "google";

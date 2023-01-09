@@ -362,8 +362,8 @@ void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
             wallet_usage_data.virtual_card_usage_data().instrument_id.value());
 
     wallet_usage_specifics->mutable_virtual_card_usage_data()
-        ->set_virtual_card_last_four(
-            wallet_usage_data.virtual_card_usage_data().virtual_card_last_four);
+        ->set_virtual_card_last_four(wallet_usage_data.virtual_card_usage_data()
+                                         .virtual_card_last_four.value());
 
     wallet_usage_specifics->mutable_virtual_card_usage_data()->set_merchant_url(
         wallet_usage_data.virtual_card_usage_data()
@@ -685,7 +685,7 @@ bool IsVirtualCardUsageDataSet(
   // anything. Last four and either the merchant_origin or merchant_app_package
   // must be present.
   return virtual_card_usage_data.instrument_id.value() != 0 &&
-         !virtual_card_usage_data.virtual_card_last_four.empty() &&
+         !virtual_card_usage_data.virtual_card_last_four.value().empty() &&
          (!virtual_card_usage_data.merchant_origin.opaque() ||
           !virtual_card_usage_data.merchant_app_package.empty());
 }

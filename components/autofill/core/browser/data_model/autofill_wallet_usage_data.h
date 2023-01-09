@@ -22,6 +22,10 @@ struct VirtualCardUsageData {
   // server.
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, int64_t>;
 
+  // Represents the last four digits of the virtual card.
+  using VirtualCardLastFour =
+      base::StrongAlias<class VirtualCardLastFourTag, std::string>;
+
   VirtualCardUsageData();
   VirtualCardUsageData(const VirtualCardUsageData&);
   VirtualCardUsageData& operator=(const VirtualCardUsageData&);
@@ -29,8 +33,7 @@ struct VirtualCardUsageData {
 
   InstrumentId instrument_id = InstrumentId(0);
 
-  // The last four digits of the virtual card.
-  std::string virtual_card_last_four;
+  VirtualCardLastFour virtual_card_last_four;
 
   // The origin of the merchant url the virtual card was retrieved on. May not
   // be set if accessed from an Android application. Example:
