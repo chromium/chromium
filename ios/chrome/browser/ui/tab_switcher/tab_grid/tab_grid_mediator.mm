@@ -625,10 +625,6 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 }
 
-- (void)closeNonPinnedItems {
-  // TODO: Implement this
-}
-
 - (void)closeAllItems {
   RecordTabGridCloseTabsCount(self.webStateList->count());
   if (!self.browserState->IsOffTheRecord()) {
@@ -641,6 +637,31 @@ void RecordTabGridCloseTabsCount(int count) {
   // This is a no-op if `webStateList` is already empty.
   self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+}
+
+- (void)saveAndCloseNonPinnedItems {
+  DCHECK(IsPinnedTabsEnabled());
+
+  BOOL hasPinnedWebStatesOnly =
+      self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
+      self.webStateList->count();
+
+  if (hasPinnedWebStatesOnly) {
+    return;
+  }
+
+  self.closedSessionWindow =
+      SerializeWebStateList(self.webStateList, [self nonPinnedWebStates]);
+  int oldSize =
+      self.tabRestoreService ? self.tabRestoreService->entries().size() : 0;
+
+  self.webStateList->CloseAllNonPinnedWebStates(
+      WebStateList::CLOSE_USER_ACTION);
+
+  self.syncedClosedTabsCount =
+      self.tabRestoreService
+          ? self.tabRestoreService->entries().size() - oldSize
+          : 0;
 }
 
 - (void)saveAndCloseAllItems {
@@ -694,8 +715,15 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (void)showCloseAllItemsConfirmationActionSheetWithAnchor:
     (UIBarButtonItem*)buttonAnchor {
-  [self.delegate dismissPopovers];
+  BOOL hasRegularWebStatesOnly =
+      self.webStateList->GetIndexOfFirstNonPinnedWebState() == 0;
 
+  if (hasRegularWebStatesOnly) {
+    [self saveAndCloseAllItems];
+    return;
+  }
+
+  [self.delegate dismissPopovers];
   [self.delegate
       showCloseAllItemsConfirmationActionSheetWithTabGridMediator:self
                                                            anchor:buttonAnchor];
@@ -1142,6 +1170,20 @@ void RecordTabGridCloseTabsCount(int count) {
   }
 
   return index + self.webStateList->GetIndexOfFirstNonPinnedWebState();
+}
+
+- (NSSet<NSString*>*)nonPinnedWebStates {
+  NSMutableSet<NSString*>* nonPinnedWebStates = [NSMutableSet set];
+
+  for (int index = self.webStateList->GetIndexOfFirstNonPinnedWebState();
+       index < self.webStateList->count(); ++index) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(index);
+    if (webState != nil && webState->GetStableIdentifier() != nil) {
+      [nonPinnedWebStates addObject:webState->GetStableIdentifier()];
+    }
+  }
+
+  return [nonPinnedWebStates copy];
 }
 
 @end

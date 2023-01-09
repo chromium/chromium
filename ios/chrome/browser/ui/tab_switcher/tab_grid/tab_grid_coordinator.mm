@@ -947,13 +947,13 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_TAB_GRID_CLOSE_NON_PINNED_TABS_ONLY)
                 action:^{
-                  [weakTabGridMediator closeNonPinnedItems];
+                  [weakTabGridMediator saveAndCloseNonPinnedItems];
                 }
                  style:UIAlertActionStyleDefault];
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_TABS)
                 action:^{
-                  [weakTabGridMediator closeAllItems];
+                  [weakTabGridMediator saveAndCloseAllItems];
                 }
                  style:UIAlertActionStyleDestructive];
 

@@ -34,10 +34,11 @@
 // Tells the receiver to close the items with the identifiers in `itemIDs`.
 // ItemIDs which are not associated with any item are ignored.
 - (void)closeItemsWithIDs:(NSArray<NSString*>*)itemIDs;
-// Tells the receiver to close all non-pinned items.
-- (void)closeNonPinnedItems;
 // Tells the receiver to close all items.
 - (void)closeAllItems;
+// Tells the receiver to save all non-pinned items for an undo operation, then
+// close all items.
+- (void)saveAndCloseNonPinnedItems;
 // Tells the receiver to save all items for an undo operation, then close all
 // items.
 - (void)saveAndCloseAllItems;

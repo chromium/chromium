@@ -2503,21 +2503,41 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self.incognitoTabsDelegate closeAllItems];
       break;
     case TabGridPageRegularTabs:
-      DCHECK_EQ(self.undoCloseAllAvailable,
-                self.regularTabsViewController.gridEmpty);
-      if (self.undoCloseAllAvailable) {
-        [self.regularTabsDelegate undoCloseAllItems];
-        self.undoCloseAllAvailable = NO;
-      } else {
-        [self.regularTabsDelegate saveAndCloseAllItems];
-        self.undoCloseAllAvailable = YES;
-      }
-      [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+      [self handleCloseAllButtonForRegularTabsWithAnchor:sender];
       break;
     case TabGridPageRemoteTabs:
       NOTREACHED() << "It is invalid to call close all tabs on remote tabs.";
       break;
   }
+}
+
+- (void)handleCloseAllButtonForRegularTabsWithAnchor:(UIBarButtonItem*)anchor {
+  DCHECK_EQ(self.undoCloseAllAvailable,
+            self.regularTabsViewController.gridEmpty);
+  if (self.undoCloseAllAvailable) {
+    [self undoCloseAllItemsForRegularTabs];
+  } else if (IsPinnedTabsEnabled()) {
+    [self confirmCloseAllItemsForRegularTabs:anchor];
+  } else {
+    [self saveAndCloseAllItemsForRegularTabs];
+  }
+}
+
+- (void)confirmCloseAllItemsForRegularTabs:(UIBarButtonItem*)anchor {
+  [self.regularTabsDelegate
+      showCloseAllItemsConfirmationActionSheetWithAnchor:anchor];
+}
+
+- (void)undoCloseAllItemsForRegularTabs {
+  [self.regularTabsDelegate undoCloseAllItems];
+  self.undoCloseAllAvailable = NO;
+  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+}
+
+- (void)saveAndCloseAllItemsForRegularTabs {
+  [self.regularTabsDelegate saveAndCloseAllItems];
+  self.undoCloseAllAvailable = YES;
+  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
 }
 
 - (void)searchButtonTapped:(id)sender {
