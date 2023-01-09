@@ -45,6 +45,8 @@
 #include "content/common/mac_helpers.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#include "base/record_replay.h"
+
 namespace {
 
 // Global atomic to generate child process unique IDs.
@@ -385,6 +387,11 @@ void ChildProcessHostImpl::OnChannelError() {
 }
 
 void ChildProcessHostImpl::OnBadMessageReceived(const IPC::Message& message) {
+  // https://linear.app/replay/issue/RUN-1082
+  recordreplay::Diagnostic("[RUN-1082] ChildProcessHostImpl::OnBadMessageReceived %p", (void*)delegate_);
+  if (!delegate_)
+    return;
+
   delegate_->OnBadMessageReceived(message);
 }
 
