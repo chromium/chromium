@@ -122,7 +122,7 @@ struct ExpectedReportWaiter {
                        std::string trigger_data,
                        net::EmbeddedTestServer* server)
       : ExpectedReportWaiter(std::move(report_url),
-                             base::DictionaryValue(),
+                             base::Value(base::Value::Dict()),
                              server) {
     expected_body.SetStringKey("attribution_destination",
                                std::move(attribution_destination));

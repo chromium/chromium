@@ -103,10 +103,10 @@ static scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& name,
     const std::string& id,
     extensions::mojom::ManifestLocation location) {
-  base::DictionaryValue manifest;
-  manifest.SetStringPath(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.SetStringPath(extensions::manifest_keys::kName, name);
+  base::Value::Dict manifest;
+  manifest.SetByDottedPath(extensions::manifest_keys::kVersion, "1.0.0.0");
+  manifest.SetByDottedPath(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.SetByDottedPath(extensions::manifest_keys::kName, name);
   std::string error;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
