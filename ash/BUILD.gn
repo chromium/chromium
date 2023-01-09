@@ -2978,6 +2978,7 @@ test("ash_unittests") {
     "shelf/shelf_drag_handle_unittest.cc",
     "shelf/shelf_layout_manager_unittest.cc",
     "shelf/shelf_locking_manager_unittest.cc",
+    "shelf/shelf_party_feature_pod_controller_unittest.cc",
     "shelf/shelf_tooltip_manager_unittest.cc",
     "shelf/shelf_unittest.cc",
     "shelf/shelf_view_unittest.cc",

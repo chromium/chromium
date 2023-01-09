@@ -682,6 +682,10 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               feature_pod_controllers_, tiles);
   create_tile(std::make_unique<LocaleFeaturePodController>(this),
               feature_pod_controllers_, tiles);
+  if (base::FeatureList::IsEnabled(features::kShelfParty)) {
+    create_tile(std::make_unique<ShelfPartyFeaturePodController>(),
+                feature_pod_controllers_, tiles);
+  }
 
   // More placeholder tiles.
   while (tiles.size() < 10) {
