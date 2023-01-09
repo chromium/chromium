@@ -51,7 +51,18 @@ JSON schema for the input of the simulator.
         "aggregation_keys": {
             // Value is uint128 formatted as a base-16 string.
             "a": "0x1"
-        }
+        },
+
+        // Optional int64 in seconds formatted as a base-10 string.
+        // Default to expiry.
+        "event_report_window": "86400000",
+
+        // Optional int64 in seconds formatted as a base-10 string.
+        // Default to expiry.
+        "aggregatable_report_window": "86400000",
+
+        // Optional boolean. Defaults to false.
+        "debug_reporting": true
       }
     }
   ],
@@ -138,7 +149,13 @@ JSON schema for the input of the simulator.
         "filters": {
           "a": ["b", "c"],
           "d": []
-        }
+        },
+
+        // Optional uint64 formatted as a base-10 string. Defaults to null.
+        "aggregatable_deduplication_key": "456",
+
+        // Optional boolean. Defaults to false.
+        "debug_reporting": true
       }
     }
   ],
@@ -292,6 +309,23 @@ JSON schema for the output of the simulator.
 
       // The report itself. See
       // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-reports
+      // for details about its fields.
+      "report": {}
+    }
+  ],
+
+  // List of verbose debug reports. Omitted if empty.
+  "verbose_debug_reports": [
+    {
+      // Time at which the report would have been sent in milliseconds since
+      // the UNIX epoch formatted as a base-10 string.
+      "report_time": "123",
+
+      // URL to which the report would have been sent.
+      "report_url": "https://reporting.example/.well-known/attribution-reporting/debug/verbose",
+
+      // The report itself. See
+      // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#verbose-debugging-reports
       // for details about its fields.
       "report": {}
     }
