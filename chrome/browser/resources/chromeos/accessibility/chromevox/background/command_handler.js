@@ -54,6 +54,7 @@ const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
+const SessionType = chrome.chromeosInfoPrivate.SessionType;
 
 /**
  * @typedef {{
@@ -85,27 +86,34 @@ export class CommandHandler extends CommandHandlerInterface {
     this.init_();
   }
 
+  /**
+   * @param {boolean} flagEnabled
+   * @private
+   */
+  updateLanguageLoggingEnabled_(flagEnabled) {
+    this.languageLoggingEnabled_ |= flagEnabled;
+  }
+
+  /**
+   * @param {!SessionType} sessionType
+   * @private
+   */
+  updateIsKioskSession_(sessionType) {
+    this.isKioskSession_ = (sessionType === SessionType.KIOSK);
+  }
+
   /** @private */
   init_() {
     chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection', enabled => {
-          if (enabled) {
-            this.languageLoggingEnabled_ = true;
-          }
-        });
+        'enable-experimental-accessibility-language-detection',
+        enabled => this.updateLanguageLoggingEnabled_(enabled));
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-language-detection-dynamic',
-        enabled => {
-          if (enabled) {
-            this.languageLoggingEnabled_ = true;
-          }
-        });
+        enabled => this.updateLanguageLoggingEnabled_(enabled));
 
-    chrome.chromeosInfoPrivate.get(['sessionType'], result => {
-      /** @type {boolean} */
-      this.isKioskSession_ = result['sessionType'] ===
-          chrome.chromeosInfoPrivate.SessionType.KIOSK;
-    });
+    chrome.chromeosInfoPrivate.get(
+        ['sessionType'],
+        result => this.updateIsKioskSession_(result['sessionType']));
   }
 
   /** @override */
