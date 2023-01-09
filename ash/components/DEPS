@@ -1,4 +1,0 @@
-include_rules = [
-  # Codes in //ash/components are used by ash-chrome, so allow it.
-  "+chromeos/ash",
-]
