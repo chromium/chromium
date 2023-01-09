@@ -3030,6 +3030,8 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/selectors/nth-child-of-no-space-after-of.html [ Failure ]
+crbug.com/626703 external/wpt/css/selectors/nth-last-child-of-no-space-after-of.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-end-001.html [ Failure ]
