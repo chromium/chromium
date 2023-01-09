@@ -116,6 +116,9 @@ class AmbientAshTestBase : public AshTestBase {
   // Set the size of the next image that will be loaded.
   void SetDecodedPhotoSize(int width, int height);
 
+  // Set the color of the next image that will be loaded.
+  void SetDecodedPhotoColor(SkColor color);
+
   void SetPhotoOrientation(bool portrait);
 
   void SetPhotoTopicType(::ambient::TopicType topic_type);

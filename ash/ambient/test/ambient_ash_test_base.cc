@@ -29,6 +29,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -91,10 +92,10 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   void DecodePhoto(
       const std::string& data,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) override {
-    gfx::ImageSkia image =
-        decoded_image_ ? *decoded_image_
-                       : gfx::test::CreateImageSkia(decoded_size_.width(),
-                                                    decoded_size_.height());
+    gfx::ImageSkia image = decoded_image_ ? *decoded_image_
+                                          : CreateSolidColorTestImage(
+                                                decoded_size_, decoded_color_);
+
     // Only use once.
     decoded_image_.reset();
 
@@ -140,6 +141,8 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
     decoded_size_.set_height(height);
   }
 
+  void SetDecodedPhotoColor(SkColor color) { decoded_color_ = color; }
+
   void SetDecodedPhoto(const gfx::ImageSkia& image) { decoded_image_ = image; }
 
   void SetPhotoDownloadDelay(base::TimeDelta delay) {
@@ -164,6 +167,8 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   // If not null, will return this data when downloading.
   std::unique_ptr<std::string> download_data_;
 
+  // Color of the test images.
+  SkColor decoded_color_ = SK_ColorGREEN;
   // Width and height of test images.
   gfx::Size decoded_size_{10, 20};
   // If set, will replay this image.
@@ -355,6 +360,13 @@ void AmbientAshTestBase::SetDecodedPhotoSize(int width, int height) {
       photo_controller()->get_photo_cache_for_testing());
 
   photo_cache->SetDecodedPhotoSize(width, height);
+}
+
+void AmbientAshTestBase::SetDecodedPhotoColor(SkColor color) {
+  auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
+      photo_controller()->get_photo_cache_for_testing());
+
+  photo_cache->SetDecodedPhotoColor(color);
 }
 
 void AmbientAshTestBase::SetPhotoOrientation(bool portrait) {

@@ -7,12 +7,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/command_line.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -24,15 +24,6 @@ constexpr SkColor kWallPaperColor = SK_ColorMAGENTA;
 // Specify the locale and the time zone used in pixel tests.
 constexpr char kLocale[] = "en_US";
 constexpr char kTimeZone[] = "America/Chicago";
-
-// Creates a pure color image of the specified size.
-gfx::ImageSkia CreateImage(const gfx::Size& image_size, SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(image_size.width(), image_size.height());
-  bitmap.eraseColor(color);
-  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  return image;
-}
 
 }  // namespace
 
@@ -72,7 +63,7 @@ void AshPixelTestHelper::SetWallPaper(const gfx::Size& wallpaper_size) {
   switch (params_.wallpaper_init_type) {
     case pixel_test::WallpaperInitType::kRegular: {
       gfx::ImageSkia wallpaper_image =
-          CreateImage(wallpaper_size, kWallPaperColor);
+          CreateSolidColorTestImage(wallpaper_size, kWallPaperColor);
       controller->set_allow_blur_or_shield_for_testing();
 
       // Use the one shot wallpaper to ensure that the custom wallpaper set by
