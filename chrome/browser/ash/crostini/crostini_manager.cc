@@ -537,9 +537,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   CloseCrostiniUpdateFilesystemView();
-  for (auto& observer : observer_list_) {
-    observer.OnContainerStarted(result);
-  }
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -661,9 +658,6 @@ void CrostiniManager::CrostiniRestarter::ContinueRestart() {
 
 void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
     CrostiniResult result) {
-  for (auto& observer : observer_list_) {
-    observer.OnComponentLoaded(result);
-  }
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -788,9 +782,6 @@ void CrostiniManager::CrostiniRestarter::OnWaylandServerCreated(
 void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(2) << "StartTerminaVmFinished for " << container_id_;
-  for (auto& observer : observer_list_) {
-    observer.OnVmStarted(success);
-  }
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -847,9 +838,6 @@ void CrostiniManager::CrostiniRestarter::SharePathsFinished(
 void CrostiniManager::CrostiniRestarter::StartLxdFinished(
     CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto& observer : observer_list_) {
-    observer.OnLxdStarted(result);
-  }
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -878,9 +866,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdFinished(
 void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
     CrostiniResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto& observer : observer_list_) {
-    observer.OnContainerCreated(result);
-  }
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -902,9 +887,6 @@ void CrostiniManager::CrostiniRestarter::SetUpLxdContainerUserFinished(
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  for (auto& observer : observer_list_) {
-    observer.OnContainerSetup(success);
-  }
   if (ReturnEarlyIfNeeded()) {
     return;
   }
@@ -2371,6 +2353,12 @@ void CrostiniManager::CancelRestartCrostini(
 
 bool CrostiniManager::IsRestartPending(RestartId restart_id) {
   return restarters_by_id_.find(restart_id) != restarters_by_id_.end();
+}
+
+bool CrostiniManager::HasRestarterForTesting(
+    const guest_os::GuestId& guest_id) {
+  return restarters_by_container_.find(guest_id) !=
+         restarters_by_container_.end();
 }
 
 void CrostiniManager::AddShutdownContainerCallback(

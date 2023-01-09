@@ -258,6 +258,7 @@ void FakeCiceroneClient::CreateLxdContainer(
     const vm_tools::cicerone::CreateLxdContainerRequest& request,
     chromeos::DBusMethodCallback<vm_tools::cicerone::CreateLxdContainerResponse>
         callback) {
+  create_lxd_container_count_++;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), create_lxd_container_response_),
@@ -289,6 +290,7 @@ void FakeCiceroneClient::StartLxdContainer(
     const vm_tools::cicerone::StartLxdContainerRequest& request,
     chromeos::DBusMethodCallback<vm_tools::cicerone::StartLxdContainerResponse>
         callback) {
+  start_lxd_container_count_++;
   start_lxd_container_response_.mutable_os_release()->CopyFrom(
       lxd_container_os_release_);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -369,6 +371,7 @@ void FakeCiceroneClient::SetUpLxdContainerUser(
     const vm_tools::cicerone::SetUpLxdContainerUserRequest& request,
     chromeos::DBusMethodCallback<
         vm_tools::cicerone::SetUpLxdContainerUserResponse> callback) {
+  setup_lxd_container_user_count_++;
   setup_lxd_container_user_request_ = request;
   last_container_username_ = request.container_username();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -454,6 +457,7 @@ void FakeCiceroneClient::StartLxd(
     const vm_tools::cicerone::StartLxdRequest& request,
     chromeos::DBusMethodCallback<vm_tools::cicerone::StartLxdResponse>
         callback) {
+  start_lxd_count_++;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_lxd_response_),
       send_start_lxd_response_delay_);

@@ -171,16 +171,10 @@ class CrostiniManager : public KeyedService,
    public:
     virtual ~RestartObserver() = default;
     virtual void OnStageStarted(mojom::InstallerState stage) {}
-    virtual void OnComponentLoaded(CrostiniResult result) {}
     virtual void OnDiskImageCreated(bool success,
                                     CrostiniResult result,
                                     int64_t disk_size_bytes) {}
-    virtual void OnVmStarted(bool success) {}
-    virtual void OnLxdStarted(CrostiniResult result) {}
     virtual void OnContainerDownloading(int32_t download_percent) {}
-    virtual void OnContainerCreated(CrostiniResult result) {}
-    virtual void OnContainerSetup(bool success) {}
-    virtual void OnContainerStarted(CrostiniResult result) {}
   };
 
   struct RestartOptions {
@@ -467,6 +461,12 @@ class CrostiniManager : public KeyedService,
   // Returns true if the Restart corresponding to |restart_id| is not yet
   // complete.
   bool IsRestartPending(RestartId restart_id);
+
+  // Returns whether there is an active restarter for a given GuestId. Even
+  // after cancelling all requests or aborting a restarter, this will continue
+  // to return true until the current operation is finished and the restarter
+  // is destroyed.
+  bool HasRestarterForTesting(const guest_os::GuestId& guest_id);
 
   // Adds a callback to receive notification of container shutdown.
   void AddShutdownContainerCallback(guest_os::GuestId container_id,

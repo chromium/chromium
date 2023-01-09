@@ -443,6 +443,12 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
     return configure_for_arc_sideload_called_;
   }
 
+  int create_lxd_container_count() { return create_lxd_container_count_; }
+  int start_lxd_container_count() { return start_lxd_container_count_; }
+  int setup_lxd_container_user_count() {
+    return setup_lxd_container_user_count_;
+  }
+  int start_lxd_count() { return start_lxd_count_; }
   int add_file_watch_call_count() { return add_file_watch_call_count_; }
   int remove_file_watch_call_count() { return remove_file_watch_call_count_; }
 
@@ -516,6 +522,10 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
 
   bool configure_for_arc_sideload_called_ = false;
 
+  int create_lxd_container_count_ = 0;
+  int start_lxd_container_count_ = 0;
+  int setup_lxd_container_user_count_ = 0;
+  int start_lxd_count_ = 0;
   int add_file_watch_call_count_ = 0;
   int remove_file_watch_call_count_ = 0;
 
