@@ -124,7 +124,8 @@ enum MetricDimension {
   SUPPORT_PAN = 24,
   SUPPORT_TILT = 25,
   SUPPORT_ZOOM = 26,
-  DOC_RESULT = 27,
+  // Obsolete
+  // DOC_RESULT = 27,
   RECORD_TYPE = 28,
   GIF_RESULT = 29,
   DURATION = 30,
@@ -211,28 +212,6 @@ export enum IntentResultType {
 }
 
 /**
- * Types of document scanning result dimension.
- */
-export enum DocResultType {
-  NOT_DOCUMENT = '',
-  CANCELED = 'canceled',
-  SAVE_AS_PHOTO = 'save-as-photo',
-  SAVE_AS_PDF = 'save-as-pdf',
-  SHARE = 'share',
-}
-
-/**
- * Types of user interaction with fix document page.
- */
-export enum DocFixType {
-  NONE = 0,
-  NO_FIX = 1,
-  FIX_ROTATION = 2,
-  FIX_POSITION = 3,
-  FIX_BOTH = 4,
-}
-
-/**
  * Types of gif recording result dimension.
  */
 export enum GifResultType {
@@ -295,8 +274,6 @@ export interface CaptureEventParam {
    */
   everPaused?: boolean;
 
-  docResult?: DocResultType;
-  docFixType?: DocFixType;
   gifResult?: GifResultType;
   recordType?: RecordType;
 
@@ -315,8 +292,6 @@ export function sendCaptureEvent({
   shutterType,
   isVideoSnapshot = false,
   everPaused = false,
-  docResult = DocResultType.NOT_DOCUMENT,
-  docFixType,
   recordType = RecordType.NOT_RECORDING,
   gifResult = GifResultType.NOT_GIF_RESULT,
   resolutionLevel,
@@ -367,11 +342,9 @@ export function sendCaptureEvent({
         [MetricDimension.SHUTTER_TYPE, shutterType],
         [MetricDimension.IS_VIDEO_SNAPSHOT, isVideoSnapshot],
         [MetricDimension.EVER_PAUSED, everPaused],
-        [MetricDimension.DOC_RESULT, docResult],
         [MetricDimension.RECORD_TYPE, recordType],
         [MetricDimension.GIF_RESULT, gifResult],
         [MetricDimension.DURATION, duration],
-        [MetricDimension.DOC_FIX_TYPE, docFixType ?? ''],
         [MetricDimension.RESOLUTION_LEVEL, resolutionLevel],
         [MetricDimension.ASPECT_RATIO_SET, aspectRatioSet],
       ]));
@@ -532,11 +505,6 @@ export function sendOpenPTZPanelEvent(
       ]));
 }
 
-/**
- * TODO(b/223089758): Remove `DocResultType` and `DocFixType` and mark the
- * dimensions as obsolete once multi-page document scanning feature is fully
- * landed.
- */
 export enum DocScanFixType {
   NONE = 0,
   CORNER = 0b1,
@@ -551,8 +519,8 @@ export enum DocScanResultActionType {
 }
 
 /**
- * Sends the multi-page document scanning result event. The actions will either
- * remove all pages (cancel) or generate files from pages (save/share).
+ * Sends document scanning result event. The actions will either remove all
+ * pages (cancel) or generate a file from pages (save/share).
  */
 export function sendDocScanResultEvent(
     action: DocScanResultActionType,
@@ -579,7 +547,7 @@ export enum DocScanActionType {
 }
 
 /**
- * Sends the multi-page document scanning event.
+ * Sends document scanning event.
  */
 export function sendDocScanEvent(action: DocScanActionType): void {
   sendEvent({

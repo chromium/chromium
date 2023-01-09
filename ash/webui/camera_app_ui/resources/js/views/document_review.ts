@@ -60,7 +60,7 @@ export enum Mode {
 }
 
 /**
- * View controller for reviewing multi-page document scanning.
+ * View controller for reviewing document scanning.
  */
 export class DocumentReview extends View {
   /**

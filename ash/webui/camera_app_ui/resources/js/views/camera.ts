@@ -22,12 +22,10 @@ import {
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
-import {Flag} from '../flag.js';
-import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
-import {getChromeFlag, getI18nMessage} from '../models/load_time_data.js';
+import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -44,7 +42,6 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
-  ImageBlob,
   LowStorageDialogType,
   LowStorageError,
   MimeType,
@@ -63,7 +60,6 @@ import {Options} from './camera/options.js';
 import {ScanOptions} from './camera/scan_options.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
-import {CropDocument} from './crop_document.js';
 import {Dialog} from './dialog.js';
 import {DocumentReview} from './document_review.js';
 import {OptionPanel} from './option_panel.js';
@@ -77,8 +73,6 @@ import {WarningType} from './warning.js';
  * Camera-view controller.
  */
 export class Camera extends View implements CameraViewUI {
-  private readonly cropDocument = new CropDocument();
-
   private readonly documentReview: DocumentReview;
 
   private readonly docModeDialogView =
@@ -145,7 +139,6 @@ export class Camera extends View implements CameraViewUI {
       new OptionPanel(),
       new PTZPanel(),
       this.review,
-      this.cropDocument,
       this.documentReview,
       this.docModeDialogView,
       this.lowStorageDialogView,
@@ -309,7 +302,7 @@ export class Camera extends View implements CameraViewUI {
         .addEventListener(
             'click',
             () => {
-              this.reviewMultiPageDocument();
+              this.reviewDocument();
             },
         );
   }
@@ -666,37 +659,6 @@ export class Camera extends View implements CameraViewUI {
 
   async onDocumentCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
-    // TODO(b/223089758): Replace onDocumentCaptureDone with
-    // onMultiPageDocumentCaptureDone once multi-page feature is fully launched.
-    if (getChromeFlag(Flag.MULTI_PAGE_DOC_SCAN)) {
-      return this.onMultiPageDocumentCaptureDone(pendingPhotoResult);
-    }
-    const {blob: rawBlob, resolution, timestamp, metadata} =
-        await this.checkPhotoResult(pendingPhotoResult);
-    const helper = ChromeHelper.getInstance();
-    const corners = await helper.scanDocumentCorners(rawBlob);
-    const reviewResult =
-        await this.reviewDocument({blob: rawBlob, resolution}, corners);
-    if (reviewResult === null) {
-      throw new CanceledError('Cancelled after review document');
-    }
-    const {docBlob, mimeType} = reviewResult;
-    let blob = docBlob;
-    if (mimeType === MimeType.PDF) {
-      blob = await helper.convertToPdf([blob]);
-    }
-    try {
-      const name = (new Filenamer(timestamp)).newDocumentName(mimeType);
-      await this.resultSaver.savePhoto(blob, name, metadata);
-    } catch (e) {
-      toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
-      throw e;
-    }
-    ChromeHelper.getInstance().maybeTriggerSurvey();
-  }
-
-  async onMultiPageDocumentCaptureDone(
-      pendingPhotoResult: Promise<PhotoResult>): Promise<void> {
     nav.open(ViewName.FLASH);
     let enterInFixMode = false;
     try {
@@ -723,7 +685,7 @@ export class Camera extends View implements CameraViewUI {
     } finally {
       nav.close(ViewName.FLASH);
     }
-    await this.reviewMultiPageDocument(enterInFixMode);
+    await this.reviewDocument(enterInFixMode);
     if (!state.get(state.State.DOC_MODE_REVIEWING)) {
       ChromeHelper.getInstance().maybeTriggerSurvey();
     }
@@ -743,146 +705,7 @@ export class Camera extends View implements CameraViewUI {
     }
   }
 
-  /**
-   * @param originImage Original photo to be cropped document from.
-   * @param refCorners Initial reference document corner positions detected by
-   *     scan API. Sets to null if scan API cannot find any reference corner
-   *     from |rawBlob|.
-   * @return Returns the processed document blob and which mime type user
-   *     choose to save. Null for cancel document.
-   */
-  private async reviewDocument(
-      originImage: ImageBlob, refCorners: Point[]|null):
-      Promise<{docBlob: Blob, mimeType: MimeType}|null> {
-    nav.open(ViewName.FLASH);
-    const helper = ChromeHelper.getInstance();
-    let result = null;
-    try {
-      await this.prepareReview(async () => {
-        function doCrop(blob: Blob, corners: Point[], rotation: number) {
-          return helper.convertToDocument(
-              blob, corners, rotation, MimeType.JPEG);
-        }
-        let corners =
-            refCorners ?? getDefaultScanCorners(originImage.resolution);
-        // This is definitely assigned in either the async doRecrop or the else
-        // branch doCrop.
-        let docBlob!: Blob;
-        let fixType = metrics.DocFixType.NONE;
-        const sendEvent = (docResult: metrics.DocResultType) => {
-          metrics.sendCaptureEvent({
-            facing: this.getFacing(),
-            resolution: originImage.resolution,
-            shutterType: this.shutterType,
-            docResult,
-            docFixType: fixType,
-            resolutionLevel: this.cameraManager.getPhotoResolutionLevel(
-                originImage.resolution),
-            aspectRatioSet:
-                this.cameraManager.getAspectRatioSet(originImage.resolution),
-          });
-        };
-
-        const doRecrop = async () => {
-          const {corners: newCorners, rotation} =
-              await this.cropDocument.reviewCropArea(corners);
-
-          fixType = (() => {
-            const isFixRotation = rotation !== Rotation.ANGLE_0;
-            const isFixPosition = newCorners.some(({x, y}, idx) => {
-              const {x: oldX, y: oldY} = corners[idx];
-              return Math.abs(x - oldX) * originImage.resolution.width > 1 ||
-                  Math.abs(y - oldY) * originImage.resolution.height > 1;
-            });
-            if (isFixRotation && isFixPosition) {
-              return metrics.DocFixType.FIX_BOTH;
-            }
-            if (isFixRotation) {
-              return metrics.DocFixType.FIX_ROTATION;
-            }
-            if (isFixPosition) {
-              return metrics.DocFixType.FIX_POSITION;
-            }
-            return metrics.DocFixType.NO_FIX;
-          })();
-
-          corners = newCorners;
-          docBlob = await (async () => {
-            nav.open(ViewName.FLASH);
-            try {
-              return await doCrop(originImage.blob, corners, rotation);
-            } finally {
-              nav.close(ViewName.FLASH);
-            }
-          })();
-          await this.review.setReviewPhoto(docBlob);
-        };
-
-        await this.cropDocument.setReviewPhoto(originImage.blob);
-        if (refCorners === null) {
-          nav.close(ViewName.FLASH);
-          await doRecrop();
-        } else {
-          docBlob = await doCrop(originImage.blob, corners, Rotation.ANGLE_0);
-          await this.review.setReviewPhoto(docBlob);
-          nav.close(ViewName.FLASH);
-        }
-
-        const negative = new review.OptionGroup({
-          template: review.ButtonGroupTemplate.NEGATIVE,
-          options: [
-            new review.Option({text: I18nString.LABEL_RETAKE}, {
-              callback: () => {
-                sendEvent(metrics.DocResultType.CANCELED);
-              },
-              exitValue: null,
-            }),
-            new review.Option({text: I18nString.LABEL_FIX_DOCUMENT}, {
-              callback: doRecrop,
-              hasPopup: true,
-            }),
-          ],
-        });
-
-        const positive = new review.OptionGroup({
-          template: review.ButtonGroupTemplate.POSITIVE,
-          options: [
-            new review.Option({text: I18nString.LABEL_SHARE}, {
-              callback: async () => {
-                sendEvent(metrics.DocResultType.SHARE);
-                const type = MimeType.JPEG;
-                const name = (new Filenamer()).newDocumentName(type);
-                await util.share(new File([docBlob], name, {type}));
-              },
-            }),
-            new review.Option({text: I18nString.LABEL_SAVE_PHOTO_DOCUMENT}, {
-              callback: () => {
-                sendEvent(metrics.DocResultType.SAVE_AS_PHOTO);
-              },
-              exitValue: MimeType.JPEG,
-            }),
-            new review.Option(
-                {text: I18nString.LABEL_SAVE_PDF_DOCUMENT, primary: true}, {
-                  callback: () => {
-                    sendEvent(metrics.DocResultType.SAVE_AS_PDF);
-                  },
-                  exitValue: MimeType.PDF,
-                }),
-          ],
-        });
-        const mimeType = await this.review.startReview(negative, positive);
-        assert(mimeType !== undefined);
-        if (mimeType !== null) {
-          result = {docBlob, mimeType};
-        }
-      });
-    } finally {
-      nav.close(ViewName.FLASH);
-    }
-    return result;
-  }
-
-  private async reviewMultiPageDocument(enterInFixMode = false): Promise<void> {
+  private async reviewDocument(enterInFixMode = false): Promise<void> {
     await this.prepareReview(async () => {
       const pageCount = await this.documentReview.open({fix: enterInFixMode});
       dom.get('#document-page-count', HTMLDivElement).textContent =

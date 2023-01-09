@@ -7,6 +7,5 @@
  */
 export enum Flag {
   LOW_STORAGE_WARNING = 'lowStorageWarning',
-  MULTI_PAGE_DOC_SCAN = 'multiPageDocScan',
   PLACEHOLDER_FLAG = '',
 }

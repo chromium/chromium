@@ -90,7 +90,6 @@ compile_js_files = [
   "views/camera/scan_options.ts",
   "views/camera/timertick.ts",
   "views/camera/video_encoder_options.ts",
-  "views/crop_document.ts",
   "views/dialog.ts",
   "views/document_review.ts",
   "views/document_fix_mode.ts",

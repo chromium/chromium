@@ -132,7 +132,6 @@ export enum Facing {
 
 export enum ViewName {
   CAMERA = 'view-camera',
-  CROP_DOCUMENT = 'view-crop-document',
   DOCUMENT_MODE_DIALOG = 'view-document-mode-dialog',
   DOCUMENT_REVIEW = 'view-document-review',
   EXPERT_SETTINGS = 'view-expert-settings',
