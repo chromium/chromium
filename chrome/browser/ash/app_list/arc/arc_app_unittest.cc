@@ -87,7 +87,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/model/sync_data.h"
@@ -1189,26 +1188,14 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     // Update the icon key to fetch the new icon and avoid icon catch,
     // TODO(crbug.com/1253250): Remove apps::mojom related code.
     apps_util::IncrementingIconKeyFactory icon_key_factory;
-    std::vector<apps::mojom::AppPtr> mojom_apps;
     std::vector<apps::AppPtr> apps;
     for (const auto& app_id : app_ids) {
-      apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-      mojom_app->app_type = apps::mojom::AppType::kArc;
-      mojom_app->app_id = app_id;
-      mojom_app->icon_key =
-          icon_key_factory.MakeIconKey(apps::IconEffects::kNone);
-      mojom_apps.push_back(mojom_app.Clone());
-
       auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
       app->icon_key =
           std::move(*icon_key_factory.CreateIconKey(apps::IconEffects::kNone));
       apps.push_back(std::move(app));
     }
 
-    apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->AppRegistryCache()
-        .OnApps(std::move(mojom_apps), apps::mojom::AppType::kArc,
-                false /* should_notify_initialized */);
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppRegistryCache()
         .OnApps(std::move(apps), apps::AppType::kArc,
