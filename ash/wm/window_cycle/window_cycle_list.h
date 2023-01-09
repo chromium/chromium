@@ -42,9 +42,13 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
 
-  const WindowCycleView* cycle_view() const { return cycle_view_; }
+  void set_user_did_accept(bool user_did_accept) {
+    user_did_accept_ = user_did_accept;
+  }
 
   bool same_app_only() const { return same_app_only_; }
+
+  const WindowCycleView* cycle_view() const { return cycle_view_; }
 
   // Returns the |target_window_| from |cycle_view_|.
   aura::Window* GetTargetWindow();
@@ -97,10 +101,6 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Updates the tab slider mode UI when alt-tab mode in user prefs changes.
   void OnModePrefsChanged();
-
-  void set_user_did_accept(bool user_did_accept) {
-    user_did_accept_ = user_did_accept;
-  }
 
   static void SetDisableInitialDelayForTesting(bool disabled);
 

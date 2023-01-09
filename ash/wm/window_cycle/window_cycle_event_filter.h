@@ -71,13 +71,6 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   // stop repeatedly cycling through windows, or cycle once.
   void HandleTriggerKey(ui::KeyEvent* event);
 
-  // Returns whether |event| is a trigger key (tab, left, right, w (when
-  // debugging)).
-  bool IsTriggerKey(ui::KeyEvent* event) const;
-
-  // Returns whether |event| is an exit key (return, space).
-  bool IsExitKey(ui::KeyEvent* event) const;
-
   // Returns whether the window cycle should repeatedly cycle in the
   // direction given by |event|.
   bool ShouldRepeatKey(ui::KeyEvent* event) const;

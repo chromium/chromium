@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,7 +32,7 @@ namespace {
 constexpr auto kToggleSlideDuration = base::Milliseconds(150);
 
 // The insets of the focus ring of the tab slider button.
-constexpr int kTabSliderButtonFocusInsets = 4;
+constexpr int kTabSliderButtonFocusRingHaloInset = -4;
 
 }  // namespace
 
@@ -65,23 +66,21 @@ WindowCycleTabSlider::WindowCycleTabSlider()
   current_desk_tab_slider_button_->SetPreferredSize(button_size);
 
   // Setup an active button selector.
-  active_button_selector_->SetPreferredSize(
-      gfx::Size(button_size.width() + 2 * kTabSliderButtonFocusInsets,
-                button_size.height() + 2 * kTabSliderButtonFocusInsets));
+  active_button_selector_->SetPreferredSize(button_size);
   active_button_selector_->SetPaintToLayer();
   active_button_selector_->layer()->SetFillsBoundsOpaquely(false);
   const int active_button_selector_round_radius =
       int{active_button_selector_->GetPreferredSize().height() / 2};
 
-  // Create highlight border for the selector to be displayed during keyboard
+  // Create the focus ring for the selector to be displayed during keyboard
   // navigation.
-  auto border = std::make_unique<WmHighlightItemBorder>(
-      active_button_selector_round_radius, gfx::Insets());
-  highlight_border_ = border.get();
-  active_button_selector_->SetBorder(std::move(border));
   views::InstallRoundRectHighlightPathGenerator(
       active_button_selector_, gfx::Insets(),
       active_button_selector_round_radius);
+  views::FocusRing* focus_ring = StyleUtil::SetUpFocusRingForView(
+      active_button_selector_, kTabSliderButtonFocusRingHaloInset);
+  focus_ring->SetHasFocusPredicate(
+      [&](views::View* view) { return is_focused(); });
 
   // Create background for the selector to show an active button.
   auto* active_button_selector_background =
@@ -112,8 +111,7 @@ void WindowCycleTabSlider::SetFocus(bool focus) {
   if (is_focused_ == focus)
     return;
   is_focused_ = focus;
-  highlight_border_->SetFocused(is_focused_);
-  active_button_selector_->SchedulePaint();
+  views::FocusRing::Get(active_button_selector_)->SchedulePaint();
 }
 
 void WindowCycleTabSlider::OnModePrefsChanged() {
@@ -132,11 +130,9 @@ void WindowCycleTabSlider::Layout() {
 
   active_button_selector_->SetBounds(
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk()
-          ? button_size.width() - kTabSliderButtonFocusInsets
-          : -kTabSliderButtonFocusInsets,
-      -kTabSliderButtonFocusInsets,
-      button_size.width() + 2 * kTabSliderButtonFocusInsets,
-      button_size.height() + 2 * kTabSliderButtonFocusInsets);
+          ? button_size.width()
+          : 0,
+      0, button_size.width(), button_size.height());
 }
 
 gfx::Size WindowCycleTabSlider::CalculatePreferredSize() const {
@@ -144,24 +140,19 @@ gfx::Size WindowCycleTabSlider::CalculatePreferredSize() const {
 }
 
 void WindowCycleTabSlider::UpdateActiveButtonSelector(bool per_desk) {
-  const gfx::Rect active_button_selector_bounds =
-      active_button_selector_->bounds();
+  const gfx::RectF active_button_selector_bounds(
+      active_button_selector_->bounds());
   // `OnModePrefsChanged()` is called in the ctor so the
   // `active_button_selector_` has not been laid out yet.
-  if (active_button_selector_bounds.IsEmpty())
+  if (active_button_selector_bounds.IsEmpty()) {
     return;
+  }
 
-  const gfx::Size button_size = GetPreferredSizeForButtons();
-  const gfx::Rect new_selector_bounds =
-      gfx::Rect(per_desk ? button_size.width() - kTabSliderButtonFocusInsets
-                         : -kTabSliderButtonFocusInsets,
-                -kTabSliderButtonFocusInsets,
-                button_size.width() + 2 * kTabSliderButtonFocusInsets,
-                button_size.height() + 2 * kTabSliderButtonFocusInsets);
-
-  const gfx::Transform transform =
-      gfx::TransformBetweenRects(gfx::RectF(active_button_selector_bounds),
-                                 gfx::RectF(new_selector_bounds));
+  const gfx::SizeF button_size(GetPreferredSizeForButtons());
+  const gfx::RectF new_selector_bounds(
+      gfx::PointF(per_desk ? button_size.width() : 0.f, 0.f), button_size);
+  const gfx::Transform transform = gfx::TransformBetweenRects(
+      active_button_selector_bounds, new_selector_bounds);
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
