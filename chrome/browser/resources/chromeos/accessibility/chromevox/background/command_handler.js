@@ -1124,7 +1124,7 @@ export class CommandHandler extends CommandHandlerInterface {
   /** @private */
   cycleTypingEcho_() {
     LocalStorage.set(
-        'typingEcho', TypingEcho.cycle(LocalStorage.get('typingEcho')));
+        'typingEcho', TypingEcho.cycle(LocalStorage.getNumber('typingEcho')));
     let announce = '';
     switch (LocalStorage.get('typingEcho')) {
       case TypingEcho.CHARACTER:
@@ -1768,7 +1768,7 @@ export class CommandHandler extends CommandHandlerInterface {
     LocalStorage.set('brailleTable', LocalStorage.get(brailleTableType));
     LocalStorage.set('brailleTableType', brailleTableType);
     BrailleBackground.instance.getTranslatorManager().refresh(
-        LocalStorage.get(brailleTableType));
+        LocalStorage.getString(brailleTableType));
     new Output().format(output).go();
   }
 

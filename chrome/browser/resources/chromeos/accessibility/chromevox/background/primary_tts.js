@@ -47,7 +47,7 @@ export class PrimaryTts extends AbstractTts {
 
     /** @private {number} */
     this.currentPunctuationEcho_ =
-        LocalStorage.get(ttsTypes.TtsSettings.PUNCTUATION_ECHO) || 1;
+        LocalStorage.getNumber(ttsTypes.TtsSettings.PUNCTUATION_ECHO, 1);
 
     /**
      * A list of punctuation characters that should always be spliced into

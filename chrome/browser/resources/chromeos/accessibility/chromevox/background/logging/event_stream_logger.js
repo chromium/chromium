@@ -33,7 +33,7 @@ export class EventStreamLogger {
         await new Promise(resolve => chrome.automation.getDesktop(resolve));
     EventStreamLogger.instance = new EventStreamLogger(desktop);
     EventStreamLogger.instance.updateAllFilters(
-        LocalStorage.get('enableEventStreamLogging'));
+        LocalStorage.getBoolean('enableEventStreamLogging'));
 
     BridgeHelper.registerHandler(
         TARGET, Action.NOTIFY_EVENT_STREAM_FILTER_CHANGED,

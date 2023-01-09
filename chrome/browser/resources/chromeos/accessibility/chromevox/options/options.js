@@ -97,8 +97,8 @@ export class OptionsPage {
     }
 
     if (LocalStorage.get(TtsSettings.PUNCTUATION_ECHO)) {
-      const currentPunctuationEcho =
-          PunctuationEchoes[LocalStorage.get(TtsSettings.PUNCTUATION_ECHO)];
+      const currentPunctuationEcho = PunctuationEchoes[LocalStorage.getNumber(
+          TtsSettings.PUNCTUATION_ECHO)];
       for (let i = 0, opt; opt = $('punctuationEcho').options[i]; ++i) {
         if (opt.id === currentPunctuationEcho.name) {
           opt.setAttribute('selected', '');
@@ -208,7 +208,8 @@ export class OptionsPage {
             'capitalStrategy', 'announceCapitals');
       } else {
         $('increasePitch').disabled = false;
-        const capitalStrategyBackup = LocalStorage.get('capitalStrategyBackup');
+        const capitalStrategyBackup =
+            LocalStorage.getString('capitalStrategyBackup');
         if (capitalStrategyBackup) {
           // Restore original capitalStrategy setting.
           $('announceCapitals').selected =
@@ -344,7 +345,7 @@ export class OptionsPage {
         LocalStorage.set('brailleTable', sel.id);
         LocalStorage.set(node.id, sel.id);
         BackgroundBridge.BrailleBackground.refreshBrailleTable(
-            LocalStorage.get('brailleTable'));
+            LocalStorage.getString('brailleTable', ''));
       };
     };
 
@@ -377,7 +378,7 @@ export class OptionsPage {
             Msgs.getMsg('options_braille_table_type_8');
       }
       BackgroundBridge.BrailleBackground.refreshBrailleTable(
-          LocalStorage.get('brailleTable'));
+          LocalStorage.getString('brailleTable', ''));
     };
     updateTableType(false);
 

@@ -41,7 +41,7 @@ export class BrailleCaptionsBackground {
    * @return {boolean}
    */
   static isEnabled() {
-    return LocalStorage.get(BrailleCaptionsBackground.PREF_KEY);
+    return LocalStorage.getBoolean(BrailleCaptionsBackground.PREF_KEY);
   }
 
   /**

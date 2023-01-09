@@ -1016,11 +1016,11 @@ class EditingRangeObserver {
     const inputType = range && range.start.node.inputType;
     if (inputType === 'email' || inputType === 'url') {
       BrailleBackground.instance.getTranslatorManager().refresh(
-          LocalStorage.get('brailleTable8'));
+          LocalStorage.getString('brailleTable8'));
       return;
     }
     BrailleBackground.instance.getTranslatorManager().refresh(
-        LocalStorage.get('brailleTable'));
+        LocalStorage.getString('brailleTable', ''));
   }
 }
 

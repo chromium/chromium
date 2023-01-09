@@ -174,7 +174,7 @@ export class BrailleTranslatorManager {
         this.tables_ = tables;
 
         // Initial refresh; set options from user preferences.
-        this.refresh(LocalStorage.get('brailleTable'), undefined, r);
+        this.refresh(LocalStorage.getString('brailleTable', ''), undefined, r);
       });
     });
   }

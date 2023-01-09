@@ -99,10 +99,10 @@ export class BluetoothBrailleDisplayManager {
     /**
      * The display explicitly preferred by a caller via connect. Only one such
      * display exists at a time.
-     * @private {string?}
+     * @private {?string}
      */
-    this.preferredDisplayAddress_ =
-        LocalStorage.get('preferredBrailleDisplayAddress');
+    this.preferredDisplayAddress_ = /** @type {?string} */ (
+        LocalStorage.get('preferredBrailleDisplayAddress'));
 
     /**
      * Tracks whether the preferred display is connected.

@@ -11,6 +11,8 @@ export class LocalStorage {
   constructor(onInit) {
     /** @private {?Object} */
     this.values_ = null;
+    /** @private {!Object<string, Function>} */
+    this.keyCallbacks_ = {};
 
     chrome.storage.local.get(
         null /* get all values */,
@@ -35,10 +37,78 @@ export class LocalStorage {
     return;
   }
 
-  /** @param {string} key */
-  static get(key) {
+  /**
+   * @param {string} key
+   * @param {Function} callback
+   */
+  static addListenerForKey(key, callback) {
+    LocalStorage.instance.keyCallbacks_[key] = callback;
+  }
+
+  /**
+   * @param {string} key
+   * @param {*=} defaultValue
+   * @return {*}
+   */
+  static get(key, defaultValue = undefined) {
     LocalStorage.assertReady_();
-    return LocalStorage.instance.values_[key];
+    const value = LocalStorage.instance.values_[key];
+    if (value !== undefined) {
+      return value;
+    }
+    return defaultValue;
+  }
+
+  /**
+   * @param {string} key
+   * @param {string|Function} type A string (for primitives) or type constructor
+   *     (for classes) corresponding to the expected type
+   * @param {*=} defaultValue
+   * @return {*}
+   */
+  static getTypeChecked(key, type, defaultValue) {
+    const value = LocalStorage.get(key, defaultValue);
+    if ((typeof type === 'string') && (typeof value === type)) {
+      return value;
+    }
+    if ((typeof type === 'function') && (value instanceof type)) {
+      return value;
+    }
+    throw new Error(
+        'Value in LocalStorage for key "' + key + '" is not a ' + type);
+  }
+
+  /**
+   * @param {string} key
+   * @param {boolean=} defaultValue
+   * @return {boolean}
+   */
+  static getBoolean(key, defaultValue) {
+    const value = LocalStorage.getTypeChecked(key, 'boolean', defaultValue);
+    return Boolean(value);
+  }
+
+  /**
+   * @param {string} key
+   * @param {number=} default_value
+   * @return {number}
+   */
+  static getNumber(key, default_value) {
+    const value = LocalStorage.getTypeChecked(key, 'number', default_value);
+    if (isNaN(value)) {
+      throw new Error('Value in LocalStorage for key "' + key + '" is NaN');
+    }
+    return Number(value);
+  }
+
+  /**
+   * @param {string} key
+   * @param {string=} default_value
+   * @return {string}
+   */
+  static getString(key, default_value) {
+    const value = LocalStorage.getTypeChecked(key, 'string', default_value);
+    return String(value);
   }
 
   /** @param {string} key */
@@ -87,6 +157,9 @@ export class LocalStorage {
   update_(updates) {
     for (const key in updates) {
       this.values_[key] = updates[key].newValue;
+      if (this.keyCallbacks_[key]) {
+        this.keyCallbacks_[key](updates[key].newValue);
+      }
     }
   }
 

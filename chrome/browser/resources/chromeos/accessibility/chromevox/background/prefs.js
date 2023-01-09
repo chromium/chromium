@@ -46,7 +46,7 @@ export class ChromeVoxPrefs {
   static init() {
     ChromeVoxPrefs.instance = new ChromeVoxPrefs();
 
-    ChromeVoxPrefs.isStickyPrefOn = LocalStorage.get('sticky');
+    ChromeVoxPrefs.isStickyPrefOn = LocalStorage.getBoolean('sticky');
 
     // Set the default value of any pref that isn't already in LocalStorage.
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {

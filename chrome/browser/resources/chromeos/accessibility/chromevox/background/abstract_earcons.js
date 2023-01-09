@@ -39,7 +39,7 @@ export class AbstractEarcons {
    * @return {boolean} True if earcons are enabled.
    */
   get enabled() {
-    return LocalStorage.get('earcons');
+    return LocalStorage.getBoolean('earcons');
   }
 
   /**
