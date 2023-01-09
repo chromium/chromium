@@ -39,6 +39,10 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // Enables client side detection referrer chain.
 BASE_DECLARE_FEATURE(kClientSideDetectionReferrerChain);
 
+// Enables force request CSD-P ping when RT Lookup Response has FORCE_REQUEST in
+// the client_side_detection_type field
+BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
+
 // Enables serving the Android Protego allowlist through the component updater.
 BASE_DECLARE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist);
 

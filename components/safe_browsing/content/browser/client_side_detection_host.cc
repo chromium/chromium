@@ -543,14 +543,35 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
                               verdict->is_phishing());
 
-    // We only send phishing verdict to the server if the verdict is phishing.
-    if (!verdict->is_phishing())
+    raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
+
+    bool force_request_from_rt_url_lookup = false;
+
+    if (base::FeatureList::IsEnabled(kClientSideDetectionTypeForceRequest)) {
+      if (cache_manager) {
+        safe_browsing::ClientSideDetectionType cached_csd_type =
+            cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+                current_url_);
+        force_request_from_rt_url_lookup =
+            cached_csd_type ==
+                safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
+            (IsExtendedReportingEnabled(*delegate_->GetPrefs()) ||
+             IsEnhancedProtectionEnabled(*delegate_->GetPrefs()));
+      }
+
+      base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
+                                force_request_from_rt_url_lookup);
+    }
+
+    // We only send a phishing verdict if the verdict is phishing OR we get a
+    // FORCE_REQUEST from a RTLookupResponse for a SBER/ESB user.
+    if (!verdict->is_phishing() && !force_request_from_rt_url_lookup) {
       return;
+    }
 
     // Fill in metadata about which model we used.
     *verdict->mutable_population() = delegate_->GetUserPopulation();
 
-    raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
     if (cache_manager) {
       ChromeUserPopulation::PageLoadToken token =
           cache_manager->GetPageLoadToken(current_url_);

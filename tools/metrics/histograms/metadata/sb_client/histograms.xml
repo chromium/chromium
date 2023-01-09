@@ -844,6 +844,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.RTLookupForceRequest"
+    enum="BooleanForceRequest" expires_after="2023-11-28">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records if the RTUrlLookupResponse contains FORCE_REQUEST in
+    client_side_detection_type, which forces the Client Side Detection -
+    Phishing ping to be sent to the server if the user also has Enhanced Safe
+    Browsing or Safe Browsing Extended Reporting opt-in. This histogram is
+    logged once on every successful classification.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing"
     enum="BooleanIsPhishing" expires_after="2023-05-27">
   <owner>drubery@chromium.org</owner>

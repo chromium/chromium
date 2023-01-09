@@ -41,6 +41,10 @@ BASE_FEATURE(kClientSideDetectionReferrerChain,
              "ClientSideDetectionReferrerChain",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionTypeForceRequest,
+             "ClientSideDetectionTypeForceRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist,
              "SafeBrowsingComponentUpdaterAndroidProtegoAllowlist",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -218,6 +222,7 @@ constexpr struct {
     {&kClientSideDetectionKillswitch, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionReferrerChain, true},
+    {&kClientSideDetectionTypeForceRequest, true},
     {&kComponentUpdaterAndroidProtegoAllowlist, true},
     {&kConnectorsScanningAccessToken, true},
     {&kConnectorsScanningReportOnlyUI, true},

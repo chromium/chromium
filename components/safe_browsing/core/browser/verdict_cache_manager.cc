@@ -32,6 +32,7 @@ const char kVerdictProto[] = "verdict_proto";
 const char kRealTimeThreatInfoProto[] = "rt_threat_info_proto";
 const char kPasswordOnFocusCacheKey[] = "password_on_focus_cache_key";
 const char kRealTimeUrlCacheKey[] = "real_time_url_cache_key";
+const char kCsdTypeCacheKey[] = "client_side_detection_type_cache_key";
 
 // Command-line flag for caching an artificial unsafe verdict.
 const char kUnsafeUrlFlag[] = "mark_as_real_time_phishing";
@@ -108,6 +109,18 @@ base::Value::Dict CreateDictionaryFromVerdict(const T& verdict,
   // Performs a base64 encoding on the serialized proto.
   base::Base64Encode(serialized_proto, &serialized_proto);
   result.Set(proto_name, serialized_proto);
+  return result;
+}
+
+template <class T>
+base::Value::Dict CreateDictionaryFromVerdict(
+    const T& verdict,
+    const base::Time& receive_time,
+    const char* proto_name,
+    const safe_browsing::ClientSideDetectionType csd_type) {
+  base::Value::Dict result =
+      CreateDictionaryFromVerdict(verdict, receive_time, proto_name);
+  result.Set(kCsdTypeCacheKey, static_cast<int>(csd_type));
   return result;
 }
 
@@ -264,27 +277,30 @@ std::string GetCacheExpression<LoginReputationClientResponse>(
 }
 
 template <class T>
-typename T::VerdictType GetMostMatchingCachedVerdictWithPathMatching(
+absl::optional<base::Value> GetMostMatchingCachedVerdictEntryWithPathMatching(
     const GURL& url,
     const std::string& type_key,
     scoped_refptr<HostContentSettingsMap> content_settings,
     const ContentSettingsType contents_setting_type,
     const char* proto_name,
-    T* out_response,
     MatchParams match_params) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
+
+  absl::optional<base::Value> result;
 
   GURL hostname = GetHostNameWithHTTPScheme(url);
   base::Value cache_dictionary_value = content_settings->GetWebsiteSetting(
       hostname, GURL(), contents_setting_type, nullptr);
 
-  if (!cache_dictionary_value.is_dict())
-    return T::VERDICT_TYPE_UNSPECIFIED;
+  if (!cache_dictionary_value.is_dict()) {
+    return absl::nullopt;
+  }
 
   base::Value::Dict* verdict_dictionary =
       cache_dictionary_value.GetDict().FindDict(type_key);
+
   if (!verdict_dictionary) {
-    return T::VERDICT_TYPE_UNSPECIFIED;
+    return absl::nullopt;
   }
 
   std::vector<std::string> paths;
@@ -296,11 +312,6 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithPathMatching(
       /*canonicalized_query*/ nullptr);
 
   int max_path_depth = -1;
-  typename T::VerdictType most_matching_verdict_type =
-      T::VERDICT_TYPE_UNSPECIFIED;
-  // For all the verdicts of the same origin, we key them by |cache_expression|.
-  // Its corresponding value is a Dict containing its creation time and
-  // the serialized verdict proto.
   for (const auto [key, value] : *verdict_dictionary) {
     int verdict_received_time;
     T verdict;
@@ -320,30 +331,26 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithPathMatching(
     int path_depth = static_cast<int>(GetPathDepth(cache_expression_path));
     if (path_depth > max_path_depth &&
         PathVariantsMatchCacheExpression(paths, cache_expression_path) &&
-        match_params.ShouldMatch()) {
+        match_params.ShouldMatch() &&
+        !IsCacheExpired(verdict_received_time, verdict.cache_duration_sec())) {
       max_path_depth = path_depth;
-      // If the most matching verdict is expired, set the result to
-      // VERDICT_TYPE_UNSPECIFIED.
-      most_matching_verdict_type =
-          IsCacheExpired(verdict_received_time, verdict.cache_duration_sec())
-              ? T::VERDICT_TYPE_UNSPECIFIED
-              : verdict.verdict_type();
-      out_response->CopyFrom(verdict);
+      result = std::move(value);
     }
   }
-  return most_matching_verdict_type;
+
+  return result;
 }
 
 template <class T>
-typename T::VerdictType GetMostMatchingCachedVerdictWithHostAndPathMatching(
+absl::optional<base::Value>
+GetMostMatchingCachedVerdictEntryWithHostAndPathMatching(
     const GURL& url,
     const std::string& type_key,
     scoped_refptr<HostContentSettingsMap> content_settings,
     const ContentSettingsType contents_setting_type,
-    const char* proto_name,
-    T* out_response) {
+    const char* proto_name) {
   DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
-  auto most_matching_verdict_type = T::VERDICT_TYPE_UNSPECIFIED;
+  absl::optional<base::Value> most_matching_verdict;
   MatchParams match_params;
 
   std::string root_host, root_path;
@@ -356,16 +363,44 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithHostAndPathMatching(
     int depth = static_cast<int>(GetHostDepth(host));
     GURL url_to_check = GetUrlWithHostAndPath(host, root_path);
     match_params.is_exact_host = (root_host == host);
-    auto verdict_type = GetMostMatchingCachedVerdictWithPathMatching<T>(
-        url_to_check, type_key, content_settings, contents_setting_type,
-        proto_name, out_response, match_params);
-    if (depth > max_path_depth && verdict_type != T::VERDICT_TYPE_UNSPECIFIED) {
+    absl::optional<base::Value> verdict =
+        GetMostMatchingCachedVerdictEntryWithPathMatching<T>(
+            url_to_check, type_key, content_settings, contents_setting_type,
+            proto_name, match_params);
+    if (depth > max_path_depth && verdict && verdict->is_dict()) {
       max_path_depth = depth;
-      most_matching_verdict_type = verdict_type;
+      most_matching_verdict = std::move(verdict);
     }
   }
 
-  return most_matching_verdict_type;
+  return most_matching_verdict;
+}
+
+template <class T>
+typename T::VerdictType GetVerdictTypeFromMostMatchedCachedVerdict(
+    const char* proto_name,
+    absl::optional<base::Value> verdict_entry,
+    T* out_response) {
+  DCHECK(proto_name == kVerdictProto || proto_name == kRealTimeThreatInfoProto);
+
+  if (!verdict_entry || !verdict_entry->is_dict()) {
+    return T::VERDICT_TYPE_UNSPECIFIED;
+  }
+
+  base::Value* verdict_proto_value = verdict_entry->FindKey(proto_name);
+
+  if (verdict_proto_value && verdict_proto_value->is_string()) {
+    std::string serialized_proto = verdict_proto_value->GetString();
+
+    if (base::Base64Decode(serialized_proto, &serialized_proto) &&
+        out_response->ParseFromString(serialized_proto)) {
+      return out_response->verdict_type();
+    } else {
+      return T::VERDICT_TYPE_UNSPECIFIED;
+    }
+  } else {
+    return T::VERDICT_TYPE_UNSPECIFIED;
+  }
 }
 
 bool HasPageLoadTokenExpired(int64_t token_time_msec) {
@@ -496,10 +531,15 @@ VerdictCacheManager::GetCachedPhishGuardVerdict(
 
   std::string type_key =
       GetKeyOfTypeFromTriggerType(trigger_type, password_type);
-  return GetMostMatchingCachedVerdictWithHostAndPathMatching<
-      LoginReputationClientResponse>(url, type_key, content_settings_,
-                                     ContentSettingsType::PASSWORD_PROTECTION,
-                                     kVerdictProto, out_response);
+  absl::optional<base::Value> most_matching_verdict =
+      GetMostMatchingCachedVerdictEntryWithHostAndPathMatching<
+          LoginReputationClientResponse>(
+          url, type_key, content_settings_,
+          ContentSettingsType::PASSWORD_PROTECTION, kVerdictProto);
+
+  return GetVerdictTypeFromMostMatchedCachedVerdict<
+      LoginReputationClientResponse>(
+      kVerdictProto, std::move(most_matching_verdict), out_response);
 }
 
 size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
@@ -567,6 +607,9 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
     return;
   }
   std::vector<std::string> visited_cache_expressions;
+  safe_browsing::ClientSideDetectionType csd_type =
+      verdict.client_side_detection_type();
+
   for (const auto& threat_info : verdict.threat_info()) {
     // If |cache_expression_match_type| is unspecified, ignore this entry.
     if (threat_info.cache_expression_match_type() ==
@@ -600,7 +643,7 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
 
     base::Value::Dict threat_info_entry =
         CreateDictionaryFromVerdict<RTLookupResponse::ThreatInfo>(
-            threat_info, receive_time, kRealTimeThreatInfoProto);
+            threat_info, receive_time, kRealTimeThreatInfoProto, csd_type);
     // Increases stored verdict count if we haven't seen this cache expression
     // before.
     if (!verdict_dictionary->contains(cache_expression)) {
@@ -627,11 +670,49 @@ VerdictCacheManager::GetCachedRealTimeUrlVerdict(
   if (is_shut_down_) {
     return RTLookupResponse::ThreatInfo::VERDICT_TYPE_UNSPECIFIED;
   }
-  return GetMostMatchingCachedVerdictWithHostAndPathMatching<
-      RTLookupResponse::ThreatInfo>(
-      url, kRealTimeUrlCacheKey, content_settings_,
-      ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-      kRealTimeThreatInfoProto, out_threat_info);
+
+  absl::optional<base::Value> most_matching_verdict =
+      GetMostMatchingCachedVerdictEntryWithHostAndPathMatching<
+          RTLookupResponse::ThreatInfo>(
+          url, kRealTimeUrlCacheKey, content_settings_,
+          ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
+          kRealTimeThreatInfoProto);
+
+  return GetVerdictTypeFromMostMatchedCachedVerdict<
+      RTLookupResponse::ThreatInfo>(kRealTimeThreatInfoProto,
+                                    std::move(most_matching_verdict),
+                                    out_threat_info);
+}
+
+safe_browsing::ClientSideDetectionType
+VerdictCacheManager::GetCachedRealTimeUrlClientSideDetectionType(
+    const GURL& url) {
+  if (is_shut_down_) {
+    return safe_browsing::ClientSideDetectionType::
+        CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+  }
+  absl::optional<base::Value> most_matching_verdict =
+      GetMostMatchingCachedVerdictEntryWithHostAndPathMatching<
+          RTLookupResponse::ThreatInfo>(
+          url, kRealTimeUrlCacheKey, content_settings_,
+          ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
+          kRealTimeThreatInfoProto);
+
+  if (!most_matching_verdict || !most_matching_verdict->is_dict()) {
+    return safe_browsing::ClientSideDetectionType::
+        CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+  }
+
+  base::Value* cache_client_side_detection_type =
+      most_matching_verdict->FindKey(kCsdTypeCacheKey);
+  if (cache_client_side_detection_type &&
+      cache_client_side_detection_type->is_int()) {
+    return static_cast<safe_browsing::ClientSideDetectionType>(
+        cache_client_side_detection_type->GetInt());
+  } else {
+    return safe_browsing::ClientSideDetectionType::
+        CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+  }
 }
 
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(

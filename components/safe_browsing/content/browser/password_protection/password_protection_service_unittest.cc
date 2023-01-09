@@ -841,11 +841,12 @@ TEST_P(PasswordProtectionServiceBaseTest, TestGetCachedVerdicts) {
                 LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                 reused_password_account_type, &actual_verdict));
 
-  // Return VERDICT_TYPE_UNSPECIFIED if look up for a URL whose variants match
-  // test.com/def, but the corresponding verdict is expired.
+  // Return SAFE if look up for a URL whose variants match
+  // test.com/def, but the corresponding verdict is expired, so the most
+  // matching unexpired verdict will return SAFE
   reused_password_account_type.set_account_type(
       ReusedPasswordAccountType::GSUITE);
-  EXPECT_EQ(LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+  EXPECT_EQ(LoginReputationClientResponse::SAFE,
             password_protection_service_->GetCachedVerdict(
                 GURL("http://test.com/def/ghi/index.html"),
                 LoginReputationClientRequest::PASSWORD_REUSE_EVENT,

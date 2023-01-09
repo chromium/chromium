@@ -630,6 +630,60 @@ TEST_F(VerdictCacheManagerTest,
             cache_manager_->GetCachedRealTimeUrlVerdict(url, &out_verdict));
 }
 
+TEST_F(VerdictCacheManagerTest,
+       TestCanRetrieveCachedRealTimeClientSideDetectionTypeCheck) {
+  base::HistogramTester histograms;
+  GURL url("https://www.example.com/path");
+
+  RTLookupResponse response;
+  AddThreatInfoToResponse(response, RTLookupResponse::ThreatInfo::SAFE,
+                          RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED,
+                          60, "www.example.com/",
+                          RTLookupResponse::ThreatInfo::EXACT_MATCH);
+  AddThreatInfoToResponse(response, RTLookupResponse::ThreatInfo::SUSPICIOUS,
+                          RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                          "www.example.com/path",
+                          RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  response.set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::
+          CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED);
+
+  cache_manager_->CacheRealTimeUrlVerdict(url, response, base::Time::Now());
+
+  RTLookupResponse::ThreatInfo out_verdict;
+  EXPECT_EQ(RTLookupResponse::ThreatInfo::SUSPICIOUS,
+            cache_manager_->GetCachedRealTimeUrlVerdict(url, &out_verdict));
+  EXPECT_EQ("www.example.com/path",
+            out_verdict.cache_expression_using_match_type());
+  EXPECT_EQ(60, out_verdict.cache_duration_sec());
+  EXPECT_EQ(RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+            out_verdict.threat_type());
+  EXPECT_EQ(static_cast<int>(safe_browsing::ClientSideDetectionType::
+                                 CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED),
+            cache_manager_->GetCachedRealTimeUrlClientSideDetectionType(url));
+
+  GURL url2("https://www.example2.com/path2");
+
+  RTLookupResponse response2;
+  AddThreatInfoToResponse(response2, RTLookupResponse::ThreatInfo::SAFE,
+                          RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED,
+                          60, "www.example2.com/",
+                          RTLookupResponse::ThreatInfo::EXACT_MATCH);
+  AddThreatInfoToResponse(response2, RTLookupResponse::ThreatInfo::SAFE,
+                          RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
+                          "www.example2.com/path2",
+                          RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  response2.set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  cache_manager_->CacheRealTimeUrlVerdict(url, response2, base::Time::Now());
+
+  EXPECT_EQ(
+      static_cast<int>(safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+      cache_manager_->GetCachedRealTimeUrlClientSideDetectionType(url2));
+}
+
 TEST_F(VerdictCacheManagerTest, TestHostSuffixMatching) {
   // Password protection verdict.
   GURL url("https://a.example.test/path");

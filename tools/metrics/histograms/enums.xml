@@ -12198,6 +12198,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Force Disabled"/>
 </enum>
 
+<enum name="BooleanForceRequest">
+  <int value="0" label="No Force Request"/>
+  <int value="1" label="Force CSD-P ping request"/>
+</enum>
+
 <enum name="BooleanForeground">
   <int value="0" label="Background"/>
   <int value="1" label="Foreground"/>

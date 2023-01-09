@@ -89,6 +89,9 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       const GURL& url,
       RTLookupResponse::ThreatInfo* out_threat_info);
 
+  safe_browsing::ClientSideDetectionType
+  GetCachedRealTimeUrlClientSideDetectionType(const GURL& url);
+
   // Creates a page load token that is tied with the hostname of the |url|.
   // The token is stored in memory.
   ChromeUserPopulation::PageLoadToken CreatePageLoadToken(const GURL& url);
