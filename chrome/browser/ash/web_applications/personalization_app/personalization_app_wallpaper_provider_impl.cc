@@ -261,7 +261,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
     const absl::optional<std::string>& resume_token,
     FetchGooglePhotosAlbumsCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
-    mojo::ReportBadMessage(
+    wallpaper_receiver_.ReportBadMessage(
         "Cannot call `FetchGooglePhotosAlbums()` without confirming that the "
         "Google Photos enterprise setting is enabled.");
     std::move(callback).Run(
@@ -282,7 +282,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosAlbums(
 void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosEnabled(
     FetchGooglePhotosEnabledCallback callback) {
   if (!IsEligibleForGooglePhotos()) {
-    mojo::ReportBadMessage(
+    wallpaper_receiver_.ReportBadMessage(
         "Cannot call `FetchGooglePhotosEnabled()` without Google Photos "
         "Wallpaper integration enabled.");
     std::move(callback).Run(
@@ -308,7 +308,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
     const absl::optional<std::string>& resume_token,
     FetchGooglePhotosPhotosCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
-    mojo::ReportBadMessage(
+    wallpaper_receiver_.ReportBadMessage(
         "Cannot call `FetchGooglePhotosPhotos()` without confirming that the "
         "Google Photos enterprise setting is enabled.");
     std::move(callback).Run(
@@ -360,7 +360,7 @@ void PersonalizationAppWallpaperProviderImpl::GetLocalImageThumbnail(
     const base::FilePath& path,
     GetLocalImageThumbnailCallback callback) {
   if (local_images_.count(path) == 0) {
-    mojo::ReportBadMessage("Invalid local image path received");
+    wallpaper_receiver_.ReportBadMessage("Invalid local image path received");
     return;
   }
   if (!thumbnail_loader_)
@@ -496,7 +496,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
   const auto& it = image_asset_id_map_.find(image_asset_id);
 
   if (it == image_asset_id_map_.end()) {
-    mojo::ReportBadMessage("Invalid image asset_id selected");
+    wallpaper_receiver_.ReportBadMessage("Invalid image asset_id selected");
     return;
   }
 
@@ -548,7 +548,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(
     bool preview_mode,
     SelectLocalImageCallback callback) {
   if (local_images_.count(path) == 0) {
-    mojo::ReportBadMessage("Invalid local image path selected");
+    wallpaper_receiver_.ReportBadMessage("Invalid local image path selected");
     return;
   }
   if (pending_select_local_image_callback_)
@@ -573,7 +573,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
     bool preview_mode,
     SelectGooglePhotosPhotoCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
-    mojo::ReportBadMessage(
+    wallpaper_receiver_.ReportBadMessage(
         "Cannot call `SelectGooglePhotosPhoto()` without confirming that the "
         "Google Photos enterprise setting is enabled.");
     std::move(callback).Run(false);
