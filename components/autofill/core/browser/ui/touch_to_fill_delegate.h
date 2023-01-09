@@ -18,7 +18,6 @@ class TouchToFillDelegate {
  public:
   virtual ~TouchToFillDelegate() = default;
 
-  // TODO(crbug.com/1247698): Define the API.
   virtual AutofillDriver* GetDriver() = 0;
 
   virtual bool ShouldShowScanCreditCard() = 0;
