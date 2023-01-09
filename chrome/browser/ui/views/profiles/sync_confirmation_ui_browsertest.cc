@@ -42,6 +42,7 @@ struct TestParam {
   bool use_dark_theme = false;
   bool use_tangible_sync = false;
   bool use_right_to_left_language = false;
+  bool use_small_window = false;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
 };
 
@@ -57,6 +58,7 @@ const TestParam kWindowTestParams[] = {
     {.test_suffix = "LegacySync"},
     {.test_suffix = "LegacySyncDarkTheme", .use_dark_theme = true},
     {.test_suffix = "LegacySyncRtl", .use_right_to_left_language = true},
+    {.test_suffix = "LegacySyncSmallWindow", .use_small_window = true},
     {.test_suffix = "TangibleSync", .use_tangible_sync = true},
     {.test_suffix = "TangibleSyncDarkTheme",
      .use_dark_theme = true,
@@ -64,6 +66,9 @@ const TestParam kWindowTestParams[] = {
     {.test_suffix = "TangibleSyncRtl",
      .use_tangible_sync = true,
      .use_right_to_left_language = true},
+    {.test_suffix = "TangibleSyncSmallWindow",
+     .use_tangible_sync = true,
+     .use_small_window = true},
 };
 
 const TestParam kDialogTestParams[] = {
@@ -227,7 +232,10 @@ class SyncConfirmationUIWindowPixelTest
           return std::unique_ptr<ProfileManagementStepController>(
               new SyncConfirmationStepControllerForTest(host));
         }));
-    profile_picker_view_->ShowAndWait();
+    profile_picker_view_->ShowAndWait(
+        GetParam().use_small_window
+            ? absl::optional<gfx::Size>(gfx::Size(750, 590))
+            : absl::nullopt);
   }
 
   bool VerifyUi() override {
