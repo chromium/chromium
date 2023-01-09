@@ -413,6 +413,27 @@ class BrowserAddedWaiter final : public BrowserListObserver {
   raw_ptr<Browser> browser_added_ = nullptr;
 };
 
+class PageLoadWaiter final : public content::WebContentsObserver {
+ public:
+  explicit PageLoadWaiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~PageLoadWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override {
+    run_loop_.Quit();
+  }
+
+  void WebContentsDestroyed() override {
+    Observe(nullptr);
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 Browser* GetBrowserForAppId(const Profile* profile, const AppId& app_id) {
   const BrowserList* browser_list = BrowserList::GetInstance();
   for (auto it = browser_list->begin_browsers_ordered_by_activation();
@@ -2785,6 +2806,17 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   FlushShortcutTasks();
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   AwaitManifestSystemIdle();
+  auto* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      if (!web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+        PageLoadWaiter page_load_waiter(web_contents);
+        page_load_waiter.Wait();
+      }
+    }
+  }
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
 
