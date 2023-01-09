@@ -883,6 +883,12 @@ class PortTest(LoggingTestCase):
             sorted(port.tests(['virtual/virtual_wpt_dom/'])),
             dom_wpt + ['virtual/virtual_wpt_dom/wpt_internal/dom/bar.html'])
 
+        all_virtual_console = set([
+            'virtual/virtual_console/external/wpt/console/console-is-a-namespace.any.html',
+            'virtual/virtual_console/external/wpt/console/console-is-a-namespace.any.worker.html'
+        ])
+        self.assertLessEqual(all_virtual_console, set(port.tests()))
+
     def test_virtual_test_paths(self):
         port = self.make_port(with_tests=True)
         add_manifest_to_mock_filesystem(port)

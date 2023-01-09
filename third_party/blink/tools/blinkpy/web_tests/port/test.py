@@ -848,6 +848,11 @@ class TestPort(Port):
 
     def virtual_test_suites(self):
         return [
+            VirtualTestSuite(
+                prefix='virtual_console',
+                platforms=['Linux', 'Mac', 'Win'],
+                bases=['external/wpt/console/console-is-a-namespace.any.js'],
+                args=['--virtual-console']),
             VirtualTestSuite(prefix='virtual_passes',
                              platforms=['Linux', 'Mac', 'Win'],
                              bases=['passes', 'passes_two'],

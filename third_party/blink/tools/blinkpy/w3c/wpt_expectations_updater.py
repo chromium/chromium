@@ -1119,7 +1119,8 @@ class WPTExpectationsUpdater(object):
                     line.test = new_file_name
                 self._test_expectations.add_expectations(
                     path, [line], lineno=line.lineno)
-            elif not root_file or not self.port.test_isfile(root_file):
+            elif not root_file or not self.host.filesystem.isfile(
+                    self.finder.path_from_web_tests(root_file)):
                 if not self.options.clean_up_affected_tests_only:
                     self._test_expectations.remove_expectations(path, [line])
 
