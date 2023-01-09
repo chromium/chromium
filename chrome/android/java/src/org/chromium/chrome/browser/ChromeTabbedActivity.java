@@ -350,6 +350,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private long mIntentHandlingTimeMs;
 
     /**
+     * Whether the Start surface should be shown when Chrome is launched.
+     */
+    private Boolean mShouldShowOverviewOnStart;
+
+    /**
      * Whether the StartSurface is shown when Chrome is launched.
      */
     private boolean mOverviewShownOnStart;
@@ -2883,10 +2888,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean shouldShowOverviewPageOnStart() {
+        if (mShouldShowOverviewOnStart != null) {
+            return mShouldShowOverviewOnStart;
+        }
+
         assert mInactivityTracker != null;
         assert getTabModelSelector() != null;
-        return ReturnToChromeUtil.shouldShowOverviewPageOnStart(
+        mShouldShowOverviewOnStart = ReturnToChromeUtil.shouldShowOverviewPageOnStart(
                 this, getIntent(), getTabModelSelector(), mInactivityTracker, isTablet());
+        return mShouldShowOverviewOnStart;
     }
 
     @Override

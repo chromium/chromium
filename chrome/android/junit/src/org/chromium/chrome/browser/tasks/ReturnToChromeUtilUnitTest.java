@@ -32,11 +32,13 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -291,5 +293,40 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
 
         Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldNotShowStartSurfaceOnStartWhenHomepagePolicyManagerIsNotInitialized() {
+        START_SURFACE_OPEN_START_AS_HOMEPAGE.setForTesting(true);
+        Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
+
+        // Sets main intent from launcher:
+        doReturn(Intent.ACTION_MAIN).when(mIntent).getAction();
+        doReturn(true).when(mIntent).hasCategory(Intent.CATEGORY_LAUNCHER);
+        Assert.assertTrue(IntentUtils.isMainIntentFromLauncher(mIntent));
+
+        // Tests the case when there isn't any Tab:
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(0).when(mTabModelSelector).getTotalTabCount();
+        // Sets background time:
+        doReturn((long) -1).when(mInactivityTracker).getLastBackgroundedTimeMs();
+
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(HomepageManager.isHomepageEnabled());
+        Assert.assertFalse(HomepagePolicyManager.isInitializedWithNative());
+        Assert.assertFalse(ReturnToChromeUtil.useChromeHomepage());
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowOverviewPageOnStart(
+                mContext, mIntent, mTabModelSelector, mInactivityTracker, false /* isTablet */));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Startup.Android.IsHomepagePolicyManagerInitialized"));
+
+        doReturn(1).when(mTabModelSelector).getTotalTabCount();
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowOverviewPageOnStart(
+                mContext, mIntent, mTabModelSelector, mInactivityTracker, false /* isTablet */));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Startup.Android.IsHomepagePolicyManagerInitialized"));
     }
 }

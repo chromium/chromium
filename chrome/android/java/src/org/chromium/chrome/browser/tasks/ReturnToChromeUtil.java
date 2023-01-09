@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -391,11 +392,13 @@ public final class ReturnToChromeUtil {
      * NTP or Start though. If checking whether to show Start as homepage, use
      * {@link ReturnToChromeUtil#shouldShowStartSurfaceAsTheHomePage(Context)} instead.
      */
-    private static boolean useChromeHomepage() {
+    @VisibleForTesting
+    public static boolean useChromeHomepage() {
         String homePageUrl = HomepageManager.getHomepageUri();
         return HomepageManager.isHomepageEnabled()
-                && (TextUtils.isEmpty(homePageUrl)
-                        || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl));
+                && (HomepagePolicyManager.isInitializedWithNative()
+                        && (TextUtils.isEmpty(homePageUrl)
+                                || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl)));
     }
 
     /**
@@ -499,9 +502,11 @@ public final class ReturnToChromeUtil {
         // However, if NTP is used as homepage, we show Start when there isn't any tab. See
         // https://crbug.com/1368224.
         if (IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeUtil.getTotalTabCount(tabModelSelector) <= 0
-                && useChromeHomepage()) {
-            return true;
+                && ReturnToChromeUtil.getTotalTabCount(tabModelSelector) <= 0) {
+            boolean initialized = HomepagePolicyManager.isInitializedWithNative();
+            RecordHistogram.recordBooleanHistogram(
+                    "Startup.Android.IsHomepagePolicyManagerInitialized", initialized);
+            if (initialized && useChromeHomepage()) return true;
         }
 
         // Checks whether to show the Start surface due to feature flag TAB_SWITCHER_ON_RETURN_MS.

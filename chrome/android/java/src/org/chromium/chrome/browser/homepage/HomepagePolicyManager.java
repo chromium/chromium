@@ -71,6 +71,13 @@ public class HomepagePolicyManager implements PrefObserver {
     }
 
     /**
+     * Returns whether the HomepagePolicyManager has been initialized with native. The
+     * HomepagePolicyManager can only return valid result after initialing with native.
+     */
+    public static boolean isInitializedWithNative() {
+        return getInstance().isInitialized();
+    }
+    /**
      * @return The homepage URL from the homepage preference.
      */
     @NonNull

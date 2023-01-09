@@ -45,6 +45,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.jank_tracker.JankMetricUMARecorder;
 import org.chromium.base.jank_tracker.JankMetricUMARecorderJni;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -215,6 +216,9 @@ public class InstantStartTest {
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromePhone.class);
         TabUiTestHelper.verifyTabSwitcherLayoutType(cta);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Startup.Android.IsHomepagePolicyManagerInitialized"));
     }
 
     @Test
