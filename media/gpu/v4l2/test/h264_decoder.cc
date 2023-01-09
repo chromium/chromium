@@ -23,6 +23,7 @@ struct H264SliceMetadata {
   H264SliceHeader slice_header;
   int bottom_field_order_cnt = 0;
   int frame_num = 0;
+  int frame_num_offset = 0;
   int frame_num_wrap = 0;
   uint64_t ref_ts_nsec = 0;  // Reference Timestamp in nanoseconds.
   int pic_order_cnt = 0;
@@ -322,10 +323,94 @@ void H264DPB::StorePic(H264SliceMetadata* pic) {
   dpb_.push_back(std::make_unique<H264SliceMetadata>(*pic));
 }
 
-VideoDecoder::Result H264Decoder::StartNewFrame(const int sps_id,
-                                                const int pps_id) {
+// Initializes H264 Slice Metadata based on slice header and
+// based on H264 specifications which it calculates its pic order count.
+VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
+    const H264SliceHeader& slice_hdr,
+    const H264SPS* sps,
+    std::unique_ptr<H264SliceMetadata>& slice_metadata) const {
+  if (!sps) {
+    return VideoDecoder::kError;
+  }
+
+  slice_metadata = std::make_unique<H264SliceMetadata>();
+  slice_metadata->slice_header = slice_hdr;
+  slice_metadata->ref_ts_nsec = global_pic_count_;
+  slice_metadata->ref = slice_hdr.nal_ref_idc != 0;
+  slice_metadata->frame_num = slice_hdr.frame_num;
+  slice_metadata->pic_order_cnt_lsb = slice_hdr.pic_order_cnt_lsb;
+
+  // Calculate H264 slice order counts.
+  switch (sps->pic_order_cnt_type) {
+    // See specification 8.2.1.1.
+    case 0: {
+      int prev_pic_order_cnt_msb, prev_pic_order_cnt_lsb;
+      if (slice_hdr.idr_pic_flag) {
+        prev_pic_order_cnt_msb = prev_pic_order_cnt_lsb = 0;
+      } else {
+        prev_pic_order_cnt_msb = prev_pic_order_.prev_ref_pic_order_cnt_msb;
+        prev_pic_order_cnt_lsb = prev_pic_order_.prev_ref_pic_order_cnt_lsb;
+      }
+
+      const int max_pic_order_cnt_lsb =
+          1 << (sps->log2_max_pic_order_cnt_lsb_minus4 + 4);
+      if ((slice_metadata->pic_order_cnt_lsb < prev_pic_order_cnt_lsb) &&
+          (prev_pic_order_cnt_lsb - slice_metadata->pic_order_cnt_lsb >=
+           max_pic_order_cnt_lsb / 2)) {
+        slice_metadata->pic_order_cnt_msb =
+            prev_pic_order_cnt_msb + max_pic_order_cnt_lsb;
+      } else if ((slice_metadata->pic_order_cnt_lsb > prev_pic_order_cnt_lsb) &&
+                 (slice_metadata->pic_order_cnt_lsb - prev_pic_order_cnt_lsb >
+                  max_pic_order_cnt_lsb / 2)) {
+        slice_metadata->pic_order_cnt_msb =
+            prev_pic_order_cnt_msb - max_pic_order_cnt_lsb;
+      } else {
+        slice_metadata->pic_order_cnt_msb = prev_pic_order_cnt_msb;
+      }
+
+      slice_metadata->top_field_order_cnt =
+          slice_metadata->pic_order_cnt_msb + slice_metadata->pic_order_cnt_lsb;
+      slice_metadata->bottom_field_order_cnt =
+          slice_metadata->top_field_order_cnt +
+          slice_hdr.delta_pic_order_cnt_bottom;
+      break;
+    }
+    // See specification 8.2.1.2.
+    case 1: {
+      // TODO(bchoobineh)
+      break;
+    }
+    // See specification 8.2.1.3.
+    case 2: {
+      // TODO(bchoobineh)
+      break;
+    }
+    default: {
+      DVLOG(1) << "Invalid pic_order_cnt_type: " << sps->pic_order_cnt_type;
+      return VideoDecoder::kError;
+    }
+  }
+
+  slice_metadata->pic_order_cnt =
+      std::min(slice_metadata->top_field_order_cnt,
+               slice_metadata->bottom_field_order_cnt);
+
+  return VideoDecoder::kOk;
+}
+
+VideoDecoder::Result H264Decoder::StartNewFrame(
+    const int sps_id,
+    const int pps_id,
+    H264SliceHeader* slice_hdr,
+    std::unique_ptr<H264SliceMetadata>& slice_metadata) {
   const H264SPS* sps = parser_->GetSPS(sps_id);
   const H264PPS* pps = parser_->GetPPS(pps_id);
+
+  if (InitializeSliceMetadata(*slice_hdr, sps, slice_metadata) ==
+      VideoDecoder::kError) {
+    return VideoDecoder::kError;
+  }
+  global_pic_count_++;
 
   struct v4l2_ctrl_h264_sps v4l2_sps = SetupSPSCtrl(sps);
   struct v4l2_ctrl_h264_pps v4l2_pps = SetupPPSCtrl(pps);
@@ -363,6 +448,11 @@ VideoDecoder::Result H264Decoder::StartNewFrame(const int sps_id,
 H264Parser::Result H264Decoder::ProcessNextFrame(
     std::unique_ptr<H264SliceHeader>* resulting_slice_header) {
   bool reached_end_of_frame = false;
+
+  // TODO(bchoobineh): Incorporate slice_metadata with Frame Finish
+  // logic in this function.
+  std::unique_ptr<H264SliceMetadata> slice_metadata;
+
   std::unique_ptr<H264SliceHeader> curr_slice_header =
       std::move(pending_slice_header_);
   std::unique_ptr<H264NALU> nalu = std::move(pending_nalu_);
@@ -389,8 +479,10 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
                 ->seq_parameter_set_id;
 
         if (!pending_slice_header_) {
-          if (StartNewFrame(sps_id, pps_id) != VideoDecoder::kOk)
+          if (StartNewFrame(sps_id, pps_id, curr_slice_header.get(),
+                            slice_metadata) != VideoDecoder::kOk) {
             return H264Parser::kInvalidStream;
+          }
 
           pending_slice_header_ = std::move(curr_slice_header);
           break;

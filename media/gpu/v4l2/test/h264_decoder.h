@@ -16,6 +16,13 @@ namespace v4l2_test {
 
 struct H264SliceMetadata;
 
+// PreviousRefPicOrder contains data regarding the picture
+// order counts for the previously decoded frame.
+struct PreviousRefPicOrder {
+  int prev_ref_pic_order_cnt_msb = 0;
+  int prev_ref_pic_order_cnt_lsb = 0;
+};
+
 // H264DPB is a class representing a Decoded Picture Buffer (DPB).
 // The DPB is a vector of H264 picture slice metadata objects that
 // describe the pictures used in the H.264 decoding process.
@@ -90,12 +97,23 @@ class H264Decoder : public VideoDecoder {
 
   // Sends IOCTL call to device with the frame's SPS, PPS, and Scaling Matrix
   // data which indicates the beginning of a new frame.
-  VideoDecoder::Result StartNewFrame(int sps_id, int pps_id);
+  VideoDecoder::Result StartNewFrame(
+      int sps_id,
+      int pps_id,
+      H264SliceHeader* slice_hdr,
+      std::unique_ptr<H264SliceMetadata>& slice_metadata);
 
   // Transmits each H264 Slice associated with the current frame to the
   // device.  Additionally sends Decode Parameters and Decode Mode
   // via IOCTL Ext Ctrls.
   VideoDecoder::Result SubmitSlice(H264SliceHeader curr_slice, int frame_num);
+
+  // Initializes H264 Slice Metadata based on slice header and
+  // based on H264 specifications which it calculates its pic order count.
+  VideoDecoder::Result InitializeSliceMetadata(
+      const H264SliceHeader& slice_hdr,
+      const H264SPS* sps,
+      std::unique_ptr<H264SliceMetadata>& slice_metadata) const;
 
   // Returns all CAPTURE buffer indexes that can be reused for a
   // VIDIOC_QBUF ioctl call.
@@ -104,6 +122,11 @@ class H264Decoder : public VideoDecoder {
       std::set<uint32_t> queued_buffer_indexes);
 
   const std::unique_ptr<H264Parser> parser_;
+
+  // Previous pic order counts from previous frame
+  PreviousRefPicOrder prev_pic_order_;
+
+  int global_pic_count_ = 0;
 
   std::unique_ptr<H264NALU> pending_nalu_;
   std::unique_ptr<H264SliceHeader> pending_slice_header_;
