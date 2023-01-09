@@ -503,16 +503,18 @@ void WebInstanceHost::OnComponentBinderClosed(const base::GUID& id,
                                               zx_status_t status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Drop the hold on the instance's Binder.
-  auto count = instances_.erase(id);
-  DCHECK_EQ(count, 1UL);
-
   // Destroy the child instance.
   const std::string name(InstanceNameFromId(id));
   DestroyChild(*realm_, name);
 
   // Drop the directory subtree for the child instance.
   DestroyChildDirectory(GetWebInstancesCollectionDir(), name);
+
+  // Drop the hold on the instance's Binder. Note: destroying the InterfacePtr
+  // here also deletes the lambda into which `id` was bound, so `id` must not
+  // be touched after this next statement.
+  auto count = instances_.erase(id);
+  DCHECK_EQ(count, 1UL);
 
   if (instances_.empty()) {
     Uninitialize();
