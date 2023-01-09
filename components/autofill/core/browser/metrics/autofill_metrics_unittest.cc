@@ -832,7 +832,7 @@ TEST_F(AutofillMetricsTest, NumericQuantityCollision) {
 
   // Set up our form data.
   test::FormDescription form_description = {
-      .description_for_logging = "AutofilledStateFieldSource",
+      .description_for_logging = "NumericQuantityCollision",
       .fields = {{.server_type = NO_SERVER_DATA,
                   .heuristic_type = NUMERIC_QUANTITY,
                   .is_autofilled = false},
@@ -10027,43 +10027,6 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
       "Autofill.ParsedFieldTypesWasPageTranslated", true, 1);
 }
 
-// Validate that the source of the autofilled state field is logged on form
-// submission.
-TEST_F(AutofillMetricsTest, AutofilledStateFieldSource) {
-  RecreateProfile(false);
-  // Set up our form data.
-  FormData form = test::GetFormData(
-      {.description_for_logging = "AutofilledStateFieldSource",
-       .fields = {{.role = NAME_FULL},
-                  {.role = ADDRESS_HOME_LINE1},
-                  {.role = ADDRESS_HOME_CITY},
-                  {.role = PHONE_HOME_NUMBER},
-                  {.role = ADDRESS_HOME_STATE,
-                   .value = u"TN",
-                   .form_control_type = "select-one",
-                   .is_autofilled = true,
-                   .select_options = {{u"TN", u"TN"}, {u"CA", u"CA"}}},
-                  {.role = ADDRESS_HOME_ZIP},
-                  {.role = ADDRESS_HOME_COUNTRY}}});
-
-  std::vector<ServerFieldType> field_types = {
-      NAME_FULL,           ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
-      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
-      ADDRESS_HOME_COUNTRY};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  base::HistogramTester histogram_tester;
-  SubmitForm(form);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.AutofilledFieldAtSubmission.ByStateSelectionField",
-      AutofillMetrics::AutofilledSourceMetricForStateSelectionField::
-          AUTOFILL_BY_VALUE,
-      1);
-}
-
 // Tests the following 4 cases when |kAutofillPreventOverridingPrefilledValues|
 // is enabled:
 // 1. The field is not autofilled since it has an initial value but the value
@@ -10091,7 +10054,8 @@ TEST_F(AutofillMetricsTest,
   RecreateProfile(false);
 
   FormData form = test::GetFormData(
-      {.description_for_logging = "AutofilledStateFieldSource",
+      {.description_for_logging =
+           "IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
        .fields = {
            {.role = NAME_FULL},
            {.role = ADDRESS_HOME_CITY,

@@ -1168,22 +1168,6 @@ void FormStructure::LogQualityMetrics(
         // confitioned on having a possible field type. Remove after M112.
         AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
             form_interactions_ukm_logger, *this, *field);
-
-        // If the field was a |ADDRESS_HOME_STATE| field which was autofilled,
-        // record the source of the autofilled value between
-        // |AlternativeStateNameMap| or the profile value.
-        if (field->is_autofilled &&
-            type.GetStorableType() == ADDRESS_HOME_STATE) {
-          AutofillMetrics::
-              LogAutofillingSourceForStateSelectionFieldAtSubmission(
-                  field->state_is_a_matching_type()
-                      ? AutofillMetrics::
-                            AutofilledSourceMetricForStateSelectionField::
-                                AUTOFILL_BY_ALTERNATIVE_STATE_NAME_MAP
-                      : AutofillMetrics::
-                            AutofilledSourceMetricForStateSelectionField::
-                                AUTOFILL_BY_VALUE);
-        }
       }
     }
   }

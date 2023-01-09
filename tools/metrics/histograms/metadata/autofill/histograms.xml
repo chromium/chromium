@@ -596,16 +596,6 @@ chromium-metrics-reviews@google.com.
   <summary>Whether there is any suggestions for an autocomplete query.</summary>
 </histogram>
 
-<histogram name="Autofill.AutofilledFieldAtSubmission.ByStateSelectionField"
-    enum="AutofillSourceForStateSelectionField" expires_after="2023-01-15">
-  <owner>vidhanj@google.com</owner>
-  <owner>koerber@google.com</owner>
-  <summary>
-    Records the source of filling for the state selection field, emitted when
-    the form is submitted.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
     expires_after="2023-07-01">
   <owner>jsaul@google.com</owner>

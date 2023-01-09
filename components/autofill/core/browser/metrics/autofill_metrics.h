@@ -681,17 +681,6 @@ class AutofillMetrics {
     kMaxValue = SECTION_UNION_IMPORT,
   };
 
-  // To record the source of the autofilled state field.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class AutofilledSourceMetricForStateSelectionField {
-    // Indicates that the filling was done by state value stored in the profile.
-    AUTOFILL_BY_VALUE = 0,
-    // Indicates that the filling was done by the |AlternativeStateNameMap|.
-    AUTOFILL_BY_ALTERNATIVE_STATE_NAME_MAP = 1,
-    kMaxValue = AUTOFILL_BY_ALTERNATIVE_STATE_NAME_MAP,
-  };
-
   // The filling status of an autofilled field.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -1495,12 +1484,6 @@ class AutofillMetrics {
   static void LogImageFetchResult(bool succeeded);
   // Logs the roundtrip latency for fetching an image in AutofillImageFetcher.
   static void LogImageFetcherRequestLatency(const base::TimeDelta& latency);
-
-  // Records the source of the state selection field if autofilled, when the
-  // form is submitted.
-  static void LogAutofillingSourceForStateSelectionFieldAtSubmission(
-      AutofilledSourceMetricForStateSelectionField
-          autofilled_source_metric_for_state_selection_field);
 
   // Logs whether the submitted field value is same as the non-empty value
   // to be autofilled in the field, when the field had a different prefilled
