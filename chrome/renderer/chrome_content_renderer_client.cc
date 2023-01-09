@@ -1471,7 +1471,7 @@ bool ChromeContentRendererClient::IsOriginIsolatedPepperPlugin(
     // The kPpapiInProcess switch should only be used by tests.  In particular,
     // we expect that the PDF plugin should always be isolated in the product
     // (and that the switch won't interfere with PDF isolation).
-    CHECK_NE(ChromeContentClient::kPDFPluginPath, plugin_path.value());
+    CHECK_NE(ChromeContentClient::kPDFInternalPluginPath, plugin_path.value());
 
     return false;
   }

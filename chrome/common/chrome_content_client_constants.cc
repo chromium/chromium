@@ -20,5 +20,7 @@ const char ChromeContentClient::kPDFInternalPluginName[] =
     "Chromium PDF Plugin";
 #endif
 
-const base::FilePath::CharType ChromeContentClient::kPDFPluginPath[] =
+const base::FilePath::CharType ChromeContentClient::kPDFExtensionPluginPath[] =
+    FILE_PATH_LITERAL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/");
+const base::FilePath::CharType ChromeContentClient::kPDFInternalPluginPath[] =
     FILE_PATH_LITERAL("internal-pdf-viewer");
