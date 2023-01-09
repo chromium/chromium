@@ -103163,10 +103163,15 @@ Full version information for the fingerprint enum values:
 <enum name="UserMediaRequestResult">
   <int value="0" label="Ok"/>
   <int value="1" label="TimedOut"/>
-  <int value="2" label="Unknown Error"/>
+  <int value="2" label="Security Error"/>
   <int value="3" label="Invalid Constraints"/>
   <int value="4" label="OverConstrained Error"/>
   <int value="5" label="Context Destroyed"/>
+  <int value="6" label="Not Allowed Error"/>
+  <int value="7" label="Not Found Error"/>
+  <int value="8" label="Abort Error"/>
+  <int value="9" label="Not Readable Error"/>
+  <int value="10" label="Not Supported Error"/>
 </enum>
 
 <enum name="UsernameDetectionMethod">

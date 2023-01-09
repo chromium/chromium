@@ -834,6 +834,8 @@ void UserMediaRequest::Fail(Result error, const String& message) {
   if (!GetExecutionContext())
     return;
   DOMExceptionCode exception_code = DOMExceptionCode::kNotSupportedError;
+  UserMediaRequestResult result_enum =
+      UserMediaRequestResult::kNotSupportedError;
   switch (error) {
     case Result::PERMISSION_DENIED:
     case Result::PERMISSION_DISMISSED:
@@ -842,25 +844,31 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::KILL_SWITCH_ON:
     case Result::SYSTEM_PERMISSION_DENIED:
       exception_code = DOMExceptionCode::kNotAllowedError;
+      result_enum = UserMediaRequestResult::kNotAllowedError;
       break;
     case Result::NO_HARDWARE:
       exception_code = DOMExceptionCode::kNotFoundError;
+      result_enum = UserMediaRequestResult::kNotFoundError;
       break;
     case Result::TAB_CAPTURE_FAILURE:
     case Result::SCREEN_CAPTURE_FAILURE:
     case Result::CAPTURE_FAILURE:
       exception_code = DOMExceptionCode::kAbortError;
+      result_enum = UserMediaRequestResult::kAbortError;
       break;
     case Result::TRACK_START_FAILURE_AUDIO:
     case Result::TRACK_START_FAILURE_VIDEO:
     case Result::DEVICE_IN_USE:
       exception_code = DOMExceptionCode::kNotReadableError;
+      result_enum = UserMediaRequestResult::kNotReadableError;
       break;
     case Result::NOT_SUPPORTED:
       exception_code = DOMExceptionCode::kNotSupportedError;
+      result_enum = UserMediaRequestResult::kNotSupportedError;
       break;
     case Result::INVALID_SECURITY_ORIGIN:
       exception_code = DOMExceptionCode::kSecurityError;
+      result_enum = UserMediaRequestResult::kSecurityError;
       break;
     default:
       NOTREACHED();
@@ -886,7 +894,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       nullptr,
       MakeGarbageCollected<V8MediaStreamError>(
           MakeGarbageCollected<DOMException>(exception_code, message)),
-      capture_controller_, UserMediaRequestResult::kUnknownError);
+      capture_controller_, result_enum);
   is_resolved_ = true;
 }
 
