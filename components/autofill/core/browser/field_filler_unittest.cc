@@ -412,7 +412,7 @@ TEST_F(AutofillFieldFillerTest, FillFormField_AutocompleteOff_CreditCardField) {
 // Verify that the correct value is returned if the maximum length of the credit
 // card value exceeds the actual length.
 TEST_F(AutofillFieldFillerTest,
-       FillFormField_MaxLength_CreditCardField_MaxLenghtExceedsLength) {
+       FillFormField_MaxLength_CreditCardField_MaxLengthExceedsLength) {
   AutofillField field;
   field.max_length = 30;
   field.set_credit_card_number_offset(2);
@@ -436,7 +436,7 @@ TEST_F(AutofillFieldFillerTest,
        FillFormField_MaxLength_CreditCardField_OffsetExceedsLength) {
   AutofillField field;
   field.max_length = 18;
-  field.set_credit_card_number_offset(30);
+  field.set_credit_card_number_offset(19);
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_NUMBER);
 
   // Credit card related field.
@@ -2190,7 +2190,6 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVCAmericanExpress) {
 TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
   AutofillField field;
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_NUMBER);
-  field.set_credit_card_number_offset(50);
   field.form_control_type = "text";
 
   CreditCard card = test::GetVirtualCard();
@@ -2209,6 +2208,33 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
       u"\x2006\x2060\x2022\x2060\x2006\x2060"
       u"5454\x202C";
 
+  EXPECT_EQ(expected, field.value);
+}
+
+// Verify that the obfuscated virtual card number is returned if the offset is
+// greater than 0 and the offset exceeds the length.
+TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber_OffsetExceedsLength) {
+  AutofillField field;
+  field.max_length = 17;
+  field.set_credit_card_number_offset(18);
+  field.form_control_type = "text";
+  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_NUMBER);
+
+  CreditCard card = test::GetVirtualCard();
+  card.SetNumber(u"5454545454545454");
+  CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
+  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
+  filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
+                       /*cvc=*/std::u16string(),
+                       mojom::RendererFormDataAction::kPreview);
+
+  // ••••••••••••5454‬
+  std::u16string expected =
+      u"\x2022\x2022\x2022\x2022\x2022\x2022\x2022\x2022\x2022\x2022\x2022"
+      u"\x2022"
+      u"5454";
+
+  // Verify that the field is previewed with the full card number.
   EXPECT_EQ(expected, field.value);
 }
 

@@ -505,6 +505,21 @@ bool FillCreditCardTypeSelectControl(const std::u16string& value,
   return false;
 }
 
+std::u16string TruncateCardNumberIfNecessary(const AutofillField& field,
+                                             const std::u16string& value) {
+  // Take the substring of the credit card number starting from the offset
+  // and ending at the field's max_length (or the entire string if
+  // max_length is 0).
+  // If the offset is greater than the length of the string, then the entire
+  // number should be returned;
+  if (field.credit_card_number_offset() < value.length()) {
+    return value.substr(
+        field.credit_card_number_offset(),
+        field.max_length > 0 ? field.max_length : std::u16string::npos);
+  }
+  return value;
+}
+
 // Returns the appropriate credit card number from |credit_card|. Truncates the
 // credit card number to be split across HTML form input fields depending on if
 // 'field.credit_card_number_offset()' is less than the length of the credit
@@ -539,16 +554,9 @@ std::u16string GetCreditCardNumberForInput(
     value = credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
   }
 
-  // |field|'s max_length truncates the credit card number to fit within.
-  if (field.credit_card_number_offset() < value.length()) {
-    // Take the substring of the credit card number starting from the offset and
-    // ending at the field's max_length (or the entire string if max_length is
-    // 0).
-    value = value.substr(
-        field.credit_card_number_offset(),
-        field.max_length > 0 ? field.max_length : std::u16string::npos);
-  }
-  return value;
+  // Check to truncate card number based on the field's credit card number
+  // offset and length of the credit card number.
+  return TruncateCardNumberIfNecessary(field, value);
 }
 
 // Returns the appropriate credit card number from |virtual_card|. Truncates the
@@ -571,16 +579,14 @@ std::u16string GetVirtualCardNumberForPreviewInput(
         (field.credit_card_number_offset() == 0 &&
          (field.max_length == 0 || field.max_length >= value.length()));
 
-    if (!is_single_field)
+    if (!is_single_field) {
       value = virtual_card
                   .ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields();
+    }
 
-    // Take the substring of the credit card number starting from the offset and
-    // ending at the field's max_length (or the entire string if max_length is
-    // 0).
-    value = value.substr(
-        field.credit_card_number_offset(),
-        field.max_length > 0 ? field.max_length : std::u16string::npos);
+    // Check to truncate card number based on the field's credit card number
+    // offset and length of the credit card number.
+    return TruncateCardNumberIfNecessary(field, value);
   }
 
   return value;
