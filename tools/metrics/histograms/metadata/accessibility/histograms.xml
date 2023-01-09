@@ -2338,6 +2338,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TextToSpeech.Utterance.Rate" units="count"
+    expires_after="2023-11-30">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The rate of an utterance to be spoken via synthesized text-to-speech.
+  </summary>
+</histogram>
+
 <histogram name="TextToSpeech.Utterance.Source" enum="TextToSpeechSource"
     expires_after="2023-11-30">
   <owner>joelriley@google.com</owner>
