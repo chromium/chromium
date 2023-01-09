@@ -103,7 +103,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &commerce::kCommerceMerchantViewer,
     &commerce::kCommercePriceTracking,
     &commerce::kShoppingList,
-    &commerce::kShoppingListEnableDesyncResolution,
     &commerce::kShoppingPDPMetrics,
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &download::features::kDownloadAutoResumptionNative,

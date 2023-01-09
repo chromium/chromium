@@ -278,6 +278,10 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.PowerBookmarks.SubscriptionValidationResult"
     enum="CommerceSubscriptionValidationResult" expires_after="2023-04-09">
+  <obsolete>
+    Deprecated in 11/2022. The validation logic became unnecessary with the new
+    subscriptions manager implementation.
+  </obsolete>
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

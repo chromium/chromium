@@ -76,7 +76,6 @@ BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
-BASE_DECLARE_FEATURE(kShoppingListEnableDesyncResolution);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 BASE_DECLARE_FEATURE(kRetailCoupons);
