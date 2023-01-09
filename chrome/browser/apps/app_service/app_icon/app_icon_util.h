@@ -64,6 +64,10 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
   return a;
 }
 
+// Constructs the path to an app icon folder for the given `app_id`.
+base::FilePath GetIconFolderPath(const base::FilePath& base_path,
+                                 const std::string& app_id);
+
 // Constructs the path to an app icon file for the given `app_id` and
 // `icon_size_in_px`.
 base::FilePath GetIconPath(const base::FilePath& base_path,
@@ -126,6 +130,10 @@ std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
     const base::FilePath& base_path,
     const std::string& app_id,
     int32_t size_in_dip);
+
+// Schedules deletion of the icon folders for `app_ids`.
+void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
+                                 const std::vector<std::string>& app_ids);
 
 }  // namespace apps
 

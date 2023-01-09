@@ -201,6 +201,21 @@ void AppServiceProxyAsh::Uninstall(const std::string& app_id,
 void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                                 AppType app_type,
                                 bool should_notify_initialized) {
+  if (base::FeatureList::IsEnabled(kUnifiedAppServiceIconLoading)) {
+    // Delete app icon folders for uninstalled apps.
+    std::vector<std::string> app_ids;
+    for (const auto& delta : deltas) {
+      if (delta->readiness != Readiness::kUnknown &&
+          !apps_util::IsInstalled(delta->readiness)) {
+        app_ids.push_back(delta->app_id);
+      }
+    }
+
+    if (!app_ids.empty()) {
+      ScheduleIconFoldersDeletion(profile_->GetPath(), app_ids);
+    }
+  }
+
   if (crosapi_subscriber_) {
     crosapi_subscriber_->OnApps(deltas, app_type, should_notify_initialized);
   }

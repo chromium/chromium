@@ -4,8 +4,10 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/layout.h"
@@ -26,6 +28,13 @@ constexpr char kBackgroundIconNameTemplate[] = "background_%d.png";
 
 namespace apps {
 
+base::FilePath GetIconFolderPath(const base::FilePath& base_path,
+                                 const std::string& app_id) {
+  return base_path.AppendASCII(kAppService)
+      .AppendASCII(kIcon)
+      .AppendASCII(app_id);
+}
+
 base::FilePath GetIconPath(const base::FilePath& base_path,
                            const std::string& app_id,
                            int32_t icon_size_in_px,
@@ -36,10 +45,7 @@ base::FilePath GetIconPath(const base::FilePath& base_path,
       is_maskable_icon
           ? base::StringPrintf(kMaskableIconNameTemplate, icon_size_in_px)
           : base::StringPrintf(kIconNameTemplate, icon_size_in_px);
-  return base_path.AppendASCII(kAppService)
-      .AppendASCII(kIcon)
-      .AppendASCII(app_id)
-      .AppendASCII(icon_file_name);
+  return GetIconFolderPath(base_path, app_id).AppendASCII(icon_file_name);
 }
 
 base::FilePath GetForegroundIconPath(const base::FilePath& base_path,
@@ -47,10 +53,7 @@ base::FilePath GetForegroundIconPath(const base::FilePath& base_path,
                                      int32_t icon_size_in_px) {
   auto icon_file_name =
       base::StringPrintf(kForegroundIconNameTemplate, icon_size_in_px);
-  return base_path.AppendASCII(kAppService)
-      .AppendASCII(kIcon)
-      .AppendASCII(app_id)
-      .AppendASCII(icon_file_name);
+  return GetIconFolderPath(base_path, app_id).AppendASCII(icon_file_name);
 }
 
 base::FilePath GetBackgroundIconPath(const base::FilePath& base_path,
@@ -58,10 +61,7 @@ base::FilePath GetBackgroundIconPath(const base::FilePath& base_path,
                                      int32_t icon_size_in_px) {
   auto icon_file_name =
       base::StringPrintf(kBackgroundIconNameTemplate, icon_size_in_px);
-  return base_path.AppendASCII(kAppService)
-      .AppendASCII(kIcon)
-      .AppendASCII(app_id)
-      .AppendASCII(icon_file_name);
+  return GetIconFolderPath(base_path, app_id).AppendASCII(icon_file_name);
 }
 
 bool IsAdaptiveIcon(const base::FilePath& base_path,
@@ -175,6 +175,20 @@ std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
            : ReadOnBackgroundThread(base_path, app_id, icon_size_in_px);
   }
   return result;
+}
+
+void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
+                                 const std::vector<std::string>& app_ids) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(
+          [](const base::FilePath& base_path,
+             const std::vector<std::string>& ids) {
+            for (const auto& app_id : ids) {
+              base::DeletePathRecursively(GetIconFolderPath(base_path, app_id));
+            }
+          },
+          base_path, app_ids));
 }
 
 }  // namespace apps
