@@ -544,26 +544,21 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     return future.Get();
   }
 
-  void FetchOrigins(std::vector<mojom::StorageUsageInfoPtr>* out_result,
-                    bool exclude_empty_origins = true) {
+  void FetchOrigins(std::vector<mojom::StorageUsageInfoPtr>* out_result) {
     DCHECK(out_result);
     DCHECK(async_database_);
     DCHECK(receiver_);
 
     auto callback = receiver_->MakeInfosCallback(
-        DBOperation(Type::DB_FETCH_ORIGINS,
-                    {TestDatabaseOperationReceiver::SerializeBool(
-                        exclude_empty_origins)}),
-        out_result);
-    async_database_->FetchOrigins(std::move(callback), exclude_empty_origins);
+        DBOperation(Type::DB_FETCH_ORIGINS), out_result);
+    async_database_->FetchOrigins(std::move(callback));
   }
 
-  std::vector<mojom::StorageUsageInfoPtr> FetchOriginsSync(
-      bool exclude_empty_origins = true) {
+  std::vector<mojom::StorageUsageInfoPtr> FetchOriginsSync() {
     DCHECK(async_database_);
 
     base::test::TestFuture<std::vector<mojom::StorageUsageInfoPtr>> future;
-    async_database_->FetchOrigins(future.GetCallback(), exclude_empty_origins);
+    async_database_->FetchOrigins(future.GetCallback());
     return future.Take();
   }
 
@@ -1697,9 +1692,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
   url::Origin kOrigin4 = url::Origin::Create(GURL("http://www.example4.test"));
 
   std::queue<DBOperation> operation_list;
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
   operation_list.push(DBOperation(Type::DB_IS_OPEN));
   operation_list.push(DBOperation(Type::DB_STATUS));
 
@@ -1766,9 +1759,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
                        SetBehavior::kDefault)}));
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin4));
 
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
   base::Time override_time =
       base::Time::Now() - base::Days(kStalenessThresholdDays + 1);
@@ -1782,12 +1773,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin2));
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin3));
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin4));
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(false)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
   operation_list.push(DBOperation(
       Type::DB_OVERRIDE_TIME_ORIGIN, kOrigin3,
@@ -1813,12 +1799,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin4));
 
   operation_list.push(DBOperation(Type::DB_TRIM_MEMORY));
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(false)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
   TestSharedStorageEntriesListenerUtility listener_utility(
       task_environment_.GetMainThreadTaskRunner());
@@ -1904,8 +1885,6 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
 
   std::vector<mojom::StorageUsageInfoPtr> infos3;
   FetchOrigins(&infos3);
-  std::vector<mojom::StorageUsageInfoPtr> infos4;
-  FetchOrigins(&infos4, /*exclude_empty_origins=*/false);
 
   bool success2 = false;
   OverrideCreationTime(kOrigin3, override_time, &success2);
@@ -1936,10 +1915,8 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
 
   TrimMemory();
 
-  std::vector<mojom::StorageUsageInfoPtr> infos5;
-  FetchOrigins(&infos5);
-  std::vector<mojom::StorageUsageInfoPtr> infos6;
-  FetchOrigins(&infos6, /*exclude_empty_origins=*/false);
+  std::vector<mojom::StorageUsageInfoPtr> infos4;
+  FetchOrigins(&infos4);
 
   OperationResult result14 = OperationResult::kSqlError;
   Entries(kOrigin2, &listener_utility, id1, &result14);
@@ -1999,11 +1976,6 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
     origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 
-  origins.clear();
-  for (const auto& info : infos4)
-    origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
-
   EXPECT_TRUE(success2);
   EXPECT_EQ(override_time, time_result.time);
 
@@ -2021,13 +1993,9 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStale) {
   EXPECT_EQ(4, length12);
 
   origins.clear();
-  for (const auto& info : infos5)
+  for (const auto& info : infos4) {
     origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
-
-  origins.clear();
-  for (const auto& info : infos6)
-    origins.push_back(info->storage_key.origin());
+  }
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
 
   // Database is still intact after trimming memory.
@@ -2083,9 +2051,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   url::Origin kOrigin5 = url::Origin::Create(GURL("http://www.example5.test"));
 
   std::queue<DBOperation> operation_list;
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
   operation_list.push(DBOperation(Type::DB_IS_OPEN));
   operation_list.push(DBOperation(Type::DB_STATUS));
 
@@ -2169,9 +2135,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
                        SetBehavior::kDefault)}));
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin5));
 
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
   base::Time threshold2 = base::Time::Now() + base::Seconds(100);
   base::Time override_time1 = threshold2 + base::Milliseconds(5);
@@ -2195,12 +2159,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin4));
   operation_list.push(DBOperation(Type::DB_LENGTH, kOrigin5));
 
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(false)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
   base::Time threshold3 = base::Time::Now() + base::Seconds(200);
   operation_list.push(
@@ -2230,12 +2189,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   operation_list.push(DBOperation(Type::DB_TRIM_MEMORY));
 
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(true)}));
-  operation_list.push(
-      DBOperation(Type::DB_FETCH_ORIGINS,
-                  {TestDatabaseOperationReceiver::SerializeBool(false)}));
+  operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
   operation_list.push(DBOperation(Type::DB_GET, kOrigin2, {u"key1"}));
   operation_list.push(DBOperation(Type::DB_GET, kOrigin4, {u"key1"}));
@@ -2333,8 +2287,6 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   std::vector<mojom::StorageUsageInfoPtr> infos3;
   FetchOrigins(&infos3);
-  std::vector<mojom::StorageUsageInfoPtr> infos4;
-  FetchOrigins(&infos4, /*exclude_empty_origins=*/false);
 
   bool success2 = false;
   OverrideCreationTime(kOrigin3, threshold3, &success2);
@@ -2361,10 +2313,8 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   TrimMemory();
 
-  std::vector<mojom::StorageUsageInfoPtr> infos5;
-  FetchOrigins(&infos5);
-  std::vector<mojom::StorageUsageInfoPtr> infos6;
-  FetchOrigins(&infos6, /*exclude_empty_origins=*/false);
+  std::vector<mojom::StorageUsageInfoPtr> infos4;
+  FetchOrigins(&infos4);
 
   GetResult value1;
   Get(kOrigin2, u"key1", &value1);
@@ -2438,12 +2388,6 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
     origins.push_back(info->storage_key.origin());
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin3, kOrigin4, kOrigin5));
 
-  origins.clear();
-  for (const auto& info : infos4)
-    origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins,
-              ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4, kOrigin5));
-
   EXPECT_TRUE(success2);
   EXPECT_TRUE(success3);
 
@@ -2458,15 +2402,10 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   EXPECT_EQ(0, length15);
 
   origins.clear();
-  for (const auto& info : infos5)
+  for (const auto& info : infos4) {
     origins.push_back(info->storage_key.origin());
+  }
   EXPECT_THAT(origins, ElementsAre(kOrigin2, kOrigin4));
-
-  origins.clear();
-  for (const auto& info : infos6)
-    origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins,
-              ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4, kOrigin5));
 
   // Database is still intact after trimming memory (and possibly performing
   // storage cleanup).

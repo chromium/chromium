@@ -178,12 +178,11 @@ void AsyncSharedStorageDatabaseImpl::PurgeStale(
 }
 
 void AsyncSharedStorageDatabaseImpl::FetchOrigins(
-    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
-    bool exclude_empty_origins) {
+    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
+        callback) {
   DCHECK(callback);
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::FetchOrigins)
-      .WithArgs(exclude_empty_origins)
       .Then(std::move(callback));
 }
 

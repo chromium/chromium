@@ -198,12 +198,10 @@ class AsyncSharedStorageDatabase {
 
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
   // `mojom::StorageUsageInfoPtr` for each origin currently using shared
-  // storage in this profile. If `exclude_empty_origins` is true, then only
-  // those with positive `length` are included in the vector.
+  // storage in this profile.
   virtual void FetchOrigins(
       base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
-          callback,
-      bool exclude_empty_origins = true) = 0;
+          callback) = 0;
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
   // privacy budget of `context_origin`.

@@ -36,11 +36,7 @@ Entries:[
     }
 ]
 Clear entries via devtools
-Metadata: {
-    creationTime : <number>
-    length : 0
-    remainingBudget : 12
-}
+undefined
 Entries:[
 ]
 Events: [

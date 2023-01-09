@@ -213,12 +213,10 @@ class SharedStorageManager {
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
   // `mojom::StorageUsageInfoPtr` for each origin currently using shared
   // storage in this profile. Called by
-  // `browsing_data::SharedStorageHelper::StartFetching`. If
-  // `exclude_empty_origins` is true, then only those with positive `length` are
-  // included in the vector.
-  void FetchOrigins(base::OnceCallback<
-                        void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
-                    bool exclude_empty_origins = true);
+  // `browsing_data::SharedStorageHelper::StartFetching`.
+  void FetchOrigins(
+      base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
+          callback);
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
   // privacy budget of `context_origin`.

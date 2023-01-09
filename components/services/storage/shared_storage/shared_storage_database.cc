@@ -287,10 +287,6 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Set(
   if (LazyInit(DBCreationPolicy::kCreateIfAbsent) != InitStatus::kSuccess)
     return OperationResult::kInitFailure;
 
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
-    return OperationResult::kSqlError;
-
   GetResult get_result = Get(context_origin, key);
   if (get_result.result != OperationResult::kSuccess &&
       get_result.result != OperationResult::kNotFound &&
@@ -299,30 +295,24 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Set(
   }
 
   std::string origin_str(SerializeOrigin(context_origin));
-  if (get_result.result == OperationResult::kSuccess ||
-      get_result.result == OperationResult::kExpired) {
-    if (Delete(context_origin, key) != OperationResult::kSuccess)
+  if (get_result.result == OperationResult::kSuccess &&
+      behavior == SharedStorageDatabase::SetBehavior::kIgnoreIfPresent) {
+    // We re-insert the old key-value pair with an updated `last_used_time`.
+    if (!UpdateValuesMapping(origin_str, key, get_result.data,
+                             /*key_exists=*/true)) {
       return OperationResult::kSqlError;
-
-    if (behavior == SharedStorageDatabase::SetBehavior::kIgnoreIfPresent &&
-        get_result.result != OperationResult::kExpired) {
-      // We re-insert the old key-value pair with an updated `last_used_time`.
-      if (!InsertIntoValuesMapping(origin_str, key, get_result.data))
-        return OperationResult::kSqlError;
-
-      if (!transaction.Commit())
-        return OperationResult::kSqlError;
-      return OperationResult::kIgnored;
     }
-  } else if (!HasCapacity(origin_str)) {
+    return OperationResult::kIgnored;
+  }
+  if (get_result.result == OperationResult::kNotFound &&
+      !HasCapacity(origin_str)) {
     return OperationResult::kNoCapacity;
   }
 
-  if (!InsertIntoValuesMapping(origin_str, key, value))
+  bool key_exists = get_result.result != OperationResult::kNotFound;
+  if (!UpdateValuesMapping(origin_str, key, value, key_exists)) {
     return OperationResult::kSqlError;
-
-  if (!transaction.Commit())
-    return OperationResult::kSqlError;
+  }
 
   return OperationResult::kSet;
 }
@@ -338,10 +328,6 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
 
   if (LazyInit(DBCreationPolicy::kCreateIfAbsent) != InitStatus::kSuccess)
     return OperationResult::kInitFailure;
-
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
-    return OperationResult::kSqlError;
 
   GetResult get_result = Get(context_origin, key);
   if (get_result.result != OperationResult::kSuccess &&
@@ -359,14 +345,8 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
 
     if (new_value.size() > max_string_length_)
       return OperationResult::kInvalidAppend;
-
-    if (Delete(context_origin, key) != OperationResult::kSuccess)
-      return OperationResult::kSqlError;
   } else if (get_result.result == OperationResult::kExpired) {
     new_value = std::move(tail_value);
-
-    if (Delete(context_origin, key) != OperationResult::kSuccess)
-      return OperationResult::kSqlError;
   } else {
     new_value = std::move(tail_value);
 
@@ -374,11 +354,10 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Append(
       return OperationResult::kNoCapacity;
   }
 
-  if (!InsertIntoValuesMapping(origin_str, key, new_value))
+  bool key_exists = get_result.result != OperationResult::kNotFound;
+  if (!UpdateValuesMapping(origin_str, key, new_value, key_exists)) {
     return OperationResult::kSqlError;
-
-  if (!transaction.Commit())
-    return OperationResult::kSqlError;
+  }
 
   return OperationResult::kSet;
 }
@@ -820,22 +799,18 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::PurgeStale() {
   return OperationResult::kSuccess;
 }
 
-std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins(
-    bool exclude_empty_origins) {
+std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess)
     return {};
 
-  const char* kSelectSql = (exclude_empty_origins)
-                               ? "SELECT context_origin,creation_time,length "
-                                 "FROM per_origin_mapping "
-                                 "WHERE length>0 ORDER BY context_origin"
-                               : "SELECT context_origin,creation_time,length "
-                                 "FROM per_origin_mapping "
-                                 "ORDER BY context_origin";
+  static constexpr char kSelectSql[] =
+      "SELECT context_origin,creation_time,length "
+      "FROM per_origin_mapping "
+      "ORDER BY context_origin";
 
-  sql::Statement statement(db_.GetUniqueStatement(kSelectSql));
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   std::vector<mojom::StorageUsageInfoPtr> fetched_origin_infos;
 
   while (statement.Step()) {
@@ -1048,8 +1023,8 @@ bool SharedStorageDatabase::OverrideCreationTimeForTesting(
   if (result == OperationResult::kNotFound)
     return true;
 
-  return DeleteThenMaybeInsertIntoPerOriginMapping(
-      origin_str, new_creation_time, length, /*force_insertion=*/true);
+  return UpdatePerOriginMapping(origin_str, new_creation_time, length,
+                                /*origin_exists=*/true);
 }
 
 bool SharedStorageDatabase::OverrideLastUsedTimeForTesting(
@@ -1071,11 +1046,9 @@ bool SharedStorageDatabase::OverrideLastUsedTimeForTesting(
   if (result.result == OperationResult::kNotFound)
     return true;
 
-  if (Delete(context_origin, key) != OperationResult::kSuccess)
-    return false;
-
-  if (!InsertIntoValuesMappingWithTime(SerializeOrigin(context_origin), key,
-                                       result.data, new_last_used_time)) {
+  if (!UpdateValuesMappingWithTime(SerializeOrigin(context_origin), key,
+                                   result.data, new_last_used_time,
+                                   /*key_exists=*/true)) {
     return false;
   }
   return true;
@@ -1343,8 +1316,12 @@ bool SharedStorageDatabase::Vacuum() {
   return db_.Execute("VACUUM");
 }
 
-bool SharedStorageDatabase::Purge(const std::string& context_origin,
-                                  bool delete_origin_if_empty) {
+bool SharedStorageDatabase::Purge(const std::string& context_origin) {
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
   static constexpr char kDeleteSql[] =
       "DELETE FROM values_mapping "
       "WHERE context_origin=?";
@@ -1352,29 +1329,10 @@ bool SharedStorageDatabase::Purge(const std::string& context_origin,
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
   statement.BindString(0, context_origin);
 
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
-    return false;
-
   if (!statement.Run())
     return false;
 
-  int64_t length = 0L;
-  base::Time creation_time;
-  OperationResult result =
-      GetOriginInfo(context_origin, &length, &creation_time);
-
-  if (result != OperationResult::kSuccess &&
-      result != OperationResult::kNotFound) {
-    return false;
-  }
-
-  // Don't delete or insert for non-existent origin.
-  if (result == OperationResult::kNotFound)
-    return true;
-
-  if (!DeleteThenMaybeInsertIntoPerOriginMapping(context_origin, creation_time,
-                                                 0L, !delete_origin_if_empty)) {
+  if (!DeleteFromPerOriginMapping(context_origin)) {
     return false;
   }
 
@@ -1466,8 +1424,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::GetOriginInfo(
 }
 
 bool SharedStorageDatabase::UpdateLength(const std::string& context_origin,
-                                         int64_t delta,
-                                         bool delete_origin_if_empty) {
+                                         int64_t delta) {
   int64_t length = 0L;
   base::Time creation_time;
   OperationResult result =
@@ -1478,6 +1435,7 @@ bool SharedStorageDatabase::UpdateLength(const std::string& context_origin,
     return false;
   }
 
+  bool origin_exists = true;
   if (result == OperationResult::kNotFound) {
     // Don't delete or insert for non-existent origin when we would have
     // decremented the length.
@@ -1486,25 +1444,41 @@ bool SharedStorageDatabase::UpdateLength(const std::string& context_origin,
 
     // We are creating `context_origin` now.
     creation_time = clock_->Now();
+    origin_exists = false;
   }
 
   int64_t new_length = (length + delta > 0L) ? length + delta : 0L;
 
-  return DeleteThenMaybeInsertIntoPerOriginMapping(
-      context_origin, creation_time, new_length, !delete_origin_if_empty);
+  return UpdatePerOriginMapping(context_origin, creation_time, new_length,
+                                origin_exists);
 }
 
-bool SharedStorageDatabase::InsertIntoValuesMappingWithTime(
+bool SharedStorageDatabase::UpdateValuesMappingWithTime(
     const std::string& context_origin,
     const std::u16string& key,
     const std::u16string& value,
-    base::Time last_used_time) {
+    base::Time last_used_time,
+    bool key_exists) {
+  if (key_exists) {
+    static constexpr char kUpdateSql[] =
+        "UPDATE values_mapping SET value=?, last_used_time=? "
+        "WHERE context_origin=? AND key=?";
+
+    sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
+    statement.BindString16(0, value);
+    statement.BindTime(1, last_used_time);
+    statement.BindString(2, context_origin);
+    statement.BindString16(3, key);
+
+    return statement.Run();
+  }
+
   sql::Transaction transaction(&db_);
   if (!transaction.Begin())
     return false;
 
   static constexpr char kInsertSql[] =
-      "INSERT INTO values_mapping(context_origin,key,value,last_used_time)"
+      "INSERT INTO values_mapping(context_origin,key,value,last_used_time) "
       "VALUES(?,?,?,?)";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
@@ -1522,12 +1496,13 @@ bool SharedStorageDatabase::InsertIntoValuesMappingWithTime(
   return transaction.Commit();
 }
 
-bool SharedStorageDatabase::InsertIntoValuesMapping(
+bool SharedStorageDatabase::UpdateValuesMapping(
     const std::string& context_origin,
     const std::u16string& key,
-    const std::u16string& value) {
-  return InsertIntoValuesMappingWithTime(context_origin, key, value,
-                                         clock_->Now());
+    const std::u16string& value,
+    bool key_exists) {
+  return UpdateValuesMappingWithTime(context_origin, key, value, clock_->Now(),
+                                     key_exists);
 }
 
 bool SharedStorageDatabase::DeleteFromPerOriginMapping(
@@ -1547,7 +1522,7 @@ bool SharedStorageDatabase::InsertIntoPerOriginMapping(
     base::Time creation_time,
     uint64_t length) {
   static constexpr char kInsertSql[] =
-      "INSERT INTO per_origin_mapping(context_origin,creation_time,length)"
+      "INSERT INTO per_origin_mapping(context_origin,creation_time,length) "
       "VALUES(?,?,?)";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
@@ -1558,26 +1533,34 @@ bool SharedStorageDatabase::InsertIntoPerOriginMapping(
   return statement.Run();
 }
 
-bool SharedStorageDatabase::DeleteThenMaybeInsertIntoPerOriginMapping(
+bool SharedStorageDatabase::UpdatePerOriginMapping(
     const std::string& context_origin,
     base::Time creation_time,
     uint64_t length,
-    bool force_insertion) {
+    bool origin_exists) {
   DCHECK(length >= 0L);
 
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin())
-    return false;
+  if (length && origin_exists) {
+    static constexpr char kUpdateSql[] =
+        "UPDATE per_origin_mapping SET creation_time=?, length=? "
+        "WHERE context_origin=?";
+    sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
+    statement.BindTime(0, creation_time);
+    statement.BindInt64(1, static_cast<int64_t>(length));
+    statement.BindString(2, context_origin);
 
-  if (!DeleteFromPerOriginMapping(context_origin))
-    return false;
-
-  if ((length || force_insertion) &&
-      !InsertIntoPerOriginMapping(context_origin, creation_time, length)) {
-    return false;
+    return statement.Run();
+  }
+  if (length) {
+    return InsertIntoPerOriginMapping(context_origin, creation_time, length);
+  }
+  if (origin_exists) {
+    return DeleteFromPerOriginMapping(context_origin);
   }
 
-  return transaction.Commit();
+  //  Origin does not exist and we are trying to set the length to 0, so this is
+  //  a no-op.
+  return true;
 }
 
 bool SharedStorageDatabase::HasCapacity(const std::string& context_origin) {
