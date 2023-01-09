@@ -39,6 +39,7 @@ DeviceActiveUseCase::DeviceActiveUseCase(
       psm_delegate_(std::move(psm_delegate)),
       statistics_provider_(system::StatisticsProvider::GetInstance()) {
   DCHECK(psm_delegate_);
+  DCHECK(local_state_);
 }
 
 DeviceActiveUseCase::~DeviceActiveUseCase() = default;
