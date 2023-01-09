@@ -48,7 +48,6 @@ source_set("test_support") {
   public_deps = [ "//testing/gtest" ]
 
   deps = [
-    ":all_frames_web_test_bundle",
     ":java_script_feature_test_inject_once_js",
     ":java_script_feature_test_reinject_js",
     ":test_constants",
@@ -106,13 +105,6 @@ source_set("test_constants") {
     "test_url_constants.cc",
     "test_url_constants.h",
   ]
-}
-
-optimize_js("all_frames_web_test_bundle") {
-  testonly = true
-
-  primary_script = "resources/cookie_test.js"
-  sources = [ "resources/cookie_test.js" ]
 }
 
 optimize_js("java_script_feature_test_inject_once_js") {

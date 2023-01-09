@@ -211,7 +211,7 @@ TEST_F(WKWebViewConfigurationProviderTest, JavaScriptFeatureInjection) {
 
   std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "cookie_test",
+          "java_script_feature_test_inject_once",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
           web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)};
 

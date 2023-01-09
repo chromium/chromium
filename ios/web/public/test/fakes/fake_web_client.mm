@@ -9,7 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/error_test_util.h"
-#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/test/test_url_constants.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -60,11 +59,6 @@ std::vector<JavaScriptFeature*> FakeWebClient::GetJavaScriptFeatures(
 NSString* FakeWebClient::GetDocumentStartScriptForMainFrame(
     BrowserState* browser_state) const {
   return early_page_script_ ? early_page_script_ : @"";
-}
-
-NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
-    BrowserState* browser_state) const {
-  return web::test::GetPageScript(@"cookie_test");
 }
 
 void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {

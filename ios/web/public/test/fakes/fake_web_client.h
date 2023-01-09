@@ -41,8 +41,6 @@ class FakeWebClient : public web::WebClient {
 
   NSString* GetDocumentStartScriptForMainFrame(
       BrowserState* browser_state) const override;
-  NSString* GetDocumentStartScriptForAllFrames(
-      BrowserState* browser_state) const override;
   void PrepareErrorPage(WebState* web_state,
                         const GURL& url,
                         NSError* error,
