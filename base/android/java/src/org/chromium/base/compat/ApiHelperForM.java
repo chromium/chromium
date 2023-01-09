@@ -147,11 +147,6 @@ public final class ApiHelperForM {
         alarmManager.setExactAndAllowWhileIdle(type, triggerAtMillis, pendingIntent);
     }
 
-    /** See {@link Display#getSupportedModes() }. */
-    public static Display.Mode[] getDisplaySupportedModes(Display display) {
-        return display.getSupportedModes();
-    }
-
     /** See {@link Display.Mode#getPhysicalWidth() }. */
     public static int getModePhysicalWidth(Display.Mode mode) {
         return mode.getPhysicalWidth();

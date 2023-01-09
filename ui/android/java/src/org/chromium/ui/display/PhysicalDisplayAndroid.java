@@ -18,7 +18,6 @@ import android.view.WindowManager;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.compat.ApiHelperForS;
@@ -212,18 +211,16 @@ import java.util.List;
             isWideColorGamut = ApiHelperForO.isWideColorGamut(display);
         }
 
-        // JellyBean MR1 and later always uses RGBA_8888.
-        int pixelFormatId = (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1)
-                ? display.getPixelFormat()
-                : PixelFormat.RGBA_8888;
+        int pixelFormatId = PixelFormat.RGBA_8888;
 
-        Display.Mode currentMode = null;
+        // Note: getMode() and getSupportedModes() can return null in some situations - see
+        // crbug.com/1401322.
+        Display.Mode currentMode = display.getMode();
+        Display.Mode[] modes = display.getSupportedModes();
         List<Display.Mode> supportedModes = null;
-        // Note: getMode() can return null in some situations - see crbug.com/1401322.
-        currentMode = display.getMode();
-        supportedModes = Arrays.asList(ApiHelperForM.getDisplaySupportedModes(display));
-        assert supportedModes != null;
-        assert supportedModes.size() > 0;
+        if (modes != null && modes.length > 0) {
+            supportedModes = Arrays.asList(modes);
+        }
 
         super.update(size, density, xdpi, ydpi, bitsPerPixel(pixelFormatId),
                 bitsPerComponent(pixelFormatId), display.getRotation(), isWideColorGamut, null,
