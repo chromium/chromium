@@ -148,7 +148,6 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/sync/app_settings_model_type_controller.h"
-#include "chrome/browser/ash/sync/apps_model_type_controller.h"
 #include "chrome/browser/ash/sync/os_syncable_service_model_type_controller.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
@@ -718,15 +717,9 @@ void ChromeSyncClient::OnLocalSyncTransportDataCleared() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<syncer::ModelTypeController>
 ChromeSyncClient::CreateAppsModelTypeController() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return AppsModelTypeController::Create(
-      GetModelTypeStoreService()->GetStoreFactory(),
-      GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(), profile_);
-#else
   return std::make_unique<ExtensionModelTypeController>(
       syncer::APPS, GetModelTypeStoreService()->GetStoreFactory(),
       GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(), profile_);
-#endif
 }
 
 std::unique_ptr<syncer::ModelTypeController>
