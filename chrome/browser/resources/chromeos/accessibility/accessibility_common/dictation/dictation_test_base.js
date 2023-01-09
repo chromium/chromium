@@ -112,10 +112,10 @@ DictationE2ETestBase = class extends E2ETestBase {
     await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
 
     // By default, Dictation JS tests should use regex parsing.
-    accessibilityCommon.dictation_.disablePumpkinForTesting_();
+    accessibilityCommon.dictation_.disablePumpkinForTesting();
     // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
     // builds.
-    accessibilityCommon.dictation_.increaseNoFocusedImeTimeoutForTesting_();
+    accessibilityCommon.dictation_.increaseNoFocusedImeTimeoutForTesting();
   }
 
   /** @override */

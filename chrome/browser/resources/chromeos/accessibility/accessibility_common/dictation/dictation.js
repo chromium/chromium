@@ -531,9 +531,8 @@ export class Dictation {
   /**
    * Used to increase the NO_FOCUSED_IME_MS timeout to reduce the flakiness of
    * Dictation tests on slower builds. For testing purposes only.
-   * @private
    */
-  increaseNoFocusedImeTimeoutForTesting_() {
+  increaseNoFocusedImeTimeoutForTesting() {
     Dictation.Timeouts.NO_FOCUSED_IME_MS = 20 * 1000;
   }
 
@@ -554,8 +553,8 @@ export class Dictation {
     return newMacro;
   }
 
-  /** @private */
-  disablePumpkinForTesting_() {
+  /** Disables Pumpkin for tests that use regex-based command parsing. */
+  disablePumpkinForTesting() {
     this.speechParser_.disablePumpkinForTesting();
   }
 }

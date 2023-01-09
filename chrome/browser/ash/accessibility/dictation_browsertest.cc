@@ -141,6 +141,10 @@ static const char* kEnglishDictationCommands[] = {
     "move to the next sentence",
     "move to the previous sentence"};
 
+constexpr char kTestSupportPath[] =
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
+    "dictation/dictation_test_support.js";
+
 PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
 }
@@ -349,12 +353,14 @@ class DictationTestBase : public InProcessBrowserTest,
     ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
 
+    // Create an instance of the DictationTestSupport JS class, which can be
+    // used from these tests to interact with Dictation JS. For more
+    // information, see kTestSupportPath.
+    SetUpTestSupport();
+
     // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
     // builds.
-    std::string script = R"(
-      accessibilityCommon.dictation_.increaseNoFocusedImeTimeoutForTesting_();
-      window.domAutomationController.send("done");
-    )";
+    std::string script = "testSupport.increaseNoFocusedImeTimeout();";
     ExecuteAccessibilityCommonScript(script);
 
     // Dictation will request a Pumpkin install when it starts up. Wait for
@@ -367,6 +373,17 @@ class DictationTestBase : public InProcessBrowserTest,
       content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
 
     InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void SetUpTestSupport() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath source_dir;
+    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_dir));
+    auto test_support_path = source_dir.AppendASCII(kTestSupportPath);
+    std::string script;
+    ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
+        << test_support_path;
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void SetUpPumpkinDir() {
@@ -394,18 +411,8 @@ class DictationTestBase : public InProcessBrowserTest,
       return;
     }
 
-    std::string error_message = "Waiting for Pumpkin Tagger to initialize";
-    SuccessWaiter(
-        base::BindLambdaForTesting([&]() { return GetPumpkinTaggerReady(); }),
-        error_message)
-        .Wait();
-  }
-
-  bool GetPumpkinTaggerReady() {
-    std::string script =
-        "window.domAutomationController.send(String(accessibilityCommon."
-        "dictation_.speechParser_.pumpkinParseStrategy_.pumpkinTaggerReady_));";
-    return "true" == ExecuteAccessibilityCommonScript(script);
+    std::string script = "testSupport.WaitForPumpkinTaggerReady();";
+    ExecuteAccessibilityCommonScript(script);
   }
 
   // Routers to SpeechRecognitionTestHelper methods.
@@ -499,34 +506,14 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   void WaitForEditableValue(const std::string& value) {
-    std::string error_message = "Still waiting for text area value: " + value;
-    SuccessWaiter(base::BindLambdaForTesting(
-                      [&]() { return value == GetEditableValue(); }),
-                  error_message)
-        .Wait();
+    std::string script = base::StringPrintf(
+        "testSupport.waitForEditableValue(`%s`);", value.c_str());
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void WaitForFocusHandler() {
-    std::string error_message = "Still waiting for FocusHandler";
-    std::string script = R"(
-      if (accessibilityCommon.dictation_.focusHandler_.isReadyForTesting()) {
-        window.domAutomationController.send("ready");
-      } else {
-        window.domAutomationController.send("not ready");
-      }
-    )";
-    SuccessWaiter(
-        base::BindLambdaForTesting([&]() {
-          std::string result =
-              extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-                  /*context=*/browser()->profile(),
-                  /*extension_id=*/
-                  extension_misc::kAccessibilityCommonExtensionId,
-                  /*script=*/script);
-          return result == "ready";
-        }),
-        error_message)
-        .Wait();
+    std::string script = "testSupport.waitForFocusHandler();";
+    ExecuteAccessibilityCommonScript(script);
   }
 
   void ToggleDictationWithKeystroke() {
@@ -562,10 +549,7 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   void DisablePumpkin() {
-    std::string script = R"(
-      accessibilityCommon.dictation_.disablePumpkinForTesting_();
-      window.domAutomationController.send("done");
-    )";
+    std::string script = "testSupport.disablePumpkin();";
     ExecuteAccessibilityCommonScript(script);
   }
 
