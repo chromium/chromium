@@ -350,7 +350,7 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
     network_detailed_network_view()->network_list()->ReorderChildView(
         connection_warning_, index++);
   } else if (connected_vpn_guid_.empty() && !using_proxy) {
-    RemoveAndResetViewIfExists(&connection_warning_);
+    HideConnectionWarning();
   }
 
   return index;
@@ -398,6 +398,13 @@ void NetworkListViewControllerImpl::MaybeShowConnectionWarningManagedIcon(
 void NetworkListViewControllerImpl::OnGetManagedPropertiesResult(
     const std::string& guid,
     ManagedPropertiesPtr properties) {
+  // Bail out early if no connection warning is being shown.
+  // This could happen if the connection warning is hidden while the async
+  // GetManagedProperties step is in progress.
+  if (!connection_warning_) {
+    return;
+  }
+
   // Check if the proxy is managed.
   const NetworkStateProperties* default_network = GetDefaultNetwork();
   if (default_network && default_network->guid == guid) {
@@ -853,6 +860,13 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
   connection_warning_ =
       network_detailed_network_view()->network_list()->AddChildView(
           std::move(connection_warning));
+}
+
+void NetworkListViewControllerImpl::HideConnectionWarning() {
+  // If `connection_warning_icon_` existed, it must be cleared first because
+  // `connection_warning_` owns it.
+  RemoveAndResetViewIfExists(&connection_warning_icon_);
+  RemoveAndResetViewIfExists(&connection_warning_);
 }
 
 void NetworkListViewControllerImpl::UpdateScanningBarAndTimer() {

@@ -159,6 +159,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // secure DNS template URIs contain identifiers.
   void ShowConnectionWarning(bool show_managed_icon);
 
+  // Hides a connection warning, if visible.
+  void HideConnectionWarning();
+
   // Determines whether a scan for WiFi and Tether networks should be requested
   // and updates the scanning bar accordingly.
   void UpdateScanningBarAndTimer();

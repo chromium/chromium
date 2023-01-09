@@ -1319,6 +1319,53 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconProxy) {
   EXPECT_TRUE(IsManagedIcon(icon));
 }
 
+// Disconnect and re-connect a network that shows a warning.
+// Regression test for b/263803248.
+TEST_P(NetworkListViewControllerTest, ConnectionWarningDisconnectReconnect) {
+  EXPECT_THAT(GetConnectionWarning(), IsNull());
+
+  SetDefaultNetworkForTesting(GetDefaultNetworkWithProxy(kWifiName));
+  SetManagedNetworkPropertiesForTesting(GetManagedNetworkPropertiesWithProxy(
+      /*is_managed=*/true));
+  AddWifiDevice();
+
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
+      GetConnectionLabelView()->GetText());
+
+  {
+    views::ImageView* icon = GetConnectionWarningIcon();
+    ASSERT_THAT(icon, NotNull());
+    EXPECT_TRUE(IsManagedIcon(icon));
+  }
+
+  // Disconnect the network and check that no warning is shown.
+  SetDefaultNetworkForTesting(nullptr);
+  SetManagedNetworkPropertiesForTesting(nullptr);
+  network_state_helper()->ClearDevices();
+  EXPECT_THAT(GetConnectionWarning(), IsNull());
+
+  // Reconnect the network. This should not crash (regression test for
+  // b/263803248). Afterwards, the warning should be shown again.
+  SetDefaultNetworkForTesting(GetDefaultNetworkWithProxy(kWifiName));
+  SetManagedNetworkPropertiesForTesting(GetManagedNetworkPropertiesWithProxy(
+      /*is_managed=*/true));
+  AddWifiDevice();
+
+  ASSERT_THAT(GetConnectionWarning(), NotNull());
+  ASSERT_THAT(GetConnectionLabelView(), NotNull());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MANAGED_WARNING),
+      GetConnectionLabelView()->GetText());
+  {
+    views::ImageView* icon = GetConnectionWarningIcon();
+    ASSERT_THAT(icon, NotNull());
+    EXPECT_TRUE(IsManagedIcon(icon));
+  }
+}
+
 TEST_P(NetworkListViewControllerTest,
        ConnectionWarningDnsTemplateUriWithIdentifier) {
   EXPECT_THAT(GetConnectionWarning(), IsNull());
