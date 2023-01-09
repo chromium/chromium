@@ -27,7 +27,9 @@ var MockInputMethodPrivate = {
    */
   setCurrentInputMethod(inputMethodId, callback) {
     MockInputMethodPrivate.currentInputMethod_ = inputMethodId;
-    callback && callback();
+    if (callback) {
+      callback();
+    }
   },
 
   // Methods for testing. //

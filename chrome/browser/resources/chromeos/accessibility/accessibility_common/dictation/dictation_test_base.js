@@ -113,6 +113,9 @@ DictationE2ETestBase = class extends E2ETestBase {
 
     // By default, Dictation JS tests should use regex parsing.
     accessibilityCommon.dictation_.disablePumpkinForTesting_();
+    // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
+    // builds.
+    accessibilityCommon.dictation_.increaseNoFocusedImeTimeoutForTesting_();
   }
 
   /** @override */
