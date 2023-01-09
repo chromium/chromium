@@ -244,6 +244,10 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     const learnMoreButton =
         page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')!;
     assertTrue(isVisible(learnMoreButton));
+    assertEquals(
+        loadTimeData.getString(
+            'topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel'),
+        learnMoreButton.getAttribute('aria-label'));
     learnMoreButton.click();
     await flushTasks();
 
@@ -529,6 +533,10 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     const learnMoreButton =
         page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')!;
     assertTrue(isVisible(learnMoreButton));
+    assertEquals(
+        loadTimeData.getString(
+            'fledgePageCurrentSitesDescriptionLearnMoreA11yLabel'),
+        learnMoreButton.getAttribute('aria-label'));
     learnMoreButton.click();
     await flushTasks();
 

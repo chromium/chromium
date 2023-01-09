@@ -1936,6 +1936,9 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="Third bullet on 'Learn more' dialog in the Topics preferences page.">
     Integer convallis congue ex non vehicula. Nam vel vestibulum ante, ut consectetur ex. Duis semper lectus velit, id porttitor massa mattis sit amet. Integer pulvinar non nisi et tincidunt. Proin aliquam turpis massa, eget tincidunt orci vulputate vitae.
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_A11Y_LABEL" translateable="false" desc="A11y label for the clickable section of the description ('Learn more') for the current Topics list in the Topics preferences page.">
+    A11y label. Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit.
+  </message>
 
   <!-- Privacy Sandbox Settings 4 - Fledge Page -->
   <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" translateable="false" desc="Title for the Fledge preferences page.">
@@ -1994,6 +1997,9 @@
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="Third bullet on 'Learn more' dialog in the FLEDGE preferences page.">
     In hac habitasse platea dictumst. Mauris sit amet nibh sollicitudin, fermentum quam vel, pharetra nisi. Nam a ornare ligula, nec auctor enim. Quisque dictum convallis nibh, non dictum nunc efficitur vitae.
+  </message>
+  <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_LEARN_MORE_A11Y_LABEL" translateable="false" desc="A11y label for the clickable section of the description ('Learn more') for the current sites list in the FLEDGE preferences page.">
+    A11y label. Nullam sollicitudin elit vitae hendrerit suscipit. Nunc mi leo, placerat sit amet lorem non, semper convallis sapien.
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Ad Measurement Page -->
