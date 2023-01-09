@@ -198,7 +198,7 @@
 <translation id="1957958912175573503">設定語言</translation>
 <translation id="1961239773406905488">隱藏咗攝錄機預覽</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
-<translation id="1962969542251276847">鎖定螢幕</translation>
+<translation id="1962969542251276847">上鎖畫面</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好：</translation>
 <translation id="1978498689038657292">文字輸入</translation>
@@ -699,7 +699,7 @@
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4778095205580009397">「Google 助理」不適用於示範工作階段。</translation>
 <translation id="4789348252524569426">無法安裝語音檔案，裝置需要更新。請重新開機，然後再試一次。</translation>
-<translation id="479989351350248267">search</translation>
+<translation id="479989351350248267">搜尋</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4814539958450445987">登入畫面</translation>
 <translation id="481455355267255546">即將舉行的活動</translation>
@@ -781,7 +781,7 @@
 <translation id="5283099933536931082">「<ph name="APP_ITEM_TITLE" />」有新嘅要求需要你處理。</translation>
 <translation id="5283198616748585639">增加 1 分鐘</translation>
 <translation id="528468243742722775">結束</translation>
-<translation id="5286194356314741248">掃描中</translation>
+<translation id="5286194356314741248">正在掃瞄</translation>
 <translation id="5293671101077843611">今天沒有任何活動</translation>
 <translation id="5297423144044956168">找不到流動裝置</translation>
 <translation id="5297704307811127955">已關閉</translation>
@@ -1336,7 +1336,7 @@
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">前一個選單</translation>
 <translation id="830868413617744215">測試版</translation>
-<translation id="8314772463905284467">大寫鍵已啟用</translation>
+<translation id="8314772463905284467">啟用咗 Caps Lock 鍵</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">揀咗「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8351131234907093545">建立筆記</translation>

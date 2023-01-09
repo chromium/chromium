@@ -36,7 +36,7 @@
 <translation id="1619887657840448962">為鞏固 Chrome 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。您亦可移除不希望 Chrome 列在興趣清單中的項目。</translation>
 <translation id="1628000112320670027">取得 Chrome 相關說明</translation>
-<translation id="1640672724030957280">下載中…</translation>
+<translation id="1640672724030957280">正在下載…</translation>
 <translation id="1662146548738125461">關於 ChromeOS Flex</translation>
 <translation id="1674870198290878346">在 Chrome 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome 無法讀取及寫入數據目錄：
