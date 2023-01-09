@@ -55,7 +55,7 @@
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
-<translation id="2241634353105152135">只有這一次</translation>
+<translation id="2241634353105152135">只此一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
@@ -185,7 +185,7 @@
 <translation id="5039804452771397117">允許</translation>
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
 <translation id="5050380848339752099">此網站即將退出無痕模式並與外部應用程式分享資料。</translation>
-<translation id="5063480226653192405">用量</translation>
+<translation id="5063480226653192405">使用狀況</translation>
 <translation id="5082281938627763039">此操作會刪除 <ph name="FPS_MEMBER" /> 和 <ph name="FPS_OWNER" /> 網站群組中網站的 Cookie 和其他網站資料</translation>
 <translation id="5091013926750941408">流動網站</translation>
 <translation id="509133520954049755">要求桌面電腦檢視模式</translation>
@@ -273,7 +273,7 @@
 <translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
 <translation id="6722828510648505498">封鎖來自身分服務的登入提示。</translation>
-<translation id="6746124502594467657">下移</translation>
+<translation id="6746124502594467657">向下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
 <translation id="6766622839693428701">向下掃就可以閂咗佢。</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -365,7 +365,7 @@
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="857943718398505171">允許 (建議)</translation>
-<translation id="8609465669617005112">上移</translation>
+<translation id="8609465669617005112">向上移</translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="868929229000858085">搜尋您的聯絡人</translation>
 <translation id="8702612070107455751">所有離線資料將會被清除</translation>

@@ -119,7 +119,7 @@
 <translation id="16777221443363124">選單列</translation>
 <translation id="1680732992526857724">「<ph name="NAME" />」已開啟</translation>
 <translation id="1686878109459149415">金色</translation>
-<translation id="1690731385917361335">沒有任何項目</translation>
+<translation id="1690731385917361335">沒有項目</translation>
 <translation id="1700517974991662022">己經去過</translation>
 <translation id="1714116687360794776">計量器</translation>
 <translation id="1717267964664691695">觸控教學課程已完成</translation>
@@ -136,7 +136,7 @@
 <translation id="180203835522132923">搜尋 + O，然後按 W</translation>
 <translation id="1810107444790159527">清單方塊</translation>
 <translation id="1812527064848182527">橫向</translation>
-<translation id="1829244130665387512">在網頁中尋找</translation>
+<translation id="1829244130665387512">喺網頁度搵</translation>
 <translation id="1834891354138622109">欄</translation>
 <translation id="1846771122725914429">藍牙點字顯示器</translation>
 <translation id="1852018405765032699">以四指輕按螢幕，即可開啟及關閉 ChromeVox 選單。這些選單包含關於指令和快速鍵的實用資料。開啟選單後，您可以單指滑動來瀏覽各個項目，輕按兩下即可啟用項目。如要繼續，請以四指輕按螢幕。</translation>
@@ -563,7 +563,7 @@
 <translation id="4784215347943747396">使用 1 或 2 種開關設定就能控制裝置</translation>
 <translation id="4786285211967466855">冇上一個第 1 級標題</translation>
 <translation id="4787577491510559358">讀出目前項目的格式</translation>
-<translation id="479989351350248267">search</translation>
+<translation id="479989351350248267">搜尋</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="481165870889056555">朗讀目前網頁的標題</translation>
 <translation id="4815668758102003883">淺綠松石色</translation>
@@ -603,7 +603,7 @@
 <translation id="5020651427400641814">啟用語音記錄功能</translation>
 <translation id="5041394372352067729">將點字顯示畫面移至頁首</translation>
 <translation id="5042770794184672516">調高說話音量</translation>
-<translation id="5042992464904238023">網頁內容</translation>
+<translation id="5042992464904238023">網絡內容</translation>
 <translation id="5045870649377683106">現在，尋找 Control 鍵正上方的左側 Shift 鍵。如要繼續，請按下左側 Shift 鍵。</translation>
 <translation id="5050015258024679800">上一個第 4 級標題</translation>
 <translation id="5054047268577924192">上一個清單項目</translation>

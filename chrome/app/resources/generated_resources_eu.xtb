@@ -2231,7 +2231,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3008272652534848354">Berrezarri baimenak</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Gaur wifi-sare batera konektatzeko eta eguneratze bat deskargatzeko eskatzen du <ph name="MANAGER" /> domeinuak. Bestela, deskarga ezazu neurtutako konexio batetik (baliteke zerbait ordaindu behar izatea).}other{Epemuga baino lehen wifi-sare batera konektatzeko eta eguneratze bat deskargatzeko eskatzen du <ph name="MANAGER" /> domeinuak. Bestela, deskargatu eguneratzea neurtutako konexio batetik (baliteke zerbait ordaindu behar izatea).}}</translation>
 <translation id="3009178788565917040">Irteera</translation>
-<translation id="3009300415590184725">Ziur mugikorreko datuen zerbitzua konfiguratzeko prozesua bertan behera utzi nahi duzula?</translation>
+<translation id="3009300415590184725">Ziur mugikorretarako datu-zerbitzua konfiguratzeko prozesua bertan behera utzi nahi duzula?</translation>
 <translation id="3009779501245596802">Datu-base indexatuak</translation>
 <translation id="3010234549896186761">{COUNT,plural, =0{Pasahitzek konplexuak dirudite}=1{{COUNT} pasahitz ez da segurua}other{{COUNT} pasahitz ez dira seguruak}}</translation>
 <translation id="3010279545267083280">Pasahitza ezabatu da</translation>
@@ -6436,7 +6436,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7019805045859631636">Bizkorra</translation>
 <translation id="7022562585984256452">Orri nagusia ezarri duzu.</translation>
 <translation id="7025082428878635038">Keinuekin nabigatzeko modu berri bat aurkeztu nahi dizugu</translation>
-<translation id="7025190659207909717">Datu-konexioaren zerbitzu-kudeaketa</translation>
+<translation id="7025190659207909717">Mugikorretarako datu-zerbitzuaren kudeaketa</translation>
 <translation id="7025895441903756761">Segurtasuna eta pribatutasuna</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Ireki guztiak &amp;ezkutuko moduko leiho batean}=1{Ireki &amp;ezkutuko moduko leiho batean}other{Ireki guztiak ({COUNT}) &amp;ezkutuko moduko leiho batean}}</translation>
 <translation id="7029307918966275733">Crostini ez dago instalatuta. Zerrendak ikusi nahi badituzu, instalatu Crostini.</translation>

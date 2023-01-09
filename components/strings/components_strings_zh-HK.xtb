@@ -118,7 +118,7 @@
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Chrome 設定</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1264309058268477500">替用匣</translation>
-<translation id="1264974993859112054">運動資訊</translation>
+<translation id="1264974993859112054">運動</translation>
 <translation id="1266469291454105242">裝置解鎖</translation>
 <translation id="1268480293435976622">Chinese #7 信封</translation>
 <translation id="1269516672602708785">在「Google 協作平台」中快速建立新版網站</translation>
@@ -173,7 +173,7 @@
 <translation id="1374692235857187091">Index-4x6 (明信片)</translation>
 <translation id="1375198122581997741">關於版本</translation>
 <translation id="1376836354785490390">顯示較少</translation>
-<translation id="1377321085342047638">卡號</translation>
+<translation id="1377321085342047638">卡號碼</translation>
 <translation id="1380591466760231819">三折頁</translation>
 <translation id="138218114945450791">淺藍色</translation>
 <translation id="1382194467192730611">系統管理員允許使用的 USB 裝置</translation>
@@ -267,7 +267,7 @@
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
 <translation id="1586541204584340881">您已安裝的擴充程式</translation>
-<translation id="1588438908519853928">一般</translation>
+<translation id="1588438908519853928">正常</translation>
 <translation id="1592005682883173041">本地資料存取</translation>
 <translation id="1594030484168838125">選擇</translation>
 <translation id="1596296697375291157">恐怖、犯罪和懸疑電影</translation>
@@ -282,7 +282,7 @@
 <translation id="1622571349153632031">素食</translation>
 <translation id="1623104350909869708">防止這個網頁產生其他對話方塊</translation>
 <translation id="16338877384480380">Architecture-B</translation>
-<translation id="1634828734222219955">全部</translation>
+<translation id="1634828734222219955">總計</translation>
 <translation id="163669211644121865">稅務籌劃</translation>
 <translation id="1638780421120290329">無法儲存付款卡</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -670,7 +670,7 @@
 <translation id="266935134738038806">瀏覽網站</translation>
 <translation id="2672201172023654893">您的瀏覽器未受管理。</translation>
 <translation id="2673968385134502798">遊戲</translation>
-<translation id="2674170444375937751">確定要從你的記錄中刪除這些網頁嗎？</translation>
+<translation id="2674170444375937751">確定要從記錄中刪除這些頁面嗎？</translation>
 <translation id="2674804415323431591">隱藏建議</translation>
 <translation id="2677696497921480781">生日和命名日</translation>
 <translation id="2677748264148917807">離開</translation>
@@ -1069,7 +1069,7 @@
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機報告功能停用時發生的當機不會在這裡顯示。</translation>
 <translation id="3760561303380396507">要使用 Windows Hello 取代 CVC 嗎？</translation>
 <translation id="3761153679507778975">音樂和舞蹈遊戲</translation>
-<translation id="3761171036307311438">信用卡持有人姓名：</translation>
+<translation id="3761171036307311438">持卡人姓名：</translation>
 <translation id="3761718714832595332">隱藏狀態</translation>
 <translation id="3765588406864124894">出紙槽 9</translation>
 <translation id="3767485424735936570">管理員政策不建議將此內容複製並貼到 <ph name="VM_NAME" /></translation>
@@ -1388,7 +1388,7 @@
 <translation id="4627675673814409125">此政策無法設定於 Chrome 設定檔層級，因此會被忽略。</translation>
 <translation id="4628948037717959914">相片</translation>
 <translation id="4631649115723685955">已連結現金回贈</translation>
-<translation id="4636930964841734540">資訊</translation>
+<translation id="4636930964841734540">資料</translation>
 <translation id="4638670630777875591">Chromium 無痕模式</translation>
 <translation id="464342062220857295">搜尋功能</translation>
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
@@ -1515,7 +1515,7 @@
 <translation id="4936134414789135531">找不到已插入的<ph name="VALUE_NAME" />。</translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4940163644868678279">Chrome 無痕模式</translation>
-<translation id="4943872375798546930">沒有結果</translation>
+<translation id="4943872375798546930">搵唔到結果</translation>
 <translation id="4943933359574417591">短訊和即時通訊</translation>
 <translation id="4950898438188848926">分頁切換按鈕，㩒一下 Enter 鍵就可以轉去開以下嘅分頁：<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">動作</translation>
@@ -2044,7 +2044,7 @@
 <translation id="6340739886198108203">當螢幕上出現機密內容時，管理員政策不建議擷取螢幕截圖或錄製內容：</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理員政策不建議上載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議上載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
-<translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
+<translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
 <translation id="6355392890578844978">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">我需要進一步資料</translation>
@@ -2170,7 +2170,7 @@
 <translation id="6698381487523150993">已建立：</translation>
 <translation id="6702919718839027939">簡報</translation>
 <translation id="6704458454638854812">屬性已設定為「custom_size」，請將名稱設定為「自訂」。</translation>
-<translation id="6709133671862442373">新聞內容</translation>
+<translation id="6709133671862442373">新聞</translation>
 <translation id="6709888928011386878">樂器</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
@@ -2567,7 +2567,7 @@
 <translation id="7679367271685653708">在 Chrome 設定中查看並管理您的瀏覽記錄</translation>
 <translation id="7679947978757153706">棒球</translation>
 <translation id="7681273392938116652">夢幻球隊經理人遊戲</translation>
-<translation id="7682287625158474539">寄送地址</translation>
+<translation id="7682287625158474539">運送</translation>
 <translation id="7682451652090915298">欖球</translation>
 <translation id="7687186412095877299">在付款表格中填入已儲存的付款方法</translation>
 <translation id="7687305263118037187">重試逾時</translation>
@@ -2761,7 +2761,7 @@
 <translation id="8238581221633243064">在新無痕式分頁中開啟網頁</translation>
 <translation id="8241707690549784388">您尋找的網頁使用了您輸入的資料。返回該頁會重複您剛才的動作。您確定要繼續嗎？</translation>
 <translation id="8241712895048303527">禁止此網站顯示廣告</translation>
-<translation id="8242426110754782860">Proceed</translation>
+<translation id="8242426110754782860">繼續</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8249463483885748674">資格測驗和入學考試</translation>
 <translation id="8252991034201168845">管理無障礙設定按鈕，㩒一下 Enter 鍵就可以喺 Chrome OS 設定度個人化您嘅無障礙工具</translation>
@@ -3075,7 +3075,7 @@
 <translation id="9119042192571987207">已上載</translation>
 <translation id="9122954576417194280">商品和期貨買賣</translation>
 <translation id="9128016270925453879">載入咗政策</translation>
-<translation id="9128870381267983090">連線至網路</translation>
+<translation id="9128870381267983090">連接網絡</translation>
 <translation id="9131119348384879525">要擷取機密內容嗎？</translation>
 <translation id="9136861683332321024">豪華房車</translation>
 <translation id="9137013805542155359">顯示原文</translation>

@@ -26,7 +26,7 @@
 <translation id="1632539827495546968">如果您只想使用此帳戶一次，可以在 Chromium 瀏覽器中使用<ph name="GUEST_LINK_BEGIN" />訪客模式<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
 
 您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
-<translation id="1640672724030957280">下載中…</translation>
+<translation id="1640672724030957280">正在下載…</translation>
 <translation id="1708666629004767631">更新、更安全的 Chromium 版本現已推出。</translation>
 <translation id="17264556997921157">您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chromium 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
 <translation id="1774152462503052664">讓 Chromium 在背景執行</translation>
@@ -146,7 +146,7 @@
 <translation id="4230135487732243613">要將您的 Chromium 數據連結至這個帳戶嗎？</translation>
 <translation id="4271805377592243930">取得 Chromium 相關說明</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
-<translation id="4304713468139749426">密碼管理員</translation>
+<translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334294535648607276">下載完成。</translation>
 <translation id="439358628917130594">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Chromium 作業系統條款》。</translation>
 <translation id="4407044323746248786">仍要結束 Chromium 嗎？</translation>
