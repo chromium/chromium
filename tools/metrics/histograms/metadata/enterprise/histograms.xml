@@ -1630,10 +1630,10 @@ chromium-metrics-reviews@google.com.
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
-    Whether loading of device policy from file on an enterprise-enrolled
-    (checked against install_attributes.pb) Chrome OS device yields an
-    enterprise policy with a DM token. Filled once during session startup, after
-    first successful device policy read.
+    Whether loading of device policies from file on an enterprise-enrolled
+    (checked against install_attributes.pb) Chrome OS device yields a PolicyData
+    message with a DMToken. Filled once during session startup, after first
+    successful device policy read.
   </summary>
 </histogram>
 
