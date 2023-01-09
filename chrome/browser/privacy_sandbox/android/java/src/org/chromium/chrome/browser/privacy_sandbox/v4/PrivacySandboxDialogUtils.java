@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.privacy_sandbox.v4;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
-import android.text.style.StyleSpan;
+import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -105,7 +105,8 @@ public class PrivacySandboxDialogUtils {
         SpannableString spannableString =
                 SpanApplier.applySpans(context.getResources().getString(stringRes),
                         new SpanApplier.SpanInfo("<b>", "</b>",
-                                new StyleSpan(R.style.TextAppearance_TextMediumThick_Secondary)));
+                                new TextAppearanceSpan(context,
+                                        R.style.TextAppearance_TextMediumThick_Secondary)));
         spannableString.setSpan(new ChromeBulletSpan(context), 0, spannableString.length(), 0);
         view.setText(spannableString);
     }
