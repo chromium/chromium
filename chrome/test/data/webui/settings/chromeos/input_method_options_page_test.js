@@ -105,11 +105,11 @@ suite('InputMethodOptionsPage', function() {
     assertEquals(
         options[0].querySelector('.start').textContent.trim(),
         'Auto-correction');
-    const select = options[0].querySelector('select');
-    assertEquals(select.value, '0');
-    select.value = '1';
-    select.dispatchEvent(new CustomEvent('change'));
-    await waitAfterNextRender(select);
+    const autoCorrectToggleButton = options[0].querySelector('cr-toggle');
+    assertEquals(autoCorrectToggleButton.checked, false);
+    autoCorrectToggleButton.click();
+    await waitAfterNextRender(autoCorrectToggleButton);
+    assertEquals(autoCorrectToggleButton.checked, true);
     assertEquals(
         optionsPage.getPref(PREFS_KEY)
             .value['xkb:us::eng']['physicalKeyboardAutoCorrectionLevel'],
