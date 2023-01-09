@@ -198,13 +198,13 @@ InstanceBuilder::~InstanceBuilder() {
 void InstanceBuilder::AppendOffersForServices(
     const std::vector<std::string>& services) {
   for (const auto& service_name : services) {
-    dynamic_offers_.push_back(fcdecl::Offer::WithProtocol(
-        std::move(fcdecl::OfferProtocol()
-                      .set_source(fcdecl::Ref::WithParent({}))
-                      .set_source_name(service_name)
-                      .set_target_name(service_name)
-                      .set_dependency_type(fcdecl::DependencyType::STRONG)
-                      .set_availability(fcdecl::Availability::REQUIRED))));
+    dynamic_offers_.push_back(fcdecl::Offer::WithProtocol(std::move(
+        fcdecl::OfferProtocol()
+            .set_source(fcdecl::Ref::WithParent({}))
+            .set_source_name(service_name)
+            .set_target_name(service_name)
+            .set_dependency_type(fcdecl::DependencyType::STRONG)
+            .set_availability(fcdecl::Availability::SAME_AS_TARGET))));
   }
 }
 
