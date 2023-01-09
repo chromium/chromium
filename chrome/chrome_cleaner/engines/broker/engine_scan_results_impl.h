@@ -5,7 +5,7 @@
 #ifndef CHROME_CHROME_CLEANER_ENGINES_BROKER_ENGINE_SCAN_RESULTS_IMPL_H_
 #define CHROME_CHROME_CLEANER_ENGINES_BROKER_ENGINE_SCAN_RESULTS_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
 #include "chrome/chrome_cleaner/mojom/engine_sandbox.mojom.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"

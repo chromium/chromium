@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

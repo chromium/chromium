@@ -5,7 +5,7 @@
 #ifndef CHROME_SERVICES_QRCODE_GENERATOR_PUBLIC_CPP_QRCODE_GENERATOR_SERVICE_H_
 #define CHROME_SERVICES_QRCODE_GENERATOR_PUBLIC_CPP_QRCODE_GENERATOR_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

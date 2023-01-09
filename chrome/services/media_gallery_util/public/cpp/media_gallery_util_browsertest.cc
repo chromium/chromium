@@ -4,7 +4,7 @@
 
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"

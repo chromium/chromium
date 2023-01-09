@@ -5,7 +5,7 @@
 #ifndef CHROME_UPDATER_APP_APP_H_
 #define CHROME_UPDATER_APP_APP_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "chrome/updater/updater_scope.h"

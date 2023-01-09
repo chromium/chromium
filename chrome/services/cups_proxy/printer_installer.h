@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 

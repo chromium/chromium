@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
 #include "third_party/nearby/src/connections/params.h"

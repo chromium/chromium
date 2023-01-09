@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/test/chromedriver/net/pipe_handler.h"
 #include "net/base/io_buffer.h"

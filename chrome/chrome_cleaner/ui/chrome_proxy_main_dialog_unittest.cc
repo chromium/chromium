@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"

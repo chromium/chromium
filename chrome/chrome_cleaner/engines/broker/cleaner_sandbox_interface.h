@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 #include "chrome/chrome_cleaner/os/file_remover_api.h"
 #include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"

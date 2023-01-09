@@ -4,7 +4,7 @@
 
 #include "ui/base/interaction/interaction_test_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"

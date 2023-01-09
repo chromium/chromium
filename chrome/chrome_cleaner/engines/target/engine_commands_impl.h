@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/chrome_cleaner/engines/target/engine_delegate.h"

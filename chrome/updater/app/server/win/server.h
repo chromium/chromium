@@ -7,8 +7,8 @@
 
 #include <windows.h>
 
-#include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/app/app.h"

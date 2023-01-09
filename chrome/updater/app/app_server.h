@@ -5,8 +5,8 @@
 #ifndef CHROME_UPDATER_APP_APP_SERVER_H_
 #define CHROME_UPDATER_APP_APP_SERVER_H_
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"

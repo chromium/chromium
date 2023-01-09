@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/test/chromedriver/log_replay/log_replay_socket.h"
 #include "chrome/test/chromedriver/net/sync_websocket_impl.h"

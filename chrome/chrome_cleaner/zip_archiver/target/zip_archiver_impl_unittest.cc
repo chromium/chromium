@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/constants/quarantine_constants.h"

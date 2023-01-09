@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/run_loop.h"

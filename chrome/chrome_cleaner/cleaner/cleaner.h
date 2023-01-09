@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
 

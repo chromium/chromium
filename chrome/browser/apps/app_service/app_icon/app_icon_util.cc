@@ -4,8 +4,8 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"

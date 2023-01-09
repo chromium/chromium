@@ -4,7 +4,7 @@
 
 #include "chrome/updater/update_service_internal_impl_inactive.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"

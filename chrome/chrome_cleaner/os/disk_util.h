@@ -14,8 +14,8 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/os/disk_util_types.h"

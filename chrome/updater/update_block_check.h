@@ -5,7 +5,7 @@
 #ifndef CHROME_UPDATER_UPDATE_BLOCK_CHECK_H_
 #define CHROME_UPDATER_UPDATE_BLOCK_CHECK_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/updater/update_service.h"
 
 namespace updater {

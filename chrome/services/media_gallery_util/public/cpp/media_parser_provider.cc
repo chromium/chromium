@@ -4,7 +4,7 @@
 
 #include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "content/public/browser/service_process_host.h"

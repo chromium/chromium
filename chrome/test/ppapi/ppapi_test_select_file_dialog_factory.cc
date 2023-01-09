@@ -4,7 +4,7 @@
 
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"

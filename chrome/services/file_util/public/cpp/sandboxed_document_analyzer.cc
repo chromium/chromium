@@ -5,8 +5,8 @@
 #include "chrome/services/file_util/public/cpp/sandboxed_document_analyzer.h"
 
 #include <utility>
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/task/thread_pool.h"

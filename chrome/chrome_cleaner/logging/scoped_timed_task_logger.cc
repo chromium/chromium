@@ -4,7 +4,7 @@
 
 #include "chrome/chrome_cleaner/logging/scoped_timed_task_logger.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 
 namespace chrome_cleaner {

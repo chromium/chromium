@@ -5,7 +5,7 @@
 #ifndef CHROME_UPDATER_CHECK_FOR_UPDATES_TASK_H_
 #define CHROME_UPDATER_CHECK_FOR_UPDATES_TASK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"

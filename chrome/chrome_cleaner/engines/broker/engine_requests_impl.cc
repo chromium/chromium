@@ -13,9 +13,9 @@
 #include <set>
 #include <utility>
 
-#include "base/callback.h"
-#include "base/task/thread_pool.h"
+#include "base/functional/callback.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/chrome_cleaner/engines/broker/scanner_sandbox_interface.h"
 #include "chrome/chrome_cleaner/os/registry.h"
 #include "mojo/public/cpp/system/platform_handle.h"

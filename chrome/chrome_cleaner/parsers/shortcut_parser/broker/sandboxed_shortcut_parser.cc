@@ -8,11 +8,11 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_handle.h"

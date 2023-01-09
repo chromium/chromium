@@ -4,8 +4,8 @@
 
 #include "chrome/chrome_cleaner/engines/broker/engine_client.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/chrome_cleaner/engines/common/engine_result_codes.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"

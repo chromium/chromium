@@ -4,7 +4,7 @@
 
 #include <tuple>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"

@@ -4,9 +4,9 @@
 
 #include "chrome/services/sharing/nearby/platform/recursive_mutex.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/services/sharing/webrtc/p2p_socket_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "chrome/services/sharing/webrtc/p2p_socket_client_delegate.h"

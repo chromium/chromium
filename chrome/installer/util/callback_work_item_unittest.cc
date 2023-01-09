@@ -4,8 +4,8 @@
 
 #include "chrome/installer/util/callback_work_item.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

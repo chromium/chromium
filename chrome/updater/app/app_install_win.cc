@@ -13,10 +13,10 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -49,12 +49,12 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/install_progress_observer.h"
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/util/win_util.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"

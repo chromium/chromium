@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 

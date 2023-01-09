@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"

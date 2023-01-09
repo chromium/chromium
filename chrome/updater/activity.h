@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/activity_data_service.h"
 

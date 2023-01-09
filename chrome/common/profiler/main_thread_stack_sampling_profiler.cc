@@ -4,8 +4,8 @@
 
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler.h"

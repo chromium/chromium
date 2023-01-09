@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/session_thread_map.h"

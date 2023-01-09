@@ -4,7 +4,7 @@
 
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/test_data_source.h"
 #include "chrome/common/webui_url_constants.h"

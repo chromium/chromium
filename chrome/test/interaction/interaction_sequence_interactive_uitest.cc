@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/chromeos_buildflags.h"

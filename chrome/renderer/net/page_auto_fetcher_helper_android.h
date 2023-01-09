@@ -5,7 +5,7 @@
 #ifndef CHROME_RENDERER_NET_PAGE_AUTO_FETCHER_HELPER_ANDROID_H_
 #define CHROME_RENDERER_NET_PAGE_AUTO_FETCHER_HELPER_ANDROID_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

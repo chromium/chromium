@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/common/importer/importer_data_types.h"
 #include "components/favicon_base/favicon_usage_data.h"
 

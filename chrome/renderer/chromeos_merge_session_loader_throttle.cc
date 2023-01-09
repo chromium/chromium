@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "net/url_request/redirect_info.h"

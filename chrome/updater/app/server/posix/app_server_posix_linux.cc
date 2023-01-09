@@ -4,7 +4,7 @@
 
 #include "chrome/updater/app/server/posix/app_server_posix.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/updater/registration_data.h"
 
 namespace updater {

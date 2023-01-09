@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/printing/pdf_thumbnailer.h"

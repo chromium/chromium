@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/credential_provider/extension/task.h"
 #include "net/base/backoff_entry.h"

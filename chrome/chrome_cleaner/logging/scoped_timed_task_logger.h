@@ -5,7 +5,7 @@
 #ifndef CHROME_CHROME_CLEANER_LOGGING_SCOPED_TIMED_TASK_LOGGER_H_
 #define CHROME_CHROME_CLEANER_LOGGING_SCOPED_TIMED_TASK_LOGGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 
 namespace chrome_cleaner {

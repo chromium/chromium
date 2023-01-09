@@ -7,9 +7,9 @@
 #include <map>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"

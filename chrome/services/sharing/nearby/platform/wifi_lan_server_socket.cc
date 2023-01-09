@@ -4,7 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"

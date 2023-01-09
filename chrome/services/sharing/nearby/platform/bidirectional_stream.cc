@@ -4,7 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/services/sharing/nearby/platform/input_stream_impl.h"

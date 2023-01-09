@@ -5,8 +5,8 @@
 #ifndef CHROME_CHROME_CLEANER_LOGGING_UTILS_H_
 #define CHROME_CHROME_CLEANER_LOGGING_UTILS_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chrome/chrome_cleaner/logging/info_sampler.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"

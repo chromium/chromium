@@ -5,7 +5,7 @@
 #ifndef CHROME_TEST_PAYMENTS_ANDROID_PAYMENT_REQUEST_TEST_BRIDGE_H_
 #define CHROME_TEST_PAYMENTS_ANDROID_PAYMENT_REQUEST_TEST_BRIDGE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/test/payments/payment_request_test_controller.h"
 
 namespace content {

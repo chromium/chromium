@@ -4,7 +4,7 @@
 
 #include "chrome/chrome_cleaner/engines/broker/engine_client_mock.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/null_task_runner.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 

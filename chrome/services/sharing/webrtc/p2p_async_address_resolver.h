@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/ip_address.h"

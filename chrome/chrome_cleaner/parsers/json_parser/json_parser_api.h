@@ -5,7 +5,7 @@
 #ifndef CHROME_CHROME_CLEANER_PARSERS_JSON_PARSER_JSON_PARSER_API_H_
 #define CHROME_CHROME_CLEANER_PARSERS_JSON_PARSER_JSON_PARSER_API_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -5,8 +5,8 @@
 #ifndef CHROME_CHROME_CLEANER_ZIP_ARCHIVER_ZIP_ARCHIVER_H_
 #define CHROME_CHROME_CLEANER_ZIP_ARCHIVER_ZIP_ARCHIVER_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 
 namespace chrome_cleaner {

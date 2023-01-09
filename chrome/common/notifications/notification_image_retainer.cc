@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <set>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"

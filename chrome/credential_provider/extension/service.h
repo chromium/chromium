@@ -7,7 +7,7 @@
 
 #include <windows.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace credential_provider {
 namespace extension {

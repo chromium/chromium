@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"

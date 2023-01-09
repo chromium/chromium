@@ -5,7 +5,7 @@
 #ifndef CHROME_INSTALLER_SETUP_USER_HIVE_VISITOR_H_
 #define CHROME_INSTALLER_SETUP_USER_HIVE_VISITOR_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace base {
 namespace win {

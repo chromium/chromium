@@ -5,7 +5,7 @@
 #ifndef CHROME_UPDATER_UPDATE_SERVICE_INTERNAL_IMPL_H_
 #define CHROME_UPDATER_UPDATE_SERVICE_INTERNAL_IMPL_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service_internal.h"
 

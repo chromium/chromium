@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class SyncWebSocket;
 class URLRequestContextGetter;

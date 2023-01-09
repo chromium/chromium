@@ -8,7 +8,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/services/media_gallery_util/media_metadata_parser.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/filters/memory_data_source.h"

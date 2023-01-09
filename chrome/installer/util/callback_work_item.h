@@ -5,7 +5,7 @@
 #ifndef CHROME_INSTALLER_UTIL_CALLBACK_WORK_ITEM_H_
 #define CHROME_INSTALLER_UTIL_CALLBACK_WORK_ITEM_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/installer/util/work_item.h"
 

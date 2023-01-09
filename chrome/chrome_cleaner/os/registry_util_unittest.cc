@@ -8,8 +8,8 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/chrome_cleaner/os/system_util.h"

@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"

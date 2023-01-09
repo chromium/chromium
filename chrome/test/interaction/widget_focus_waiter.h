@@ -5,7 +5,7 @@
 #ifndef CHROME_TEST_INTERACTION_WIDGET_FOCUS_WAITER_H_
 #define CHROME_TEST_INTERACTION_WIDGET_FOCUS_WAITER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/gfx/native_widget_types.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/updater/setup.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/updater/updater_scope.h"

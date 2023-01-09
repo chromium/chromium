@@ -6,8 +6,8 @@
 #define CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_DOCUMENT_ANALYZER_H_
 
 #include <string>
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "chrome/services/file_util/public/mojom/document_analysis_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_document_analyzer.mojom.h"

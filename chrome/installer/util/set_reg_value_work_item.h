@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chrome/installer/util/work_item.h"
 
 // A WorkItem subclass that sets a registry value with REG_SZ, REG_DWORD, or

@@ -9,8 +9,8 @@
 #include <sstream>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"

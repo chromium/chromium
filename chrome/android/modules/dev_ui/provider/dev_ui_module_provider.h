@@ -5,7 +5,7 @@
 #ifndef CHROME_ANDROID_MODULES_DEV_UI_PROVIDER_DEV_UI_MODULE_PROVIDER_H_
 #define CHROME_ANDROID_MODULES_DEV_UI_PROVIDER_DEV_UI_MODULE_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace dev_ui {
 

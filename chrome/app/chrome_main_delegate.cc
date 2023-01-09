@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -17,6 +16,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/immediate_crash.h"
 #include "base/lazy_instance.h"

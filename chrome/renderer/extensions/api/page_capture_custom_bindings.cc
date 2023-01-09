@@ -4,7 +4,7 @@
 
 #include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/extension_messages.h"
