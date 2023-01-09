@@ -1,21 +1,21 @@
 Test that links to UISourceCode work correctly when navigating OOPIF
 
 Navigating main frame
-Line Message was added: debugger:///VM# error.html Error 'Error from error.html':1:8
-Line Message was removed: debugger:///VM# error.html Error 'Error from error.html':1:8
-Line Message was added: http://127.0.0.1:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
+Current messages:
+  - http://127.0.0.1:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
 Revealing main frame source
 
 Creating iframe
-Line Message was added: debugger:///VM# error.html Error 'Error from error.html':1:8
-Line Message was removed: debugger:///VM# error.html Error 'Error from error.html':1:8
-Line Message was added: http://devtools.oopif.test:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
+Current messages:
+  - http://127.0.0.1:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
+  - http://devtools.oopif.test:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
 Revealing iframe source
 
 Navigating iframe
-Line Message was removed: http://devtools.oopif.test:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
+Current messages:
+  - http://127.0.0.1:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
 Revealing iframe source
 
 Clearing console
-Line Message was removed: http://127.0.0.1:8000/devtools/oopif/resources/error.html Error 'Error from error.html':2:8
+Current messages:
 
