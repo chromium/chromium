@@ -550,17 +550,21 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
   return endpoint;
 }
 
-MojoHandleSignalsState DataPipe::GetSignals() {
-  MojoHandleSignalsState signals_state = {};
+bool DataPipe::GetSignals(MojoHandleSignalsState& signals_state) {
+  signals_state = {};
   MojoHandleSignals& satisfied = signals_state.satisfied_signals;
   MojoHandleSignals& satisfiable = signals_state.satisfiable_signals;
 
   base::AutoLock lock(lock_);
+  if (!portal_) {
+    return false;
+  }
+
   IpczPortalStatus status = {.size = sizeof(status)};
   const IpczResult result = GetIpczAPI().QueryPortalStatus(
       portal_->handle(), IPCZ_NO_FLAGS, nullptr, &status);
   if (result != IPCZ_RESULT_OK) {
-    return signals_state;
+    return false;
   }
 
   if ((status.flags & IPCZ_PORTAL_STATUS_DEAD) != 0) {
@@ -594,7 +598,7 @@ MojoHandleSignalsState DataPipe::GetSignals() {
           MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
     }
 
-    return signals_state;
+    return true;
   }
 
   DCHECK(is_producer());
@@ -605,7 +609,7 @@ MojoHandleSignalsState DataPipe::GetSignals() {
     }
   }
 
-  return signals_state;
+  return true;
 }
 
 void DataPipe::FlushUpdatesFromPeer() {
