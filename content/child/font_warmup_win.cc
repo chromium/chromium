@@ -7,6 +7,8 @@
 #include <dwrite.h>
 #include <stdint.h>
 #include <map>
+#include <string>
+#include <utility>
 
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
@@ -22,7 +24,6 @@
 #include "base/sys_byteorder.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -391,10 +392,7 @@ void PatchServiceManagerCalls() {
   static bool is_patched = false;
   if (is_patched)
     return;
-  const char* service_provider_dll =
-      (base::win::GetVersion() >= base::win::Version::WIN8
-           ? "api-ms-win-service-management-l1-1-0.dll"
-           : "advapi32.dll");
+  const char* service_provider_dll = "api-ms-win-service-management-l1-1-0.dll";
 
   is_patched = true;
 
