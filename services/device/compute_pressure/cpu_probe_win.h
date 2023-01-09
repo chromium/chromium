@@ -43,6 +43,15 @@ class CpuProbeWin : public CpuProbe {
   // with cpu_query_.
   PDH_HCOUNTER cpu_percent_utilization_;
 
+  // True if PdhCollectQueryData has been called.
+  //
+  // It requires two data samples to calculate a formatted data value. So
+  // PdhCollectQueryData should be called twice before calling
+  // PdhGetFormattedCounterValue.
+  // Detailed information can be found in the following website:
+  // https://learn.microsoft.com/en-us/windows/win32/perfctrs/collecting-performance-data
+  bool got_baseline_ = false;
+
   PressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_) =
       kUnsupportedValue;
 };

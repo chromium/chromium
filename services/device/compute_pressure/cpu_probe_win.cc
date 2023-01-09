@@ -63,6 +63,11 @@ absl::optional<PressureSample> CpuProbeWin::GetPdhData() {
     return absl::nullopt;
   }
 
+  if (!got_baseline_) {
+    got_baseline_ = true;
+    return absl::nullopt;
+  }
+
   PDH_FMT_COUNTERVALUE counter_value;
   pdh_status = PdhGetFormattedCounterValue(
       cpu_percent_utilization_, PDH_FMT_DOUBLE, NULL, &counter_value);
