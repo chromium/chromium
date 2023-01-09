@@ -116,10 +116,8 @@ struct IsTraceable<blink::WeakMember<T>> {
 };
 
 template <typename T, typename MemberType>
-struct BaseMemberHashTraits : GenericHashTraits<MemberType> {
+struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   STATIC_ONLY(BaseMemberHashTraits);
-
-  static constexpr bool kEmptyValueIsZero = true;
 
   using PeekInType = T*;
   using PeekOutType = T*;
@@ -135,7 +133,13 @@ struct BaseMemberHashTraits : GenericHashTraits<MemberType> {
     storage = value;
   }
 
-  static MemberType DeletedValue() { return cppgc::kSentinelPointer; }
+  static void ConstructDeletedValue(MemberType& slot, bool) {
+    slot = cppgc::kSentinelPointer;
+  }
+
+  static bool IsDeletedValue(const MemberType& value) {
+    return value == cppgc::kSentinelPointer;
+  }
 };
 
 template <typename T>
