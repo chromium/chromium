@@ -389,6 +389,16 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // details.
   const blink::StorageKey& key() const { return key_; }
 
+  // This function returns the correct StorageKey depending on the state of the
+  // "disable-web-security" flag.
+  //
+  // If web security is disabled then it's possible for the `url` to be
+  // cross-origin from `this`'s origin. In that case we need to make a new key
+  // with the `url`'s origin, otherwise we might access the wrong storage
+  // partition.
+  blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
+      const GURL& url) const;
+
   // Calls ContentBrowserClient::AllowServiceWorker(). Returns true if content
   // settings allows service workers to run at |scope|. If this container is for
   // a window client, the check involves the topmost frame url as well as
@@ -597,16 +607,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
                                     const GURL& script_url,
                                     const char* error_prefix,
                                     Args... args);
-
-  // This function returns the correct StorageKey depending on the state of the
-  // "disable-web-security" flag.
-  //
-  // If web security is disabled then it's possible for the `url` to be
-  // cross-origin from `this`'s origin. In that case we need to make a new key
-  // with the `url`'s origin, otherwise we might access the wrong storage
-  // partition.
-  blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
-      const GURL& url) const;
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
 

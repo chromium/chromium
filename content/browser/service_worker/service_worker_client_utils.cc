@@ -350,12 +350,11 @@ void GetWindowClients(
                       std::move(clients));
 }
 
-// TODO(crbug.com/1199077): Update `sane_origin` to StorageKey once
-// ServiceWorkerContainerHost implements StorageKey.
 void DidGetExecutionReadyClient(
     const base::WeakPtr<ServiceWorkerContextCore>& context,
     const std::string& client_uuid,
-    const GURL& sane_origin,
+    const GURL& script_url,
+    const blink::StorageKey& key,
     NavigationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -375,7 +374,10 @@ void DidGetExecutionReadyClient(
     return;
   }
 
-  CHECK_EQ(container_host->url().DeprecatedGetOriginAsURL(), sane_origin);
+  // In a scenario where "--disable-web-security" is specified the |script_url|
+  // may be cross-origin
+  CHECK_EQ(container_host->GetCorrectStorageKeyForWebSecurityState(script_url),
+           key);
 
   blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
       container_host->GetRenderFrameHostId(), container_host->create_time(),
@@ -440,8 +442,8 @@ void OpenWindow(const GURL& url,
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(worker_process_id);
   if (render_process_host->IsForGuestsOnly()) {
-    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
-                std::move(callback), GlobalRenderFrameHostId());
+    DidNavigate(context, script_url, key, std::move(callback),
+                GlobalRenderFrameHostId());
     return;
   }
 
@@ -451,8 +453,8 @@ void OpenWindow(const GURL& url,
       context_wrapper->process_manager()->GetSiteInstanceForWorker(worker_id);
   if (!site_instance) {
     // Worker isn't running anymore. Fail.
-    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
-                std::move(callback), GlobalRenderFrameHostId());
+    DidNavigate(context, script_url, key, std::move(callback),
+                GlobalRenderFrameHostId());
     return;
   }
 
@@ -477,8 +479,7 @@ void OpenWindow(const GURL& url,
   GetContentClient()->browser()->OpenURL(
       site_instance, params,
       base::BindOnce(&DidOpenURL,
-                     base::BindOnce(&DidNavigate, context,
-                                    script_url.DeprecatedGetOriginAsURL(), key,
+                     base::BindOnce(&DidNavigate, context, script_url, key,
                                     std::move(callback))));
 }
 
@@ -494,8 +495,8 @@ void NavigateClient(const GURL& url,
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfhi);
 
   if (!rfhi || !web_contents) {
-    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
-                std::move(callback), GlobalRenderFrameHostId());
+    DidNavigate(context, script_url, key, std::move(callback),
+                GlobalRenderFrameHostId());
     return;
   }
 
@@ -505,8 +506,8 @@ void NavigateClient(const GURL& url,
   // RequestOpenURL() crashes if called by a prerendering main frame.
   if (rfhi->frame_tree_node()->GetFrameType() ==
       FrameType::kPrerenderMainFrame) {
-    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
-                std::move(callback), GlobalRenderFrameHostId());
+    DidNavigate(context, script_url, key, std::move(callback),
+                GlobalRenderFrameHostId());
     return;
   }
 
@@ -517,8 +518,8 @@ void NavigateClient(const GURL& url,
       rfhi->frame_tree()->root()->navigation_request();
   if (ongoing_navigation_request &&
       ongoing_navigation_request->browser_initiated()) {
-    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
-                std::move(callback), GlobalRenderFrameHostId());
+    DidNavigate(context, script_url, key, std::move(callback),
+                GlobalRenderFrameHostId());
     return;
   }
 
@@ -539,8 +540,7 @@ void NavigateClient(const GURL& url,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
       absl::nullopt);
   new OpenURLObserver(web_contents, frame_tree_node_id,
-                      base::BindOnce(&DidNavigate, context,
-                                     script_url.DeprecatedGetOriginAsURL(), key,
+                      base::BindOnce(&DidNavigate, context, script_url, key,
                                      std::move(callback)));
 }
 
@@ -597,7 +597,7 @@ void GetClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
 }
 
 void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
-                 const GURL& origin,
+                 const GURL& script_url,
                  const blink::StorageKey& key,
                  NavigationCallback callback,
                  GlobalRenderFrameHostId rfh_id) {
@@ -634,12 +634,12 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
     if (!container_host->is_execution_ready()) {
       container_host->AddExecutionReadyCallback(base::BindOnce(
           &DidGetExecutionReadyClient, context, container_host->client_uuid(),
-          origin, std::move(callback)));
+          script_url, key, std::move(callback)));
       return;
     }
 
-    DidGetExecutionReadyClient(context, container_host->client_uuid(), origin,
-                               std::move(callback));
+    DidGetExecutionReadyClient(context, container_host->client_uuid(),
+                               script_url, key, std::move(callback));
     return;
   }
 

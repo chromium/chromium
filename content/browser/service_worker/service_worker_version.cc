@@ -172,7 +172,7 @@ void DidShowPaymentHandlerWindow(
     int render_frame_id) {
   if (success) {
     service_worker_client_utils::DidNavigate(
-        context, url.DeprecatedGetOriginAsURL(), key,
+        context, url, key,
         base::BindOnce(&OnOpenWindowFinished, std::move(callback)),
         GlobalRenderFrameHostId(render_process_id, render_frame_id));
   } else {
