@@ -65,6 +65,7 @@ public class PrivacySandboxDialogNoticeROWV4
 
         mMoreButton.setOnClickListener(this);
         setOnShowListener(this);
+        setCancelable(false);
 
         mScrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
             if (!mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
