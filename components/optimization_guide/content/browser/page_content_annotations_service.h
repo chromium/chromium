@@ -40,10 +40,6 @@
 
 class OptimizationGuideLogger;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace history {
 class HistoryService;
 }  // namespace history
@@ -227,11 +223,6 @@ class PageContentAnnotationsService : public KeyedService,
   friend class PageContentAnnotationsServiceBrowserTest;
   // Virtualized for testing.
   virtual void Annotate(const HistoryVisit& visit);
-
-  // Creates a HistoryVisit based on the current state of |web_contents|.
-  static HistoryVisit CreateHistoryVisitFromWebContents(
-      content::WebContents* web_contents,
-      int64_t navigation_id);
 
   // Requests |search_result_extractor_client_| to extract related searches from
   // the Google SRP DOM associated with |web_contents|.

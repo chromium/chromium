@@ -25,6 +25,16 @@ namespace optimization_guide {
 
 namespace {
 
+// Creates a HistoryVisit based on the current state of |web_contents|.
+HistoryVisit CreateHistoryVisitFromWebContents(
+    content::WebContents* web_contents,
+    int64_t navigation_id) {
+  HistoryVisit visit(
+      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
+      web_contents->GetLastCommittedURL(), navigation_id);
+  return visit;
+}
+
 // Data scoped to a single page. PageData has the same lifetime as the page's
 // main document. Contains information for whether we annotated the title for
 // the page yet.
@@ -108,9 +118,9 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
       PageData::GetOrCreateForPage(web_contents()->GetPrimaryPage());
   page_data->set_navigation_id(navigation_handle->GetNavigationId());
 
-  optimization_guide::HistoryVisit history_visit = optimization_guide::
-      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
-          web_contents(), navigation_handle->GetNavigationId());
+  optimization_guide::HistoryVisit history_visit =
+      CreateHistoryVisitFromWebContents(web_contents(),
+                                        navigation_handle->GetNavigationId());
   if (features::RemotePageMetadataEnabled() && optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimizationAsync(
         navigation_handle, proto::PAGE_ENTITIES,
@@ -189,9 +199,9 @@ void PageContentAnnotationsWebContentsObserver::TitleWasSet(
     return;
 
   page_data->set_annotation_was_requested();
-  optimization_guide::HistoryVisit history_visit = optimization_guide::
-      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
-          web_contents(), page_data->navigation_id());
+  optimization_guide::HistoryVisit history_visit =
+      CreateHistoryVisitFromWebContents(web_contents(),
+                                        page_data->navigation_id());
   history_visit.text_to_annotate =
       base::UTF16ToUTF8(entry->GetTitleForDisplay());
   page_content_annotations_service_->Annotate(history_visit);
@@ -209,9 +219,9 @@ void PageContentAnnotationsWebContentsObserver::
   if (!page_data)
     return;
 
-  optimization_guide::HistoryVisit history_visit = optimization_guide::
-      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
-          web_contents(), page_data->navigation_id());
+  optimization_guide::HistoryVisit history_visit =
+      CreateHistoryVisitFromWebContents(web_contents(),
+                                        page_data->navigation_id());
   bool is_google_search_url =
       google_util::IsGoogleSearchUrl(web_contents()->GetLastCommittedURL());
   if (is_google_search_url &&

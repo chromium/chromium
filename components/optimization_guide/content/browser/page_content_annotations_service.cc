@@ -28,8 +28,6 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -733,16 +731,6 @@ void PageContentAnnotationsService::OnEntityMetadataRetrieved(
         << " Weight=" << base::NumberToString(weight) << ". "
         << entity_metadata->ToHumanReadableString();
   }
-}
-
-// static
-HistoryVisit PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
-    content::WebContents* web_contents,
-    int64_t navigation_id) {
-  HistoryVisit visit(
-      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
-      web_contents->GetLastCommittedURL(), navigation_id);
-  return visit;
 }
 
 HistoryVisit::HistoryVisit() = default;
