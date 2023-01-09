@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.te
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -29,6 +30,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -51,6 +53,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Build(sdk_is_less_than = VERSION_CODES.O_MR1, message = "https://crbug.com/1404413")
 public class TouchToFillCreditCardRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
