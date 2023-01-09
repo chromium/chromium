@@ -7,12 +7,14 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -30,6 +32,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
+
+class UsbBrowserTestHelper {
+ public:
+  UsbBrowserTestHelper() {
+    // Set collection delay to zero seconds. We don't use
+    // |ScopedMockTimeMessageLoopTaskRunner| here because we are not able to
+    // make it work with mojom.
+    metrics::PeripheralCollectionDelayParam::SetForTesting(base::Seconds(0));
+  }
+};
 namespace {
 
 namespace cros_healthd = ::ash::cros_healthd;
@@ -135,7 +147,40 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   ash::LoginManagerMixin login_manager_mixin_{
       &mixin_host_, ash::LoginManagerMixin::UserList(), &fake_gaia_mixin_};
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  UsbBrowserTestHelper usb_browser_test_helper_;
 };
+
+IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
+                       UsbEventDrivenTelemetryCollectedOnUsbEvent) {
+  EnableUsbPolicy();
+  LoginAffiliatedUser();
+
+  chromeos::MissiveClientTestObserver missive_observer_(
+      Destination::PERIPHERAL_EVENTS);
+
+  auto usb_telemetry = CreateUsbTelemetry();
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      usb_telemetry);
+
+  // Any USB event should trigger event driven telemetry collection
+  cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
+
+  Record record = std::get<1>(missive_observer_.GetNextEnqueuedRecord());
+  MetricData record_data;
+
+  // First record should be the USB added event
+  ASSERT_TRUE(record_data.ParseFromString(record.data()));
+  EXPECT_THAT(record_data.event_data().type(),
+              ::testing::Eq(MetricEventType::USB_ADDED));
+
+  // Second record should be the USB telemetry
+  record = std::get<1>(missive_observer_.GetNextEnqueuedRecord());
+  ASSERT_TRUE(record_data.ParseFromString(record.data()));
+  EXPECT_TRUE(record_data.has_telemetry_data());
+  EXPECT_TRUE(record_data.telemetry_data().has_peripherals_telemetry());
+  // Since telemetry is not an event, it shouldn't have event data or event type
+  EXPECT_FALSE(record_data.has_event_data());
+}
 
 IN_PROC_BROWSER_TEST_F(
     UsbEventsBrowserTest,

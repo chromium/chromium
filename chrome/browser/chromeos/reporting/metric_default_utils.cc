@@ -49,4 +49,19 @@ const base::TimeDelta InitDelayParam::Get() {
   return InitDelayParam::init_delay;
 }
 
+// static
+// 5 seconds is what was recommended by the upstream maintainer of FWUPD
+base::TimeDelta PeripheralCollectionDelayParam::collection_delay_ =
+    base::Seconds(5);
+
+// static
+void PeripheralCollectionDelayParam::SetForTesting(
+    const base::TimeDelta& delay) {
+  PeripheralCollectionDelayParam::collection_delay_ = delay;
+}
+
+// static
+const base::TimeDelta PeripheralCollectionDelayParam::Get() {
+  return PeripheralCollectionDelayParam::collection_delay_;
+}
 }  // namespace reporting::metrics

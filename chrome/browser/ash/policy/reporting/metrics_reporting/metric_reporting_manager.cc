@@ -41,6 +41,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
+#include "components/reporting/metrics/delayed_sampler.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
@@ -59,6 +60,7 @@ constexpr char kBootPerformance[] = "boot_performance";
 constexpr char kHttpsLatency[] = "https_latency";
 constexpr char kNetworkTelemetry[] = "network_telemetry";
 constexpr char kPeripheralTelemetry[] = "peripheral_telemetry";
+constexpr char kDelayedPeripheralTelemetry[] = "delayed_peripheral_telemetry";
 constexpr char kDisplaysTelemetry[] = "displays_telemetry";
 
 }  // namespace
@@ -147,6 +149,14 @@ std::vector<CollectorBase*> MetricReportingManager::GetTelemetryCollectors(
     case NETWORK_SIGNAL_STRENGTH_RECOVERED:
       return GetTelemetryCollectorsFromSetting(
           ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry);
+    case USB_ADDED:
+    case USB_REMOVED:
+      if (base::Contains(telemetry_collectors_, kDelayedPeripheralTelemetry)) {
+        return {telemetry_collectors_.at(kDelayedPeripheralTelemetry).get()};
+      }
+      // Return statement or `ABSL_FALLTHROUGH_INTENDED` is necessary to silence
+      // "unannotated fall-through" errors on builds.
+      return {};
     default:
       return {};
   }
@@ -330,6 +340,24 @@ void MetricReportingManager::InitOneShotTelemetryCollector(
   telemetry_collectors_.insert({collector_name, std::move(collector)});
 }
 
+void MetricReportingManager::InitManualTelemetryCollector(
+    const std::string& collector_name,
+    Sampler* sampler,
+    MetricReportQueue* metric_report_queue,
+    const std::string& enable_setting_path,
+    bool enable_default_value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!base::Contains(telemetry_collectors_, collector_name));
+  if (!metric_report_queue) {
+    return;
+  }
+
+  auto collector = delegate_->CreateManualCollector(
+      sampler, metric_report_queue, &reporting_settings_, enable_setting_path,
+      enable_default_value);
+  telemetry_collectors_.insert({collector_name, std::move(collector)});
+}
+
 void MetricReportingManager::InitPeriodicCollector(
     const std::string& collector_name,
     Sampler* sampler,
@@ -482,10 +510,10 @@ void MetricReportingManager::InitAudioCollectors() {
 
 void MetricReportingManager::InitPeripheralsCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Peripheral events
   if (!user_peripheral_events_and_telemetry_report_queue_) {
     return;
   }
+  // Peripheral events
   event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
       std::make_unique<UsbEventsObserver>(),
       user_peripheral_events_and_telemetry_report_queue_.get(),
@@ -494,13 +522,12 @@ void MetricReportingManager::InitPeripheralsCollectors() {
       /*collector_pool=*/this));
 
   // Peripheral telemetry
-  auto peripheral_telemetry_handler =
-      std::make_unique<CrosHealthdBusSamplerHandler>(
-          CrosHealthdSamplerHandler::MetricType::kTelemetry);
   auto peripheral_telemetry_sampler =
-      std::make_unique<CrosHealthdMetricSampler>(
-          std::move(peripheral_telemetry_handler),
+      /*sampler=*/std::make_unique<CrosHealthdMetricSampler>(
+          /*handler=*/std::make_unique<CrosHealthdBusSamplerHandler>(
+              CrosHealthdSamplerHandler::MetricType::kTelemetry),
           ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus);
+
   InitOneShotTelemetryCollector(
       kPeripheralTelemetry, peripheral_telemetry_sampler.get(),
       user_peripheral_events_and_telemetry_report_queue_.get(),
@@ -508,6 +535,26 @@ void MetricReportingManager::InitPeripheralsCollectors() {
       metrics::kReportDevicePeripheralsDefaultValue,
       /*init_delay=*/base::TimeDelta());
   samplers_.push_back(std::move(peripheral_telemetry_sampler));
+
+  // Event-driven peripheral telemetry.
+  // We add a short delay to mitigate a
+  // race condition that occurs when cros healthd queries the firmware updater
+  // tool (fwupd) for USB firmware version data before fwupd has a chance to
+  // read all of the USB devices plugged into the machine.
+  auto delayed_peripheral_telemetry_sampler = std::make_unique<DelayedSampler>(
+      /*sampler=*/std::make_unique<CrosHealthdMetricSampler>(
+          /*handler=*/std::make_unique<CrosHealthdBusSamplerHandler>(
+              CrosHealthdSamplerHandler::MetricType::kTelemetry),
+          ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus),
+      /*delay=*/metrics::PeripheralCollectionDelayParam::Get());
+
+  InitManualTelemetryCollector(
+      kDelayedPeripheralTelemetry, delayed_peripheral_telemetry_sampler.get(),
+      user_peripheral_events_and_telemetry_report_queue_.get(),
+      /*enable_setting_path=*/::ash::kReportDevicePeripherals,
+      metrics::kReportDevicePeripheralsDefaultValue);
+
+  samplers_.push_back(std::move(delayed_peripheral_telemetry_sampler));
 }
 
 void MetricReportingManager::InitDisplayCollectors() {

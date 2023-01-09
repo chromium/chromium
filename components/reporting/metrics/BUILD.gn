@@ -6,7 +6,11 @@ source_set("metrics_data_collection") {
   sources = [
     "collector_base.cc",
     "collector_base.h",
+    "delayed_sampler.cc",
+    "delayed_sampler.h",
     "event_driven_telemetry_collector_pool.h",
+    "manual_collector.cc",
+    "manual_collector.h",
     "metric_event_observer.h",
     "metric_event_observer_manager.cc",
     "metric_event_observer_manager.h",
@@ -37,6 +41,8 @@ source_set("metrics_data_collection") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "delayed_sampler_unittest.cc",
+    "manual_collector_unittest.cc",
     "metric_event_observer_manager_unittest.cc",
     "metric_rate_controller_unittest.cc",
     "metric_report_queue_unittest.cc",

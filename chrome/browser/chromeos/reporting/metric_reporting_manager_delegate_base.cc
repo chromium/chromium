@@ -10,6 +10,7 @@
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
+#include "components/reporting/metrics/manual_collector.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/one_shot_collector.h"
@@ -92,6 +93,18 @@ MetricReportingManagerDelegateBase::CreateOneShotCollector(
   return std::make_unique<OneShotCollector>(
       sampler, metric_report_queue, reporting_settings, enable_setting_path,
       setting_enabled_default_value, init_delay);
+}
+
+std::unique_ptr<CollectorBase>
+MetricReportingManagerDelegateBase::CreateManualCollector(
+    Sampler* sampler,
+    MetricReportQueue* metric_report_queue,
+    ReportingSettings* reporting_settings,
+    const std::string& enable_setting_path,
+    bool setting_enabled_default_value) {
+  return std::make_unique<ManualCollector>(
+      sampler, metric_report_queue, reporting_settings, enable_setting_path,
+      setting_enabled_default_value);
 }
 
 std::unique_ptr<MetricEventObserverManager>

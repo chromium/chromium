@@ -133,6 +133,15 @@ class MockDelegate : public MetricReportingManager::Delegate {
               (override));
 
   MOCK_METHOD(std::unique_ptr<CollectorBase>,
+              CreateManualCollector,
+              (Sampler * sampler,
+               MetricReportQueue* metric_report_queue,
+               ReportingSettings* reporting_settings,
+               const std::string& enable_setting_path,
+               bool setting_enabled_default_value),
+              (override));
+
+  MOCK_METHOD(std::unique_ptr<CollectorBase>,
               CreateOneShotCollector,
               (Sampler * sampler,
                MetricReportQueue* metric_report_queue,

@@ -73,6 +73,16 @@ class MetricReportingManagerDelegateBase {
       bool setting_enabled_default_value,
       base::TimeDelta init_delay = base::TimeDelta());
 
+  // Creates a new collector for manual collection. Does not automatically
+  // collect data upon construction or on any time period. Only collects if the
+  // appropriate settings are enabled when manual collection happens.
+  virtual std::unique_ptr<CollectorBase> CreateManualCollector(
+      Sampler* sampler,
+      MetricReportQueue* metric_report_queue,
+      ReportingSettings* reporting_settings,
+      const std::string& enable_setting_path,
+      bool setting_enabled_default_value);
+
   // Creates a new event observer manager to manage events reporting. The rate
   // is controlled by the specified setting and we fall back to the defaults
   // specified if none set by policy.
