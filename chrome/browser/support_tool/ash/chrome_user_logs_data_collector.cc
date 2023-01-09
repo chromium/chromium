@@ -266,15 +266,14 @@ void ChromeUserLogsDataCollector::OnPIIDetected(
     base::RepeatingClosure barrier_closure,
     base::FilePath path_in_temp_dir,
     PIIMap detected_pii) {
-  task_runner_for_redaction_tool_.reset();
-  redaction_tool_container_.reset();
-
   pii_in_log_files_.emplace(path_in_temp_dir, GetPIITypesInMap(detected_pii));
   MergePIIMaps(pii_map_, detected_pii);
   std::move(barrier_closure).Run();
 }
 
 void ChromeUserLogsDataCollector::OnAllUserLogFilesReadAndDetected() {
+  task_runner_for_redaction_tool_.reset();
+  redaction_tool_container_.reset();
   if (errors_.empty()) {
     std::move(on_data_collector_done_callback_).Run(absl::nullopt);
     return;
