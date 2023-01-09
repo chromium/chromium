@@ -5932,7 +5932,7 @@
         },
       },
       'win32-updater-builder-rel': {
-        'additional_compile_targets': ['updater_tests_all'],
+        'additional_compile_targets': ['chrome/updater:all'],
       },
     }
   },

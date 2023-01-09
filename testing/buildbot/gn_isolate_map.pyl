@@ -1913,7 +1913,7 @@
       "--ui-test-action-timeout=40000",
     ],
   },
-  "updater_tests_all": {
+  "chrome/updater:all": {
     "label": "//chrome/updater:all",
     "type": "additional_compile_target",
   },
