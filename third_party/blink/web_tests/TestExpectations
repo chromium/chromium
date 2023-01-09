@@ -6886,8 +6886,6 @@ crbug.com/1385548 [ Win ] virtual/close-watcher/external/wpt/close-watcher/user-
 crbug.com/1385548 [ Mac ] virtual/close-watcher/external/wpt/close-watcher/user-activation.html [ Pass Timeout ]
 
 # Sheriff 2022-11-21 - EMEA
-crbug.com/1376986 [ Mac ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Failure Timeout ]
-crbug.com/1376986 [ Linux ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Failure Timeout ]
 crbug.com/1392077 external/wpt/screen-orientation/orientation-reading.html [ Failure Timeout ]
 
 # Sheriff 2022-11-23
