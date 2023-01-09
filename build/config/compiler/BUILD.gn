@@ -139,8 +139,7 @@ declare_args() {
 
   # Zero init has favorable performance/size tradeoffs for Chrome OS
   # but was not evaluated for other platforms.
-  # TODO(adriandole) enable for both ash and lacros once lacros updates toolchain.
-  init_stack_vars_zero = is_chromeos_ash
+  init_stack_vars_zero = is_chromeos
 
   # This argument is to control whether enabling text section splitting in the
   # final binary. When enabled, the separated text sections with prefix
