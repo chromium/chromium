@@ -129,6 +129,14 @@ DynamicComponentHost::DynamicComponentHost(
 DynamicComponentHost::~DynamicComponentHost() {
   Destroy();
 
+  // If a capabilities directory was created for this component then it must
+  // be torn-down to ensure that it cannot continue to be used after the
+  // component is supposed to have been destroyed.
+  zx_status_t status =
+      DynamicComponentCapabilitiesDir()->RemoveEntry(child_id_);
+  ZX_CHECK(status == ZX_OK || status == ZX_ERR_NOT_FOUND, status)
+      << "RemoveEntry()";
+
   DVLOG(1) << "Deleted DynamicComponentHost " << child_id_;
 
   // Don't invoke |on_teardown| here, since we're already being deleted.
