@@ -51,7 +51,7 @@ class TestFunctionDispatcherDelegate
 
 namespace extension_function_test_utils {
 
-absl::optional<base::Value> ParseList(const std::string& data) {
+absl::optional<base::Value::List> ParseList(const std::string& data) {
   absl::optional<base::Value> result = base::JSONReader::Read(data);
   if (!result) {
     ADD_FAILURE() << "Failed to parse: " << data;
@@ -59,7 +59,7 @@ absl::optional<base::Value> ParseList(const std::string& data) {
   }
   if (!result->is_list())
     return absl::nullopt;
-  return result;
+  return std::move(*result).TakeList();
 }
 
 base::Value::Dict ToDictionary(std::unique_ptr<base::Value> val) {
@@ -149,11 +149,10 @@ bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags) {
-  absl::optional<base::Value> maybe_parsed_args(ParseList(args));
+  absl::optional<base::Value::List> maybe_parsed_args(ParseList(args));
   EXPECT_TRUE(maybe_parsed_args)
       << "Could not parse extension function arguments: " << args;
-  return RunFunction(function, std::move(*maybe_parsed_args).TakeList(),
-                     browser, flags);
+  return RunFunction(function, std::move(*maybe_parsed_args), browser, flags);
 }
 
 bool RunFunction(ExtensionFunction* function,

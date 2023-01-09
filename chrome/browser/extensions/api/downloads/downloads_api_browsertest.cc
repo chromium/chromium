@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
 
   open_function = base::MakeRefCounted<DownloadsOpenFunction>();
   open_function->set_user_gesture(true);
-  base::Value args_list(base::Value::Type::LIST);
+  base::Value::List args_list;
   args_list.Append(static_cast<int>(download_item->GetId()));
   open_function->SetArgs(std::move(args_list));
   open_function->set_extension(extension());

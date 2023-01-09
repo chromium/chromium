@@ -547,10 +547,9 @@ void ExtensionFunction::OnQuotaExceeded(std::string violation_error) {
   RespondWithError(std::move(violation_error));
 }
 
-void ExtensionFunction::SetArgs(base::Value args) {
-  DCHECK(args.is_list());
+void ExtensionFunction::SetArgs(base::Value::List args) {
   DCHECK(!args_.has_value());
-  args_ = std::move(args).TakeList();
+  args_ = std::move(args);
 }
 
 const base::Value::List* ExtensionFunction::GetResultListForTest() const {

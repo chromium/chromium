@@ -230,9 +230,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // returns an error.
   virtual void OnQuotaExceeded(std::string violation_error);
 
-  // Specifies the raw arguments to the function, as a JSON value. Expects a
-  // base::Value of type LIST.
-  void SetArgs(base::Value args);
+  // Specifies the raw arguments to the function, as a JSON value.
+  void SetArgs(base::Value::List args);
 
   // Retrieves the results of the function as a base::Value::List for testing
   // purposes.

@@ -22,7 +22,7 @@ class ExtensionFunction;
 namespace extension_function_test_utils {
 
 // Parse JSON and return as a list Value, or nullopt if invalid.
-absl::optional<base::Value> ParseList(const std::string& data);
+absl::optional<base::Value::List> ParseList(const std::string& data);
 
 // If |val| is a dictionary, return it as one, otherwise create an empty one.
 base::Value::Dict ToDictionary(std::unique_ptr<base::Value> val);
