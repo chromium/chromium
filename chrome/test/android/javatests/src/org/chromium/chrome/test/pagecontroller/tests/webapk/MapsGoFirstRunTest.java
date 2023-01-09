@@ -53,7 +53,6 @@ public class MapsGoFirstRunTest {
             "policy={\"TosDialogBehavior\":1}";
     private static final String FLAG_POLICY_TOS_DIALOG_BEHAVIOR_SKIP =
             "policy={\"TosDialogBehavior\":2}";
-    private static final String MAPS_GO_PACKAGE = "org.chromium.test.maps_go_webapk";
 
     // Launching the PWA is currently taking 9-10 seconds on emulators. Increasing this
     // substantially to avoid flakes. See https://crbug.com/1142821.
@@ -104,7 +103,7 @@ public class MapsGoFirstRunTest {
     public void testFirstRunIsShown() {
         LightweightFirstRunActivity.setSupportSkippingTos(false);
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
-        launchWebapk();
+        launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
 
         LightWeightTOSController controller = LightWeightTOSController.getInstance();
         Assert.assertTrue("Light weight TOS page should be shown.", controller.isCurrentPageThis());
@@ -120,7 +119,7 @@ public class MapsGoFirstRunTest {
         // Verification will fail for this APK, so instead of using the LWFRE, the full FRE will be
         // shown instead.
         WebApkValidator.setDisableValidationForTesting(false);
-        launchWebapk();
+        launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
 
         CriteriaHelper.pollInstrumentationThread(
                 () -> mFirstRunActivity != null, "FirstRunActivity did not start");
@@ -131,7 +130,7 @@ public class MapsGoFirstRunTest {
     public void testFirstRunIsNotShownAfterAck() {
         LightweightFirstRunActivity.setSupportSkippingTos(false);
         FirstRunStatus.setLightweightFirstRunFlowComplete(true);
-        launchWebapk();
+        launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
 
         verifyWebappActivityStarted();
         Assert.assertNull("Lightweight FRE should not have started.", mLightweightFreActivity);
@@ -142,7 +141,7 @@ public class MapsGoFirstRunTest {
     public void testTosSkipped() throws Exception {
         LightweightFirstRunActivity.setSupportSkippingTos(true);
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
-        launchWebapk();
+        launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
 
         // Verify LWFRE activity is created before skipped to WebappActivity. See
         // https://crbug.com/1184149 for previous problems here.
@@ -157,7 +156,7 @@ public class MapsGoFirstRunTest {
     public void testTosNotSkippedByPolicy() {
         LightweightFirstRunActivity.setSupportSkippingTos(true);
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
-        launchWebapk();
+        launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
 
         Assert.assertNotNull("Lightweight FRE should launch.", mLightweightFreActivity);
         LightWeightTOSController controller = LightWeightTOSController.getInstance();
@@ -165,20 +164,18 @@ public class MapsGoFirstRunTest {
     }
 
     /**
-     * Launch the Maps Go WebAPK.
-     *
-     * Maps Go WebAPK is a bound WebAPK to the apk under test so that there is
-     * no browser choice on launch.
+     * Launch a WebAPK (which launches Chrome).
+     * @param webapkPackageName Package name of the WebAPK.
+     * @param chromePackageName Package name of Chromium that the WebAPK points to.
      */
-    private void launchWebapk() {
-        String chromePackageName = InstrumentationRegistry.getTargetContext().getPackageName();
-        Log.d(TAG, "Launching %s in Chrome (%s)", MAPS_GO_PACKAGE, chromePackageName);
+    private void launchWebapk(String webapkPackageName, String chromePackageName) {
+        Log.d(TAG, "Launching %s in Chrome (%s)", webapkPackageName, chromePackageName);
 
         Context context = InstrumentationRegistry.getContext();
         final Intent intent =
-                context.getPackageManager().getLaunchIntentForPackage(MAPS_GO_PACKAGE);
+                context.getPackageManager().getLaunchIntentForPackage(webapkPackageName);
         if (intent == null) {
-            throw new IllegalStateException("Could not get intent to launch " + MAPS_GO_PACKAGE
+            throw new IllegalStateException("Could not get intent to launch " + webapkPackageName
                     + ", please ensure that it is installed");
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
