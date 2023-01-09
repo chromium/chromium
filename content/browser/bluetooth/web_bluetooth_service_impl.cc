@@ -966,7 +966,10 @@ void WebBluetoothServiceImpl::ForgetDevice(
   if (!base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
     auto device_address = allowed_devices().GetDeviceAddress(device_id);
-    allowed_devices().RemoveDevice(device_address);
+    // allowed_devices().RemoveDevice() expects a valid |device_address|.
+    if (!device_address.empty()) {
+      allowed_devices().RemoveDevice(device_address);
+    }
     std::move(callback).Run();
     return;
   }
