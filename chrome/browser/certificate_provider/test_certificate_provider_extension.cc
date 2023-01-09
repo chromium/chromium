@@ -60,10 +60,10 @@ constexpr extensions::api::certificate_provider::Algorithm
                                   ALGORITHM_RSASSA_PKCS1_V1_5_SHA1};
 
 base::Value ConvertBytesToValue(base::span<const uint8_t> bytes) {
-  base::Value value(base::Value::Type::LIST);
+  base::Value::List value;
   for (auto byte : bytes)
     value.Append(byte);
-  return value;
+  return base::Value(std::move(value));
 }
 
 std::vector<uint8_t> ExtractBytesFromValue(const base::Value& value) {
@@ -80,18 +80,18 @@ base::span<const uint8_t> GetCertDer(const net::X509Certificate& certificate) {
 
 base::Value MakeClientCertificateInfoValue(
     const net::X509Certificate& certificate) {
-  base::Value cert_info_value(base::Value::Type::DICTIONARY);
-  base::Value certificate_chain(base::Value::Type::LIST);
+  base::Value::Dict cert_info_value;
+  base::Value::List certificate_chain;
   certificate_chain.Append(ConvertBytesToValue(GetCertDer(certificate)));
-  cert_info_value.SetKey("certificateChain", std::move(certificate_chain));
-  base::Value supported_algorithms_value(base::Value::Type::LIST);
+  cert_info_value.Set("certificateChain", std::move(certificate_chain));
+  base::Value::List supported_algorithms_value;
   for (auto supported_algorithm : kSupportedAlgorithms) {
     supported_algorithms_value.Append(
         extensions::api::certificate_provider::ToString(supported_algorithm));
   }
-  cert_info_value.SetKey("supportedAlgorithms",
-                         std::move(supported_algorithms_value));
-  return cert_info_value;
+  cert_info_value.Set("supportedAlgorithms",
+                      std::move(supported_algorithms_value));
+  return base::Value(std::move(cert_info_value));
 }
 
 std::string ConvertValueToJson(const base::Value& value) {
@@ -210,12 +210,12 @@ TestCertificateProviderExtension::TestCertificateProviderExtension(
 TestCertificateProviderExtension::~TestCertificateProviderExtension() = default;
 
 void TestCertificateProviderExtension::TriggerSetCertificates() {
-  base::Value message_data(base::Value::Type::DICTIONARY);
-  message_data.SetStringKey("name", "setCertificates");
-  base::Value cert_info_values(base::Value::Type::LIST);
+  base::Value::Dict message_data;
+  message_data.Set("name", "setCertificates");
+  base::Value::List cert_info_values;
   if (should_provide_certificates_)
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
-  message_data.SetKey("certificateInfoList", std::move(cert_info_values));
+  message_data.Set("certificateInfoList", std::move(cert_info_values));
 
   base::Value::List message;
   message.Append(std::move(message_data));
@@ -255,10 +255,10 @@ void TestCertificateProviderExtension::HandleMessage(
 void TestCertificateProviderExtension::HandleCertificatesRequest(
     ReplyToJsCallback callback) {
   ++certificate_request_count_;
-  base::Value cert_info_values(base::Value::Type::LIST);
+  base::Value::List cert_info_values;
   if (should_provide_certificates_)
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
-  std::move(callback).Run(cert_info_values);
+  std::move(callback).Run(base::Value(std::move(cert_info_values)));
 }
 
 void TestCertificateProviderExtension::HandleSignatureRequest(
@@ -295,19 +295,18 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
     return;
   }
 
-  base::Value response(base::Value::Type::DICTIONARY);
+  base::Value::Dict response;
   if (required_pin_.has_value()) {
     if (pin_status_string == "not_requested") {
       // The PIN is required but not specified yet, so request it via the JS
       // side before generating the signature.
-      base::Value pin_request_parameters(base::Value::Type::DICTIONARY);
-      pin_request_parameters.SetIntKey("signRequestId", sign_request_id);
+      base::Value::Dict pin_request_parameters;
+      pin_request_parameters.Set("signRequestId", sign_request_id);
       if (remaining_pin_attempts_ == 0) {
-        pin_request_parameters.SetStringKey("errorType",
-                                            "MAX_ATTEMPTS_EXCEEDED");
+        pin_request_parameters.Set("errorType", "MAX_ATTEMPTS_EXCEEDED");
       }
-      response.SetKey("requestPin", std::move(pin_request_parameters));
-      std::move(callback).Run(response);
+      response.Set("requestPin", std::move(pin_request_parameters));
+      std::move(callback).Run(base::Value(std::move(response)));
       return;
     }
     if (remaining_pin_attempts_ == 0) {
@@ -330,31 +329,30 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
       // update the PIN dialog with displaying an error.
       if (remaining_pin_attempts_ > 0)
         --remaining_pin_attempts_;
-      base::Value pin_request_parameters(base::Value::Type::DICTIONARY);
-      pin_request_parameters.SetIntKey("signRequestId", sign_request_id);
-      pin_request_parameters.SetStringKey(
-          "errorType", remaining_pin_attempts_ == 0 ? "MAX_ATTEMPTS_EXCEEDED"
-                                                    : "INVALID_PIN");
+      base::Value::Dict pin_request_parameters;
+      pin_request_parameters.Set("signRequestId", sign_request_id);
+      pin_request_parameters.Set("errorType", remaining_pin_attempts_ == 0
+                                                  ? "MAX_ATTEMPTS_EXCEEDED"
+                                                  : "INVALID_PIN");
       if (remaining_pin_attempts_ > 0) {
-        pin_request_parameters.SetIntKey("attemptsLeft",
-                                         remaining_pin_attempts_);
+        pin_request_parameters.Set("attemptsLeft", remaining_pin_attempts_);
       }
-      response.SetKey("requestPin", std::move(pin_request_parameters));
-      std::move(callback).Run(response);
+      response.Set("requestPin", std::move(pin_request_parameters));
+      std::move(callback).Run(base::Value(std::move(response)));
       return;
     }
     // The entered PIN is correct. Stop the PIN request and proceed to
     // generating the signature.
-    base::Value stop_pin_request_parameters(base::Value::Type::DICTIONARY);
-    stop_pin_request_parameters.SetIntKey("signRequestId", sign_request_id);
-    response.SetKey("stopPinRequest", std::move(stop_pin_request_parameters));
+    base::Value::Dict stop_pin_request_parameters;
+    stop_pin_request_parameters.Set("signRequestId", sign_request_id);
+    response.Set("stopPinRequest", std::move(stop_pin_request_parameters));
   }
   // Generate and return a valid signature.
   std::vector<uint8_t> signature;
   CHECK(RsaSignRawData(private_key_.get(), openssl_signature_algorithm, input,
                        &signature));
-  response.SetKey("signature", ConvertBytesToValue(signature));
-  std::move(callback).Run(response);
+  response.Set("signature", ConvertBytesToValue(signature));
+  std::move(callback).Run(base::Value(std::move(response)));
 }
 
 }  // namespace ash
