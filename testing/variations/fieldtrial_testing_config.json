@@ -3245,7 +3245,7 @@
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "CrOSHugepageRemapAndLockInZygoteStudy"
+                        "CrOSHugepageRemapAndLockInZygote"
                     ]
                 }
             ]
