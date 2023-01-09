@@ -152,52 +152,6 @@ export class Output {
   }
 
   /**
-   * For a given automation property, return true if the value
-   * represents something 'truthy', e.g.: for checked:
-   * 'true'|'mixed' -> true
-   * 'false'|undefined -> false
-   */
-  static isTruthy(node, attrib) {
-    switch (attrib) {
-      case 'checked':
-        return node.checked && node.checked !== 'false';
-      case 'hasPopup':
-        return node.hasPopup &&
-            node.hasPopup !== chrome.automation.HasPopup.FALSE;
-
-      // Chrome automatically calculates these attributes.
-      case 'posInSet':
-        return node.htmlAttributes['aria-posinset'] ||
-            (node.root.role !== RoleType.ROOT_WEB_AREA && node.posInSet);
-      case 'setSize':
-        return node.htmlAttributes['aria-setsize'] || node.setSize;
-
-      // These attributes default to false for empty strings.
-      case 'roleDescription':
-        return Boolean(node.roleDescription);
-      case 'value':
-        return Boolean(node.value);
-      case 'selected':
-        return node.selected === true;
-      default:
-        return node[attrib] !== undefined || node.state[attrib];
-    }
-  }
-
-  /**
-   * represents something 'falsey', e.g.: for selected:
-   * node.selected === false
-   */
-  static isFalsey(node, attrib) {
-    switch (attrib) {
-      case 'selected':
-        return node.selected === false;
-      default:
-        return !Output.isTruthy(node, attrib);
-    }
-  }
-
-  /**
    * @return {boolean} True if there's any speech that will be output.
    */
   get hasSpeech() {
@@ -680,7 +634,7 @@ export class Output {
       formatLog.writeToken(token);
       const cond = tree.firstChild;
       const attrib = cond.value.slice(1);
-      if (Output.isTruthy(node, attrib)) {
+      if (AutomationUtil.isTruthy(node, attrib)) {
         formatLog.write(attrib + '==true => ');
         this.format_({
           node,
@@ -688,7 +642,7 @@ export class Output {
           outputBuffer: buff,
           outputFormatLogger: formatLog,
         });
-      } else if (Output.isFalsey(node, attrib)) {
+      } else if (AutomationUtil.isFalsey(node, attrib)) {
         formatLog.write(attrib + '==false => ');
         this.format_({
           node,
@@ -701,7 +655,7 @@ export class Output {
       formatLog.writeToken(token);
       const cond = tree.firstChild;
       const attrib = cond.value.slice(1);
-      if (Output.isFalsey(node, attrib)) {
+      if (AutomationUtil.isFalsey(node, attrib)) {
         formatLog.write(attrib + '==false => ');
         this.format_({
           node,
@@ -709,7 +663,7 @@ export class Output {
           outputBuffer: buff,
           outputFormatLogger: formatLog,
         });
-      } else if (Output.isTruthy(node, attrib)) {
+      } else if (AutomationUtil.isTruthy(node, attrib)) {
         formatLog.write(attrib + '==true => ');
         this.format_({
           node,

@@ -11,7 +11,9 @@ import {constants} from './constants.js';
 import {AutomationTreeWalker, AutomationTreeWalkerRestriction} from './tree_walker.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const HasPopup = chrome.automation.HasPopup;
 const RoleType = chrome.automation.RoleType;
+const StateType = chrome.automation.StateType;
 
 export class AutomationUtil {
   /**
@@ -44,6 +46,67 @@ export class AutomationUtil {
     }
     return null;
   }
+
+  /**
+   * For a given automation property, return true if the value
+   * represents something 'truthy', e.g.: for checked:
+   * 'true'|'mixed' -> true
+   * 'false'|undefined -> false
+   * @param {AutomationNode} node
+   * @param {string} attrib
+   * @return {boolean}
+   */
+  static isTruthy(node, attrib) {
+    if (!node) {
+      return false;
+    }
+    switch (attrib) {
+      case 'checked':
+        return Boolean(node.checked) && node.checked !== 'false';
+      case 'hasPopup':
+        return Boolean(node.hasPopup) && node.hasPopup !== HasPopup.FALSE;
+
+      // Chrome automatically calculates these attributes.
+      case 'posInSet':
+        return Boolean(node.htmlAttributes['aria-posinset']) ||
+            (node.root.role !== RoleType.ROOT_WEB_AREA &&
+             Boolean(node.posInSet));
+      case 'setSize':
+        return Boolean(node.htmlAttributes['aria-setsize']) ||
+            Boolean(node.setSize);
+
+      // These attributes default to false for empty strings.
+      case 'roleDescription':
+        return Boolean(node.roleDescription);
+      case 'value':
+        return Boolean(node.value);
+      case 'selected':
+        return node.selected === true;
+      default:
+        return node[attrib] !== undefined ||
+            Boolean(node.state[/** @type {StateType} */ (attrib)]);
+    }
+  }
+
+  /**
+   * represents something 'falsey', e.g.: for selected:
+   * node.selected === false
+   * @param {AutomationNode} node
+   * @param {string} attrib
+   * @return {boolean}
+   */
+  static isFalsey(node, attrib) {
+    if (!node) {
+      return false;
+    }
+    switch (attrib) {
+      case 'selected':
+        return node.selected === false;
+      default:
+        return !AutomationUtil.isTruthy(node, attrib);
+    }
+  }
+
 
   /**
    * Find a node in subtree of |cur| satisfying |pred| using post-order
