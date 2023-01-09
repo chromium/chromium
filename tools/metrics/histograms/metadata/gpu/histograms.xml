@@ -722,29 +722,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.GL.GetErrorDuration.GLImageEGL.BindTexImage"
-    units="microseconds" expires_after="2022-03-31">
-  <owner>berlu@chromium.org</owner>
-  <owner>chromeos-gfx-compositor@google.com</owner>
-  <summary>
-    The time that elapsed for a call to glGetError to complete while trying to
-    bind a GLImageEGL to a texture. The goal is to measure the impact of the
-    potential sync barrier that glGetError represents. Only reported for
-    platforms supporting high resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="Gpu.GL.GetErrorResult.GLImageEGL.BindTexImage"
-    enum="BooleanError" expires_after="2022-03-31">
-  <owner>berlu@chromium.org</owner>
-  <owner>chromeos-gfx-compositor@google.com</owner>
-  <summary>
-    Whether glGetError actually returned an error while trying to bind a
-    GLImageEGL to a texture. The goal is to evaluate how often the call to
-    glGetError might actually serve its purpose.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.GL.ProgramBuildTime" units="ms" expires_after="M82">
   <owner>ccameron@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
