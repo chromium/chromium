@@ -9,6 +9,7 @@ attribution_reporting_promise_test(async t => {
   await registerAttributionSrc(t, {
     trigger: {
       debug_reporting: true,
+      debug_key: '456',
     },
     cookie: attributionDebugCookie,
   });
@@ -20,5 +21,6 @@ attribution_reporting_promise_test(async t => {
   assert_equals(report[0].type, 'trigger-no-matching-source');
   assert_own_property(report[0], 'body');
   assert_equals(report[0].body.attribution_destination, `https://{{host}}`);
+  assert_equals(report[0].body.trigger_debug_key, '456');
 }, 'Verbose debug report is received.');
 </script>
