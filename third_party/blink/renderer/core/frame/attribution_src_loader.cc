@@ -336,8 +336,9 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
                              eligible);
 
-  FetchParameters params(std::move(request),
-                         local_frame_->DomWindow()->GetCurrentWorld());
+  FetchParameters params(
+      std::move(request),
+      ResourceLoaderOptions(local_frame_->DomWindow()->GetCurrentWorld()));
   params.MutableOptions().initiator_info.name =
       fetch_initiator_type_names::kAttributionsrc;
 

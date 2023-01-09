@@ -51,6 +51,12 @@ ResourceLoaderOptions::ResourceLoaderOptions(
 ResourceLoaderOptions& ResourceLoaderOptions::operator=(
     const ResourceLoaderOptions& other) = default;
 
+ResourceLoaderOptions::ResourceLoaderOptions(ResourceLoaderOptions&& other) =
+    default;
+
+ResourceLoaderOptions& ResourceLoaderOptions::operator=(
+    ResourceLoaderOptions&& other) = default;
+
 ResourceLoaderOptions::~ResourceLoaderOptions() = default;
 
 }  // namespace blink

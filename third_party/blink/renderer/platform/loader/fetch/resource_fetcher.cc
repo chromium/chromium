@@ -2504,7 +2504,10 @@ void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource) {
   // requests.
   ResourceRequest request;
   request.CopyHeadFrom(stale_resource->GetResourceRequest());
-  FetchParameters params(std::move(request), nullptr /* world */);
+  // TODO(https://crbug.com/1405800): investigate whether it's correct to use a
+  // null `world` in the ResourceLoaderOptions below.
+  FetchParameters params(std::move(request),
+                         ResourceLoaderOptions(/*world=*/nullptr));
   params.SetStaleRevalidation(true);
   params.MutableResourceRequest().SetSkipServiceWorker(true);
   // Stale revalidation resource requests should be very low regardless of

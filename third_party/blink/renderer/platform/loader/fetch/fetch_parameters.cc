@@ -37,23 +37,15 @@ namespace blink {
 // static
 FetchParameters FetchParameters::CreateForTest(
     ResourceRequest resource_request) {
-  return FetchParameters(std::move(resource_request), nullptr);
+  return FetchParameters(std::move(resource_request),
+                         ResourceLoaderOptions(/*world=*/nullptr));
 }
 
 FetchParameters::FetchParameters(ResourceRequest resource_request,
-                                 scoped_refptr<const DOMWrapperWorld> world)
+                                 ResourceLoaderOptions options)
     : resource_request_(std::move(resource_request)),
       decoder_options_(TextResourceDecoderOptions::kPlainTextContent),
-      options_(std::move(world)),
-      speculative_preload_type_(SpeculativePreloadType::kNotSpeculative),
-      defer_(kNoDefer),
-      image_request_behavior_(ImageRequestBehavior::kNone) {}
-
-FetchParameters::FetchParameters(ResourceRequest resource_request,
-                                 const ResourceLoaderOptions& options)
-    : resource_request_(std::move(resource_request)),
-      decoder_options_(TextResourceDecoderOptions::kPlainTextContent),
-      options_(options),
+      options_(std::move(options)),
       speculative_preload_type_(SpeculativePreloadType::kNotSpeculative),
       defer_(kNoDefer),
       image_request_behavior_(ImageRequestBehavior::kNone) {}
