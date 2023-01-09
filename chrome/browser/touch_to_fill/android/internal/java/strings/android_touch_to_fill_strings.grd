@@ -200,7 +200,7 @@ found in the LICENSE file.
         List of credentials to be filled on touch opened at full height.
       </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_CLOSED" desc="Accessibility string read when the Touch To Fill bottom sheet showing a list of the user's credentials is closed.">
-        List of credentials to be filled on touch is closed.
+        List of credentials is closed.
       </message>
       <message name="IDS_MANAGE_PASSWORDS" desc="Title of the button at the end of a touch to fill sheet that will open the password preferences when tapped.">
         Manage passwords

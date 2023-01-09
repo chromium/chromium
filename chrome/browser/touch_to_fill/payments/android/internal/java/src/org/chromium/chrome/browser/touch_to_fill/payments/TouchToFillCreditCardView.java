@@ -105,26 +105,22 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(crbug.com/1247698): Introduce and use proper payments string.
-        return android.R.string.ok;
+        return R.string.autofill_credit_card_bottom_sheet_content_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/1247698): Introduce and use proper payments string.
-        return android.R.string.ok;
+        return R.string.autofill_credit_card_bottom_sheet_half_height;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/1247698): Introduce and use proper payments string.
-        return android.R.string.ok;
+        return R.string.autofill_credit_card_bottom_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/1247698): Introduce and use proper payments string.
-        return android.R.string.ok;
+        return R.string.autofill_credit_card_bottom_sheet_closed;
     }
 
     @Override
