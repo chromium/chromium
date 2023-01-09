@@ -1,0 +1,5 @@
+Tests that an infinite loop can be interrupted and paused from a step-over.
+didEval
+Expecting the debugger to pause the loop ...
+SUCCESS
+
