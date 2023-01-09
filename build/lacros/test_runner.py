@@ -63,14 +63,10 @@ _SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir))
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'depot_tools'))
 
-# Base GS URL to store prebuilt ash-chrome.
-_GS_URL_BASE = 'gs://ash-chromium-on-linux-prebuilts/x86_64'
 
-# Latest file version.
-_GS_URL_LATEST_FILE = _GS_URL_BASE + '/latest/ash-chromium.txt'
+# The cipd path for prebuilt ash chrome.
+_ASH_CIPD_PATH = 'chromium/testing/linux-ash-chromium/x86_64/ash.zip'
 
-# GS path to the zipped ash-chrome build with any given version.
-_GS_ASH_CHROME_PATH = 'ash-chromium.zip'
 
 # Directory to cache downloaded ash-chrome versions to avoid re-downloading.
 _PREBUILT_ASH_CHROME_DIR = os.path.join(os.path.dirname(__file__),
@@ -170,28 +166,71 @@ def _remove_unused_ash_chrome_versions(version_to_skip):
           'past %d days', p, days)
       shutil.rmtree(p)
 
-def _GsutilCopyWithRetry(gs_path, local_name, retry_times=3):
-  """Gsutil copy with retry.
 
-  Args:
-    gs_path: The gs path for remote location.
-    local_name: The local file name.
-    retry_times: The total try times if the gsutil call fails.
+def _GetLatestVersionOfAshChrome():
+  '''Get the latest ash chrome version.
+
+  Get the package version info with canary ref.
+
+  Returns:
+    A string with the chrome version.
 
   Raises:
-    RuntimeError: If failed to download the specified version, for example,
-        if the version is not present on gcs.
-  """
-  import download_from_google_storage
-  gsutil = download_from_google_storage.Gsutil(
-      download_from_google_storage.GSUTIL_DEFAULT_PATH)
-  exit_code = 1
-  retry = 0
-  while exit_code and retry < retry_times:
-    retry += 1
-    exit_code = gsutil.call('cp', gs_path, local_name)
-  if exit_code:
-    raise RuntimeError('Failed to download: "%s"' % gs_path)
+    RuntimeError: if we can not get the version.
+  '''
+  cp = subprocess.run(
+      ['cipd', 'describe', _ASH_CIPD_PATH, '-version', 'canary'],
+      capture_output=True)
+  assert (cp.returncode == 0)
+  groups = re.search(r'version:(?P<version>[\d\.]+)', str(cp.stdout))
+  if not groups:
+    raise RuntimeError('Can not find the version. Error message: %s' %
+                       cp.stdout)
+  return groups.group('version')
+
+
+def _DownloadAshChromeFromCipd(path, version):
+  '''Download the ash chrome with the requested version.
+
+  Args:
+    path: string for the downloaded ash chrome folder.
+    version: string for the ash chrome version.
+
+  Returns:
+    A string representing the path for the downloaded ash chrome.
+  '''
+  with tempfile.TemporaryDirectory() as temp_dir:
+    ensure_file_path = os.path.join(temp_dir, 'ensure_file.txt')
+    f = open(ensure_file_path, 'w+')
+    f.write(_ASH_CIPD_PATH + ' version:' + version)
+    f.close()
+    subprocess.run(
+        ['cipd', 'ensure', '-ensure-file', ensure_file_path, '-root', path])
+
+
+def _DoubleCheckDownloadedAshChrome(path, version):
+  '''Check the downloaded ash is the expected version.
+
+  Double check by running the chrome binary with --version.
+
+  Args:
+    path: string for the downloaded ash chrome folder.
+    version: string for the expected ash chrome version.
+
+  Raises:
+    RuntimeError if no test_ash_chrome binary can be found.
+  '''
+  test_ash_chrome = os.path.join(path, 'test_ash_chrome')
+  if not os.path.exists(test_ash_chrome):
+    raise RuntimeError('Can not find test_ash_chrome binary under %s' % path)
+  cp = subprocess.run([test_ash_chrome, '--version'], capture_output=True)
+  assert (cp.returncode == 0)
+  if str(cp.stdout).find(version) == -1:
+    logging.warning(
+        'The downloaded ash chrome version is %s, but the '
+        'expected ash chrome is %s. There is a version mismatch. Please '
+        'file a bug to OS>Lacros so someone can take a look.' %
+        (cp.stdout, version))
 
 
 def _DownloadAshChromeIfNecessary(version):
@@ -219,36 +258,9 @@ def _DownloadAshChromeIfNecessary(version):
 
   shutil.rmtree(ash_chrome_dir, ignore_errors=True)
   os.makedirs(ash_chrome_dir)
-  with tempfile.NamedTemporaryFile() as tmp:
-    logging.info('Ash-chrome version: %s', version)
-    gs_path = _GS_URL_BASE + '/' + version + '/' + _GS_ASH_CHROME_PATH
-    _GsutilCopyWithRetry(gs_path, tmp.name)
-
-    # https://bugs.python.org/issue15795. ZipFile doesn't preserve permissions.
-    # And in order to workaround the issue, this function is created and used
-    # instead of ZipFile.extractall().
-    # The solution is copied from:
-    # https://stackoverflow.com/questions/42326428/zipfile-in-python-file-permission
-    def ExtractFile(zf, info, extract_dir):
-      zf.extract(info.filename, path=extract_dir)
-      perm = info.external_attr >> 16
-      os.chmod(os.path.join(extract_dir, info.filename), perm)
-
-    with zipfile.ZipFile(tmp.name, 'r') as zf:
-      # Extra all files instead of just 'chrome' binary because 'chrome' needs
-      # other resources and libraries to run.
-      for info in zf.infolist():
-        ExtractFile(zf, info, ash_chrome_dir)
-
+  _DownloadAshChromeFromCipd(ash_chrome_dir, version)
+  _DoubleCheckDownloadedAshChrome(ash_chrome_dir, version)
   _remove_unused_ash_chrome_versions(version)
-
-
-def _GetLatestVersionOfAshChrome():
-  """Returns the latest version of uploaded ash-chrome."""
-  with tempfile.NamedTemporaryFile() as tmp:
-    _GsutilCopyWithRetry(_GS_URL_LATEST_FILE, tmp.name)
-    with open(tmp.name, 'r') as f:
-      return f.read().strip()
 
 
 def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
