@@ -44,7 +44,7 @@ class VirtualCardSelectionDialogControllerImpl
   void OnCancelButtonClicked() override;
   void OnDialogClosed() override;
 
-  VirtualCardSelectionDialog* dialog_view() { return dialog_view_; }
+  VirtualCardSelectionDialog* dialog() { return dialog_; }
 
  protected:
   explicit VirtualCardSelectionDialogControllerImpl(
@@ -65,7 +65,7 @@ class VirtualCardSelectionDialogControllerImpl
   // is accepted. Will pass the |selected_card_id_| as the param.
   base::OnceCallback<void(const std::string&)> callback_;
 
-  raw_ptr<VirtualCardSelectionDialog> dialog_view_ = nullptr;
+  raw_ptr<VirtualCardSelectionDialog> dialog_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

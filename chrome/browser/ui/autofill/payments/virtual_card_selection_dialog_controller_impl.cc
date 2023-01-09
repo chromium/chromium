@@ -20,17 +20,17 @@ VirtualCardSelectionDialogControllerImpl::
     ~VirtualCardSelectionDialogControllerImpl() {
   // This part of code is executed only if browser window is closed when the
   // dialog is visible. In this case the controller is destroyed before
-  // VirtualCardSelectionDialogViewImpl::dtor() being called, but the reference
+  // VirtualCardSelectionDialogView::dtor() being called, but the reference
   // to controller is not reset. Need to reset via
-  // VirtualCardSelectionDialogViewImpl::Hide() to avoid crash.
-  if (dialog_view_)
-    dialog_view_->Hide();
+  // VirtualCardSelectionDialogView::Hide() to avoid crash.
+  if (dialog_)
+    dialog_->Hide();
 }
 
 void VirtualCardSelectionDialogControllerImpl::ShowDialog(
     const std::vector<CreditCard*>& candidates,
     base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK(!dialog_view_);
+  DCHECK(!dialog_);
 
   candidates_ = candidates;
   // If there is only one card available, the card will be selected by default.
@@ -40,7 +40,7 @@ void VirtualCardSelectionDialogControllerImpl::ShowDialog(
     selected_card_id_ = candidates_[0]->server_id();
 
   callback_ = std::move(callback);
-  dialog_view_ =
+  dialog_ =
       VirtualCardSelectionDialog::CreateAndShow(this, &GetWebContents());
 }
 
@@ -98,7 +98,7 @@ void VirtualCardSelectionDialogControllerImpl::OnCancelButtonClicked() {
 }
 
 void VirtualCardSelectionDialogControllerImpl::OnDialogClosed() {
-  dialog_view_ = nullptr;
+  dialog_ = nullptr;
   callback_.Reset();
 }
 

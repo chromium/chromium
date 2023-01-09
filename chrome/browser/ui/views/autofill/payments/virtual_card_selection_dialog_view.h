@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_IMPL_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_IMPL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog.h"
@@ -14,18 +14,18 @@ namespace autofill {
 
 class VirtualCardSelectionDialogController;
 
-// The Views implementation of VirtualCardSelectionDialog.
-class VirtualCardSelectionDialogViewImpl : public VirtualCardSelectionDialog,
-                                           public views::DialogDelegateView {
+// The View implementation of VirtualCardSelectionDialog.
+class VirtualCardSelectionDialogView : public VirtualCardSelectionDialog,
+                                       public views::DialogDelegateView {
  public:
-  METADATA_HEADER(VirtualCardSelectionDialogViewImpl);
-  VirtualCardSelectionDialogViewImpl(
+  METADATA_HEADER(VirtualCardSelectionDialogView);
+  VirtualCardSelectionDialogView(
       VirtualCardSelectionDialogController* controller);
-  VirtualCardSelectionDialogViewImpl(
-      const VirtualCardSelectionDialogViewImpl&) = delete;
-  VirtualCardSelectionDialogViewImpl& operator=(
-      const VirtualCardSelectionDialogViewImpl&) = delete;
-  ~VirtualCardSelectionDialogViewImpl() override;
+  VirtualCardSelectionDialogView(const VirtualCardSelectionDialogView&) =
+      delete;
+  VirtualCardSelectionDialogView& operator=(
+      const VirtualCardSelectionDialogView&) = delete;
+  ~VirtualCardSelectionDialogView() override;
 
   // VirtualCardSelectionDialog:
   void Hide() override;

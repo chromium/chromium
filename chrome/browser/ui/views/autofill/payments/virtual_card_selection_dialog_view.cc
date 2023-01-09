@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_selection_dialog_view_impl.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_selection_dialog_view.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller.h"
@@ -26,7 +26,7 @@
 
 namespace autofill {
 
-VirtualCardSelectionDialogViewImpl::VirtualCardSelectionDialogViewImpl(
+VirtualCardSelectionDialogView::VirtualCardSelectionDialogView(
     VirtualCardSelectionDialogController* controller)
     : controller_(controller) {
   SetShowTitle(true);
@@ -45,7 +45,7 @@ VirtualCardSelectionDialogViewImpl::VirtualCardSelectionDialogViewImpl(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
-VirtualCardSelectionDialogViewImpl::~VirtualCardSelectionDialogViewImpl() {
+VirtualCardSelectionDialogView::~VirtualCardSelectionDialogView() {
   if (controller_) {
     controller_->OnDialogClosed();
     controller_ = nullptr;
@@ -56,13 +56,13 @@ VirtualCardSelectionDialogViewImpl::~VirtualCardSelectionDialogViewImpl() {
 VirtualCardSelectionDialog* VirtualCardSelectionDialog::CreateAndShow(
     VirtualCardSelectionDialogController* controller,
     content::WebContents* web_content) {
-  VirtualCardSelectionDialogViewImpl* dialog =
-      new VirtualCardSelectionDialogViewImpl(controller);
+  VirtualCardSelectionDialogView* dialog =
+      new VirtualCardSelectionDialogView(controller);
   constrained_window::ShowWebModalDialogViews(dialog, web_content);
   return dialog;
 }
 
-void VirtualCardSelectionDialogViewImpl::Hide() {
+void VirtualCardSelectionDialogView::Hide() {
   // Reset controller reference if the controller has been destroyed before the
   // view being destroyed. This happens if browser window is closed when the
   // dialog is visible.
@@ -73,17 +73,17 @@ void VirtualCardSelectionDialogViewImpl::Hide() {
   GetWidget()->Close();
 }
 
-void VirtualCardSelectionDialogViewImpl::AddedToWidget() {
+void VirtualCardSelectionDialogView::AddedToWidget() {
   // TODO(crbug.com/1020740): The header image is not ready. Implement it later.
 }
 
-bool VirtualCardSelectionDialogViewImpl::IsDialogButtonEnabled(
+bool VirtualCardSelectionDialogView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button == ui::DIALOG_BUTTON_OK ? controller_->IsOkButtonEnabled()
                                         : true;
 }
 
-views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
+views::View* VirtualCardSelectionDialogView::GetContentsView() {
   RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -106,11 +106,11 @@ views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
   return this;
 }
 
-std::u16string VirtualCardSelectionDialogViewImpl::GetWindowTitle() const {
+std::u16string VirtualCardSelectionDialogView::GetWindowTitle() const {
   return controller_->GetContentTitle();
 }
 
-BEGIN_METADATA(VirtualCardSelectionDialogViewImpl, views::DialogDelegateView)
+BEGIN_METADATA(VirtualCardSelectionDialogView, views::DialogDelegateView)
 END_METADATA
 
 }  // namespace autofill
