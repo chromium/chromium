@@ -10,19 +10,14 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
@@ -59,9 +54,8 @@ const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
 
 PrefModelAssociator::PrefModelAssociator(
     const PrefModelAssociatorClient* client,
-    syncer::ModelType type,
-    PersistentPrefStore* user_pref_store)
-    : type_(type), client_(client), user_pref_store_(user_pref_store) {
+    syncer::ModelType type)
+    : type_(type), client_(client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(type_ == syncer::PREFERENCES ||
@@ -71,7 +65,6 @@ PrefModelAssociator::PrefModelAssociator(
 #else
   DCHECK(type_ == syncer::PREFERENCES || type_ == syncer::PRIORITY_PREFERENCES);
 #endif
-  DCHECK(user_pref_store_);
 }
 
 PrefModelAssociator::~PrefModelAssociator() {
@@ -419,17 +412,11 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
       continue;
     }
 
-    if (!TypeMatchesUserPrefStore(pref_name, *new_value)) {
-      // Ignore updates where the server type doesn't match the local type.
-      // Don't use SetPrefWithTypeCheck() because we want to skip notifying
-      // observers and inserting into |synced_preferences_|.
+    if (!SetPrefWithTypeCheck(pref_name, *new_value)) {
+      // Ignore updates where the server type doesn't match the local type. In
+      // that case, don't notify observers or insert into `synced_preferences_`.
       continue;
     }
-
-    // This will only modify the user controlled value store, which takes
-    // priority over the default value but is ignored if the preference is
-    // policy controlled.
-    pref_service_->Set(pref_name, *new_value);
 
     NotifySyncedPrefObservers(pref_specifics.name(), true /*from_sync*/);
 
@@ -589,27 +576,22 @@ void PrefModelAssociator::NotifySyncedPrefObservers(const std::string& path,
   }
 }
 
-void PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
+bool PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
                                                const base::Value& new_value) {
-  if (TypeMatchesUserPrefStore(pref_name, new_value)) {
-    pref_service_->Set(pref_name, new_value);
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(pref_name);
+  if (pref->GetType() != new_value.type()) {
+    DLOG(WARNING) << "Unexpected type mis-match for pref. "
+                  << "Synced value for " << pref_name << " is of type "
+                  << new_value.type() << " which doesn't match the registered "
+                  << "pref type: " << pref->GetType();
+    return false;
   }
-}
-
-bool PrefModelAssociator::TypeMatchesUserPrefStore(
-    const std::string& pref_name,
-    const base::Value& new_value) const {
-  const base::Value* local_value = nullptr;
-  user_pref_store_->GetValue(pref_name, &local_value);
-  if (!local_value || local_value->type() == new_value.type()) {
-    return true;
-  }
-
-  DLOG(WARNING) << "Unexpected type mis-match for pref. "
-                << "Synced value for " << pref_name << " is of type "
-                << new_value.type() << " which doesn't match the locally "
-                << "present pref type: " << local_value->type();
-  return false;
+  // This will only modify the user controlled value store, which takes priority
+  // over the default value but is ignored if the preference is policy
+  // controlled.
+  pref_service_->Set(pref_name, new_value);
+  return true;
 }
 
 void PrefModelAssociator::NotifyStartedSyncing(const std::string& path) const {

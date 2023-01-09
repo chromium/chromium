@@ -51,19 +51,14 @@ PrefServiceSyncable::PrefServiceSyncable(
                   std::move(read_error_callback),
                   async),
       pref_service_forked_(false),
-      pref_sync_associator_(pref_model_associator_client,
-                            syncer::PREFERENCES,
-                            user_prefs.get()),
+      pref_sync_associator_(pref_model_associator_client, syncer::PREFERENCES),
       priority_pref_sync_associator_(pref_model_associator_client,
-                                     syncer::PRIORITY_PREFERENCES,
-                                     user_prefs.get()),
+                                     syncer::PRIORITY_PREFERENCES),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       os_pref_sync_associator_(pref_model_associator_client,
-                               syncer::OS_PREFERENCES,
-                               user_prefs.get()),
+                               syncer::OS_PREFERENCES),
       os_priority_pref_sync_associator_(pref_model_associator_client,
-                                        syncer::OS_PRIORITY_PREFERENCES,
-                                        user_prefs.get()),
+                                        syncer::OS_PRIORITY_PREFERENCES),
 #endif
       pref_registry_(std::move(pref_registry)) {
   pref_sync_associator_.SetPrefService(this);

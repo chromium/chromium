@@ -19,8 +19,6 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 
-class PersistentPrefStore;
-
 namespace base {
 class Value;
 }
@@ -36,16 +34,12 @@ class PrefModelAssociatorClient;
 class PrefServiceSyncable;
 
 // Contains all preference sync related logic.
-// TODO(sync): Merge this into PrefService once we separate the profile
-// PrefService from the local state PrefService.
 class PrefModelAssociator : public syncer::SyncableService {
  public:
-  // Constructs a PrefModelAssociator initializing the |client_| and |type_|
-  // instance variable. The |client| and |user_pref_store| are not owned by this
-  // object and they must outlive the PrefModelAssociator.
+  // Constructs a PrefModelAssociator with the |client_| and |type_|. The
+  // |client| is not and must outlive this object.
   PrefModelAssociator(const PrefModelAssociatorClient* client,
-                      syncer::ModelType type,
-                      PersistentPrefStore* user_pref_store);
+                      syncer::ModelType type);
 
   PrefModelAssociator(const PrefModelAssociator&) = delete;
   PrefModelAssociator& operator=(const PrefModelAssociator&) = delete;
@@ -157,16 +151,10 @@ class PrefModelAssociator : public syncer::SyncableService {
 
   void NotifySyncedPrefObservers(const std::string& path, bool from_sync) const;
 
-  // Sets |pref_name| to |new_value| if |new_value| has an appropriate type for
-  // this preference. Otherwise records metrics and logs a warning.
-  void SetPrefWithTypeCheck(const std::string& pref_name,
+  // Sets |pref_name| to |new_value| and returns true if |new_value| has an
+  // appropriate type for this preference. Otherwise returns false.
+  bool SetPrefWithTypeCheck(const std::string& pref_name,
                             const base::Value& new_value);
-
-  // Returns true if the |new_value| for |pref_name| has the same type as the
-  // existing value in the user's local pref store. If the types don't match,
-  // records metrics and logs a warning.
-  bool TypeMatchesUserPrefStore(const std::string& pref_name,
-                                const base::Value& new_value) const;
 
   // Notifies the synced pref observers that the pref for the given |path| is
   // synced.
@@ -201,7 +189,7 @@ class PrefModelAssociator : public syncer::SyncableService {
   // so updates can be sent back to older clients with this old ModelType.
   // Updates received from older clients will be ignored. The common case is
   // migration from PREFERENCES to OS_PREFERENCES. This field can be removed
-  // after 10/2020.
+  // after 06/2023 (see crbug.com/1255724).
   PreferenceSet legacy_model_type_preferences_;
 
   // The PrefService we are syncing to.
@@ -213,7 +201,7 @@ class PrefModelAssociator : public syncer::SyncableService {
   // Sync's error handler. We use this to create sync errors.
   std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory_;
 
-  // The datatype that this associator is responible for, either PREFERENCES or
+  // The datatype that this associator is responsible for, either PREFERENCES or
   // PRIORITY_PREFERENCES or OS_PREFERENCES or OS_PRIORITY_PREFERENCES.
   syncer::ModelType type_;
 
@@ -225,8 +213,6 @@ class PrefModelAssociator : public syncer::SyncableService {
   std::unordered_map<std::string, std::unique_ptr<SyncedPrefObserverList>>
       synced_pref_observers_;
   raw_ptr<const PrefModelAssociatorClient> client_;  // Weak.
-
-  const raw_ptr<PersistentPrefStore> user_pref_store_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
