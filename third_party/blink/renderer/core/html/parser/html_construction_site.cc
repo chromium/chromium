@@ -303,12 +303,13 @@ void HTMLConstructionSite::FlushPendingText() {
     }
     StringView substring_view =
         string.SubstringView(current_position, break_index - current_position);
-    String substring = g_empty_string;
-    // Strings composed entirely of whitespace are likely to be repeated. Turn
-    // them into AtomicString so we share a single string for each.
-    if (pending_text_.whitespace_mode == kAllWhitespace ||
-        (pending_text_.whitespace_mode == kWhitespaceUnknown &&
-         IsAllWhitespace(substring_view))) {
+    String substring;
+    if (canonicalize_whitespace_strings_ &&
+        (pending_text_.whitespace_mode == kAllWhitespace ||
+         (pending_text_.whitespace_mode == kWhitespaceUnknown &&
+          IsAllWhitespace(substring_view)))) {
+      // Strings composed entirely of whitespace are likely to be repeated. Turn
+      // them into AtomicString so we share a single string for each.
       substring = substring_view.ToAtomicString().GetString();
     } else {
       substring = substring_view.ToString();
@@ -402,7 +403,9 @@ HTMLConstructionSite::HTMLConstructionSite(
           ScriptingContentIsAllowed(parser_content_policy)),
       is_parsing_fragment_(false),
       redirect_attach_to_foster_parent_(false),
-      in_quirks_mode_(document.InQuirksMode()) {
+      in_quirks_mode_(document.InQuirksMode()),
+      canonicalize_whitespace_strings_(
+          RuntimeEnabledFeatures::CanonicalizeWhiteSpaceStringsEnabled()) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument());
 }
 

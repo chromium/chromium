@@ -347,6 +347,9 @@ class HTMLConstructionSite final {
 
   // Whether duplicate attribute was reported.
   bool reported_duplicate_attribute_ = false;
+
+  // Whether strings should be canonicalized (deduplicated).
+  bool canonicalize_whitespace_strings_ = false;
 };
 
 }  // namespace blink
