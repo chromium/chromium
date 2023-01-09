@@ -7,11 +7,11 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 
 #import "base/check.h"
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -38,6 +38,12 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// Animation time for the shift up/down animations to focus/defocus omnibox.
+const CGFloat kShiftTilesDownAnimationDuration = 0.2;
+const CGFloat kShiftTilesUpAnimationDuration = 0.25;
+}  // namespace
 
 @interface NewTabPageViewController () <NewTabPageOmniboxPositioning,
                                         UICollectionViewDelegate,
@@ -91,18 +97,55 @@
 // ContentSuggestions.
 @property(nonatomic, weak) UIButton* identityDiscButton;
 
+// Tap gesture recognizer when the omnibox is focused.
+@property(nonatomic, strong) UITapGestureRecognizer* tapGestureRecognizer;
+
+// Animator for the `shiftTilesUpToFocusOmnibox` animation.
+@property(nonatomic, strong) UIViewPropertyAnimator* animator;
+
+// When the omnibox is focused, this value represents the shift distance of the
+// collection needed to pin the omnibox to the top. It is 0 if the omnibox has
+// not been moved when focused (i.e. the collection was already scrolled to
+// top).
+@property(nonatomic, assign, readwrite) CGFloat collectionShiftingOffset;
+
+// `YES` if the collection is scrolled to the point where the omnibox is stuck
+// to the top of the NTP. Used to lock this position in place on various frame
+// changes.
+@property(nonatomic, assign, readwrite) BOOL scrolledToMinimumHeight;
+
+// The added y-offset of the NTP collection view to make up for the header.
+// Without this, the offset is negative at the top of the NTP.
+@property(nonatomic, assign) CGFloat additionalOffset;
+
+// If YES the animations of the fake omnibox triggered when the collection is
+// scrolled (expansion) are disabled. This is used for the fake omnibox focus
+// animations so the constraints aren't changed while the ntp is scrolled.
+@property(nonatomic, assign) BOOL disableScrollAnimation;
+
+// `YES` if the fakebox header should be animated on scroll.
+@property(nonatomic, assign) BOOL shouldAnimateHeader;
+
+// Keeps track of how long the shift down animation has taken. Used to update
+// the Content Suggestions header as the animation progresses.
+@property(nonatomic, assign) CFTimeInterval shiftTileStartTime;
+
 @end
 
 @implementation NewTabPageViewController
-
-// Synthesized for ContentSuggestionsCollectionControlling protocol.
-@synthesize headerSynchronizer = _headerSynchronizer;
-@synthesize scrolledToMinimumHeight = _scrolledToMinimumHeight;
 
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _viewControllersAboveFeed = [[NSMutableArray alloc] init];
+
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(unfocusOmnibox)];
+
+    _collectionShiftingOffset = 0;
+    _additionalOffset = 0;
+    _shouldAnimateHeader = YES;
   }
   return self;
 }
@@ -126,7 +169,7 @@
   // Prevent the NTP from spilling behind the toolbar and tab strip.
   self.view.clipsToBounds = YES;
 
-  // TODO(crbug.com/1170995): The contentCollectionView width might be narrower
+  // TODO(crbug.com/1403612): The contentCollectionView width might be narrower
   // than the ContentSuggestions view. This causes elements to be hidden. A
   // gesture recognizer is added to allow these elements to be interactable.
   UITapGestureRecognizer* singleTapRecognizer = [[UITapGestureRecognizer alloc]
@@ -159,7 +202,7 @@
   [super viewWillLayoutSubviews];
 
   [self updateNTPLayout];
-  [self updateHeaderSynchronizerOffset];
+  [self updateAdditionalOffset];
   [self updateScrolledToMinimumHeight];
   [self.headerController updateConstraints];
 }
@@ -178,10 +221,10 @@
 
   // Updates omnibox to ensure that the dimensions are correct when navigating
   // back to the NTP.
-  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
+  [self updateFakeOmniboxForScrollPosition];
 
-  if (self.shouldFocusFakebox && [self collectionViewHasLoaded]) {
-    [self.headerController focusFakebox];
+  if (self.shouldFocusFakebox) {
+    [self focusFakebox];
     self.shouldFocusFakebox = NO;
   }
 
@@ -263,8 +306,8 @@
 
     // Pinned offset is different based on the orientation, so we reevaluate the
     // minimum scroll position upon device rotation.
-    CGFloat pinnedOffsetY = [weakSelf.headerSynchronizer pinnedOffsetY];
-    if ([weakSelf.headerController isOmniboxFocused] &&
+    CGFloat pinnedOffsetY = [weakSelf pinnedOffsetY];
+    if (weakSelf.headerController.omniboxFocused &&
         [weakSelf scrollPosition] < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
     }
@@ -302,7 +345,7 @@
 
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
+    [self updateFakeOmniboxForScrollPosition];
   }
 
   [self.headerController updateConstraints];
@@ -411,7 +454,7 @@
   // show a "double" omibox state.
   // TODO(crbug.com/1371261): Replace the -setContentOffsetForWebState: call
   // with calls directly from all async updates to the NTP.
-  if (self.headerController.isOmniboxFocused) {
+  if (self.headerController.omniboxFocused) {
     return;
   }
   [self setContentOffset:-[self heightAboveFeed]];
@@ -434,24 +477,12 @@
   // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
   // positioned, in particular during a rotation while a ViewController is
   // presented in front of the NTP.
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
+  [self updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
   // Ensure initial fake omnibox layout.
-  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
+  [self updateFakeOmniboxForScrollPosition];
 
   if (!self.viewDidAppear && ![self isInitialOffsetFromSavedState]) {
     [self setContentOffsetToTop];
-  }
-}
-
-- (void)focusFakebox {
-  // The fakebox should only be focused once the collection view has reached its
-  // minimum height. If this is not the case yet, we wait until viewDidAppear
-  // before focusing the fakebox.
-  if ([self collectionViewHasLoaded]) {
-    [self.headerController focusFakebox];
-  } else {
-    self.shouldFocusFakebox = YES;
   }
 }
 
@@ -519,8 +550,64 @@
 
 #pragma mark - ContentSuggestionsHeaderViewControllerDelegate
 
-- (BOOL)isScrolledToMinimumHeight {
-  return self.scrolledToMinimumHeight;
+- (void)focusFakebox {
+  // If the feed is meant to be visible and its contents have not loaded yet,
+  // then any omnibox focus animations (i.e. opening app from search widget
+  // action) needs to wait until it is ready. viewDidAppear: currently serves as
+  // this proxy as there is no specific signal given from the feed that its
+  // contents have loaded.
+  if (self.isFeedVisible && ![self collectionViewHasLoaded]) {
+    self.shouldFocusFakebox = YES;
+  } else {
+    [self shiftTilesUpToFocusOmnibox];
+  }
+}
+
+- (void)omniboxDidResignFirstResponder {
+  if (![self.headerController isShowing] && !self.scrolledToMinimumHeight) {
+    return;
+  }
+
+  self.headerController.omniboxFocused = NO;
+  [self shiftTilesDownForOmniboxDefocus];
+}
+
+- (void)shiftTilesDownForOmniboxDefocus {
+  if (IsSplitToolbarMode(self)) {
+    [self.ntpContentDelegate onFakeboxBlur];
+  }
+
+  [self.view removeGestureRecognizer:self.tapGestureRecognizer];
+
+  self.shouldAnimateHeader = YES;
+
+  if (self.animator.running) {
+    [self.animator stopAnimation:NO];
+    [self.animator finishAnimationAtPosition:UIViewAnimatingPositionStart];
+    self.animator = nil;
+  }
+
+  if (self.collectionShiftingOffset == 0 || self.collectionView.dragging) {
+    self.collectionShiftingOffset = 0;
+    [self updateFakeOmniboxForScrollPosition];
+    return;
+  }
+
+  self.scrolledToMinimumHeight = NO;
+
+  // CADisplayLink is used for this animation instead of the standard UIView
+  // animation because the standard animation did not properly convert the
+  // fakebox from its scrolled up mode to its scrolled down mode. Specifically,
+  // calling `UICollectionView reloadData` adjacent to the standard animation
+  // caused the fakebox's views to jump incorrectly. CADisplayLink avoids this
+  // problem because it allows `shiftTilesDownAnimationDidFire` to directly
+  // control each frame.
+  // TODO(crbug.com/1403613): Remove the use of this, listen to the UIScrollView
+  // delegate.
+  CADisplayLink* link = [CADisplayLink
+      displayLinkWithTarget:self
+                   selector:@selector(shiftTilesDownAnimationDidFire:)];
+  [link addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -528,7 +615,7 @@
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
   [self.panGestureHandler scrollViewDidScroll:scrollView];
-  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
+  [self updateFakeOmniboxForScrollPosition];
 
   [self updateScrolledToMinimumHeight];
 
@@ -589,16 +676,10 @@
   // User has tapped the status bar to scroll to the top.
   // Prevent scrolling back to pre-focus state, making sure we don't have
   // two scrolling animations running at the same time.
-  [self.headerSynchronizer resetPreFocusOffset];
+  self.collectionShiftingOffset = 0;
   // Unfocus omnibox without scrolling back.
-  [self.headerSynchronizer unfocusOmnibox];
+  [self unfocusOmnibox];
   return YES;
-}
-
-#pragma mark - ContentSuggestionsCollectionControlling
-
-- (UICollectionView*)collectionView {
-  return self.feedWrapperViewController.contentCollectionView;
 }
 
 #pragma mark - NewTabPageOmniboxPositioning
@@ -647,7 +728,138 @@
                                [touch locationInView:self.view]));
 }
 
+#pragma mark - Scrolling Animations
+
+// Updates the collection view's scroll view offset for the next frame of the
+// shiftTilesDownForOmniboxDefocus animation.
+- (void)shiftTilesDownAnimationDidFire:(CADisplayLink*)link {
+  // If this is the first frame of the animation, store the starting timestamp
+  // and do nothing.
+  if (self.shiftTileStartTime == -1) {
+    self.shiftTileStartTime = link.timestamp;
+    return;
+  }
+
+  CFTimeInterval timeElapsed = link.timestamp - self.shiftTileStartTime;
+  double percentComplete = timeElapsed / kShiftTilesDownAnimationDuration;
+  // Ensure that the percentage cannot be above 1.0.
+  if (percentComplete > 1.0) {
+    percentComplete = 1.0;
+  }
+
+  // Find how much the collection view should be scrolled up in the next frame.
+  CGFloat yOffset = (1.0 - percentComplete) * [self pinnedOffsetY] +
+                    percentComplete * MAX([self pinnedOffsetY] -
+                                              self.collectionShiftingOffset,
+                                          -self.additionalOffset);
+  self.collectionView.contentOffset = CGPointMake(0, yOffset);
+
+  if (percentComplete == 1.0) {
+    [link invalidate];
+    self.collectionShiftingOffset = 0;
+    // Reset `shiftTileStartTime` to its sentinel value.
+    self.shiftTileStartTime = -1;
+  }
+}
+
+- (void)shiftTilesUpToFocusOmnibox {
+  // Add gesture recognizer to collection view when the omnibox is focused.
+  [self.view addGestureRecognizer:self.tapGestureRecognizer];
+
+  if (self.collectionView.decelerating) {
+    // Stop the scrolling if the scroll view is decelerating to prevent the
+    // focus to be immediately lost.
+    [self.collectionView setContentOffset:self.collectionView.contentOffset
+                                 animated:NO];
+  }
+
+  if (self.scrolledToMinimumHeight) {
+    self.shouldAnimateHeader = NO;
+    self.disableScrollAnimation = NO;
+    [self.headerController
+        completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
+            UIViewAnimatingPositionEnd];
+    return;
+  }
+
+  if (CGSizeEqualToSize(self.collectionView.contentSize, CGSizeZero)) {
+    [self.collectionView layoutIfNeeded];
+  }
+
+  CGFloat headerPinnedOffsetY = [self.headerController pinnedOffsetY];
+  self.collectionShiftingOffset = MAX(
+      -self.additionalOffset, headerPinnedOffsetY - [self adjustedOffset].y);
+  self.shouldAnimateHeader = YES;
+
+  CGFloat pinnedOffsetBeforeAnimation = [self pinnedOffsetY];
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock shiftOmniboxToTop = ^{
+    __typeof(weakSelf) strongSelf = weakSelf;
+    // Changing the contentOffset of the collection results in a
+    // scroll and a change in the constraints of the header.
+    strongSelf.collectionView.contentOffset =
+        CGPointMake(0, [strongSelf pinnedOffsetY]);
+    // Layout the header for the constraints to be animated.
+    [strongSelf.headerController layoutHeader];
+    //    [strongSelf.collectionView.collectionViewLayout invalidateLayout];
+  };
+
+  self.animator = [[UIViewPropertyAnimator alloc]
+      initWithDuration:kShiftTilesUpAnimationDuration
+                 curve:UIViewAnimationCurveEaseInOut
+            animations:^{
+              NewTabPageViewController* strongSelf = weakSelf;
+              if (!strongSelf) {
+                return;
+              }
+
+              if (strongSelf.collectionView.contentOffset.y <
+                  [strongSelf pinnedOffsetY]) {
+                self.disableScrollAnimation = YES;
+                [strongSelf.headerController expandHeaderForFocus];
+                shiftOmniboxToTop();
+              }
+            }];
+
+  [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
+    NewTabPageViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    if (finalPosition == UIViewAnimatingPositionEnd) {
+      // Content suggestion headers can be updated during the scroll, causing
+      // `pinnedOffsetY` to be invalid. When this happens during the animation,
+      // the tiles are not scrolled to the top causing the omnibox to be hidden
+      // by the `PrimaryToolbarView`. In that state, the omnibox's popup and the
+      // keyboard are still visible.
+      // If the animation is not interrupted and `pinnedOffsetY` changed
+      // during the animation, shift the omnibox to the top at the end of the
+      // animation.
+      if ([strongSelf pinnedOffsetY] != pinnedOffsetBeforeAnimation &&
+          strongSelf.collectionView.contentOffset.y <
+              [strongSelf pinnedOffsetY]) {
+        shiftOmniboxToTop();
+      }
+      strongSelf.shouldAnimateHeader = NO;
+    }
+
+    strongSelf.scrolledToMinimumHeight = YES;
+    strongSelf.disableScrollAnimation = NO;
+    [strongSelf.headerController
+        completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:finalPosition];
+  }];
+
+  self.animator.interruptible = YES;
+  [self.animator startAnimation];
+}
+
 #pragma mark - Private
+
+- (UICollectionView*)collectionView {
+  return self.feedWrapperViewController.contentCollectionView;
+}
 
 // Configures overscroll actions controller.
 - (void)configureOverscrollActionsController {
@@ -675,6 +887,16 @@
     [self.overscrollActionsController enableOverscrollActions];
   } else {
     [self.overscrollActionsController disableOverscrollActions];
+  }
+}
+
+// Either signals to the omnibox to cancel its focused state or just update the
+// NTP state for an unfocused state.
+- (void)unfocusOmnibox {
+  if (self.headerController.omniboxFocused) {
+    [self.ntpContentDelegate cancelOmniboxEdit];
+  } else {
+    [self omniboxDidResignFirstResponder];
   }
 }
 
@@ -729,6 +951,48 @@
         constraintEqualToAnchor:self.headerController.view.bottomAnchor],
   ];
   [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
+}
+
+// Update the header for a new width size depending on if the change needs to be
+// animated.
+- (void)updateFakeOmniboxOnNewWidth:(CGFloat)width {
+  if (self.shouldAnimateHeader) {
+    // We check -superview here because in certain scenarios (such as when the
+    // VC is rotated underneath another presented VC), in a
+    // UICollectionViewController -viewSafeAreaInsetsDidChange the VC.view has
+    // updated safeAreaInsets, but VC.collectionView does not until a layer
+    // -viewDidLayoutSubviews.  Since self.collectionView and it's superview
+    // should always have the same safeArea, this should be safe.
+    UIEdgeInsets insets = self.collectionView.superview.safeAreaInsets;
+    [self.headerController
+        updateFakeOmniboxForOffset:[self adjustedOffset].y
+                       screenWidth:width
+                    safeAreaInsets:insets
+            animateScrollAnimation:!self.disableScrollAnimation];
+  } else {
+    [self.headerController updateFakeOmniboxForWidth:width];
+  }
+}
+
+// Update the header state for a change in scroll position. This could mean
+// unfocusing the omnibox and/or updating its shape if `shouldAnimateHeader` is
+// YES.
+- (void)updateFakeOmniboxForScrollPosition {
+  // Unfocus the omnibox when the scroll view is scrolled by the user (but not
+  // when a scroll is triggered by layout/UIKit).
+  if (self.headerController.omniboxFocused && !self.shouldAnimateHeader &&
+      self.collectionView.dragging) {
+    [self unfocusOmnibox];
+  }
+
+  if (self.shouldAnimateHeader) {
+    UIEdgeInsets insets = self.collectionView.safeAreaInsets;
+    [self.headerController
+        updateFakeOmniboxForOffset:[self adjustedOffset].y
+                       screenWidth:self.collectionView.frame.size.width
+                    safeAreaInsets:insets
+            animateScrollAnimation:!self.disableScrollAnimation];
+  }
 }
 
 // Pins feed header to top of the NTP when scrolled into the feed, below the
@@ -795,13 +1059,12 @@
 - (void)updateFeedInsetsForContentAbove {
   self.collectionView.contentInset = UIEdgeInsetsMake(
       [self heightAboveFeed], 0, self.collectionView.contentInset.bottom, 0);
-  [self updateHeaderSynchronizerOffset];
+  [self updateAdditionalOffset];
 }
 
-// Updates headerSynchronizer's additionalOffset using the content above the
-// feed.
-- (void)updateHeaderSynchronizerOffset {
-  self.headerSynchronizer.additionalOffset = [self heightAboveFeed];
+// Updates additionalOffset using the content above the feed.
+- (void)updateAdditionalOffset {
+  self.additionalOffset = [self heightAboveFeed];
 }
 
 // Checks whether the feed top section is visible and updates the
@@ -823,13 +1086,13 @@
       (visibleContentStartingPoint > -([self feedTopSectionHeight] * 2) / 3 &&
        ([self scrollPosition] <
         -([self stickyContentHeight] + [self feedTopSectionHeight] / 3))) &&
-      ![self.headerController isOmniboxFocused];
+      !self.headerController.omniboxFocused;
 
   [self.ntpContentDelegate
       signinPromoHasChangedVisibility:isFeedSigninPromoVisible];
 }
 
-// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// TODO(crbug.com/1403612): Remove once the Feed header properly supports
 // ContentSuggestions.
 - (void)handleSingleTapInView:(UITapGestureRecognizer*)recognizer {
   CGPoint location = [recognizer locationInView:[recognizer.view superview]];
@@ -840,7 +1103,7 @@
     [self.identityDiscButton
         sendActionsForControlEvents:UIControlEventTouchUpInside];
   } else {
-    [self.headerSynchronizer unfocusOmnibox];
+    [self unfocusOmnibox];
   }
 }
 
@@ -1006,6 +1269,17 @@
     stickyContentHeight += [self feedHeaderHeight];
   }
   return stickyContentHeight;
+}
+
+// Returns y-offset compensated for any additionalOffset that might be set.
+- (CGPoint)adjustedOffset {
+  CGPoint adjustedOffset = self.collectionView.contentOffset;
+  adjustedOffset.y += self.additionalOffset;
+  return adjustedOffset;
+}
+
+- (CGFloat)pinnedOffsetY {
+  return [self.headerController pinnedOffsetY] - self.additionalOffset;
 }
 
 #pragma mark - Helpers
@@ -1181,8 +1455,7 @@
 // Checks if the collection view is scrolled at least to the minimum height and
 // updates property.
 - (void)updateScrolledToMinimumHeight {
-  CGFloat pinnedOffsetY = [self.headerSynchronizer pinnedOffsetY];
-  self.scrolledToMinimumHeight = [self scrollPosition] >= pinnedOffsetY;
+  self.scrolledToMinimumHeight = [self scrollPosition] >= [self pinnedOffsetY];
 }
 
 // Adds `viewController` as a child of `parentViewController` and adds

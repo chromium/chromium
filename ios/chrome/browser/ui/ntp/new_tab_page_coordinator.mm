@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -55,7 +54,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
@@ -86,6 +84,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/util_swift.h"
@@ -139,7 +138,7 @@
     ContentSuggestionsCoordinator* contentSuggestionsCoordinator;
 
 // View controller for the regular NTP.
-@property(nonatomic, strong) NewTabPageViewController* ntpViewController;
+@property(nonatomic, strong) NewTabPageViewController* NTPViewController;
 
 // Mediator owned by this coordinator.
 @property(nonatomic, strong) NewTabPageMediator* ntpMediator;
@@ -164,11 +163,6 @@
 
 // Wheter the scene is currently in foreground.
 @property(nonatomic, assign) BOOL sceneInForeground;
-
-// Handles interactions with the content suggestions header and the fake
-// omnibox.
-@property(nonatomic, strong)
-    ContentSuggestionsHeaderSynchronizer* headerSynchronizer;
 
 // The ViewController displayed by this Coordinator. This is the returned
 // ViewController and will contain the `containedViewController` (Which can
@@ -310,7 +304,6 @@
   self.feedManagementCoordinator = nil;
   [self.contentSuggestionsCoordinator stop];
   self.contentSuggestionsCoordinator = nil;
-  self.headerSynchronizer = nil;
   self.headerController = nil;
   // Remove before nil to ensure View Hierarchy doesn't hold last strong
   // reference.
@@ -318,8 +311,8 @@
   [self.containedViewController.view removeFromSuperview];
   [self.containedViewController removeFromParentViewController];
   self.containedViewController = nil;
-  self.ntpViewController.feedHeaderViewController = nil;
-  self.ntpViewController = nil;
+  self.NTPViewController.feedHeaderViewController = nil;
+  self.NTPViewController = nil;
   self.feedHeaderViewController.ntpDelegate = nil;
   self.feedHeaderViewController = nil;
   self.feedTopSectionCoordinator.ntpDelegate = nil;
@@ -371,25 +364,21 @@
   if (!self.contentSuggestionsCoordinator) {
     return;
   }
-  [self.ntpViewController stopScrolling];
+  [self.NTPViewController stopScrolling];
 }
 
 - (BOOL)isScrolledToTop {
-  return [self.ntpViewController isNTPScrolledToTop];
+  return [self.NTPViewController isNTPScrolledToTop];
 }
 
 - (void)willUpdateSnapshot {
   if (self.contentSuggestionsCoordinator.started) {
-    [self.ntpViewController willUpdateSnapshot];
+    [self.NTPViewController willUpdateSnapshot];
   }
 }
 
 - (void)focusFakebox {
-  if (self.feedViewController) {
-    [self.ntpViewController focusFakebox];
-  } else {
-    [self.headerController focusFakebox];
-  }
+  [self.NTPViewController focusFakebox];
 }
 
 - (void)reload {
@@ -429,14 +418,14 @@
 }
 
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
-  DCHECK(self.ntpViewController);
-  if (!self.feedViewController || !self.ntpViewController.viewDidAppear) {
+  DCHECK(self.NTPViewController);
+  if (!self.feedViewController || !self.NTPViewController.viewDidAppear) {
     return;
   }
   // When the visible feed has been updated, recalculate the minimum NTP height.
   if (feedType == self.selectedFeed) {
-    [self.ntpViewController updateFeedInsetsForMinimumHeight];
-    [self.ntpViewController updateStickyElements];
+    [self.NTPViewController updateFeedInsetsForMinimumHeight];
+    [self.NTPViewController updateStickyElements];
   }
 }
 
@@ -445,7 +434,7 @@
     [self updateStartForVisibilityChange:visible];
     if (visible && self.started) {
       if ([self isFollowingFeedAvailable]) {
-        self.ntpViewController.shouldScrollIntoFeed = self.shouldScrollIntoFeed;
+        self.NTPViewController.shouldScrollIntoFeed = self.shouldScrollIntoFeed;
         self.shouldScrollIntoFeed = NO;
         // Reassign the sort type in case it changed in another tab.
         self.feedHeaderViewController.followingFeedSortType =
@@ -550,7 +539,7 @@
 
 // Creates all the NTP components.
 - (void)initializeNTPComponents {
-  self.ntpViewController = [[NewTabPageViewController alloc] init];
+  self.NTPViewController = [[NewTabPageViewController alloc] init];
   self.headerController = [[ContentSuggestionsHeaderViewController alloc] init];
   self.ntpMediator = [[NewTabPageMediator alloc]
               initWithWebState:self.webState
@@ -565,9 +554,6 @@
                     logoVendor:ios::provider::CreateLogoVendor(self.browser,
                                                                self.webState)
       identityDiscImageUpdater:self.headerController];
-  self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
-      initWithCollectionController:self.ntpViewController
-                  headerController:self.headerController];
   self.contentSuggestionsCoordinator = [[ContentSuggestionsCoordinator alloc]
       initWithBaseViewController:nil
                          browser:self.browser];
@@ -579,9 +565,9 @@
 // Creates and configures the feed and feed header based on user prefs.
 - (void)configureFeedAndHeader {
   DCHECK([self isFeedHeaderVisible]);
-  DCHECK(self.ntpViewController);
+  DCHECK(self.NTPViewController);
 
-  self.ntpViewController.feedHeaderViewController =
+  self.NTPViewController.feedHeaderViewController =
       self.feedHeaderViewController;
 
   if ([self isFeedTopSectionVisible]) {
@@ -609,7 +595,6 @@
 - (void)configureHeaderController {
   DCHECK(self.headerController);
   DCHECK(self.ntpMediator);
-  DCHECK(self.headerSynchronizer);
 
   self.headerController.isGoogleDefaultSearchEngine =
       [self isGoogleDefaultSearchEngine];
@@ -620,15 +605,11 @@
                      FakeboxFocuser, LensCommands>>(
           self.browser->GetCommandDispatcher());
   self.headerController.commandHandler = self;
-  self.headerController.delegate = self.ntpViewController;
+  self.headerController.delegate = self.NTPViewController;
   self.headerController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.headerController.readingListModel =
-      ReadingListModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
   self.headerController.toolbarDelegate = self.toolbarDelegate;
   self.headerController.baseViewController = self.baseViewController;
-  self.headerController.collectionSynchronizer = self.headerSynchronizer;
   if (NewTabPageTabHelper::FromWebState(self.webState)
           ->ShouldShowStartSurface()) {
     self.headerController.isStartShowing = YES;
@@ -648,9 +629,8 @@
 - (void)configureNTPMediator {
   DCHECK(self.ntpMediator);
   DCHECK(self.contentSuggestionsCoordinator.contentSuggestionsMediator);
-  self.ntpMediator.headerCollectionInteractionHandler = self.headerSynchronizer;
   self.ntpMediator.browser = self.browser;
-  self.ntpMediator.ntpViewController = self.ntpViewController;
+  self.ntpMediator.NTPViewController = self.NTPViewController;
   self.ntpMediator.feedControlDelegate = self;
   self.ntpMediator.consumer = self.headerController;
   self.ntpMediator.suggestionsMediator =
@@ -664,37 +644,36 @@
   self.feedMetricsRecorder.followDelegate = self;
 }
 
-// Configures `self.ntpViewController` and sets it up as the main ViewController
+// Configures `self.NTPViewController` and sets it up as the main ViewController
 // managed by this Coordinator.
 - (void)configureNTPViewController {
-  DCHECK(self.ntpViewController);
+  DCHECK(self.NTPViewController);
 
-  self.ntpViewController.contentSuggestionsViewController =
+  self.NTPViewController.contentSuggestionsViewController =
       self.contentSuggestionsCoordinator.viewController;
 
-  self.ntpViewController.panGestureHandler = self.panGestureHandler;
-  self.ntpViewController.feedVisible = [self isFeedVisible];
-  self.ntpViewController.headerSynchronizer = self.headerSynchronizer;
+  self.NTPViewController.panGestureHandler = self.panGestureHandler;
+  self.NTPViewController.feedVisible = [self isFeedVisible];
 
   self.feedWrapperViewController = [[FeedWrapperViewController alloc]
         initWithDelegate:self
       feedViewController:self.feedViewController];
 
   if ([self isFeedTopSectionVisible]) {
-    self.ntpViewController.feedTopSectionViewController =
+    self.NTPViewController.feedTopSectionViewController =
         self.feedTopSectionCoordinator.viewController;
   }
 
-  self.ntpViewController.feedWrapperViewController =
+  self.NTPViewController.feedWrapperViewController =
       self.feedWrapperViewController;
-  self.ntpViewController.overscrollDelegate = self;
-  self.ntpViewController.ntpContentDelegate = self;
+  self.NTPViewController.overscrollDelegate = self;
+  self.NTPViewController.ntpContentDelegate = self;
 
-  self.ntpViewController.headerController = self.headerController;
+  self.NTPViewController.headerController = self.headerController;
 
-  [self configureMainViewControllerUsing:self.ntpViewController];
-  self.ntpViewController.feedMetricsRecorder = self.feedMetricsRecorder;
-  self.ntpViewController.bubblePresenter = self.bubblePresenter;
+  [self configureMainViewControllerUsing:self.NTPViewController];
+  self.NTPViewController.feedMetricsRecorder = self.feedMetricsRecorder;
+  self.NTPViewController.bubblePresenter = self.bubblePresenter;
 }
 
 // Configures the main ViewController managed by this Coordinator.
@@ -727,13 +706,13 @@
 }
 
 - (id<ThumbStripSupporting>)thumbStripSupporting {
-  return self.ntpViewController;
+  return self.NTPViewController;
 }
 
 #pragma mark - NewTabPageConfiguring
 
 - (void)selectFeedType:(FeedType)feedType {
-  if (!self.ntpViewController.viewDidAppear ||
+  if (!self.NTPViewController.viewDidAppear ||
       ![self isFollowingFeedAvailable]) {
     self.selectedFeed = feedType;
     return;
@@ -775,7 +754,7 @@
   // for the frame.
   UIButton* menuButton = self.feedHeaderViewController.menuButton;
   self.alertCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.ntpViewController
+      initWithBaseViewController:self.NTPViewController
                          browser:self.browser
                            title:nil
                          message:nil
@@ -899,7 +878,7 @@
   self.selectedFeed = feedType;
 
   // Saves scroll position before changing feed.
-  CGFloat scrollPosition = [self.ntpViewController scrollPosition];
+  CGFloat scrollPosition = [self.NTPViewController scrollPosition];
 
   if (feedType == FeedTypeFollowing && IsDotEnabledForNewFollowedContent()) {
     // Clears dot and notifies service that the Following feed content has
@@ -913,7 +892,7 @@
 
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
-  [self.ntpViewController setContentOffsetToTopOfFeed:scrollPosition];
+  [self.NTPViewController setContentOffsetToTopOfFeed:scrollPosition];
 }
 
 - (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType {
@@ -924,7 +903,7 @@
   }
 
   // Save the scroll position before changing sort type.
-  CGFloat scrollPosition = [self.ntpViewController scrollPosition];
+  CGFloat scrollPosition = [self.NTPViewController scrollPosition];
 
   [self.feedMetricsRecorder recordFollowingFeedSortTypeSelected:sortType];
   self.prefService->SetInteger(prefs::kNTPFollowingFeedSortType, sortType);
@@ -937,7 +916,7 @@
 
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
-  [self.ntpViewController setContentOffsetToTopOfFeed:scrollPosition];
+  [self.NTPViewController setContentOffsetToTopOfFeed:scrollPosition];
 }
 
 - (BOOL)shouldFeedBeVisible {
@@ -987,7 +966,7 @@
 - (void)showSignInPromoUI {
   // Show a sign-in promo half sheet.
   self.feedSignInPromoCoordinator = [[FeedSignInPromoCoordinator alloc]
-      initWithBaseViewController:self.ntpViewController
+      initWithBaseViewController:self.NTPViewController
                          browser:self.browser];
   [self.feedSignInPromoCoordinator start];
 }
@@ -1002,7 +981,7 @@
       initWithOperation:AuthenticationOperationSigninAndSync
             accessPoint:access_point];
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
-  [handler showSignin:command baseViewController:self.ntpViewController];
+  [handler showSignin:command baseViewController:self.NTPViewController];
 }
 
 #pragma mark - FeedWrapperViewControllerDelegate
@@ -1029,6 +1008,18 @@
   [self.feedTopSectionCoordinator signinPromoHasChangedVisibility:visible];
 }
 
+- (void)cancelOmniboxEdit {
+  id<OmniboxCommands> omniboxCommandHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  [omniboxCommandHandler cancelOmniboxEdit];
+}
+
+- (void)onFakeboxBlur {
+  id<FakeboxFocuser> fakeboxFocuserHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
+  [fakeboxFocuserHandler onFakeboxBlur];
+}
+
 #pragma mark - NewTabPageDelegate
 
 - (void)updateFeedLayout {
@@ -1039,11 +1030,11 @@
   }
   [self.containedViewController.view setNeedsLayout];
   [self.containedViewController.view layoutIfNeeded];
-  [self.ntpViewController updateNTPLayout];
+  [self.NTPViewController updateNTPLayout];
 }
 
 - (void)setContentOffsetToTop {
-  [self.ntpViewController setContentOffsetToTop];
+  [self.NTPViewController setContentOffsetToTop];
 }
 
 - (BOOL)isGoogleDefaultSearchEngine {
@@ -1065,7 +1056,7 @@
 }
 
 - (void)handleFeedTopSectionClosed {
-  [self.ntpViewController updateScrollPositionForFeedTopSectionClosed];
+  [self.NTPViewController updateScrollPositionForFeedTopSectionClosed];
 }
 
 #pragma mark - NewTabPageFollowDelegate
@@ -1146,7 +1137,7 @@
 
 - (CGFloat)headerInsetForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return [self.ntpViewController heightAboveFeed];
+  return [self.NTPViewController heightAboveFeed];
 }
 
 - (CGFloat)headerHeightForOverscrollActionsController:
@@ -1188,14 +1179,14 @@
 #pragma mark - DiscoverFeedObserverBridge
 
 - (void)discoverFeedModelWasCreated {
-  if (self.ntpViewController.viewDidAppear) {
+  if (self.NTPViewController.viewDidAppear) {
     [self updateNTPForFeed];
 
     if (IsWebChannelsEnabled()) {
       [self.feedHeaderViewController updateForFollowingFeedVisibilityChanged];
-      [self.ntpViewController updateNTPLayout];
+      [self.NTPViewController updateNTPLayout];
       [self updateFeedLayout];
-      [self.ntpViewController setContentOffsetToTop];
+      [self.NTPViewController setContentOffsetToTop];
     }
   }
 }
@@ -1318,20 +1309,20 @@
 // Updates the NTP to take into account a new feed, or a change in feed
 // visibility.
 - (void)updateNTPForFeed {
-  DCHECK(self.ntpViewController);
+  DCHECK(self.NTPViewController);
 
   if (!self.started) {
     return;
   }
 
-  [self.ntpViewController resetViewHierarchy];
+  [self.NTPViewController resetViewHierarchy];
 
   if (self.feedViewController) {
     self.discoverFeedService->RemoveFeedViewController(self.feedViewController);
   }
 
-  self.ntpViewController.feedWrapperViewController = nil;
-  self.ntpViewController.feedTopSectionViewController = nil;
+  self.NTPViewController.feedWrapperViewController = nil;
+  self.NTPViewController.feedTopSectionViewController = nil;
   self.feedWrapperViewController = nil;
   self.feedViewController = nil;
   self.feedTopSectionCoordinator = nil;
@@ -1341,25 +1332,25 @@
   if ([self isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
   } else {
-    self.ntpViewController.feedHeaderViewController = nil;
+    self.NTPViewController.feedHeaderViewController = nil;
     self.feedHeaderViewController = nil;
   }
 
   if ([self isFeedTopSectionVisible]) {
-    self.ntpViewController.feedTopSectionViewController =
+    self.NTPViewController.feedTopSectionViewController =
         self.feedTopSectionCoordinator.viewController;
   }
 
-  self.ntpViewController.feedVisible = [self isFeedVisible];
+  self.NTPViewController.feedVisible = [self isFeedVisible];
 
   self.feedWrapperViewController = [[FeedWrapperViewController alloc]
         initWithDelegate:self
       feedViewController:self.feedViewController];
 
-  self.ntpViewController.feedWrapperViewController =
+  self.NTPViewController.feedWrapperViewController =
       self.feedWrapperViewController;
 
-  [self.ntpViewController layoutContentInParentCollectionView];
+  [self.NTPViewController layoutContentInParentCollectionView];
 
   [self updateFeedLayout];
 }
@@ -1431,7 +1422,7 @@
   DiscoverFeedViewControllerConfiguration* viewControllerConfig =
       [[DiscoverFeedViewControllerConfiguration alloc] init];
   viewControllerConfig.browser = self.browser;
-  viewControllerConfig.scrollDelegate = self.ntpViewController;
+  viewControllerConfig.scrollDelegate = self.NTPViewController;
   viewControllerConfig.previewDelegate = self;
   viewControllerConfig.signInPromoDelegate = self;
 
@@ -1466,9 +1457,9 @@
 // Handles how the NTP reacts when the default search engine is changed.
 - (void)defaultSearchEngineDidChange {
   [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
-  [self.ntpViewController updateNTPLayout];
+  [self.NTPViewController updateNTPLayout];
   [self updateFeedLayout];
-  [self.ntpViewController setContentOffsetToTop];
+  [self.NTPViewController setContentOffsetToTop];
 }
 
 // Toggles feed visibility between hidden or expanded using the feed header
@@ -1482,10 +1473,10 @@
 
 // Configures and returns the feed top section coordinator.
 - (FeedTopSectionCoordinator*)createFeedTopSectionCoordinator {
-  DCHECK(self.ntpViewController);
+  DCHECK(self.NTPViewController);
   FeedTopSectionCoordinator* feedTopSectionCoordinator =
       [[FeedTopSectionCoordinator alloc]
-          initWithBaseViewController:self.ntpViewController
+          initWithBaseViewController:self.NTPViewController
                              browser:self.browser];
   feedTopSectionCoordinator.ntpDelegate = self;
   [feedTopSectionCoordinator start];
@@ -1498,7 +1489,7 @@
   self.feedManagementCoordinator = nil;
 
   self.feedManagementCoordinator = [[FeedManagementCoordinator alloc]
-      initWithBaseViewController:self.ntpViewController
+      initWithBaseViewController:self.NTPViewController
                          browser:self.browser];
   self.feedManagementCoordinator.navigationDelegate = self;
   self.feedManagementCoordinator.feedMetricsRecorder = self.feedMetricsRecorder;

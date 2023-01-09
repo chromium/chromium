@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
@@ -24,8 +23,7 @@
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
 @interface NewTabPageViewController
-    : UIViewController <ContentSuggestionsCollectionControlling,
-                        ThumbStripSupporting,
+    : UIViewController <ThumbStripSupporting,
                         ContentSuggestionsHeaderViewControllerDelegate,
                         UIScrollViewDelegate>
 
@@ -99,9 +97,6 @@
 // Lays out content above feed and adjusts content suggestions.
 - (void)updateNTPLayout;
 
-// Scrolls up the collection view enough to focus the omnibox.
-- (void)focusFakebox;
-
 // Returns whether the NTP is scrolled to the top or not.
 - (BOOL)isNTPScrolledToTop;
 
@@ -136,6 +131,16 @@
 // Forces the elements that stick to the top when scrolling (eg. omnibox, feed
 // header) to update for the current scroll position.
 - (void)updateStickyElements;
+
+// Returns the Y value to use for the scroll view's contentOffset when scrolling
+// the omnibox to the top of the screen.
+- (CGFloat)pinnedOffsetY;
+
+// When the omnibox is focused, this value represents the scroll distance needed
+// to pin the omnibox to the top. It is 0 if no scrolling was done in order pin
+// the omnibox to the top (i.e. the NTP ScrollView was already scrolled far
+// enough down that the omnibo was already pinned to the top).
+@property(nonatomic, assign, readonly) CGFloat collectionShiftingOffset;
 
 @end
 
