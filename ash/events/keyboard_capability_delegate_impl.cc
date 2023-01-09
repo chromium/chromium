@@ -20,6 +20,16 @@ KeyboardCapabilityDelegateImpl::~KeyboardCapabilityDelegateImpl() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
+void KeyboardCapabilityDelegateImpl::AddObserver(
+    ui::KeyboardCapability::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void KeyboardCapabilityDelegateImpl::RemoveObserver(
+    ui::KeyboardCapability::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool KeyboardCapabilityDelegateImpl::TopRowKeysAreFKeys() const {
   // Handle the case when top_row_are_f_keys_pref_ is not initialized yet.
   if (top_row_are_f_keys_pref_->GetPrefName().empty()) {
@@ -41,7 +51,17 @@ void KeyboardCapabilityDelegateImpl::OnActiveUserPrefServiceChanged(
 void KeyboardCapabilityDelegateImpl::InitUserPrefs(PrefService* prefs) {
   if (prefs && prefs->FindPreference(prefs::kSendFunctionKeys)) {
     top_row_are_f_keys_pref_ = std::make_unique<BooleanPrefMember>();
-    top_row_are_f_keys_pref_->Init(prefs::kSendFunctionKeys, prefs);
+    top_row_are_f_keys_pref_->Init(
+        prefs::kSendFunctionKeys, prefs,
+        base::BindRepeating(
+            &KeyboardCapabilityDelegateImpl::NotifyTopRowKeysAreFKeysChanged,
+            base::Unretained(this)));
+  }
+}
+
+void KeyboardCapabilityDelegateImpl::NotifyTopRowKeysAreFKeysChanged() {
+  for (auto& observer : observers_) {
+    observer.OnTopRowKeysAreFKeysChanged();
   }
 }
 

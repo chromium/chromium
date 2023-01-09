@@ -12,12 +12,14 @@
 
 #include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -228,9 +230,9 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   }
 
   void TearDown() override {
-    AshTestBase::TearDown();
     // `provider_` has a dependency on `input_method_manager_`.
     provider_.reset();
+    AshTestBase::TearDown();
     input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
   }
@@ -426,9 +428,12 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
                                observer.config());
 
   // Enable TopRowKeysAreFKeys.
-  Shell::Get()->keyboard_capability()->SetTopRowKeysAsFKeysEnabledForTesting(
-      true);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kSendFunctionKeys, true);
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+  EXPECT_EQ(2, observer.num_times_notified());
 
   // Initialize the same test_data again, but with
   // TopRowKeysAsFunctionKeysEnabled.
@@ -469,7 +474,7 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
        TOGGLE_FULLSCREEN},
   };
 
-  EXPECT_EQ(2, observer.num_times_notified());
+  EXPECT_EQ(3, observer.num_times_notified());
   // Verify observer received the top-row-remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
                                expected_test_data, observer.config());

@@ -325,6 +325,9 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
   // Observe keyboard input method changes.
   input_method::InputMethodManager::Get()->AddObserver(this);
 
+  // Observe top row keys are f-keys preference changes.
+  Shell::Get()->keyboard_capability()->AddObserver(this);
+
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
       base::BindRepeating(
           &AcceleratorConfigurationProvider::OnAcceleratorsUpdated,
@@ -346,6 +349,7 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
 
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   input_method::InputMethodManager::Get()->RemoveObserver(this);
+  Shell::Get()->keyboard_capability()->RemoveObserver(this);
 }
 
 void AcceleratorConfigurationProvider::IsMutable(
@@ -387,6 +391,10 @@ void AcceleratorConfigurationProvider::InputMethodChanged(
     bool show_message) {
   // Accelerators are updated to match the current input method, e.g. positional
   // shortcuts.
+  NotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfigurationProvider::OnTopRowKeysAreFKeysChanged() {
   NotifyAcceleratorsUpdated();
 }
 

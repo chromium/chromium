@@ -15,6 +15,14 @@ KeyboardCapability::KeyboardCapability(std::unique_ptr<Delegate> delegate)
 
 KeyboardCapability::~KeyboardCapability() = default;
 
+void KeyboardCapability::AddObserver(Observer* observer) {
+  delegate_->AddObserver(observer);
+}
+
+void KeyboardCapability::RemoveObserver(Observer* observer) {
+  delegate_->RemoveObserver(observer);
+}
+
 bool KeyboardCapability::TopRowKeysAreFKeys() const {
   return delegate_->TopRowKeysAreFKeys();
 }

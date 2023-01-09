@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -42,7 +43,8 @@ namespace shortcut_ui {
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,
-      public input_method::InputMethodManager::Observer {
+      public input_method::InputMethodManager::Observer,
+      public ui::KeyboardCapability::Observer {
  public:
   using ActionIdToAcceleratorsInfoMap =
       base::flat_map<AcceleratorActionId,
@@ -77,6 +79,9 @@ class AcceleratorConfigurationProvider
   void InputMethodChanged(input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
+
+  // ui::KeyboardCapability::Observer:
+  void OnTopRowKeysAreFKeysChanged() override;
 
   void BindInterface(
       mojo::PendingReceiver<
