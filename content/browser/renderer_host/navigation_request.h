@@ -1709,6 +1709,10 @@ class CONTENT_EXPORT NavigationRequest
     return common_params_->download_policy;
   }
 
+  // Called on FrameTreeNode's NavigationRequest (if any) when another
+  // NavigationRequest associated with the same FrameTreeNode is destroyed.
+  void ResumeCommitIfNeeded();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
@@ -2316,6 +2320,23 @@ class CONTENT_EXPORT NavigationRequest
   // Whether a Cookie header added to this request should not be overwritten by
   // the network service.
   bool allow_cookies_from_browser_ = false;
+
+  // If the browser has asked the renderer to commit the navigation in a
+  // speculative RenderFrameHost, but the renderer has not yet responded, a
+  // subsequent navigation request will be suspended if it also reaches the
+  // ready to commit state. A suspended navigation should populate this field
+  // with a closure that resumes committing the navigation when run.
+  //
+  // 1. The closure should always be bound with a `WeakPtr` receiver. To avoid
+  //    weird reentrancy bugs, it will be run as a non-nested posted task, which
+  //    means the original NavigationRequest could already be deleted by the
+  //    time the closure runs.
+  // 2. The closure may run spuriously, i.e. it may be invoked even if a
+  //    speculative RenderFrameHost is still in the pending commit state and
+  //    still preventing any other navigations from committing. If this happens,
+  //    the closure should re-queue itself. For more background, please see the
+  //    comments in the implementation of `ResumeCommitIfNeeded()`.
+  base::OnceClosure resume_commit_closure_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

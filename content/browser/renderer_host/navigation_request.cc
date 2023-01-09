@@ -1959,6 +1959,23 @@ NavigationRequest::~NavigationRequest() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "", navigation_id_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "NavigationRequest",
                                   navigation_id_);
+
+  // In theory, this only needs to run when deleting a NavigationRequest with an
+  // associated RenderFrameHost that is:
+  //
+  // - the speculative RenderFrameHost
+  // - and that speculative RenderFrameHost was previously in the pending commit
+  //   state.
+  //
+  // In practice, it is safer to just always run this; trying to resume a
+  // NavigationRequest's attempt to commit "too soon" will just re-queue the
+  // request, whereas accidentally forgetting to resume it sometimes will lead
+  // to a navigation just silently not working.
+  if (base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit) &&
+      frame_tree_node_->navigation_request()) {
+    frame_tree_node_->navigation_request()->ResumeCommitIfNeeded();
+  }
+
   if (loading_mem_tracker_)
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
@@ -8581,6 +8598,17 @@ void NavigationRequest::ComputeDownloadPolicy() {
   // [AdFrameNoGesture]
   // [AdFrame]
   // [Interstitial]
+}
+
+void NavigationRequest::ResumeCommitIfNeeded() {
+  DCHECK(base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit));
+  // TODO(crbug.com/1220337): Add some metrics for how often:
+  // - this is run
+  // - how often it ends up having to simply re-queue itself
+  if (resume_commit_closure_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
+        FROM_HERE, std::move(resume_commit_closure_));
+  }
 }
 
 }  // namespace content
