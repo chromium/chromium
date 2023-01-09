@@ -866,6 +866,14 @@ std::u16string PageInfo::GetSiteNameOrAppNameToDisplay() const {
 }
 
 void PageInfo::ComputeUIInputs(const GURL& url) {
+  // TODO(https://crbug.com/1404024): Check |isolated-app| scheme once we have a
+  // definition available for components
+  if (IsIsolatedWebApp()) {
+    site_identity_status_ = SITE_IDENTITY_STATUS_ISOLATED_WEB_APP;
+    site_connection_status_ = SITE_CONNECTION_STATUS_ISOLATED_WEB_APP;
+    return;
+  }
+
   auto security_level = delegate_->GetSecurityLevel();
   auto visible_security_state = delegate_->GetVisibleSecurityState();
 #if !BUILDFLAG(IS_ANDROID)

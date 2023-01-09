@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -526,6 +527,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       switch (identity_info.connection_status) {
         case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
           return CreateSecurityDescription(SecuritySummaryColor::RED,
@@ -905,6 +907,7 @@ int PageInfoUI::GetIdentityIconID(PageInfo::SiteIdentityStatus status) {
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       return IDR_PAGEINFO_GOOD;
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ERROR:
@@ -922,6 +925,7 @@ int PageInfoUI::GetConnectionIconID(PageInfo::SiteConnectionStatus status) {
     case PageInfo::SITE_CONNECTION_STATUS_UNKNOWN:
     case PageInfo::SITE_CONNECTION_STATUS_INTERNAL_PAGE:
     case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED:
+    case PageInfo::SITE_CONNECTION_STATUS_ISOLATED_WEB_APP:
       return IDR_PAGEINFO_GOOD;
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
@@ -940,6 +944,7 @@ int PageInfoUI::GetIdentityIconColorID(PageInfo::SiteIdentityStatus status) {
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       return IDR_PAGEINFO_GOOD_COLOR;
     case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
@@ -957,6 +962,7 @@ int PageInfoUI::GetConnectionIconColorID(
     case PageInfo::SITE_CONNECTION_STATUS_UNKNOWN:
     case PageInfo::SITE_CONNECTION_STATUS_INTERNAL_PAGE:
     case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED:
+    case PageInfo::SITE_CONNECTION_STATUS_ISOLATED_WEB_APP:
       return IDR_PAGEINFO_GOOD_COLOR;
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:

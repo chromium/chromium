@@ -58,9 +58,14 @@ class PageInfo : private content_settings::CookieControlsView {
                                                           // target.
     SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE,   // Non-secure active
                                                           // content.
-    SITE_CONNECTION_STATUS_UNENCRYPTED,      // Connection is not encrypted.
-    SITE_CONNECTION_STATUS_ENCRYPTED_ERROR,  // Connection error occurred.
-    SITE_CONNECTION_STATUS_INTERNAL_PAGE,    // Internal site.
+    SITE_CONNECTION_STATUS_UNENCRYPTED,       // Connection is not encrypted.
+    SITE_CONNECTION_STATUS_ENCRYPTED_ERROR,   // Connection error occurred.
+    SITE_CONNECTION_STATUS_INTERNAL_PAGE,     // Internal site.
+    SITE_CONNECTION_STATUS_ISOLATED_WEB_APP,  // Isolated Web Apps are either
+                                              // from a Signed Web Bundle on
+                                              // local filesystem or from a
+                                              // trusted developer
+                                              // server(dev-proxy mode).
   };
 
   // Validation status of a website's identity.
@@ -84,6 +89,10 @@ class PageInfo : private content_settings::CookieControlsView {
     // The website provided a valid certificate, but the certificate or chain
     // is using a deprecated signature algorithm.
     SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM,
+    // Isolated Web Apps are loaded from local resource (Signed Web Bundle),
+    // except when installed in dev-mode-proxy. The identities of Isolated Web
+    // Apps are associated with the bundle signature.
+    SITE_IDENTITY_STATUS_ISOLATED_WEB_APP,
   };
 
   // Safe Browsing status of a website.
