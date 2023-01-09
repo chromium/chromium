@@ -15,8 +15,11 @@ import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 
@@ -29,6 +32,26 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
     private final RecyclerView mSheetItemListView;
+    private Callback<Integer> mDismissHandler;
+
+    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
+        @Override
+        public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+            super.onSheetClosed(reason);
+            assert mDismissHandler != null;
+            mDismissHandler.onResult(reason);
+            mBottomSheetController.removeObserver(mBottomSheetObserver);
+        }
+
+        @Override
+        public void onSheetStateChanged(int newState, int reason) {
+            super.onSheetStateChanged(newState, reason);
+            if (newState != BottomSheetController.SheetState.HIDDEN) return;
+            // This is a fail-safe for cases where onSheetClosed isn't triggered.
+            mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
+            mBottomSheetController.removeObserver(mBottomSheetObserver);
+        }
+    };
 
     /**
      * Used to access the handlebar to measure it.
@@ -93,6 +116,35 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     public void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
         mSheetItemListView.setAdapter(adapter);
+    }
+
+    /**
+     * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
+     *
+     * @param isVisible A boolean describing whether to show or hide the sheet.
+     * @return True if the request was successful, false otherwise.
+     */
+    public boolean setVisible(boolean isVisible) {
+        if (isVisible) {
+            remeasure(false);
+            mBottomSheetController.addObserver(mBottomSheetObserver);
+            if (!mBottomSheetController.requestShowContent(this, true)) {
+                mBottomSheetController.removeObserver(mBottomSheetObserver);
+                return false;
+            }
+        } else {
+            mBottomSheetController.hideContent(this, true);
+        }
+        return true;
+    }
+
+    /**
+     * Sets a new listener that reacts to events like item selection or dismissal.
+     *
+     * @param dismissHandler A {@link Callback<Integer>}.
+     */
+    public void setDismissHandler(Callback<Integer> dismissHandler) {
+        mDismissHandler = dismissHandler;
     }
 
     /**
@@ -266,5 +318,10 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     @Override
     public boolean hideOnScroll() {
         return false;
+    }
+
+    @Override
+    public void destroy() {
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 }

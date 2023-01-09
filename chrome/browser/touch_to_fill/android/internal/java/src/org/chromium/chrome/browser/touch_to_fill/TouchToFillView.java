@@ -15,13 +15,10 @@ import android.widget.TextView;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the touch to fill
@@ -31,7 +28,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 class TouchToFillView extends TouchToFillViewBase {
     private final BottomSheetController mBottomSheetController;
     private final RecyclerView mSheetItemListView;
-    private Callback<Integer> mDismissHandler;
 
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(int horizontalMargin, Context context) {
@@ -68,25 +64,6 @@ class TouchToFillView extends TouchToFillViewBase {
         }
     }
 
-    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
-        @Override
-        public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-            super.onSheetClosed(reason);
-            assert mDismissHandler != null;
-            mDismissHandler.onResult(reason);
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-        }
-
-        @Override
-        public void onSheetStateChanged(int newState, int reason) {
-            super.onSheetStateChanged(newState, reason);
-            if (newState != BottomSheetController.SheetState.HIDDEN) return;
-            // This is a fail-safe for cases where onSheetClosed isn't triggered.
-            mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-        }
-    };
-
     /**
      * Constructs a TouchToFillView which creates, modifies, and shows the bottom sheet.
      *
@@ -108,35 +85,6 @@ class TouchToFillView extends TouchToFillViewBase {
         }
     }
 
-    /**
-     * Sets a new listener that reacts to events like item selection or dismissal.
-     *
-     * @param dismissHandler A {@link Callback<Integer>}.
-     */
-    void setDismissHandler(Callback<Integer> dismissHandler) {
-        mDismissHandler = dismissHandler;
-    }
-
-    /**
-     * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
-     *
-     * @param isVisible A boolean describing whether to show or hide the sheet.
-     * @return True if the request was successful, false otherwise.
-     */
-    boolean setVisible(boolean isVisible) {
-        if (isVisible) {
-            remeasure(false);
-            mBottomSheetController.addObserver(mBottomSheetObserver);
-            if (!mBottomSheetController.requestShowContent(this, true)) {
-                mBottomSheetController.removeObserver(mBottomSheetObserver);
-                return false;
-            }
-        } else {
-            mBottomSheetController.hideContent(this, true);
-        }
-        return true;
-    }
-
     void setOnManagePasswordClick(Runnable runnable) {
         getContentView()
                 .findViewById(R.id.touch_to_fill_sheet_manage_passwords)
@@ -146,12 +94,6 @@ class TouchToFillView extends TouchToFillViewBase {
     void setManagePasswordText(String buttonText) {
         TextView view = getContentView().findViewById(R.id.touch_to_fill_sheet_manage_passwords);
         view.setText(buttonText);
-    }
-
-    // TODO(crbug.com/1247698): Move this method to the base class.
-    @Override
-    public void destroy() {
-        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     @Override

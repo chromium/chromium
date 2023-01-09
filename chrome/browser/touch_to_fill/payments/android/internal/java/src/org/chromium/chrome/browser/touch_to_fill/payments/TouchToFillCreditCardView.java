@@ -12,13 +12,10 @@ import android.widget.RelativeLayout;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the
@@ -28,7 +25,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 class TouchToFillCreditCardView extends TouchToFillViewBase {
     private final BottomSheetController mBottomSheetController;
     private final RecyclerView mSheetItemListView;
-    private Callback<Integer> mDismissHandler;
     private Runnable mScanCreditCardHandler;
 
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
@@ -62,26 +58,6 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
         }
     }
 
-    // TODO(crbug.com/1247698): Reuse this logic between different sheets.
-    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
-        @Override
-        public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-            super.onSheetClosed(reason);
-            assert mDismissHandler != null;
-            mDismissHandler.onResult(reason);
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-        }
-
-        @Override
-        public void onSheetStateChanged(int newState, int reason) {
-            super.onSheetStateChanged(newState, reason);
-            if (newState != BottomSheetController.SheetState.HIDDEN) return;
-            // This is a fail-safe for cases where onSheetClosed isn't triggered.
-            mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-        }
-    };
-
     /**
      * Constructs a TouchToFillCreditCardView which creates, modifies, and shows the bottom sheet.
      *
@@ -112,15 +88,6 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
         }
     }
 
-    /**
-     * Sets a new listener that reacts to a dismisal event.
-     *
-     * @param dismissHandler A {@link Callback<Integer>}.
-     */
-    void setDismissHandler(Callback<Integer> dismissHandler) {
-        mDismissHandler = dismissHandler;
-    }
-
     void setScanCreditCardCallback(Runnable callback) {
         mScanCreditCardHandler = callback;
     }
@@ -129,35 +96,6 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
         View managePaymentMethodsButton =
                 getContentView().findViewById(R.id.manage_payment_methods);
         managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
-    }
-
-    /**
-     * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
-     *
-     * @param isVisible A boolean describing whether to show or hide the sheet.
-     * @return True if the request was successful, false otherwise.
-     */
-    boolean setVisible(boolean isVisible) {
-        // TODO(crbug.com/1247698): Move this method to the base class.
-        if (isVisible) {
-            remeasure(false);
-        } else {
-            mBottomSheetController.hideContent(this, true);
-            return true;
-        }
-
-        mBottomSheetController.addObserver(mBottomSheetObserver);
-        if (!mBottomSheetController.requestShowContent(this, true)) {
-            mBottomSheetController.removeObserver(mBottomSheetObserver);
-            return false;
-        }
-        return true;
-    }
-
-    // TODO(crbug.com/1247698): Move this method to the base class.
-    @Override
-    public void destroy() {
-        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     @Override
