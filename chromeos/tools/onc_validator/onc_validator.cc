@@ -88,8 +88,7 @@ void PrintHelp() {
           kStatusArgumentError);
 }
 
-std::unique_ptr<base::DictionaryValue> ReadDictionary(
-    const std::string& filename) {
+base::Value::Dict ReadDictionary(const std::string& filename) {
   base::FilePath path(filename);
   JSONFileValueDeserializer deserializer(path,
                                          base::JSON_ALLOW_TRAILING_COMMAS);
@@ -103,15 +102,13 @@ std::unique_ptr<base::DictionaryValue> ReadDictionary(
     return nullptr;
   }
 
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(value));
-  if (!dict) {
+  if (!value->is_dict()) {
     LOG(ERROR) << "File '" << filename
                << "' does not contain a dictionary as expected, but type "
-               << value->GetType();
+               << base::Value::GetTypeName(value->type());
   }
 
-  return dict;
+  return std::move(*value).TakeDict();
 }
 
 int main(int argc, const char* argv[]) {
@@ -125,7 +122,7 @@ int main(int argc, const char* argv[]) {
     return kStatusArgumentError;
   }
 
-  std::unique_ptr<base::DictionaryValue> onc_object = ReadDictionary(args[1]);
+  base::Value::Dict onc_object = ReadDictionary(args[1]);
 
   if (!onc_object)
     return kStatusJsonError;
@@ -157,7 +154,8 @@ int main(int argc, const char* argv[]) {
   }
 
   chromeos::onc::Validator::Result result;
-  validator.ValidateAndRepairObject(signature, *onc_object, &result);
+  validator.ValidateAndRepairObject(
+      signature, Base::Value(std::move(onc_object)), &result);
 
   switch (result) {
     case chromeos::onc::Validator::VALID:
