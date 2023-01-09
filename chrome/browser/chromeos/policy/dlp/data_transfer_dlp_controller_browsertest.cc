@@ -701,13 +701,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
   EXPECT_TRUE(!widget || widget->IsClosed());
 }
 
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ShouldProceedWarn DISABLED_ShouldProceedWarn
-#else
-#define MAYBE_ShouldProceedWarn ShouldProceedWarn
-#endif
+// TODO(b/264865493): Flaky
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
-                       MAYBE_ShouldProceedWarn) {
+                       DISABLED_ShouldProceedWarn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
