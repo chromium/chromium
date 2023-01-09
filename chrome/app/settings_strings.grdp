@@ -3413,6 +3413,9 @@
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
     While in Incognito, sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
   </message>
+  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO_FPS" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
+    While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
+  </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY" desc="Label for block third party cookies radio toggle">
     Block third-party cookies
   </message>

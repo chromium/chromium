@@ -311,6 +311,17 @@ suite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled', function() {
         page.prefs.profile.cookie_controls_mode.value);
     assertTrue(firstPartySetsToggle.disabled, 'expect toggle to be disabled');
   });
+
+  test('Block third-party cookies in Incognito FPS bullet point', function() {
+    // Confirm the correct string is set.
+    const cookiePageBlockThirdIncognitoBulTwoLabel =
+        page.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#cookiePageBlockThirdIncognitoBulTwo')!.innerText.trim();
+    assertEquals(
+        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoFps'),
+        cookiePageBlockThirdIncognitoBulTwoLabel);
+  });
 });
 
 // TODO(crbug.com/1378703): Remove after crbug/1378703 launched.
@@ -607,6 +618,17 @@ suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
     assertFalse(page.$.toast.open);
+  });
+
+  test('Block third-party cookies in Incognito bullet point', function() {
+    // Confirm the correct string is set.
+    const cookiePageBlockThirdIncognitoBulTwoLabel =
+        page.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#cookiePageBlockThirdIncognitoBulTwo')!.innerText.trim();
+    assertEquals(
+        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwo'),
+        cookiePageBlockThirdIncognitoBulTwoLabel);
   });
 });
 

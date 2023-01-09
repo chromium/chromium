@@ -163,6 +163,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private exceptionListsReadOnly_: boolean;
   private blockAllPref_: chrome.settingsPrivate.PrefObject;
   focusConfig: FocusConfig;
+  private enableFirstPartySetsUI_: boolean;
   private isPrivacySandboxSettings4_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -185,6 +186,13 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     if (route !== routes.COOKIES) {
       this.$.toast.hide();
     }
+  }
+
+  private getCookiePageBlockThirdIncognitoBulTwoLabel(): string {
+    return this.i18n(
+        this.enableFirstPartySetsUI_ ?
+            'cookiePageBlockThirdIncognitoBulTwoFps' :
+            'cookiePageBlockThirdIncognitoBulTwo');
   }
 
   // <if expr="not chromeos_ash">

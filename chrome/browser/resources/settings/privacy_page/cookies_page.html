@@ -94,9 +94,11 @@
                 <iron-icon icon="settings:cookie"></iron-icon>
                 <div class="secondary">$i18n{privacyPageTitle}</div>
               </div>
-              <div class="bullet-line">
+              <div class="bullet-line" id="cookiePageBlockThirdIncognitoBulTwo">
                 <iron-icon icon="settings:block"></iron-icon>
-                <div class="secondary">$i18n{privacyPageTitle}</div>
+                <div class="secondary">
+                  [[getCookiePageBlockThirdIncognitoBulTwoLabel()]]
+                </div>
               </div>
             </div>
           </settings-collapse-radio-button>
@@ -166,10 +168,10 @@
                       $i18n{cookiePageBlockThirdIncognitoBulOne}
                 </div>
               </div>
-              <div class="bullet-line">
+              <div class="bullet-line" id="cookiePageBlockThirdIncognitoBulTwo">
                 <iron-icon icon="settings:block"></iron-icon>
                 <div class="secondary">
-                      $i18n{cookiePageBlockThirdIncognitoBulTwo}
+                  [[getCookiePageBlockThirdIncognitoBulTwoLabel()]]
                 </div>
               </div>
             </div>
