@@ -309,9 +309,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
   source->AddBoolean(
-      "multiPageDocScan",
-      base::FeatureList::IsEnabled(ash::features::kCameraAppMultiPageDocScan));
-  source->AddBoolean(
       "lowStorageWarning",
       base::FeatureList::IsEnabled(ash::features::kCameraAppLowStorageWarning));
 }

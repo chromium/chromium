@@ -824,11 +824,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "camera-app-multi-page-doc-scan",
-    "owners": [ "chuhsuan" ],
-    "expiry_milestone": 111
-  },
-  {
     "name": "canvas-2d-layers",
     "owners": [ "fserb", "jpgravel", "juanmihd", "yiyix" ],
     "expiry_milestone": 114

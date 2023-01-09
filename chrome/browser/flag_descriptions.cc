@@ -4942,11 +4942,6 @@ extern const char kCameraAppLowStorageWarningDescription[] =
     "Enable this flag to show warning and handle the video recording when "
     "device storage is running low";
 
-const char kCameraAppMultiPageDocScanName[] = "Camera App Multi-Page Doc Scan";
-const char kCameraAppMultiPageDocScanDescription[] =
-    "Enables this flag to show multi-page UI for document scanning featrue in "
-    "the camera app";
-
 const char kCryptAuthV2DedupDeviceLastActivityTimeName[] =
     "Dedup devices by last activity time";
 const char kCryptAuthV2DedupDeviceLastActivityTimeDescription[] =
