@@ -78,6 +78,8 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   FrameKind GetWebDialogFrameKind() const override;
   std::string GetDialogArgs() const override;
+  // Derived classes that override this method should still call
+  // SystemWebDialogDelegate::OnDialogShown.
   void OnDialogShown(content::WebUI* webui) override;
   // Note: deletes |this|.
   void OnDialogClosed(const std::string& json_retval) override;

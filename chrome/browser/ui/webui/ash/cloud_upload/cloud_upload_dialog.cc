@@ -267,6 +267,7 @@ bool CloudUploadDialog::Show(
 
 void CloudUploadDialog::OnDialogShown(content::WebUI* webui) {
   DCHECK(dialog_args_);
+  SystemWebDialogDelegate::OnDialogShown(webui);
   static_cast<CloudUploadUI*>(webui->GetController())
       ->SetDialogArgs(std::move(dialog_args_));
 }
