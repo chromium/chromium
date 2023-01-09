@@ -26,7 +26,6 @@
 #endif
 
 namespace base {
-class MessagePump;
 class SingleThreadTaskRunner;
 }
 
@@ -94,6 +93,8 @@ class HEADLESS_EXPORT HeadlessBrowser {
   // become invalid after calling this function.
   virtual void Shutdown() = 0;
 
+  static std::string GetProductNameAndVersion();
+
  protected:
   HeadlessBrowser() {}
   virtual ~HeadlessBrowser() {}
@@ -134,21 +135,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // A single way to test whether the devtools server has been requested.
   bool DevtoolsServerEnabled();
 
-  // Optional message pump that overrides the default. Must outlive the browser.
-  raw_ptr<base::MessagePump> message_pump = nullptr;
-
-  // Run the browser in single process mode instead of using separate renderer
-  // processes as per default. Note that this also disables any sandboxing of
-  // web content, which can be a security risk.
-  bool single_process_mode = false;
-
-  // Run the browser without renderer sandbox. This option can be
-  // a security risk and should be used with caution.
-  bool disable_sandbox = false;
-
-  // Whether or not to enable content::ResourceScheduler. Enabled by default.
-  bool enable_resource_scheduler = true;
-
   // Choose the GL implementation to use for rendering. A suitable
   // implementantion is selected by default. Setting this to an empty
   // string can be used to disable GL rendering (e.g., WebGL support).
@@ -159,8 +145,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   std::string angle_implementation;
 
   // Default per-context options, can be specialized on per-context basis.
-
-  std::string product_name_and_version;
   std::string accept_language;
   std::string user_agent;
 
@@ -184,33 +168,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // Whether or not BeginFrames will be issued over DevTools protocol
   // (experimental).
   bool enable_begin_frame_control = false;
-
-  // Whether or not all sites should have a dedicated process.
-  bool site_per_process = false;
-
-  // Set a callback that is invoked to override WebPreferences for RenderViews
-  // created within the HeadlessBrowser. Called whenever the WebPreferences of a
-  // RenderView change. Executed on the browser main thread.
-  //
-  // WARNING: We cannot provide any guarantees about the stability of the
-  // exposed WebPreferences API, so use with care.
-  base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
-      override_web_preferences_callback;
-
-  // Set a callback that is invoked when a new child process is spawned or
-  // forked and allows adding additional command line flags to the child
-  // process's command line. Executed on the browser main thread.
-  // |child_browser_context| points to the BrowserContext of the child
-  // process, but will only be set if the child process is a renderer process.
-  //
-  // NOTE: This callback may be called on the UI or IO thread even after the
-  // HeadlessBrowser has been destroyed.
-  using AppendCommandLineFlagsCallback = base::RepeatingCallback<void(
-      base::CommandLine* command_line,
-      HeadlessBrowserContext* child_browser_context,
-      const std::string& child_process_type,
-      int child_process_id)>;
-  AppendCommandLineFlagsCallback append_command_line_flags_callback;
 
   // Minidump crash reporter settings. Crash reporting is disabled by default.
   // By default crash dumps are written to the directory containing the
@@ -241,14 +198,8 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
 
   Builder& EnableDevToolsServer(const net::HostPortPair& endpoint);
   Builder& EnableDevToolsPipe();
-  Builder& SetMessagePump(base::MessagePump* pump);
-  Builder& SetSingleProcessMode(bool single_process);
-  Builder& SetDisableSandbox(bool disable);
-  Builder& SetEnableResourceScheduler(bool enable);
   Builder& SetGLImplementation(const std::string& implementation);
   Builder& SetANGLEImplementation(const std::string& implementation);
-  Builder& SetAppendCommandLineFlagsCallback(
-      const Options::AppendCommandLineFlagsCallback& callback);
 #if BUILDFLAG(IS_WIN)
   Builder& SetInstance(HINSTANCE hinstance);
   Builder& SetSandboxInfo(sandbox::SandboxInterfaceInfo* info);
@@ -256,7 +207,6 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
 
   // Per-context settings.
 
-  Builder& SetProductNameAndVersion(const std::string& name_and_version);
   Builder& SetAcceptLanguage(const std::string& language);
   Builder& SetEnableBeginFrameControl(bool enable);
   Builder& SetUserAgent(const std::string& agent);
@@ -264,10 +214,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetWindowSize(const gfx::Size& size);
   Builder& SetUserDataDir(const base::FilePath& dir);
   Builder& SetIncognitoMode(bool incognito);
-  Builder& SetSitePerProcess(bool per_process);
   Builder& SetBlockNewWebContents(bool block);
-  Builder& SetOverrideWebPreferencesCallback(
-      base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback);
   Builder& SetCrashReporterEnabled(bool enabled);
   Builder& SetCrashDumpsDir(const base::FilePath& dir);
   Builder& SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting);

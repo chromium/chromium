@@ -89,11 +89,6 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
   Builder& EnableUnsafeNetworkAccessWithMojoBindings(
       bool enable_http_and_https_if_mojo_used);
 
-  // By default |HeadlessBrowserContext| inherits the following options from
-  // the browser instance. The methods below can be used to override these
-  // settings. See HeadlessBrowser::Options for their meaning.
-  Builder& SetProductNameAndVersion(
-      const std::string& product_name_and_version);
   Builder& SetAcceptLanguage(const std::string& accept_language);
   Builder& SetUserAgent(const std::string& user_agent);
   Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> proxy_config);
@@ -101,8 +96,6 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
   Builder& SetUserDataDir(const base::FilePath& user_data_dir);
   Builder& SetIncognitoMode(bool incognito_mode);
   Builder& SetBlockNewWebContents(bool block_new_web_contents);
-  Builder& SetOverrideWebPreferencesCallback(
-      base::RepeatingCallback<void(WebPreferences*)> callback);
 
   HeadlessBrowserContext* Build();
 
@@ -112,24 +105,8 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
 
   explicit Builder(HeadlessBrowserImpl* browser);
 
-  struct MojoBindings {
-    MojoBindings();
-    MojoBindings(const std::string& mojom_name, const std::string& js_bindings);
-
-    MojoBindings(const MojoBindings&) = delete;
-    MojoBindings& operator=(const MojoBindings&) = delete;
-
-    ~MojoBindings();
-
-    std::string mojom_name;
-    std::string js_bindings;
-  };
-
   raw_ptr<HeadlessBrowserImpl> browser_;
   std::unique_ptr<HeadlessBrowserContextOptions> options_;
-
-  std::list<MojoBindings> mojo_bindings_;
-  bool enable_http_and_https_if_mojo_used_;
 };
 
 }  // namespace headless

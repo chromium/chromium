@@ -102,10 +102,6 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
 
-  // We store the callback here because we may call it from the I/O thread.
-  HeadlessBrowser::Options::AppendCommandLineFlagsCallback
-      append_command_line_flags_callback_;
-
   std::unique_ptr<StubBadgeService> stub_badge_service_;
 };
 

@@ -259,30 +259,4 @@ IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithUserDataDirAndMaybeIncognito,
   EXPECT_EQ(incognito(), base::IsDirectoryEmpty(user_data_dir()));
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ContextWebPreferences) {
-  // By default, hide_scrollbars should be false.
-  EXPECT_FALSE(WebPreferences().hide_scrollbars);
-
-  // Set hide_scrollbars preference to true for a new BrowserContext.
-  HeadlessBrowserContext* browser_context =
-      browser()
-          ->CreateBrowserContextBuilder()
-          .SetOverrideWebPreferencesCallback(base::BindRepeating(
-              [](blink::web_pref::WebPreferences* preferences) {
-                preferences->hide_scrollbars = true;
-              }))
-          .Build();
-  HeadlessWebContents* web_contents =
-      browser_context->CreateWebContentsBuilder()
-          .SetInitialURL(GURL("about:blank"))
-          .Build();
-
-  // Verify that the preference takes effect.
-  HeadlessWebContentsImpl* contents_impl =
-      HeadlessWebContentsImpl::From(web_contents);
-  EXPECT_TRUE(contents_impl->web_contents()
-                  ->GetOrCreateWebPreferences()
-                  .hide_scrollbars);
-}
-
 }  // namespace headless

@@ -233,9 +233,6 @@ int RunContentMain(
   params.argv = options.argv;
 #endif
 
-  // TODO(skyostil): Implement custom message pumps.
-  DCHECK(!options.message_pump);
-
   auto browser = std::make_unique<HeadlessBrowserImpl>(
       std::move(on_browser_start_callback), std::move(options));
   HeadlessContentMainDelegate delegate(std::move(browser));

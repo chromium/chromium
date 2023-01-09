@@ -184,15 +184,6 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   if (!command_line->HasSwitch(::switches::kHeadless))
     command_line->AppendSwitch(::switches::kHeadless);
 
-  if (options()->single_process_mode)
-    command_line->AppendSwitch(::switches::kSingleProcess);
-
-  if (options()->disable_sandbox)
-    command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
-
-  if (!options()->enable_resource_scheduler)
-    command_line->AppendSwitch(::switches::kDisableResourceScheduler);
-
 #if BUILDFLAG(IS_OZONE)
   // The headless backend is automatically chosen for a headless build, but also
   // adding it here allows us to run in a non-headless build too.

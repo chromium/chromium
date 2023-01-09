@@ -28,9 +28,6 @@ constexpr gfx::Size kDefaultWindowSize(800, 600);
 constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
     gfx::FontRenderParams::Hinting::HINTING_FULL;
 
-std::string GetProductNameAndVersion() {
-  return std::string(kHeadlessProductName) + "/" + PRODUCT_VERSION;
-}
 }  // namespace
 
 Options::Options(int argc, const char** argv)
@@ -38,8 +35,8 @@ Options::Options(int argc, const char** argv)
       argv(argv),
       gl_implementation(gl::kGLImplementationANGLEName),
       angle_implementation(gl::kANGLEImplementationSwiftShaderForWebGLName),
-      product_name_and_version(GetProductNameAndVersion()),
-      user_agent(content::BuildUserAgentFromProduct(product_name_and_version)),
+      user_agent(content::BuildUserAgentFromProduct(
+          HeadlessBrowser::GetProductNameAndVersion())),
       window_size(kDefaultWindowSize),
       font_render_hinting(kDefaultFontRenderHinting) {}
 
@@ -58,12 +55,6 @@ Builder::Builder(int argc, const char** argv) : options_(argc, argv) {}
 Builder::Builder() : options_(0, nullptr) {}
 
 Builder::~Builder() = default;
-
-Builder& Builder::SetProductNameAndVersion(
-    const std::string& name_and_version) {
-  options_.product_name_and_version = name_and_version;
-  return *this;
-}
 
 Builder& Builder::SetUserAgent(const std::string& agent) {
   options_.user_agent = agent;
@@ -90,28 +81,8 @@ Builder& Builder::EnableDevToolsPipe() {
   return *this;
 }
 
-Builder& Builder::SetMessagePump(base::MessagePump* pump) {
-  options_.message_pump = pump;
-  return *this;
-}
-
 Builder& Builder::SetProxyConfig(std::unique_ptr<net::ProxyConfig> config) {
   options_.proxy_config = std::move(config);
-  return *this;
-}
-
-Builder& Builder::SetSingleProcessMode(bool single_process) {
-  options_.single_process_mode = single_process;
-  return *this;
-}
-
-Builder& Builder::SetDisableSandbox(bool disable) {
-  options_.disable_sandbox = disable;
-  return *this;
-}
-
-Builder& Builder::SetEnableResourceScheduler(bool enable) {
-  options_.enable_resource_scheduler = enable;
   return *this;
 }
 
@@ -122,12 +93,6 @@ Builder& Builder::SetGLImplementation(const std::string& implementation) {
 
 Builder& Builder::SetANGLEImplementation(const std::string& implementation) {
   options_.angle_implementation = implementation;
-  return *this;
-}
-
-Builder& Builder::SetAppendCommandLineFlagsCallback(
-    const Options::AppendCommandLineFlagsCallback& callback) {
-  options_.append_command_line_flags_callback = callback;
   return *this;
 }
 
@@ -158,19 +123,8 @@ Builder& Builder::SetIncognitoMode(bool incognito) {
   return *this;
 }
 
-Builder& Builder::SetSitePerProcess(bool per_process) {
-  options_.site_per_process = per_process;
-  return *this;
-}
-
 Builder& Builder::SetBlockNewWebContents(bool block) {
   options_.block_new_web_contents = block;
-  return *this;
-}
-
-Builder& Builder::SetOverrideWebPreferencesCallback(
-    base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback) {
-  options_.override_web_preferences_callback = std::move(callback);
   return *this;
 }
 
@@ -191,6 +145,11 @@ Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
 
 Options Builder::Build() {
   return std::move(options_);
+}
+
+/// static
+std::string HeadlessBrowser::GetProductNameAndVersion() {
+  return std::string(kHeadlessProductName) + "/" + PRODUCT_VERSION;
 }
 
 }  // namespace headless

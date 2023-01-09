@@ -388,13 +388,6 @@ HeadlessBrowserContext::Builder::~Builder() = default;
 
 HeadlessBrowserContext::Builder::Builder(Builder&&) = default;
 
-HeadlessBrowserContext::Builder&
-HeadlessBrowserContext::Builder::SetProductNameAndVersion(
-    const std::string& product_name_and_version) {
-  options_->product_name_and_version_ = product_name_and_version;
-  return *this;
-}
-
 HeadlessBrowserContext::Builder& HeadlessBrowserContext::Builder::SetUserAgent(
     const std::string& user_agent) {
   options_->user_agent_ = user_agent;
@@ -441,24 +434,8 @@ HeadlessBrowserContext::Builder::SetBlockNewWebContents(
   return *this;
 }
 
-HeadlessBrowserContext::Builder&
-HeadlessBrowserContext::Builder::SetOverrideWebPreferencesCallback(
-    base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback) {
-  options_->override_web_preferences_callback_ = std::move(callback);
-  return *this;
-}
-
 HeadlessBrowserContext* HeadlessBrowserContext::Builder::Build() {
   return browser_->CreateBrowserContext(this);
 }
-
-HeadlessBrowserContext::Builder::MojoBindings::MojoBindings() = default;
-
-HeadlessBrowserContext::Builder::MojoBindings::MojoBindings(
-    const std::string& mojom_name,
-    const std::string& js_bindings)
-    : mojom_name(mojom_name), js_bindings(js_bindings) {}
-
-HeadlessBrowserContext::Builder::MojoBindings::~MojoBindings() = default;
 
 }  // namespace headless

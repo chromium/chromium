@@ -31,12 +31,6 @@ HeadlessBrowserContextOptions::HeadlessBrowserContextOptions(
     HeadlessBrowser::Options* options)
     : browser_options_(options) {}
 
-const std::string& HeadlessBrowserContextOptions::product_name_and_version()
-    const {
-  return ReturnOverriddenValue(product_name_and_version_,
-                               browser_options_->product_name_and_version);
-}
-
 const std::string& HeadlessBrowserContextOptions::accept_language() const {
   return ReturnOverriddenValue(accept_language_,
                                browser_options_->accept_language);
@@ -68,13 +62,6 @@ bool HeadlessBrowserContextOptions::incognito_mode() const {
 bool HeadlessBrowserContextOptions::block_new_web_contents() const {
   return ReturnOverriddenValue(block_new_web_contents_,
                                browser_options_->block_new_web_contents);
-}
-
-base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
-HeadlessBrowserContextOptions::override_web_preferences_callback() const {
-  return ReturnOverriddenValue(
-      override_web_preferences_callback_,
-      browser_options_->override_web_preferences_callback);
 }
 
 gfx::FontRenderParams::Hinting
