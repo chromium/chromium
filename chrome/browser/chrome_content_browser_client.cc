@@ -3284,13 +3284,13 @@ bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
   if (operation == InterestGroupApiOperation::kJoin) {
     content_settings::PageSpecificContentSettings::InterestGroupJoined(
         render_frame_host, api_origin, !allowed);
+    content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
+        render_frame_host,
+        content::InterestGroupManager::InterestGroupDataKey{api_origin,
+                                                            top_frame_origin},
+        BrowsingDataModel::StorageType::kInterestGroup, !allowed);
   }
 
-  content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
-      render_frame_host,
-      content::InterestGroupManager::InterestGroupDataKey{api_origin,
-                                                          top_frame_origin},
-      BrowsingDataModel::StorageType::kInterestGroup, !allowed);
   return allowed;
 }
 
