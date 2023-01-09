@@ -33,10 +33,10 @@ AccountCache::AccountIdSet GetLacrosAccountIdsPref(PrefService* prefs) {
 // Saves to `prefs` a list of account ids from `accounts`.
 void SetLacrosAccountIdsPref(PrefService* prefs,
                              const AccountCache::AccountByGaiaIdMap& accounts) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& gaia_id_account_pair : accounts)
     list.Append(gaia_id_account_pair.first);
-  prefs->Set(kLacrosAccountIdsPref, list);
+  prefs->SetList(kLacrosAccountIdsPref, std::move(list));
 }
 
 }  // namespace

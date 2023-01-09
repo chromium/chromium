@@ -449,10 +449,10 @@ class AccountProfileMapperTest : public testing::Test {
 
   void SetLacrosAccountsInLocalState(
       const base::flat_set<std::string>& account_ids) {
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     for (const auto& gaia_id : account_ids)
       list.Append(gaia_id);
-    local_state()->Set(kLacrosAccountIdsPref, list);
+    local_state()->SetList(kLacrosAccountIdsPref, std::move(list));
   }
 
   base::flat_set<std::string> GetLacrosAccountsFromLocalState() {

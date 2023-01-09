@@ -268,11 +268,10 @@ IN_PROC_BROWSER_TEST_F(ProxyConfigServiceLacrosTest, UserPrefPrecedence) {
   // Set a proxy via pref.
   base::RunLoop run_loop;
   proxy_monitor_->SetQuitClosure(run_loop.QuitClosure());
-  base::Value proxy_config_wpad(base::Value::Type::DICTIONARY);
-  proxy_config_wpad.SetKey("mode",
-                           base::Value(ProxyPrefs::kAutoDetectProxyModeName));
-  browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
-                                        proxy_config_wpad);
+  base::Value::Dict proxy_config_wpad;
+  proxy_config_wpad.Set("mode", ProxyPrefs::kAutoDetectProxyModeName);
+  browser()->profile()->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+                                            std::move(proxy_config_wpad));
   run_loop.Run();
   // Verify that the pref proxy is applied.
   EXPECT_EQ(proxy_monitor_->cached_proxy_config_.value().ToValue(),
