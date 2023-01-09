@@ -40,6 +40,8 @@
 #include "ash/style/color_util.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/wm/desks/cros_next_desk_button.h"
+#include "ash/wm/desks/cros_next_desk_button_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -60,6 +62,7 @@
 #include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
+#include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -128,6 +131,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
@@ -369,6 +373,7 @@ class StuckWidgetDelegate : public views::WidgetDelegate {
 struct DesksTestParams {
   bool use_touch_gestures = false;
   bool use_16_desks = false;
+  bool enable_jellyroll = false;
 };
 
 // Defines a parameterized test fixture to test Virtual Desks behavior.
@@ -389,8 +394,20 @@ class DesksTest : public AshTestBase,
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kUseFirstDisplayAsInternal);
 
-    scoped_feature_list_.InitWithFeatureState(features::kEnable16Desks,
-                                              GetParam().use_16_desks);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().use_16_desks) {
+      enabled_features.push_back(features::kEnable16Desks);
+    } else {
+      disabled_features.push_back(features::kEnable16Desks);
+    }
+
+    if (GetParam().enable_jellyroll) {
+      enabled_features.push_back(features::kJellyroll);
+    } else {
+      disabled_features.push_back(features::kJellyroll);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);
@@ -399,6 +416,82 @@ class DesksTest : public AshTestBase,
   void TearDown() override {
     AshTestBase::TearDown();
     scoped_feature_list_.Reset();
+  }
+
+  views::LabelButton* GetDefaultDeskButton(const DesksBarView* bar_view) {
+    if (GetParam().enable_jellyroll) {
+      return bar_view->default_desk_button();
+    }
+
+    return bar_view->zero_state_default_desk_button();
+  }
+
+  views::LabelButton* GetZeroStateNewDeskButton(const DesksBarView* bar_view) {
+    if (GetParam().enable_jellyroll) {
+      return bar_view->new_desk_button();
+    }
+
+    return bar_view->zero_state_new_desk_button();
+  }
+
+  views::View* GetExpandedStateNewDeskButton(const DesksBarView* bar_view) {
+    if (GetParam().enable_jellyroll) {
+      return bar_view->new_desk_button();
+    }
+
+    return bar_view->expanded_state_new_desk_button();
+  }
+
+  views::LabelButton* GetExpandedStateInnerNewDeskButton(
+      const DesksBarView* bar_view) {
+    if (GetParam().enable_jellyroll) {
+      return bar_view->new_desk_button();
+    }
+
+    return bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  }
+
+  views::LabelButton* GetExpandedStateLibraryButton(
+      const DesksBarView* bar_view) {
+    if (GetParam().enable_jellyroll) {
+      return bar_view->library_button();
+    }
+
+    return bar_view->expanded_state_library_button()->GetInnerButton();
+  }
+
+  void VerifyZeroStateNewDeskButtonVisibility(const DesksBarView* bar_view,
+                                              bool expected_visibility) {
+    // If `Jellyroll` is enabled, new desk button is always visible no matter
+    // what's the current desks bar's state. Thus check the button's state
+    // instead of the visibility.
+    if (GetParam().enable_jellyroll) {
+      const auto state = bar_view->new_desk_button()->state();
+      EXPECT_TRUE(expected_visibility
+                      ? state == CrOSNextDeskIconButton::State::kZero
+                      : state != CrOSNextDeskIconButton::State::kZero);
+      return;
+    }
+
+    EXPECT_EQ(expected_visibility,
+              bar_view->zero_state_new_desk_button()->GetVisible());
+  }
+
+  void VerifyExpandedStateNewDeskButtonVisibility(const DesksBarView* bar_view,
+                                                  bool expected_visibility) {
+    // If `Jellyroll` is enabled, new desk button is always visible no matter
+    // what's the current desks bar's state. Thus verify the button's state
+    // instead of the visibility.
+    if (GetParam().enable_jellyroll) {
+      const auto state = bar_view->new_desk_button()->state();
+      EXPECT_TRUE(expected_visibility
+                      ? state == CrOSNextDeskIconButton::State::kExpanded
+                      : state != CrOSNextDeskIconButton::State::kExpanded);
+      return;
+    }
+
+    EXPECT_EQ(expected_visibility,
+              bar_view->expanded_state_new_desk_button()->GetVisible());
   }
 
   void SendKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
@@ -534,12 +627,10 @@ TEST_P(DesksTest, DesksBarViewDeskCreation) {
   EXPECT_TRUE(desks_bar_view->mini_views().empty());
 
   auto* event_generator = GetEventGenerator();
-  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
-              event_generator);
+  ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
   EXPECT_FALSE(desks_bar_view->IsZeroState());
 
-  auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  auto* new_desk_button = GetExpandedStateInnerNewDeskButton(desks_bar_view);
   EXPECT_TRUE(new_desk_button->GetEnabled());
 
   auto* scroll_right_button = DesksTestApi::GetDesksBarRightScrollButton();
@@ -595,9 +686,7 @@ TEST_P(DesksTest, DesksBarViewDeskCreation) {
 
   DCHECK(desks_bar_view);
   EXPECT_EQ(controller->desks().size(), desks_bar_view->mini_views().size());
-  EXPECT_TRUE(desks_bar_view->expanded_state_new_desk_button()
-                  ->GetInnerButton()
-                  ->GetEnabled());
+  EXPECT_TRUE(GetExpandedStateNewDeskButton(desks_bar_view)->GetEnabled());
 }
 
 TEST_P(DesksTest, RemoveDeskWithEmptyName) {
@@ -708,10 +797,8 @@ TEST_P(DesksTest, GestureTapOnNewDeskButton) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   auto* event_generator = GetEventGenerator();
   DCHECK(desks_bar_view);
-  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
-              event_generator);
-  auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
+  auto* new_desk_button = GetExpandedStateInnerNewDeskButton(desks_bar_view);
   EXPECT_TRUE(new_desk_button->GetEnabled());
 
   auto* scroll_right_button = DesksTestApi::GetDesksBarRightScrollButton();
@@ -1548,6 +1635,12 @@ TEST_P(DesksTest, AppListActivationInTablet) {
 }
 
 TEST_P(DesksTest, DragWindowToDesk) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   auto* controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, controller->desks().size());
@@ -1634,6 +1727,12 @@ TEST_P(DesksTest, DragWindowToDesk) {
 }
 
 TEST_P(DesksTest, DragMinimizedWindowToDesk) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   auto* controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, controller->desks().size());
@@ -1685,6 +1784,12 @@ TEST_P(DesksTest, DragMinimizedWindowToDesk) {
 }
 
 TEST_P(DesksTest, DragAllOverviewWindowsToOtherDesksNotEndOverview) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   NewDesk();
   ASSERT_EQ(2u, DesksController::Get()->desks().size());
   auto win = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
@@ -1704,6 +1809,12 @@ TEST_P(DesksTest, DragAllOverviewWindowsToOtherDesksNotEndOverview) {
 }
 
 TEST_P(DesksTest, DragWindowToNonMiniViewPoints) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   auto* controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, controller->desks().size());
@@ -1928,14 +2039,17 @@ TEST_P(DesksTest, NewDeskButtonStateAndColor) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
   const auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+      GetExpandedStateInnerNewDeskButton(desks_bar_view);
   auto* scroll_right_button = DesksTestApi::GetDesksBarRightScrollButton();
 
   // Tests that with one or two desks, the new desk button has an enabled state
   // and color.
-  const SkColor background_color =
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  auto* color_provider = new_desk_button->GetColorProvider();
+  SkColor background_color =
+      features::IsJellyrollEnabled()
+          ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
+          : color_provider->GetColor(kColorAshControlBackgroundColorInactive);
+
   const SkColor disabled_background_color =
       ColorUtil::GetDisabledColor(background_color);
   EXPECT_TRUE(new_desk_button->GetEnabled());
@@ -2479,8 +2593,7 @@ TEST_P(DesksEditableNamesTest, EventsThatCommitChanges) {
   EXPECT_TRUE(desk_name_view->HasFocus());
 
   // Creating a new desk commits the changes.
-  auto* new_desk_button =
-      desks_bar_view()->expanded_state_new_desk_button()->GetInnerButton();
+  auto* new_desk_button = GetExpandedStateNewDeskButton(desks_bar_view());
   auto* event_generator = GetEventGenerator();
   ClickOnView(new_desk_button, event_generator);
   ASSERT_EQ(3u, controller()->desks().size());
@@ -3444,6 +3557,12 @@ TEST_P(DesksTest, SwitchToDeskWithSnappedActiveWindow) {
 }
 
 TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   auto* controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, controller->desks().size());
@@ -3494,6 +3613,12 @@ TEST_P(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
 }
 
 TEST_P(DesksTest, DragAllOverviewWindowsToOtherDesksNotEndClamshellSplitView) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   // Two virtual desks.
   NewDesk();
   ASSERT_EQ(2u, DesksController::Get()->desks().size());
@@ -4940,12 +5065,10 @@ TEST_P(DesksTest, NameNudges) {
   ASSERT_TRUE(desks_bar_view->IsZeroState());
 
   auto* event_generator = GetEventGenerator();
-  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
-              event_generator);
+  ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
   EXPECT_EQ(1u, desks_bar_view->mini_views().size());
 
-  auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  auto* new_desk_button = GetExpandedStateNewDeskButton(desks_bar_view);
   EXPECT_TRUE(new_desk_button->GetEnabled());
 
   // As desks are added, we will scroll the desks bar to keep the "new desk"
@@ -4992,7 +5115,7 @@ TEST_P(DesksTest, NameNudgesMultiDisplay) {
 
   // Click on the zero state default desk button for the second root window.
   auto* zero_state_default_desk_button_2 =
-      desks_bar_view_2->zero_state_default_desk_button();
+      GetDefaultDeskButton(desks_bar_view_2);
   EXPECT_TRUE(zero_state_default_desk_button_2->GetEnabled());
   auto* event_generator = GetEventGenerator();
   ClickOnView(zero_state_default_desk_button_2, event_generator);
@@ -5015,7 +5138,7 @@ TEST_P(DesksTest, NameNudgesMultiDisplay) {
   ASSERT_TRUE(desks_bar_view_2->IsZeroState());
 
   // Click on the new desk button on the first root window.
-  auto* new_desk_button_1 = desks_bar_view_1->zero_state_new_desk_button();
+  auto* new_desk_button_1 = GetZeroStateNewDeskButton(desks_bar_view_1);
   EXPECT_TRUE(new_desk_button_1->GetEnabled());
   ClickOnView(new_desk_button_1, event_generator);
 
@@ -5031,7 +5154,7 @@ TEST_P(DesksTest, NameNudgesMultiDisplay) {
   EXPECT_EQ(std::u16string(), desk_name_view_2->GetText());
 
   // Tap on the new desk button on the second root window.
-  auto* new_desk_button_2 = desks_bar_view_2->expanded_state_new_desk_button();
+  auto* new_desk_button_2 = GetExpandedStateNewDeskButton(desks_bar_view_2);
   EXPECT_TRUE(new_desk_button_2->GetEnabled());
   GestureTapOnView(new_desk_button_2, event_generator);
 
@@ -5087,12 +5210,10 @@ TEST_P(DesksTest, ScrollableDesks) {
       GetOverviewGridForRoot(root_window)->desks_bar_view();
   ASSERT_TRUE(desks_bar_view->IsZeroState());
   auto* event_generator = GetEventGenerator();
-  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
-              event_generator);
+  ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
   EXPECT_EQ(1u, desks_bar_view->mini_views().size());
 
-  auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  auto* new_desk_button = GetExpandedStateNewDeskButton(desks_bar_view);
 
   // Set the scroll delta large enough to make sure the desks bar can be
   // scrolled to the end each time.
@@ -5311,8 +5432,18 @@ TEST_P(DesksTest, ContinueScrollBar) {
   // Wait for 1s, there will be another scroll.
   WaitForMilliseconds(1000);
   current_index += desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-            mini_views[current_index]->bounds().x());
+
+  // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
+  // desk button and library button are smaller, two scrolls will reach the end
+  // of the desks bar view, thus we verify the right of the visible scroll view.
+  if (features::IsJellyrollEnabled() && !features::Is16DesksEnabled()) {
+    EXPECT_EQ(
+        scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
+        GetExpandedStateLibraryButton(desks_bar)->bounds().right());
+  } else {
+    EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
+              mini_views[current_index]->bounds().x());
+  }
 
   // Release and click a few times to make sure we end up at the maximum offset.
   event_generator->ReleaseLeftButton();
@@ -5336,7 +5467,15 @@ TEST_P(DesksTest, ContinueScrollBar) {
   // previous page to make sure the desk preview will not be cropped.
   event_generator->MoveTouch(left_button->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
-  current_index -= desks_in_one_page;
+  // When the feature flag `Jellyroll` is enabled, the new desk button and the
+  // library button become smaller, thus when scroll to the left from the right
+  // mode, the index of desk mini view on the left is smaller than it when
+  // `Jellyroll` is not enabled.
+  if (features::IsJellyrollEnabled()) {
+    current_index -= (desks_in_one_page + 1);
+  } else {
+    current_index -= desks_in_one_page;
+  }
   EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
@@ -5662,8 +5801,7 @@ TEST_P(DesksTest, EnterOverviewWithCorrectDesksBarState) {
   EXPECT_TRUE(desks_bar_view->mini_views().empty());
 
   // Click new desk button in the zero state bar to create a new desk.
-  ClickOnView(desks_bar_view->zero_state_new_desk_button(),
-              GetEventGenerator());
+  ClickOnView(GetZeroStateNewDeskButton(desks_bar_view), GetEventGenerator());
   ExitOverview();
 
   // Desks bar should not stay in zero state if there are more than one desks.
@@ -5684,10 +5822,8 @@ TEST_P(DesksTest, DesksBarZeroState) {
   ASSERT_TRUE(desks_bar_view->mini_views().empty());
 
   auto* event_generator = GetEventGenerator();
-  auto* zero_state_default_desk_button =
-      desks_bar_view->zero_state_default_desk_button();
-  auto* zero_state_new_desk_button =
-      desks_bar_view->zero_state_new_desk_button();
+  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
+  auto* zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
   ClickOnView(zero_state_default_desk_button, event_generator);
   // Click the zero state default desk button should switch to expanded desks
   // bar and focus on the default desk's name view. The two buttons in zero
@@ -5696,16 +5832,15 @@ TEST_P(DesksTest, DesksBarZeroState) {
   EXPECT_EQ(1u, desks_bar_view->mini_views().size());
   EXPECT_TRUE(desks_bar_view->mini_views()[0]->desk_name_view()->HasFocus());
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
-  EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
 
   ExitOverview();
   EnterOverview();
   desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
   ASSERT_TRUE(desks_bar_view->IsZeroState());
 
-  zero_state_default_desk_button =
-      desks_bar_view->zero_state_default_desk_button();
-  zero_state_new_desk_button = desks_bar_view->zero_state_new_desk_button();
+  zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
+  zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
   ClickOnView(zero_state_new_desk_button, event_generator);
   // Click the zero state new desk button should switch to expand desks bar,
   // create a new desk and focus on the new created desk's name view. The two
@@ -5714,12 +5849,12 @@ TEST_P(DesksTest, DesksBarZeroState) {
   EXPECT_EQ(2u, desks_bar_view->mini_views().size());
   EXPECT_TRUE(desks_bar_view->mini_views()[1]->desk_name_view()->HasFocus());
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
-  EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
 
   // Should switch to zero state if there is only one desk after removing.
   CloseDeskFromMiniView(desks_bar_view->mini_views()[0], event_generator);
   EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
 }
 
 // Tests that buttons in the desk bar are shown and hidden correctly when
@@ -5744,14 +5879,9 @@ TEST_P(DesksTest, DesksBarButtonVisibility) {
 
   // Verify that the expanded state button is visible, while the zero state
   // buttons are not visible.
-  auto* expanded_state_new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button();
-  auto* zero_state_new_desk_button =
-      desks_bar_view->zero_state_new_desk_button();
-  auto* zero_state_default_desk_button =
-      desks_bar_view->zero_state_default_desk_button();
-  EXPECT_TRUE(expanded_state_new_desk_button->GetVisible());
-  EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
+  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
 
   // Close a desk and check that the desks bar switches into zero state.
@@ -5762,8 +5892,8 @@ TEST_P(DesksTest, DesksBarButtonVisibility) {
 
   // Verify that the expanded state button is not visible, while the zero state
   // buttons are visible.
-  EXPECT_FALSE(expanded_state_new_desk_button->GetVisible());
-  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
   EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
 }
 
@@ -5777,10 +5907,8 @@ TEST_P(DesksTest, NewDeskButton) {
   // Click the default desk button in the zero state bar to switch to expanded
   // desks bar.
   auto* event_generator = GetEventGenerator();
-  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
-              event_generator);
-  auto* new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
+  auto* new_desk_button = GetExpandedStateInnerNewDeskButton(desks_bar_view);
   EXPECT_TRUE(new_desk_button->GetVisible());
   EXPECT_TRUE(new_desk_button->GetEnabled());
 
@@ -5813,12 +5941,10 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
   ASSERT_TRUE(desks_bar_view->IsZeroState());
   // Show the default name "Desk 1" while initializing the desks bar at the
   // first time.
-  EXPECT_EQ(u"Desk 1",
-            desks_bar_view->zero_state_default_desk_button()->GetText());
+  EXPECT_EQ(u"Desk 1", GetDefaultDeskButton(desks_bar_view)->GetText());
 
   auto* event_generator = GetEventGenerator();
-  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
-              event_generator);
+  ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
   EXPECT_TRUE(desks_bar_view->mini_views()[0]->desk_name_view()->HasFocus());
 
   // Change the desk name to "test".
@@ -5833,11 +5959,10 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
   desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   // Should show the desk's current name "test" instead of the default name.
-  EXPECT_EQ(u"test",
-            desks_bar_view->zero_state_default_desk_button()->GetText());
+  EXPECT_EQ(u"test", GetDefaultDeskButton(desks_bar_view)->GetText());
 
   // Create 'Desk 2'.
-  ClickOnView(desks_bar_view->zero_state_new_desk_button(), event_generator);
+  ClickOnView(GetZeroStateNewDeskButton(desks_bar_view), event_generator);
   EXPECT_FALSE(desks_bar_view->IsZeroState());
   SendKey(ui::VKEY_RETURN);
   EXPECT_EQ(u"Desk 2", DesksController::Get()->desks()[1].get()->name());
@@ -5846,12 +5971,10 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
   // desk button should show current desk's name, which is 'Desk 1'.
   CloseDeskFromMiniView(desks_bar_view->mini_views()[0], event_generator);
   EXPECT_TRUE(desks_bar_view->IsZeroState());
-  EXPECT_EQ(u"Desk 1",
-            desks_bar_view->zero_state_default_desk_button()->GetText());
+  EXPECT_EQ(u"Desk 1", GetDefaultDeskButton(desks_bar_view)->GetText());
 
   // Set a super long desk name.
-  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
-              event_generator);
+  ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
   for (size_t i = 0; i < DesksTextfield::kMaxLength + 5; i++)
     SendKey(ui::VKEY_A);
   SendKey(ui::VKEY_RETURN);
@@ -5859,8 +5982,7 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
   EnterOverview();
 
   desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
-  auto* zero_state_default_desk_button =
-      desks_bar_view->zero_state_default_desk_button();
+  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
   std::u16string desk_button_text = zero_state_default_desk_button->GetText();
   std::u16string expected_desk_name(DesksTextfield::kMaxLength, L'a');
   // Zero state desk button should show the elided name as the DeskNameView.
@@ -6267,8 +6389,18 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   // Wait for 1s, there will be another scroll.
   WaitForMilliseconds(1000);
   current_index += desks_in_one_page;
-  EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
-            mini_views[current_index]->bounds().x());
+
+  // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
+  // desk button and library button are smaller, two scrolls will reach the end
+  // of the desks bar view, thus we verify the right of the visible scroll view.
+  if (features::IsJellyrollEnabled() && !features::Is16DesksEnabled()) {
+    EXPECT_EQ(
+        scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
+        GetExpandedStateLibraryButton(desks_bar)->bounds().right());
+  } else {
+    EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
+              mini_views[current_index]->bounds().x());
+  }
 
   // While scrolling, the desk cannot be reordered.
   EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
@@ -6301,7 +6433,15 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   mini_views = desks_bar->mini_views();
   StartDragDeskPreview(mini_views[max_desks_size - 1], event_generator);
   event_generator->MoveMouseTo(left_button->GetBoundsInScreen().CenterPoint());
-  current_index -= desks_in_one_page;
+  // When the feature flag `Jellyroll` is enabled, the new desk button and the
+  // library button become smaller, thus when scroll to the left from the right
+  // most, the index of desk mini view on the left is smaller than it when
+  // `Jellyroll` is not enabled.
+  if (features::IsJellyrollEnabled()) {
+    current_index -= (desks_in_one_page + 1);
+  } else {
+    current_index -= desks_in_one_page;
+  }
   EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
             mini_views[current_index]->bounds().x());
 
@@ -6316,6 +6456,10 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
 
   // Drop the desk. Desks bar will scroll to show the desk's target position.
   event_generator->ReleaseLeftButton();
+  // Wait 100ms for the animation of the scrollable bar to end. Otherwise, the
+  // test could be flaky, i.e, the visible bounds of the scroll bar is not
+  // updated yet if we get its bounds immediately after the desk is dropped.
+  WaitForMilliseconds(100);
   gfx::Rect bounds_0 = mini_view_0->bounds();
   gfx::Rect bounds_visible = scroll_view->GetVisibleRect();
   EXPECT_LE(bounds_visible.x(), bounds_0.x());
@@ -6559,7 +6703,7 @@ TEST_P(DesksTest, NameNudgesTabletMode) {
   auto* event_generator = GetEventGenerator();
   const auto* desks_bar_view =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
-  GestureTapOnView(desks_bar_view->expanded_state_new_desk_button(),
+  GestureTapOnView(GetExpandedStateNewDeskButton(desks_bar_view),
                    event_generator);
   EXPECT_FALSE(keyboard::KeyboardUIController::Get()->IsKeyboardVisible());
   EXPECT_EQ(3u, desks_bar_view->mini_views().size());
@@ -6578,7 +6722,7 @@ TEST_P(DesksTest, NameNudgesTabletMode) {
   // Tap the new desk button again. There should be a new DeskNameView that is
   // created and the virtual keyboard should be shown.
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
-  GestureTapOnView(desks_bar_view->expanded_state_new_desk_button(),
+  GestureTapOnView(GetExpandedStateNewDeskButton(desks_bar_view),
                    event_generator);
   ASSERT_TRUE(keyboard::WaitUntilShown());
   EXPECT_TRUE(keyboard::KeyboardUIController::Get()->IsKeyboardVisible());
@@ -7474,6 +7618,12 @@ class DragWindowToNewDeskTest : public DesksTest {
 // Tests that dragging and dropping window to new desk while desks bar view is
 // at zero state.
 TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   auto* controller = DesksController::Get();
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
 
@@ -7489,13 +7639,11 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
   // Since we only have one desk, there should be 0 desk mini view and the zero
   // state default desk button and new desk button should be visible.
   ASSERT_EQ(0u, desks_bar_view->mini_views().size());
-  auto* zero_state_default_desk_button =
-      desks_bar_view->zero_state_default_desk_button();
-  auto* zero_state_new_desk_button =
-      desks_bar_view->zero_state_new_desk_button();
+  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
+  auto* zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
   EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
-  EXPECT_FALSE(desks_bar_view->expanded_state_new_desk_button()->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
 
   auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
   auto* event_generator = GetEventGenerator();
@@ -7511,8 +7659,8 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
       event_generator,
       /*by_touch_gestures=*/false, /*drop=*/false);
   EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
-  EXPECT_FALSE(desks_bar_view->expanded_state_new_desk_button()->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
 
   // Now keep dragging `overview_item1` and make it close enough to the center
   // point of `zero_state_new_desk_button`. Verify that desks bar is transformed
@@ -7524,8 +7672,8 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
                              new_desk_button_center_point.y() + 10),
                   event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
-  EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
-  EXPECT_TRUE(desks_bar_view->expanded_state_new_desk_button()->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
 
   // Now drop |overview_item1|, a new desk which contains |win1| will be
   // created.
@@ -7549,6 +7697,11 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
 // desk bar will be transformed back to zero state once the drag is completed.
 TEST_P(DragWindowToNewDeskTest,
        DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
   auto* controller = DesksController::Get();
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
 
@@ -7562,15 +7715,13 @@ TEST_P(DragWindowToNewDeskTest,
   ASSERT_TRUE(desks_bar_view);
 
   // Make sure the desks bar is at zero state in the beginning.
-  auto* zero_state_default_desk_button =
-      desks_bar_view->zero_state_default_desk_button();
-  auto* zero_state_new_desk_button =
-      desks_bar_view->zero_state_new_desk_button();
+  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
+  auto* zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
   auto* expanded_state_new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button();
+      GetExpandedStateNewDeskButton(desks_bar_view);
   EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-  EXPECT_TRUE(zero_state_new_desk_button->GetVisible());
-  EXPECT_FALSE(expanded_state_new_desk_button->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
 
   auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
   auto* event_generator = GetEventGenerator();
@@ -7585,8 +7736,8 @@ TEST_P(DragWindowToNewDeskTest,
                              new_desk_button_center_point.y() + 10),
                   event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
   EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
-  EXPECT_FALSE(zero_state_new_desk_button->GetVisible());
-  EXPECT_TRUE(expanded_state_new_desk_button->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
 
   // Now keep dragging `overview_item1` and make it not able to be dropped on
   // the new desk, then drop it. Check that `overview_item1` is dropped back to
@@ -7606,6 +7757,12 @@ TEST_P(DragWindowToNewDeskTest,
 // Tests that dragging and dropping window to new desk while desks bar view is
 // at expanded state.
 TEST_P(DragWindowToNewDeskTest, DragWindowAtExpandedState) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   auto* controller = DesksController::Get();
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   NewDesk();
@@ -7621,8 +7778,8 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtExpandedState) {
 
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
   auto* expanded_state_new_desk_button =
-      desks_bar_view->expanded_state_new_desk_button();
-  EXPECT_TRUE(expanded_state_new_desk_button->GetVisible());
+      GetExpandedStateNewDeskButton(desks_bar_view);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
 
   // Drag and drop |overview_item1| on |expanded_state_new_desk_button|. A new
   // desk which contains |win1| will be created.
@@ -7641,6 +7798,12 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtExpandedState) {
 // Tests that dragging and dropping a window on the new desk button does not
 // create a new desk if we are already at the maximum number of desks.
 TEST_P(DragWindowToNewDeskTest, DragWindowAtMaximumDesksState) {
+  // TODO(b/264895043): Remove this if block after the implementation of drag
+  // and drop window on new desk is done when `Jellyroll` is enabled.
+  if (GetParam().enable_jellyroll) {
+    return;
+  }
+
   // Set a display mode that forces vertical layout of split view drag
   // indicators. This is so that we are able to drop an overview item on the
   // "new desk" button even if it's right up to the edge.
@@ -7684,7 +7847,7 @@ TEST_P(DragWindowToNewDeskTest, DragWindowAtMaximumDesksState) {
   event_generator->MoveMouseBy(20, 0);
 
   // Move the item to the new desk button and drop it.
-  event_generator->MoveMouseTo(desks_bar_view->expanded_state_new_desk_button()
+  event_generator->MoveMouseTo(GetExpandedStateNewDeskButton(desks_bar_view)
                                    ->GetBoundsInScreen()
                                    .CenterPoint());
   event_generator->ReleaseLeftButton();
@@ -8638,9 +8801,8 @@ TEST_P(DesksCloseAllTest, CanAddLastDeskWhileUndoToastIsBeingDisplayed) {
   ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
 
   // The new desk button should be enabled at this point.
-  auto* new_desk_button = GetPrimaryRootDesksBarView()
-                              ->expanded_state_new_desk_button()
-                              ->GetInnerButton();
+  auto* new_desk_button =
+      GetExpandedStateNewDeskButton(GetPrimaryRootDesksBarView());
   ASSERT_TRUE(new_desk_button->GetEnabled());
 
   // Scroll all the way to the right to ensure that the new button is visible.
@@ -8755,13 +8917,33 @@ TEST_P(DesksCloseAllTest, TestRecordingNumerOfClosedWindowsMetrics) {
 
 // Instantiate the parametrized tests.
 
-// This is used for tests that test all combinations of 8/16 desks as well as
-// clicks/touch.
+// This is used for tests that test all combinations of 8/16 desks, enabled /
+// disabled feature flag `Jellyroll` as well as clicks/touch.
 constexpr DesksTestParams kAllCombinations[] = {
-    {.use_touch_gestures = false, .use_16_desks = false},
-    {.use_touch_gestures = false, .use_16_desks = true},
-    {.use_touch_gestures = true, .use_16_desks = false},
-    {.use_touch_gestures = true, .use_16_desks = true},
+    {.use_touch_gestures = false,
+     .use_16_desks = false,
+     .enable_jellyroll = false},
+    {.use_touch_gestures = false,
+     .use_16_desks = false,
+     .enable_jellyroll = true},
+    {.use_touch_gestures = false,
+     .use_16_desks = true,
+     .enable_jellyroll = false},
+    {.use_touch_gestures = false,
+     .use_16_desks = true,
+     .enable_jellyroll = true},
+    {.use_touch_gestures = true,
+     .use_16_desks = false,
+     .enable_jellyroll = false},
+    {.use_touch_gestures = true,
+     .use_16_desks = false,
+     .enable_jellyroll = true},
+    {.use_touch_gestures = true,
+     .use_16_desks = true,
+     .enable_jellyroll = false},
+    {.use_touch_gestures = true,
+     .use_16_desks = true,
+     .enable_jellyroll = true},
 };
 
 // This is used for tests that only want to test 8/16 desks.

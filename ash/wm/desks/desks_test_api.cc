@@ -4,8 +4,10 @@
 
 #include "ash/wm/desks/desks_test_api.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/wm/desks/cros_next_desk_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -20,6 +22,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
@@ -71,10 +74,12 @@ PersistentDesksBarContextMenu* DesksTestApi::GetDesksBarContextMenu() {
 
 // static
 SkColor DesksTestApi::GetNewDeskButtonBackgroundColor() {
-  return GetDesksBarView()
-      ->expanded_state_new_desk_button()
-      ->GetInnerButton()
-      ->background_color_;
+  return features::IsJellyrollEnabled()
+             ? GetDesksBarView()->new_desk_button()->background()->get_color()
+             : GetDesksBarView()
+                   ->expanded_state_new_desk_button()
+                   ->GetInnerButton()
+                   ->background_color_;
 }
 
 // static
