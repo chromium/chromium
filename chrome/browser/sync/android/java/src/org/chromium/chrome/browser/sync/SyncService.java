@@ -311,14 +311,6 @@ public abstract class SyncService {
     public abstract boolean isSyncingUnencryptedUrls();
 
     /**
-     * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
-     * @deprecated Use isSyncingUnencryptedUrls.
-     * TODO(crbug/1396310): Delete once Clank is no longer calling it.
-     */
-    @Deprecated()
-    public abstract boolean isSyncingUrlsWithKeystorePassphrase();
-
-    /**
      * Returns the time when the last sync cycle was completed.
      *
      * @return The difference measured in microseconds, between last sync cycle completion time

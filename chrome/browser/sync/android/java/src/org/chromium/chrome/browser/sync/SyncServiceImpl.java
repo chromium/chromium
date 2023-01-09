@@ -323,13 +323,6 @@ public class SyncServiceImpl extends SyncService {
                         || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
     }
 
-    // TODO(crbug/1396310): Delete once Clank is no longer calling it.
-    @Deprecated
-    @Override
-    public boolean isSyncingUrlsWithKeystorePassphrase() {
-        return isSyncingUnencryptedUrls();
-    }
-
     @VisibleForTesting
     @Override
     public long getLastSyncedTimeForDebugging() {
