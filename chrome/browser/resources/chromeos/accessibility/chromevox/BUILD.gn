@@ -115,6 +115,7 @@ chromevox_es6_modules = [
   "background/phonetic_data.js",
   "background/pointer_handler.js",
   "background/prefs.js",
+  "background/primary_tts.js",
   "background/range_automation_handler.js",
   "background/smart_sticky_mode.js",
   "background/tts_background.js",
