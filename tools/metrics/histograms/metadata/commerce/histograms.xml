@@ -457,6 +457,29 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PriceTracking.Untrack.BookmarkFound" enum="Boolean"
+    expires_after="2024-01-03">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    Records whether a bookmark is found when untracking a site in price drop
+    notifications upon receiving a price drop notification. It is expected that
+    a bookmark should be present if a notification has been received. This
+    metric is being recorded to confirm that assumption is valid.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceTracking.Untrack.Success" enum="Boolean"
+    expires_after="2024-01-03">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    Records whether untracking price drops for a site was successful or not
+    after selecting 'Untrack' from the long press menu upon receiving a price
+    drop notification.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataContent"
     enum="ShoppingDataProviderFallback" expires_after="2023-06-01">
   <owner>ayman@chromium.org</owner>

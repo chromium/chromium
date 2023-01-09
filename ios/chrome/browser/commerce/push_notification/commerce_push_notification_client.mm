@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/commerce/push_notification/commerce_push_notification_client.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/run_loop.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -138,12 +139,22 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
     const bookmarks::BookmarkNode* bookmark =
         GetBookmarkModel()->GetMostRecentlyAddedUserNodeForURL(
             GURL(price_drop_notification.destination_url()));
+    base::UmaHistogramBoolean("Commerce.PriceTracking.Untrack.BookmarkFound",
+                              bookmark != nil);
+    if (!bookmark) {
+      if (on_complete_for_testing) {
+        on_complete_for_testing->Quit();
+      }
+      return;
+    }
     commerce::SetPriceTrackingStateForBookmark(
         GetShoppingService(), GetBookmarkModel(), bookmark, false,
         base::BindOnce(^(bool success) {
           if (on_complete_for_testing) {
             on_complete_for_testing->Quit();
           }
+          base::UmaHistogramBoolean("Commerce.PriceTracking.Untrack.Success",
+                                    success);
         }));
   }
 }
