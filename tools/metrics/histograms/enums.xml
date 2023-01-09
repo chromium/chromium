@@ -83924,6 +83924,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="Failed to initialize schema"/>
 </enum>
 
+<enum name="PrivacySandboxApiAllowed">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Restricted"/>
+  <int value="2" label="Incognito profile"/>
+  <int value="3" label="Apis disabled"/>
+  <int value="4" label="Site data access blocked"/>
+</enum>
+
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus">
   <int value="0" label="Valid"/>
   <int value="1" label="Valid but empty; no budget data stored"/>

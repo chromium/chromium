@@ -4,7 +4,10 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 
+#include <tuple>
+
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -233,6 +236,117 @@ void CheckOutput(
       ASSERT_EQ(return_value,
                 privacy_sandbox_settings->IsPrivateAggregationAllowed(
                     top_frame_origin, reporting_origin));
+      return;
+    }
+
+    case (OutputKey::kIsTopicsAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsTopicsAllowed");
+      base::HistogramTester histogram_tester;
+      std::ignore = privacy_sandbox_settings->IsTopicsAllowed();
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsTopicsAllowed",
+                                          histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsTopicsAllowedForContextMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsTopicsAllowedForContext");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto topics_url = GetItemValueForKey<GURL>(InputKey::kTopicsURL, input);
+      std::ignore = privacy_sandbox_settings->IsTopicsAllowedForContext(
+          top_frame_origin, topics_url);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsTopicsAllowedForContext", histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsFledgeAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsFledgeAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kFledgeAuctionPartyOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
+          top_frame_origin, fledge_auction_party_origin);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeAllowed",
+                                          histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsAttributionReportingAllowedMetric): {
+      SCOPED_TRACE(
+          "Check Output: PrivacySandbox.IsAttributionReportingAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementReportingOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsAttributionReportingAllowed(
+          top_frame_origin, reporting_origin);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsAttributionReportingAllowed", histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kMaySendAttributionReportMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.MaySendAttributionReport");
+      base::HistogramTester histogram_tester;
+      auto source_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementSourceOrigin, input);
+      auto destination_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementDestinationOrigin, input);
+      auto reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementReportingOrigin, input);
+      std::ignore = privacy_sandbox_settings->MaySendAttributionReport(
+          source_origin, destination_origin, reporting_origin);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.MaySendAttributionReport", histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsSharedStorageAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsSharedStorageAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsSharedStorageAllowed(
+          top_frame_origin, accessing_origin);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsSharedStorageAllowed", histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsSharedStorageSelectURLAllowedMetric): {
+      SCOPED_TRACE(
+          "Check Output: PrivacySandbox.IsSharedStorageSelectURLAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto accessing_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsSharedStorageSelectURLAllowed(
+          top_frame_origin, accessing_origin);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsSharedStorageSelectURLAllowed", histogram_value, 1);
+      return;
+    }
+    case (OutputKey::kIsPrivateAggregationAllowedMetric): {
+      SCOPED_TRACE("Check Output: PrivacySandbox.IsPrivateAggregationAllowed");
+      base::HistogramTester histogram_tester;
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kAdMeasurementReportingOrigin, input);
+      std::ignore = privacy_sandbox_settings->IsPrivateAggregationAllowed(
+          top_frame_origin, reporting_origin);
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsPrivateAggregationAllowed", histogram_value, 1);
       return;
     }
   }

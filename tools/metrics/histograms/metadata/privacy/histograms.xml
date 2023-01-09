@@ -697,6 +697,33 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
+    expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>sauski@chromium.org</owner>
+  <summary>
+    Whether or not the {ApiType} operation was allowed by Privacy Sandbox
+    settings and why. Recorded at the time settings are checked when performing
+    the operation.
+  </summary>
+  <token key="ApiType">
+    <variant name="IsAttributionReportingAllowed"
+        summary="IsAttributionReportingAllowed"/>
+    <variant name="IsFledgeAllowed" summary="IsFledgeAllowed"/>
+    <variant name="IsPrivateAggregationAllowed"
+        summary="IsPrivateAggregationAllowed"/>
+    <variant name="IsSharedStorageAllowed" summary="IsSharedStorageAllowed"/>
+    <variant name="IsSharedStorageSelectURLAllowed"
+        summary="IsSharedStorageSelectURLAllowed"/>
+    <variant name="IsTopicsAllowed" summary="IsTopicsAllowed"/>
+    <variant name="IsTopicsAllowedForContext"
+        summary="IsTopicsAllowedForContext"/>
+    <variant name="MaySendAttributionReport"
+        summary="MaySendAttributionReport"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

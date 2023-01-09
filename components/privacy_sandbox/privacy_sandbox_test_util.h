@@ -91,6 +91,14 @@ enum class OutputKey {
   kIsSharedStorageAllowed = 6,
   kIsSharedStorageSelectURLAllowed = 7,
   kIsPrivateAggregationAllowed = 8,
+  kIsTopicsAllowedMetric = 9,
+  kIsTopicsAllowedForContextMetric = 10,
+  kIsFledgeAllowedMetric = 11,
+  kIsAttributionReportingAllowedMetric = 12,
+  kMaySendAttributionReportMetric = 13,
+  kIsSharedStorageAllowedMetric = 14,
+  kIsSharedStorageSelectURLAllowedMetric = 15,
+  kIsPrivateAggregationAllowedMetric = 16,
 };
 
 // To allow multiple input keys to map to the same value, without having to
@@ -120,7 +128,8 @@ using TestCaseItemValue = absl::variant<bool,
                                         GURL,
                                         content_settings::CookieControlsMode,
                                         SiteDataExceptions,
-                                        ContentSetting>;
+                                        ContentSetting,
+                                        int>;
 
 using TestState = std::map<TestKey<StateKey>, TestCaseItemValue>;
 using TestInput = std::map<TestKey<InputKey>, TestCaseItemValue>;

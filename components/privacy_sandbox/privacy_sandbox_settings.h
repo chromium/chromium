@@ -236,13 +236,17 @@ class PrivacySandboxSettings : public KeyedService {
   void SetTopicsDataAccessibleFromNow() const;
 
  private:
+  friend class PrivacySandboxSettingsM1Test;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Status {
     kAllowed,
     kRestricted,
     kIncognitoProfile,
     kApisDisabled,
-    kSiteDataAccesssDisallowed,
-    kMaxValue = kSiteDataAccesssDisallowed,
+    kSiteDataAccessBlocked,
+    kMaxValue = kSiteDataAccessBlocked,
   };
 
   static bool IsAllowed(Status status);
@@ -261,6 +265,21 @@ class PrivacySandboxSettings : public KeyedService {
   // For individual sites, check as well with GetSiteAccessAllowedStatus.
   Status GetM1PrivacySandboxApiEnabledStatus(
       const std::string& pref_name) const;
+
+  // Whether the Topics API can be allowed given the current
+  // environment or the reason why it is not allowed.
+  Status GetM1TopicAllowedStatus() const;
+
+  // Whether Attribution Reporting API can be allowed given the current
+  // environment or the reason why it is not allowed.
+  Status GetM1AttributionReportingAllowedStatus(
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) const;
+
+  // Whether Fledge can be allowed given the current environment or the reason
+  // why it is not allowed.
+  Status GetM1FledgeAllowedStatus(const url::Origin& top_frame_origin,
+                                  const url::Origin& accessing_origin) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

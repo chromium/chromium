@@ -77,6 +77,21 @@ constexpr auto kIsSharedStorageSelectURLAllowed =
 constexpr auto kIsPrivateAggregationAllowed =
     OutputKey::kIsPrivateAggregationAllowed;
 
+constexpr auto kIsTopicsAllowedMetric = OutputKey::kIsTopicsAllowedMetric;
+constexpr auto kIsTopicsAllowedForContextMetric =
+    OutputKey::kIsTopicsAllowedForContextMetric;
+constexpr auto kIsFledgeAllowedMetric = OutputKey::kIsFledgeAllowedMetric;
+constexpr auto kIsAttributionReportingAllowedMetric =
+    OutputKey::kIsAttributionReportingAllowedMetric;
+constexpr auto kMaySendAttributionReportMetric =
+    OutputKey::kMaySendAttributionReportMetric;
+constexpr auto kIsSharedStorageAllowedMetric =
+    OutputKey::kIsSharedStorageAllowedMetric;
+constexpr auto kIsSharedStorageSelectURLAllowedMetric =
+    OutputKey::kIsSharedStorageSelectURLAllowedMetric;
+constexpr auto kIsPrivateAggregationAllowedMetric =
+    OutputKey::kIsPrivateAggregationAllowedMetric;
+
 // using enum ContentSetting;
 constexpr auto CONTENT_SETTING_ALLOW = ContentSetting::CONTENT_SETTING_ALLOW;
 constexpr auto CONTENT_SETTING_BLOCK = ContentSetting::CONTENT_SETTING_BLOCK;
@@ -988,6 +1003,8 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
   }
 
  protected:
+  using Status = PrivacySandboxSettings::Status;
+
   void RunTestCase(const TestState& test_state,
                    const TestInput& test_input,
                    const TestOutput& test_output) {
@@ -1039,7 +1056,14 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceEnabled) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
-           true}});
+           true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kAllowed)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
@@ -1065,7 +1089,15 @@ TEST_F(PrivacySandboxSettingsM1Test, ApiPreferenceDisabled) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed},
            false},
-          {kIsSharedStorageAllowed, true}});
+          {kIsSharedStorageAllowed, true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kApisDisabled)},
+          {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
@@ -1092,7 +1124,14 @@ TEST_F(PrivacySandboxSettingsM1Test, CookieControlsModeHasNoEffect) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
-           true}});
+           true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kAllowed)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockApplies) {
@@ -1116,13 +1155,22 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockApplies) {
            url::Origin::Create(GURL("https://source-origin.com"))},
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL("https://dest-origin.com"))}},
-      TestOutput{{kIsTopicsAllowed, true},
-                 {MultipleOutputKeys{
-                      kIsTopicsAllowedForContext, kIsFledgeAllowed,
-                      kIsAttributionReportingAllowed, kMaySendAttributionReport,
-                      kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
-                      kIsPrivateAggregationAllowed},
-                  false}});
+      TestOutput{
+          {kIsTopicsAllowed, true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsAttributionReportingAllowed, kMaySendAttributionReport,
+               kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
+               kIsPrivateAggregationAllowed},
+           false},
+          {kIsTopicsAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kSiteDataAccessBlocked)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
@@ -1154,7 +1202,15 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
                kIsTopicsAllowed, kIsTopicsAllowedForContext, kIsFledgeAllowed,
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed},
-           false}});
+           false},
+          {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kApisDisabled)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
@@ -1184,7 +1240,14 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
-           true}});
+           true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kAllowed)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
@@ -1214,7 +1277,14 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
-           true}});
+           true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kAllowed)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
@@ -1238,13 +1308,22 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
            url::Origin::Create(GURL("https://source-origin.com"))},
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL("https://dest-origin.com"))}},
-      TestOutput{{kIsTopicsAllowed, true},
-                 {MultipleOutputKeys{
-                      kIsTopicsAllowedForContext, kIsFledgeAllowed,
-                      kIsAttributionReportingAllowed, kMaySendAttributionReport,
-                      kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
-                      kIsPrivateAggregationAllowed},
-                  false}});
+      TestOutput{
+          {kIsTopicsAllowed, true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsFledgeAllowed,
+               kIsAttributionReportingAllowed, kMaySendAttributionReport,
+               kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
+               kIsPrivateAggregationAllowed},
+           false},
+          {kIsTopicsAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContextMetric, kIsFledgeAllowedMetric,
+               kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kSiteDataAccessBlocked)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffInIncognito) {
@@ -1270,7 +1349,14 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffInIncognito) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
-           false}});
+           false},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kIncognitoProfile)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
@@ -1296,7 +1382,14 @@ TEST_F(PrivacySandboxSettingsM1Test, ApisAreOffForRestrictedAccounts) {
                kIsAttributionReportingAllowed, kMaySendAttributionReport,
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed},
-           false}});
+           false},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric, kIsTopicsAllowedForContextMetric,
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kRestricted)}});
 }
 
 TEST_F(PrivacySandboxSettingsM1Test,

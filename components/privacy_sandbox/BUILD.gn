@@ -90,6 +90,7 @@ source_set("test_support") {
   deps = [
     ":privacy_sandbox",
     ":privacy_sandbox_prefs",
+    "//base/test:test_support",
     "//components/content_settings/core/browser:browser",
     "//components/content_settings/core/common:common",
     "//components/content_settings/core/test:test_support",
