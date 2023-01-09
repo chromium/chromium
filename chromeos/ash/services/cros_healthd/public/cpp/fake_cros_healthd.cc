@@ -696,6 +696,10 @@ void FakeCrosHealthd::RunDiskReadRoutine(mojom::DiskReadRoutineTypeEnum type,
                                          uint32_t file_size_mb,
                                          RunDiskReadRoutineCallback callback) {
   actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("type", static_cast<int>(type));
+  actual_passed_parameters_.Set("length_seconds",
+                                static_cast<int>(length_seconds));
+  actual_passed_parameters_.Set("file_size_mb", static_cast<int>(file_size_mb));
 
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kDiskRead;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
