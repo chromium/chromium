@@ -7,7 +7,11 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client.h"
+#include "chrome/browser/fast_checkout/fast_checkout_enums.h"
+#include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
+#include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -19,22 +23,6 @@ class LogManager;
 
 constexpr char kUmaKeyFastCheckoutRunOutcome[] =
     "Autofill.FastCheckout.RunOutcome";
-
-// Enum defining possible outcomes of a Fast Checkout run. Must be kept in sync
-// with enums.xml.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class FastCheckoutRunOutcome {
-  // Script did not run because the user has declined onboarding.
-  kOnboardingDeclined = 0,
-  // The script run did not complete or never started.
-  kIncompleteRun = 1,
-  // Script run failed.
-  kFail = 2,
-  // Script ran successfully.
-  kSuccess = 3,
-  kMaxValue = kSuccess
-};
 
 class FastCheckoutClientImpl
     : public content::WebContentsUserData<FastCheckoutClientImpl>,
@@ -48,16 +36,34 @@ class FastCheckoutClientImpl
   FastCheckoutClientImpl& operator=(const FastCheckoutClientImpl&) = delete;
 
   // FastCheckoutClient:
-  bool Start(base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
-             const GURL& url) override;
-  void Stop() override;
+  bool TryToStart(const GURL& url,
+                  const autofill::FormData& form,
+                  const autofill::FormFieldData& field,
+                  autofill::AutofillDriver* autofill_driver) override;
+  void Stop(bool allow_further_runs) override;
   bool IsRunning() const override;
+  bool IsShowing() const override;
 
   // FastCheckoutControllerImpl::Delegate:
   void OnOptionsSelected(
       std::unique_ptr<autofill::AutofillProfile> selected_profile,
       std::unique_ptr<autofill::CreditCard> selected_credit_card) override;
   void OnDismiss() override;
+
+#if defined(UNIT_TEST)
+  void set_trigger_validator_for_test(
+      std::unique_ptr<FastCheckoutTriggerValidator> trigger_validator) {
+    trigger_validator_ = std::move(trigger_validator);
+  }
+
+  void set_autofill_client_for_test(autofill::AutofillClient* autofill_client) {
+    autofill_client_ = autofill_client;
+  }
+
+  autofill::ContentAutofillDriver* get_autofill_driver_for_test() {
+    return autofill_driver_;
+  }
+#endif
 
  protected:
   explicit FastCheckoutClientImpl(content::WebContents* web_contents);
@@ -71,9 +77,6 @@ class FastCheckoutClientImpl
 
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;
-
-  // Returns the current active personal data manager.
-  autofill::PersonalDataManager* GetPersonalDataManager();
 
   // Called whenever the surface gets hidden (regardless of the cause). Informs
   // the Delegate that the surface is now hidden.
@@ -89,24 +92,41 @@ class FastCheckoutClientImpl
   // Turns keyboard suppression on and off.
   void SetShouldSuppressKeyboard(bool suppress);
 
-  // Returns true if fast checkout should run, e.g. if the feature is enabled.
-  bool ShouldRun();
-
   // Returns the Autofill log manager if available.
-  autofill::LogManager* GetAutofillLogManager();
+  autofill::LogManager* GetAutofillLogManager() const;
 
-  // Delegate for the surface being shown.
-  base::WeakPtr<autofill::FastCheckoutDelegate> delegate_;
+  // Logs `message` to chrome://autofill-internals.
+  void LogAutofillInternals(std::string message) const;
+
+  // The `ChromeAutofillClient` instanced attached to the same `WebContents`.
+  raw_ptr<autofill::AutofillClient> autofill_client_ = nullptr;
+
+  // The `ContentAutofillDriver` instance invoking the fast checkout run. This
+  // class generally outlives `autofill_driver_` so extra care needs to be taken
+  // with this pointer. It gets reset in `Stop(..)` which is (also) called from
+  // `~BrowserAutofillManager()` when the `ContentAutofillDriver` instance gets
+  // destroyed.
+  raw_ptr<autofill::ContentAutofillDriver> autofill_driver_ = nullptr;
 
   // Fast Checkout UI Controller. Responsible for showing the bottomsheet and
   // handling user selections.
   std::unique_ptr<FastCheckoutController> fast_checkout_controller_;
+
+  // Helper class providing information about address profiles and credit cards.
+  std::unique_ptr<FastCheckoutPersonalDataHelper> personal_data_helper_;
+
+  // Checks whether a run should be permitted or not.
+  std::unique_ptr<FastCheckoutTriggerValidator> trigger_validator_;
 
   // True if a run is ongoing; used to avoid multiple runs in parallel.
   bool is_running_ = false;
 
   // The url for which `Start()` was triggered.
   GURL url_;
+
+  // The current state of the bottomsheet.
+  FastCheckoutUIState fast_checkout_ui_state_ =
+      FastCheckoutUIState::kNotShownYet;
 
   base::ScopedObservation<autofill::PersonalDataManager,
                           autofill::PersonalDataManagerObserver>

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
 
-#include "base/memory/weak_ptr.h"
-
 class GURL;
 
 namespace autofill {
-class FastCheckoutDelegate;
+class AutofillDriver;
+struct FormData;
+struct FormFieldData;
 }  // namespace autofill
 
 namespace content {
@@ -28,14 +28,20 @@ class FastCheckoutClient {
       content::WebContents* web_contents);
 
   // Starts the fast checkout run. Returns true if the run was successful.
-  virtual bool Start(base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
-                     const GURL& url) = 0;
+  virtual bool TryToStart(const GURL& url,
+                          const autofill::FormData& form,
+                          const autofill::FormFieldData& field,
+                          autofill::AutofillDriver* autofill_driver) = 0;
 
-  // Stops the fast checkout run.
-  virtual void Stop() = 0;
+  // Stops the fast checkout run. Resets internal UI state to `kNotShownYet` if
+  // `allow_further_runs == true`.
+  virtual void Stop(bool allow_further_runs) = 0;
 
   // Returns true if a fast checkout run is ongoing.
   virtual bool IsRunning() const = 0;
+
+  // Returns true if the bottomsheet is currently showing to the user.
+  virtual bool IsShowing() const = 0;
 
  protected:
   FastCheckoutClient() = default;

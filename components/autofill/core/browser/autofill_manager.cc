@@ -487,11 +487,11 @@ void AutofillManager::OnAskForValuesToFill(
   NotifyObservers(&Observer::OnBeforeAskForValuesToFill);
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)
 #if BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1379149) Asynchronous parsing breaks Touch To Fill's the
+      // TODO(crbug.com/1379149) Asynchronous parsing breaks Touch To Fill's
       // keyboard suppression mechanism. Fast Checkout uses the same mechanism.
       // Also see crbug.com/1375966.
-      || client_->IsTouchToFillCreditCardSupported() ||
-      client_->IsFastCheckoutSupported()
+      || client()->IsTouchToFillCreditCardSupported() ||
+      client()->IsFastCheckoutSupported()
 #endif
   ) {
     OnAskForValuesToFillImpl(form, field, bounding_box,

@@ -24,8 +24,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
-#include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
@@ -66,8 +64,6 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_internals/log_message.h"
-#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -117,7 +113,6 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
-#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/messages/android/messages_feature.h"
@@ -693,111 +688,39 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
-bool ChromeAutofillClient::IsFastCheckoutSupported() {
+bool ChromeAutofillClient::TryToShowFastCheckout(const FormData& form,
+                                                 const FormFieldData& field,
+                                                 AutofillDriver* driver) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(::features::kFastCheckout)) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because FastCheckout flag is disabled.";
-    return false;
-  }
-
-  // Not supported if MakeSearchesAndBrowsingBetter is not enabled. This has
-  // been done to allow for consequent hash dances during consent-less flows.
-  if (!GetPrefs()->GetBoolean(
-          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because the client is not MSBB.";
-    return false;
-  }
-
-  if (!GetPersonalDataManager()->IsAutofillProfileEnabled()) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << autofill::LogMessage::kFastCheckout
-        << "not triggered because Autofill profile is disabled.";
-    return false;
-  }
-
-  if (!GetPersonalDataManager()->IsAutofillCreditCardEnabled()) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "if disabled, not triggered Autofill credit card is disabled.";
-    return false;
-  }
-
-  // Not supported on CCTs.
-  auto* tab_android = TabAndroid::FromWebContents(web_contents());
-  if (tab_android && tab_android->IsCustomTab()) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because the tab is CCT.";
-    return false;
-  }
-
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool ChromeAutofillClient::IsFastCheckoutTriggerForm(
-    const FormData& form,
-    const FormFieldData& field) {
-#if BUILDFLAG(IS_ANDROID)
-  FastCheckoutCapabilitiesFetcher* fetcher =
-      FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
-          GetProfile());
-  if (!fetcher) {
-    return false;
-  }
-  // TODO(crbug.com/1356498): Stop calculating the signature once the form
-  // signature has been moved to `form_data`.
-  // Check browser form's signature and renderer form's signature.
-  FormSignature form_signature = CalculateFormSignature(form);
-  bool is_trigger_form =
-      fetcher->IsTriggerFormSupported(form.main_frame_origin, form_signature) ||
-      fetcher->IsTriggerFormSupported(form.main_frame_origin,
-                                      field.host_form_signature);
-  if (!is_trigger_form) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because there is no Fast Checkout support for form "
-           "signatures {"
-        << form_signature.value() << ", " << field.host_form_signature.value()
-        << "} on origin " << form.main_frame_origin.Serialize() << ".";
-  }
-  return is_trigger_form;
-#else
-  NOTREACHED();
-  return false;
-#endif
-}
-
-bool ChromeAutofillClient::ShowFastCheckout(
-    base::WeakPtr<FastCheckoutDelegate> delegate) {
-#if BUILDFLAG(IS_ANDROID)
-  if (delegate->IsShowingFastCheckoutUI()) {
-    LOG_AF(log_manager_.get())
-        << LoggingScope::kFastCheckout << LogMessage::kFastCheckout
-        << "not triggered because Fast Checkout UI is already showing.";
-    return false;
-  }
-
   const GURL& url = web_contents()->GetLastCommittedURL();
   return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->Start(delegate, url);
+      ->TryToStart(url, form, field, driver);
 #else
-  NOTREACHED();
   return false;
 #endif
 }
 
-void ChromeAutofillClient::HideFastCheckout() {
+void ChromeAutofillClient::HideFastCheckout(bool allow_further_runs) {
 #if BUILDFLAG(IS_ANDROID)
-  FastCheckoutClient::GetOrCreateForWebContents(web_contents())->Stop();
+  FastCheckoutClient::GetOrCreateForWebContents(web_contents())
+      ->Stop(/*allow_further_runs=*/allow_further_runs);
+#endif
+}
+
+bool ChromeAutofillClient::IsFastCheckoutSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(::features::kFastCheckout);
 #else
-  NOTREACHED();
+  return false;
+#endif
+}
+
+bool ChromeAutofillClient::IsShowingFastCheckoutUI() {
+#if BUILDFLAG(IS_ANDROID)
+  return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
+      ->IsShowing();
+#else
+  return false;
 #endif
 }
 

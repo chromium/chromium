@@ -60,7 +60,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
-#include "components/autofill/core/browser/fast_checkout_delegate_impl.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
@@ -485,7 +484,6 @@ BrowserAutofillManager::BrowserAutofillManager(
                       enable_download_manager),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
-      fast_checkout_delegate_(std::make_unique<FastCheckoutDelegateImpl>(this)),
       touch_to_fill_delegate_(std::make_unique<TouchToFillDelegateImpl>(this)),
       app_locale_(app_locale),
       personal_data_(client->GetPersonalDataManager()),
@@ -531,6 +529,12 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   // SimpleURLLoaders, which would immediately cancel the uploads.
   // As a consequence of this, votes are lost if the user generates blur votes
   // and closes the tab before the votes are sent (due to a navigation).
+
+  // Hides Fast Checkout UI, if required. Needs to use `unsafe_client()` instead
+  // of `client()` because the destructor can be called during prerendering.
+  // This call is also important to communicate the destruction of the
+  // `AutofillDriver` object to `FastCheckoutClient`.
+  unsafe_client()->HideFastCheckout(/*allow_further_runs=*/true);
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -1175,12 +1179,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   };
 
   auto ShouldShowSuggestion = [&] {
-    if (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
+    if (client()->IsShowingFastCheckoutUI() ||
         (form_element_was_clicked &&
-         fast_checkout_delegate_->TryToShowFastCheckout(form, field))) {
+         client()->TryToShowFastCheckout(form, field, driver()))) {
       // The Fast Checkout surface is shown, so abort showing regular Autofill
-      // UI. Now the flow is controlled by the `fast_checkout_delegate_` instead
-      // of `external_delegate_`.
+      // UI. Now the flow is controlled by the `FastCheckoutClient` instead of
+      // `external_delegate_`.
       // In principle, TTF and Fast Checkout triggering surfaces are different
       // and the two screens should never coincide.
       return false;
@@ -1523,7 +1527,7 @@ void BrowserAutofillManager::OnHidePopupImpl() {
 
   single_field_form_fill_router_->CancelPendingQueries(this);
   client()->HideAutofillPopup(PopupHidingReason::kRendererEvent);
-  fast_checkout_delegate_->HideFastCheckoutUI();
+  client()->HideFastCheckout(/*allow_further_runs=*/false);
   touch_to_fill_delegate_->HideTouchToFill();
 }
 
@@ -2026,7 +2030,7 @@ void BrowserAutofillManager::Reset() {
   initial_interaction_timestamp_ = TimeTicks();
   autofill_suggestion_method_ = AutofillSuggestionMethod::kUnknown;
   external_delegate_->Reset();
-  fast_checkout_delegate_->Reset();
+  unsafe_client()->HideFastCheckout(/*allow_further_runs=*/true);
   touch_to_fill_delegate_->Reset();
   filling_context_.clear();
 }

@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -328,11 +327,6 @@ class BrowserAutofillManager : public AutofillManager,
   void SetTouchToFillDelegateImplForTest(
       std::unique_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate) {
     touch_to_fill_delegate_ = std::move(touch_to_fill_delegate);
-  }
-
-  void SetFastCheckoutDelegateForTest(
-      std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate) {
-    fast_checkout_delegate_ = std::move(fast_checkout_delegate);
   }
 
   static void DeterminePossibleFieldTypesForUploadForTest(
@@ -721,7 +715,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
-  std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate_;
   std::unique_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate_;
 
   std::string app_locale_;
