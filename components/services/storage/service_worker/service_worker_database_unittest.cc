@@ -2283,161 +2283,407 @@ TEST(ServiceWorkerDatabaseTest, UncommittedAndPurgeableResourceIds) {
   EXPECT_EQ(expected, ids_out);
 }
 
-TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
+namespace {
+class DeleteAllDataForStorageKeyTest {
+ public:
+  // Returns true if `kThirdPartyStoragePartitioning` should be enabled for the
+  // test.
+  virtual bool WithThirdPartyStoragePartitioningEnabled() { return false; }
+
+  // Runs the test.
+  //
+  // The three `registered_keys` parameters define the key to register in the SW
+  // database. This must be given in parts because the `StorageKey` constructor
+  // depends on the status of the `kThirdPartyStoragePartitioning`, so must be
+  // called only after that is configured.
+  //
+  // `deleted_origin` is the origin with which to call
+  // `DeleteAllDataForStorageKeys`.
+  //
+  // `expect_key_deleted` determines whether the test will expect the registered
+  // key to be deleted; otherwise, it will expected the registered key to
+  // remain.
+  void TestDeleteAllDataForStorageKey(
+      std::string registered_key_origin,
+      std::string registered_key_top_level_site,
+      blink::mojom::AncestorChainBit registered_key_ancestor_chain_bit,
+      std::string deleted_origin,
+      bool expect_key_deleted);
+};
+
+void DeleteAllDataForStorageKeyTest::TestDeleteAllDataForStorageKey(
+    std::string registered_key_origin,
+    std::string registered_key_top_level_site,
+    blink::mojom::AncestorChainBit registered_key_ancestor_chain_bit,
+    std::string deleted_origin,
+    bool expect_key_deleted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (WithThirdPartyStoragePartitioningEnabled()) {
+    scoped_feature_list.InitAndEnableFeature(
+        net::features::kThirdPartyStoragePartitioning);
+  } else {
+    scoped_feature_list.InitAndDisableFeature(
+        net::features::kThirdPartyStoragePartitioning);
+  }
+
+  blink::StorageKey registered_key = blink::StorageKey::CreateWithOptionalNonce(
+      url::Origin::Create(GURL(registered_key_origin)),
+      net::SchemefulSite(GURL(registered_key_top_level_site)), nullptr,
+      registered_key_ancestor_chain_bit);
+
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
   ServiceWorkerDatabase::DeletedVersion deleted_version;
+  GURL reg_url = registered_key.origin().GetURL();
 
-  // Data associated with |key1| will be removed.
-  GURL url1("https://example.com");
-  GURL url2("https://example.org");
-  url::Origin origin1 = url::Origin::Create(url1);
-  url::Origin origin2 = url::Origin::Create(url2);
-  blink::StorageKey key1(origin1);
-  blink::StorageKey key2(origin2);
-
-  // |key1| has two registrations (registration1 and registration2).
+  // `registered_key` has two registrations (data1 and data2).
   RegistrationData data1;
   data1.registration_id = 10;
-  data1.scope = URL(url1, "/foo");
-  data1.key = key1;
-  data1.script = URL(url1, "/resource1");
+  data1.scope = URL(reg_url, "/foo");
+  data1.key = registered_key;
+  data1.script = URL(reg_url, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 2013 + 512;
 
   std::vector<ResourceRecordPtr> resources1;
-  resources1.push_back(CreateResource(1, URL(url1, "/resource1"), 2013));
-  resources1.push_back(CreateResource(2, URL(url1, "/resource2"), 512));
+  resources1.push_back(CreateResource(1, URL(reg_url, "/resource1"), 2013));
+  resources1.push_back(CreateResource(2, URL(reg_url, "/resource2"), 512));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data1, resources1, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, key1,
+                data1.registration_id, registered_key,
                 CreateUserData(data1.registration_id, {{"key1", "value1"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data1.registration_id, key1,
+                data1.registration_id, registered_key,
                 CreateUserData(data1.registration_id, {{"key2", "value2"}})));
 
   RegistrationData data2;
   data2.registration_id = 11;
-  data2.scope = URL(url1, "/bar");
-  data2.key = key1;
-  data2.script = URL(url1, "/resource3");
+  data2.scope = URL(reg_url, "/bar");
+  data2.key = registered_key;
+  data2.script = URL(reg_url, "/resource3");
   data2.version_id = 101;
   data2.resources_total_size_bytes = 4 + 5;
 
   std::vector<ResourceRecordPtr> resources2;
-  resources2.push_back(CreateResource(3, URL(url1, "/resource3"), 4));
-  resources2.push_back(CreateResource(4, URL(url1, "/resource4"), 5));
+  resources2.push_back(CreateResource(3, URL(reg_url, "/resource3"), 4));
+  resources2.push_back(CreateResource(4, URL(reg_url, "/resource4"), 5));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data2, resources2, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, key1,
+                data2.registration_id, registered_key,
                 CreateUserData(data2.registration_id, {{"key3", "value3"}})));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteUserData(
-                data2.registration_id, key1,
+                data2.registration_id, registered_key,
                 CreateUserData(data2.registration_id, {{"key4", "value4"}})));
 
-  // |key2| has one registration (registration3).
-  RegistrationData data3;
-  data3.registration_id = 12;
-  data3.scope = URL(url2, "/hoge");
-  data3.key = key2;
-  data3.script = URL(url2, "/resource5");
-  data3.version_id = 102;
-  data3.resources_total_size_bytes = 6 + 7;
+  // `existing_key` is a key unrelated to `registered_key` that should never
+  // have its registrations deleted.
+  blink::StorageKey existing_key(
+      url::Origin::Create(GURL("https://unrelated.com")));
+  GURL existing_url = existing_key.origin().GetURL();
 
-  std::vector<ResourceRecordPtr> resources3;
-  resources3.push_back(CreateResource(5, URL(url2, "/resource5"), 6));
-  resources3.push_back(CreateResource(6, URL(url2, "/resource6"), 7));
-  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->WriteRegistration(data3, resources3, &deleted_version));
-  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->WriteUserData(
-                data3.registration_id, key2,
-                CreateUserData(data3.registration_id, {{"key5", "value5"}})));
-  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->WriteUserData(
-                data3.registration_id, key2,
-                CreateUserData(data3.registration_id, {{"key6", "value6"}})));
+  RegistrationData exiting_data;
+  exiting_data.registration_id = 555;
+  exiting_data.scope = URL(existing_url, "/foo");
+  exiting_data.key = existing_key;
+  exiting_data.script = URL(existing_url, "/resource5");
+  exiting_data.version_id = 55;
+  exiting_data.resources_total_size_bytes = 2013;
 
-  std::set<blink::StorageKey> keys_to_delete;
+  std::vector<ResourceRecordPtr> existing_resources;
+  existing_resources.push_back(
+      CreateResource(1, URL(existing_url, "/resource5"), 2013));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(exiting_data, existing_resources,
+                                        &deleted_version));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteUserData(exiting_data.registration_id, existing_key,
+                                    CreateUserData(exiting_data.registration_id,
+                                                   {{"key1", "value1"}})));
+
+  // invoke DeleteAllDataForStorageKeys
   std::vector<int64_t> newly_purgeable_resources;
-  keys_to_delete.insert(key1);
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteAllDataForStorageKeys(keys_to_delete,
+  auto origin_obj = url::Origin::Create(GURL(deleted_origin));
+  blink::StorageKey deleted_key(origin_obj);
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->DeleteAllDataForStorageKeys({deleted_key},
                                                   &newly_purgeable_resources));
 
-  // |key1| should be removed from the unique origin list.
+  if (expect_key_deleted) {
+    // `registered_key` should be removed from the unique origin list.
+    std::set<blink::StorageKey> unique_keys;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->GetStorageKeysWithRegistrations(&unique_keys));
+    ASSERT_EQ(1u, unique_keys.size());  // just existing_key
+
+    // The registrations for `registered_key` should be removed.
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->GetRegistrationsForStorageKey(registered_key,
+                                                      &registrations, nullptr));
+    ASSERT_TRUE(registrations.empty());
+    blink::StorageKey key_out;
+    ASSERT_EQ(
+        ServiceWorkerDatabase::Status::kErrorNotFound,
+        database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
+
+    // The resources associated with `registered_key` should be purgeable.
+    std::vector<int64_t> purgeable_ids_out;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->GetPurgeableResourceIds(&purgeable_ids_out));
+    ASSERT_EQ(4u, purgeable_ids_out.size());
+    ASSERT_TRUE(base::Contains(purgeable_ids_out, 1));
+    ASSERT_TRUE(base::Contains(purgeable_ids_out, 2));
+    ASSERT_TRUE(base::Contains(purgeable_ids_out, 3));
+    ASSERT_TRUE(base::Contains(purgeable_ids_out, 4));
+
+    // The user data associated with `registered_key` should be removed.
+    std::vector<std::string> user_data_out;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+              database->ReadUserData(data1.registration_id, {"key1"},
+                                     &user_data_out));
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+              database->ReadUserData(data1.registration_id, {"key2"},
+                                     &user_data_out));
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+              database->ReadUserData(data2.registration_id, {"key3"},
+                                     &user_data_out));
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+              database->ReadUserData(data2.registration_id, {"key4"},
+                                     &user_data_out));
+    return;
+  }
+
+  // `registered_key` should not be removed from the unique origin list.
   std::set<blink::StorageKey> unique_keys;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&unique_keys));
-  EXPECT_EQ(1u, unique_keys.size());
-  EXPECT_TRUE(base::Contains(unique_keys, key2));
+  ASSERT_EQ(2u, unique_keys.size());  // registered_key + existing_key
+  ASSERT_TRUE(base::Contains(unique_keys, registered_key));
 
-  // The registrations for |key1| should be removed.
-  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kOk,
-      database->GetRegistrationsForStorageKey(key1, &registrations, nullptr));
-  EXPECT_TRUE(registrations.empty());
-  blink::StorageKey key_out;
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kErrorNotFound,
-      database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
-
-  // The registration for |key2| should not be removed.
+  // The registration for `registered_key` should not be removed.
   RegistrationDataPtr data_out;
+  blink::StorageKey key_out;
+
   std::vector<ResourceRecordPtr> resources_out;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data3.registration_id, key2, &data_out,
-                                       &resources_out));
-  VerifyRegistrationData(data3, *data_out);
-  VerifyResourceRecords(resources3, resources_out);
-  EXPECT_EQ(
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data1.registration_id, registered_key,
+                                       &data_out, &resources_out));
+  VerifyRegistrationData(data1, *data_out);
+  VerifyResourceRecords(resources1, resources_out);
+  ASSERT_EQ(
       ServiceWorkerDatabase::Status::kOk,
-      database->ReadRegistrationStorageKey(data3.registration_id, &key_out));
-  EXPECT_EQ(key2, key_out);
+      database->ReadRegistrationStorageKey(data1.registration_id, &key_out));
+  ASSERT_EQ(registered_key, key_out);
 
-  // The resources associated with |key1| should be purgeable.
-  std::vector<int64_t> purgeable_ids_out;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetPurgeableResourceIds(&purgeable_ids_out));
-  EXPECT_EQ(4u, purgeable_ids_out.size());
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, 1));
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, 2));
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, 3));
-  EXPECT_TRUE(base::Contains(purgeable_ids_out, 4));
+  resources_out.clear();
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data2.registration_id, registered_key,
+                                       &data_out, &resources_out));
+  VerifyRegistrationData(data2, *data_out);
+  VerifyResourceRecords(resources2, resources_out);
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->ReadRegistrationStorageKey(data2.registration_id, &key_out));
+  ASSERT_EQ(registered_key, key_out);
 
-  // The user data associated with |key1| should be removed.
+  // The user data associated with `registered_key` should not be removed.
   std::vector<std::string> user_data_out;
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kErrorNotFound,
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
       database->ReadUserData(data1.registration_id, {"key1"}, &user_data_out));
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kErrorNotFound,
+  ASSERT_EQ(1u, user_data_out.size());
+  ASSERT_EQ("value1", user_data_out[0]);
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
       database->ReadUserData(data1.registration_id, {"key2"}, &user_data_out));
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kErrorNotFound,
+  ASSERT_EQ(1u, user_data_out.size());
+  ASSERT_EQ("value2", user_data_out[0]);
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
       database->ReadUserData(data2.registration_id, {"key3"}, &user_data_out));
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kErrorNotFound,
+  ASSERT_EQ(1u, user_data_out.size());
+  ASSERT_EQ("value3", user_data_out[0]);
+  ASSERT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
       database->ReadUserData(data2.registration_id, {"key4"}, &user_data_out));
-
-  // The user data associated with |key2| should not be removed.
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kOk,
-      database->ReadUserData(data3.registration_id, {"key5"}, &user_data_out));
   ASSERT_EQ(1u, user_data_out.size());
-  EXPECT_EQ("value5", user_data_out[0]);
-  EXPECT_EQ(
-      ServiceWorkerDatabase::Status::kOk,
-      database->ReadUserData(data3.registration_id, {"key6"}, &user_data_out));
-  ASSERT_EQ(1u, user_data_out.size());
-  EXPECT_EQ("value6", user_data_out[0]);
+  ASSERT_EQ("value4", user_data_out[0]);
 }
+
+}  // namespace
+
+// Tests for first-party keys, which are parameterized on whether
+// `kThirdPartyStoragePartitioning` is enabled or disabled.
+class DeleteAllDataForStorageKeyFirstPartyP
+    : public DeleteAllDataForStorageKeyTest,
+      public testing::TestWithParam<bool> {
+  bool WithThirdPartyStoragePartitioningEnabled() override {
+    return GetParam();
+  }
+};
+
+// Tests for third-party keys, which only exist when
+// `kThirdPartyStoragePartitioning` is disabled.
+class ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty
+    : public DeleteAllDataForStorageKeyTest,
+      public testing::Test {
+  bool WithThirdPartyStoragePartitioningEnabled() override { return true; }
+};
+
+// A simple first-party key that matches the deleted origin should be
+// deleted.
+TEST_P(DeleteAllDataForStorageKeyFirstPartyP, Matching) {
+  TestDeleteAllDataForStorageKey("https://example.com", "https://example.com",
+                                 blink::mojom::AncestorChainBit::kSameSite,
+                                 "https://example.com", true);
+}
+
+// A simple first-party key that does not match the deleted origin should
+// not be deleted.
+TEST_P(DeleteAllDataForStorageKeyFirstPartyP, NonMatching) {
+  TestDeleteAllDataForStorageKey("https://other.com", "https://other.com",
+                                 blink::mojom::AncestorChainBit::kSameSite,
+                                 "https://example.com", false);
+}
+
+// A first party key where the key's origin is a subsite of the deleted
+// origin should not be deleted, regardless of 3PSP.
+TEST_P(DeleteAllDataForStorageKeyFirstPartyP, WithSubsiteOrigin) {
+  TestDeleteAllDataForStorageKey(
+      "https://subsite.example.com", "https://example.com",
+      blink::mojom::AncestorChainBit::kSameSite, "https://example.com", false);
+}
+
+// A first-party key, where the deleted origin is a subsite of the
+// registered key's origin, should not be deleted regardless of 3PSP.
+TEST_P(DeleteAllDataForStorageKeyFirstPartyP, WithSupersiteOfDeletedOrigin) {
+  TestDeleteAllDataForStorageKey("https://example.com", "https://example.com",
+                                 blink::mojom::AncestorChainBit::kSameSite,
+                                 "https://subsite.example.com", false);
+}
+
+// A first-party key with a subsite origin, where the deleted origin is the
+// same subsite, should be deleted regardless of 3PSP.
+TEST_P(DeleteAllDataForStorageKeyFirstPartyP,
+       WithSubsiteMatchingDeletedOrigin) {
+  TestDeleteAllDataForStorageKey("https://subsite.example.com",
+                                 "https://example.com",
+                                 blink::mojom::AncestorChainBit::kSameSite,
+                                 "https://subsite.example.com", true);
+}
+
+// A third-party key with a subsite origin not matching the top-level site,
+// where the deleted origin matches the key origin, should not be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       WithSubsiteMatchingDeletedOrigin) {
+  TestDeleteAllDataForStorageKey(
+      "https://subsite.example.com", "https://other.com",
+      blink::mojom::AncestorChainBit::kCrossSite, "https://subsite.example.com",
+      // TODO(crbug.com/1376065): should be deleted (origin match)
+      false);
+}
+
+// A third-party key with a subsite origin matching the top-level site,
+// where the deleted origin matches the key origin, should not be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       WithSubsiteMatchingDeletedOriginMatchingTopLevelSite) {
+  TestDeleteAllDataForStorageKey(
+      "https://subsite.example.com", "https://example.com",
+      blink::mojom::AncestorChainBit::kCrossSite, "https://subsite.example.com",
+      // TODO(crbug.com/1376065): should be deleted (origin match)
+      false);
+}
+
+// A third-party key with an origin equal to the top-level site,
+// where the deleted origin is a subsite, should not be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       SupersiteOfDeletedOrigin) {
+  TestDeleteAllDataForStorageKey("https://example.com", "https://other.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://subsite.example.com", false);
+}
+
+// A third-party key with an origin equal to the top-level site,
+// where the deleted origin is a subsite, should not be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       SupersiteOfDeletedOriginMatchingTopLevelSite) {
+  TestDeleteAllDataForStorageKey("https://example.com", "https://example.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://subsite.example.com",
+                                 // TODO(crbug.com/1376065): maybe? (site match)
+                                 false);
+}
+
+// A third-party key for a subsite of the deleted key should not be
+// deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       SubsiteOfDeletedOrigin) {
+  TestDeleteAllDataForStorageKey("https://sub.example.com", "https://other.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://example.com", false);
+}
+
+// A third-party key (per ancestor chain bit) for a subsite of the deleted
+// key should not be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       PerAncestorChainBitSubsiteOfDeletedOrigin) {
+  TestDeleteAllDataForStorageKey(
+      "https://sub.example.com", "https://example.com",
+      blink::mojom::AncestorChainBit::kCrossSite, "https://example.com",
+      // TODO(crbug.com/1376065): maybe? (site match)
+      false);
+}
+
+// A third-party key where the origin (but not the top-level site) matches
+// the deleted origin should be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       WithMatchingOrigin) {
+  TestDeleteAllDataForStorageKey("https://example.com", "https://other.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://example.com", false);
+}
+
+// A third-party key (per ancestor chain bit) for a the deleted origin
+// should not be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       PerAncestorChainBitWithMatchingOrigin) {
+  TestDeleteAllDataForStorageKey(
+      "https://example.com", "https://example.com",
+      blink::mojom::AncestorChainBit::kCrossSite, "https://example.com",
+      // TODO(crbug.com/1376065): should be deleted (origin match)
+      false);
+}
+
+// A third-party key for an unrelated origin should not be deleted..
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       ForOtherOrigin) {
+  TestDeleteAllDataForStorageKey("https://other.com", "https://other.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://example.com", false);
+}
+
+// A third-party key where the top-level-site (but not the origin) matches
+// the deleted origin should not be deleted.
+TEST_F(ServiceWorkerDatabaseTestDeleteAllDataForStorageKeyThirdParty,
+       WithMatchingTopLevelSite) {
+  TestDeleteAllDataForStorageKey("https://other.com", "https://example.com",
+                                 blink::mojom::AncestorChainBit::kCrossSite,
+                                 "https://example.com",
+                                 // TODO(crbug.com/1376065): maybe? (site match)
+                                 false);
+}
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerDatabaseTest,
+                         DeleteAllDataForStorageKeyFirstPartyP,
+                         testing::ValuesIn({false, true}),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "3PSPEnabled" : "3PSPDisabled";
+                         });
 
 TEST(ServiceWorkerDatabaseTest, DestroyDatabase) {
   base::ScopedTempDir database_dir;
