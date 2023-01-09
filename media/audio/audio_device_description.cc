@@ -48,8 +48,9 @@ bool AudioDeviceDescription::IsCommunicationsDevice(
 
 // static
 bool AudioDeviceDescription::IsLoopbackDevice(const std::string& device_id) {
-  return device_id.compare(kLoopbackInputDeviceId) == 0 ||
-         device_id.compare(kLoopbackWithMuteDeviceId) == 0;
+  return device_id == kLoopbackInputDeviceId ||
+         device_id == kLoopbackWithMuteDeviceId ||
+         device_id == kLoopbackWithoutChromeId;
 }
 
 // static

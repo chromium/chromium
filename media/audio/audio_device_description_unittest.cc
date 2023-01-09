@@ -34,4 +34,15 @@ TEST(AudioDeviceDescriptionTest, LocalizedUserNameInDefaultDeviceIsSanitized) {
   EXPECT_EQ(device_descriptions[1].device_name, "AirPods");
 }
 
+TEST(AudioDeviceDescriptionTest, IsLoopbackDevice) {
+  EXPECT_TRUE(AudioDeviceDescription::IsLoopbackDevice(
+      AudioDeviceDescription::kLoopbackInputDeviceId));
+  EXPECT_TRUE(AudioDeviceDescription::IsLoopbackDevice(
+      AudioDeviceDescription::kLoopbackWithMuteDeviceId));
+  EXPECT_TRUE(AudioDeviceDescription::IsLoopbackDevice(
+      AudioDeviceDescription::kLoopbackWithoutChromeId));
+  EXPECT_FALSE(AudioDeviceDescription::IsLoopbackDevice(
+      AudioDeviceDescription::kDefaultDeviceId));
+}
+
 }  // namespace media
