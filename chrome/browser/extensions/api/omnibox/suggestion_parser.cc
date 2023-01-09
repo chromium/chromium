@@ -31,12 +31,11 @@ std::string CheckedGetElementTag(const base::Value& node) {
 
 // Recursively walks an XML node, generating `result` as it goes along.
 void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
-  const base::Value* children = data_decoder::GetXmlElementChildren(node);
+  const base::Value::List* children = data_decoder::GetXmlElementChildren(node);
   if (!children)
     return;
 
-  DCHECK(children->is_list());
-  for (const base::Value& child : children->GetList()) {
+  for (const base::Value& child : *children) {
     // Append text nodes to our description.
     if (data_decoder::IsXmlElementOfType(
             child, data_decoder::mojom::XmlParser::kTextNodeType)) {
@@ -106,13 +105,13 @@ bool PopulateEntriesFromNode(const base::Value& root_node,
   if (CheckedGetElementTag(root_node) != "fragment")
     return false;
 
-  const base::Value* children = data_decoder::GetXmlElementChildren(root_node);
+  const base::Value::List* children =
+      data_decoder::GetXmlElementChildren(root_node);
   if (!children)
     return false;
 
-  DCHECK(children->is_list());
-  entries_out->reserve(children->GetList().size());
-  for (const base::Value& child : children->GetList()) {
+  entries_out->reserve(children->size());
+  for (const base::Value& child : *children) {
     if (!data_decoder::IsXmlElementOfType(
             child, data_decoder::mojom::XmlParser::kElementType)) {
       return false;

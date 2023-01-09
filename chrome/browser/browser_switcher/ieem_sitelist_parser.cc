@@ -80,8 +80,7 @@ void ParseIeFileVersionOne(const base::Value& xml,
       base::FeatureList::IsEnabled(kBrowserSwitcherNoneIsGreylist);
 
   DCHECK(data_decoder::IsXmlElementNamed(xml, kSchema1RulesElement));
-  for (const base::Value& node :
-       data_decoder::GetXmlElementChildren(xml)->GetList()) {
+  for (const base::Value& node : *data_decoder::GetXmlElementChildren(xml)) {
     // Skip over anything that is not a <emie> or <docMode> element.
     if (!data_decoder::IsXmlElementNamed(node, kSchema1EmieElement) &&
         !data_decoder::IsXmlElementNamed(node, kSchema1DocModeElement)) {

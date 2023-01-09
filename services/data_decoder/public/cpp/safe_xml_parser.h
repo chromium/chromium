@@ -12,15 +12,12 @@
 
 #include "base/callback.h"
 #include "base/token.h"
-
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace data_decoder {
 
 // Returns all the children of |element|.
-const base::Value* GetXmlElementChildren(const base::Value& element);
+const base::Value::List* GetXmlElementChildren(const base::Value& element);
 
 // Returns the qualified name |name_space|:|name| or simply |name| if
 // |name_space| is empty.

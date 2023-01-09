@@ -771,21 +771,24 @@ void TtsControllerImpl::StripSSMLHelper(
 void TtsControllerImpl::PopulateParsedText(std::string* parsed_text,
                                            const base::Value* element) {
   DCHECK(parsed_text);
-  if (!element)
+  if (!element || !element->is_dict()) {
     return;
+  }
   // Add element's text if present.
   // Note: We don't use data_decoder::GetXmlElementText because it gets the text
   // of element's first child, not text of current element.
-  const base::Value* text_value = element->FindKeyOfType(
-      data_decoder::mojom::XmlParser::kTextKey, base::Value::Type::STRING);
+  const std::string* text_value =
+      element->GetDict().FindString(data_decoder::mojom::XmlParser::kTextKey);
   if (text_value)
-    *parsed_text += text_value->GetString();
+    *parsed_text += *text_value;
 
-  const base::Value* children = data_decoder::GetXmlElementChildren(*element);
-  if (!children || !children->is_list())
+  const base::Value::List* children =
+      data_decoder::GetXmlElementChildren(*element);
+  if (!children) {
     return;
+  }
 
-  for (const auto& entry : children->GetList()) {
+  for (const auto& entry : *children) {
     // We need to iterate over all children because some text elements are
     // nested within other types of elements, such as <emphasis> tags.
     PopulateParsedText(parsed_text, &entry);

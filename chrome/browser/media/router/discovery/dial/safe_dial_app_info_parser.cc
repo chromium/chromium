@@ -27,11 +27,12 @@ DialAppState ParseDialAppState(const std::string& app_state) {
 
 void ProcessAdditionalDataElement(const base::Value& additional_data_element,
                                   ParsedDialAppInfo* out_app_info) {
-  const base::Value* child_elements =
+  const base::Value::List* child_elements =
       data_decoder::GetXmlElementChildren(additional_data_element);
-  if (!child_elements || !child_elements->is_list())
+  if (!child_elements) {
     return;
-  for (const auto& child_element : child_elements->GetList()) {
+  }
+  for (const auto& child_element : *child_elements) {
     std::string tag_name;
     if (!data_decoder::GetXmlElementTagName(child_element, &tag_name))
       continue;
@@ -125,15 +126,15 @@ void SafeDialAppInfoParser::OnXmlParsingDone(
       data_decoder::GetXmlElementAttribute(*service_element, "dialVer");
 
   // Fetch all the children of <service> element.
-  const base::Value* child_elements =
+  const base::Value::List* child_elements =
       data_decoder::GetXmlElementChildren(*service_element);
-  if (!child_elements || !child_elements->is_list()) {
+  if (!child_elements) {
     std::move(callback).Run(nullptr, ParsingResult::kInvalidXML);
     return;
   }
 
   ParsingResult parsing_result = ParsingResult::kSuccess;
-  for (const auto& child_element : child_elements->GetList()) {
+  for (const auto& child_element : *child_elements) {
     parsing_result = ProcessChildElement(child_element, app_info.get());
     if (parsing_result != ParsingResult::kSuccess) {
       std::move(callback).Run(nullptr, parsing_result);
