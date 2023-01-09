@@ -463,15 +463,9 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
         "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
   }
 }
-// Flaky on multiple ASAN bots. See https://crbug.com/1266318
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TestIncognitoDoesntFetchModels \
-  DISABLED_TestIncognitoDoesntFetchModels
-#else
-#define MAYBE_TestIncognitoDoesntFetchModels TestIncognitoDoesntFetchModels
-#endif
+
 IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
-                       MAYBE_TestIncognitoDoesntFetchModels) {
+                       TestIncognitoDoesntFetchModels) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -715,14 +709,8 @@ IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
-// Flaky on multiple ASAN bots. See https://crbug.com/1266318
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TestSwitchProfileDoesntCrash DISABLED_TestSwitchProfileDoesntCrash
-#else
-#define MAYBE_TestSwitchProfileDoesntCrash TestSwitchProfileDoesntCrash
-#endif
 IN_PROC_BROWSER_TEST_P(PredictionManagerModelDownloadingBrowserTest,
-                       MAYBE_TestSwitchProfileDoesntCrash) {
+                       TestSwitchProfileDoesntCrash) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath other_path =
       profile_manager->GenerateNextProfileDirectoryPath();
