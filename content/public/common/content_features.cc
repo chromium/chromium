@@ -1264,10 +1264,10 @@ BASE_FEATURE(kWebAssemblyBaseline,
              "WebAssemblyBaseline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable WebAssembly stack switching.
+// Enable WebAssembly JSPI.
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
-BASE_FEATURE(kEnableExperimentalWebAssemblyStackSwitching,
-             "WebAssemblyExperimentalStackSwitching",
+BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
+             "WebAssemblyExperimentalJSPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 

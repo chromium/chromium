@@ -3469,11 +3469,9 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kEnableExperimentalWebAssemblyFeatures)},
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
     {"enable-experimental-webassembly-stack-switching",
-     flag_descriptions::kExperimentalWebAssemblyStackSwitchingName,
-     flag_descriptions::kExperimentalWebAssemblyStackSwitchingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         features::kEnableExperimentalWebAssemblyStackSwitching)},
+     flag_descriptions::kExperimentalWebAssemblyJSPIName,
+     flag_descriptions::kExperimentalWebAssemblyJSPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kEnableExperimentalWebAssemblyJSPI)},
 #endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
     {"enable-webassembly-baseline", flag_descriptions::kEnableWasmBaselineName,
      flag_descriptions::kEnableWasmBaselineDescription, kOsAll,

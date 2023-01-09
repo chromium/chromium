@@ -59624,6 +59624,7 @@ from previous Chrome versions.
   <int value="-749048160" label="enable-panels"/>
   <int value="-748571227"
       label="AssistantEnableMediaSessionIntegration:enabled"/>
+  <int value="-748133924" label="WebAssemblyExperimentalJSPI:disabled"/>
   <int value="-747919789" label="VideoToolboxVp9Decoding:enabled"/>
   <int value="-747463111" label="ContentSuggestionsNotifications:disabled"/>
   <int value="-747072690" label="NtpRepeatableQueries:disabled"/>
@@ -62477,6 +62478,7 @@ from previous Chrome versions.
   <int value="926852901" label="DataReductionProxyMainMenu:disabled"/>
   <int value="928900043" label="OmniboxLooseMaxLimitOnDedicatedRows:disabled"/>
   <int value="929462705" label="disable-link-disambiguation-popup"/>
+  <int value="930187600" label="WebAssemblyExperimentalJSPI:enabled"/>
   <int value="932468127" label="LauncherPulsingBlocksRefresh:enabled"/>
   <int value="933696491" label="TailoredSecurityDesktopNotice:enabled"/>
   <int value="934139985" label="WallpaperWebUI:enabled"/>

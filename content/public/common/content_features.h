@@ -284,8 +284,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kV8VmFuture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyBaseline);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDynamicTiering);
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kEnableExperimentalWebAssemblyStackSwitching);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableExperimentalWebAssemblyJSPI);
 #endif  // defined(ARCH_CPU_X86_64)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGarbageCollection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyLazyCompilation);

@@ -1376,11 +1376,12 @@ const char kExperimentalWebAssemblyFeaturesName[] = "Experimental WebAssembly";
 const char kExperimentalWebAssemblyFeaturesDescription[] =
     "Enable web pages to use experimental WebAssembly features.";
 
-const char kExperimentalWebAssemblyStackSwitchingName[] =
-    "Experimental WebAssembly Stack Switching";
-const char kExperimentalWebAssemblyStackSwitchingDescription[] =
-    "Enable web pages to use experimental WebAssembly stack switching "
-    "features.";
+const char kExperimentalWebAssemblyJSPIName[] =
+    "Experimental WebAssembly JavaScript Promise Integration (JSPI)";
+const char kExperimentalWebAssemblyJSPIDescription[] =
+    "Enable web pages to use experimental WebAssembly JavaScript Promise "
+    "Integration (JSPI) "
+    "API.";
 
 const char kEnableWasmBaselineName[] = "WebAssembly baseline compiler";
 const char kEnableWasmBaselineDescription[] =

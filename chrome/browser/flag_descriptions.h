@@ -764,8 +764,8 @@ extern const char kEnableRegionCaptureExperimentalSubtypesDescription[];
 extern const char kExperimentalWebAssemblyFeaturesName[];
 extern const char kExperimentalWebAssemblyFeaturesDescription[];
 
-extern const char kExperimentalWebAssemblyStackSwitchingName[];
-extern const char kExperimentalWebAssemblyStackSwitchingDescription[];
+extern const char kExperimentalWebAssemblyJSPIName[];
+extern const char kExperimentalWebAssemblyJSPIDescription[];
 
 extern const char kEnableWasmBaselineName[];
 extern const char kEnableWasmBaselineDescription[];

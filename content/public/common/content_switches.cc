@@ -333,10 +333,6 @@ const char kEnableExperimentalCookieFeatures[] =
 const char kEnableExperimentalWebAssemblyFeatures[] =
     "enable-experimental-webassembly-features";
 
-// Enables experimental WebAssembly stack switching.
-const char kEnableExperimentalWebAssemblyStackSwitching[] =
-    "enable-experimental-webassembly-stack-switching";
-
 // Enables Web Platform features that are in development.
 const char kEnableExperimentalWebPlatformFeatures[] =
     "enable-experimental-web-platform-features";
