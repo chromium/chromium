@@ -78,6 +78,16 @@ dimension.)
 Note you might need `--swarming-os Ubuntu-14.04` if you get an error like,
 `UnboundLocalError: local variable 'dbus_pid' referenced before assignment`.
 
+Web tests can be also run on swarmed. However:
+- the only supported output folders are `Debug` and `Release`
+- `--no-test-flags` must be specified.
+
+For example, you can run all Web Platform Tests inside `<some-wpt-folder>` like this:
+```
+$ autoninja -C out/Release blink_tests
+$ tools/run-swarmed.py --no-test-flags out/Release blink_wpt_tests <some-wpt-folder>
+```
+
 ### mb.py run
 
 Similar to `tools/run-swarmed.py`, `mb.py run` bundles much of the logic into a
