@@ -22,5 +22,8 @@ found in the LICENSE file.
   <dimen name="privacy_sandbox_spinner_dimension">20dp</dimen>
   <dimen name="custom_preference_category_paddingVertical">16dp</dimen>
   <dimen name="custom_preference_category_title_marginBottom">8dp</dimen>
+  <dimen name="custom_image_preference_paddingVertical">24dp</dimen>
+  <dimen name="custom_image_preference_icon_size">24dp</dimen>
+  <dimen name="custom_image_preference_icon_marginBottom">16dp</dimen>
   <dimen name="privacy_sandbox_more_button_drawable_padding">8dp</dimen>
 </resources>

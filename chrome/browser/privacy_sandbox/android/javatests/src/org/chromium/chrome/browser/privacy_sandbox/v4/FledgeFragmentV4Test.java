@@ -194,11 +194,8 @@ public final class FledgeFragmentV4Test {
     @Feature({"RenderTest"})
     public void testRenderAllSitesPage() throws IOException {
         setFledgePrefEnabled(true);
-        for (int i = 0; i < FledgeFragmentV4.MAX_DISPLAYED_SITES + 1; i++) {
-            mFakePrivacySandboxBridge.setFledgeJoiningAllowed(generateSiteFromNr(i), true);
-        }
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
         startFledgeSettings();
-        scrollToSetting(withText(R.string.settings_fledge_page_see_all_sites_label));
         onView(withText(R.string.settings_fledge_page_see_all_sites_label)).perform(click());
         mRenderTestRule.render(getAllSitesPageRootView(), "fledge_all_sites_page");
     }
@@ -282,6 +279,10 @@ public final class FledgeFragmentV4Test {
         // Click on the toggle.
         onView(getFledgeToggleMatcher()).perform(click());
 
+        // Check that the all sites pref is displayed
+        onViewWaiting(withText(R.string.settings_fledge_page_see_all_sites_label))
+                .check(matches(isDisplayed()));
+
         // Check that the sites list is displayed when Fledge is enabled.
         onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
         onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
@@ -315,10 +316,6 @@ public final class FledgeFragmentV4Test {
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
         startFledgeSettings();
 
-        // Check that the all sites pref is not displayed
-        onView(withText(R.string.settings_fledge_page_see_all_sites_label)).check(doesNotExist());
-
-        // Check that the sites are displayed.
         onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
         onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
     }
