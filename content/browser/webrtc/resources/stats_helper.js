@@ -30,8 +30,8 @@ function generateLabel(key, statsValues) {
 export function generateStatsLabel(report) {
   let label = report.type + ' (';
   let labels = [];
-  if (['outbound-rtp', 'inbound-rtp'].includes(report.type)
-      && report.stats.values) {
+  if (['outbound-rtp', 'remote-outbound-rtp', 'inbound-rtp',
+      'remote-inbound-rtp'].includes(report.type) && report.stats.values) {
     labels = ['kind', 'mid', 'rid', 'ssrc', '[codec]']
       .map(stat => generateLabel(stat, report.stats.values));
   } else if (['local-candidate', 'remote-candidate'].includes(report.type)) {
@@ -45,7 +45,7 @@ export function generateStatsLabel(report) {
       .map(stat => generateLabel(stat, report.stats.values));
   } else if (report.type === 'candidate-pair') {
     labels = ['state']
-    .map(stat => generateLabel(stat, report.stats.values));
+      .map(stat => generateLabel(stat, report.stats.values));
   }
   labels = labels.filter(label => !!label);
   if (labels.length) {
