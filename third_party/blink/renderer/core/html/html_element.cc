@@ -1510,6 +1510,19 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
 
   GetPopoverData()->setInvoker(nullptr);
 
+  if (force_hide) {
+    // Stop matching `:open` now:
+    GetPopoverData()->setVisibilityState(
+        PopoverVisibilityState::kTransitioning);
+    PseudoStateChanged(CSSSelector::kPseudoOpen);
+
+    // Note that a `beforetoggle` event is not fired in the case that the
+    // popover is being hidden because it has been removed from the document.
+
+    // Immediately finish the hide process.
+    return PopoverHideFinishIfNeeded();
+  }
+
   // Fire the "closing" beforetoggle event.
   auto* event = BeforeToggleEvent::CreateBubble(
       event_type_names::kBeforetoggle, Event::Cancelable::kNo,
@@ -1519,18 +1532,6 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   DCHECK_EQ(event->currentState(), "open");
   DCHECK_EQ(event->newState(), "closed");
   event->SetTarget(this);
-  if (force_hide) {
-    // Stop matching `:open` now:
-    GetPopoverData()->setVisibilityState(
-        PopoverVisibilityState::kTransitioning);
-    PseudoStateChanged(CSSSelector::kPseudoOpen);
-
-    // We will be force-hidden when the popover element is being removed from
-    // the document, during which event dispatch is prohibited.
-    GetDocument().EnqueueAnimationFrameEvent(event);
-    // Immediately finish the hide process.
-    return PopoverHideFinishIfNeeded();
-  }
   auto result = DispatchEvent(*event);
   DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
 
