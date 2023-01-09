@@ -511,9 +511,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         fixedpos_containing_block_offset = converter.ToLogical(
             multicol_info->fixedpos_containing_block.Offset(),
             fixedpos_containing_block_fragment->Size());
-        fixedpos_containing_block_rel_offset = converter.ToLogical(
+        fixedpos_containing_block_rel_offset = RelativeInsetToLogical(
             multicol_info->fixedpos_containing_block.RelativeOffset(),
-            fixedpos_containing_block_fragment->Size());
+            GetWritingDirection());
         fixedpos_containing_block_rel_offset += relative_offset;
         // We want the fixedpos containing block offset to be the offset from
         // the containing block to the top of the fragmentation context root,
@@ -611,9 +611,8 @@ void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
     LogicalOffset containing_block_offset =
         converter.ToLogical(descendant.containing_block.Offset(),
                             containing_block_fragment->Size());
-    LogicalOffset containing_block_rel_offset =
-        converter.ToLogical(descendant.containing_block.RelativeOffset(),
-                            containing_block_fragment->Size());
+    LogicalOffset containing_block_rel_offset = RelativeInsetToLogical(
+        descendant.containing_block.RelativeOffset(), GetWritingDirection());
     containing_block_rel_offset += relative_offset;
     if (!fragment.IsFragmentainerBox())
       containing_block_offset += offset;
@@ -657,9 +656,9 @@ void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
       fixedpos_containing_block_offset =
           converter.ToLogical(descendant.fixedpos_containing_block.Offset(),
                               fixedpos_containing_block_fragment->Size());
-      fixedpos_containing_block_rel_offset = converter.ToLogical(
+      fixedpos_containing_block_rel_offset = RelativeInsetToLogical(
           descendant.fixedpos_containing_block.RelativeOffset(),
-          fixedpos_containing_block_fragment->Size());
+          GetWritingDirection());
       fixedpos_containing_block_rel_offset += relative_offset;
       if (!fragment.IsFragmentainerBox())
         fixedpos_containing_block_offset += offset;

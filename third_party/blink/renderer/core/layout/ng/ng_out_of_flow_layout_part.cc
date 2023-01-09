@@ -961,9 +961,9 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
         fixedpos_containing_block_offset =
             converter.ToLogical(descendant.fixedpos_containing_block.Offset(),
                                 fixedpos_containing_block_fragment->Size());
-        fixedpos_containing_block_rel_offset = converter.ToLogical(
+        fixedpos_containing_block_rel_offset = RelativeInsetToLogical(
             descendant.fixedpos_containing_block.RelativeOffset(),
-            fixedpos_containing_block_fragment->Size());
+            writing_direction);
       }
 
       NGInlineContainer<LogicalOffset> inline_container(
