@@ -16,25 +16,6 @@ namespace device_signals::test {
 // Returns an absolute path to test data directory containing test resources.
 base::FilePath GetTestDataDir();
 
-// Returns an absolute path to the signed.exe file in the test data directory.
-base::FilePath GetSignedExePath();
-
-// Returns an absolute path to the multi-signed.exe file in the test data
-// directory.
-base::FilePath GetMultiSignedExePath();
-
-// Returns an absolute path to the metadata.exe file in the test data directory.
-base::FilePath GetMetadataExePath();
-
-// Returns an absolute path to the empty.exe file in the test data directory.
-base::FilePath GetEmptyExePath();
-
-// Returns the expected product name of the metadata.exe test file.
-std::string GetMetadataProductName();
-
-// Returns the expected product version of the metadata.exe test file.
-std::string GetMetadataProductVersion();
-
 // Returns an absolute path to the TestApp.app test bundle.
 base::FilePath GetTestBundlePath();
 

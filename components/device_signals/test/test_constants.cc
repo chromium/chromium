@@ -11,8 +11,6 @@ namespace device_signals::test {
 
 namespace {
 
-constexpr char kProductName[] = "Test Product Name";
-constexpr char kProductVersion[] = "1.0.0.2";
 constexpr char kTestBundleProductName[] = "TestApp";
 constexpr char kTestBundleProductVersion[] = "10.8";
 
@@ -24,30 +22,6 @@ base::FilePath GetTestDataDir() {
       .AppendASCII("test")
       .AppendASCII("data")
       .AppendASCII("device_signals");
-}
-
-base::FilePath GetSignedExePath() {
-  return GetTestDataDir().AppendASCII("signed.exe");
-}
-
-base::FilePath GetMultiSignedExePath() {
-  return GetTestDataDir().AppendASCII("multi-signed.exe");
-}
-
-base::FilePath GetMetadataExePath() {
-  return GetTestDataDir().AppendASCII("metadata.exe");
-}
-
-base::FilePath GetEmptyExePath() {
-  return GetTestDataDir().AppendASCII("empty.exe");
-}
-
-std::string GetMetadataProductName() {
-  return kProductName;
-}
-
-std::string GetMetadataProductVersion() {
-  return kProductVersion;
 }
 
 base::FilePath GetTestBundlePath() {

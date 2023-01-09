@@ -46,6 +46,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "components/device_signals/test/win/scoped_executable_files.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -745,12 +746,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
   std::string extra_items = "";
 #if BUILDFLAG(IS_WIN)
+  device_signals::test::ScopedExecutableFiles scoped_executable_files;
   std::string signed_exe_path =
-      device_signals::test::GetSignedExePath().AsUTF8Unsafe();
+      scoped_executable_files.GetSignedExePath().AsUTF8Unsafe();
   base::ReplaceSubstringsAfterOffset(&signed_exe_path, 0U, "\\", "\\\\");
 
   std::string metadata_exe_path =
-      device_signals::test::GetMetadataExePath().AsUTF8Unsafe();
+      scoped_executable_files.GetMetadataExePath().AsUTF8Unsafe();
   base::ReplaceSubstringsAfterOffset(&metadata_exe_path, 0U, "\\", "\\\\");
 
   extra_items = base::StringPrintf(
@@ -772,8 +774,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
     });
   )",
       signed_exe_path.c_str(), metadata_exe_path.c_str(),
-      device_signals::test::GetMetadataProductName().c_str(),
-      device_signals::test::GetMetadataProductVersion().c_str());
+      scoped_executable_files.GetMetadataProductName().c_str(),
+      scoped_executable_files.GetMetadataProductVersion().c_str());
 
   constexpr char kAssertions[] = R"(
         chrome.test.assertTrue(fileItems instanceof Array);

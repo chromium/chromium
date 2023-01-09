@@ -14,7 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "components/device_signals/test/test_constants.h"
+#include "components/device_signals/test/win/scoped_executable_files.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device_signals {
@@ -58,6 +58,7 @@ class WinPlatformDelegateTest : public testing::Test {
   base::ScopedTempDir scoped_dir_;
   base::FilePath absolute_file_path_;
   std::unique_ptr<base::Environment> env_;
+  test::ScopedExecutableFiles scoped_executable_files_;
   WinPlatformDelegate platform_delegate_;
 };
 
@@ -96,7 +97,7 @@ TEST_F(WinPlatformDelegateTest,
 }
 
 TEST_F(WinPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_Signed) {
-  base::FilePath signed_exe_path = test::GetSignedExePath();
+  base::FilePath signed_exe_path = scoped_executable_files_.GetSignedExePath();
   ASSERT_TRUE(base::PathExists(signed_exe_path));
 
   auto public_keys =
@@ -111,7 +112,8 @@ TEST_F(WinPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_Signed) {
 
 TEST_F(WinPlatformDelegateTest,
        GetSigningCertificatesPublicKeyHashes_MultiSigned) {
-  base::FilePath multi_signed_exe_path = test::GetMultiSignedExePath();
+  base::FilePath multi_signed_exe_path =
+      scoped_executable_files_.GetMultiSignedExePath();
   ASSERT_TRUE(base::PathExists(multi_signed_exe_path));
 
   auto public_keys = platform_delegate_.GetSigningCertificatesPublicKeyHashes(
@@ -129,7 +131,7 @@ TEST_F(WinPlatformDelegateTest,
 }
 
 TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeysHash_Empty) {
-  base::FilePath empty_exe_path = test::GetEmptyExePath();
+  base::FilePath empty_exe_path = scoped_executable_files_.GetEmptyExePath();
   ASSERT_TRUE(base::PathExists(empty_exe_path));
 
   auto public_keys =
@@ -139,18 +141,20 @@ TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeysHash_Empty) {
 }
 
 TEST_F(WinPlatformDelegateTest, GetProductMetadata_Success) {
-  base::FilePath metadata_exe_path = test::GetMetadataExePath();
+  base::FilePath metadata_exe_path =
+      scoped_executable_files_.GetMetadataExePath();
   ASSERT_TRUE(base::PathExists(metadata_exe_path));
 
   auto metadata = platform_delegate_.GetProductMetadata(metadata_exe_path);
 
   ASSERT_TRUE(metadata);
-  EXPECT_EQ(metadata->name, test::GetMetadataProductName());
-  EXPECT_EQ(metadata->version, test::GetMetadataProductVersion());
+  EXPECT_EQ(metadata->name, scoped_executable_files_.GetMetadataProductName());
+  EXPECT_EQ(metadata->version,
+            scoped_executable_files_.GetMetadataProductVersion());
 }
 
 TEST_F(WinPlatformDelegateTest, GetProductMetadata_Empty) {
-  base::FilePath empty_exe_path = test::GetEmptyExePath();
+  base::FilePath empty_exe_path = scoped_executable_files_.GetEmptyExePath();
   ASSERT_TRUE(base::PathExists(empty_exe_path));
 
   EXPECT_FALSE(platform_delegate_.GetProductMetadata(empty_exe_path));

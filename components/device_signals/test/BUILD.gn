@@ -11,6 +11,15 @@ source_set("test_support") {
     "test_constants.h",
   ]
 
+  if (is_win) {
+    sources += [
+      "win/files_data.cc",
+      "win/files_data.h",
+      "win/scoped_executable_files.cc",
+      "win/scoped_executable_files.h",
+    ]
+  }
+
   deps = [
     "//base",
     "//base/test:test_support",

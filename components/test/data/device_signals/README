@@ -3,21 +3,6 @@ signals extraction.
 
 Description of the files:
 
-signed.exe
-An executable file that was signed with a self-signed certificate.
-
-multi-signed.exe
-An executable file that has two digital signatures.
-
-metadata.exe
-An executable file which exposes metadata such as:
-- File version: 1.0.0.1
-- Product version: 1.0.0.2
-- Product name: Test Product Name
-
-empty.exe
-An executable file which has no metadata and is not signed.
-
 TestApp.app
 Simple test app bundle that is signed and has the following properties:
 - Product Name: TestApp
@@ -48,6 +33,10 @@ Instructions for adding a second signature to an executable (e.g. multi-signed.e
 cert), but when you get to run the "signtool" command, add the /as flag to append
 the signature (instead of overwriting it).
 signtool sign /as /f C:\self-signed.pfx /p "1231233!a" C:\signed.exe
+
+Do not commit actual exe files. Instead, you can generate them at runtime from
+base64 encoded bytes. See this test utility as example:
+//components/device_signals/test/win/scoped_executable_files.h
 
 Instructions for signing the TestApp.app bundle:
 - Create a self-signed certificate in the login keychain via Keychain access
