@@ -13451,7 +13451,7 @@
   },
   "android-perfetto-rel": {
     "additional_compile_targets": [
-      "all"
+      "chrome_public_apk"
     ],
     "gtest_tests": [
       {

@@ -3019,7 +3019,7 @@
       },
 
       'android-perfetto-rel': {
-        'additional_compile_targets': [ 'all' ],
+        'additional_compile_targets': [ 'chrome_public_apk' ],
         'mixins': [
           '12-x64-emulator',
           'emulator-8-cores',
