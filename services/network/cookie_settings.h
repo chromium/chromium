@@ -180,9 +180,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     // Access to unpartitioned cookies is blocked in this context, but access to
     // partitioned cookies is allowed.
     kPartitionedStateAllowed,
-    // Access to cookies is blocked in this context, but they are forced to
-    // allowed by some mechanism, eg. user bypass.
-    kForceAllowed,
   };
 
   struct CookieSettingWithMetadata {

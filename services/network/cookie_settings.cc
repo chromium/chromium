@@ -179,8 +179,6 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
 
     case ThirdPartyBlockingOutcome::kPartitionedStateAllowed:
       return net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly;
-    case ThirdPartyBlockingOutcome::kForceAllowed:
-      return net::NetworkDelegate::PrivacySetting::kStateAllowed;
   }
 }
 
@@ -254,7 +252,7 @@ CookieSettings::GetCookieSettingWithMetadata(
                      net::CookieSettingOverride::kForceThirdPartyByUser)) {
         // See if a user bypass can unblock.
         cookie_setting = CONTENT_SETTING_ALLOW;
-        third_party_blocking_outcome = ThirdPartyBlockingOutcome::kForceAllowed;
+        third_party_blocking_outcome = ThirdPartyBlockingOutcome::kIrrelevant;
         storage_access_result =
             net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
       }
@@ -266,6 +264,10 @@ CookieSettings::GetCookieSettingWithMetadata(
         net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
   FireStorageAccessHistogram(storage_access_result);
+
+  DCHECK(third_party_blocking_outcome ==
+             ThirdPartyBlockingOutcome::kIrrelevant ||
+         !IsAllowed(cookie_setting));
 
   return {cookie_setting, third_party_blocking_outcome};
 }
