@@ -187,8 +187,10 @@ String RTCStats::GetType() const {
   return String::FromUTF8(stats_->type());
 }
 
-double RTCStats::Timestamp() const {
-  return stats_->timestamp_us() /
+double RTCStats::TimestampMs() const {
+  // The timestamp unit is milliseconds but we want decimal
+  // precision so we convert ourselves.
+  return stats_->timestamp().us() /
          static_cast<double>(base::Time::kMicrosecondsPerMillisecond);
 }
 

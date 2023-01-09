@@ -81,7 +81,7 @@ class PLATFORM_EXPORT RTCStats {
 
   String Id() const;
   String GetType() const;
-  double Timestamp() const;
+  double TimestampMs() const;
 
   size_t MembersCount() const;
   std::unique_ptr<RTCStatsMember> GetMember(size_t i) const;

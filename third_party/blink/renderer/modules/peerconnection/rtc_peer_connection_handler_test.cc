@@ -959,13 +959,13 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
     EXPECT_EQ(stats->GetType().Utf8(), webrtc::RTCTestStats::kType);
     if (stats->Id().Utf8() == "RTCUndefinedStats") {
       ++undefined_stats_count;
-      EXPECT_EQ(stats->Timestamp(), 1.0);
+      EXPECT_EQ(stats->TimestampMs(), 1.0);
       for (size_t i = 0; i < stats->MembersCount(); ++i) {
         EXPECT_FALSE(stats->GetMember(i)->IsDefined());
       }
     } else if (stats->Id().Utf8() == "RTCDefinedStats") {
       ++defined_stats_count;
-      EXPECT_EQ(stats->Timestamp(), 2.0);
+      EXPECT_EQ(stats->TimestampMs(), 2.0);
       std::set<webrtc::RTCStatsMemberInterface::Type> members;
       for (size_t i = 0; i < stats->MembersCount(); ++i) {
         std::unique_ptr<RTCStatsMember> member = stats->GetMember(i);

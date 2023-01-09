@@ -608,9 +608,13 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     for (const auto& stats : *report) {
       // The format of "stats_subdictionary" is:
       // {timestamp:<milliseconds>, values: [<key-value pairs>]}
+      // The timestamp unit is milliseconds but we want decimal
+      // precision so we convert ourselves.
       base::Value::Dict stats_subdictionary;
-      // Timestamp is reported in milliseconds.
-      stats_subdictionary.Set("timestamp", stats.timestamp_us() / 1000.0);
+      stats_subdictionary.Set(
+          "timestamp",
+          stats.timestamp().us() /
+              static_cast<double>(base::Time::kMicrosecondsPerMillisecond));
       // Values are reported as
       // "values": ["member1", value, "member2", value...]
       base::Value::List name_value_pairs;

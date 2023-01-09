@@ -53,7 +53,7 @@ v8::Local<v8::Object> RTCStatsToV8Object(ScriptState* script_state,
   V8ObjectBuilder builder(script_state);
 
   builder.AddString("id", stats->Id());
-  builder.AddNumber("timestamp", stats->Timestamp());
+  builder.AddNumber("timestamp", stats->TimestampMs());
   builder.AddString("type", stats->GetType());
 
   const bool expose_hardware_caps = ExposeHardwareCapabilityStats(script_state);
