@@ -57,4 +57,9 @@ unsigned ImageFactoryNativePixmap::RequiredTextureType() {
   return GL_TEXTURE_2D;
 }
 
+ImageFactoryNativePixmap*
+ImageFactoryNativePixmap::AsImageFactoryNativePixmap() {
+  return this;
+}
+
 }  // namespace gpu

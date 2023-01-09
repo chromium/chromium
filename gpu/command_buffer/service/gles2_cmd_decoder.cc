@@ -19548,16 +19548,30 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
 }
 
 bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
-  return image_factory_for_nacl_swapchain()->SupportsCreateAnonymousImage();
+#if BUILDFLAG(IS_OZONE)
+  if (auto* image_factory_native_pixmap =
+          image_factory_for_nacl_swapchain()->AsImageFactoryNativePixmap()) {
+    return image_factory_native_pixmap->SupportsCreateAnonymousImage();
+  }
+#endif
+
+  return false;
 }
 
 scoped_refptr<gl::GLImage> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool* is_cleared) {
-  return image_factory_for_nacl_swapchain()->CreateAnonymousImage(
-      size, format, gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle,
-      is_cleared);
+#if BUILDFLAG(IS_OZONE)
+  if (auto* image_factory_native_pixmap =
+          image_factory_for_nacl_swapchain()->AsImageFactoryNativePixmap()) {
+    return image_factory_native_pixmap->CreateAnonymousImage(
+        size, format, gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle,
+        is_cleared);
+  }
+#endif
+
+  return nullptr;
 }
 
 // An image can only be bound to a texture with the appropriate type.
