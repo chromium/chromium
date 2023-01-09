@@ -101,7 +101,7 @@ class CastRemotingConnector::RemotingBridge final
   }
   void StartWithPermissionAlreadyGranted() final {
     if (connector_) {
-      connector_->StartRemotingWithoutPermission(this);
+      connector_->StartWithPermissionAlreadyGranted(this);
     }
   }
   void StartDataStreams(
@@ -284,7 +284,7 @@ void CastRemotingConnector::StartRemoting(RemotingBridge* bridge) {
       &CastRemotingConnector::OnDialogClosed, weak_factory_.GetWeakPtr()));
 }
 
-void CastRemotingConnector::StartRemotingWithoutPermission(
+void CastRemotingConnector::StartWithPermissionAlreadyGranted(
     RemotingBridge* bridge) {
   if (!StartRemotingCommon(bridge)) {
     return;
@@ -324,6 +324,7 @@ bool CastRemotingConnector::StartRemotingCommon(RemotingBridge* bridge) {
   active_bridge_ = bridge;
   return true;
 }
+
 void CastRemotingConnector::OnDialogClosed(bool remoting_allowed) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   remoting_allowed_ = remoting_allowed;
@@ -478,9 +479,8 @@ void CastRemotingConnector::OnSinkAvailable(
       media::mojom::RemotingSinkFeature::RENDERING);
 #endif
 
-  if (remoting_allowed_.value_or(true)) {
-    for (RemotingBridge* notifyee : bridges_)
-      notifyee->OnSinkAvailable(sink_metadata_);
+  for (RemotingBridge* notifyee : bridges_) {
+    notifyee->OnSinkAvailable(sink_metadata_);
   }
 }
 
