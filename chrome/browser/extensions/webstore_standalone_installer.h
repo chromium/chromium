@@ -101,9 +101,6 @@ class WebstoreStandaloneInstaller
   // extension's icon?
   virtual bool ShouldShowPostInstallUI() const = 0;
 
-  // Should pop up an "App installed" bubble after installation?
-  virtual bool ShouldShowAppInstalledBubble() const = 0;
-
   // In the very least this should return a dummy WebContents (required
   // by some calls even when no prompt or other UI is shown). A non-dummy
   // WebContents is required if the prompt returned by CreateInstallPromt()

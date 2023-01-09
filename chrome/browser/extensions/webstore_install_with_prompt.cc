@@ -73,10 +73,6 @@ bool WebstoreInstallWithPrompt::ShouldShowPostInstallUI() const {
   return show_post_install_ui_;
 }
 
-bool WebstoreInstallWithPrompt::ShouldShowAppInstalledBubble() const {
-  return false;
-}
-
 WebContents* WebstoreInstallWithPrompt::GetWebContents() const {
   return dummy_web_contents_.get();
 }

@@ -61,10 +61,6 @@ bool WebstoreReinstaller::ShouldShowPostInstallUI() const {
   return false;
 }
 
-bool WebstoreReinstaller::ShouldShowAppInstalledBubble() const {
-  return false;
-}
-
 content::WebContents* WebstoreReinstaller::GetWebContents() const {
   return web_contents();
 }
