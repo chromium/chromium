@@ -28,6 +28,7 @@ CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
 CLANG_UPDATE_PY_PATH = os.path.join(THIS_DIR, 'update.py')
 RUST_UPDATE_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust',
                                    'update_rust.py')
+BUILD_RUST_PY_PATH = os.path.join(THIS_DIR, '..', '..', 'rust', 'build_rust.py')
 DEPS_PATH = os.path.join(CHROMIUM_DIR, 'DEPS')
 
 # URL prefix for LLVM git diff ranges.
@@ -224,12 +225,27 @@ def PatchClangRevision(new_version: ClangVersion) -> ClangVersion:
 
 
 def PatchRustRevision(new_version: RustVersion) -> RustVersion:
+  verify_stage0 = subprocess.run([BUILD_RUST_PY_PATH, '--verify-stage0-hash'],
+                                 capture_output=True,
+                                 text=True)
+  if verify_stage0.returncode != 0:
+    # TODO(crbug.com/1405814): We're printing a warning that the hash has
+    # changed, but we could require a verification step of some sort here. We
+    # should do the same for both Rust and Clang if we do so.
+    print(verify_stage0.stdout)
+    lines = verify_stage0.stdout.splitlines()
+    m = re.match('Actual hash: +([0-9a-z]+)', lines[2])
+    new_stage0_hash = m.group(1)
+  else:
+    new_stage0_hash = None
+
   with open(RUST_UPDATE_PY_PATH) as f:
     content = f.read()
 
   REV = '\'([0-9]+)\''
   SUB_REV = '([0-9]+)'
   TAG = '\'([0-9]+)\''
+  STAGE0_HASH = '\'([0-9a-z]+)\''
 
   tag = re.search(f'RUST_REVISION_TAG = {TAG}', content).group(1)
   date = re.search(f'RUST_REVISION = {REV}', content).group(1)
@@ -248,6 +264,11 @@ def PatchRustRevision(new_version: RustVersion) -> RustVersion:
                    f'RUST_SUB_REVISION = {new_version.sub_revision}',
                    content,
                    count=1)
+  if new_stage0_hash:
+    content = re.sub(f'STAGE0_JSON_SHA256 = {STAGE0_HASH}',
+                     f'STAGE0_JSON_SHA256 = \'{new_stage0_hash}\'',
+                     content,
+                     count=1)
 
   with open(RUST_UPDATE_PY_PATH, 'w') as f:
     f.write(content)

@@ -61,8 +61,7 @@ FALLBACK_CLANG_VERSION = 'llvmorg-16-init-13328-g110fe4f4-1'
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
-STAGE0_JSON_SHA256 = (
-    '07f4d4ddde6910a70f16f372309525528ff42499fb50317e6ded4bfe1b6ce7cf')
+STAGE0_JSON_SHA256 = '07f4d4ddde6910a70f16f372309525528ff42499fb50317e6ded4bfe1b6ce7cf'
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
