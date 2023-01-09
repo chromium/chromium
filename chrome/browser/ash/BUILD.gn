@@ -2954,8 +2954,6 @@ source_set("ash") {
     "smb_client/smbfs_share.h",
     "startup_settings_cache.cc",
     "startup_settings_cache.h",
-    "sync/app_settings_model_type_controller.cc",
-    "sync/app_settings_model_type_controller.h",
     "sync/os_sync_util.cc",
     "sync/os_sync_util.h",
     "sync/os_syncable_service_model_type_controller.cc",
