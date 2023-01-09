@@ -680,6 +680,24 @@ void V4L2VideoDecoder::CompleteFlush() {
   }
 }
 
+void V4L2VideoDecoder::RestartStream() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  DVLOGF(3);
+
+  if (!StopStreamV4L2Queue(true)) {
+    VLOGF(1) << "Failed to stop streaming.";
+    return;
+  }
+
+  if (!StartStreamV4L2Queue(true)) {
+    VLOGF(1) << "Failed to start streaming.";
+    return;
+  }
+
+  if (state_ != State::kDecoding)
+    SetState(State::kDecoding);
+}
+
 void V4L2VideoDecoder::ChangeResolution(gfx::Size pic_size,
                                         gfx::Rect visible_rect,
                                         size_t num_codec_reference_frames) {

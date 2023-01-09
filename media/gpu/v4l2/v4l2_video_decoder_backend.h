@@ -50,6 +50,9 @@ class V4L2VideoDecoderBackend {
     virtual void InitiateFlush() = 0;
     // Inform the flushing is complete.
     virtual void CompleteFlush() = 0;
+    // Perform streamoff - streamon sequence to start capture queue when
+    // it is stopped after LAST buffer dequeue.
+    virtual void RestartStream() = 0;
     // Stop the stream to reallocate the CAPTURE buffers. Can only be done
     // between calls to |InitiateFlush| and |CompleteFlush|.
     virtual void ChangeResolution(gfx::Size pic_size,

@@ -574,7 +574,10 @@ bool V4L2StatefulVideoDecoderBackend::CompleteFlush() {
   }
 
   client_->CompleteFlush();
-
+  // Qualcomm venus stops capture queue after LAST buffer is dequeued and needs
+  // restarting to be ready for resume operation in case it was left in EOS
+  // state
+  client_->RestartStream();
   // Resume decoding if data is available.
   ScheduleDecodeWork();
 

@@ -75,6 +75,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   bool IsDecoding() const override;
   void InitiateFlush() override;
   void CompleteFlush() override;
+  void RestartStream() override;
   void ChangeResolution(gfx::Size pic_size,
                         gfx::Rect visible_rect,
                         size_t num_codec_reference_frames) override;
