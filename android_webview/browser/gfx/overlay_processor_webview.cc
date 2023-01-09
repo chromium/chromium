@@ -915,7 +915,14 @@ void OverlayProcessorWebView::ProcessForFrameSinkId(
   DCHECK(it != overlays_.end());
   auto& overlay = it->second;
 
-  auto& pass = frame_data->GetRootRenderPassData();
+  const auto& passes = frame_data->GetResolvedPasses();
+  if (passes.empty()) {
+    return;
+  }
+
+  DCHECK_EQ(passes.size(), 1u);
+
+  auto& pass = passes.back();
   if (!pass.draw_quads().empty()) {
     DCHECK_EQ(pass.draw_quads().size(), 1u);
     auto* surface = frame_sink_manager_->surface_manager()->GetSurfaceForId(
