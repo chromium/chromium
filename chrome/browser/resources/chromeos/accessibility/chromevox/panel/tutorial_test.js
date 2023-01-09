@@ -63,10 +63,10 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
                   // Once the tutorial has been added to the document, we need
                   // to wait for the lesson templates to load.
                   const panel = this.getPanel();
-                  if (panel.instance_.tutorialReadyForTesting_) {
+                  if (panel.instance.tutorialReadyForTesting_) {
                     resolve();
                   } else {
-                    panel.instance_.tutorial_.addEventListener(
+                    panel.instance.tutorial_.addEventListener(
                         'readyfortesting', () => resolve());
                   }
                   observer.disconnect();
@@ -84,11 +84,11 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   }
 
   getTutorial() {
-    return this.getPanel().instance_.tutorial_;
+    return this.getPanel().instance.tutorial_;
   }
 
   disableRestartNudges() {
-    this.getPanel().instance_.tutorial_.restartNudges = null;
+    this.getPanel().instance.tutorial_.restartNudges = null;
   }
 
   get simpleDoc() {

@@ -40,7 +40,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
       obj.preventDefault = function() {};
       obj.stopPropagation = function() {};
       obj.key = key;
-      this.getPanel().instance_.onKeyDown_(obj);
+      this.getPanel().instance.onKeyDown_(obj);
     }.bind(this);
   }
 
@@ -49,7 +49,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
       const evt = {};
       evt.target = {};
       evt.target.value = query;
-      this.getPanel().instance_.onSearchBarQuery_(evt);
+      this.getPanel().instance.onSearchBarQuery_(evt);
     }.bind(this);
   }
 
@@ -58,24 +58,24 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     // to wait until an update has been made. Swap in our hook, wait, then
     // restore after.
     const makeAssertions = () => {
-      const menu = this.getPanel().instance_.activeMenu_;
+      const menu = this.getPanel().instance.activeMenu_;
       assertEquals(menuMsg, menu.menuMsg);
     };
 
     return new Promise(resolve => {
       const Panel = this.getPanel();
-      const original = Panel.instance_.activateMenu_.bind(Panel.instance_);
-      Panel.instance_.activateMenu_ = (menu, activateFirstItem) => {
+      const original = Panel.instance.activateMenu_.bind(Panel.instance);
+      Panel.instance.activateMenu_ = (menu, activateFirstItem) => {
         original(menu, activateFirstItem);
         makeAssertions();
-        Panel.instance_.activateMenu_ = original;
+        Panel.instance.activateMenu_ = original;
         resolve();
       };
     });
   }
 
   assertActiveMenuItem(menuMsg, menuItemTitle, opt_menuItemShortcut) {
-    const menu = this.getPanel().instance_.activeMenu_;
+    const menu = this.getPanel().instance.activeMenu_;
     const menuItem = menu.items_[menu.activeIndex_];
     assertEquals(menuMsg, menu.menuMsg);
     assertEquals(menuItemTitle, menuItem.menuItemTitle);
@@ -85,7 +85,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   assertActiveSearchMenuItem(menuItemTitle) {
-    const searchMenu = this.getPanel().instance_.menuManager_.searchMenu;
+    const searchMenu = this.getPanel().instance.menuManager_.searchMenu;
     const activeIndex = searchMenu.activeIndex_;
     const activeItem = searchMenu.items_[activeIndex];
     assertEquals(menuItemTitle, activeItem.menuItemTitle);
@@ -96,7 +96,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   isMenuTitleMessage(menuTitleMessage) {
-    const menu = this.getPanel().instance_.activeMenu_;
+    const menu = this.getPanel().instance.activeMenu_;
     return menuTitleMessage === menu.menuMsg;
   }
 

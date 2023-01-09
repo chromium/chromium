@@ -85,7 +85,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
 
   simulateHitTestResult(node) {
     return () => {
-      GestureCommandHandler.instance_.pointerHandler_.handleHitTestResult(node);
+      GestureCommandHandler.instance.pointerHandler_.handleHitTestResult(node);
     };
   }
 
@@ -2756,12 +2756,12 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'HitTestOnExoSurface', async function() {
 
   // Fake a mouse explore event on the real text field. This should not
   // trigger the above mouse path.
-  GestureCommandHandler.instance_.pointerHandler_.onMouseMove(
+  GestureCommandHandler.instance.pointerHandler_.onMouseMove(
       realTextField.location.left, realTextField.location.top);
 
   // Fake a touch explore gesture event on the fake window which should
   // trigger a mouse move.
-  GestureCommandHandler.instance_.onAccessibilityGesture_(
+  GestureCommandHandler.instance.onAccessibilityGesture_(
       Gesture.TOUCH_EXPLORE, fakeWindow.location.left, fakeWindow.location.top);
 });
 
@@ -2900,8 +2900,8 @@ AX_TEST_F(
           .expectSpeech('hi', 'Button')
 
           // Touch slightly off of the button.
-          .call(GestureCommandHandler.instance_.onAccessibilityGesture_.bind(
-              GestureCommandHandler.instance_, Gesture.TOUCH_EXPLORE,
+          .call(GestureCommandHandler.instance.onAccessibilityGesture_.bind(
+              GestureCommandHandler.instance, Gesture.TOUCH_EXPLORE,
               button.location.left, button.location.top + 60))
           .expectSpeech('range cleared!')
           .expectEarcon(EarconId.NO_POINTER_ANCHOR)
@@ -3615,8 +3615,8 @@ AX_TEST_F(
       const nextObjectBraille = BrailleCommandHandler.onBrailleKeyEvent.bind(
           BrailleCommandHandler, {command: BrailleKeyCommand.PAN_RIGHT});
       const nextObjectGesture =
-          GestureCommandHandler.instance_.onAccessibilityGesture_.bind(
-              GestureCommandHandler.instance_, Gesture.SWIPE_RIGHT1);
+          GestureCommandHandler.instance.onAccessibilityGesture_.bind(
+              GestureCommandHandler.instance, Gesture.SWIPE_RIGHT1);
       const clearCurrentRange = ChromeVoxState.instance.setCurrentRange.bind(
           ChromeVoxState.instance, null);
       const toggleTalkBack = () => {

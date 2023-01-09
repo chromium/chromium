@@ -64,14 +64,13 @@ export class DownloadHandler {
    * event listener for chrome.downloads.onChanged events.
    */
   static init() {
-    DownloadHandler.instance_ = new DownloadHandler();
+    DownloadHandler.instance = new DownloadHandler();
 
     // Populate downloadItemData_.
     // Retrieve 20 most recent downloads sorted by most recent start time.
     chrome.downloads.search(
         {orderBy: ['-startTime'], limit: DownloadHandler.FILE_LIMIT_},
-        results =>
-            DownloadHandler.instance_.populateDownloadItemData_(results));
+        results => DownloadHandler.instance.populateDownloadItemData_(results));
 
     // Note: No event listener for chrome.downloads.onCreated because
     // onCreated does not actually correspond to when the download starts;
@@ -82,7 +81,7 @@ export class DownloadHandler {
     // Fired when any of a DownloadItem's properties, except bytesReceived and
     // estimatedEndTime, change. Only contains properties that changed.
     chrome.downloads.onChanged.addListener(
-        item => DownloadHandler.instance_.onChanged_(
+        item => DownloadHandler.instance.onChanged_(
             /** @type {DownloadDelta} */ (item)));
   }
 
@@ -316,5 +315,5 @@ DownloadHandler.FILE_LIMIT_ = 20;
  */
 DownloadHandler.INTERVAL_TIME_MILLISECONDS_ = 10000;
 
-/** @private {DownloadHandler} */
-DownloadHandler.instance_;
+/** @type {DownloadHandler} */
+DownloadHandler.instance;

@@ -47,7 +47,7 @@ export class GestureCommandHandler {
   }
 
   static init() {
-    GestureCommandHandler.instance_ = new GestureCommandHandler();
+    GestureCommandHandler.instance = new GestureCommandHandler();
 
     BridgeHelper.registerHandler(
         BridgeConstants.GestureCommandHandler.TARGET,
@@ -57,12 +57,12 @@ export class GestureCommandHandler {
 
   /** @return {boolean} */
   static getEnabled() {
-    return GestureCommandHandler.instance_.enabled_;
+    return GestureCommandHandler.instance.enabled_;
   }
 
   /** @param {boolean} state */
   static setEnabled(state) {
-    GestureCommandHandler.instance_.enabled_ = state;
+    GestureCommandHandler.instance.enabled_ = state;
   }
 
 
@@ -152,5 +152,5 @@ export class GestureCommandHandler {
   }
 }
 
-/** @private {GestureCommandHandler} */
-GestureCommandHandler.instance_;
+/** @type {GestureCommandHandler} */
+GestureCommandHandler.instance;

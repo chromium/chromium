@@ -129,20 +129,20 @@ export class Panel extends PanelInterface {
 
   /** Initialize the panel. */
   static async init() {
-    if (Panel.instance_) {
+    if (Panel.instance) {
       throw new Error('Cannot call Panel.init() more than once');
     }
 
     await LocalStorage.init();
     LocaleOutputHelper.init();
 
-    Panel.instance_ = new Panel();
-    PanelInterface.instance = Panel.instance_;
+    Panel.instance = new Panel();
+    PanelInterface.instance = Panel.instance;
 
     Msgs.addTranslatedMessagesToDom(document);
 
     if (location.search.slice(1) === 'tutorial') {
-      Panel.instance_.onTutorial_();
+      Panel.instance.onTutorial_();
     }
   }
 
@@ -1345,5 +1345,5 @@ function $(id) {
 
 window.addEventListener('load', async () => await Panel.init(), false);
 
-/** @private {Panel} */
-Panel.instance_;
+/** @type {Panel} */
+Panel.instance;

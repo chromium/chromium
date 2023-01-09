@@ -1025,5 +1025,5 @@ class EditingRangeObserver {
 }
 
 
-/** @private {ChromeVoxRangeObserver} */
-EditingRangeObserver.instance_ = new EditingRangeObserver();
+/** @type {ChromeVoxRangeObserver} */
+EditingRangeObserver.instance = new EditingRangeObserver();

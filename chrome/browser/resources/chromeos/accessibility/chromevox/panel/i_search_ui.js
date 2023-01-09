@@ -31,15 +31,15 @@ export class ISearchUI {
    * @return {!Promise<ISearchUI>}
    */
   static async init(input) {
-    if (ISearchUI.instance_) {
-      ISearchUI.instance_.destroy();
+    if (ISearchUI.instance) {
+      ISearchUI.instance.destroy();
     }
 
     await BackgroundBridge.PanelBackground.createNewISearch();
-    ISearchUI.instance_ = new ISearchUI(input);
+    ISearchUI.instance = new ISearchUI(input);
     input.focus();
     input.select();
-    return ISearchUI.instance_;
+    return ISearchUI.instance;
   }
 
   /**
@@ -94,3 +94,6 @@ export class ISearchUI {
     input.removeEventListener('textInput', this.onTextInput, false);
   }
 }
+
+/** @type {ISearchUI} */
+ISearchUI.instance;
