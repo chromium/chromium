@@ -7,10 +7,9 @@
 // disabled.  I can delete the others in a follow up, but not changing this file
 // to make the revert simpler to review.
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/emoji_picker/emoji_variants.html
-import './emoji_variants.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
-import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_button.html.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiButtonClickEvent, EmojiVariantsShownEvent} from './events.js';
@@ -28,8 +27,6 @@ export class EmojiButton extends PolymerElement {
   static get properties() {
     return {
       emoji: {type: String, readonly: true},
-      variants: {type: Array, readonly: true},
-      variantsVisible: {type: Boolean, value: false},
       variant: {type: Boolean, value: false, readonly: true},
       disabled: {type: Boolean, value: false, readonly: true},
       base: {type: String},
@@ -43,8 +40,6 @@ export class EmojiButton extends PolymerElement {
     };
   }
   emoji: string;
-  variants?: Emoji[];
-  private variantsVisible: boolean;
   private variant: boolean;
   private disabled: boolean;
   private base?: string;
@@ -61,63 +56,19 @@ export class EmojiButton extends PolymerElement {
       text: this.emoji,
       isVariant: this.variant,
       baseEmoji: this.base,
-      allVariants: this.allVariants ? this.allVariants : this.variants,
+      allVariants: this.allVariants ? this.allVariants : [],
       name: this.tooltip,
       category: this.category,
     }));
   }
 
-  private onContextMenu(ev: Event): void {
-    ev.preventDefault();
-
-    if (this.disabled) {
-      return;
-    }
-
-    if (this.variants && this.variants.length) {
-      this.variantsVisible = !this.variantsVisible;
-    }
-
-    // send event so emoji-picker knows to close other variants.
-    // need to defer this until <emoji-variants> is created and sized by
-    // Polymer.
-    beforeNextRender(this, () => {
-      const variants = this.variantsVisible ?
-          // ShadowRoot is guaranteed to exist so ! is safe
-          this.shadowRoot!.querySelector('emoji-variants') :
-          null;
-
-      this.dispatchEvent(createCustomEvent(
-          EMOJI_VARIANTS_SHOWN,
-          {owner: this, variants: variants, baseEmoji: this.emoji}));
-    });
-  }
-
-  /**
-   * Hides emoji variants if any is visible.
-   */
-  hideEmojiVariants(): void {
-    /**
-     * TODO(b/233130994): Remove the function as part of the component removal.
-     * The function is only added to help merging emoji-button into
-     * emoji-group to allow removing emoji-button later.
-     */
-    this.variantsVisible = false;
-  }
-
-  private calculateClassName(): string {
-    return (this.variants && this.variants.length > 0) ? 'has-variants' : '';
-  }
-
   private getLabel(): string {
     // TODO(crbug/1227852): Just use emoji as the tooltip once ChromeVox can
     // announce them properly.
-    const emojiLabel =
-        (navigator.languages.some(lang => lang.startsWith('en')) &&
-         this.tooltip) ?
+    return (navigator.languages.some(lang => lang.startsWith('en')) &&
+            this.tooltip) ?
         this.tooltip :
         this.emoji;
-    return this.variants?.length ? emojiLabel + ' with variants.' : emojiLabel;
   }
 }
 

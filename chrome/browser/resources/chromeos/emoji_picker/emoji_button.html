@@ -86,8 +86,7 @@
   }
 </style>
 
-<button id="emoji-button" class$="[[calculateClassName()]]"
-    on-click="onClick" on-contextmenu="onContextMenu"
+<button id="emoji-button" on-click="onClick"
     disabled="[[disabled]]" aria-label="[[getLabel()]]">
   [[emoji]]
 </button>
@@ -96,8 +95,4 @@
       part="tooltip" offset="8">
     [[tooltip]]
   </paper-tooltip>
-</template>
-<template is="dom-if" if="[[variantsVisible]]">
-  <emoji-variants variants="[[variants]]" tooltip="[[tooltip]]">
-  </emoji-variants>
 </template>
