@@ -13,6 +13,8 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -43,16 +45,6 @@ const char kInitiatorSessionPublicKeyBase64[] =
 const char kResponderSessionPublicKeyBase64[] =
     "CAESRgohAN9QYU5HySO14Gi9PDIClacBnC0C8wqPwXsNHUNG_vXlEiEAggzU80ZOd9DWuCBdp"
     "6bzpGcC-oj1yrwdVCHGg_yeaAQ=";
-
-// Callback saving a string from |result| to |result_out|.
-void SaveStringResult(std::string* result_out, const std::string& result) {
-  *result_out = result;
-}
-
-// Callback saving a boolean from |result| to |result_out|.
-void SaveBooleanResult(bool* result_out, bool result) {
-  *result_out = result;
-}
 
 // Callback saving the result of ValidateHelloMessage().
 void SaveValidateHelloMessageResult(bool* validated_out,
@@ -145,6 +137,8 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
 
   // This instance is owned by the super class.
   base::MockOneShotTimer* timer_;
+
+  base::test::SingleThreadTaskEnvironment env_;
 };
 
 }  // namespace
@@ -182,9 +176,11 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
     secure_message_delegate_->set_next_public_key(local_session_public_key_);
     connection_.Connect();
 
-    secure_message_delegate_->DeriveKey(
-        remote_session_private_key_, local_session_public_key_,
-        base::BindOnce(&SaveStringResult, &session_symmetric_key_));
+    base::test::TestFuture<const std::string&> future;
+    secure_message_delegate_->DeriveKey(remote_session_private_key_,
+                                        local_session_public_key_,
+                                        future.GetCallback());
+    session_symmetric_key_ = future.Take();
   }
 
   // Begins authentication, and returns the [Hello] message sent from the local
@@ -218,12 +214,12 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
         secure_message_delegate_->GetPrivateKeyForPublicKey(
             multidevice::kTestRemoteDevicePublicKey);
 
-    std::string responder_auth_message;
+    base::test::TestFuture<const std::string&> future;
     DeviceToDeviceResponderOperations::CreateResponderAuthMessage(
         hello_message, remote_session_public_key_, remote_session_private_key_,
         remote_device_private_key, remote_device_.persistent_symmetric_key(),
-        secure_message_delegate_,
-        base::BindOnce(&SaveStringResult, &responder_auth_message));
+        secure_message_delegate_, future.GetCallback());
+    std::string responder_auth_message = future.Take();
     EXPECT_FALSE(responder_auth_message.empty());
 
     WireMessage wire_message(responder_auth_message,
@@ -278,13 +274,12 @@ TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, AuthenticateSucceeds) {
   ASSERT_EQ(1u, connection_.message_buffer().size());
   std::string initiator_auth = connection_.message_buffer()[0]->payload();
 
-  bool initiator_auth_validated = false;
+  base::test::TestFuture<bool> future;
   DeviceToDeviceResponderOperations::ValidateInitiatorAuthMessage(
       initiator_auth, SessionKeys(session_symmetric_key_),
       remote_device_.persistent_symmetric_key(), responder_auth_message,
-      secure_message_delegate_,
-      base::BindOnce(&SaveBooleanResult, &initiator_auth_validated));
-  ASSERT_TRUE(initiator_auth_validated);
+      secure_message_delegate_, future.GetCallback());
+  ASSERT_TRUE(future.Get());
 }
 
 TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, ResponderRejectsHello) {
