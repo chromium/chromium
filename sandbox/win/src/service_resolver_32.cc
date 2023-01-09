@@ -4,8 +4,11 @@
 
 #include "sandbox/win/src/service_resolver.h"
 
+#include <windows.h>
+
 #include <ntstatus.h>
 #include <stddef.h>
+#include <winternl.h>
 
 #include <memory>
 

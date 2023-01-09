@@ -6,9 +6,9 @@
 #define SANDBOX_WIN_SRC_SANDBOX_UTILS_H_
 
 #include <windows.h>
-#include <string>
+#include <winternl.h>
 
-#include "sandbox/win/src/nt_internals.h"
+#include <string>
 
 namespace sandbox {
 

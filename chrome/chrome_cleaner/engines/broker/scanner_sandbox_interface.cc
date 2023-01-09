@@ -58,11 +58,11 @@ bool SandboxKnownFolderIdToPathServiceKey(KnownFolder folder_id,
   return false;
 }
 
-NTSTATUS NtQueryInformationProcess(HANDLE ProcessHandle,
-                                   PROCESSINFOCLASS ProcessInformationClass,
-                                   PVOID ProcessInformation,
-                                   ULONG ProcessInformationLength,
-                                   PULONG ReturnLength) {
+NTSTATUS WrapNtQueryInformationProcess(HANDLE ProcessHandle,
+                                       PROCESSINFOCLASS ProcessInformationClass,
+                                       PVOID ProcessInformation,
+                                       ULONG ProcessInformationLength,
+                                       PULONG ReturnLength) {
   static NtQueryInformationProcessFunction query_information_process = nullptr;
   if (!query_information_process) {
     ResolveNTFunctionPtr("NtQueryInformationProcess",
@@ -94,16 +94,10 @@ bool GetCommandLineUsingProcessInformation(base::ProcessId pid,
     return false;
   }
 
-  // Use undocumented ProcessCommandLineInformation value (60) of the
-  // PROCESSINFOCLASS enumeration to retrieve UNICODE_STRING value containing
-  // command line of the process.
-  constexpr PROCESSINFOCLASS kProcessCommandLineInformation =
-      static_cast<PROCESSINFOCLASS>(60);
-
   // 1. Query length of the information structure.
   DWORD info_length = 0;
-  NTSTATUS status = NtQueryInformationProcess(
-      process.Get(), kProcessCommandLineInformation, nullptr, 0, &info_length);
+  NTSTATUS status = WrapNtQueryInformationProcess(
+      process.Get(), ProcessCommandLineInformation, nullptr, 0, &info_length);
   if (status == STATUS_INVALID_INFO_CLASS || status == STATUS_NOT_IMPLEMENTED) {
     *feature_available = false;
     return false;
@@ -120,9 +114,9 @@ bool GetCommandLineUsingProcessInformation(base::ProcessId pid,
   // Leave enough space to enforce the terminating null character.
   std::vector<char> buffer(info_length + sizeof(WCHAR));
   DWORD bytes_read = 0;
-  status =
-      NtQueryInformationProcess(process.Get(), kProcessCommandLineInformation,
-                                buffer.data(), info_length, &bytes_read);
+  status = WrapNtQueryInformationProcess(
+      process.Get(), ProcessCommandLineInformation, buffer.data(), info_length,
+      &bytes_read);
   if (NT_ERROR(status)) {
     LOG(ERROR) << "Error querying process command line: error " << status;
     return false;
@@ -137,10 +131,10 @@ bool GetCommandLineUsingProcessInformation(base::ProcessId pid,
   PUNICODE_STRING command_line =
       reinterpret_cast<PUNICODE_STRING>(buffer.data());
 
-  // NtQueryInformationProcess can return a buffer filled with 0's (for example
-  // when querying LsaIso.exe, an Isolated User Mode process). When we cast a
-  // buffer of 0's to a UNICODE_STRING struct, all members including the Buffer
-  // pointer becomed 0.
+  // WrapNtQueryInformationProcess can return a buffer filled with 0's (for
+  // example when querying LsaIso.exe, an Isolated User Mode process). When we
+  // cast a buffer of 0's to a UNICODE_STRING struct, all members including the
+  // Buffer pointer becomed 0.
   if (command_line->Buffer == nullptr) {
     LOG(ERROR) << "Invalid command line buffer";
     return false;
@@ -197,7 +191,7 @@ bool GetCommandLineLegacy(base::ProcessId pid, std::wstring* process_cmd) {
 
   PROCESS_BASIC_INFORMATION process_basic_info;
   ULONG process_info_size = 0;
-  NTSTATUS query_info_status = NtQueryInformationProcess(
+  NTSTATUS query_info_status = WrapNtQueryInformationProcess(
       process.Get(), ProcessBasicInformation, &process_basic_info,
       sizeof(process_basic_info), &process_info_size);
   if (query_info_status != STATUS_SUCCESS) {

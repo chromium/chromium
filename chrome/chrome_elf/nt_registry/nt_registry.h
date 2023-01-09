@@ -24,10 +24,11 @@
 #ifndef CHROME_CHROME_ELF_NT_REGISTRY_NT_REGISTRY_H_
 #define CHROME_CHROME_ELF_NT_REGISTRY_NT_REGISTRY_H_
 
+#include <windows.h>
+#include <winternl.h>  // NTSTATUS
+
 #include <string>
 #include <vector>
-
-#include "sandbox/win/src/nt_internals.h"  // NTSTATUS
 
 namespace nt {
 
@@ -63,7 +64,7 @@ enum WOW64_OVERRIDE {
 bool CreateRegKey(ROOT_KEY root,
                   const wchar_t* key_path,
                   ACCESS_MASK access,
-                  HANDLE* out_handle OPTIONAL);
+                  HANDLE* out_handle);
 
 // Open existing registry key.
 // - Caller must call CloseRegKey on returned handle (on success).
@@ -72,7 +73,7 @@ bool OpenRegKey(ROOT_KEY root,
                 const wchar_t* key_path,
                 ACCESS_MASK access,
                 HANDLE* out_handle,
-                NTSTATUS* error_code OPTIONAL);
+                NTSTATUS* error_code);
 
 // Delete a registry key.
 // - Caller must still call CloseRegKey after the delete.

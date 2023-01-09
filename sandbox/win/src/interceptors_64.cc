@@ -49,7 +49,7 @@ NTSTATUS WINAPI TargetNtUnmapViewOfSection64(HANDLE process, PVOID base) {
 
 NTSTATUS WINAPI
 TargetNtSetInformationThread64(HANDLE thread,
-                               NT_THREAD_INFORMATION_CLASS thread_info_class,
+                               THREADINFOCLASS thread_info_class,
                                PVOID thread_information,
                                ULONG thread_information_bytes) {
   NtSetInformationThreadFunction orig_fn =

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "sandbox/win/src/internal_types.h"
+#include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {
 

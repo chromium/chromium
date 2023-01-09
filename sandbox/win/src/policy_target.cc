@@ -72,7 +72,7 @@ bool QueryBroker(IpcTag ipc_id, CountedParameterSetBase* params) {
 NTSTATUS WINAPI TargetNtSetInformationThread(
     NtSetInformationThreadFunction orig_SetInformationThread,
     HANDLE thread,
-    NT_THREAD_INFORMATION_CLASS thread_info_class,
+    THREADINFOCLASS thread_info_class,
     PVOID thread_information,
     ULONG thread_information_bytes) {
   do {

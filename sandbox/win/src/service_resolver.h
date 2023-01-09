@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "sandbox/win/src/nt_internals.h"
+#include "base/win/windows_types.h"
 #include "sandbox/win/src/resolver.h"
 
 namespace sandbox {

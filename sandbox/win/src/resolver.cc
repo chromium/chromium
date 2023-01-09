@@ -4,6 +4,8 @@
 
 #include "sandbox/win/src/resolver.h"
 
+#include <windows.h>
+
 #include <ntstatus.h>
 #include <stddef.h>
 

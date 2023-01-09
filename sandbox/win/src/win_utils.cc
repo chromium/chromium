@@ -540,7 +540,7 @@ void* GetProcessBaseAddress(HANDLE process) {
   if (STATUS_SUCCESS != status)
     return nullptr;
 
-  PEB peb = {};
+  NT_PEB peb = {};
   SIZE_T bytes_read = 0;
   if (!::ReadProcessMemory(process, process_basic_info.PebBaseAddress, &peb,
                            sizeof(peb), &bytes_read) ||

@@ -11,6 +11,8 @@
 #include <memory>
 #include <string>
 
+#include "sandbox/win/src/nt_internals.h"
+
 namespace {
 
 // Function pointers used for registry access.

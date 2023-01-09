@@ -361,8 +361,7 @@ ResultCode TargetProcess::AssignLowBoxToken(
   process_access_token.token = token.Get();
 
   NTSTATUS status = GetNtExports()->SetInformationProcess(
-      sandbox_process_info_.process_handle(),
-      static_cast<PROCESSINFOCLASS>(NtProcessInformationAccessToken),
+      sandbox_process_info_.process_handle(), ProcessInformationAccessToken,
       &process_access_token, sizeof(process_access_token));
   if (!NT_SUCCESS(status)) {
     ::SetLastError(GetLastErrorFromNtStatus(status));

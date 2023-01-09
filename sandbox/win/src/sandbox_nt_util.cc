@@ -347,7 +347,10 @@ NTSTATUS GetProcessId(HANDLE process, DWORD* process_id) {
   if (!NT_SUCCESS(ret) || sizeof(proc_info) != bytes_returned)
     return ret;
 
-  *process_id = proc_info.UniqueProcessId;
+  // https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntqueryinformationprocess
+  // "UniqueProcessId Can be cast to a DWORD and contains a unique identifier
+  // for this process."
+  *process_id = static_cast<DWORD>(proc_info.UniqueProcessId);
   return STATUS_SUCCESS;
 }
 

@@ -12,7 +12,7 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr_exclusion.h"
-#include "sandbox/win/src/nt_internals.h"
+#include "base/win/windows_types.h"
 
 namespace sandbox {
 
