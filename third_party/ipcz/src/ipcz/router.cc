@@ -1557,6 +1557,11 @@ bool Router::StartSelfBypassToLocalPeer(
          local_outward_peer = WrapRefCounted(&local_outward_peer),
          inward_link = WrapRefCounted(&inward_link)](
             FragmentRef<RouterLinkState> new_link_state) {
+          if (new_link_state.is_null()) {
+            // If this fails once, it's unlikely to succeed afterwards.
+            return;
+          }
+
           router->StartSelfBypassToLocalPeer(context, *local_outward_peer,
                                              *inward_link,
                                              std::move(new_link_state));
@@ -1871,6 +1876,10 @@ bool Router::BypassPeerWithNewRemoteLink(
         [router = WrapRefCounted(this), requestor = WrapRefCounted(&requestor),
          node_link = WrapRefCounted(&node_link), context,
          bypass_target_sublink](FragmentRef<RouterLinkState> new_link_state) {
+          if (!new_link_state.is_null()) {
+            // If this fails once, it's unlikely to succeed afterwards.
+            return;
+          }
           router->BypassPeerWithNewRemoteLink(context, *requestor, *node_link,
                                               bypass_target_sublink,
                                               std::move(new_link_state));
