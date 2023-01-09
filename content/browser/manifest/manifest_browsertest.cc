@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -742,6 +743,61 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   EXPECT_TRUE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
+}
+
+// This is testing the crash scenario encountered by https://crbug.com/1369363.
+// In it a GetManifest() request by WebAppInstallTask was interrupted by a page
+// navigation which destructed the internal ManifestManagerHost and forced the
+// GetManifest() callback to be invoked during the destruction stack frame. The
+// callback, which considered empty manifests valid for proceeding, proceeded to
+// read other data on the (not destroyed) WebContents that were also in the
+// middle of destruction and triggered a UAF crash.
+//
+// This test checks that the callback does not get invoked during the
+// ManifestManagerHost destruction stack frame and other fields of the
+// WebContents are still valid to synchronously access by the callback.
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       GetManifestInterruptedByDestruction) {
+  // Attempting to fetch the manifest on this page will hang forever, giving
+  // this test time to interrupt the manifest request with the destruction of
+  // ManifestManagerHost.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/manifest/hung-manifest.html")));
+
+  base::RunLoop run_loop;
+  WebContents* web_contents = shell()->web_contents();
+  web_contents->GetPrimaryPage().GetManifest(base::BindLambdaForTesting(
+      [&](const GURL& url, blink::mojom::ManifestPtr manifest) {
+        EXPECT_TRUE(url.is_empty());
+        EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+
+        // Accessing fields on the web_contents at this point in time should be
+        // safe.
+        std::ignore = web_contents->GetFaviconURLs().empty();
+
+        run_loop.Quit();
+      }));
+
+  // Unchecked downcast to get access to the
+  // ReinitializeDocumentAssociatedDataForTesting() method. This method was not
+  // put on the base class to avoid polluting the public interface with
+  // implementation details only used by this test.
+  auto* render_frame_host_impl =
+      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
+
+  // Resetting the DocumentAssociatedData, which owns ManifestManagerHost and
+  // the pending GetManifest() callback, forces the callback to be invoked.
+  // This is intended to reproduce the effects of a page navigation seen in
+  // https://crbug.com/1369363, this shortcut is used as it was too difficult to
+  // determine the exact sequence of JavaScript commands needed to cause the
+  // page navigation to trigger
+  // RenderFrameHostImpl::DidCommitNavigationInternal() (which reassigns the
+  // DocumentAssociatedData that owns ManifestManagerHost) without first
+  // triggering the callback safely as the in flight network request was
+  // cancelled.
+  render_frame_host_impl->ReinitializeDocumentAssociatedDataForTesting();
+
+  run_loop.Run();
 }
 
 class ManifestBrowserPrerenderingTest : public ManifestBrowserTest {

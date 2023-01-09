@@ -13864,6 +13864,10 @@ void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForReuseAfterCrash(
   document_associated_data_.emplace(*this, blink::DocumentToken());
 }
 
+void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForTesting() {
+  document_associated_data_.emplace(*this, blink::DocumentToken());
+}
+
 void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
     const ui::ClipboardFormatType& data_type,
     const std::string& data,

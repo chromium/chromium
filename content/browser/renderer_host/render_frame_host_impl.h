@@ -547,6 +547,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ReinitializeDocumentAssociatedDataForReuseAfterCrash(
       base::PassKey<RenderFrameHostManager>);
 
+  // Immediately reinitializes DocumentUserData for testing a corner case crash
+  // scenario. See usage in
+  // ManifestBrowserTest.GetManifestInterruptedByDestruction.
+  void ReinitializeDocumentAssociatedDataForTesting();
+
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
   // RenderFrameHostDelegate::IsClipboardPasteContentAllowed().  See the
