@@ -7,7 +7,7 @@
  */
 import {Command, CommandStore} from '../common/command_store.js';
 
-import {PanelMenu} from './panel_menu.js';
+import {PanelMenu, PanelSearchMenu} from './panel_menu.js';
 
 export class MenuManager {
   constructor() {
@@ -16,6 +16,9 @@ export class MenuManager {
      * @private {!Array<PanelMenu>}
      */
     this.menus_ = [];
+
+    /** @private {?PanelSearchMenu} */
+    this.searchMenu_ = null;
   }
 
   /** Disables menu items that are prohibited without a signed-in user. */
@@ -32,9 +35,24 @@ export class MenuManager {
 
   /**
    * Temporary method during migration from panel.js.
-   * @return {!Array<PanelMenu>}
+   * @return {!Array<!PanelMenu>}
    */
   get menus() {
     return this.menus_;
+  }
+
+  /**
+   * Temporary method during migration from panel.js.
+   * @return {?PanelSearchMenu}
+   */
+  get searchMenu() {
+    return this.searchMenu_;
+  }
+  /**
+   * Temporary method during migration from panel.js.
+   * @param {?PanelSearchMenu} menu
+   */
+  set searchMenu(menu) {
+    this.searchMenu_ = menu;
   }
 }

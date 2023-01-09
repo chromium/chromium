@@ -62,9 +62,6 @@ export class Panel extends PanelInterface {
     /** @private {?(function(): !Promise)} */
     this.pendingCallback_ = null;
 
-    /** @private {?PanelSearchMenu} */
-    this.searchMenu_ = null;
-
     /** @private {string} */
     this.sessionState_ = '';
 
@@ -519,14 +516,15 @@ export class Panel extends PanelInterface {
 
       // Activate either the specified menu or the search menu.
       // Search menu can be null, since it is hidden behind a flag.
-      let selectedMenu = this.searchMenu_ || this.menuManager_.menus[0];
+      let selectedMenu =
+          this.menuManager_.searchMenu || this.menuManager_.menus[0];
       for (let i = 0; i < this.menuManager_.menus.length; i++) {
         if (this.menuManager_.menus[i].menuMsg === opt_activateMenuTitle) {
           selectedMenu = this.menuManager_.menus[i];
         }
       }
 
-      const activateFirstItem = (selectedMenu !== this.searchMenu_);
+      const activateFirstItem = (selectedMenu !== this.menuManager_.searchMenu);
       this.activateMenu_(selectedMenu, activateFirstItem);
     };
 
@@ -762,30 +760,34 @@ export class Panel extends PanelInterface {
    * @private
    */
   addSearchMenu_(menuMsg) {
-    this.searchMenu_ = new PanelSearchMenu(menuMsg);
+    this.menuManager_.searchMenu = new PanelSearchMenu(menuMsg);
     // Add event listeners to search bar.
-    this.searchMenu_.searchBar.addEventListener(
+    this.menuManager_.searchMenu.searchBar.addEventListener(
         'input', event => this.onSearchBarQuery_(event), false);
-    this.searchMenu_.searchBar.addEventListener('mouseup', event => {
-      // Clicking in the panel causes us to either activate an item or close the
-      // menus altogether. Prevent that from happening if we click the search
-      // bar.
-      event.preventDefault();
-      event.stopPropagation();
-    }, false);
+    this.menuManager_.searchMenu.searchBar.addEventListener(
+        'mouseup', event => {
+          // Clicking in the panel causes us to either activate an item or close
+          // the menus altogether. Prevent that from happening if we click the
+          // search bar.
+          event.preventDefault();
+          event.stopPropagation();
+        }, false);
 
-    $('menu-bar').appendChild(this.searchMenu_.menuBarItemElement);
-    this.searchMenu_.menuBarItemElement.addEventListener(
+    $('menu-bar').appendChild(this.menuManager_.searchMenu.menuBarItemElement);
+    this.menuManager_.searchMenu.menuBarItemElement.addEventListener(
         'mouseover',
-        () =>
-            this.activateMenu_(this.searchMenu_, false /* activateFirstItem */),
+        () => this.activateMenu_(
+            this.menuManager_.searchMenu, false /* activateFirstItem */),
         false);
-    this.searchMenu_.menuBarItemElement.addEventListener(
-        'mouseup', event => this.onMouseUpOnMenuTitle_(this.searchMenu_, event),
+    this.menuManager_.searchMenu.menuBarItemElement.addEventListener(
+        'mouseup',
+        event =>
+            this.onMouseUpOnMenuTitle_(this.menuManager_.searchMenu, event),
         false);
-    $('menus_background').appendChild(this.searchMenu_.menuContainerElement);
-    this.menuManager_.menus.push(this.searchMenu_);
-    return this.searchMenu_;
+    $('menus_background')
+        .appendChild(this.menuManager_.searchMenu.menuContainerElement);
+    this.menuManager_.menus.push(this.menuManager_.searchMenu);
+    return this.menuManager_.searchMenu;
   }
 
   /**
@@ -961,7 +963,8 @@ export class Panel extends PanelInterface {
     // If left/right arrow are pressed, we should adjust the search bar's
     // cursor. We only want to advance the active menu if we are at the
     // beginning/end of the search bar's contents.
-    if (this.searchMenu_ && event.target === this.searchMenu_.searchBar) {
+    if (this.menuManager_.searchMenu &&
+        event.target === this.menuManager_.searchMenu.searchBar) {
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
@@ -1216,18 +1219,20 @@ export class Panel extends PanelInterface {
    * @private
    */
   onSearchBarQuery_(event) {
-    if (!this.searchMenu_) {
-      throw Error('Panel.instance_.searchMenu_ must be defined');
+    if (!this.menuManager_.searchMenu) {
+      throw Error('MenuManager.searchMenu_ must be defined');
     }
     const query = event.target.value.toLowerCase();
-    this.searchMenu_.clear();
+    this.menuManager_.searchMenu.clear();
     // Show the search results menu.
-    this.activateMenu_(this.searchMenu_, false /* activateFirstItem */);
+    this.activateMenu_(
+        this.menuManager_.searchMenu, false /* activateFirstItem */);
     // Populate.
     if (query) {
       for (let i = 0; i < this.menuManager_.menus.length; ++i) {
         const menu = this.menuManager_.menus[i];
-        if (menu === this.searchMenu_ || menu instanceof PanelNodeMenu) {
+        if (menu === this.menuManager_.searchMenu ||
+            menu instanceof PanelNodeMenu) {
           continue;
         }
         const items = menu.items;
@@ -1243,17 +1248,17 @@ export class Panel extends PanelInterface {
                Msgs.getMsg('panel_menu_item_none').toLowerCase()) &&
               item.enabled;
           if (match) {
-            this.searchMenu_.copyAndAddMenuItem(item);
+            this.menuManager_.searchMenu.copyAndAddMenuItem(item);
           }
         }
       }
     }
 
-    if (this.searchMenu_.items.length === 0) {
-      this.searchMenu_.addMenuItem(
+    if (this.menuManager_.searchMenu.items.length === 0) {
+      this.menuManager_.searchMenu.addMenuItem(
           Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
     }
-    this.searchMenu_.activateItem(0);
+    this.menuManager_.searchMenu.activateItem(0);
   }
 
   /** @private */

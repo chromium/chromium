@@ -85,7 +85,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   assertActiveSearchMenuItem(menuItemTitle) {
-    const searchMenu = this.getPanel().instance_.searchMenu_;
+    const searchMenu = this.getPanel().instance_.menuManager_.searchMenu;
     const activeIndex = searchMenu.activeIndex_;
     const activeItem = searchMenu.items_[activeIndex];
     assertEquals(menuItemTitle, activeItem.menuItemTitle);
