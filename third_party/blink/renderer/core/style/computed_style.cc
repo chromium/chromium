@@ -1964,90 +1964,74 @@ const StyleNonInheritedVariables* ComputedStyle::NonInheritedVariables() const {
   return NonInheritedVariablesInternal().get();
 }
 
-static CSSVariableData* GetInitialVariableData(
+namespace {
+
+template <typename T>
+CSSVariableData* GetVariableData(
+    const T& style_or_builder,
     const AtomicString& name,
-    const StyleInitialData* initial_data) {
-  if (!initial_data) {
-    return nullptr;
+    absl::optional<bool> inherited_hint = absl::nullopt) {
+  if (inherited_hint.value_or(true) && style_or_builder.InheritedVariables()) {
+    if (auto data = style_or_builder.InheritedVariables()->GetData(name)) {
+      return *data;
+    }
   }
-  return initial_data->GetVariableData(name);
+  if (!inherited_hint.value_or(false) &&
+      style_or_builder.NonInheritedVariables()) {
+    if (auto data = style_or_builder.NonInheritedVariables()->GetData(name)) {
+      return *data;
+    }
+  }
+  if (StyleInitialData* initial_data = style_or_builder.InitialData().get()) {
+    return initial_data->GetVariableData(name);
+  }
+  return nullptr;
 }
+
+template <typename T>
+const CSSValue* GetVariableValue(
+    const T& style_or_builder,
+    const AtomicString& name,
+    absl::optional<bool> inherited_hint = absl::nullopt) {
+  if (inherited_hint.value_or(true) && style_or_builder.InheritedVariables()) {
+    if (auto data = style_or_builder.InheritedVariables()->GetValue(name)) {
+      return *data;
+    }
+  }
+  if (!inherited_hint.value_or(false) &&
+      style_or_builder.NonInheritedVariables()) {
+    if (auto data = style_or_builder.NonInheritedVariables()->GetValue(name)) {
+      return *data;
+    }
+  }
+  if (StyleInitialData* initial_data = style_or_builder.InitialData().get()) {
+    return initial_data->GetVariableValue(name);
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 CSSVariableData* ComputedStyle::GetVariableData(
     const AtomicString& name) const {
-  if (InheritedVariables()) {
-    if (auto data = InheritedVariables()->GetData(name)) {
-      return *data;
-    }
-  }
-  if (NonInheritedVariables()) {
-    if (auto data = NonInheritedVariables()->GetData(name)) {
-      return *data;
-    }
-  }
-  return GetInitialVariableData(name, InitialData().get());
+  return blink::GetVariableData(*this, name);
 }
 
 CSSVariableData* ComputedStyle::GetVariableData(
     const AtomicString& name,
     bool is_inherited_property) const {
-  if (is_inherited_property) {
-    if (InheritedVariables()) {
-      if (auto data = InheritedVariables()->GetData(name)) {
-        return *data;
-      }
-    }
-  } else {
-    if (NonInheritedVariables()) {
-      if (auto data = NonInheritedVariables()->GetData(name)) {
-        return *data;
-      }
-    }
-  }
-  return GetInitialVariableData(name, InitialData().get());
-}
-
-static const CSSValue* GetInitialVariableValue(
-    const AtomicString& name,
-    const StyleInitialData* initial_data) {
-  if (!initial_data) {
-    return nullptr;
-  }
-  return initial_data->GetVariableValue(name);
+  return blink::GetVariableData(*this, name, is_inherited_property);
 }
 
 const CSSValue* ComputedStyle::GetVariableValue(
     const AtomicString& name) const {
-  if (InheritedVariables()) {
-    if (auto value = InheritedVariables()->GetValue(name)) {
-      return *value;
-    }
-  }
-  if (NonInheritedVariables()) {
-    if (auto value = NonInheritedVariables()->GetValue(name)) {
-      return *value;
-    }
-  }
-  return GetInitialVariableValue(name, InitialData().get());
+  return blink::GetVariableValue(*this, name);
 }
 
 const CSSValue* ComputedStyle::GetVariableValue(
     const AtomicString& name,
     bool is_inherited_property) const {
-  if (is_inherited_property) {
-    if (InheritedVariables()) {
-      if (auto value = InheritedVariables()->GetValue(name)) {
-        return *value;
-      }
-    }
-  } else {
-    if (NonInheritedVariables()) {
-      if (auto value = NonInheritedVariables()->GetValue(name)) {
-        return *value;
-      }
-    }
-  }
-  return GetInitialVariableValue(name, InitialData().get());
+  return blink::GetVariableValue(*this, name, is_inherited_property);
 }
 
 bool ComputedStyle::HasIdenticalAscentDescentAndLineGap(
@@ -2649,6 +2633,12 @@ void ComputedStyleBuilder::SetUsedColorScheme(
       (force_dark && !prefers_dark);
 
   SetColorSchemeForced(forced_scheme);
+}
+
+CSSVariableData* ComputedStyleBuilder::GetVariableData(
+    const AtomicString& name,
+    bool is_inherited_property) const {
+  return blink::GetVariableData(*this, name, is_inherited_property);
 }
 
 StyleInheritedVariables& ComputedStyleBuilder::MutableInheritedVariables() {

@@ -3271,6 +3271,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   const StyleInheritedVariables* InheritedVariables() const {
     return InheritedVariablesInternal().get();
   }
+  const StyleNonInheritedVariables* NonInheritedVariables() const {
+    return NonInheritedVariablesInternal().get();
+  }
+  CSSVariableData* GetVariableData(const AtomicString&,
+                                   bool is_inherited_property) const;
   CORE_EXPORT StyleInheritedVariables& MutableInheritedVariables();
   CORE_EXPORT StyleNonInheritedVariables& MutableNonInheritedVariables();
   CORE_EXPORT void SetVariableData(const AtomicString& name,

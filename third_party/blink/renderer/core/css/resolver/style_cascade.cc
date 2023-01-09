@@ -1157,7 +1157,7 @@ CSSVariableData* StyleCascade::GetVariableData(
     const CustomProperty& property) const {
   const AtomicString& name = property.GetPropertyNameAtomicString();
   const bool is_inherited = property.IsInherited();
-  return state_.Style()->GetVariableData(name, is_inherited);
+  return state_.StyleBuilder().GetVariableData(name, is_inherited);
 }
 
 CSSVariableData* StyleCascade::GetEnvironmentVariable(
