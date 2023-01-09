@@ -220,7 +220,10 @@ void AppIconDecoder::DiscardDecodeRequest() {
   // 'callback_' is responsible to remove this AppIconDecoder object, then
   // all decode requests saved in `decode_requests_` can be destroyed, so we
   // don't need to free  DecodeRequest's objects in `decode_requests_`.
-  std::move(callback_).Run(this, nullptr);
+  //
+  // Return an empty icon value, because the callers assume the icon value
+  // should never be nullptr.
+  std::move(callback_).Run(this, std::make_unique<apps::IconValue>());
 }
 
 void AppIconDecoder::CompleteWithImageSkia(const gfx::ImageSkia& image_skia) {
