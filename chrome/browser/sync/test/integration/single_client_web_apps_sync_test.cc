@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   syncer::SyncUserSettings* settings = service->GetUserSettings();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Apps is an OS type on Ash if SyncSettingsCategorization is enabled.
+  // Apps is an OS type on Ash.
   ASSERT_TRUE(
       settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));

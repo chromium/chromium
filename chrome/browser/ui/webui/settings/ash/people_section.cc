@@ -688,7 +688,7 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kSyncSetup, kSyncSettings,
                             generator);
 
-  // TODO(crbug.com/1227417): Remove after SyncSettingsCategorization launch.
+  // TODO(crbug.com/1249845): Remove this.
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE,
       mojom::Subpage::kSyncDeprecatedAdvanced, mojom::Subpage::kSyncSetup,

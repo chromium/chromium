@@ -237,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests for SyncSettingsCategorization, which uses a different
-// ModelTypeController for syncer::APP_SETTINGS.
+// Tests for ChromeOS-Ash, which uses a different ModelTypeController for
+// syncer::APP_SETTINGS.
 class TwoClientAppSettingsOsSyncTest : public SyncTest {
  public:
   TwoClientAppSettingsOsSyncTest() : SyncTest(TWO_CLIENT) {}

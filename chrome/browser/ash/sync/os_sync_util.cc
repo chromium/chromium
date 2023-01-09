@@ -14,8 +14,8 @@ namespace {
 
 // Returns true if the prefs were migrated.
 bool MaybeMigratePreferencesForSyncSettingsCategorization(PrefService* prefs) {
-  // Migration code can be removed when SyncSettingsCategorization has been
-  // fully deployed to stable channel for a couple milestones.
+  // TODO(crbug.com/1249845): Remove this migration code after 2023-06 (see
+  // also crbug.com/1255724).
   bool migrated_this_time = false;
 
   // Don't migrate more than once.

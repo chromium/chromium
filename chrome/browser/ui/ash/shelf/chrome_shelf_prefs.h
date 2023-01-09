@@ -74,8 +74,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
                       const std::vector<ash::ShelfID>& shelf_ids_after);
 
   // Makes GetPinnedAppsFromSync() return an empty list. Avoids test failures
-  // with SyncSettingsCategorization due to an untitled Play Store icon in the
-  // shelf.
+  // due to an untitled Play Store icon in the shelf.
   // https://crbug.com/1085597
   static void SkipPinnedAppsFromSyncForTest();
 

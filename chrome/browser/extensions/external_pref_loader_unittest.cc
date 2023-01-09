@@ -127,8 +127,7 @@ class ExternalPrefLoaderTest : public ::testing::Test {
 // PrioritySyncReadyWaiter::OnIsSyncingChanged().
 
 // Tests that we fire pref reading correctly after priority sync state
-// is resolved by ExternalPrefLoader. This test checks that the flow works
-// regardless of the state of SyncSettingsCategorization.
+// is resolved by ExternalPrefLoader.
 TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   base::RunLoop run_loop;
   scoped_refptr<ExternalPrefLoader> loader(

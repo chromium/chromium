@@ -244,7 +244,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   EXPECT_TRUE(SyncItemsMatch(service, &compare_service));
 }
 
-// Tests for SyncSettingsCategorization.
 class SingleClientAppListOsSyncTest : public SyncTest {
  public:
   SingleClientAppListOsSyncTest() : SyncTest(SINGLE_CLIENT) {}

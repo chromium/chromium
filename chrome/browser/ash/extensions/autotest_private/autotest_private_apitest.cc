@@ -107,9 +107,9 @@ class TestSearchProvider : public app_list::SearchProvider {
 class AutotestPrivateApiTest : public ExtensionApiTest {
  public:
   AutotestPrivateApiTest() {
-    // SyncSettingsCategorization makes an untitled Play Store icon appear in
-    // the shelf due to app pin syncing code. Sync isn't relevant to this test,
-    // so skip pinned app sync. https://crbug.com/1085597
+    // App pin syncing code makes an untitled Play Store icon appear in the
+    // shelf. Sync isn't relevant to this test, so skip pinned app sync.
+    // https://crbug.com/1085597
     ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
   }
 
