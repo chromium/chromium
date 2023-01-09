@@ -204,6 +204,11 @@ WebAppInstallManager& FakeWebAppProvider::GetInstallManager() const {
   return *install_manager_;
 }
 
+OsIntegrationManager& FakeWebAppProvider::GetOsIntegrationManager() const {
+  DCHECK(os_integration_manager_);
+  return *os_integration_manager_;
+}
+
 void FakeWebAppProvider::StartWithSubsystems() {
   CheckNotStarted();
   SetRunSubsystemStartupTasks(true);

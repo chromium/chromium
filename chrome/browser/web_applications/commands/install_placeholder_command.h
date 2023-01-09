@@ -7,11 +7,15 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class Profile;
 
 namespace content {
 class WebContents;
@@ -29,9 +33,14 @@ class WebAppDataRetriever;
 // load.
 class InstallPlaceholderCommand : public WebAppCommandTemplate<AppLock> {
  public:
+  using InstallAndReplaceCallback =
+      base::OnceCallback<void(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace)>;
   InstallPlaceholderCommand(
+      Profile* profile,
       const ExternalInstallOptions& install_options,
-      OnceInstallCallback callback,
+      InstallAndReplaceCallback callback,
       base::WeakPtr<content::WebContents> web_contents,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
@@ -63,15 +72,21 @@ class InstallPlaceholderCommand : public WebAppCommandTemplate<AppLock> {
   void OnInstallFinalized(const AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
+  void OnUninstallAndReplaced(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace);
 
+  const raw_ptr<Profile> profile_;
   const AppId app_id_;
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
   const ExternalInstallOptions install_options_;
-  OnceInstallCallback callback_;
+  InstallAndReplaceCallback callback_;
   base::WeakPtr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
+
+  absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 
   base::Value::Dict debug_value_;
 

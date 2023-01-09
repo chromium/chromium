@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -14,9 +15,12 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+
+class Profile;
 
 namespace web_app {
 
@@ -39,16 +43,35 @@ class LockDescription;
 // site then `overwrite_existing_manifest_fields` should be true.
 class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
  public:
-  InstallFromInfoCommand(std::unique_ptr<WebAppInstallInfo> install_info,
+  using InstallAndReplaceCallback =
+      base::OnceCallback<void(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace)>;
+
+  // This doesn't install OS hooks.
+  InstallFromInfoCommand(Profile* profile,
+                         std::unique_ptr<WebAppInstallInfo> install_info,
                          bool overwrite_existing_manifest_fields,
                          webapps::WebappInstallSource install_surface,
                          OnceInstallCallback install_callback);
 
-  InstallFromInfoCommand(std::unique_ptr<WebAppInstallInfo> install_info,
+  // The `install_params` controls whether and how OS hooks get installed.
+  InstallFromInfoCommand(Profile* profile,
+                         std::unique_ptr<WebAppInstallInfo> install_info,
                          bool overwrite_existing_manifest_fields,
                          webapps::WebappInstallSource install_surface,
                          OnceInstallCallback install_callback,
                          const WebAppInstallParams& install_params);
+
+  // The `install_params` controls whether and how OS hooks get installed.
+  InstallFromInfoCommand(
+      Profile* profile,
+      std::unique_ptr<WebAppInstallInfo> install_info,
+      bool overwrite_existing_manifest_fields,
+      webapps::WebappInstallSource install_surface,
+      InstallAndReplaceCallback install_callback,
+      const WebAppInstallParams& install_params,
+      const std::vector<AppId>& apps_or_extensions_to_uninstall);
 
   ~InstallFromInfoCommand() override;
 
@@ -69,6 +92,12 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
+  void OnUnintallAndReplaceFinished(const AppId& app_id,
+                                    webapps::InstallResultCode code,
+                                    bool did_uninstall_and_replace);
+
+  const raw_ptr<Profile> profile_;
+
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
@@ -76,8 +105,11 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<WebAppInstallInfo> install_info_;
   bool overwrite_existing_manifest_fields_;
   webapps::WebappInstallSource install_surface_;
-  OnceInstallCallback install_callback_;
+  InstallAndReplaceCallback install_callback_;
   absl::optional<WebAppInstallParams> install_params_;
+
+  const std::vector<AppId> apps_or_extensions_to_uninstall_;
+  absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 
   base::Value::Dict debug_value_;
 

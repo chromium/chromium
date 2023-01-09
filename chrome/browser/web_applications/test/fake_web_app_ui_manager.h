@@ -25,7 +25,6 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void Shutdown() override;
 
   void SetNumWindowsForApp(const AppId& app_id, size_t num_windows_for_app);
-  bool DidUninstallAndReplace(const AppId& from_app, const AppId& to_app);
   int num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
 
   // WebAppUiManager:
@@ -33,8 +32,6 @@ class FakeWebAppUiManager : public WebAppUiManager {
   size_t GetNumWindowsForApp(const AppId& app_id) override;
   void NotifyOnAllAppWindowsClosed(const AppId& app_id,
                                    base::OnceClosure callback) override;
-  bool UninstallAndReplaceIfExists(const std::vector<AppId>& from_apps,
-                                   const AppId& to_app) override;
   bool CanAddAppToQuickLaunchBar() const override;
   void AddAppToQuickLaunchBar(const AppId& app_id) override;
   bool IsAppInQuickLaunchBar(const AppId& app_id) const override;
@@ -65,10 +62,11 @@ class FakeWebAppUiManager : public WebAppUiManager {
                            Profile& profile,
                            LaunchWebAppCallback callback,
                            AppLock& lock) override;
+  void MaybeTransferAppAttributes(const AppId& from_extension_or_app,
+                                  const AppId& to_app) override;
 
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;
-  std::map<AppId, AppId> uninstall_and_replace_map_;
   int num_reparent_tab_calls_ = 0;
 };
 

@@ -73,6 +73,8 @@ class WebAppCommandScheduler {
 
   // Install with provided `WebAppInstallInfo` instead of fetching data from
   // manifest.
+  // `InstallFromInfo` doesn't install OS hooks. `InstallFromInfoWithParams`
+  // install OS hooks when they are set in `install_params`.
   void InstallFromInfo(std::unique_ptr<WebAppInstallInfo> install_info,
                        bool overwrite_existing_manifest_fields,
                        webapps::WebappInstallSource install_surface,
@@ -85,18 +87,33 @@ class WebAppCommandScheduler {
       OnceInstallCallback install_callback,
       const WebAppInstallParams& install_params);
 
-  // Install web apps managed by `ExternallyManagedAppManager`.
+  void InstallFromInfoWithParams(
+      std::unique_ptr<WebAppInstallInfo> install_info,
+      bool overwrite_existing_manifest_fields,
+      webapps::WebappInstallSource install_surface,
+      base::OnceCallback<void(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace)> install_callback,
+      const WebAppInstallParams& install_params,
+      const std::vector<AppId>& apps_to_uninstall);
+
+  // Install web apps managed by `ExternallyInstalledAppManager`.
   void InstallExternallyManagedApp(
       const ExternalInstallOptions& external_install_options,
-      OnceInstallCallback callback,
+      base::OnceCallback<void(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace)> install_callback,
       base::WeakPtr<content::WebContents> contents,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
   // Install a placeholder app, this is used during externally managed install
   // flow when url load fails.
-  void InstallPlaceholder(const ExternalInstallOptions& install_options,
-                          OnceInstallCallback callback,
-                          base::WeakPtr<content::WebContents> web_contents);
+  void InstallPlaceholder(
+      const ExternalInstallOptions& install_options,
+      base::OnceCallback<void(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace)> callback,
+      base::WeakPtr<content::WebContents> web_contents);
 
   void PersistFileHandlersUserChoice(const AppId& app_id,
                                      bool allowed,

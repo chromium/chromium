@@ -240,6 +240,7 @@ source_set("web_applications") {
     "web_app_translation_manager.h",
     "web_app_ui_manager.cc",
     "web_app_ui_manager.h",
+    "web_app_uninstall_and_replace_job.h",
     "web_app_uninstall_job.cc",
     "web_app_uninstall_job.h",
     "web_app_url_loader.cc",

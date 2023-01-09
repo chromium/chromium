@@ -116,8 +116,9 @@ void WebAppCommandScheduler::InstallFromInfo(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
-          std::move(install_info), overwrite_existing_manifest_fields,
-          std::move(install_surface), std::move(install_callback)));
+          &profile_.get(), std::move(install_info),
+          overwrite_existing_manifest_fields, std::move(install_surface),
+          std::move(install_callback)));
 }
 
 void WebAppCommandScheduler::InstallFromInfoWithParams(
@@ -136,45 +137,79 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
-          std::move(install_info), overwrite_existing_manifest_fields,
-          std::move(install_surface), std::move(install_callback),
-          install_params));
+          &profile_.get(), std::move(install_info),
+          overwrite_existing_manifest_fields, std::move(install_surface),
+          std::move(install_callback), install_params));
+}
+
+void WebAppCommandScheduler::InstallFromInfoWithParams(
+    std::unique_ptr<WebAppInstallInfo> install_info,
+    bool overwrite_existing_manifest_fields,
+    webapps::WebappInstallSource install_surface,
+    base::OnceCallback<void(const AppId& app_id,
+                            webapps::InstallResultCode code,
+                            bool did_uninstall_and_replace)> install_callback,
+    const WebAppInstallParams& install_params,
+    const std::vector<AppId>& apps_to_uninstall) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(install_callback), AppId(),
+            webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown,
+            /*did_uninstall_and_replace=*/false));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<InstallFromInfoCommand>(
+          &profile_.get(), std::move(install_info),
+          overwrite_existing_manifest_fields, std::move(install_surface),
+          std::move(install_callback), install_params, apps_to_uninstall));
 }
 
 void WebAppCommandScheduler::InstallExternallyManagedApp(
     const ExternalInstallOptions& external_install_options,
-    OnceInstallCallback callback,
+    base::OnceCallback<void(const AppId& app_id,
+                            webapps::InstallResultCode code,
+                            bool did_uninstall_and_replace)> install_callback,
     base::WeakPtr<content::WebContents> contents,
     std::unique_ptr<WebAppDataRetriever> data_retriever) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), AppId(),
-                                  webapps::InstallResultCode::
-                                      kCancelledOnWebAppProviderShuttingDown));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(install_callback), AppId(),
+            webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown,
+            /*did_uninstall_and_replace=*/false));
     return;
   }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ExternallyManagedInstallCommand>(
-          external_install_options, std::move(callback), contents,
-          std::move(data_retriever)));
+          &profile_.get(), external_install_options,
+          std::move(install_callback), contents, std::move(data_retriever)));
 }
 
 void WebAppCommandScheduler::InstallPlaceholder(
     const ExternalInstallOptions& install_options,
-    OnceInstallCallback callback,
+    base::OnceCallback<void(const AppId& app_id,
+                            webapps::InstallResultCode code,
+                            bool did_uninstall_and_replace)> callback,
     base::WeakPtr<content::WebContents> web_contents) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), AppId(),
-                                  webapps::InstallResultCode::
-                                      kCancelledOnWebAppProviderShuttingDown));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback), AppId(),
+            webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown,
+            /*did_uninstall_and_replace=*/false));
     return;
   }
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallPlaceholderCommand>(
-          install_options, std::move(callback), web_contents,
+          &profile_.get(), install_options, std::move(callback), web_contents,
           std::make_unique<WebAppDataRetriever>()));
 }
 

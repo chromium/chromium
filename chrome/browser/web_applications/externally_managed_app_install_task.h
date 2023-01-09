@@ -101,11 +101,14 @@ class ExternallyManagedAppInstallTask {
                                 webapps::UninstallResultCode code);
   void ContinueWebAppInstall(content::WebContents* web_contents,
                              ResultCallback result_callback);
-  void OnWebAppInstalled(bool is_placeholder,
-                         bool offline_install,
-                         ResultCallback result_callback,
-                         const AppId& app_id,
-                         webapps::InstallResultCode code);
+  void OnWebAppInstalledAndReplaced(bool is_placeholder,
+                                    bool offline_install,
+                                    ResultCallback result_callback,
+                                    const AppId& app_id,
+                                    webapps::InstallResultCode code,
+                                    bool did_uninstall_and_replace);
+
+  void OnUninstallAndReplaced(bool uninstall_and_replace_triggered);
   void TryAppInfoFactoryOnFailure(
       ResultCallback result_callback,
       ExternallyManagedAppManager::InstallResult result);

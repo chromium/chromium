@@ -186,10 +186,11 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
       std::move(web_app_info),
       /*overwrite_existing_manifest_fields=*/install_params.force_reinstall,
       internal_install_source,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
-                     weak_ptr_factory_.GetWeakPtr(), /* is_placeholder=*/false,
-                     /*offline_install=*/true, std::move(result_callback)),
-      install_params);
+      base::BindOnce(
+          &ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced,
+          weak_ptr_factory_.GetWeakPtr(), /* is_placeholder=*/false,
+          /*offline_install=*/true, std::move(result_callback)),
+      install_params, install_options_.uninstall_and_replace);
 }
 
 void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
@@ -239,10 +240,11 @@ void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
 
   command_scheduler_->InstallExternallyManagedApp(
       install_options_,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*is_placeholder=*/false,
-                     /*offline_install=*/false, std::move(result_callback)),
+      base::BindOnce(
+          &ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced,
+          weak_ptr_factory_.GetWeakPtr(),
+          /*is_placeholder=*/false,
+          /*offline_install=*/false, std::move(result_callback)),
       web_contents->GetWeakPtr(), data_retriever_factory_.Run());
 }
 
@@ -265,27 +267,25 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
 
   command_scheduler_->InstallPlaceholder(
       install_options_,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebAppInstalled,
-                     weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/true,
-                     /*offline_install=*/false, std::move(callback)),
+      base::BindOnce(
+          &ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced,
+          weak_ptr_factory_.GetWeakPtr(), /*is_placeholder=*/true,
+          /*offline_install=*/false, std::move(callback)),
       web_contents->GetWeakPtr());
 }
 
-void ExternallyManagedAppInstallTask::OnWebAppInstalled(
+void ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced(
     bool is_placeholder,
     bool offline_install,
     ResultCallback result_callback,
     const AppId& app_id,
-    webapps::InstallResultCode code) {
+    webapps::InstallResultCode code,
+    bool did_uninstall_and_replace) {
   if (!IsNewInstall(code)) {
     std::move(result_callback)
         .Run(ExternallyManagedAppManager::InstallResult(code));
     return;
   }
-
-  bool uninstall_and_replace_triggered =
-      ui_manager_->UninstallAndReplaceIfExists(
-          install_options().uninstall_and_replace, app_id);
 
   externally_installed_app_prefs_.Insert(install_options_.install_url, app_id,
                                          install_options_.install_source);
@@ -300,7 +300,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
 
   std::move(result_callback)
       .Run(ExternallyManagedAppManager::InstallResult(
-          code, app_id, uninstall_and_replace_triggered));
+          code, app_id, did_uninstall_and_replace));
 }
 
 void ExternallyManagedAppInstallTask::TryAppInfoFactoryOnFailure(

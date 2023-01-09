@@ -48,8 +48,6 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   size_t GetNumWindowsForApp(const AppId& app_id) override;
   void NotifyOnAllAppWindowsClosed(const AppId& app_id,
                                    base::OnceClosure callback) override;
-  bool UninstallAndReplaceIfExists(const std::vector<AppId>& from_apps,
-                                   const AppId& to_app) override;
   bool CanAddAppToQuickLaunchBar() const override;
   void AddAppToQuickLaunchBar(const AppId& app_id) override;
   bool IsAppInQuickLaunchBar(const AppId& app_id) const override;
@@ -80,6 +78,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
                            Profile& profile,
                            LaunchWebAppCallback callback,
                            AppLock& lock) override;
+  void MaybeTransferAppAttributes(const AppId& from_extension_or_app,
+                                  const AppId& to_app) override;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
@@ -100,17 +100,6 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   AppId GetAppIdForBrowser(Browser* browser);
 
   void OnExtensionSystemReady();
-
-  void OnShortcutInfoReceivedSearchShortcutLocations(
-      const AppId& from_app,
-      const AppId& app_id,
-      std::unique_ptr<ShortcutInfo> shortcut_info);
-
-  void OnShortcutLocationGathered(const AppId& from_app,
-                                  const AppId& app_id,
-                                  ShortcutLocations locations);
-  void InstallOsHooksForReplacementApp(const AppId& app_id,
-                                       ShortcutLocations locations);
 
   std::unique_ptr<WebAppDialogManager> dialog_manager_;
 

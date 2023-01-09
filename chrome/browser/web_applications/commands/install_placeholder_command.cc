@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/install_placeholder_command.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -13,8 +14,8 @@
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 
@@ -27,11 +28,13 @@ const base::TimeDelta ICON_DOWNLOAD_RETRY_DELAY = base::Seconds(5);
 }  // namespace
 
 InstallPlaceholderCommand::InstallPlaceholderCommand(
+    Profile* profile,
     const ExternalInstallOptions& install_options,
-    OnceInstallCallback callback,
+    InstallAndReplaceCallback callback,
     base::WeakPtr<content::WebContents> web_contents,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
-    : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
+    : WebAppCommandTemplate<AppLock>("InstallPlaceholderCommand"),
+      profile_(profile),
       app_id_(GenerateAppId(/*manifest_id=*/"", install_options.install_url)),
       lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
@@ -79,7 +82,8 @@ void InstallPlaceholderCommand::Abort(webapps::InstallResultCode code) {
   webapps::InstallableMetrics::TrackInstallResult(false);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
-      base::BindOnce(std::move(callback_), app_id_, code));
+      base::BindOnce(std::move(callback_), app_id_, code,
+                     /*did_uninstall_and_replace=*/false));
 }
 
 void InstallPlaceholderCommand::FetchCustomIcon(const GURL& url,
@@ -199,9 +203,25 @@ void InstallPlaceholderCommand::OnInstallFinalized(
   RecordAppBanner(web_contents_.get(), install_options_.install_url);
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+
+  DCHECK(lock_);
+  uninstall_and_replace_job_.emplace(
+      profile_, lock_->AsWeakPtr(), install_options_.uninstall_and_replace,
+      app_id,
+      base::BindOnce(&InstallPlaceholderCommand::OnUninstallAndReplaced,
+                     weak_factory_.GetWeakPtr(), app_id, std::move(code)));
+  uninstall_and_replace_job_->Start();
+}
+
+void InstallPlaceholderCommand::OnUninstallAndReplaced(
+    const AppId& app_id,
+    webapps::InstallResultCode code,
+    bool did_uninstall_and_replace) {
+  debug_value_.Set("did_uninstall_and_replace", did_uninstall_and_replace);
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
-      base::BindOnce(std::move(callback_), app_id, code));
+      base::BindOnce(std::move(callback_), app_id, std::move(code),
+                     did_uninstall_and_replace));
 }
 
 }  // namespace web_app

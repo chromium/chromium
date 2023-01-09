@@ -114,13 +114,6 @@ class WebAppUiManager {
       const AppId& app_id,
       content::NavigationHandle* navigation_handle);
 
-  // Uninstalls the the apps in |from_apps| and migrates an |to_app|'s OS
-  // attributes (e.g pin position, app list folder/position, shortcuts) to the
-  // first |from_app| found. |shortcut_locations| will be populated with the
-  // shortcut locations Returns whether any |from_apps| were uninstalled.
-  virtual bool UninstallAndReplaceIfExists(const std::vector<AppId>& from_apps,
-                                           const AppId& to_app) = 0;
-
   virtual bool CanAddAppToQuickLaunchBar() const = 0;
   virtual void AddAppToQuickLaunchBar(const AppId& app_id) = 0;
   virtual bool IsAppInQuickLaunchBar(const AppId& app_id) const = 0;
@@ -162,6 +155,11 @@ class WebAppUiManager {
                                    Profile& profile,
                                    LaunchWebAppCallback callback,
                                    AppLock& lock) = 0;
+  // On Chrome OS ash, transfers app attributes, such as parent folder id,
+  // position in App Launcher and pin position on the shelf from one app to
+  // another app.
+  virtual void MaybeTransferAppAttributes(const AppId& from_extension_or_app,
+                                          const AppId& to_app) = 0;
 
  private:
   base::ObserverList<WebAppUiManagerObserver> observers_;

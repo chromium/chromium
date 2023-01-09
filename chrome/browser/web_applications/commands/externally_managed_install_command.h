@@ -8,6 +8,7 @@
 #include <memory>
 #include <variant>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -15,9 +16,11 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
+#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -35,9 +38,14 @@ class WebAppDataRetriever;
 // Command to install web_apps from param by the ExternallyInstalledAppsManager
 class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
  public:
+  using InstallAndReplaceCallback =
+      base::OnceCallback<void(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace)>;
   ExternallyManagedInstallCommand(
+      Profile* profile,
       const ExternalInstallOptions& external_install_options,
-      OnceInstallCallback callback,
+      InstallAndReplaceCallback callback,
       base::WeakPtr<content::WebContents> contents,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~ExternallyManagedInstallCommand() override;
@@ -71,6 +79,11 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
   void OnInstallFinalized(const AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
+  void OnUninstallAndReplaced(const AppId& app_id,
+                              webapps::InstallResultCode code,
+                              bool did_uninstall_and_replace);
+
+  const raw_ptr<Profile> profile_;
 
   std::unique_ptr<NoopLockDescription> noop_lock_description_;
   std::unique_ptr<AppLockDescription> app_lock_description_;
@@ -80,7 +93,8 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
 
   WebAppInstallParams install_params_;
   webapps::WebappInstallSource install_surface_;
-  OnceInstallCallback install_callback_;
+  const std::vector<AppId> apps_to_uninstall_;
+  InstallAndReplaceCallback install_callback_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 
@@ -89,6 +103,8 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
+
+  absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 
   base::Value::Dict debug_value_;
   InstallErrorLogEntry install_error_log_entry_;

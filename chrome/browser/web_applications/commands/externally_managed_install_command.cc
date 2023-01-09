@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
+#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -30,16 +31,19 @@
 namespace web_app {
 
 ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
+    Profile* profile,
     const ExternalInstallOptions& external_install_options,
-    OnceInstallCallback callback,
+    InstallAndReplaceCallback callback,
     base::WeakPtr<content::WebContents> contents,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : WebAppCommandTemplate<NoopLock>("ExternallyManagedInstallCommand"),
+      profile_(profile),
       noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_params_(
           ConvertExternalInstallOptionsToParams(external_install_options)),
       install_surface_(ConvertExternalInstallSourceToInstallSource(
           external_install_options.install_source)),
+      apps_to_uninstall_(external_install_options.uninstall_and_replace),
       install_callback_(std::move(callback)),
       web_contents_(contents),
       data_retriever_(std::move(data_retriever)),
@@ -101,7 +105,8 @@ void ExternallyManagedInstallCommand::Abort(webapps::InstallResultCode code) {
   webapps::InstallableMetrics::TrackInstallResult(false);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), AppId(), code));
+      base::BindOnce(std::move(install_callback_), AppId(), code,
+                     /*did_uninstall_and_replace=*/false));
 }
 
 void ExternallyManagedInstallCommand::OnGetWebAppInstallInfoInCommand(
@@ -251,7 +256,6 @@ void ExternallyManagedInstallCommand::OnLockUpgradedFinalizeInstall(
     finalize_options.skip_icon_writes_on_download_failure =
         icon_download_failed_;
   }
-
   app_lock_->install_finalizer().FinalizeInstall(
       *web_app_info_, finalize_options,
       base::BindOnce(&ExternallyManagedInstallCommand::OnInstallFinalized,
@@ -293,9 +297,24 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
   }
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+
+  DCHECK(app_lock_);
+  uninstall_and_replace_job_.emplace(
+      profile_, app_lock_->AsWeakPtr(), apps_to_uninstall_, app_id,
+      base::BindOnce(&ExternallyManagedInstallCommand::OnUninstallAndReplaced,
+                     weak_factory_.GetWeakPtr(), app_id, code));
+  uninstall_and_replace_job_->Start();
+}
+
+void ExternallyManagedInstallCommand::OnUninstallAndReplaced(
+    const AppId& app_id,
+    webapps::InstallResultCode code,
+    bool did_uninstall_and_replace) {
+  debug_value_.Set("did_uninstall_and_replace", did_uninstall_and_replace);
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
-      base::BindOnce(std::move(install_callback_), app_id, code));
+      base::BindOnce(std::move(install_callback_), app_id, code,
+                     did_uninstall_and_replace));
 }
 
 void ExternallyManagedInstallCommand::SetOnLockUpgradedCallbackForTesting(
