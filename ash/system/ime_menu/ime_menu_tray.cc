@@ -170,6 +170,7 @@ class ImeTitleView : public views::BoxLayoutView {
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
     SetInsideBorderInsets(kTitleViewPadding);
     SetMinimumCrossAxisSize(kTrayPopupItemMinHeight);
+    SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
 
     auto* title_label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME)));
