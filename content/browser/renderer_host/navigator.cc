@@ -1033,13 +1033,14 @@ void Navigator::OnBeginNavigation(
     return;
   }
 
-  NavigationEntryImpl* navigation_entry =
-      GetNavigationEntryForRendererInitiatedNavigation(*common_params,
-                                                       frame_tree_node);
+  // Compute this ahead of creating the NavigationEntry, since it is needed both
+  // there and in CreateRendererInitiated.
   const bool override_user_agent =
       delegate_->ShouldOverrideUserAgentForRendererInitiatedNavigation();
-  if (navigation_entry)
-    navigation_entry->SetIsOverridingUserAgent(override_user_agent);
+
+  NavigationEntryImpl* navigation_entry =
+      GetNavigationEntryForRendererInitiatedNavigation(
+          *common_params, frame_tree_node, override_user_agent);
 
   frame_tree_node->TakeNavigationRequest(
       NavigationRequest::CreateRendererInitiated(
@@ -1321,7 +1322,8 @@ void Navigator::RecordNavigationMetrics(
 NavigationEntryImpl*
 Navigator::GetNavigationEntryForRendererInitiatedNavigation(
     const blink::mojom::CommonNavigationParams& common_params,
-    FrameTreeNode* frame_tree_node) {
+    FrameTreeNode* frame_tree_node,
+    bool override_user_agent) {
   // With MPArch, there may be multiple main frames, but each one has its own
   // NavigationController. Thus, it's correct to check for NavigationEntries for
   // each main frame, even if one is embedded (e.g., a fenced frame).
@@ -1373,6 +1375,7 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
 
   entry->set_reload_type(NavigationRequest::NavigationTypeToReloadType(
       common_params.navigation_type));
+  entry->SetIsOverridingUserAgent(override_user_agent);
 
   controller_.SetPendingEntry(std::move(entry));
   delegate_->NotifyChangedNavigationState(content::INVALIDATE_TYPE_URL);

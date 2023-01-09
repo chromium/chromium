@@ -232,7 +232,8 @@ class CONTENT_EXPORT Navigator {
   // NavigationController.
   NavigationEntryImpl* GetNavigationEntryForRendererInitiatedNavigation(
       const blink::mojom::CommonNavigationParams& common_params,
-      FrameTreeNode* frame_tree_node);
+      FrameTreeNode* frame_tree_node,
+      bool override_user_agent);
 
   // Called to record the time it took to execute beforeunload handlers for
   // renderer-inititated navigations. It records the time it took to execute
