@@ -331,7 +331,7 @@ bool HTMLFormControlElement::IsSuccessfulSubmitButton() const {
 //  4. If both 'popovershowtarget' and 'popoverhidetarget' are present and their
 //     values match, the behavior is to toggle.
 HTMLFormControlElement::PopoverTargetElement
-HTMLFormControlElement::popoverTargetElement() const {
+HTMLFormControlElement::popoverTargetElement() {
   const PopoverTargetElement no_element{.popover = nullptr,
                                         .action = PopoverTriggerAction::kNone,
                                         .attribute_name = g_null_name};
@@ -342,33 +342,36 @@ HTMLFormControlElement::popoverTargetElement() const {
     return no_element;
   }
 
-  AtomicString idref;
+  Element* target_element;
   QualifiedName attribute_name = html_names::kPopovertoggletargetAttr;
   PopoverTriggerAction action = PopoverTriggerAction::kToggle;
-  if (FastHasAttribute(html_names::kPopovertoggletargetAttr)) {
-    idref = FastGetAttribute(html_names::kPopovertoggletargetAttr);
-  } else if (FastHasAttribute(html_names::kPopovershowtargetAttr)) {
-    idref = FastGetAttribute(html_names::kPopovershowtargetAttr);
-    action = PopoverTriggerAction::kShow;
-    attribute_name = html_names::kPopovershowtargetAttr;
+  target_element = GetElementAttribute(html_names::kPopovertoggletargetAttr);
+  if (!target_element) {
+    target_element = GetElementAttribute(html_names::kPopovershowtargetAttr);
+    if (target_element) {
+      action = PopoverTriggerAction::kShow;
+      attribute_name = html_names::kPopovershowtargetAttr;
+    }
   }
-  if (FastHasAttribute(html_names::kPopoverhidetargetAttr)) {
-    if (idref.IsNull()) {
-      idref = FastGetAttribute(html_names::kPopoverhidetargetAttr);
+  if (Element* hide_target =
+          GetElementAttribute(html_names::kPopoverhidetargetAttr)) {
+    if (!target_element) {
+      target_element = hide_target;
       action = PopoverTriggerAction::kHide;
       attribute_name = html_names::kPopoverhidetargetAttr;
-    } else if (FastGetAttribute(html_names::kPopoverhidetargetAttr) == idref) {
+    } else if (hide_target == target_element) {
       action = PopoverTriggerAction::kToggle;
       // Leave attribute_name as-is in this case.
     }
   }
-  if (idref.IsNull())
+  if (!target_element) {
     return no_element;
-  HTMLElement* popover_element =
-      DynamicTo<HTMLElement>(GetTreeScope().getElementById(idref));
-  if (!popover_element || !popover_element->HasPopoverAttribute())
+  }
+  auto* target_popover = DynamicTo<HTMLElement>(target_element);
+  if (!target_popover || !target_popover->HasPopoverAttribute()) {
     return no_element;
-  return PopoverTargetElement{.popover = popover_element,
+  }
+  return PopoverTargetElement{.popover = target_popover,
                               .action = action,
                               .attribute_name = attribute_name};
 }

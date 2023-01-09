@@ -92,7 +92,9 @@ bool IsOpenPopoverInvoker(const Node* node) {
   auto* invoker = DynamicTo<HTMLFormControlElement>(node);
   if (!invoker)
     return false;
-  HTMLElement* popover = invoker->popoverTargetElement().popover;
+  HTMLElement* popover = const_cast<HTMLFormControlElement*>(invoker)
+                             ->popoverTargetElement()
+                             .popover;
   // There could be more than one invoker for a given popover. Only return true
   // if this invoker was the one that was actually used.
   return popover && popover->popoverOpen() &&
@@ -368,9 +370,10 @@ ScopedFocusNavigation ScopedFocusNavigation::OwnedByPopoverInvoker(
     const Element& invoker,
     FocusController::OwnerMap& owner_map) {
   DCHECK(IsA<HTMLFormControlElement>(invoker));
-  HTMLElement* popover = DynamicTo<HTMLFormControlElement>(invoker)
-                             ->popoverTargetElement()
-                             .popover;
+  HTMLElement* popover =
+      DynamicTo<HTMLFormControlElement>(const_cast<Element&>(invoker))
+          ->popoverTargetElement()
+          .popover;
   DCHECK(IsOpenPopoverWithInvoker(popover));
   return ScopedFocusNavigation(*popover, nullptr, owner_map);
 }

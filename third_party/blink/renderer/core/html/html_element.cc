@@ -1655,7 +1655,10 @@ const HTMLElement* NearestInclusiveTargetPopoverForInvoker(const Node* node) {
   return NearestInclusiveMatchingAncestor(node, [](const Node* test_node) {
     auto* form_element = DynamicTo<HTMLFormControlElement>(test_node);
     auto target_popover =
-        form_element ? form_element->popoverTargetElement().popover : nullptr;
+        form_element ? const_cast<HTMLFormControlElement*>(form_element)
+                           ->popoverTargetElement()
+                           .popover
+                     : nullptr;
     return (target_popover && target_popover->popoverOpen() &&
             target_popover->PopoverType() != PopoverValueType::kManual)
                ? target_popover.Get()

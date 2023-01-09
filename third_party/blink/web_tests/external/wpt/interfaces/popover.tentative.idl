@@ -6,11 +6,9 @@ partial interface HTMLElement {
 };
 
 interface mixin PopoverTargetElement {
-  // TODO(crbug.com/1405856): These might change to `Element`, or additional
-  // attributes like `popoverToggleTargetElement` might be added for that.
-  [CEReactions] attribute DOMString? popoverToggleTarget;
-  [CEReactions] attribute DOMString? popoverHideTarget;
-  [CEReactions] attribute DOMString? popoverShowTarget;
+  [CEReactions] attribute Element? popoverToggleTargetElement;
+  [CEReactions] attribute Element? popoverHideTargetElement;
+  [CEReactions] attribute Element? popoverShowTargetElement;
 };
 HTMLInputElement includes PopoverTargetElement;
 HTMLButtonElement includes PopoverTargetElement;

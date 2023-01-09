@@ -105,7 +105,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   // Retrieves the element pointed to by 'popovertoggletarget',
   // 'popovershowtarget', and/or 'popoverhidetarget' content attributes, if any,
   // and only if this form control element supports popover triggering.
-  PopoverTargetElement popoverTargetElement() const;
+  PopoverTargetElement popoverTargetElement();
   virtual PopoverTriggerSupport SupportsPopoverTriggering() const {
     return PopoverTriggerSupport::kNone;
   }

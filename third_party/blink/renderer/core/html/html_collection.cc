@@ -261,7 +261,8 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
              IsA<HTMLFormControlElement>(element) ||
              element.IsFormAssociatedCustomElement();
     case kPopoverInvokers:
-      if (auto* invoker = DynamicTo<HTMLFormControlElement>(element)) {
+      if (auto* invoker = DynamicTo<HTMLFormControlElement>(
+              const_cast<HTMLElement&>(element))) {
         return invoker->popoverTargetElement().popover;
       }
       return false;

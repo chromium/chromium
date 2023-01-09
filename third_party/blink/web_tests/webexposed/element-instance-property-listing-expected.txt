@@ -505,9 +505,9 @@ html element button
     property formTarget
     property labels
     property name
-    property popoverHideTarget
-    property popoverShowTarget
-    property popoverToggleTarget
+    property popoverHideTargetElement
+    property popoverShowTargetElement
+    property popoverToggleTargetElement
     property reportValidity
     property setCustomValidity
     property type
@@ -754,9 +754,9 @@ html element input
     property name
     property pattern
     property placeholder
-    property popoverHideTarget
-    property popoverShowTarget
-    property popoverToggleTarget
+    property popoverHideTargetElement
+    property popoverShowTargetElement
+    property popoverToggleTargetElement
     property readOnly
     property reportValidity
     property required
