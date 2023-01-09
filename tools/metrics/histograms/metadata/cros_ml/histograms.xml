@@ -26,7 +26,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="FederatedPopulationName">
   <variant name="analytics_test_population" summary="for F.A. test"/>
-  <variant name="timezone_code_population" summary="for timezone PHH task"/>
+  <variant name="timezone_code_phh" summary="for timezone PHH task"/>
 </variants>
 
 <histogram name="FederatedService.ServiceEvent" enum="FederatedServiceEvent"
