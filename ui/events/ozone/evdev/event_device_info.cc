@@ -49,6 +49,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x0111, 0x1854},  // SteelSeries Aerox 5 Wireless (Bluetooth)
     {0x0111, 0x185a},  // SteelSeries Aerox 9 Wireless (Bluetooth)
     {0x03f0, 0x0b97},  // HyperX Pulsefire Haste 2 Gaming Mouse
+    {0x03f0, 0x4e41},  // HP OMEN Vector Wireless Mouse
     {0x03f0, 0xa407},  // HP X4000 Wireless Mouse
     {0x045e, 0x0745},  // Microsoft Wireless Mobile Mouse 6000
     {0x045e, 0x0821},  // Microsoft Surface Precision Mouse
