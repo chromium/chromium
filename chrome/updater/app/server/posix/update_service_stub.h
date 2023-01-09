@@ -5,17 +5,14 @@
 #ifndef CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_STUB_H_
 #define CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_STUB_H_
 
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
-
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace updater {
 

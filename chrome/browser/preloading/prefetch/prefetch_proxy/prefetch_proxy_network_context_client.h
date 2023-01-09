@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 // This is a NetworkContextClient that purposely does nothing so that no extra

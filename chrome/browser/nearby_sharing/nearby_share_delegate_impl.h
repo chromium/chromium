@@ -12,7 +12,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
 class NearbyShareController;

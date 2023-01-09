@@ -11,7 +11,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
-#include "mojo/public/cpp/platform/platform_channel.h"
 
 namespace network {
 class SharedURLLoaderFactory;

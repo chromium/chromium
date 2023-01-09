@@ -8,8 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/image_editor/image_editor.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
 class Profile;

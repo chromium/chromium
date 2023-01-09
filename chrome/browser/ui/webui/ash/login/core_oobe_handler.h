@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_source.h"
 

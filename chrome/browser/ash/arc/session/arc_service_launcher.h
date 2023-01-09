@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "media/media_buildflags.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 #include "base/memory/weak_ptr.h"

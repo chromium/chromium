@@ -11,8 +11,6 @@
 #include "base/values.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 

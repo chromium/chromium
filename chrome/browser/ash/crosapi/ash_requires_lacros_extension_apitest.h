@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
 

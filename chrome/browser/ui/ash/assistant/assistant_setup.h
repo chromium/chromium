@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 // AssistantSetup is the class responsible for start Assistant OptIn flow.
 class AssistantSetup : public ash::AssistantSetup,

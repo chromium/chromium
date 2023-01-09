@@ -9,6 +9,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace media_router {

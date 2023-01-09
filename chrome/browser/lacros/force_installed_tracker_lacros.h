@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 // Provider of APIs to track the installation status of extensions (listed in
 // ExtensionInstallForceList policy). This class is also responsible for

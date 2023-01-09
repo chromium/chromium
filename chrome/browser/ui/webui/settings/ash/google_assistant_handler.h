@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::settings {
 

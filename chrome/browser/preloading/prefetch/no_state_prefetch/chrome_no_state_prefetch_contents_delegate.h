@@ -5,7 +5,6 @@
 #define CHROME_BROWSER_PRELOADING_PREFETCH_NO_STATE_PREFETCH_CHROME_NO_STATE_PREFETCH_CONTENTS_DELEGATE_H_
 
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace content {

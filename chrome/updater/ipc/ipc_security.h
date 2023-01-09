@@ -6,7 +6,6 @@
 #define CHROME_UPDATER_IPC_IPC_SECURITY_H_
 
 #include "chrome/updater/updater_scope.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace named_mojo_ipc_server {
 struct ConnectionInfo;

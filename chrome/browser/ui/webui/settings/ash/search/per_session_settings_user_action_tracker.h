@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash::settings {
 

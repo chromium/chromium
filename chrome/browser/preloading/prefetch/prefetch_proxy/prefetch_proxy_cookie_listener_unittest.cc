@@ -6,8 +6,8 @@
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

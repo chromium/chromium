@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

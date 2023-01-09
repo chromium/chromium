@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
 namespace chromeos {

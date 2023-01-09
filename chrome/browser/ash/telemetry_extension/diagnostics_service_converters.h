@@ -13,7 +13,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
-#include "mojo/public/cpp/system/handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::converters {

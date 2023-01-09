@@ -11,8 +11,6 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace updater {
 

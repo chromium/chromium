@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

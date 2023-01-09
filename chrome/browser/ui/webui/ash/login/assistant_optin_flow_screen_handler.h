@@ -18,8 +18,6 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
