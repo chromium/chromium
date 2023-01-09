@@ -71,7 +71,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled16ms_20221212",
                     "params": {
                         "leeway": "16ms"
                     },
@@ -79,6 +79,9 @@
                         "AddTaskLeeway",
                         "AlignWakeUps",
                         "ExplicitHighResolutionTimerWin"
+                    ],
+                    "disable_features": [
+                        "UseLessHighResTimers"
                     ]
                 }
             ]
