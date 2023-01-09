@@ -5980,6 +5980,8 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//components/exo/wayland:ui_controls_protocol_stub",
+    "//components/exo/wayland:weston_test_stub",
   ]
 }
 
@@ -5999,6 +6001,8 @@ if (use_libfuzzer) {
       "//chrome/browser",
       "//chrome/common:constants",
       "//chromeos/ash/components/install_attributes",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/exo/wayland:weston_test_stub",
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/policy/core/common",
@@ -6055,6 +6059,8 @@ if (use_libfuzzer) {
       "//base",
       "//base:i18n",
       "//chrome/browser",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/exo/wayland:weston_test_stub",
       "//components/policy/proto",
     ]
   }
