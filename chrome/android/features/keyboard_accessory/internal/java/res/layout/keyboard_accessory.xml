@@ -35,7 +35,7 @@ found in the LICENSE file.
         android:layout_height="@dimen/keyboard_accessory_height"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
-        android:background="@color/default_bg_color_secondary">
+        android:background="@drawable/rectangle_surface_1">
 
         <include layout="@layout/keyboard_accessory_tabs"
             android:id="@+id/tabs"/>
