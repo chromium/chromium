@@ -86,9 +86,10 @@ public class BookmarkUndoController extends BookmarkModelObserver implements
     public void destroy() {
         mDestroyChecker.checkNotDestroyed();
 
-        mDestroyChecker.destroy();
         mBookmarkModel.removeDeleteObserver(this);
         mSnackbarManager.dismissSnackbars(this);
+
+        mDestroyChecker.destroy();
     }
 
     @Override
