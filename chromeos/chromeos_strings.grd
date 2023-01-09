@@ -3687,6 +3687,12 @@ Try tapping the mic to ask me anything.
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_SHORTCUTS_BUTTON" desc="Button label for action that confirms resetting all shortcuts to their default values" translateable="false">
           Reset
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_LOCKED_SHORTCUT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override a locked accelerator" translateable="false">
+          Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut to replace.
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator" translateable="false">
+          Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut or press the same one again to use it for this action instead.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_TABS_AND_WINDOWS" desc="Category named 'Tabs and Windows' shown on the navigation sidebar" translateable="false">Tabs &#38; Windows</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_PAGE_AND_WEB_BROWSER" desc="Category named 'Page and Web Browser' shown on the navigation sidebar" translateable="false">Page &#38; Web Browser</message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_SYSTEM_AND_DISPLAY_SETTINGS" desc="Category named 'System and Display Settings' shown on the navigation sidebar" translateable="false">System &#38; Display Settings</message>

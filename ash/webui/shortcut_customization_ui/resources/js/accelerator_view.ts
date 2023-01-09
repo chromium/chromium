@@ -5,6 +5,7 @@
 import './input_key.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -58,7 +59,9 @@ function getModifierString(modifier: Modifier): string {
  * the read-only and editable state of an accelerator.
  * TODO(jimmyxgong): Implement the edit mode.
  */
-export class AcceleratorViewElement extends PolymerElement {
+const AcceleratorViewElementBase = I18nMixin(PolymerElement);
+
+export class AcceleratorViewElement extends AcceleratorViewElementBase {
   static get is(): string {
     return 'accelerator-view';
   }
@@ -305,17 +308,14 @@ export class AcceleratorViewElement extends PolymerElement {
           this.lookupManager.isAcceleratorLocked(
               conflictSource, conflictAction,
               getAccelerator(pendingAccelInfo))) {
-        // TODO(jimmyxgong): i18n this string.
-        this.statusMessage = 'Shortcut is used by \"' + conflictAccelName +
-            '\". Press a new shortcut to replace.';
+        this.statusMessage =
+            this.i18n('lockedShortcutStatusMessage', conflictAccelName);
         this.hasError = true;
         return;
       }
 
-      // TODO(jimmyxgong): i18n this string.
-      this.statusMessage = 'Shortcut is used by ' + conflictAccelName +
-          '. Press a new shortcut or press the same one again to use it for ' +
-          'this action instead.';
+      this.statusMessage =
+          this.i18n('shortcutWithConflictStatusMessage', conflictAccelName);
       this.hasError = true;
 
       // Store the pending accelerator.
