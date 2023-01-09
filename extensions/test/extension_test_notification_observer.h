@@ -46,15 +46,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   // successfully.
   bool WaitForCrxInstallerDone();
 
-  // Watch for the given event type from the given source.
-  // After calling this method, call Wait() to ensure that RunMessageLoop() is
-  // called appropriately and cleanup is performed.
-  void Watch(int type, const content::NotificationSource& source);
-
-  // After registering one or more event types with Watch(), call
-  // this method to run the message loop and perform cleanup.
-  void Wait();
-
   const std::string& last_loaded_extension_id() {
     return last_loaded_extension_id_;
   }

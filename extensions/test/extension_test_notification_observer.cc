@@ -133,22 +133,6 @@ bool ExtensionTestNotificationObserver::WaitForCrxInstallerDone() {
          !last_loaded_extension_id_.empty();
 }
 
-void ExtensionTestNotificationObserver::Watch(
-    int type,
-    const content::NotificationSource& source) {
-  CHECK(!observer_);
-  observer_ =
-      std::make_unique<content::WindowedNotificationObserver>(type, source);
-  registrar_.Add(this, type, source);
-}
-
-void ExtensionTestNotificationObserver::Wait() {
-  observer_->Wait();
-
-  registrar_.RemoveAll();
-  observer_.reset();
-}
-
 void ExtensionTestNotificationObserver::Observe(
     int type,
     const content::NotificationSource& source,

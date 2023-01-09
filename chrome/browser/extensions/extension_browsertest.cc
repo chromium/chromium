@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -585,27 +586,28 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
 const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
     const std::string& id,
     const base::FilePath& path,
-    int expected_change) {
+    absl::optional<int> expected_change) {
   return InstallOrUpdateExtension(id, path, INSTALL_UI_TYPE_NONE,
-                                  expected_change, ManifestLocation::kInternal,
-                                  browser(), Extension::NO_FLAGS, false, false);
+                                  std::move(expected_change),
+                                  ManifestLocation::kInternal, browser(),
+                                  Extension::NO_FLAGS, false, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
     const base::FilePath& path,
-    int expected_change) {
-  return InstallOrUpdateExtension(std::string(), path,
-                                  INSTALL_UI_TYPE_AUTO_CONFIRM, expected_change,
-                                  ManifestLocation::kInternal, browser(),
-                                  Extension::FROM_WEBSTORE, true, false);
+    absl::optional<int> expected_change) {
+  return InstallOrUpdateExtension(
+      std::string(), path, INSTALL_UI_TYPE_AUTO_CONFIRM,
+      std::move(expected_change), ManifestLocation::kInternal, browser(),
+      Extension::FROM_WEBSTORE, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const std::string& id,
     const base::FilePath& path,
     InstallUIType ui_type,
-    int expected_change) {
-  return InstallOrUpdateExtension(id, path, ui_type, expected_change,
+    absl::optional<int> expected_change) {
+  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
                                   ManifestLocation::kInternal, browser(),
                                   Extension::NO_FLAGS, true, false);
 }
@@ -614,10 +616,10 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const std::string& id,
     const base::FilePath& path,
     InstallUIType ui_type,
-    int expected_change,
+    absl::optional<int> expected_change,
     Browser* browser,
     Extension::InitFromValueFlags creation_flags) {
-  return InstallOrUpdateExtension(id, path, ui_type, expected_change,
+  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
                                   ManifestLocation::kInternal, browser,
                                   creation_flags, true, false);
 }
@@ -626,9 +628,9 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const std::string& id,
     const base::FilePath& path,
     InstallUIType ui_type,
-    int expected_change,
+    absl::optional<int> expected_change,
     ManifestLocation install_source) {
-  return InstallOrUpdateExtension(id, path, ui_type, expected_change,
+  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
                                   install_source, browser(),
                                   Extension::NO_FLAGS, true, false);
 }
@@ -637,7 +639,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const std::string& id,
     const base::FilePath& path,
     InstallUIType ui_type,
-    int expected_change,
+    absl::optional<int> expected_change,
     ManifestLocation install_source,
     Browser* browser,
     Extension::InitFromValueFlags creation_flags,
@@ -646,6 +648,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
   ExtensionRegistry* registry = extension_registry();
   size_t num_before = registry->enabled_extensions().size();
 
+  scoped_refptr<CrxInstaller> installer;
+  absl::optional<CrxInstallError> install_error;
   {
     std::unique_ptr<ScopedTestDialogAutoConfirm> prompt_auto_confirm;
     if (ui_type == INSTALL_UI_TYPE_CANCEL) {
@@ -673,8 +677,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       install_ui = std::make_unique<ExtensionInstallPrompt>(
           browser->tab_strip_model()->GetActiveWebContents());
     }
-    scoped_refptr<CrxInstaller> installer(
-        CrxInstaller::Create(extension_service(), std::move(install_ui)));
+    installer =
+        CrxInstaller::Create(extension_service(), std::move(install_ui));
     installer->set_expected_id(id);
     installer->set_creation_flags(creation_flags);
     installer->set_install_source(install_source);
@@ -685,37 +689,52 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
           CrxInstaller::OffStoreInstallAllowedInTest);
     }
 
-    observer_->Watch(NOTIFICATION_CRX_INSTALLER_DONE,
-                     content::Source<CrxInstaller>(installer.get()));
+    base::test::TestFuture<absl::optional<CrxInstallError>>
+        installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const absl::optional<CrxInstallError>&>());
 
     installer->InstallCrx(crx_path);
 
-    observer_->Wait();
+    install_error = installer_done_future.Get();
   }
 
-  size_t num_after = registry->enabled_extensions().size();
-  EXPECT_EQ(num_before + expected_change, num_after);
-  if (num_before + expected_change != num_after) {
-    VLOG(1) << "Num extensions before: " << base::NumberToString(num_before)
-            << " num after: " << base::NumberToString(num_after)
-            << " Installed extensions follow:";
+  if (expected_change.has_value()) {
+    size_t num_after = registry->enabled_extensions().size();
+    EXPECT_EQ(num_before + expected_change.value(), num_after);
+    if (num_before + expected_change.value() != num_after) {
+      VLOG(1) << "Num extensions before: " << base::NumberToString(num_before)
+              << " num after: " << base::NumberToString(num_after)
+              << " Installed extensions follow:";
 
-    for (const scoped_refptr<const Extension>& extension :
-         registry->enabled_extensions())
-      VLOG(1) << "  " << extension->id();
+      for (const scoped_refptr<const Extension>& extension :
+           registry->enabled_extensions()) {
+        VLOG(1) << "  " << extension->id();
+      }
 
-    VLOG(1) << "Errors follow:";
-    const std::vector<std::u16string>* errors =
-        LoadErrorReporter::GetInstance()->GetErrors();
-    for (auto iter = errors->begin(); iter != errors->end(); ++iter)
-      VLOG(1) << *iter;
+      VLOG(1) << "Errors follow:";
+      const std::vector<std::u16string>* errors =
+          LoadErrorReporter::GetInstance()->GetErrors();
+      for (const auto& error : *errors) {
+        VLOG(1) << error;
+      }
 
+      return nullptr;
+    }
+  }
+
+  if (!observer_->WaitForExtensionViewsToLoad()) {
     return nullptr;
   }
 
-  if (!observer_->WaitForExtensionViewsToLoad())
+  if (install_error) {
     return nullptr;
-  return registry->GetExtensionById(last_loaded_extension_id(),
+  }
+
+  // Even though we can already get the Extension from the CrxInstaller,
+  // ensure it's also in the list of enabled extensions.
+  return registry->GetExtensionById(installer->extension()->id(),
                                     ExtensionRegistry::ENABLED);
 }
 
