@@ -1,13 +1,22 @@
 package com.ark.browser.ui.fragment;
 
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_ICONS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
+
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.ArkCompositorViewHolder;
 import com.ark.browser.ArkNavigationHandler;
@@ -15,22 +24,30 @@ import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
-import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
+import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.bus.ZBus;
+import com.zpj.fragmentation.dialog.ZDialog;
+import com.zpj.toast.ZToast;
+import com.zpj.utils.FileUtils;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
+import org.chromium.chrome.browser.download.DownloadDialogBridge;
+import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.DownloadManagerService;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -40,10 +57,22 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.messages.DismissReason;
+import org.chromium.components.messages.ManagedMessageDispatcher;
+import org.chromium.components.messages.MessageAutodismissDurationProvider;
+import org.chromium.components.messages.MessageContainer;
+import org.chromium.components.messages.MessageDispatcherBridge;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageQueueDelegate;
+import org.chromium.components.messages.MessagesFactory;
+import org.chromium.components.messages.MessagesMetrics;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 public class ArkMainFragment extends BaseFragment implements
@@ -60,6 +89,10 @@ public class ArkMainFragment extends BaseFragment implements
     private boolean isViewCreated = false;
     private Runnable mOpenPage;
 
+    @Nullable
+    protected ManagedMessageDispatcher mMessageDispatcher;
+
+
     public ArkWindowAndroid createWindowAndroid(Context context) {
         return new ArkWindowAndroid(context) {
 
@@ -75,6 +108,13 @@ public class ArkMainFragment extends BaseFragment implements
 
             @Override
             public void destroy() {
+                if (mMessageDispatcher != null) {
+                    // TODO 移除
+                    MessageDispatcherBridge.setWindowAndroid(null);
+                    mMessageDispatcher.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
+                    MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+                    mMessageDispatcher = null;
+                }
                 if (mViewHolder != null) {
                     mViewHolder.shutDown();
                     mViewHolder = null;
@@ -120,6 +160,43 @@ public class ArkMainFragment extends BaseFragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        DownloadDialogBridge.setDownloadDialogFactory(new DownloadDialogBridge.DownloadDialogFactory() {
+            @Override
+            public void showDialog(DownloadDialogBridge downloadDialogBridge,
+                                   @NonNull Activity activity,
+                                   long totalBytes,
+                                   @ConnectionType int connectionType,
+                                   @DownloadLocationDialogType int dialogType,
+                                   String suggestedPath,
+                                   boolean supportsLaterDialog,
+                                   boolean isIncognito) {
+                if (dialogType == DownloadLocationDialogType.DANGEROUS) {
+                    ZDialog.alert()
+                            .setTitle("Download Dangerous File?")
+                            .setContent("Are you sure to download this dangerous file? ")
+                            .setPositiveButton(R.string.ok, (dialog, which) -> {
+                                downloadDialogBridge.onComplete(suggestedPath);
+                                dialog.dismiss();
+                            })
+                            .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                                downloadDialogBridge.onCancel();
+                                dialog.dismiss();
+                            })
+                            .setOnCancelListener(dialog -> downloadDialogBridge.onCancel())
+                            .show(activity);
+                } else {
+                    // TODO url
+                    new DownloadDialog()
+                            .setFileName(FileUtils.getFileName(suggestedPath))
+                            .setUrl("TODO url")
+                            .setDownloadDialogBridge(downloadDialogBridge)
+                            .setFileSize(FileUtils.formatFileSize(totalBytes))
+                            .setDownloadPath(suggestedPath)
+                            .show(activity);
+                }
+            }
+        });
 
         ZBus.with(this)
                 .observe(LoadUrlEvent.class)
@@ -233,6 +310,7 @@ public class ArkMainFragment extends BaseFragment implements
 
         mViewHolder.setInsetObserverView(insetObserverView);
 
+        initMessageDispatcher();
         initCompositor();
 
         isViewCreated = true;
@@ -404,6 +482,47 @@ public class ArkMainFragment extends BaseFragment implements
         mViewHolder.onStart();
     }
 
+    private void initMessageDispatcher() {
+        MessageContainer container = findViewById(R.id.message_container);
+
+        // TODO 移除
+        MessageDispatcherBridge.setWindowAndroid(getWindowAndroid());
+        mMessageDispatcher = MessagesFactory.createMessageDispatcher(container,
+                new Supplier<Integer>() {
+                    @NonNull
+                    @Override
+                    public Integer get() {
+                        return container.getMessageBannerHeight() + container.getMessageShadowTopMargin();
+                    }
+                },
+                new ChromeMessageAutodismissDurationProvider(),
+                getWindowAndroid()::startAnimationOverContent, getWindowAndroid());
+        mMessageDispatcher.setDelegate(new MessageQueueDelegate() {
+
+            private Runnable mCallback;
+
+            @Override
+            public void onStartShowing(Runnable callback) {
+                container.setVisibility(View.VISIBLE);
+                if (mCallback != null) {
+                    ThreadPool.removeCallbacks(mCallback);
+                }
+                mCallback = callback;
+                ThreadPool.postDelayed(mCallback, 2000);
+            }
+
+            @Override
+            public void onFinishHiding() {
+                if (mCallback != null) {
+                    ThreadPool.removeCallbacks(mCallback);
+                    mCallback = null;
+                }
+                container.setVisibility(View.GONE);
+            }
+        });
+        MessagesFactory.attachMessageDispatcher(getWindowAndroid(), mMessageDispatcher);
+    }
+
     public Tab getActivityTab() {
         ITab tab = TabListManager.getInstance().getCurrentTab();
         if (tab == null) {
@@ -488,6 +607,67 @@ public class ArkMainFragment extends BaseFragment implements
     public void loadUrlInNewTab(PageInfo pageInfo, LoadUrlParams params, boolean incognito) {
 //        mLauncherManager.goToBrowser();
         TabListManager.getInstance().openNewTab(pageInfo, params, TabLaunchType.FROM_CHROME_UI, incognito);
+    }
+
+
+    /**
+     * Implementation of {@link MessageAutodismissDurationProvider}.
+     * <p>
+     * Use finch parameter "autodismiss_duration_ms_{@link MessageIdentifier}" to customize through
+     * finch config, such as "autodismiss_duration_ms_SyncError" within the feature {@code
+     * ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE}. The duration configured in this way will
+     * take the highest priority over clients' configuration in code.
+     */
+    public static class ChromeMessageAutodismissDurationProvider
+            implements MessageAutodismissDurationProvider {
+        @VisibleForTesting
+        static final String FEATURE_SPECIFIC_FINCH_CONTROLLED_DURATION_PREFIX =
+                "autodismiss_duration_ms_";
+
+        private long mAutodismissDurationMs;
+        private long mAutodismissDurationWithA11yMs;
+
+        public ChromeMessageAutodismissDurationProvider() {
+            mAutodismissDurationMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE, "autodismiss_duration_ms",
+                    10 * (int) DateUtils.SECOND_IN_MILLIS);
+
+            mAutodismissDurationWithA11yMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                    "autodismiss_duration_with_a11y_ms", 30 * (int) DateUtils.SECOND_IN_MILLIS);
+        }
+
+        @Override
+        public long get(@MessageIdentifier int messageIdentifier, long customDuration) {
+            long nonA11yDuration = Math.max(mAutodismissDurationMs, customDuration);
+            long finchControlledDuration = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                    FEATURE_SPECIFIC_FINCH_CONTROLLED_DURATION_PREFIX
+                            + MessagesMetrics.messageIdentifierToHistogramSuffix(messageIdentifier),
+                    -1);
+            if (finchControlledDuration > 0) {
+                nonA11yDuration = Math.max(finchControlledDuration, nonA11yDuration);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                // crbug.com/1312548: To have a minimum duration even if the system has a default value.
+                return Math.max(mAutodismissDurationWithA11yMs,
+                        ChromeAccessibilityUtil.get().getRecommendedTimeoutMillis((int) nonA11yDuration,
+                                FLAG_CONTENT_ICONS | FLAG_CONTENT_CONTROLS | FLAG_CONTENT_TEXT));
+            }
+            return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                    ? Math.max(mAutodismissDurationWithA11yMs, nonA11yDuration)
+                    : nonA11yDuration;
+        }
+
+        @VisibleForTesting
+        public void setDefaultAutodismissDurationMsForTesting(long duration) {
+            mAutodismissDurationMs = duration;
+        }
+
+        public void setDefaultAutodismissDurationWithA11yMsForTesting(long duration) {
+            mAutodismissDurationWithA11yMs = duration;
+        }
     }
 
 

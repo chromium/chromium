@@ -281,7 +281,7 @@ public class BookmarkFragment extends CollectionChildFragment
 
                     }
                 },
-                items.get(0)
+                getCurrentFolder()
         );
     }
 

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ark.browser.core.bookmark.BookmarkBridge;
 import com.ark.browser.core.bookmark.BookmarkModel;
+import com.ark.browser.settings.Keys;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.fragmentation.SupportActivity;
 import com.zpj.fragmentation.SupportFragment;
@@ -44,8 +45,6 @@ public class BookmarkFolderPickerDialog extends OverDragBottomDialogFragment<Boo
 
     private static final String TAG = "BookmarkFolderSelectFragment";
 
-    static final String INTENT_BOOKMARKS_TO_MOVE = "BookmarkFolderSelectFragment.bookmarksToMove";
-
     private final BookmarkBridge.BookmarkModelObserver mBookmarkModelObserver = new BookmarkBridge.BookmarkModelObserver() {
         @Override
         public void bookmarkModelChanged() {
@@ -55,19 +54,13 @@ public class BookmarkFolderPickerDialog extends OverDragBottomDialogFragment<Boo
         @Override
         public void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node,
                                         boolean isDoingExtensiveChanges) {
-            if (mBookmarksToMove.contains(node.getId())) {
-                mBookmarksToMove.remove(node.getId());
-                if (mBookmarksToMove.isEmpty()) {
-                    popThis();
-                }
-            } else if (node.isFolder()) {
+            if (node.isFolder()) {
                 updateFolderList();
             }
         }
     };
 
     private BookmarkModel mBookmarkModel;
-    private List<BookmarkId> mBookmarksToMove;
     private BookmarkId mParentId;
 
     private MultiRecycler mRecycler;
@@ -80,18 +73,12 @@ public class BookmarkFolderPickerDialog extends OverDragBottomDialogFragment<Boo
         void onDestroy();
     }
 
-    public static void startFolderSelectFragment(Context context, Callback callback, BookmarkId... bookmarks) {
+    public static void startFolderSelectFragment(Context context, Callback callback, BookmarkId currentFolderId) {
         Bundle bundle = new Bundle();
-        ArrayList<String> bookmarkStrings = new ArrayList<>(bookmarks.length);
-        for (BookmarkId id : bookmarks) {
-            bookmarkStrings.add(id.toString());
-        }
-        Log.d(TAG, "length=" + bookmarks.length + "  bookmarkStrings=" + bookmarkStrings);
-        bundle.putStringArrayList(INTENT_BOOKMARKS_TO_MOVE, bookmarkStrings);
+        bundle.putString(Keys.KEY_ID, currentFolderId.toString());
         BookmarkFolderPickerDialog fragment = new BookmarkFolderPickerDialog();
-        fragment.setArguments(bundle);
         fragment.setCallback(callback);
-
+        fragment.setArguments(bundle);
         Activity activity = ContextUtils.getActivity(context);
         if (activity instanceof SupportActivity) {
             ((SupportActivity) activity).start(fragment);
@@ -100,19 +87,11 @@ public class BookmarkFolderPickerDialog extends OverDragBottomDialogFragment<Boo
         }
     }
 
-    public static void startFolderSelectFragment(SupportFragment parentFragment, Callback callback, BookmarkId... bookmarks) {
-        Bundle bundle = new Bundle();
-        ArrayList<String> bookmarkStrings = new ArrayList<>(bookmarks.length);
-        for (BookmarkId id : bookmarks) {
-            bookmarkStrings.add(id.toString());
-        }
-        Log.d(TAG, "length=" + bookmarks.length + "  bookmarkStrings=" + bookmarkStrings);
-        bundle.putStringArrayList(INTENT_BOOKMARKS_TO_MOVE, bookmarkStrings);
-        BookmarkFolderPickerDialog fragment = new BookmarkFolderPickerDialog();
-        fragment.setArguments(bundle);
-        fragment.setCallback(callback);
-        parentFragment.start(fragment);
-    }
+//    public static void startFolderSelectFragment(SupportFragment parentFragment, Callback callback) {
+//        BookmarkFolderPickerDialog fragment = new BookmarkFolderPickerDialog();
+//        fragment.setCallback(callback);
+//        parentFragment.start(fragment);
+//    }
 
     public BookmarkFolderPickerDialog() {
         setMaxHeight(MATCH_PARENT);
@@ -154,20 +133,17 @@ public class BookmarkFolderPickerDialog extends OverDragBottomDialogFragment<Boo
 
         mBookmarkModel = new BookmarkModel();
         mBookmarkModel.finishLoadingBookmarkModel(() -> {
-
-
             Bundle bundle = getArguments();
-            if (bundle == null) {
-                popThis();
-                return;
+            String parentIdStr = bundle == null ? null : bundle.getString(Keys.KEY_ID);
+            if (TextUtils.isEmpty(parentIdStr)) {
+                mParentId = null;
+            } else {
+                mParentId = BookmarkId.getBookmarkIdFromString(parentIdStr);
             }
-            List<String> stringList = bundle.getStringArrayList(INTENT_BOOKMARKS_TO_MOVE);
-            if (stringList == null) {
-                popThis();
-                return;
+            if (mParentId == null || !mBookmarkModel.doesBookmarkExist(mParentId)) {
+                mParentId = mBookmarkModel.getDefaultFolder();
             }
 
-            initItemsToMove(stringList);
             mBookmarkModel.addObserver(mBookmarkModelObserver);
             updateFolderList();
         });
@@ -176,23 +152,6 @@ public class BookmarkFolderPickerDialog extends OverDragBottomDialogFragment<Boo
 
     public void setCallback(Callback mCallback) {
         this.mCallback = mCallback;
-    }
-
-    private void initItemsToMove(List<String> itemsToMove) {
-        mBookmarksToMove = new ArrayList<>(itemsToMove.size());
-        for (String string : itemsToMove) {
-            BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(string);
-            if (mBookmarkModel.doesBookmarkExist(bookmarkId)) {
-                mBookmarksToMove.add(bookmarkId);
-            }
-        }
-
-        if (mBookmarksToMove.isEmpty()) {
-            mParentId = mBookmarkModel.getDefaultFolder();
-        } else {
-            mParentId = mBookmarkModel.getBookmarkById(mBookmarksToMove.get(0))
-                    .getParentId();
-        }
     }
 
     private void updateFolderList() {

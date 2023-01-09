@@ -92,6 +92,10 @@ public class ThreadPool {
         Holder.HANDLER.postDelayed(r, delayMillis);
     }
 
+    public static void removeCallbacks(Runnable r) {
+        Holder.HANDLER.removeCallbacks(r);
+    }
+
     public static Future<?> submit(Runnable runnable) {
         return EXECUTOR.submit(runnable);
     }

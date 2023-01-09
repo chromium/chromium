@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
@@ -55,6 +56,31 @@ public class DownloadDialogBridge {
 
     private long mDownloadLaterTime = INVALID_START_TIME;
 
+
+    private static DownloadDialogFactory sFactory;
+
+    public interface IDownloadDialog {
+
+        IDownloadDialog show(Context context);
+
+    }
+
+    public interface DownloadDialogFactory {
+
+        void showDialog(DownloadDialogBridge downloadDialogBridge,
+                                     @NonNull Activity activity,
+                                     long totalBytes,
+                                     @ConnectionType int connectionType,
+                                     @DownloadLocationDialogType int dialogType,
+                                     String suggestedPath, boolean supportsLaterDialog,
+                                     boolean isIncognito);
+
+    }
+
+    public static void setDownloadDialogFactory(DownloadDialogFactory factory) {
+        sFactory = factory;
+    }
+
     public DownloadDialogBridge(long nativeDownloadDialogBridge) {
         mNativeDownloadDialogBridge = nativeDownloadDialogBridge;
     }
@@ -74,6 +100,8 @@ public class DownloadDialogBridge {
     private void showDialog(@Nullable WindowAndroid windowAndroid, long totalBytes,
                             @ConnectionType int connectionType, @DownloadLocationDialogType int dialogType,
                             String suggestedPath, boolean supportsLaterDialog, boolean isIncognito) {
+
+
         mWindowAndroid = windowAndroid;
         Activity activity;
 //        if (activity == null) {
@@ -98,63 +126,67 @@ public class DownloadDialogBridge {
             return;
         }
 
-        this.mSuggestedPath = suggestedPath;
-        this.mConnectionType = connectionType;
-        this.mTotalBytes = totalBytes;
+        sFactory.showDialog(this, activity, totalBytes,
+                        connectionType, dialogType, suggestedPath,
+                        supportsLaterDialog, isIncognito);
 
-        Log.e("DownloadDialogBridge",
-                "showDialog totalBytes=%s, connectionType=%s, dialogType=%s, supportsLaterDialog=%s, isIncognito=%s, suggestedPath=%s",
-                totalBytes, connectionType, dialogType, supportsLaterDialog, isIncognito, suggestedPath);
-
-        AlertDialog dialog;
-        if (dialogType == DownloadLocationDialogType.DANGEROUS) {
-            dialog = new AlertDialog.Builder(activity)
-                    .setTitle("Download Dangerous File?")
-                    .setMessage("Are you sure to download this dangerous file? ")
-                    .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
-                        onComplete();
-                        dialog13.dismiss();
-                    })
-                    .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
-                        onCancel();
-                        dialog12.dismiss();
-                    })
-                    .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
-                    .create();
-        } else {
-            dialog = new AlertDialog.Builder(activity)
-                    .setTitle("Download File?")
-                    .setMessage("Are you sure to download file? ")
-                    .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
-                        File targetFile = new File(mSuggestedPath);
-                        if (targetFile.exists()) {
-                            File parentFile = targetFile.getParentFile();
-                            if (parentFile == null) {
-                                parentFile = new File(activity.getExternalCacheDir(), "download");
-                            }
-                            String parent = parentFile.getAbsolutePath();
-                            String name = targetFile.getName();
-                            int i = name.lastIndexOf('.');
-                            if (i < 0) {
-                                mSuggestedPath = generateNewFilePath(parent, name, null);
-                            } else {
-                                mSuggestedPath = generateNewFilePath(parent, name.substring(0, i), name.substring(i));
-                            }
-                        }
-                        Log.e("DownloadDialogBridge", "setPositiveButton mSuggestedPath=%s", mSuggestedPath);
-                        onComplete();
-                        dialog13.dismiss();
-                    })
-                    .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
-                        onCancel();
-                        dialog12.dismiss();
-                    })
-                    .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
-                    .create();
-        }
-
-
-        dialog.show();
+//        this.mSuggestedPath = suggestedPath;
+//        this.mConnectionType = connectionType;
+//        this.mTotalBytes = totalBytes;
+//
+//        Log.e("DownloadDialogBridge",
+//                "showDialog totalBytes=%s, connectionType=%s, dialogType=%s, supportsLaterDialog=%s, isIncognito=%s, suggestedPath=%s",
+//                totalBytes, connectionType, dialogType, supportsLaterDialog, isIncognito, suggestedPath);
+//
+//        AlertDialog dialog;
+//        if (dialogType == DownloadLocationDialogType.DANGEROUS) {
+//            dialog = new AlertDialog.Builder(activity)
+//                    .setTitle("Download Dangerous File?")
+//                    .setMessage("Are you sure to download this dangerous file? ")
+//                    .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+//                        onComplete(mSuggestedPath);
+//                        dialog13.dismiss();
+//                    })
+//                    .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+//                        onCancel();
+//                        dialog12.dismiss();
+//                    })
+//                    .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
+//                    .create();
+//        } else {
+//            dialog = new AlertDialog.Builder(activity)
+//                    .setTitle("Download File?")
+//                    .setMessage("Are you sure to download file? ")
+//                    .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+//                        File targetFile = new File(mSuggestedPath);
+//                        if (targetFile.exists()) {
+//                            File parentFile = targetFile.getParentFile();
+//                            if (parentFile == null) {
+//                                parentFile = new File(activity.getExternalCacheDir(), "download");
+//                            }
+//                            String parent = parentFile.getAbsolutePath();
+//                            String name = targetFile.getName();
+//                            int i = name.lastIndexOf('.');
+//                            if (i < 0) {
+//                                mSuggestedPath = generateNewFilePath(parent, name, null);
+//                            } else {
+//                                mSuggestedPath = generateNewFilePath(parent, name.substring(0, i), name.substring(i));
+//                            }
+//                        }
+//                        Log.e("DownloadDialogBridge", "setPositiveButton mSuggestedPath=%s", mSuggestedPath);
+//                        onComplete(mSuggestedPath);
+//                        dialog13.dismiss();
+//                    })
+//                    .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+//                        onCancel();
+//                        dialog12.dismiss();
+//                    })
+//                    .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
+//                    .create();
+//        }
+//
+//
+//        dialog.show();
     }
 
     private static String generateNewFilePath(String parent, String name, @Nullable String suffix) {
@@ -172,7 +204,8 @@ public class DownloadDialogBridge {
                     try {
                         num = Integer.parseInt(name.substring(index + 1, name.length() - 1)) + 1;
                         newName = name.substring(0, index);
-                    } catch (Exception ignore) {}
+                    } catch (Exception ignore) {
+                    }
                 } else if (!Character.isDigit(last)) {
                     break;
                 }
@@ -187,17 +220,17 @@ public class DownloadDialogBridge {
         return newFile.getAbsolutePath();
     }
 
-    private void onComplete() {
+    public void onComplete(String suggestedPath) {
         if (mNativeDownloadDialogBridge == 0) return;
 
         DownloadDialogBridgeJni.get().onComplete(mNativeDownloadDialogBridge,
-                DownloadDialogBridge.this, mSuggestedPath, false, mDownloadLaterTime);
+                DownloadDialogBridge.this, suggestedPath, false, mDownloadLaterTime);
         if (mWindowAndroid != null) {
             mWindowAndroid = null;
         }
     }
 
-    private void onCancel() {
+    public void onCancel() {
         if (mNativeDownloadDialogBridge == 0) return;
         DownloadDialogBridgeJni.get().onCanceled(
                 mNativeDownloadDialogBridge, DownloadDialogBridge.this);

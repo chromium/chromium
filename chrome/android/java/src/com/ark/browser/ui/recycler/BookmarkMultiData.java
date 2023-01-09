@@ -206,9 +206,7 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
                                 showDeleteDialog("你将删除文件夹：" + item.getTitle(), item.getId(), holder);
                                 break;
                             case 2:
-                                List<BookmarkId> bookmarkIdList = new ArrayList<>();
-                                bookmarkIdList.add(item.getId());
-                                showFolderSelectFragment(context, bookmarkIdList);
+                                showFolderSelectFragment(context, item);
                                 break;
                         }
                     } else {
@@ -226,9 +224,7 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
                                 CollectionEditorDialog.newInstance(item.getId()).show(context);
                                 break;
                             case 4:
-                                List<BookmarkId> bookmarkIdList = new ArrayList<>();
-                                bookmarkIdList.add(item.getId());
-                                showFolderSelectFragment(context, bookmarkIdList);
+                                showFolderSelectFragment(context, item);
                                 break;
                             case 5:
                                 // TODO
@@ -258,12 +254,15 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
                 .show(holder.getContext());
     }
 
-    private void showFolderSelectFragment(Context context, List<BookmarkId> items) {
+    private void showFolderSelectFragment(Context context, BookmarkItem item) {
+        BookmarkId bookmarkId = item.getId();
         BookmarkFolderPickerDialog.startFolderSelectFragment(
                 context,
                 new BookmarkFolderPickerDialog.Callback() {
                     @Override
                     public void onSelectFolder(String selectedFolder, BookmarkId folderId) {
+                        List<BookmarkId> items = new ArrayList<>();
+                        items.add(bookmarkId);
                         bookmarkModel.moveBookmarks(items, folderId);
                         refresh();
                     }
@@ -273,7 +272,8 @@ public class BookmarkMultiData extends BaseHeaderMultiData<BookmarkId> {
 
                     }
                 },
-                items.get(0)
+                item.getParentId()
+
         );
     }
 

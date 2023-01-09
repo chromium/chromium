@@ -221,6 +221,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/fragment_dialog_bookmark_folder_select.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_clipboard_intercept.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_collection_editor.xml",
+    "//chrome/android/java/res_app/layout/fragment_dialog_download.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_exit.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_history_stack.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_homepage_item_editor.xml",

@@ -124,6 +124,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/dialog/BookmarkFolderPickerDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ClipboardInterceptDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/CollectionEditorDialog.java",
+  "java/src/com/ark/browser/ui/fragment/dialog/DownloadDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ExitDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/HistoryStackDialogFragment.java",
   "java/src/com/ark/browser/ui/fragment/dialog/MainMenuDialog.java",

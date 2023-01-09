@@ -1,0 +1,170 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <View
+        android:layout_width="56dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_round_accent"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_download"
+        android:textColor="?attr/textColorMajor"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="24dp"
+        />
+
+    <ImageView
+        android:id="@+id/file_icon"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/wechat_icon_apk"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <TextView
+        android:id="@+id/file_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="21.41MB"
+        android:textColor="?attr/textColorMajor"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="8dp"
+        />
+
+    <TextView
+        android:id="@+id/copy_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="复制链接"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        />
+
+    <com.ark.browser.ui.widget.DrawableTintEditText
+        android:id="@+id/et_file_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/text_name"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textCapSentences|textAutoCorrect"
+        android:singleLine="true"
+        android:background="@drawable/bg_round_accent"
+        android:padding="16dp"
+        android:textSize="13sp"
+        android:layout_marginVertical="8dp"
+        app:alertMessage="@string/text_missing_title"
+        android:drawableStart="@drawable/ic_language_black_24dp"
+        android:drawablePadding="8dp"
+        android:textColor="?attr/textColorMajor"
+        android:textColorHint="?attr/textColorNormal"
+        android:layout_marginHorizontal="24dp"
+        app:drawable_tint_color="?attr/textColorMajor"
+        />
+
+    <com.ark.browser.ui.widget.DrawableTintEditText
+        android:id="@+id/et_link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/text_link"
+        android:drawableStart="@drawable/ic_link_black_24dp"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textUri"
+        android:singleLine="true"
+        android:background="@drawable/bg_round_accent"
+        android:padding="16dp"
+        android:textSize="13sp"
+        android:textColor="?attr/textColorMajor"
+        android:textColorHint="?attr/textColorNormal"
+        app:alertMessage="@string/text_missing_url"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="16dp"
+        android:drawablePadding="8dp"
+        android:layout_marginHorizontal="24dp"
+        app:drawable_tint_color="?attr/textColorMajor"
+        />
+
+    <com.ark.browser.ui.widget.DrawableTintTextView
+        android:id="@+id/folder_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="16dp"
+        android:padding="16dp"
+        android:text="/sdcard/QXBrowser/download"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_folder_blue_24dp"
+        android:background="@drawable/bg_round_accent"
+        android:textColor="?attr/textColorMajor"
+        android:drawableEnd="@drawable/ic_enter_arrow"
+        android:drawablePadding="8dp"
+        app:drawable_tint_color="?attr/textColorMajor"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_round_accent"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            >
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="12dp"
+                android:background="@color/colorPrimary"
+                />
+
+
+            <TextView
+                android:id="@+id/threads_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="线程数:3"
+                android:padding="2dp"
+                android:textColor="?attr/textColorMajor"
+                />
+
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/threads"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="127"
+            android:layout_marginTop="12dp"
+            android:progress="3"
+            android:progressTint="@color/colorPrimary"
+            />
+
+
+    </LinearLayout>
+
+    <include layout="@layout/_dialog_buttons" />
+
+
+</LinearLayout>

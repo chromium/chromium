@@ -243,7 +243,7 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
 
                         }
                     },
-                    mBookmarkId
+                    moveToFolderId == null ? currentFolderId : moveToFolderId
             );
         });
 

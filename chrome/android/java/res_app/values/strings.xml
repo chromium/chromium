@@ -11,7 +11,9 @@
     <string name="text_save">保存</string>
     <string name="text_delete">删除</string>
     <string name="text_name">"名称"</string>
+    <string name="text_name">"标题"</string>
     <string name="text_site">"网址"</string>
+    <string name="text_link">链接</string>
 
     <string name="text_download">下载</string>
 
@@ -55,6 +57,7 @@
     <string name="text_autoplay">"自动播放"</string>
     <string name="text_camera_permission">"使用您的摄像头"</string>
 
+    <string name="text_missing_name">"必须提供名称"</string>
     <string name="text_missing_title">"必须提供标题"</string>
     <string name="text_missing_url">"必须提供网址"</string>
 
