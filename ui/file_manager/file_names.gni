@@ -240,7 +240,6 @@ static_js_files = [
 ts_files = [
   # Common.
   "file_manager/common/js/dom_utils.ts",
-  "file_manager/common/js/tslib_shim.ts",
   "file_manager/common/js/trash.ts",
   "file_manager/common/js/entry_utils.ts",
 

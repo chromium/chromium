@@ -11,21 +11,22 @@ import("//third_party/node/node.gni")
 template("rewrite_imports") {
   node(target_name) {
     script = "//third_party/material_web_components/rewrite_imports.py"
-
+    manifest_out = "${target_gen_dir}/${target_name}.manifest"
     forward_variables_from(invoker,
                            [
                              "deps",
-                             "import_mappings",
+                             "base_dir",
+                             "out_dir",
+                             "in_files",
+                             "testonly",
                            ])
 
     inputs = []
-    outputs = []
+    outputs = [ manifest_out ]
 
-    foreach(_dep, deps) {
-      foreach(_output, filter_include(get_target_outputs(_dep), [ "*.js" ])) {
-        inputs += [ _output ]
-        outputs += [ "$target_gen_dir/" + get_path_info(_output, "file") ]
-      }
+    foreach(_file, in_files) {
+      inputs += [ "${base_dir}/${_file}" ]
+      outputs += [ "${out_dir}/${_file}" ]
     }
 
     import_mappings = [ "tslib|//resources/mwc/tslib/tslib.js" ]
@@ -33,10 +34,18 @@ template("rewrite_imports") {
       import_mappings += invoker.import_mappings
     }
 
-    args = [ "--in_files" ] + rebase_path(inputs, root_build_dir)
+    args = [ "--in_files" ] + in_files
+    args += [
+      "--base_dir",
+      rebase_path(base_dir, root_build_dir),
+    ]
     args += [
       "--out_dir",
-      rebase_path(target_gen_dir, root_build_dir),
+      rebase_path(out_dir, root_build_dir),
+    ]
+    args += [
+      "--manifest_out",
+      rebase_path(manifest_out, root_build_dir),
     ]
     args += [ "--import_mappings" ] + import_mappings
   }
