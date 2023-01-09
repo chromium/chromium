@@ -1,9 +1,0 @@
-specific_include_rules = {
-  'mz_os_chrome\.cc': [
-    '+base/rand_util.h',
-  ],
-  '.*_fuzzer\.cc': [
-    '+base',
-    '+testing/libfuzzer/fuzzers',
-  ],
-}

@@ -416,15 +416,6 @@ group("gn_all") {
     }
   }
 
-  if (is_linux || is_chromeos) {
-    # This is only used by ChromeOS, but we want maximal fuzzer coverage, so
-    # run it under linux too.
-    deps += [
-      "//third_party/minizip:minizip_compress_fuzzer",
-      "//third_party/minizip:minizip_uncompress_fuzzer",
-    ]
-  }
-
   if (is_linux || is_chromeos || is_android) {
     deps += [
       "//third_party/breakpad:breakpad_unittests",
