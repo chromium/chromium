@@ -187,8 +187,7 @@ class CC_PAINT_EXPORT PaintFlags {
       FilterQuality filter_quality);
 
   bool IsValid() const;
-  bool operator==(const PaintFlags& other) const;
-  bool operator!=(const PaintFlags& other) const { return !(*this == other); }
+  bool EqualsForTesting(const PaintFlags& other) const;
 
   bool HasDiscardableImages() const;
 

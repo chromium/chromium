@@ -31,9 +31,6 @@ struct CC_PAINT_EXPORT SkottieFrameData {
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kLow;
 };
 
-CC_PAINT_EXPORT bool operator==(const SkottieFrameData& frame_l,
-                                const SkottieFrameData& frame_r);
-
 // Map from asset id to the image to use for that asset.
 using SkottieFrameDataMap =
     base::flat_map<SkottieResourceIdHash, SkottieFrameData>;

@@ -170,8 +170,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   // shader is correct is hard.
   bool IsValid() const;
 
-  bool operator==(const PaintShader& other) const;
-  bool operator!=(const PaintShader& other) const { return !(*this == other); }
+  bool EqualsForTesting(const PaintShader& other) const;
 
   RecordShaderId paint_record_shader_id() const {
     DCHECK(id_ == kInvalidRecordShaderId || shader_type_ == Type::kPaintRecord);

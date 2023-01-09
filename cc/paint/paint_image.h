@@ -198,8 +198,10 @@ class CC_PAINT_EXPORT PaintImage {
   PaintImage& operator=(const PaintImage& other);
   PaintImage& operator=(PaintImage&& other);
 
-  bool operator==(const PaintImage& other) const;
-  bool operator!=(const PaintImage& other) const { return !(*this == other); }
+  // For testing only. Checks if `this` and `other` are the same image, i.e.
+  // share the same underlying image. `a.IsSameForTesting(b)` will be true after
+  // `PaintImage b = a;`.
+  bool IsSameForTesting(const PaintImage& other) const;
 
   // Returns the smallest size that is at least as big as the requested_size
   // such that we can decode to exactly that scale. If the requested size is

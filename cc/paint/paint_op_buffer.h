@@ -238,10 +238,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // retains the original data buffer for future use.
   PaintRecord ReleaseAsRecord();
 
-  bool operator==(const PaintOpBuffer& other) const;
-  bool operator!=(const PaintOpBuffer& other) const {
-    return !(*this == other);
-  }
+  bool EqualsForTesting(const PaintOpBuffer& other) const;
 
   const PaintOp& GetFirstOp() const {
     DCHECK(!empty());

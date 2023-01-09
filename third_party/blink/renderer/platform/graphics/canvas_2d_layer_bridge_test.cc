@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/test/paint_image_matchers.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/common/resources/release_callback.h"
@@ -68,6 +69,10 @@
 
 #include <memory>
 
+namespace blink {
+
+namespace {
+
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -76,10 +81,6 @@ using testing::Pointee;
 using testing::Return;
 using testing::SetArgPointee;
 using testing::Test;
-
-namespace blink {
-
-namespace {
 
 class ImageTrackingDecodeCache : public cc::StubDecodeCache {
  public:
@@ -833,7 +834,7 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
       SkCanvas::kFast_SrcRectConstraint);
   bridge->NewImageSnapshot();
 
-  EXPECT_EQ(image_decode_cache_.decoded_images(), images);
+  EXPECT_THAT(image_decode_cache_.decoded_images(), cc::ImagesAreSame(images));
 }
 
 TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
@@ -857,7 +858,7 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
       SkCanvas::kFast_SrcRectConstraint);
   bridge->NewImageSnapshot();
 
-  EXPECT_EQ(image_decode_cache_.decoded_images(), images);
+  EXPECT_THAT(image_decode_cache_.decoded_images(), cc::ImagesAreSame(images));
 }
 
 TEST_F(Canvas2DLayerBridgeTest, ImagesLockedUntilCacheLimit) {

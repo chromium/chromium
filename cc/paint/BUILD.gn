@@ -87,7 +87,6 @@ cc_component("paint") {
     "skia_paint_image_generator.cc",
     "skia_paint_image_generator.h",
     "skottie_color_map.h",
-    "skottie_frame_data.cc",
     "skottie_frame_data.h",
     "skottie_frame_data_provider.h",
     "skottie_marker.h",

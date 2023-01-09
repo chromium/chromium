@@ -115,10 +115,7 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   // that are easy to compare. As an example, it doesn't compare equality of
   // images, rather only its existence. This is meant to be used only by tests
   // and fuzzers.
-  // TODO(vmpstr): Rename this and places that its used to something like
-  // EqualsForTesting.
-  bool operator==(const PaintFilter& other) const;
-  bool operator!=(const PaintFilter& other) const { return !(*this == other); }
+  bool EqualsForTesting(const PaintFilter& other) const;
 
  protected:
   PaintFilter(Type type,
@@ -166,7 +163,7 @@ class CC_PAINT_EXPORT ColorFilterPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const ColorFilterPaintFilter& other) const;
+  bool EqualsForTesting(const ColorFilterPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -194,7 +191,7 @@ class CC_PAINT_EXPORT BlurPaintFilter final : public PaintFilter {
   SkTileMode tile_mode() const { return tile_mode_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const BlurPaintFilter& other) const;
+  bool EqualsForTesting(const BlurPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -234,7 +231,7 @@ class CC_PAINT_EXPORT DropShadowPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const DropShadowPaintFilter& other) const;
+  bool EqualsForTesting(const DropShadowPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -264,7 +261,7 @@ class CC_PAINT_EXPORT MagnifierPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const MagnifierPaintFilter& other) const;
+  bool EqualsForTesting(const MagnifierPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -286,7 +283,7 @@ class CC_PAINT_EXPORT ComposePaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& inner() const { return inner_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const ComposePaintFilter& other) const;
+  bool EqualsForTesting(const ComposePaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -313,7 +310,7 @@ class CC_PAINT_EXPORT AlphaThresholdPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const AlphaThresholdPaintFilter& other) const;
+  bool EqualsForTesting(const AlphaThresholdPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -340,7 +337,7 @@ class CC_PAINT_EXPORT XfermodePaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& foreground() const { return foreground_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const XfermodePaintFilter& other) const;
+  bool EqualsForTesting(const XfermodePaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -374,7 +371,7 @@ class CC_PAINT_EXPORT ArithmeticPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& foreground() const { return foreground_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const ArithmeticPaintFilter& other) const;
+  bool EqualsForTesting(const ArithmeticPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -414,7 +411,7 @@ class CC_PAINT_EXPORT MatrixConvolutionPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const MatrixConvolutionPaintFilter& other) const;
+  bool EqualsForTesting(const MatrixConvolutionPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -450,7 +447,7 @@ class CC_PAINT_EXPORT DisplacementMapEffectPaintFilter final
   const sk_sp<PaintFilter>& color() const { return color_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const DisplacementMapEffectPaintFilter& other) const;
+  bool EqualsForTesting(const DisplacementMapEffectPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -479,7 +476,7 @@ class CC_PAINT_EXPORT ImagePaintFilter final : public PaintFilter {
   PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const ImagePaintFilter& other) const;
+  bool EqualsForTesting(const ImagePaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -518,7 +515,7 @@ class CC_PAINT_EXPORT RecordPaintFilter final : public PaintFilter {
   ScalingBehavior scaling_behavior() const { return scaling_behavior_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const RecordPaintFilter& other) const;
+  bool EqualsForTesting(const RecordPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -552,7 +549,7 @@ class CC_PAINT_EXPORT MergePaintFilter final : public PaintFilter {
   }
 
   size_t SerializedSize() const override;
-  bool operator==(const MergePaintFilter& other) const;
+  bool EqualsForTesting(const MergePaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -583,7 +580,7 @@ class CC_PAINT_EXPORT MorphologyPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const MorphologyPaintFilter& other) const;
+  bool EqualsForTesting(const MorphologyPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -610,7 +607,7 @@ class CC_PAINT_EXPORT OffsetPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const OffsetPaintFilter& other) const;
+  bool EqualsForTesting(const OffsetPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -635,7 +632,7 @@ class CC_PAINT_EXPORT TilePaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const TilePaintFilter& other) const;
+  bool EqualsForTesting(const TilePaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -672,7 +669,7 @@ class CC_PAINT_EXPORT TurbulencePaintFilter final : public PaintFilter {
   SkISize tile_size() const { return tile_size_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const TurbulencePaintFilter& other) const;
+  bool EqualsForTesting(const TurbulencePaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -707,7 +704,7 @@ class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
   SkImageFilters::Dither dither() const { return dither_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const ShaderPaintFilter& other) const;
+  bool EqualsForTesting(const ShaderPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -733,7 +730,7 @@ class CC_PAINT_EXPORT MatrixPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const MatrixPaintFilter& other) const;
+  bool EqualsForTesting(const MatrixPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -770,7 +767,7 @@ class CC_PAINT_EXPORT LightingDistantPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const LightingDistantPaintFilter& other) const;
+  bool EqualsForTesting(const LightingDistantPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -811,7 +808,7 @@ class CC_PAINT_EXPORT LightingPointPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const LightingPointPaintFilter& other) const;
+  bool EqualsForTesting(const LightingPointPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
@@ -858,7 +855,7 @@ class CC_PAINT_EXPORT LightingSpotPaintFilter final : public PaintFilter {
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const LightingSpotPaintFilter& other) const;
+  bool EqualsForTesting(const LightingSpotPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(

@@ -354,7 +354,7 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
   ASSERT_EQ(image_->SetData(partial_buffer, false), Image::kSizeAvailable);
   auto image1 = image_->PaintImageForCurrentFrame();
   auto image2 = image_->PaintImageForCurrentFrame();
-  EXPECT_EQ(image1, image2);
+  EXPECT_TRUE(image1.IsSameForTesting(image2));
   auto sk_image1 = image1.GetSwSkImage();
   auto sk_image2 = image2.GetSwSkImage();
   EXPECT_EQ(sk_image1->uniqueID(), sk_image2->uniqueID());
@@ -407,7 +407,7 @@ TEST_F(BitmapImageTest, ImageForDefaultFrame_MultiFrame) {
   // But the PaintImage should be the same.
   auto paint_image1 = default_image1->PaintImageForCurrentFrame();
   auto paint_image2 = default_image2->PaintImageForCurrentFrame();
-  EXPECT_EQ(paint_image1, paint_image2);
+  EXPECT_TRUE(paint_image1.IsSameForTesting(paint_image2));
   EXPECT_EQ(paint_image1.GetSwSkImage()->uniqueID(),
             paint_image2.GetSwSkImage()->uniqueID());
 }

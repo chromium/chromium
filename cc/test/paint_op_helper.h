@@ -21,150 +21,147 @@ namespace cc {
 // implementation should be limited ot the header.
 class PaintOpHelper {
  public:
-  static std::string ToString(const PaintOp* base_op) {
+  static std::string ToString(const PaintOp& base_op) {
     std::ostringstream str;
     str << std::boolalpha;
-    switch (base_op->GetType()) {
+    switch (base_op.GetType()) {
       case PaintOpType::Annotate: {
-        const auto* op = static_cast<const AnnotateOp*>(base_op);
+        const auto& op = static_cast<const AnnotateOp&>(base_op);
         str << "AnnotateOp(type="
-            << PaintOpHelper::EnumToString(op->annotation_type)
-            << ", rect=" << PaintOpHelper::SkiaTypeToString(op->rect)
-            << ", data=" << PaintOpHelper::SkiaTypeToString(op->data) << ")";
+            << PaintOpHelper::EnumToString(op.annotation_type)
+            << ", rect=" << PaintOpHelper::SkiaTypeToString(op.rect)
+            << ", data=" << PaintOpHelper::SkiaTypeToString(op.data) << ")";
         break;
       }
       case PaintOpType::ClipPath: {
-        const auto* op = static_cast<const ClipPathOp*>(base_op);
-        str << "ClipPathOp(path=" << PaintOpHelper::SkiaTypeToString(op->path)
-            << ", op=" << PaintOpHelper::SkiaTypeToString(op->op)
-            << ", antialias=" << op->antialias
-            << ", use_cache=" << (op->use_cache == UsePaintCache::kEnabled)
+        const auto& op = static_cast<const ClipPathOp&>(base_op);
+        str << "ClipPathOp(path=" << PaintOpHelper::SkiaTypeToString(op.path)
+            << ", op=" << PaintOpHelper::SkiaTypeToString(op.op)
+            << ", antialias=" << op.antialias
+            << ", use_cache=" << (op.use_cache == UsePaintCache::kEnabled)
             << ")";
         break;
       }
       case PaintOpType::ClipRect: {
-        const auto* op = static_cast<const ClipRectOp*>(base_op);
-        str << "ClipRectOp(rect=" << PaintOpHelper::SkiaTypeToString(op->rect)
-            << ", op=" << PaintOpHelper::SkiaTypeToString(op->op)
-            << ", antialias=" << op->antialias << ")";
+        const auto& op = static_cast<const ClipRectOp&>(base_op);
+        str << "ClipRectOp(rect=" << PaintOpHelper::SkiaTypeToString(op.rect)
+            << ", op=" << PaintOpHelper::SkiaTypeToString(op.op)
+            << ", antialias=" << op.antialias << ")";
         break;
       }
       case PaintOpType::ClipRRect: {
-        const auto* op = static_cast<const ClipRRectOp*>(base_op);
-        str << "ClipRRectOp(rrect="
-            << PaintOpHelper::SkiaTypeToString(op->rrect)
-            << ", op=" << PaintOpHelper::SkiaTypeToString(op->op)
-            << ", antialias=" << op->antialias << ")";
+        const auto& op = static_cast<const ClipRRectOp&>(base_op);
+        str << "ClipRRectOp(rrect=" << PaintOpHelper::SkiaTypeToString(op.rrect)
+            << ", op=" << PaintOpHelper::SkiaTypeToString(op.op)
+            << ", antialias=" << op.antialias << ")";
         break;
       }
       case PaintOpType::Concat: {
-        const auto* op = static_cast<const ConcatOp*>(base_op);
-        str << "ConcatOp(matrix=" << PaintOpHelper::SkiaTypeToString(op->matrix)
+        const auto& op = static_cast<const ConcatOp&>(base_op);
+        str << "ConcatOp(matrix=" << PaintOpHelper::SkiaTypeToString(op.matrix)
             << ")";
         break;
       }
       case PaintOpType::CustomData: {
-        const auto* op = static_cast<const CustomDataOp*>(base_op);
-        str << "CustomDataOp(id=" << PaintOpHelper::SkiaTypeToString(op->id)
+        const auto& op = static_cast<const CustomDataOp&>(base_op);
+        str << "CustomDataOp(id=" << PaintOpHelper::SkiaTypeToString(op.id)
             << ")";
         break;
       }
       case PaintOpType::DrawColor: {
-        const auto* op = static_cast<const DrawColorOp*>(base_op);
-        str << "DrawColorOp(color="
-            << PaintOpHelper::SkiaTypeToString(op->color)
-            << ", mode=" << PaintOpHelper::SkiaTypeToString(op->mode) << ")";
+        const auto& op = static_cast<const DrawColorOp&>(base_op);
+        str << "DrawColorOp(color=" << PaintOpHelper::SkiaTypeToString(op.color)
+            << ", mode=" << PaintOpHelper::SkiaTypeToString(op.mode) << ")";
         break;
       }
       case PaintOpType::DrawDRRect: {
-        const auto* op = static_cast<const DrawDRRectOp*>(base_op);
+        const auto& op = static_cast<const DrawDRRectOp&>(base_op);
         str << "DrawDRRectOp(outer="
-            << PaintOpHelper::SkiaTypeToString(op->outer)
-            << ", inner=" << PaintOpHelper::SkiaTypeToString(op->inner)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+            << PaintOpHelper::SkiaTypeToString(op.outer)
+            << ", inner=" << PaintOpHelper::SkiaTypeToString(op.inner)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawImage: {
-        const auto* op = static_cast<const DrawImageOp*>(base_op);
-        str << "DrawImageOp(image=" << PaintOpHelper::ImageToString(op->image)
-            << ", left=" << PaintOpHelper::SkiaTypeToString(op->left)
-            << ", top=" << PaintOpHelper::SkiaTypeToString(op->top)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+        const auto& op = static_cast<const DrawImageOp&>(base_op);
+        str << "DrawImageOp(image=" << PaintOpHelper::ImageToString(op.image)
+            << ", left=" << PaintOpHelper::SkiaTypeToString(op.left)
+            << ", top=" << PaintOpHelper::SkiaTypeToString(op.top)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawImageRect: {
-        const auto* op = static_cast<const DrawImageRectOp*>(base_op);
+        const auto& op = static_cast<const DrawImageRectOp&>(base_op);
         str << "DrawImageRectOp(image="
-            << PaintOpHelper::ImageToString(op->image)
-            << ", src=" << PaintOpHelper::SkiaTypeToString(op->src)
-            << ", dst=" << PaintOpHelper::SkiaTypeToString(op->dst)
-            << ", constraint=" << PaintOpHelper::EnumToString(op->constraint)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+            << PaintOpHelper::ImageToString(op.image)
+            << ", src=" << PaintOpHelper::SkiaTypeToString(op.src)
+            << ", dst=" << PaintOpHelper::SkiaTypeToString(op.dst)
+            << ", constraint=" << PaintOpHelper::EnumToString(op.constraint)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawIRect: {
-        const auto* op = static_cast<const DrawIRectOp*>(base_op);
-        str << "DrawIRectOp(rect=" << PaintOpHelper::SkiaTypeToString(op->rect)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+        const auto& op = static_cast<const DrawIRectOp&>(base_op);
+        str << "DrawIRectOp(rect=" << PaintOpHelper::SkiaTypeToString(op.rect)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawLine: {
-        const auto* op = static_cast<const DrawLineOp*>(base_op);
-        str << "DrawLineOp(x0=" << PaintOpHelper::SkiaTypeToString(op->x0)
-            << ", y0=" << PaintOpHelper::SkiaTypeToString(op->y0)
-            << ", x1=" << PaintOpHelper::SkiaTypeToString(op->x1)
-            << ", y1=" << PaintOpHelper::SkiaTypeToString(op->y1)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+        const auto& op = static_cast<const DrawLineOp&>(base_op);
+        str << "DrawLineOp(x0=" << PaintOpHelper::SkiaTypeToString(op.x0)
+            << ", y0=" << PaintOpHelper::SkiaTypeToString(op.y0)
+            << ", x1=" << PaintOpHelper::SkiaTypeToString(op.x1)
+            << ", y1=" << PaintOpHelper::SkiaTypeToString(op.y1)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawOval: {
-        const auto* op = static_cast<const DrawOvalOp*>(base_op);
-        str << "DrawOvalOp(oval=" << PaintOpHelper::SkiaTypeToString(op->oval)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+        const auto& op = static_cast<const DrawOvalOp&>(base_op);
+        str << "DrawOvalOp(oval=" << PaintOpHelper::SkiaTypeToString(op.oval)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawPath: {
-        const auto* op = static_cast<const DrawPathOp*>(base_op);
-        str << "DrawPathOp(path=" << PaintOpHelper::SkiaTypeToString(op->path)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags)
-            << ", use_cache=" << (op->use_cache == UsePaintCache::kEnabled)
+        const auto& op = static_cast<const DrawPathOp&>(base_op);
+        str << "DrawPathOp(path=" << PaintOpHelper::SkiaTypeToString(op.path)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags)
+            << ", use_cache=" << (op.use_cache == UsePaintCache::kEnabled)
             << ")";
         break;
       }
       case PaintOpType::DrawRecord: {
-        const auto* op = static_cast<const DrawRecordOp*>(base_op);
+        const auto& op = static_cast<const DrawRecordOp&>(base_op);
         str << "DrawRecordOp(record="
-            << PaintOpHelper::RecordToString(op->record) << ")";
+            << PaintOpHelper::RecordToString(op.record) << ")";
         break;
       }
       case PaintOpType::DrawRect: {
-        const auto* op = static_cast<const DrawRectOp*>(base_op);
-        str << "DrawRectOp(rect=" << PaintOpHelper::SkiaTypeToString(op->rect)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+        const auto& op = static_cast<const DrawRectOp&>(base_op);
+        str << "DrawRectOp(rect=" << PaintOpHelper::SkiaTypeToString(op.rect)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawRRect: {
-        const auto* op = static_cast<const DrawRRectOp*>(base_op);
-        str << "DrawRRectOp(rrect="
-            << PaintOpHelper::SkiaTypeToString(op->rrect)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+        const auto& op = static_cast<const DrawRRectOp&>(base_op);
+        str << "DrawRRectOp(rrect=" << PaintOpHelper::SkiaTypeToString(op.rrect)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::DrawSkottie: {
-        const auto* op = static_cast<const DrawSkottieOp*>(base_op);
+        const auto& op = static_cast<const DrawSkottieOp&>(base_op);
         str << "DrawSkottieOp("
-            << "skottie=" << PaintOpHelper::SkottieToString(op->skottie)
-            << ", dst=" << PaintOpHelper::SkiaTypeToString(op->dst)
-            << ", t=" << op->t << ")";
+            << "skottie=" << PaintOpHelper::SkottieToString(op.skottie)
+            << ", dst=" << PaintOpHelper::SkiaTypeToString(op.dst)
+            << ", t=" << op.t << ")";
         break;
       }
       case PaintOpType::DrawTextBlob: {
-        const auto* op = static_cast<const DrawTextBlobOp*>(base_op);
+        const auto& op = static_cast<const DrawTextBlobOp&>(base_op);
         str << "DrawTextBlobOp(blob="
-            << PaintOpHelper::TextBlobToString(op->blob)
-            << ", x=" << PaintOpHelper::SkiaTypeToString(op->x)
-            << ", y=" << PaintOpHelper::SkiaTypeToString(op->y)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+            << PaintOpHelper::TextBlobToString(op.blob)
+            << ", x=" << PaintOpHelper::SkiaTypeToString(op.x)
+            << ", y=" << PaintOpHelper::SkiaTypeToString(op.y)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::Noop: {
@@ -176,9 +173,9 @@ class PaintOpHelper {
         break;
       }
       case PaintOpType::Rotate: {
-        const auto* op = static_cast<const RotateOp*>(base_op);
+        const auto& op = static_cast<const RotateOp&>(base_op);
         str << "RotateOp(degrees="
-            << PaintOpHelper::SkiaTypeToString(op->degrees) << ")";
+            << PaintOpHelper::SkiaTypeToString(op.degrees) << ")";
         break;
       }
       case PaintOpType::Save: {
@@ -186,40 +183,40 @@ class PaintOpHelper {
         break;
       }
       case PaintOpType::SaveLayer: {
-        const auto* op = static_cast<const SaveLayerOp*>(base_op);
+        const auto& op = static_cast<const SaveLayerOp&>(base_op);
         str << "SaveLayerOp(bounds="
-            << PaintOpHelper::SkiaTypeToString(op->bounds)
-            << ", flags=" << PaintOpHelper::FlagsToString(op->flags) << ")";
+            << PaintOpHelper::SkiaTypeToString(op.bounds)
+            << ", flags=" << PaintOpHelper::FlagsToString(op.flags) << ")";
         break;
       }
       case PaintOpType::SaveLayerAlpha: {
-        const auto* op = static_cast<const SaveLayerAlphaOp*>(base_op);
+        const auto& op = static_cast<const SaveLayerAlphaOp&>(base_op);
         str << "SaveLayerAlphaOp(bounds="
-            << PaintOpHelper::SkiaTypeToString(op->bounds)
-            << ", alpha=" << static_cast<uint32_t>(op->alpha * 255) << ")";
+            << PaintOpHelper::SkiaTypeToString(op.bounds)
+            << ", alpha=" << static_cast<uint32_t>(op.alpha * 255) << ")";
         break;
       }
       case PaintOpType::Scale: {
-        const auto* op = static_cast<const ScaleOp*>(base_op);
-        str << "ScaleOp(sx=" << PaintOpHelper::SkiaTypeToString(op->sx)
-            << ", sy=" << PaintOpHelper::SkiaTypeToString(op->sy) << ")";
+        const auto& op = static_cast<const ScaleOp&>(base_op);
+        str << "ScaleOp(sx=" << PaintOpHelper::SkiaTypeToString(op.sx)
+            << ", sy=" << PaintOpHelper::SkiaTypeToString(op.sy) << ")";
         break;
       }
       case PaintOpType::SetMatrix: {
-        const auto* op = static_cast<const SetMatrixOp*>(base_op);
+        const auto& op = static_cast<const SetMatrixOp&>(base_op);
         str << "SetMatrixOp(matrix="
-            << PaintOpHelper::SkiaTypeToString(op->matrix) << ")";
+            << PaintOpHelper::SkiaTypeToString(op.matrix) << ")";
         break;
       }
       case PaintOpType::Translate: {
-        const auto* op = static_cast<const TranslateOp*>(base_op);
-        str << "TranslateOp(dx=" << PaintOpHelper::SkiaTypeToString(op->dx)
-            << ", dy=" << PaintOpHelper::SkiaTypeToString(op->dy) << ")";
+        const auto& op = static_cast<const TranslateOp&>(base_op);
+        str << "TranslateOp(dx=" << PaintOpHelper::SkiaTypeToString(op.dx)
+            << ", dy=" << PaintOpHelper::SkiaTypeToString(op.dy) << ")";
         break;
       }
       case PaintOpType::SetNodeId: {
-        const auto* op = static_cast<const SetNodeIdOp*>(base_op);
-        str << "SetNodeIdOp(id=" << op->node_id << ")";
+        const auto& op = static_cast<const SetNodeIdOp&>(base_op);
+        str << "SetNodeIdOp(id=" << op.node_id << ")";
         break;
       }
     }
