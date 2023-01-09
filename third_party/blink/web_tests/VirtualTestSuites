@@ -1414,14 +1414,6 @@
     ],
     "expires": "Jul 1, 2023"
   },
-  {
-    "prefix": "document-pip",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--enable-features=DocumentPictureInPictureAPI",
-             "--enable-blink-features=DocumentPictureInPictureAPI"],
-    "expires": "Jul 1, 2023"
-  },
 
   "Tests URL processing in IDNA 2008 Transitional Mode. Explicitly disables ",
   "the Non-Transitional Mode feature flag to do so.",
