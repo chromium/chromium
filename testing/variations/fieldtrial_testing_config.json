@@ -9030,6 +9030,7 @@
                         "InterestGroupStorage",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
+                        "PrivateAggregationApi",
                         "SharedStorageAPI"
                     ]
                 }
@@ -9051,6 +9052,7 @@
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
                         "PrivacySandboxSettings3",
+                        "PrivateAggregationApi",
                         "SharedStorageAPI"
                     ]
                 }
