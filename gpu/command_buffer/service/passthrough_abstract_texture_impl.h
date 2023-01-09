@@ -45,15 +45,10 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
   scoped_refptr<TexturePassthrough> OnDecoderWillDestroy();
 
  private:
-  // Attaches |image| to |texture_passthrough_|, setting |texture_passthrough_|
-  // as needing binding if |client_managed| is false. Releases any previous
-  // image if *that* image was not client-managed.
-  // NOTE: |client_managed| must be false on Windows/Mac and true on all other
-  // platforms.
-  void BindImageInternal(gl::GLImage* image, bool client_managed);
-
   scoped_refptr<TexturePassthrough> texture_passthrough_;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   bool decoder_managed_image_ = false;
+#endif
   raw_ptr<gl::GLApi> gl_api_;
   raw_ptr<GLES2DecoderPassthroughImpl> decoder_;
   CleanupCallback cleanup_cb_;

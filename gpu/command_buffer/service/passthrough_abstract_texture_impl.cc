@@ -49,48 +49,40 @@ void PassthroughAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void PassthroughAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
-  BindImageInternal(image, /*client_managed=*/false);
-}
-#else
-void PassthroughAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
-  BindImageInternal(image, /*client_managed=*/true);
-}
-#endif
-
-void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
-                                                       bool client_managed) {
   if (!texture_passthrough_)
     return;
 
   const GLuint target = texture_passthrough_->target();
   const GLuint level = 0;
 
-  // If there is a decoder-managed image bound, release it.
+  // If the previous execution of SetUnboundImage() set an image, check if the
+  // image has since been bound and release it if so.
   if (decoder_managed_image_) {
     gl::GLImage* current_image =
         texture_passthrough_->GetLevelImage(target, level);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     bool is_bound = !texture_passthrough_->is_bind_pending();
-#else
-    bool is_bound = true;
-#endif
     if (current_image && is_bound)
       current_image->ReleaseTexImage(target);
   }
 
   // Configure the new image.
-  decoder_managed_image_ = image && !client_managed;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  CHECK(!client_managed);
+  decoder_managed_image_ = (image != nullptr);
   if (decoder_managed_image_)
     texture_passthrough_->set_bind_pending();
   else
     texture_passthrough_->clear_bind_pending();
-#else
-  CHECK(client_managed);
-#endif
   texture_passthrough_->SetLevelImage(target, level, image);
 }
+#else
+void PassthroughAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
+  if (!texture_passthrough_) {
+    return;
+  }
+
+  texture_passthrough_->SetLevelImage(texture_passthrough_->target(),
+                                      /*level=*/0, image);
+}
+#endif
 
 gl::GLImage* PassthroughAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_passthrough_)
