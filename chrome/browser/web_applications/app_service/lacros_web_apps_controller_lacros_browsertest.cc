@@ -22,7 +22,6 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"

@@ -57,7 +57,7 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
                         provider_,
                         this,
                         ShouldObserveMediaRequests()) {
-  Initialize(proxy->AppService());
+  Initialize();
 }
 
 WebApps::~WebApps() = default;
@@ -73,17 +73,13 @@ const WebApp* WebApps::GetWebApp(const AppId& app_id) const {
   return provider_->registrar_unsafe().GetAppById(app_id);
 }
 
-void WebApps::Initialize(
-    const mojo::Remote<apps::mojom::AppService>& app_service) {
+void WebApps::Initialize() {
   DCHECK(profile_);
   if (!AreWebAppsEnabled(profile_)) {
     return;
   }
 
   DCHECK(provider_);
-
-  PublisherBase::Initialize(app_service,
-                            apps::ConvertAppTypeToMojomAppType(app_type()));
 
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebApps::InitWebApps, AsWeakPtr()));
@@ -243,16 +239,6 @@ void WebApps::SetWindowMode(const std::string& app_id,
   publisher_helper().SetWindowMode(app_id, window_mode);
 }
 
-void WebApps::Connect(
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
-    apps::mojom::ConnectOptionsPtr opts) {
-  DCHECK(provider_);
-
-  provider_->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&WebApps::StartPublishingWebApps, AsWeakPtr(),
-                                std::move(subscriber_remote)));
-}
-
 void WebApps::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
@@ -266,32 +252,8 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
     return;
   }
 
-  std::vector<apps::mojom::AppPtr> mojom_apps;
-  mojom_apps.reserve(apps.size());
-  for (const apps::AppPtr& app : apps) {
-    mojom_apps.push_back(apps::ConvertAppToMojomApp(app));
-  }
-
   apps::AppPublisher::Publish(std::move(apps), app_type(),
                               /*should_notify_initialized=*/false);
-
-  const bool should_notify_initialized = false;
-  if (subscribers_.size() == 1) {
-    auto& subscriber = *subscribers_.begin();
-    subscriber->OnApps(std::move(mojom_apps),
-                       apps::ConvertAppTypeToMojomAppType(app_type()),
-                       should_notify_initialized);
-    return;
-  }
-  for (auto& subscriber : subscribers_) {
-    std::vector<apps::mojom::AppPtr> cloned_apps;
-    cloned_apps.reserve(mojom_apps.size());
-    for (const auto& app : mojom_apps)
-      cloned_apps.push_back(app.Clone());
-    subscriber->OnApps(std::move(cloned_apps),
-                       apps::ConvertAppTypeToMojomAppType(app_type()),
-                       should_notify_initialized);
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
@@ -311,9 +273,7 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
   bool is_projector = app->app_id == ash::kChromeUITrustedProjectorSwaAppId;
 #endif
 
-  auto mojom_app = apps::ConvertAppToMojomApp(app);
   apps::AppPublisher::Publish(std::move(app));
-  PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_projector) {
@@ -345,17 +305,6 @@ std::vector<apps::AppPtr> WebApps::CreateWebApps() {
   return apps;
 }
 
-void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
-  DCHECK(provider_);
-  if (publisher_helper().IsShuttingDown()) {
-    return;
-  }
-
-  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
-    apps_out->push_back(publisher_helper().ConvertWebApp(&web_app));
-  }
-}
-
 void WebApps::InitWebApps() {
   is_ready_ = true;
 
@@ -364,22 +313,6 @@ void WebApps::InitWebApps() {
   std::vector<apps::AppPtr> apps = CreateWebApps();
   apps::AppPublisher::Publish(std::move(apps), app_type(),
                               /*should_notify_initialized=*/true);
-}
-
-void WebApps::StartPublishingWebApps(
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote) {
-  is_ready_ = true;
-
-  std::vector<apps::mojom::AppPtr> apps;
-  ConvertWebApps(&apps);
-
-  mojo::Remote<apps::mojom::Subscriber> subscriber(
-      std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps),
-                     apps::ConvertAppTypeToMojomAppType(app_type()),
-                     true /* should_notify_initialized */);
-
-  subscribers_.Add(std::move(subscriber));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

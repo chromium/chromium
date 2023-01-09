@@ -50,14 +50,6 @@ class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
       absl::optional<bool> accessing_microphone) override {}
 };
 
-std::string ToString(const apps::AppPtr& app) {
-  // No string converter defined for App, so convert to AppUpdate.
-  apps::AppUpdate app_update(app.get(), /*delta=*/nullptr, AccountId());
-  std::stringstream ss;
-  ss << app_update;
-  return ss.str();
-}
-
 bool HandlesIntent(const apps::AppPtr& app, const apps::IntentPtr& intent) {
   for (const auto& filter : app->intent_filters) {
     if (intent->MatchFilter(filter)) {
@@ -116,10 +108,6 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
   EXPECT_EQ(app->app_id, app_id);
   EXPECT_EQ(app->name, name);
   EXPECT_EQ(app->publisher_id, start_url.spec());
-
-  // Ensure the legacy mojom converter produces an equivalent App.
-  apps::mojom::AppPtr mojom_app = publisher_->ConvertWebApp(web_app);
-  EXPECT_EQ(ToString(app), ToString(apps::ConvertMojomAppToApp(mojom_app)));
 }
 
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
@@ -145,12 +133,6 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
     EXPECT_EQ(app->app_id, random_app->app_id());
     EXPECT_EQ(app->name, random_app->untranslated_name());
     EXPECT_EQ(app->publisher_id, random_app->start_url().spec());
-
-    // Ensure the legacy mojom converter produces an equivalent App.
-    apps::mojom::AppPtr mojom_app = publisher_->ConvertWebApp(random_app.get());
-    // Shortcuts aren't supported in the mojom struct, so make them consistent.
-    app->shortcuts.clear();
-    EXPECT_EQ(ToString(app), ToString(apps::ConvertMojomAppToApp(mojom_app)));
   }
 }
 
@@ -169,10 +151,6 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_NoteTaking) {
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(app, apps_util::CreateCreateNoteIntent()));
-
-  // Ensure the legacy mojom converter produces an equivalent App.
-  apps::mojom::AppPtr mojom_app = publisher_->ConvertWebApp(web_app);
-  EXPECT_EQ(ToString(app), ToString(apps::ConvertMojomAppToApp(mojom_app)));
 }
 
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
@@ -190,10 +168,6 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_FALSE(HandlesIntent(app, apps_util::CreateStartOnLockScreenIntent()));
-
-  // Ensure the legacy mojom converter produces an equivalent App.
-  apps::mojom::AppPtr mojom_app = publisher_->ConvertWebApp(web_app);
-  EXPECT_EQ(ToString(app), ToString(apps::ConvertMojomAppToApp(mojom_app)));
 }
 
 TEST_F(WebAppPublisherHelperTest,
@@ -316,10 +290,6 @@ TEST_F(WebAppPublisherHelperTest_WebLockScreenApi, CreateWebApp_LockScreen) {
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(app, apps_util::CreateStartOnLockScreenIntent()));
-
-  // Ensure the legacy mojom converter produces an equivalent App.
-  apps::mojom::AppPtr mojom_app = publisher_->ConvertWebApp(web_app);
-  EXPECT_EQ(ToString(app), ToString(apps::ConvertMojomAppToApp(mojom_app)));
 }
 
 }  // namespace web_app
