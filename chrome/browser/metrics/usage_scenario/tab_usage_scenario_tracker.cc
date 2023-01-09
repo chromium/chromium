@@ -154,6 +154,30 @@ void TabUsageScenarioTracker::OnMediaEffectivelyFullscreenChanged(
 void TabUsageScenarioTracker::OnMediaDestroyed(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Return early if the tab is being destroyed. It will be removed from
+  // `contents_playing_video_fullscreen_` by
+  // TabUsageScenarioTracker::OnWebContentsRemoved().
+  //
+  // This is an unfortunate workaround for a crash (crbug.com/1393544) that
+  // occurs when a Browser that still contains WebContents is destroyed,
+  // resulting in:
+  // 1. The Browser destroys its `exclusive_access_manager_`.
+  // 2. The Browser destroys its WebContents.
+  // 3. The WebContents destroys its frames.
+  // 4. The frame deletion calls TabUsageScenarioTracker::OnMediaDestroyed
+  //    (this method).
+  // 5. This method calls HasActiveEffectivelyFullscreenVideo(), which ends
+  //    up calling Browser::IsFullscreenForTabOrPending().
+  // 6. Browser::IsFullscreenForTabOrPending() accesses a deleted
+  //    `exclusive_access_manager_`.
+  // According to a DCHECK in ~Browser
+  // (https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/browser.cc;l=575;drc=60e7a86ffafb2aafa40cb00214d6b813b41c6f75),
+  // a Browser's WebContents should be deleted before the Browser itself is
+  // deleted, but it looks like it's not always the case.
+  if (web_contents->IsBeingDestroyed())
+    return;
+
   // Destroying a media may cause the WebContents to no longer have a fullscreen
   // media.
   OnMediaEffectivelyFullscreenChanged(
