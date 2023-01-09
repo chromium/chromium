@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -171,9 +172,10 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             return;
         }
 
-        String fullName = mProfileDataCache.getProfileDataOrDefault(mSignedInAccountName)
-                                  .getFullNameOrEmail();
-        getActivity().setTitle(fullName);
+        DisplayableProfileData profileData =
+                mProfileDataCache.getProfileDataOrDefault(mSignedInAccountName);
+        getActivity().setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.ADD_EDU_ACCOUNT_FROM_ACCOUNT_SETTINGS_FOR_SUPERVISED_USERS)) {
@@ -352,9 +354,12 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     private Preference createAccountPreference(Account account) {
         Preference accountPreference = new Preference(getStyledContext());
         accountPreference.setLayoutResource(R.layout.account_management_account_row);
-        accountPreference.setTitle(account.name);
-        accountPreference.setIcon(
-                mProfileDataCache.getProfileDataOrDefault(account.name).getImage());
+
+        DisplayableProfileData profileData =
+                mProfileDataCache.getProfileDataOrDefault(account.name);
+        accountPreference.setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                profileData, getContext(), SyncSettingsUtils.TitlePreference.EMAIL));
+        accountPreference.setIcon(profileData.getImage());
 
         accountPreference.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SigninUtils.openSettingsForAccount(getActivity(), account)));

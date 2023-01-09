@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.thatMatchesFirst;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -80,6 +81,7 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
@@ -89,6 +91,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
@@ -97,6 +101,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -504,6 +509,68 @@ public class MainSettingsFragmentTest {
                         .isVisible());
         Assert.assertTrue("Sync preference should appear when the user is signed in.",
                 mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL)
+    public void testAccountManagementRowForChildAccountWithNonDisplayableAccountEmail()
+            throws InterruptedException {
+        launchSettingsActivity();
+
+        // Account set up.
+        final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
+        AccountInfo accountInfo =
+                signinTestRule.addAccount(AccountManagerTestRule.CHILD_ACCOUNT_EMAIL,
+                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        signinTestRule.waitForSeeding();
+        signinTestRule.waitForSignin(accountInfo);
+
+        // Force update the preference so that NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES is
+        // actually utilized. This is to replicate downstream implementation behavior, where
+        // checkIfDisplayableEmailAddress() differs.
+        SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
+        CriteriaHelper.pollUiThread(() -> {
+            return !signInPreference.getProfileDataCache()
+                            .getProfileDataOrDefault(accountInfo.getEmail())
+                            .hasDisplayableEmailAddress();
+        });
+        TestThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        onView(thatMatchesFirst(withText(accountInfo.getFullName()))).check(matches(isDisplayed()));
+        onView(withText(accountInfo.getEmail())).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL)
+    public void
+    testAccountManagementRowForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
+            throws InterruptedException {
+        launchSettingsActivity();
+
+        // Account set up.
+        // If both fullName and givenName are empty, accountCapabilities is ignored.
+        final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
+        AccountInfo accountInfo = signinTestRule.addAccount(
+                AccountManagerTestRule.CHILD_ACCOUNT_EMAIL, "", "child.test.given", null,
+                SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        signinTestRule.waitForSeeding();
+        signinTestRule.waitForSignin(accountInfo);
+
+        SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
+        CriteriaHelper.pollUiThread(() -> {
+            return !signInPreference.getProfileDataCache()
+                            .getProfileDataOrDefault(accountInfo.getEmail())
+                            .hasDisplayableEmailAddress();
+        });
+        TestThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        onView(withText(accountInfo.getEmail())).check(matches(not(isDisplayed())));
+        onView(thatMatchesFirst(withText(R.string.default_google_account_username)))
+                .check(matches(isDisplayed()));
     }
 
     @Test

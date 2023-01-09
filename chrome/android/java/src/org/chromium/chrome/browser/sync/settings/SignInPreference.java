@@ -51,6 +51,10 @@ public class SignInPreference
     private final ProfileDataCache mProfileDataCache;
     private final AccountManagerFacade mAccountManagerFacade;
 
+    public ProfileDataCache getProfileDataCache() {
+        return mProfileDataCache;
+    }
+
     /**
      * Constructor for inflating from XML.
      */
@@ -181,9 +185,12 @@ public class SignInPreference
 
     private void setupSignedIn(String accountName) {
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(accountName);
-
-        setTitle(profileData.getFullNameOrEmail());
-        setSummary(accountName);
+        final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress()
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL);
+        setSummary(canShowEmailAddress ? accountName : "");
+        setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
         setFragment(AccountManagementFragment.class.getName());
         setIcon(profileData.getImage());
         setViewEnabled(true);

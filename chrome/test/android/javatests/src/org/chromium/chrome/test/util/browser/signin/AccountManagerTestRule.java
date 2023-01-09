@@ -43,6 +43,8 @@ import java.util.HashMap;
 public class AccountManagerTestRule implements TestRule {
     public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
 
+    public static final String CHILD_ACCOUNT_EMAIL = generateChildEmail(TEST_ACCOUNT_EMAIL);
+
     private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
     // TODO(https://crbug.com/1352119): Revise this test rule and make this non-nullable.
     private final @Nullable FakeAccountInfoService mFakeAccountInfoService;

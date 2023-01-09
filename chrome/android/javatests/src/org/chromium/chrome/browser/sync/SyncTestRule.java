@@ -185,6 +185,10 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private SyncService mSyncService;
     private final SigninTestRule mSigninTestRule = new SigninTestRule();
 
+    public SigninTestRule getSigninTestRule() {
+        return mSigninTestRule;
+    }
+
     private void ruleTearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSyncService.setSyncRequested(false);
