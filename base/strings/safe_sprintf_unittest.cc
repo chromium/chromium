@@ -483,14 +483,7 @@ class ScopedSafeSPrintfSSizeMaxSetter {
 
 }  // anonymous namespace
 
-// TODO(crbug.com/1369007): Fails when OOB protection is turned on.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT)
-#define MAYBE_Truncation DISABLED_Truncation
-#else
-#define MAYBE_Truncation Truncation
-#endif
-TEST(SafeSPrintfTest, MAYBE_Truncation) {
+TEST(SafeSPrintfTest, Truncation) {
   // We use PrintLongString() to print a complex long string and then
   // truncate to all possible lengths. This ends up exercising a lot of
   // different code paths in SafeSPrintf() and IToASCII(), as truncation can
