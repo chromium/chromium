@@ -46,21 +46,21 @@ const char kMsiJsonPath[] = "distribution.msi";
 const wchar_t kMsiInstall[] = L"msi";
 
 // Parses the json data and returns it as a dictionary. If the json data isn't
-// valid, returns nullptr.
-base::DictionaryValue* ParseDistributionPreferences(
+// valid, returns absl::nullopt.
+absl::optional<base::Value::Dict> ParseDistributionPreferences(
     const std::string& json_data) {
   JSONStringValueDeserializer json(json_data);
   std::string error;
   std::unique_ptr<base::Value> root(json.Deserialize(nullptr, &error));
   if (!root.get()) {
     LOGFN(WARNING) << "Failed to parse initial prefs file: " << error;
-    return nullptr;
+    return absl::nullopt;
   }
   if (!root->is_dict()) {
     LOGFN(WARNING) << "Failed to parse installer data file";
-    return nullptr;
+    return absl::nullopt;
   }
-  return static_cast<base::DictionaryValue*>(root.release());
+  return std::move(*root).TakeDict();
 }
 
 }  // namespace
@@ -103,7 +103,7 @@ void StandaloneInstallerConfigurator::ConfigureInstallationType(
           cmdline.GetSwitchValuePath(switches::kInstallerData));
 
       if (InitializeFromInstallerData(prefs_path))
-        is_msi = installer_data_dictionary_->FindPath(kMsiJsonPath);
+        is_msi = installer_data_dictionary_.FindByDottedPath(kMsiJsonPath);
     }
 
     is_msi_installation_ = false;
@@ -311,12 +311,14 @@ bool StandaloneInstallerConfigurator::InitializeFromInstallerData(
     return false;
   }
 
-  installer_data_dictionary_.reset(ParseDistributionPreferences(json_data));
-
-  if (!installer_data_dictionary_) {
-    LOGFN(WARNING) << "Installer data is empty!";
+  absl::optional<base::Value::Dict> prefs =
+      ParseDistributionPreferences(json_data);
+  if (!prefs) {
+    LOGFN(WARNING) << "Installer data isn't formatted correctly";
     return false;
   }
+
+  installer_data_dictionary_ = std::move(prefs).value();
 
   return true;
 }

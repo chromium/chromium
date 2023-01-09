@@ -9,10 +9,10 @@
 
 #include "base/command_line.h"
 #include "base/files/file.h"
+#include "base/values.h"
 #include "base/win/windows_types.h"
 
 namespace base {
-class DictionaryValue;
 class FilePath;
 }  // namespace base
 
@@ -81,7 +81,7 @@ class StandaloneInstallerConfigurator {
 
   // Dictionary is parsed from the installer data argument which is set only for
   // MSIs.
-  std::unique_ptr<base::DictionaryValue> installer_data_dictionary_;
+  base::Value::Dict installer_data_dictionary_;
 };
 
 }  // namespace credential_provider
