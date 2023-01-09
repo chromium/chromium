@@ -264,6 +264,10 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
   // Destroy the previous remote accessibility element.
   remote_window_accessible_.reset();
 
+  // Reset `ns_view_` before resetting `remote_ns_view_` to avoid dangling
+  // pointers. `ns_view_` gets reinitialized later in this method.
+  ns_view_ = nullptr;
+
   // Disconnect from the previous bridge (this will have the effect of
   // destroying the associated bridge), and close the receiver (to allow it
   // to be re-bound). Note that |in_process_ns_view_bridge_| remains valid.
