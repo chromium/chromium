@@ -2511,7 +2511,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
              service->IsAvailable<crosapi::mojom::ClipboardHistory>();
     }
 #else
-      NOTREACHED();
+      NOTREACHED() << "Unhandled id: " << id;
       return false;
 #endif
 
@@ -2520,7 +2520,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !GetProfile()->IsOffTheRecord();
 
     default:
-      NOTREACHED();
+      NOTREACHED() << "Unhandled id: " << id;
       return false;
   }
 }
@@ -2950,7 +2950,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       }
 #endif
 #else
-      NOTREACHED();
+      NOTREACHED() << "Unhandled id: " << id;
 #endif
       break;
     }
@@ -2964,7 +2964,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED() << "Unhandled id: " << id;
       break;
   }
 }
