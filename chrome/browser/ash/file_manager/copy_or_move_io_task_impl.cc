@@ -432,32 +432,31 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
   const std::string destination_path = destination_url.path().AsUTF8Unsafe();
   auto& [individual_progress, aggregate_progress] = item_progresses[idx];
 
+  const auto log_progress = [&]() {
+    VLOG(1) << type << "\ncopy_move_src" << source_url.path()
+            << "\ncopy_move_des " << destination_url.path();
+  };
+
   using ProgressType = FileManagerCopyOrMoveHookDelegate::ProgressType;
   if (type != ProgressType::kProgress) {
-    const std::string source_path = source_url.path().AsUTF8Unsafe();
     switch (type) {
       case ProgressType::kBegin:
-        VLOG(1) << "ProgressType::kBegin\ncopy_move_src " << source_path
-                << "\ncopy_move_des " << destination_path;
+        log_progress();
         individual_progress[destination_path] = 0;
         return;
       case ProgressType::kEndCopy:
-        VLOG(1) << "ProgressType::kEndCopy\ncopy_move_src " << source_path
-                << "\ncopy_move_des " << destination_path;
+        log_progress();
         individual_progress.erase(destination_path);
         return;
       case ProgressType::kEndMove:
-        VLOG(1) << "ProgressType::kEndMove\ncopy_move_src " << source_path
-                << "\ncopy_move_des " << destination_path;
+        log_progress();
         individual_progress.erase(destination_path);
         return;
       case ProgressType::kEndRemoveSource:
-        VLOG(1) << "ProgressType::kEndRemoveSource\ncopy_move_src "
-                << source_path << "\ncopy_move_des " << destination_path;
+        log_progress();
         return;
       case ProgressType::kError:
-        VLOG(1) << "ProgressType::kError\ncopy_move_src " << source_path
-                << "\ncopy_move_des " << destination_path;
+        log_progress();
         return;
       default:
         NOTREACHED() << "Unknown ProgressType:" << int(type);

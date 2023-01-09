@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 
+#include <ios>
+
 #include "base/files/file.h"
+#include "base/notreached.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -80,6 +83,31 @@ void FileManagerCopyOrMoveHookDelegate::OnEndRemoveSource(
   progress_callback_.Run(ProgressType::kEndRemoveSource, source_url,
                          /*destination_url=*/storage::FileSystemURL(),
                          /*size=*/0);
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const FileManagerCopyOrMoveHookDelegate::ProgressType& type) {
+  out << "ProgressType::";
+
+  using ProgressType = FileManagerCopyOrMoveHookDelegate::ProgressType;
+  switch (type) {
+    case ProgressType::kBegin:
+      return out << "kBegin";
+    case ProgressType::kProgress:
+      return out << "kProgress";
+    case ProgressType::kEndCopy:
+      return out << "kEndCopy";
+    case ProgressType::kEndMove:
+      return out << "kEndMove";
+    case ProgressType::kEndRemoveSource:
+      return out << "kEndRemoveSource";
+    case ProgressType::kError:
+      return out << "kError";
+  }
+
+  NOTREACHED();
+  return out << "Unknown type";
 }
 
 }  // namespace file_manager

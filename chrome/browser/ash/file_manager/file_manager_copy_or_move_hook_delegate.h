@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FILE_MANAGER_COPY_OR_MOVE_HOOK_DELEGATE_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_FILE_MANAGER_COPY_OR_MOVE_HOOK_DELEGATE_H_
 
+#include <iosfwd>
+
 #include "base/files/file.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_operation.h"
@@ -30,6 +32,7 @@ class FileManagerCopyOrMoveHookDelegate
     kEndRemoveSource,
     kError,
   };
+
   using ProgressCallback = base::RepeatingCallback<void(
       ProgressType type,
       const storage::FileSystemURL& source_url,
@@ -44,6 +47,7 @@ class FileManagerCopyOrMoveHookDelegate
   void OnBeginProcessFile(const storage::FileSystemURL& source_url,
                           const storage::FileSystemURL& destination_url,
                           StatusCallback callback) override;
+
   void OnBeginProcessDirectory(const storage::FileSystemURL& source_url,
                                const storage::FileSystemURL& destination_url,
                                StatusCallback callback) override;
@@ -51,19 +55,27 @@ class FileManagerCopyOrMoveHookDelegate
   void OnProgress(const storage::FileSystemURL& source_url,
                   const storage::FileSystemURL& destination_url,
                   int64_t size) override;
+
   void OnError(const storage::FileSystemURL& source_url,
                const storage::FileSystemURL& destination_url,
                base::File::Error error) override;
 
   void OnEndCopy(const storage::FileSystemURL& source_url,
                  const storage::FileSystemURL& destination_url) override;
+
   void OnEndMove(const storage::FileSystemURL& source_url,
                  const storage::FileSystemURL& destination_url) override;
+
   void OnEndRemoveSource(const storage::FileSystemURL& source_url) override;
 
  protected:
   ProgressCallback GUARDED_BY_CONTEXT(sequence_checker_) progress_callback_;
 };
+
+// Out operator for logging FileManagerCopyOrMoveHookDelegate::Progress type.
+std::ostream& operator<<(
+    std::ostream& out,
+    const FileManagerCopyOrMoveHookDelegate::ProgressType& type);
 
 }  // namespace file_manager
 
