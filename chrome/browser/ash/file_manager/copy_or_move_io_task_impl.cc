@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -428,21 +429,44 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     int64_t size) {
-  std::string destination_path = destination_url.path().AsUTF8Unsafe();
+  const std::string destination_path = destination_url.path().AsUTF8Unsafe();
   auto& [individual_progress, aggregate_progress] = item_progresses[idx];
-  // |size| is only valid for kProgress.
-  if (type != FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress) {
-    if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kBegin) {
-      individual_progress[destination_path] = 0;
-    } else if (type ==
-                   FileManagerCopyOrMoveHookDelegate::ProgressType::kEndCopy ||
-               type ==
-                   FileManagerCopyOrMoveHookDelegate::ProgressType::kEndMove) {
-      individual_progress.erase(destination_path);
+
+  using ProgressType = FileManagerCopyOrMoveHookDelegate::ProgressType;
+  if (type != ProgressType::kProgress) {
+    const std::string source_path = source_url.path().AsUTF8Unsafe();
+    switch (type) {
+      case ProgressType::kBegin:
+        VLOG(1) << "ProgressType::kBegin\ncopy_move_src " << source_path
+                << "\ncopy_move_des " << destination_path;
+        individual_progress[destination_path] = 0;
+        return;
+      case ProgressType::kEndCopy:
+        VLOG(1) << "ProgressType::kEndCopy\ncopy_move_src " << source_path
+                << "\ncopy_move_des " << destination_path;
+        individual_progress.erase(destination_path);
+        return;
+      case ProgressType::kEndMove:
+        VLOG(1) << "ProgressType::kEndMove\ncopy_move_src " << source_path
+                << "\ncopy_move_des " << destination_path;
+        individual_progress.erase(destination_path);
+        return;
+      case ProgressType::kEndRemoveSource:
+        VLOG(1) << "ProgressType::kEndRemoveSource\ncopy_move_src "
+                << source_path << "\ncopy_move_des " << destination_path;
+        return;
+      case ProgressType::kError:
+        VLOG(1) << "ProgressType::kError\ncopy_move_src " << source_path
+                << "\ncopy_move_des " << destination_path;
+        return;
+      default:
+        NOTREACHED() << "Unknown ProgressType:" << int(type);
+        return;
     }
-    return;
   }
 
+  // The |size| is only valid for ProgressType::kProgress.
+  DCHECK_EQ(type, ProgressType::kProgress);
   int64_t& last_size = individual_progress.at(destination_path);
   int64_t delta = size - last_size;
   last_size = size;
@@ -450,10 +474,10 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
   aggregate_progress += delta;
   progress_.bytes_transferred += delta;
   speedometer_.Update(progress_.bytes_transferred);
-  const double remaining_seconds = speedometer_.GetRemainingSeconds();
 
   // Speedometer can produce infinite result which can't be serialized to JSON
   // when sending the status via private API.
+  double remaining_seconds = speedometer_.GetRemainingSeconds();
   if (std::isfinite(remaining_seconds)) {
     progress_.remaining_seconds = remaining_seconds;
   }
