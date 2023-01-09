@@ -137,9 +137,6 @@ class LocalDataContainer {
   // delegate to deliver the updated data to the CookieTreeModel.
   raw_ptr<CookiesTreeModel> model_ = nullptr;
 
-  // Keeps track of how many batches are expected to start.
-  int batches_started_ = 0;
-
   base::WeakPtrFactory<LocalDataContainer> weak_ptr_factory_{this};
 };
 

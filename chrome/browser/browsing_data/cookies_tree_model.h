@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
@@ -285,10 +286,17 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   // observers for every item added from databases and local storage.
   // We extend the Observer interface to add notifications before and
   // after these batch inserts.
+  // DEPRECATED(crbug.com/1271155): The cookies tree model is slowly being
+  // deprecated, during this process the semantics of the model are nuanced
+  // w.r.t sync vs async operations, and should not be used in new locations.
+  // Batch operations which fetch are always sync if all helpers are canned
+  // (in-memory) versions *and* the CannedLocalStorageHelper is configured not
+  // to check for empty local storages. Batch fetch operations are always async
+  // otherwise.
   class Observer : public ui::TreeModelObserver {
    public:
-    virtual void TreeModelBeginBatch(CookiesTreeModel* model) {}
-    virtual void TreeModelEndBatch(CookiesTreeModel* model) {}
+    virtual void TreeModelBeginBatchDeprecated(CookiesTreeModel* model) {}
+    virtual void TreeModelEndBatchDeprecated(CookiesTreeModel* model) {}
   };
 
   // This class defines the scope for batch updates. It can be created as a
@@ -377,6 +385,8 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   GetCookieDeletionDisabledCallback(Profile* profile);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CookiesTreeModelBrowserTest, BatchesFinishSync);
+
   // Record that one batch has been delivered.
   void RecordBatchSeen();
 

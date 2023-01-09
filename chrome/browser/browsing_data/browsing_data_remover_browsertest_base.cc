@@ -100,9 +100,9 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
       : quit_closure_(std::move(quit_closure)) {}
   ~CookiesTreeObserver() override = default;
 
-  void TreeModelBeginBatch(CookiesTreeModel* model) override {}
+  void TreeModelBeginBatchDeprecated(CookiesTreeModel* model) override {}
 
-  void TreeModelEndBatch(CookiesTreeModel* model) override {
+  void TreeModelEndBatchDeprecated(CookiesTreeModel* model) override {
     std::move(quit_closure_).Run();
   }
 

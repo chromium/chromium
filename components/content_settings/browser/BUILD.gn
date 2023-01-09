@@ -16,6 +16,7 @@ source_set("browser") {
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/page_info/core:core",
     "//components/page_load_metrics/browser",
     "//components/prefs",
     "//components/privacy_sandbox",

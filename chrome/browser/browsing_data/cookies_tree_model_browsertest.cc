@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/browsing_data/content/local_shared_objects_container.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,7 +59,9 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
     run_loop->Run();
   }
 
-  void TreeModelEndBatch(CookiesTreeModel* model) override { run_loop->Quit(); }
+  void TreeModelEndBatchDeprecated(CookiesTreeModel* model) override {
+    run_loop->Quit();
+  }
 
   void TreeNodesAdded(ui::TreeModel* model,
                       ui::TreeModelNode* parent,
@@ -152,6 +156,34 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, NoQuotaStorage) {
   EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKERS]);
   EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE]);
   EXPECT_EQ(1, node_counts[CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGES]);
+}
+
+IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, BatchesFinishSync) {
+  // Confirm that when all helpers fetch functions return synchronously, that
+  // the model has received all expected batches.
+  auto shared_objects = browsing_data::LocalSharedObjectsContainer(
+      chrome_test_utils::GetProfile(this),
+      /*ignore_empty_localstorage=*/false, {}, base::NullCallback());
+  auto local_data_container = std::make_unique<LocalDataContainer>(
+      shared_objects.cookies(), shared_objects.databases(),
+      shared_objects.local_storages(), shared_objects.session_storages(),
+      shared_objects.indexed_dbs(), shared_objects.file_systems(),
+      /*quota_helper=*/nullptr, shared_objects.service_workers(),
+      shared_objects.shared_workers(), shared_objects.cache_storages());
+
+  // Ideally we could observe TreeModelEndBatch, however in the sync case, the
+  // batch will finish during the models constructor, before we can attach an
+  // observer.
+  auto cookies_model = std::make_unique<CookiesTreeModel>(
+      std::move(local_data_container), /*special_storage_policy=*/nullptr);
+
+  // The model will clear all batch information when the batch is completed, so
+  // all 0's here implies any previous batches have been completed, and the
+  // model is not awaiting any helper to finish.
+  EXPECT_EQ(cookies_model->batches_seen_, 0);
+  EXPECT_EQ(cookies_model->batches_started_, 0);
+  EXPECT_EQ(cookies_model->batches_expected_, 0);
+  EXPECT_EQ(cookies_model->batches_seen_, 0);
 }
 
 class CookiesTreeModelBrowserTestQuotaOnly

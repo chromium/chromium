@@ -101,8 +101,7 @@ void CannedSharedWorkerHelper::StartFetching(FetchCallback callback) {
   std::list<SharedWorkerInfo> result;
   for (auto& it : pending_shared_worker_info_)
     result.push_back(it);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+  std::move(callback).Run(result);
 }
 
 void CannedSharedWorkerHelper::DeleteSharedWorker(

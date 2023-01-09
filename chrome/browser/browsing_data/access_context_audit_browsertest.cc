@@ -161,7 +161,9 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
     run_loop->Run();
   }
 
-  void TreeModelEndBatch(CookiesTreeModel* model) override { run_loop->Quit(); }
+  void TreeModelEndBatchDeprecated(CookiesTreeModel* model) override {
+    run_loop->Quit();
+  }
 
   void TreeNodesAdded(ui::TreeModel* model,
                       ui::TreeModelNode* parent,

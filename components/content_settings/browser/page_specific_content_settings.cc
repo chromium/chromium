@@ -49,6 +49,10 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/page_info/core/features.h"
+#endif
+
 using content::BrowserThread;
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
@@ -407,10 +411,18 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
     : content::PageUserData<PageSpecificContentSettings>(page),
       delegate_(delegate),
       map_(delegate_->GetSettingsMap()),
-      allowed_local_shared_objects_(GetWebContents()->GetBrowserContext(),
-                                    /*ignore_empty_localstorage=*/true,
-                                    delegate_->GetAdditionalFileSystemTypes(),
-                                    delegate_->GetIsDeletionDisabledCallback()),
+      allowed_local_shared_objects_(
+          GetWebContents()->GetBrowserContext(),
+#if !BUILDFLAG(IS_ANDROID)
+          // TODO(crbug.com/1404234): Remove the async local storage pathway
+          // completely when the new dialog has launched.
+          /*ignore_empty_localstorage=*/
+          !base::FeatureList::IsEnabled(page_info::kPageSpecificSiteDataDialog),
+#else
+          /*ignore_empty_localstorage=*/true,
+#endif
+          delegate_->GetAdditionalFileSystemTypes(),
+          delegate_->GetIsDeletionDisabledCallback()),
       blocked_local_shared_objects_(GetWebContents()->GetBrowserContext(),
                                     /*ignore_empty_localstorage=*/false,
                                     delegate_->GetAdditionalFileSystemTypes(),

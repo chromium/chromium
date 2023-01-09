@@ -188,8 +188,7 @@ void CannedFileSystemHelper::StartFetching(FetchCallback callback) {
   for (const auto& origin : pending_origins_)
     result.emplace_back(origin);
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+  std::move(callback).Run(result);
 }
 
 void CannedFileSystemHelper::DeleteFileSystemOrigin(const url::Origin& origin) {
