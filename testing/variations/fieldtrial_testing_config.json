@@ -8660,22 +8660,21 @@
             ]
         }
     ],
-    "PermissionsPostPromptSurvey": [
+    "PermissionsPostPromptSurveyv2": [
         {
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Notifications_Accepted_20220712",
+                    "name": "Enabled_Notifications_Accepted_20221207",
                     "params": {
                         "action_filter": "Accepted",
-                        "probability": "0.045",
+                        "probability": "0.102",
                         "request_type_filter": "Notifications",
                         "trigger_id": "YU4bKoXZ40ugnJ3q1cK0QhGFeT4E"
                     },
