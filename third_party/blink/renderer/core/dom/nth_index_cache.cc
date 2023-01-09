@@ -26,6 +26,14 @@ NthIndexCache::~NthIndexCache() {
   document_->SetNthIndexCache(nullptr);
 }
 
+unsigned NthIndexCache::Key::GetHash() const {
+  unsigned hash = WTF::MemberHash<Node>::GetHash(parent);
+  if (!child_tag_name.empty()) {
+    WTF::AddIntToHash(hash, DefaultHash<String>::GetHash(child_tag_name));
+  }
+  return hash;
+}
+
 namespace {
 
 // Generating the cached nth-index counts when the number of children
@@ -87,15 +95,12 @@ unsigned NthIndexCache::NthChildIndex(Element& element) {
     return 1;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
-  NthIndexData* nth_index_data = nullptr;
-  if (nth_index_cache && nth_index_cache->parent_map_) {
-    auto it = nth_index_cache->parent_map_->find(element.parentNode());
-    if (it != nth_index_cache->parent_map_->end()) {
-      nth_index_data = it->value;
+  if (nth_index_cache && nth_index_cache->cache_) {
+    auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
+        Key(element.parentNode()));
+    if (it != nth_index_cache->cache_->end()) {
+      return it->value->NthIndex(element);
     }
-  }
-  if (nth_index_data) {
-    return nth_index_data->NthIndex(element);
   }
   unsigned index = UncachedNthChildIndex(element);
   if (nth_index_cache && index > kCachedSiblingCountLimit) {
@@ -109,15 +114,12 @@ unsigned NthIndexCache::NthLastChildIndex(Element& element) {
     return 1;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
-  NthIndexData* nth_index_data = nullptr;
-  if (nth_index_cache && nth_index_cache->parent_map_) {
-    auto it = nth_index_cache->parent_map_->find(element.parentNode());
-    if (it != nth_index_cache->parent_map_->end()) {
-      nth_index_data = it->value;
+  if (nth_index_cache && nth_index_cache->cache_) {
+    auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
+        Key(element.parentNode()));
+    if (it != nth_index_cache->cache_->end()) {
+      return it->value->NthLastIndex(element);
     }
-  }
-  if (nth_index_data) {
-    return nth_index_data->NthLastIndex(element);
   }
   unsigned index = UncachedNthLastChildIndex(element);
   if (nth_index_cache && index > kCachedSiblingCountLimit) {
@@ -126,32 +128,16 @@ unsigned NthIndexCache::NthLastChildIndex(Element& element) {
   return index;
 }
 
-NthIndexData* NthIndexCache::NthTypeIndexDataForParent(Element& element) const {
-  DCHECK(element.parentNode());
-  if (!parent_map_for_type_) {
-    return nullptr;
-  }
-  auto it_parent = parent_map_for_type_->find(element.parentNode());
-  const IndexByType* map =
-      it_parent != parent_map_for_type_->end() ? it_parent->value : nullptr;
-  if (map) {
-    auto it_map = map->find(element.tagName());
-    if (it_map != map->end()) {
-      return it_map->value;
-    }
-  }
-  return nullptr;
-}
-
 unsigned NthIndexCache::NthOfTypeIndex(Element& element) {
   if (element.IsPseudoElement() || !element.parentNode()) {
     return 1;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
-  if (nth_index_cache) {
-    if (NthIndexData* nth_index_data =
-            nth_index_cache->NthTypeIndexDataForParent(element)) {
-      return nth_index_data->NthOfTypeIndex(element);
+  if (nth_index_cache && nth_index_cache->cache_) {
+    auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
+        Key(element.parentNode(), element.tagName()));
+    if (it != nth_index_cache->cache_->end()) {
+      return it->value->NthOfTypeIndex(element);
     }
   }
   unsigned sibling_count = 0;
@@ -167,10 +153,11 @@ unsigned NthIndexCache::NthLastOfTypeIndex(Element& element) {
     return 1;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
-  if (nth_index_cache) {
-    if (NthIndexData* nth_index_data =
-            nth_index_cache->NthTypeIndexDataForParent(element)) {
-      return nth_index_data->NthLastOfTypeIndex(element);
+  if (nth_index_cache && nth_index_cache->cache_) {
+    auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
+        Key(element.parentNode(), element.tagName()));
+    if (it != nth_index_cache->cache_->end()) {
+      return it->value->NthLastOfTypeIndex(element);
     }
   }
   unsigned sibling_count = 0;
@@ -181,42 +168,30 @@ unsigned NthIndexCache::NthLastOfTypeIndex(Element& element) {
   return index;
 }
 
-void NthIndexCache::CacheNthIndexDataForParent(Element& element) {
-  DCHECK(element.parentNode());
-  if (!parent_map_) {
-    parent_map_ = MakeGarbageCollected<ParentMap>();
+void NthIndexCache::EnsureCache() {
+  if (!cache_) {
+    cache_ = MakeGarbageCollected<
+        HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHash>>();
   }
-
-  ParentMap::AddResult add_result =
-      parent_map_->insert(element.parentNode(), nullptr);
-  DCHECK(add_result.is_new_entry);
-  add_result.stored_value->value =
-      MakeGarbageCollected<NthIndexData>(*element.parentNode());
 }
 
-NthIndexCache::IndexByType& NthIndexCache::EnsureTypeIndexMap(
-    ContainerNode& parent) {
-  if (!parent_map_for_type_) {
-    parent_map_for_type_ = MakeGarbageCollected<ParentMapForType>();
-  }
-
-  ParentMapForType::AddResult add_result =
-      parent_map_for_type_->insert(&parent, nullptr);
-  if (add_result.is_new_entry) {
-    add_result.stored_value->value = MakeGarbageCollected<IndexByType>();
-  }
-
-  DCHECK(add_result.stored_value->value);
-  return *add_result.stored_value->value;
+void NthIndexCache::CacheNthIndexDataForParent(Element& element) {
+  DCHECK(element.parentNode());
+  EnsureCache();
+  auto add_result =
+      cache_->insert(MakeGarbageCollected<Key>(element.parentNode()),
+                     MakeGarbageCollected<NthIndexData>(*element.parentNode()));
+  DCHECK(add_result.is_new_entry);
 }
 
 void NthIndexCache::CacheNthOfTypeIndexDataForParent(Element& element) {
   DCHECK(element.parentNode());
-  IndexByType::AddResult add_result = EnsureTypeIndexMap(*element.parentNode())
-                                          .insert(element.tagName(), nullptr);
+  EnsureCache();
+  auto add_result = cache_->insert(
+      MakeGarbageCollected<Key>(element.parentNode(), element.tagName()),
+      MakeGarbageCollected<NthIndexData>(*element.parentNode(),
+                                         element.TagQName()));
   DCHECK(add_result.is_new_entry);
-  add_result.stored_value->value = MakeGarbageCollected<NthIndexData>(
-      *element.parentNode(), element.TagQName());
 }
 
 unsigned NthIndexData::NthIndex(Element& element) const {

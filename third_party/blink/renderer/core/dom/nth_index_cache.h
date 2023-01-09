@@ -88,23 +88,55 @@ class CORE_EXPORT NthIndexCache final {
   static unsigned NthLastOfTypeIndex(Element&);
 
  private:
-  // For :nth-child; effectively maps (parent, child) → index.
-  // (The child part of the key is in NthIndexData.)
-  using ParentMap = HeapHashMap<Member<Node>, Member<NthIndexData>>;
+  // Key in the top-level cache; identifies the parent and the type of query.
+  struct Key : public GarbageCollected<Key> {
+    explicit Key(Node* parent_arg) : parent(parent_arg) {}
+    Key(Node* parent_arg, String child_tag_name_arg)
+        : parent(parent_arg), child_tag_name(child_tag_name_arg) {}
 
-  // For :nth-of-type; effectively maps (parent, child tag name, child) → index.
-  // (The child part of the key is in NthIndexData.)
-  using IndexByType = HeapHashMap<String, Member<NthIndexData>>;
-  using ParentMapForType = HeapHashMap<Member<Node>, Member<IndexByType>>;
+    Member<Node> parent;
+    String child_tag_name;  // Empty if not :nth-of-type.
+
+    void Trace(Visitor* visitor) const { visitor->Trace(parent); }
+    unsigned GetHash() const;
+    bool operator==(const Key& other) const {
+      return parent == other.parent && child_tag_name == other.child_tag_name;
+    }
+  };
+
+  // Helper needed to make sure Key is compared by value and not by pointer,
+  // even though the hash map key is a Member<> (which Oilpan forces us to).
+  struct KeyHash {
+    STATIC_ONLY(KeyHash);
+
+    static unsigned GetHash(const Member<Key>& key) { return key->GetHash(); }
+    static bool Equal(const Member<Key>& a, const Member<Key>& b) {
+      return (!a && !b) || (a && b && *a == *b);
+    }
+
+    static const bool safe_to_compare_to_empty_or_deleted = true;
+  };
+
+  // Helper needed to allow calling Find() with a Key instead of Member<Key>
+  // (note that find() does not allow this).
+  struct KeyHashTranslator {
+    STATIC_ONLY(KeyHashTranslator);
+
+    static unsigned GetHash(const Key& key) { return key.GetHash(); }
+    static bool Equal(const Member<Key>& a, const Key& b) {
+      return a && *a == b;
+    }
+  };
 
   void CacheNthIndexDataForParent(Element&);
   void CacheNthOfTypeIndexDataForParent(Element&);
-  IndexByType& EnsureTypeIndexMap(ContainerNode&);
-  NthIndexData* NthTypeIndexDataForParent(Element&) const;
+  void EnsureCache();
 
   Document* document_ = nullptr;
-  ParentMap* parent_map_ = nullptr;
-  ParentMapForType* parent_map_for_type_ = nullptr;
+
+  // Effectively maps (parent, optional tag name, child) → index.
+  // (The child part of the key is in NthIndexData.)
+  HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHash>* cache_ = nullptr;
 
 #if DCHECK_IS_ON()
   uint64_t dom_tree_version_;
