@@ -326,7 +326,7 @@ class GaiaDialog extends GaiaDialogBase {
         chrome.send(
             'metricsHandler:recordBooleanHistogram',
             [CHROMEOS_GAIA_PASSWORD_METRIC, false]);
-        chrome.send('login.GaiaSigninScreen.userActed', ['passwordEntered']);
+        chrome.send('passwordEntered');
       },
       'authCompleted': (e) => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.

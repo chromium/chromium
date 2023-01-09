@@ -143,9 +143,7 @@ import {OobeTypes} from './components/oobe_types.js';
       chrome.send('OobeTestApi.skipToLoginForTesting');
 
       if (!enterpriseEnroll) {
-        chrome.send(
-            'login.GaiaSigninScreen.userActed',
-            ['completeLoginForTesting', gaia_id, username, password, false]);
+        chrome.send('completeLogin', [gaia_id, username, password, false]);
       } else {
         waitForOobeScreen('gaia-signin', function() {
           // TODO(crbug.com/1100910): migrate logic to dedicated test api.

@@ -1195,10 +1195,6 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
-    case GaiaScreen::Result::LOGIN_SUCCESS:
-      LoginDisplayHost::default_host()->CompleteLogin(
-          *wizard_context_->extra_factors_auth_session);
-      break;
   }
 }
 
@@ -1419,15 +1415,12 @@ void WizardController::SkipToLoginForTesting() {
     return;
   wizard_context_->skip_to_login_for_tests = true;
 
-  if (LoginDisplayHost::default_host()->HasUserPods()) {
-    AdvanceToSigninScreen();
-  } else {
-    if (!features::IsOobeConsolidatedConsentEnabled())
-      StartupUtils::MarkEulaAccepted();
-
-    PerformPostNetworkScreenActions();
-    OnDeviceDisabledChecked(false /* device_disabled */);
+  if (!features::IsOobeConsolidatedConsentEnabled()) {
+    StartupUtils::MarkEulaAccepted();
   }
+
+  PerformPostNetworkScreenActions();
+  OnDeviceDisabledChecked(false /* device_disabled */);
 }
 
 void WizardController::OnScreenExit(OobeScreenId screen,

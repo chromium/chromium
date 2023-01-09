@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
+#include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
@@ -25,6 +26,10 @@
 #include "net/cookies/cookie_access_result.h"
 
 class AccountId;
+
+namespace base {
+class ElapsedTimer;
+}  // namespace base
 
 namespace network {
 class NSSTempCertsCacheChromeOS;
@@ -88,12 +93,6 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
                                        const std::string& services) = 0;
   // Reset authenticator.
   virtual void Reset() = 0;
-
-  // Returns the partition name during sign-in.
-  virtual std::string GetSigninPartitionName() = 0;
-  // Called when authenticaion is completed. This is used to clear the test
-  // properties.
-  virtual void OnCompleteAuthentication(const std::string& email) = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
@@ -138,8 +137,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
                                const std::string& password,
                                const std::string& services) override;
   void Reset() override;
-  std::string GetSigninPartitionName() override;
-  void OnCompleteAuthentication(const std::string& email) override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
@@ -195,7 +192,25 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);
+  void HandleCompleteAuthentication(
+      const std::string& gaia_id,
+      const std::string& email,
+      const std::string& password,
+      const base::Value::List& scraped_saml_passwords_value,
+      bool using_saml,
+      const base::Value::List& services_list,
+      bool services_provided,
+      const base::Value::Dict& password_attributes,
+      const base::Value::Dict& sync_trusted_vault_keys);
+  void HandleCompleteLogin(const std::string& gaia_id,
+                           const std::string& typed_email,
+                           const std::string& password,
+                           bool using_saml);
   void HandleLaunchSAMLPublicSession(const std::string& email);
+
+  // Handles SAML/GAIA login flow metrics
+  // is_third_party_idp == false means GAIA-based authentication
+  void HandleUsingSAMLAPI(bool is_third_party_idp);
   void HandleRecordSAMLProvider(const std::string& x509certificate);
   void HandleSamlChallengeMachineKey(const std::string& callback_id,
                                      const std::string& url,
@@ -204,6 +219,10 @@ class GaiaScreenHandler : public BaseScreenHandler,
                                            base::Value::Dict result);
 
   void HandleGaiaUIReady();
+
+  void HandleIdentifierEntered(const std::string& account_identifier);
+
+  void HandleAuthExtensionLoaded();
 
   // Allows WebUI to control the login shelf's guest and apps buttons visibility
   // during OOBE.
@@ -224,6 +243,12 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   void HandleShowLoadingTimeoutError();
 
+  // Really handles the complete login message.
+  void DoCompleteLogin(const std::string& gaia_id,
+                       const std::string& typed_email,
+                       const std::string& password,
+                       bool using_saml);
+
   // Kick off cookie / local storage cleanup.
   void StartClearingCookies(base::OnceClosure on_clear_callback);
   void OnCookiesCleared(base::OnceClosure on_clear_callback);
@@ -234,6 +259,13 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   // Attempts login for test.
   void SubmitLoginFormForTest();
+
+  // Updates the member variable and UMA histogram indicating whether the
+  // Chrome Credentials Passing API was used during SAML login.
+  void SetSAMLPrincipalsAPIUsed(bool is_third_party_idp, bool is_api_used);
+
+  void RecordScrapedPasswordCount(int password_count);
+  bool IsSamlUserPasswordless();
 
   // Shows signin screen after dns cache and cookie cleanup operations finish.
   void ShowGaiaScreenIfReady();
@@ -263,6 +295,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
                          const std::string& id,
                          const AccountType& account_type) const;
 
+  void OnCookieWaitTimeout();
+
   bool is_security_token_pin_dialog_running() const {
     return !security_token_pin_dialog_closed_callback_.is_null();
   }
@@ -274,6 +308,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Callback method to load Gaia screen after reauth request token is fetched.
   void OnGaiaReauthTokenFetched(const login::GaiaContext& context,
                                 const std::string& token);
+
+  void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
+                           std::unique_ptr<UserContext> user_context);
 
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;
@@ -302,6 +339,11 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // clean-up finish, and the handler is initialized (i.e. the web UI is ready).
   bool show_when_ready_ = false;
 
+  // This flag is set when user authenticated using the Chrome Credentials
+  // Passing API (the login could happen via SAML or, with the current
+  // server-side implementation, via Gaia).
+  bool using_saml_api_ = false;
+
   // Test credentials.
   std::string test_user_;
   std::string test_pass_;
@@ -322,6 +364,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   // The type of Gaia page to show.
   GaiaScreenMode screen_mode_ = GAIA_SCREEN_MODE_DEFAULT;
+
+  std::unique_ptr<LoginClientCertUsageObserver>
+      extension_provided_client_cert_usage_observer_;
 
   std::unique_ptr<PublicSamlUrlFetcher> public_saml_url_fetcher_;
 
@@ -353,11 +398,18 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   bool hidden_ = true;
 
+  // Used to record amount of time user needed for successful online login.
+  std::unique_ptr<base::ElapsedTimer> elapsed_timer_;
+
   std::string signin_partition_name_;
+
+  GaiaLoginVariant login_request_variant_ = GaiaLoginVariant::kUnknown;
 
   // Handler for `samlChallengeMachineKey` request.
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_;
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;
+
+  std::unique_ptr<OnlineLoginHelper> online_login_helper_;
 
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 };
