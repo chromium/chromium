@@ -121,6 +121,8 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool HasReporterAt(PipelineStage stage) const;
 
+  void SetVisible(bool visible);
+
  protected:
   struct SubmittedCompositorFrame {
     uint32_t frame_token;
@@ -247,6 +249,12 @@ class CC_EXPORT CompositorFrameReportingController {
   // Container that stores the EventLatency stage latency predictions based on
   // previous event traces.
   CompositorFrameReporter::EventLatencyInfo event_latency_predictions_;
+
+  // Reporting controller needs to track transition of the page from invisible
+  // to visible in order to discard EventsMetrics impacted by duration of page
+  // being invisible
+  bool visible_ = true;
+  bool waiting_for_did_present_after_visible_ = false;
 };
 
 }  // namespace cc

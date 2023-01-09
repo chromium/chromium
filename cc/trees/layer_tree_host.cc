@@ -790,6 +790,12 @@ void LayerTreeHost::SetVisible(bool visible) {
   if (visible_ == visible)
     return;
   visible_ = visible;
+  // If the page becomes invisible, corresponding metrics will be discarded
+  // because they are invalid. The metrics will be measured when the page
+  // becomes visible again.
+  if (!visible_) {
+    ClearEventsMetrics();
+  }
   proxy_->SetVisible(visible);
 }
 

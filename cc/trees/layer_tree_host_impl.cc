@@ -3489,7 +3489,17 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     auto now = base::TimeTicks::Now();
     total_frame_counter_.OnHide(now);
     dropped_frame_counter_.ResetPendingFrames(now);
+
+    // When page is invisible, throw away corresponding EventsMetrics since
+    // these metrics will be incorrect due to duration of page being invisible.
+    active_tree()->TakeEventsMetrics();
+    events_metrics_manager_.TakeSavedEventsMetrics();
+    if (pending_tree()) {
+      pending_tree()->TakeEventsMetrics();
+    }
   }
+  // Notify reporting controller of transition between visible and invisible
+  compositor_frame_reporting_controller_->SetVisible(visible_);
   DidVisibilityChange(this, visible_);
   UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
 

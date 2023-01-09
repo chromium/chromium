@@ -64,6 +64,20 @@ CompositorFrameReportingController::~CompositorFrameReportingController() {
   }
 }
 
+void CompositorFrameReportingController::SetVisible(bool visible) {
+  if (visible_ == visible) {
+    return;
+  }
+
+  visible_ = visible;
+  if (visible_) {
+    // Note:`waiting_for_did_present_after_visible_` will be set to false
+    // inside `CompositorFrameReportingController::DidPresentCompositorFrame`
+    // after `events_metrics_from_dropped_frames_` is clear
+    waiting_for_did_present_after_visible_ = true;
+  }
+}
+
 CompositorFrameReportingController::SubmittedCompositorFrame::
     SubmittedCompositorFrame() = default;
 CompositorFrameReportingController::SubmittedCompositorFrame::
@@ -499,6 +513,21 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
             previous_latency_predictions_main_,
             latency_prediction_deviation_threshold);
         break;
+    }
+
+    // If the page was transitioned from invisible to visible, need to throw
+    // away EventsMetrics from `events_metrics_from_dropped_frames_` because
+    // these measurement would be invalid due to the duration of page being
+    // invisible.
+    if (waiting_for_did_present_after_visible_) {
+      waiting_for_did_present_after_visible_ = false;
+      // The implicit assumption is that reporter->frame_id will never be
+      // equal to it->first
+      for (auto it = events_metrics_from_dropped_frames_.begin();
+           it != events_metrics_from_dropped_frames_.end() &&
+           (it->first < reporter->frame_id());
+           it = events_metrics_from_dropped_frames_.erase(it)) {
+      }
     }
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
