@@ -10,15 +10,14 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_delegate.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_fetcher_factory_impl.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_fetcher_factory_impl.h"
 
 namespace base {
 class FilePath;
@@ -28,7 +27,7 @@ class SequencedTaskRunner;
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace url {
 class SchemeHostPort;

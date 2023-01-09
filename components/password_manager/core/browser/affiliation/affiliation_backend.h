@@ -19,9 +19,9 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetch_throttler_delegate.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_delegate.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/facet_manager_host.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 
 namespace base {
 class Clock;

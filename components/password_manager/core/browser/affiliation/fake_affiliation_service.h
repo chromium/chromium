@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_AFFILIATION_FAKE_AFFILIATION_SERVICE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_AFFILIATION_FAKE_AFFILIATION_SERVICE_H_
 
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 

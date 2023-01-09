@@ -10,8 +10,8 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_delegate.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_factory.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
 
 namespace password_manager {
 
