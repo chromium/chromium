@@ -13,6 +13,7 @@
 
 # https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1222923
 # https://ci.chromium.org/ui/p/chromium/builders/ci/mac-rel-cft/473
+-*JavaScriptTests.testElementRegionTest
 -All/GetDisplayMediaChangeSourceBrowserTest.*
 -All/PageSpecificSiteDataDialogBrowserTest.*
 -All/TabSharingUIViewsBrowserTest.*

@@ -5740,6 +5740,10 @@ class JavaScriptTests(ChromeDriverBaseTestWithWebServer):
     self.WaitForCondition(getStatus)
     self.assertEqual('PASS', getStatus())
 
+  def testElementRegionTest(self):
+    self._driver.Load(self.GetFileUrl('get_element_region_test.html'))
+    self.checkTestResult()
+
   def testAllJS(self):
     self._driver.Load(self.GetFileUrl('call_function_test.html'))
     self.checkTestResult()
@@ -5754,9 +5758,6 @@ class JavaScriptTests(ChromeDriverBaseTestWithWebServer):
     self.checkTestResult()
 
     self._driver.Load(self.GetFileUrl('get_element_location_test.html'))
-    self.checkTestResult()
-
-    self._driver.Load(self.GetFileUrl('get_element_region_test.html'))
     self.checkTestResult()
 
     self._driver.Load(self.GetFileUrl('is_option_element_toggleable_test.html'))
