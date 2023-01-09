@@ -1653,6 +1653,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmCompilationMethod" enum="WasmCompilationMethod"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    WebAssembly JS API function that triggers compilation. Recorded when
+    WebAssembly compilation gets triggered, independently of the compilation
+    results, i.e. whether compilation succeeds or fails.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCompilationUntilStreamFinishedMilliSeconds" units="ms"
     expires_after="2023-08-01">
   <owner>ahaas@chromium.org</owner>

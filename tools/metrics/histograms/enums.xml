@@ -105744,6 +105744,14 @@ others/histograms.xml -->
   <int value="3" label="kNoCacheHandler"/>
 </enum>
 
+<enum name="WasmCompilationMethod">
+  <int value="0" label="kSyncCompilation"/>
+  <int value="1" label="kAsyncCompilation"/>
+  <int value="2" label="kStreamingCompilation"/>
+  <int value="3" label="kAsyncInstantiation"/>
+  <int value="4" label="kStreamingInstantiation"/>
+</enum>
+
 <enum name="WasmStreamingInputType">
   <int value="0" label="kNoResponse"/>
   <int value="1" label="kResponseNotOK"/>
