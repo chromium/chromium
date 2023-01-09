@@ -54,8 +54,6 @@ class StartupController final {
   State GetState() const;
 
  private:
-  enum StartUpDeferredOption { STARTUP_DEFERRED, STARTUP_IMMEDIATE };
-
   // Enum for UMA defining different events that cause us to exit the "deferred"
   // state of initialization and invoke start_engine.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -72,7 +70,6 @@ class StartupController final {
   // The actual (synchronous) implementation of TryStart().
   void TryStartImpl(bool force_immediate);
 
-  void StartUp(StartUpDeferredOption deferred_option);
   void OnFallbackStartupTimerExpired();
 
   // Records time spent in deferred state with UMA histograms.

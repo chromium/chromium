@@ -57,29 +57,6 @@ StartupController::StartupController(
 
 StartupController::~StartupController() = default;
 
-void StartupController::StartUp(StartUpDeferredOption deferred_option) {
-  const bool first_start = start_up_time_.is_null();
-  if (first_start) {
-    start_up_time_ = base::Time::Now();
-  }
-
-  if (deferred_option == STARTUP_DEFERRED &&
-      get_preferred_data_types_callback_.Run().Has(SESSIONS)) {
-    if (first_start) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&StartupController::OnFallbackStartupTimerExpired,
-                         weak_factory_.GetWeakPtr()),
-          GetDeferredInitDelay());
-    }
-    return;
-  }
-
-  if (start_engine_callback_) {
-    std::move(start_engine_callback_).Run();
-  }
-}
-
 void StartupController::TryStart(bool force_immediate) {
   // Post a task instead of running the startup checks directly, to guarantee
   // that |start_engine_callback_| is never called synchronously from
@@ -94,13 +71,31 @@ void StartupController::TryStartImpl(bool force_immediate) {
     return;
   }
 
+  const bool first_start = start_up_time_.is_null();
+  if (first_start) {
+    start_up_time_ = base::Time::Now();
+  }
+
   // For performance reasons, defer the heavy lifting for sync init unless:
   //
   // - a datatype has requested an immediate start of sync, or
   // - sync needs to start up the engine immediately to provide control state
   //   and encryption information to the UI.
-  StartUp((force_immediate || bypass_deferred_startup_) ? STARTUP_IMMEDIATE
-                                                        : STARTUP_DEFERRED);
+  if (!force_immediate && !bypass_deferred_startup_ &&
+      get_preferred_data_types_callback_.Run().Has(SESSIONS)) {
+    if (first_start) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&StartupController::OnFallbackStartupTimerExpired,
+                         weak_factory_.GetWeakPtr()),
+          GetDeferredInitDelay());
+    }
+    return;
+  }
+
+  if (start_engine_callback_) {
+    std::move(start_engine_callback_).Run();
+  }
 }
 
 void StartupController::RecordTimeDeferred(DeferredInitTrigger trigger) {
