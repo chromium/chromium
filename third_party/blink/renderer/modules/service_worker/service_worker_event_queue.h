@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -273,12 +274,14 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   // Event queue to where all online events (normal and pending events) are
   // enqueued. We use std::map as a task queue because it's ordered by the
   // `event_id` and the entries can be effectively erased in random order.
-  std::map<int /* event_id */, std::unique_ptr<Event>> queued_online_events_;
+  std::map<int /* event_id */, std::unique_ptr<Event>> queued_online_events_
+      ALLOW_DISCOURAGED_TYPE("Needs to be ordered by event_id");
 
   // Event queue to where offline events are enqueued. We use std::map as a task
   // queue because it's ordered by the `event_id` and the entries can be
   // effectively erased in random order.
-  std::map<int /* event_id */, std::unique_ptr<Event>> queued_offline_events_;
+  std::map<int /* event_id */, std::unique_ptr<Event>> queued_offline_events_
+      ALLOW_DISCOURAGED_TYPE("Needs to be ordered by event_id");
 
   // Set to true during running ProcessEvents(). This is used for avoiding to
   // invoke |idle_callback_| or to re-enter ProcessEvents() when calling

@@ -134,7 +134,7 @@ void MediaStreamTrackMetrics::RemoveTrack(Direction direction,
                                           Kind kind,
                                           const std::string& track_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto it = base::ranges::find_if(
+  auto* it = base::ranges::find_if(
       observers_,
       [&](const std::unique_ptr<MediaStreamTrackMetricsObserver>& observer) {
         return direction == observer->direction() && kind == observer->kind() &&

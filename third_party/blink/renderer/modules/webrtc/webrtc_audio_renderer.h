@@ -29,6 +29,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_source.h"
@@ -248,7 +249,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // Maps an audio source to a list of playing states that collectively hold
   // volume information for that source.
   typedef std::map<webrtc::AudioSourceInterface*, PlayingStates>
-      SourcePlayingStates;
+      SourcePlayingStates ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327");
 
   // Used to DCHECK that we are called on the correct thread.
   THREAD_CHECKER(thread_checker_);

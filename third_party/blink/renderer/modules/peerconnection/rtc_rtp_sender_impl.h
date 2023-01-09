@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_transceiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
@@ -103,7 +104,8 @@ class MODULES_EXPORT RtpSenderState {
   bool is_initialized_;
   std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
       track_ref_;
-  std::vector<std::string> stream_ids_;
+  std::vector<std::string> stream_ids_ ALLOW_DISCOURAGED_TYPE(
+      "Avoids conversions when passed from/to webrtc API");
 };
 
 // Used to surface |webrtc::RtpSenderInterface| to blink. Multiple

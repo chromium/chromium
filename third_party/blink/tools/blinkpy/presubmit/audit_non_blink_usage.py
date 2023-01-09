@@ -649,10 +649,12 @@ _CONFIG = [
             # STL containers such as std::string and std::vector are discouraged
             # but still needed for interop with blink/common. Note that other
             # STL types such as std::unique_ptr are encouraged.
+            # Discouraged usages for data members are checked in clang plugin.
             'std::.+',
 
             # Similarly, GURL is allowed to interoperate with blink/common and
             # other common code shared between browser and renderer.
+            # Discouraged usages for data members are checked in clang plugin.
             'GURL',
 
             # UI Cursor
@@ -727,11 +729,6 @@ _CONFIG = [
         'disallowed': [
             ('base::Bind(|Once|Repeating)',
              'Use WTF::Bind or WTF::BindRepeating.'),
-            ('std::(deque|map|multimap|set|vector|unordered_set|unordered_map)',
-             'Use WTF containers like WTF::Deque, WTF::HashMap, WTF::HashSet or WTF::Vector instead of the banned std containers. '
-             'However, it is fine to use std containers at the boundary layer between Blink and Chromium. '
-             'If you are in this case, you can use --bypass-hooks option to avoid the presubmit check when uploading your CL.'
-             ),
             _DISALLOW_NON_BLINK_MOJOM,
         ],
         # These task runners are generally banned in blink to ensure
@@ -1053,9 +1050,6 @@ _CONFIG = [
     {
         'paths': ['third_party/blink/renderer/core/inspector'],
         'allowed': [
-            # Devtools binary protocol uses std::vector<uint8_t> for serialized
-            # objects.
-            'std::vector',
             # [C]h[R]ome [D]ev[T]ools [P]rotocol implementation support library
             # (see third_party/inspector_protocol/crdtp).
             'crdtp::.+',
@@ -1214,8 +1208,6 @@ _CONFIG = [
             # Required to initialize WebGraphicsContext3DVideoFramePool.
             'gpu::GpuMemoryBufferManager',
             'media::.+',
-            # Some media APIs require std::vector.
-            "std::vector",
         ]
     },
     {
@@ -1380,8 +1372,6 @@ _CONFIG = [
         ],
         'allowed': [
             'gin::.+',
-            # gin::NamedPropertyInterceptor uses std::vector.
-            'std::vector',
         ],
     },
     {
@@ -1501,17 +1491,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/accessibility',
-        ],
-        # These are necessary because BlinkAXTreeSource inherits from
-        # ui::AXTreeSource, which has these in its interface.
-        'allowed': [
-            'std::vector',
-            'std::set',
-        ],
-    },
-    {
-        'paths': [
             'third_party/blink/renderer/modules/animationworklet/',
         ],
         'allowed': [
@@ -1541,9 +1520,6 @@ _CONFIG = [
 
             # //third_party/liburlpattern
             'liburlpattern::.+',
-
-            # The liburlpattern API requires using std::vector.
-            'std::vector',
 
             # Internal namespace used by url_pattern module.
             'url_pattern::.+',

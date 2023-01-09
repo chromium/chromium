@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -179,7 +180,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     SkBitmap bitmap_;
     std::unique_ptr<cc::PaintCanvas> canvas_;
     std::unique_ptr<WebGraphicsContext3DProvider> encoder_thread_context_;
-    std::vector<uint8_t> resize_buffer_;
+    std::vector<uint8_t> resize_buffer_
+        ALLOW_DISCOURAGED_TYPE("Avoids conversion when passed to media:: code");
 
     media::VideoFramePool frame_pool_;
   };

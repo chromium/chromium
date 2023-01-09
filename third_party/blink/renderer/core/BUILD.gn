@@ -97,12 +97,6 @@ config("config") {
   defines = [ "BLINK_CORE_IMPLEMENTATION=1" ]
 
   if (is_clang && clang_use_chrome_plugins) {
-    cflags += [
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "check-blink-data-member-type",
-    ]
     if (use_layout_plugin) {
       cflags += [
         "-Xclang",

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/modules/accessibility/blink_ax_tree_source.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -551,7 +552,9 @@ class MODULES_EXPORT AXObjectCacheImpl
     Member<AXObject> obj;
     ax::mojom::blink::EventFrom event_from;
     ax::mojom::blink::Action event_from_action;
-    std::vector<ui::AXEventIntent> event_intents;
+    std::vector<ui::AXEventIntent> event_intents ALLOW_DISCOURAGED_TYPE(
+        "Avoids conversion when passed from/to ui::AXTreeUpdate or "
+        "blink::WebAXObject");
   };
 
   // Create an AXObject, and do not check if a previous one exists.

@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
 namespace blink {
@@ -97,9 +97,7 @@ class MODULES_EXPORT MediaStreamTrackMetrics {
   mojo::Remote<blink::mojom::blink::MediaStreamTrackMetricsHost>
       track_metrics_host_;
 
-  typedef std::vector<std::unique_ptr<MediaStreamTrackMetricsObserver>>
-      ObserverVector;
-  ObserverVector observers_;
+  Vector<std::unique_ptr<MediaStreamTrackMetricsObserver>> observers_;
 
   webrtc::PeerConnectionInterface::IceConnectionState ice_state_;
 

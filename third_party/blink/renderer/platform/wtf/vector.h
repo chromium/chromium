@@ -2288,7 +2288,7 @@ template <typename T,
           typename U>
 wtf_size_t Erase(Vector<T, inline_capacity, Allocator>& v, const U& value) {
   auto it = std::remove(v.begin(), v.end(), value);
-  wtf_size_t removed = v.end() - it;
+  wtf_size_t removed = base::checked_cast<wtf_size_t>(v.end() - it);
   v.erase(it, v.end());
   return removed;
 }
@@ -2298,7 +2298,7 @@ template <typename T,
           typename Pred>
 wtf_size_t EraseIf(Vector<T, inline_capacity, Allocator>& v, Pred pred) {
   auto it = std::remove_if(v.begin(), v.end(), pred);
-  wtf_size_t removed = v.end() - it;
+  wtf_size_t removed = base::checked_cast<wtf_size_t>(v.end() - it);
   v.erase(it, v.end());
   return removed;
 }

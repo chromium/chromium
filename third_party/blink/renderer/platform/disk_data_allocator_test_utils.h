@@ -11,10 +11,10 @@
 #include <cstdint>
 #include <cstring>
 #include <map>
-#include <vector>
 
 #include "base/synchronization/lock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -22,9 +22,7 @@ class InMemoryDataAllocator : public DiskDataAllocator {
  public:
   constexpr static size_t kMaxSize = 1 << 20;
 
-  InMemoryDataAllocator() : max_offset_(0), data_(kMaxSize) {
-    set_may_write_for_testing(true);
-  }
+  InMemoryDataAllocator() : data_(kMaxSize) { set_may_write_for_testing(true); }
   ~InMemoryDataAllocator() override = default;
 
   std::map<int64_t, size_t> FreeChunks() {
@@ -58,8 +56,8 @@ class InMemoryDataAllocator : public DiskDataAllocator {
   }
 
  private:
-  int64_t max_offset_;
-  std::vector<char> data_;
+  int64_t max_offset_ = 0;
+  Vector<char> data_;
 };
 
 }  // namespace blink

@@ -158,15 +158,6 @@ config("blink_platform_config") {
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
   ]
-  cflags = []
-  if (is_clang && clang_use_chrome_plugins) {
-    cflags += [
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "check-blink-data-member-type",
-    ]
-  }
 }
 
 # Deps and configs required to include platform headers. Applied to all

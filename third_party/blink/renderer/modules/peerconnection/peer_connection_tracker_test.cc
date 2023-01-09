@@ -92,7 +92,7 @@ std::unique_ptr<RTCRtpTransceiverPlatform> CreateDefaultTransceiver() {
       "receiverTrackId", {"receiverStreamId"},
       blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   transceiver = std::make_unique<blink::FakeRTCRtpTransceiverImpl>(
-      absl::nullopt, std::move(sender), std::move(receiver),
+      String(), std::move(sender), std::move(receiver),
       webrtc::RtpTransceiverDirection::kSendOnly /* direction */,
       absl::nullopt /* current_direction */);
   return transceiver;
@@ -308,7 +308,7 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
   CreateTrackerWithMocks();
   CreateAndRegisterPeerConnectionHandler();
   blink::FakeRTCRtpTransceiverImpl transceiver(
-      absl::nullopt,
+      String(),
       blink::FakeRTCRtpSenderImpl(
           absl::nullopt, {},
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()),

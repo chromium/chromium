@@ -5,11 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_MOCK_PEER_CONNECTION_DEPENDENCY_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_MOCK_PEER_CONNECTION_DEPENDENCY_FACTORY_H_
 
-#include <set>
 #include <string>
-#include <vector>
 
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
@@ -19,7 +18,7 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
-typedef std::set<webrtc::ObserverInterface*> ObserverSet;
+using ObserverSet = HashSet<webrtc::ObserverInterface*>;
 
 class MockWebRtcAudioSource : public webrtc::AudioSourceInterface {
  public:

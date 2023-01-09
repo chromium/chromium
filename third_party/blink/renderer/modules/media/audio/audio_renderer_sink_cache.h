@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,6 +19,7 @@
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace media {
 class AudioRendererSink;
@@ -70,7 +70,7 @@ class MODULES_EXPORT AudioRendererSinkCache {
   friend class AudioRendererSinkCache::WindowObserver;
 
   struct CacheEntry;
-  using CacheContainer = std::vector<CacheEntry>;
+  using CacheContainer = Vector<CacheEntry>;
 
   // Schedules a sink for deletion. Deletion will be performed on the same
   // thread the cache is created on.
@@ -90,7 +90,7 @@ class MODULES_EXPORT AudioRendererSinkCache {
   void DropSinksForFrame(const LocalFrameToken& source_frame_token);
 
   // To avoid publishing CacheEntry structure in the header.
-  size_t GetCacheSizeForTesting();
+  wtf_size_t GetCacheSizeForTesting();
 
   // Global instance, set in constructor and unset in destructor.
   static AudioRendererSinkCache* instance_;

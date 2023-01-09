@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -67,7 +68,8 @@ class FakeRtpSender : public webrtc::RtpSenderInterface {
  private:
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track_;
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport_;
-  std::vector<std::string> stream_ids_;
+  std::vector<std::string> stream_ids_ ALLOW_DISCOURAGED_TYPE(
+      "Avoids conversion when implementing webrtc::RtpSenderInterface");
 };
 
 class FakeRtpReceiver : public webrtc::RtpReceiverInterface {
@@ -99,7 +101,9 @@ class FakeRtpReceiver : public webrtc::RtpReceiverInterface {
  private:
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track_;
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport_;
-  std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> streams_;
+  std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>> streams_
+      ALLOW_DISCOURAGED_TYPE(
+          "Avoids conversion when implementing webrtc::RcpReceiverInterface");
 };
 
 class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
@@ -323,10 +327,11 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
 
  private:
   std::string stream_label_;
-  std::vector<std::string> local_stream_ids_;
+  std::vector<std::string> local_stream_ids_ ALLOW_DISCOURAGED_TYPE(
+      "Avoids conversion when implementing webrtc::PeerConnectionInterface");
   rtc::scoped_refptr<MockStreamCollection> remote_streams_;
-  std::vector<rtc::scoped_refptr<FakeRtpSender>> senders_;
-  std::vector<rtc::scoped_refptr<FakeRtpTransceiver>> transceivers_;
+  Vector<rtc::scoped_refptr<FakeRtpSender>> senders_;
+  Vector<rtc::scoped_refptr<FakeRtpTransceiver>> transceivers_;
   std::unique_ptr<webrtc::SessionDescriptionInterface> local_desc_;
   std::unique_ptr<webrtc::SessionDescriptionInterface> remote_desc_;
   std::unique_ptr<webrtc::SessionDescriptionInterface>

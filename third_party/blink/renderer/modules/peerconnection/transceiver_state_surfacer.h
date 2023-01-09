@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
 #include "third_party/webrtc/api/rtp_transceiver_interface.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
@@ -57,7 +58,9 @@ class MODULES_EXPORT TransceiverStateSurfacer {
   bool is_initialized_;
   bool states_obtained_;
   blink::WebRTCSctpTransportSnapshot sctp_transport_snapshot_;
-  std::vector<blink::RtpTransceiverState> transceiver_states_;
+  std::vector<blink::RtpTransceiverState> transceiver_states_
+      ALLOW_DISCOURAGED_TYPE(
+          "Avoids conversions when passed from/to webrtc API");
 };
 
 }  // namespace blink
