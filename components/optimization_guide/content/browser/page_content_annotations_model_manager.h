@@ -26,6 +26,11 @@ class PageEntitiesModelHandler;
 using EntityMetadataRetrievedCallback =
     base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
 
+// Callback to inform the caller that the metadata for a set of entity IDs has
+// been retrieved.
+using BatchEntityMetadataRetrievedCallback = base::OnceCallback<void(
+    const base::flat_map<std::string, EntityMetadata>&)>;
+
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
  public:
@@ -56,6 +61,11 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // when done.
   void GetMetadataForEntityId(const std::string& entity_id,
                               EntityMetadataRetrievedCallback callback);
+
+  // Retrieves the metadata associated for each entry in |entity_ids|. Invokes
+  // |callback| when done.
+  void GetMetadataForEntityIds(const base::flat_set<std::string>& entity_ids,
+                               BatchEntityMetadataRetrievedCallback callback);
 
  private:
   friend class PageContentAnnotationsModelManagerTest;

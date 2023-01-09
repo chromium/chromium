@@ -48,6 +48,11 @@ class BatchEntityMetadataTask {
       const std::string& entity_id,
       const absl::optional<EntityMetadata>& entity_metadata);
 
+  // Callback invoked when metadata for all entries in |entity_ids_| have been
+  // retrieved.
+  void OnBatchEntityMetadataRetrieved(
+      const base::flat_map<std::string, EntityMetadata>& entity_metadata_map);
+
   // The provider used to retrieve entity metadata from.
   raw_ptr<optimization_guide::EntityMetadataProvider> entity_metadata_provider_;
   // The entity IDs that metadata will be retrieved for.

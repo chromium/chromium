@@ -30,16 +30,15 @@ BASE_DECLARE_FEATURE(kOptimizationTargetPrediction);
 BASE_DECLARE_FEATURE(kOptimizationGuideModelDownloading);
 BASE_DECLARE_FEATURE(kPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesPageContentAnnotations);
-BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
+BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
+BASE_DECLARE_FEATURE(kPageEntitiesModelBatchEntityMetadataSimplification);
+BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageTextExtraction);
 BASE_DECLARE_FEATURE(kPushNotifications);
 BASE_DECLARE_FEATURE(kOptimizationGuideMetadataValidation);
 BASE_DECLARE_FEATURE(kPageTopicsBatchAnnotations);
 BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
-BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
-BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
-BASE_DECLARE_FEATURE(kUseLocalPageEntitiesMetadataProvider);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 BASE_DECLARE_FEATURE(kPreventLongRunningPredictionModels);
 BASE_DECLARE_FEATURE(kOverrideNumThreadsForModelExecution);
@@ -242,6 +241,10 @@ bool ShouldExtractRelatedSearches();
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
 
+// Returns whether to use the simplified path for fetching entity metadata for a
+// batch of entity IDs.
+bool ShouldUseBatchEntityMetadataSimplication();
+
 // Returns whether the page visibility model should be executed on page content
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);
@@ -274,9 +277,6 @@ bool PageTopicsBatchAnnotationsEnabled();
 
 // Returns if Page Visibility Batch Annotations are enabled.
 bool PageVisibilityBatchAnnotationsEnabled();
-
-// Whether to use the leveldb-based page entities metadata provider.
-bool UseLocalPageEntitiesMetadataProvider();
 
 // The number of visits batch before running the page content annotation
 // models. A size of 1 is equivalent to annotating one page load at time

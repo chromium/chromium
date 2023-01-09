@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 
 #include "components/optimization_guide/core/entity_metadata_provider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
 
@@ -27,11 +28,18 @@ void BatchEntityMetadataTask::Execute(
 
   callback_ = std::move(callback);
 
-  for (const auto& entity_id : entity_ids_) {
-    entity_metadata_provider_->GetMetadataForEntityId(
-        entity_id,
-        base::BindOnce(&BatchEntityMetadataTask::OnEntityMetadataRetrieved,
-                       weak_ptr_factory_.GetWeakPtr(), entity_id));
+  if (features::ShouldUseBatchEntityMetadataSimplication()) {
+    entity_metadata_provider_->GetMetadataForEntityIds(
+        entity_ids_,
+        base::BindOnce(&BatchEntityMetadataTask::OnBatchEntityMetadataRetrieved,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    for (const auto& entity_id : entity_ids_) {
+      entity_metadata_provider_->GetMetadataForEntityId(
+          entity_id,
+          base::BindOnce(&BatchEntityMetadataTask::OnEntityMetadataRetrieved,
+                         weak_ptr_factory_.GetWeakPtr(), entity_id));
+    }
   }
 }
 
@@ -52,6 +60,15 @@ void BatchEntityMetadataTask::OnEntityMetadataRetrieved(
     task_state_ = TaskState::kCompleted;
     std::move(callback_).Run(entity_metadata_map_);
   }
+}
+
+void BatchEntityMetadataTask::OnBatchEntityMetadataRetrieved(
+    const base::flat_map<std::string, EntityMetadata>& entity_metadata_map) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(task_state_, TaskState::kStarted);
+
+  task_state_ = TaskState::kCompleted;
+  std::move(callback_).Run(entity_metadata_map);
 }
 
 }  // namespace optimization_guide

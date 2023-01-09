@@ -54,7 +54,6 @@ class ProtoDatabaseProvider;
 
 namespace optimization_guide {
 
-class LocalPageEntitiesMetadataProvider;
 class OptimizationGuideModelProvider;
 class PageContentAnnotationsModelManager;
 class PageContentAnnotationsServiceBrowserTest;
@@ -142,6 +141,9 @@ class PageContentAnnotationsService : public KeyedService,
   void GetMetadataForEntityId(
       const std::string& entity_id,
       EntityMetadataRetrievedCallback callback) override;
+  void GetMetadataForEntityIds(
+      const base::flat_set<std::string>& entity_ids,
+      BatchEntityMetadataRetrievedCallback callback) override;
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
@@ -284,13 +286,6 @@ class PageContentAnnotationsService : public KeyedService,
   // The minimum score that an allowlisted page category must have for it to be
   // persisted.
   const int min_page_category_score_to_persist_;
-
-  // A metadata-only provider for page entities (as opposed to |model_manager_|
-  // which does both entity model execution and metadata providing) that uses a
-  // local database to provide the metadata for a given entity id. This is only
-  // non-null and initialized when its feature flag is enabled.
-  std::unique_ptr<LocalPageEntitiesMetadataProvider>
-      local_page_entities_metadata_provider_;
 
   // The history service to write content annotations to. Not owned. Guaranteed
   // to outlive |this|.

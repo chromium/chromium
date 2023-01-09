@@ -78,6 +78,19 @@ class FakePageEntitiesModelHandler : public PageEntitiesModelHandler {
                                 : absl::nullopt);
   }
 
+  void GetMetadataForEntityIds(
+      const base::flat_set<std::string>& entity_ids,
+      PageEntitiesModelBatchEntityMetadataRetrievedCallback callback) override {
+    base::flat_map<std::string, EntityMetadata> entity_metadata_map;
+    for (const auto& entity_id : entity_ids) {
+      auto it = entity_metadata_.find(entity_id);
+      if (it != entity_metadata_.end()) {
+        entity_metadata_map[entity_id] = it->second;
+      }
+    }
+    std::move(callback).Run(entity_metadata_map);
+  }
+
   void AddOnModelUpdatedCallback(base::OnceClosure callback) override {
     std::move(callback).Run();
   }

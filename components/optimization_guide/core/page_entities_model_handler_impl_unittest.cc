@@ -132,6 +132,27 @@ class PageEntitiesModelHandlerImplTest : public testing::Test {
     return entity_metadata;
   }
 
+  base::flat_map<std::string, EntityMetadata> GetMetadataForEntityIds(
+      const base::flat_set<std::string>& entity_ids) {
+    base::flat_map<std::string, EntityMetadata> entity_metadata_map;
+
+    base::RunLoop run_loop;
+    model_executor_->GetMetadataForEntityIds(
+        entity_ids, base::BindOnce(
+                        [](base::RunLoop* run_loop,
+                           base::flat_map<std::string, EntityMetadata>*
+                               out_entity_metadata_map,
+                           const base::flat_map<std::string, EntityMetadata>&
+                               entity_metadata_map) {
+                          *out_entity_metadata_map = entity_metadata_map;
+                          run_loop->Quit();
+                        },
+                        &run_loop, &entity_metadata_map));
+    run_loop.Run();
+
+    return entity_metadata_map;
+  }
+
   PageEntitiesModelHandler* model_executor() { return model_executor_.get(); }
 
   ModelObserverTracker* model_observer_tracker() const {
@@ -330,6 +351,10 @@ TEST_F(PageEntitiesModelHandlerImplTest, CreateMissingFiles) {
 
 TEST_F(PageEntitiesModelHandlerImplTest, GetMetadataForEntityIdNoModel) {
   EXPECT_EQ(GetMetadataForEntityId("/m/0dl567"), absl::nullopt);
+}
+
+TEST_F(PageEntitiesModelHandlerImplTest, GetMetadataForEntityIdsNoModel) {
+  EXPECT_TRUE(GetMetadataForEntityIds({"/m/0dl567"}).empty());
 }
 
 TEST_F(PageEntitiesModelHandlerImplTest, ExecuteModelNoModel) {

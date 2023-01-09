@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/entity_metadata.h"
-#include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -169,13 +168,6 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     annotation_types_to_execute_.push_back(AnnotationType::kPageEntities);
   }
 #endif
-
-  if (features::UseLocalPageEntitiesMetadataProvider()) {
-    local_page_entities_metadata_provider_ =
-        std::make_unique<LocalPageEntitiesMetadataProvider>();
-    local_page_entities_metadata_provider_->Initialize(
-        database_provider, database_dir, background_task_runner);
-  }
 
   validator_ =
       PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
@@ -622,17 +614,20 @@ void PageContentAnnotationsService::OnURLQueried(
 void PageContentAnnotationsService::GetMetadataForEntityId(
     const std::string& entity_id,
     EntityMetadataRetrievedCallback callback) {
-  if (features::UseLocalPageEntitiesMetadataProvider()) {
-    DCHECK(local_page_entities_metadata_provider_);
-    local_page_entities_metadata_provider_->GetMetadataForEntityId(
-        entity_id, std::move(callback));
-    return;
-  }
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
 #else
   std::move(callback).Run(absl::nullopt);
+#endif
+}
+
+void PageContentAnnotationsService::GetMetadataForEntityIds(
+    const base::flat_set<std::string>& entity_ids,
+    BatchEntityMetadataRetrievedCallback callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  model_manager_->GetMetadataForEntityIds(entity_ids, std::move(callback));
+#else
+  std::move(callback).Run({});
 #endif
 }
 

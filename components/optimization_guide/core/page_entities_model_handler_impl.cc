@@ -194,6 +194,29 @@ void EntityAnnotatorHolder::GetMetadataForEntityIdOnBackgroundThread(
       base::BindOnce(std::move(callback), std::move(entity_metadata)));
 }
 
+void EntityAnnotatorHolder::GetMetadataForEntityIdsOnBackgroundThread(
+    const base::flat_set<std::string>& entity_ids,
+    PageEntitiesModelHandler::
+        PageEntitiesModelBatchEntityMetadataRetrievedCallback callback) {
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+
+  base::flat_map<std::string, EntityMetadata> entity_metadata_map;
+  if (entity_annotator_) {
+    DCHECK(entity_annotator_native_library_);
+    for (const auto& entity_id : entity_ids) {
+      absl::optional<EntityMetadata> entity_metadata =
+          entity_annotator_native_library_->GetEntityMetadataForEntityId(
+              entity_annotator_, entity_id);
+      if (entity_metadata) {
+        entity_metadata_map[entity_id] = *entity_metadata;
+      }
+    }
+  }
+  reply_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(entity_metadata_map)));
+}
+
 base::WeakPtr<EntityAnnotatorHolder>
 EntityAnnotatorHolder::GetBackgroundWeakPtr() {
   return background_weak_ptr_factory_.GetWeakPtr();
@@ -305,6 +328,17 @@ void PageEntitiesModelHandlerImpl::GetMetadataForEntityId(
       base::BindOnce(
           &EntityAnnotatorHolder::GetMetadataForEntityIdOnBackgroundThread,
           entity_annotator_holder_->GetBackgroundWeakPtr(), entity_id,
+          std::move(callback)));
+}
+
+void PageEntitiesModelHandlerImpl::GetMetadataForEntityIds(
+    const base::flat_set<std::string>& entity_ids,
+    PageEntitiesModelBatchEntityMetadataRetrievedCallback callback) {
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &EntityAnnotatorHolder::GetMetadataForEntityIdsOnBackgroundThread,
+          entity_annotator_holder_->GetBackgroundWeakPtr(), entity_ids,
           std::move(callback)));
 }
 

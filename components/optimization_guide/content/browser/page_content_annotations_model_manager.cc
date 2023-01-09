@@ -130,6 +130,18 @@ void PageContentAnnotationsModelManager::GetMetadataForEntityId(
   std::move(callback).Run(absl::nullopt);
 }
 
+void PageContentAnnotationsModelManager::GetMetadataForEntityIds(
+    const base::flat_set<std::string>& entity_ids,
+    BatchEntityMetadataRetrievedCallback callback) {
+  if (page_entities_model_handler_) {
+    page_entities_model_handler_->GetMetadataForEntityIds(entity_ids,
+                                                          std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run({});
+}
+
 void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
     AnnotationType type,
     base::OnceCallback<void(bool)> callback) {
