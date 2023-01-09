@@ -6047,6 +6047,8 @@ if (use_libfuzzer) {
       ":ash",
       "//base",
       "//chrome/browser",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/exo/wayland:weston_test_stub",
     ]
   }
 
