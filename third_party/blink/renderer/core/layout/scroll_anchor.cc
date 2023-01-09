@@ -76,7 +76,6 @@ static LayoutBox* ScrollerLayoutBox(const ScrollableArea* scroller) {
   return box;
 }
 
-
 // TODO(skobes): Storing a "corner" doesn't make much sense anymore since we
 // adjust only on the block flow axis.  This could probably be refactored to
 // simply measure the movement of the block-start edge.
@@ -232,7 +231,10 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
   }
 
   return ":nth-child(" +
-         String::Number(NthIndexCache::NthChildIndex(*element)) + ")";
+         String::Number(NthIndexCache::NthChildIndex(
+             *element, /*filter=*/nullptr, /*selector_checker=*/nullptr,
+             /*context=*/nullptr)) +
+         ")";
 }
 
 // Computes a selector that uniquely identifies |anchor_node|. This is done

@@ -703,21 +703,25 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
 
 bool SelectorChecker::CheckPseudoNot(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
-  const CSSSelector& selector = *context.selector;
-  DCHECK(selector.SelectorList());
+  return !MatchesAnyInList(context, context.selector->SelectorList()->First(),
+                           result);
+}
+
+bool SelectorChecker::MatchesAnyInList(const SelectorCheckingContext& context,
+                                       const CSSSelector* selector_list,
+                                       MatchResult& result) const {
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;
   sub_context.in_nested_complex_selector = true;
   sub_context.pseudo_id = kPseudoIdNone;
-  for (sub_context.selector = selector.SelectorList()->First();
-       sub_context.selector;
+  for (sub_context.selector = selector_list; sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
     SubResult sub_result(result);
     if (MatchSelector(sub_context, sub_result) == kSelectorMatches) {
-      return false;
+      return true;
     }
   }
-  return true;
+  return false;
 }
 
 namespace {
@@ -1379,7 +1383,17 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           parent->SetChildrenAffectedByForwardPositionalRules();
         }
       }
-      return selector.MatchNth(NthIndexCache::NthChildIndex(element));
+      if (selector.SelectorList()) {
+        // Check if the element itself matches the “of” selector.
+        // Note that this will also propagate the correct MatchResult flags,
+        // so NthIndexCache does not have to do that.
+        if (!MatchesAnyInList(context, selector.SelectorList()->First(),
+                              result)) {
+          return false;
+        }
+      }
+      return selector.MatchNth(NthIndexCache::NthChildIndex(
+          element, selector.SelectorList(), this, &context));
     case CSSSelector::kPseudoNthOfType:
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent = element.ParentElementOrDocumentFragment()) {
@@ -1396,7 +1410,15 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           !parent->IsFinishedParsingChildren()) {
         return false;
       }
-      return selector.MatchNth(NthIndexCache::NthLastChildIndex(element));
+      if (selector.SelectorList()) {
+        // Check if the element itself matches the “of” selector.
+        if (!MatchesAnyInList(context, selector.SelectorList()->First(),
+                              result)) {
+          return false;
+        }
+      }
+      return selector.MatchNth(NthIndexCache::NthLastChildIndex(
+          element, selector.SelectorList(), this, &context));
     }
     case CSSSelector::kPseudoNthLastOfType: {
       ContainerNode* parent = element.ParentElementOrDocumentFragment();
@@ -1421,21 +1443,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
     case CSSSelector::kPseudoAny:
-    case CSSSelector::kPseudoParent: {
-      SelectorCheckingContext sub_context(context);
-      sub_context.is_sub_selector = true;
-      sub_context.in_nested_complex_selector = true;
-      sub_context.pseudo_id = kPseudoIdNone;
-      for (sub_context.selector = selector.SelectorListOrParent();
-           sub_context.selector; sub_context.selector = CSSSelectorList::Next(
-                                     *sub_context.selector)) {
-        SubResult sub_result(result);
-        if (MatchSelector(sub_context, sub_result) == kSelectorMatches) {
-          return true;
-        }
-      }
-      break;
-    }
+    case CSSSelector::kPseudoParent:
+      return MatchesAnyInList(context, selector.SelectorListOrParent(), result);
     case CSSSelector::kPseudoAutofill:
     case CSSSelector::kPseudoWebKitAutofill: {
       auto* html_form_element = DynamicTo<HTMLFormControlElement>(&element);

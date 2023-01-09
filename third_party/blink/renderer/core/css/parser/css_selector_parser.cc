@@ -1407,10 +1407,28 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
         return false;
       }
       block.ConsumeWhitespace();
+      if (block.AtEnd()) {
+        selector.SetNth(ab.first, ab.second, nullptr);
+        output_.push_back(std::move(selector));
+        return true;
+      }
+
+      // See if there's an “of ...” part.
+      if (selector.GetPseudoType() != CSSSelector::kPseudoNthChild &&
+          selector.GetPseudoType() != CSSSelector::kPseudoNthLastChild) {
+        return false;
+      }
+
+      CSSSelectorList* sub_selectors = ConsumeNthChildOfSelectors(block);
+      if (sub_selectors == nullptr) {
+        return false;
+      }
+      block.ConsumeWhitespace();
       if (!block.AtEnd()) {
         return false;
       }
-      selector.SetNth(ab.first, ab.second);
+
+      selector.SetNth(ab.first, ab.second, sub_selectors);
       output_.push_back(std::move(selector));
       return true;
     }
@@ -1657,6 +1675,29 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,
     }
   }
   return true;
+}
+
+// Consumes the “of ...” part of :nth_child(An+B of ...).
+// Returns nullptr on failure.
+CSSSelectorList* CSSSelectorParser::ConsumeNthChildOfSelectors(
+    CSSParserTokenRange& range) {
+  if (!RuntimeEnabledFeatures::CSSSelectorNthChildComplexSelectorEnabled()) {
+    return nullptr;
+  }
+
+  if (range.Peek().GetType() != kIdentToken ||
+      range.Consume().Value() != "of") {
+    return nullptr;
+  }
+  range.ConsumeWhitespace();
+
+  ResetVectorAfterScope reset_vector(output_);
+  base::span<CSSSelector> selectors =
+      ConsumeComplexSelectorList(range, /*in_nested_style_rule=*/false);
+  if (selectors.empty()) {
+    return nullptr;
+  }
+  return CSSSelectorList::AdoptSelectorVector(selectors);
 }
 
 const AtomicString& CSSSelectorParser::DefaultNamespace() const {

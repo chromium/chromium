@@ -70,6 +70,7 @@ class CORE_EXPORT CSSSelectorParser {
       HeapVector<CSSSelector>&);
 
   static bool ConsumeANPlusB(CSSParserTokenRange&, std::pair<int, int>&);
+  CSSSelectorList* ConsumeNthChildOfSelectors(CSSParserTokenRange&);
 
   static bool SupportsComplexSelector(CSSParserTokenRange,
                                       const CSSParserContext*);

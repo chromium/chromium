@@ -158,6 +158,13 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
             return 0;
           }
           return MaximumSpecificity(data_.parent_rule_->FirstSelector());
+        case kPseudoNthChild:
+        case kPseudoNthLastChild:
+          if (SelectorList()) {
+            return kClassLikeSpecificity + MaximumSpecificity(SelectorList());
+          } else {
+            return kClassLikeSpecificity;
+          }
         case kPseudoRelativeAnchor:
           return 0;
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
@@ -862,6 +869,18 @@ static void SerializeNamespacePrefixIfNeeded(const AtomicString& prefix,
   builder.Append('|');
 }
 
+static void SerializeSelectorList(const CSSSelectorList* selector_list,
+                                  StringBuilder& builder) {
+  const CSSSelector* first_sub_selector = selector_list->First();
+  for (const CSSSelector* sub_selector = first_sub_selector; sub_selector;
+       sub_selector = CSSSelectorList::Next(*sub_selector)) {
+    if (sub_selector != first_sub_selector) {
+      builder.Append(", ");
+    }
+    builder.Append(sub_selector->SelectorText());
+  }
+}
+
 const CSSSelector* CSSSelector::SerializeCompound(
     StringBuilder& builder) const {
   if (match_ == kTag && !is_implicitly_added_) {
@@ -873,6 +892,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
 
   for (const CSSSelector* simple_selector = this; simple_selector;
        simple_selector = simple_selector->TagHistory()) {
+    bool suppress_selector_list = false;
     if (simple_selector->match_ == kId) {
       builder.Append('#');
       SerializeIdentifier(simple_selector->SerializingValue(), builder);
@@ -913,6 +933,14 @@ const CSSSelector* CSSSelector::SerializeCompound(
             } else if (b > 0) {
               builder.AppendFormat("+%d", b);
             }
+          }
+
+          // Only relevant for :nth-child, not :nth-of-type.
+          if (simple_selector->data_.rare_data_->selector_list_ != nullptr) {
+            builder.Append(" of ");
+            SerializeSelectorList(
+                simple_selector->data_.rare_data_->selector_list_, builder);
+            suppress_selector_list = true;
           }
 
           builder.Append(')');
@@ -1032,17 +1060,9 @@ const CSSSelector* CSSSelector::SerializeCompound(
       }
     }
 
-    if (simple_selector->SelectorList()) {
+    if (simple_selector->SelectorList() && !suppress_selector_list) {
       builder.Append('(');
-      const CSSSelector* first_sub_selector =
-          simple_selector->SelectorList()->First();
-      for (const CSSSelector* sub_selector = first_sub_selector; sub_selector;
-           sub_selector = CSSSelectorList::Next(*sub_selector)) {
-        if (sub_selector != first_sub_selector) {
-          builder.Append(", ");
-        }
-        builder.Append(sub_selector->SelectorText());
-      }
+      SerializeSelectorList(simple_selector->SelectorList(), builder);
       builder.Append(')');
     }
 
@@ -1252,10 +1272,11 @@ bool CSSSelector::HasLinkOrVisited() const {
   return false;
 }
 
-void CSSSelector::SetNth(int a, int b) {
+void CSSSelector::SetNth(int a, int b, CSSSelectorList* sub_selectors) {
   CreateRareData();
   data_.rare_data_->bits_.nth_.a_ = a;
   data_.rare_data_->bits_.nth_.b_ = b;
+  data_.rare_data_->selector_list_ = sub_selectors;
 }
 
 bool CSSSelector::MatchNth(unsigned count) const {

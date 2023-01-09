@@ -326,6 +326,9 @@ class CORE_EXPORT SelectorChecker {
   bool CheckPseudoScope(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
+  bool MatchesAnyInList(const SelectorCheckingContext& context,
+                        const CSSSelector* selector_list,
+                        MatchResult& result) const;
 
   // The *activations* for a given StyleScope/element, is a list of active
   // scopes found in the ancestor chain, their roots (Element*), and the
@@ -355,6 +358,8 @@ class CORE_EXPORT SelectorChecker {
 #if DCHECK_IS_ON()
   mutable bool inside_match_ = false;
 #endif
+
+  friend class NthIndexCache;
 };
 
 }  // namespace blink

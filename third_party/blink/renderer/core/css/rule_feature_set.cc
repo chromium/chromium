@@ -217,7 +217,9 @@ bool SupportsInvalidationWithSelectorList(CSSSelector::PseudoType pseudo) {
          pseudo == CSSSelector::kPseudoNot ||
          pseudo == CSSSelector::kPseudoSlotted ||
          pseudo == CSSSelector::kPseudoWhere ||
-         pseudo == CSSSelector::kPseudoParent;
+         pseudo == CSSSelector::kPseudoParent ||
+         pseudo == CSSSelector::kPseudoNthChild ||
+         pseudo == CSSSelector::kPseudoNthLastChild;
 }
 
 bool RequiresSubtreeInvalidation(const CSSSelector& selector) {

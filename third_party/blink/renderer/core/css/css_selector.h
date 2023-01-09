@@ -136,8 +136,8 @@ class CORE_EXPORT CSSSelector {
     kInvalidList,       // Used as a marker in CSSSelectorList.
     kTag,               // Example: div
     kId,                // Example: #id
-    kClass,             // example: .class
-    kPseudoClass,       // Example:  :nth-child(2)
+    kClass,             // Example: .class
+    kPseudoClass,       // Example: :nth-child(2)
     kPseudoElement,     // Example: ::first-line
     kPagePseudoClass,   // ??
     kAttributeExact,    // Example: E[foo="bar"]
@@ -234,7 +234,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoModal,
     kPseudoNoButton,
     kPseudoNot,
-    kPseudoNthChild,
+    kPseudoNthChild,  // Includes :nth-child(An+B of <selector>)
     kPseudoNthLastChild,
     kPseudoNthLastOfType,
     kPseudoNthOfType,
@@ -421,7 +421,7 @@ class CORE_EXPORT CSSSelector {
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 
-  void SetNth(int a, int b);
+  void SetNth(int a, int b, CSSSelectorList* sub_selector);
   bool MatchNth(unsigned count) const;
 
   static bool IsAdjacentRelation(RelationType relation) {
@@ -537,8 +537,8 @@ class CORE_EXPORT CSSSelector {
         bool contains_complex_logical_combinations_;
       } has_;
     } bits_;
-    QualifiedName attribute_;  // used for attribute selector
-    AtomicString argument_;    // Used for :contains, :lang, :nth-*, :toggle()
+    QualifiedName attribute_;  // Used for attribute selector
+    AtomicString argument_;    // Used for :contains, :lang, :dir, :toggle, etc.
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
     std::unique_ptr<Vector<AtomicString>>

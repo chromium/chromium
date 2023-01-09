@@ -873,6 +873,13 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
+      // Support for :nth-child(An + B of S).
+      //
+      // https://drafts.csswg.org/selectors-4/#the-nth-child-pseudo
+      name: "CSSSelectorNthChildComplexSelector",
+      status: "experimental"
+    },
+    {
       // Support for CSS ::spelling-error, ::grammar-error, and the
       // spelling-error and grammar-error values in text-decoration-line.
       //

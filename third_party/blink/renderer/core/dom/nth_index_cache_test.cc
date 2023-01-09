@@ -31,10 +31,14 @@ TEST_F(NthIndexCacheTest, NthIndex) {
 
   NthIndexCache nth_index_cache(GetDocument());
 
-  EXPECT_EQ(nth_index_cache.NthChildIndex(*GetElementById("nth-child")), 12U);
-  EXPECT_EQ(
-      nth_index_cache.NthLastChildIndex(*GetElementById("nth-last-child")),
-      12U);
+  EXPECT_EQ(nth_index_cache.NthChildIndex(
+                *GetElementById("nth-child"), /*filter=*/nullptr,
+                /*selector_checker=*/nullptr, /*context=*/nullptr),
+            12U);
+  EXPECT_EQ(nth_index_cache.NthLastChildIndex(
+                *GetElementById("nth-last-child"), /*filter=*/nullptr,
+                /*selector_checker=*/nullptr, /*context=*/nullptr),
+            12U);
 }
 
 }  // namespace blink

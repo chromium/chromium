@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 
+#include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 
@@ -26,8 +27,16 @@ NthIndexCache::~NthIndexCache() {
   document_->SetNthIndexCache(nullptr);
 }
 
+void NthIndexCache::Key::Trace(Visitor* visitor) const {
+  visitor->Trace(parent);
+  visitor->Trace(filter);
+}
+
 unsigned NthIndexCache::Key::GetHash() const {
   unsigned hash = WTF::MemberHash<Node>::GetHash(parent);
+  if (filter != nullptr) {
+    WTF::AddIntToHash(hash, WTF::MemberHash<CSSSelectorList>::GetHash(filter));
+  }
   if (!child_tag_name.empty()) {
     WTF::AddIntToHash(hash, DefaultHash<String>::GetHash(child_tag_name));
   }
@@ -42,25 +51,6 @@ namespace {
 // increasing number of children.
 
 const unsigned kCachedSiblingCountLimit = 32;
-
-unsigned UncachedNthChildIndex(Element& element) {
-  int index = 1;
-  for (const Element* sibling = ElementTraversal::PreviousSibling(element);
-       sibling; sibling = ElementTraversal::PreviousSibling(*sibling)) {
-    index++;
-  }
-
-  return index;
-}
-
-unsigned UncachedNthLastChildIndex(Element& element) {
-  int index = 1;
-  for (const Element* sibling = ElementTraversal::NextSibling(element); sibling;
-       sibling = ElementTraversal::NextSibling(*sibling)) {
-    ++index;
-  }
-  return index;
-}
 
 unsigned UncachedNthOfTypeIndex(Element& element, unsigned& sibling_count) {
   int index = 1;
@@ -90,40 +80,118 @@ unsigned UncachedNthLastOfTypeIndex(Element& element, unsigned& sibling_count) {
 
 }  // namespace
 
-unsigned NthIndexCache::NthChildIndex(Element& element) {
+bool NthIndexCache::MatchesFilter(
+    Element* element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context) {
+  if (filter == nullptr) {
+    // With no selector list, consider all elements.
+    return true;
+  }
+
+  SelectorChecker::SelectorCheckingContext sub_context(*context);
+  sub_context.element = element;
+  sub_context.is_sub_selector = true;
+  sub_context.in_nested_complex_selector = true;
+  sub_context.pseudo_id = kPseudoIdNone;
+  for (sub_context.selector = filter->First(); sub_context.selector;
+       sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
+    // NOTE: We don't want to propagate match_result up to the parent;
+    // the correct flags were already set when the caller tested that
+    // the element matched the selector list itself.
+    SelectorChecker::MatchResult dummy_match_result;
+    if (selector_checker->MatchSelector(sub_context, dummy_match_result) ==
+        SelectorChecker::kSelectorMatches) {
+      return true;
+    }
+  }
+  return false;
+}
+
+unsigned NthIndexCache::UncachedNthChildIndex(
+    Element& element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context,
+    unsigned& sibling_count) {
+  int index = 1;
+  for (Element* sibling = ElementTraversal::PreviousSibling(element); sibling;
+       sibling = ElementTraversal::PreviousSibling(*sibling)) {
+    if (MatchesFilter(sibling, filter, selector_checker, context)) {
+      ++index;
+    }
+    ++sibling_count;
+  }
+
+  return index;
+}
+
+unsigned NthIndexCache::UncachedNthLastChildIndex(
+    Element& element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context,
+    unsigned& sibling_count) {
+  int index = 1;
+  for (Element* sibling = ElementTraversal::NextSibling(element); sibling;
+       sibling = ElementTraversal::NextSibling(*sibling)) {
+    if (MatchesFilter(sibling, filter, selector_checker, context)) {
+      index++;
+    }
+    ++sibling_count;
+  }
+  return index;
+}
+
+unsigned NthIndexCache::NthChildIndex(
+    Element& element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context) {
   if (element.IsPseudoElement() || !element.parentNode()) {
     return 1;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
-        Key(element.parentNode()));
+        Key(element.parentNode(), filter));
     if (it != nth_index_cache->cache_->end()) {
       return it->value->NthIndex(element);
     }
   }
-  unsigned index = UncachedNthChildIndex(element);
-  if (nth_index_cache && index > kCachedSiblingCountLimit) {
-    nth_index_cache->CacheNthIndexDataForParent(element);
+  unsigned sibling_count = 0;
+  unsigned index = UncachedNthChildIndex(element, filter, selector_checker,
+                                         context, sibling_count);
+  if (nth_index_cache && sibling_count > kCachedSiblingCountLimit) {
+    nth_index_cache->CacheNthIndexDataForParent(element, filter,
+                                                selector_checker, context);
   }
   return index;
 }
 
-unsigned NthIndexCache::NthLastChildIndex(Element& element) {
+unsigned NthIndexCache::NthLastChildIndex(
+    Element& element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context) {
   if (element.IsPseudoElement() && !element.parentNode()) {
     return 1;
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
     auto it = nth_index_cache->cache_->Find<KeyHashTranslator>(
-        Key(element.parentNode()));
+        Key(element.parentNode(), filter));
     if (it != nth_index_cache->cache_->end()) {
       return it->value->NthLastIndex(element);
     }
   }
-  unsigned index = UncachedNthLastChildIndex(element);
-  if (nth_index_cache && index > kCachedSiblingCountLimit) {
-    nth_index_cache->CacheNthIndexDataForParent(element);
+  unsigned sibling_count = 0;
+  unsigned index = UncachedNthLastChildIndex(element, filter, selector_checker,
+                                             context, sibling_count);
+  if (nth_index_cache && sibling_count > kCachedSiblingCountLimit) {
+    nth_index_cache->CacheNthIndexDataForParent(element, filter,
+                                                selector_checker, context);
   }
   return index;
 }
@@ -175,12 +243,17 @@ void NthIndexCache::EnsureCache() {
   }
 }
 
-void NthIndexCache::CacheNthIndexDataForParent(Element& element) {
+void NthIndexCache::CacheNthIndexDataForParent(
+    Element& element,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context) {
   DCHECK(element.parentNode());
   EnsureCache();
-  auto add_result =
-      cache_->insert(MakeGarbageCollected<Key>(element.parentNode()),
-                     MakeGarbageCollected<NthIndexData>(*element.parentNode()));
+  auto add_result = cache_->insert(
+      MakeGarbageCollected<Key>(element.parentNode(), filter),
+      MakeGarbageCollected<NthIndexData>(*element.parentNode(), filter,
+                                         selector_checker, context));
   DCHECK(add_result.is_new_entry);
 }
 
@@ -232,7 +305,16 @@ unsigned NthIndexData::NthLastOfTypeIndex(Element& element) const {
   return count_ - NthOfTypeIndex(element) + 1;
 }
 
-NthIndexData::NthIndexData(ContainerNode& parent) {
+NthIndexData::NthIndexData(
+    ContainerNode& parent,
+    const CSSSelectorList* filter,
+    const SelectorChecker* selector_checker,
+    const SelectorChecker::SelectorCheckingContext* context) {
+  auto matches = [&](Element& element) {
+    return NthIndexCache::MatchesFilter(&element, filter, selector_checker,
+                                        context);
+  };
+
   // The frequency at which we cache the nth-index for a set of siblings.  A
   // spread value of 3 means every third Element will have its nth-index cached.
   // Using a spread value > 1 is done to save memory. Looking up the nth-index
@@ -240,8 +322,8 @@ NthIndexData::NthIndexData(ContainerNode& parent) {
   // 'spread' elements will be traversed.
   const unsigned kSpread = 3;
   unsigned count = 0;
-  for (Element* sibling = ElementTraversal::FirstChild(parent); sibling;
-       sibling = ElementTraversal::NextSibling(*sibling)) {
+  for (Element* sibling = ElementTraversal::FirstChild(parent, matches);
+       sibling; sibling = ElementTraversal::NextSibling(*sibling, matches)) {
     if (!(++count % kSpread)) {
       element_index_map_.insert(sibling, count);
     }

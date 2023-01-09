@@ -30,6 +30,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,11 +41,14 @@ class Document;
 
 // The cache for a given :nth-* selector; maps from each child element of
 // a given node (modulo spread; see file comment) to its correct child index.
-// The owner needs to key by parent and potentially tag name; we receive them
-// to do the actual query, but do not store them.
+// The owner needs to key by parent and potentially tag name or selector;
+// we receive them to do the actual query, but do not store them.
 class CORE_EXPORT NthIndexData final : public GarbageCollected<NthIndexData> {
  public:
-  explicit NthIndexData(ContainerNode&);
+  NthIndexData(ContainerNode&,
+               const CSSSelectorList* filter,
+               const SelectorChecker* selector_checker,
+               const SelectorChecker::SelectorCheckingContext* context);
   NthIndexData(ContainerNode&, const QualifiedName& type);
   NthIndexData(const NthIndexData&) = delete;
   NthIndexData& operator=(const NthIndexData&) = delete;
@@ -82,25 +86,41 @@ class CORE_EXPORT NthIndexCache final {
   NthIndexCache& operator=(const NthIndexCache&) = delete;
   ~NthIndexCache();
 
-  static unsigned NthChildIndex(Element&);
-  static unsigned NthLastChildIndex(Element&);
+  static unsigned NthChildIndex(
+      Element& element,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context);
+  static unsigned NthLastChildIndex(
+      Element& element,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context);
   static unsigned NthOfTypeIndex(Element&);
   static unsigned NthLastOfTypeIndex(Element&);
 
  private:
   // Key in the top-level cache; identifies the parent and the type of query.
   struct Key : public GarbageCollected<Key> {
-    explicit Key(Node* parent_arg) : parent(parent_arg) {}
+    Key(Node* parent_arg, const CSSSelectorList* filter_arg)
+        : parent(parent_arg), filter(filter_arg) {}
     Key(Node* parent_arg, String child_tag_name_arg)
         : parent(parent_arg), child_tag_name(child_tag_name_arg) {}
 
     Member<Node> parent;
     String child_tag_name;  // Empty if not :nth-of-type.
+    // Can be nullptr. Always nullptr if :nth-of-type, which filters on
+    // child_tag_name instead.
+    Member<const CSSSelectorList> filter;
 
-    void Trace(Visitor* visitor) const { visitor->Trace(parent); }
+    void Trace(Visitor* visitor) const;
     unsigned GetHash() const;
     bool operator==(const Key& other) const {
-      return parent == other.parent && child_tag_name == other.child_tag_name;
+      // NOTE: We compare filter by identity, which makes for potentially
+      // (theoretically) less effective caching between different selectors, but
+      // is simpler.
+      return parent == other.parent && filter == other.filter &&
+             child_tag_name == other.child_tag_name;
     }
   };
 
@@ -128,7 +148,28 @@ class CORE_EXPORT NthIndexCache final {
     }
   };
 
-  void CacheNthIndexDataForParent(Element&);
+  static bool MatchesFilter(
+      Element* element,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context);
+  static unsigned UncachedNthChildIndex(
+      Element& element,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context,
+      unsigned& sibling_count);
+  static unsigned UncachedNthLastChildIndex(
+      Element& element,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context,
+      unsigned& sibling_count);
+  void CacheNthIndexDataForParent(
+      Element& element,
+      const CSSSelectorList* filter,
+      const SelectorChecker* selector_checker,
+      const SelectorChecker::SelectorCheckingContext* context);
   void CacheNthOfTypeIndexDataForParent(Element&);
   void EnsureCache();
 
@@ -141,6 +182,8 @@ class CORE_EXPORT NthIndexCache final {
 #if DCHECK_IS_ON()
   uint64_t dom_tree_version_;
 #endif
+
+  friend class NthIndexData;
 };
 
 }  // namespace blink
