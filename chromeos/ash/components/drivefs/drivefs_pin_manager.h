@@ -171,33 +171,41 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // A wrapper to maintain sequence-affinity on the `InProgressMap`. The
   // instance of this is owned by `DriveFsPinManager`, is created and destroyed
   // on the same task runner.
-  class InProgressSyncingItems {
+  class TrackedFiles {
    public:
-    InProgressSyncingItems();
-
-    InProgressSyncingItems(const InProgressSyncingItems&) = delete;
-    InProgressSyncingItems& operator=(const InProgressSyncingItems&) = delete;
-
-    ~InProgressSyncingItems();
+    ~TrackedFiles();
+    TrackedFiles();
 
     // Adds an item to the map.
-    void AddItem(const std::string& path);
+    void Add(const std::string& path, int64_t expected_size);
 
     // Removes an item from the map. Does nothing if the item is not in the map.
-    // Updates and returns the total number of bytes transferred so far.
-    int64_t RemoveItem(const std::string& path, int64_t bytes_transferred);
+    // Updates the total number of bytes transferred so far.
+    // Returns whether an item was actually removed.
+    bool Remove(const std::string& path, int64_t bytes_transferred = -1);
 
     // Adds or updates the item keyed at `path` with the new progress bytes.
-    // Updates and returns the total number of bytes transferred so far.
-    int64_t UpdateItem(const std::string& path,
-                       int64_t bytes_transferred,
-                       int64_t bytes_to_transfer);
+    // Updates the total number of bytes transferred so far.
+    // Returns whether anything has actually been updated.
+    bool Update(const std::string& path,
+                int64_t bytes_transferred,
+                int64_t bytes_to_transfer);
+
+    // Adds or updates the item to mark it in progress.
+    // Returns whether anything has actually been updated.
+    bool MarkInProgress(const std::string& path);
 
     // Returns the number of items currently being tracked as in progress.
-    size_t GetItemCount();
+    size_t GetCount() const;
 
-    // Returns the paths of items currently being tracked as in progress.
-    std::vector<std::string> GetPaths();
+    // Returns the paths of the tracked files that haven't started syncing yet.
+    std::vector<std::string> GetUnstartedPaths() const;
+
+    // Returns the total number of bytes that have been transferred so far.
+    int64_t GetTotalBytesTransferred() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      return total_bytes_transferred_;
+    }
 
     // Resets this object.
     void Reset();
@@ -210,13 +218,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
       // Number of bytes that have been transferred so far.
       int64_t transferred = 0;
 
-      // Total number of bytes for this file.
+      // Total expected number of bytes for this file.
       int64_t total = 0;
+
+      // Have we received in-progress events for this file?
+      bool in_progress = false;
+
+      friend std::ostream& operator<<(std::ostream& out, const Progress& p) {
+        return out << "{transferred: " << HumanReadableSize(p.transferred)
+                   << ", total: " << HumanReadableSize(p.total)
+                   << ", in_progress: " << p.in_progress << "}";
+      }
     };
 
     // Map that tracks the in-progress files indexed by their path.
-    using InProgressMap = std::map<std::string, Progress>;
-    InProgressMap in_progress_items_ GUARDED_BY_CONTEXT(sequence_checker_);
+    using Files = std::map<std::string, Progress>;
+    Files files_ GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Keeps track of the total bytes transferred by all the in progress syncing
     // items.
@@ -256,28 +273,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // ensure they are all still not available offline (i.e. still syncing). In
   // certain cases (e.g. hosted docs like gdocs) they will not emit a syncing
   // status update but will get pinned.
-  void PeriodicallyRemovePinnedItems();
-
-  // For any paths that are in the unstarted phase (i.e. no `bytes_to_transfer`
-  // registered), the metadata must be retrieved to verify their
-  // `available_offline` boolean is true OR the size is 0.
-  void GetMetadata(const std::vector<std::string>& unstarted_paths);
+  void CheckUnstartedFiles();
 
   // When an item goes to completed, it doesn't emit the final chunk of progress
   // nor it's final size, to ensure progress is adequately retrieved, this
   // method is used to get the total size to keep track of.
-  void GetMetadataForPath(const std::string& path);
   void OnMetadataRetrieved(const std::string& path,
                            drive::FileError error,
                            mojom::FileMetadataPtr metadata);
 
   // If there are no remaining items left, get the next search query page.
-  void MaybeStartSearch(size_t remaining_items);
+  void MaybeContinueSearch();
 
   // The `total_bytes_transferred` is guarded by a sequence in the
   // `InProgressMap`, so after updating a single item the total bytes is
   // notified via `NotifyProgress`.
-  void ReportTotalBytesTransferred(int64_t total_bytes_transferred);
+  void ReportTotalBytesTransferred();
 
   // Report progress to all the observers.
   void NotifyProgress();
@@ -296,7 +307,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   const raw_ptr<mojom::DriveFs> drivefs_interface_;
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
-  InProgressSyncingItems syncing_items_;
+  TrackedFiles tracked_files_;
 
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 };

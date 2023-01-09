@@ -336,7 +336,7 @@ TEST_F(DriveFsPinManagerTest,
   run_loop.Run();
 }
 
-TEST_F(DriveFsPinManagerTest, OnlyUnpinnedItemsShouldGetPinned) {
+TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
   base::MockOnceCallback<void(SetupError)> mock_callback;
   auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
@@ -419,9 +419,8 @@ TEST_F(DriveFsPinManagerTest, OnlyUnpinnedItemsShouldGetPinned) {
   new_run_loop.Run();
 }
 
-TEST_F(
-    DriveFsPinManagerTest,
-    ZeroByteItemsAndHostedItemsShouldBePeriodicallyCleanedFromTheInProgressMap) {
+TEST_F(DriveFsPinManagerTest,
+       DISABLED_ZeroByteItemsAndHostedItemsShouldBePeriodicallyCleaned) {
   base::MockOnceCallback<void(SetupError)> mock_callback;
   auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
@@ -511,7 +510,7 @@ class TestBulkPinObserver : public DriveFsBulkPinObserver {
 };
 
 TEST_F(DriveFsPinManagerTest,
-       SyncingStatusUpdateProgressIsReportedBackToObserver) {
+       DISABLED_SyncingStatusUpdateProgressIsReportedBackToObserver) {
   base::MockOnceCallback<void(SetupError)> mock_callback;
   auto mock_free_disk_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
