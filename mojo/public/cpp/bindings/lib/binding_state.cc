@@ -64,6 +64,8 @@ void BindingStateBase::Close() {
   // Mojo resources must be destroyed at deterministic points,
   // so leak them if this state is destroyed during a GC.
   if (recordreplay::AreEventsDisallowed()) {
+    if (endpoint_client_)
+      endpoint_client_->record_replay_leak();
     endpoint_client_.release();
     (void)router_.release();
     return;

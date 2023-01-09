@@ -96,6 +96,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     return !async_responders_.empty() || !sync_responses_.empty();
   }
 
+  void record_replay_leak() {
+    record_replay_leaked_ = true;
+  }
+
   AssociatedGroup* associated_group();
 
   scoped_refptr<ThreadSafeProxy> CreateThreadSafeProxy(
@@ -333,6 +337,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   base::OnceClosure error_handler_;
   ConnectionErrorWithReasonCallback error_with_reason_handler_;
   bool encountered_error_ = false;
+
+  // When recording/replaying there are various points where endpoints are leaked
+  // to avoid destroying mojo resources at non-deterministic points. The receiver
+  // is no longer valid to use once this has been set.
+  bool record_replay_leaked_ = false;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

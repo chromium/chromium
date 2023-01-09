@@ -1019,7 +1019,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       return control_message_handler_.Accept(message);
     }
 
-    accepted_interface_message = incoming_receiver_->Accept(message);
+    // If this has been leaked instead of destroyed the receiver can no longer be used.
+    accepted_interface_message = record_replay_leaked_ || incoming_receiver_->Accept(message);
   }
 
   if (weak_self && accepted_interface_message &&
