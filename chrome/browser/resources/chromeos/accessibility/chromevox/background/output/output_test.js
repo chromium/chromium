@@ -121,7 +121,8 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxE2ETest {
 
     await importModule('LocalStorage', '/common/local_storage.js');
 
-    window.Dir = AutomationUtil.Dir;
+    globalThis.Dir = AutomationUtil.Dir;
+    globalThis.RoleType = chrome.automation.RoleType;
     this.forceContextualLastOutput();
   }
 };

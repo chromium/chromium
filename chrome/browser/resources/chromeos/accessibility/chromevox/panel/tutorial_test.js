@@ -27,6 +27,8 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
         ['PanelCommand', 'PanelCommandType'],
         '/chromevox/common/panel_command.js');
     await importModule('KeyCode', '/common/key_code.js');
+
+    globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
   }
 
   assertActiveLessonIndex(expectedIndex) {

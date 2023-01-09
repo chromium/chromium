@@ -25,6 +25,8 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxE2ETest {
         'ChromeVoxKbHandler', '/chromevox/common/keyboard_handler.js');
     await importModule('KeySequence', '/chromevox/common/key_sequence.js');
     await importModule('KeyCode', '/common/key_code.js');
+
+    globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
   }
 
   /**

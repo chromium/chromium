@@ -32,12 +32,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
 
   /** @override */
   setUp() {
-    window.EventType = chrome.automation.EventType;
-    window.RoleType = chrome.automation.RoleType;
-    window.TreeChangeType = chrome.automation.TreeChangeType;
-    window.doCmd = this.doCmd;
-    window.doGesture = this.doGesture;
-    window.Gesture = chrome.accessibilityPrivate.Gesture;
+    globalThis.doCmd = this.doCmd;
+    globalThis.doGesture = this.doGesture;
 
     super.setUp();
   }

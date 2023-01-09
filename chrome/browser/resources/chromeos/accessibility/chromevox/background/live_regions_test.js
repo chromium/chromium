@@ -19,7 +19,8 @@ ChromeVoxLiveRegionsTest = class extends ChromeVoxE2ETest {
     await importModule('Output', '/chromevox/background/output/output.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
 
-    window.TreeChangeType = chrome.automation.TreeChangeType;
+    globalThis.RoleType = chrome.automation.RoleType;
+    globalThis.TreeChangeType = chrome.automation.TreeChangeType;
   }
 
   /**

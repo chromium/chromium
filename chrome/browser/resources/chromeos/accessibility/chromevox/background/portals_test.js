@@ -27,6 +27,9 @@ ChromeVoxPortalsTest = class extends ChromeVoxE2ETest {
     // Alphabetical based on file path.
     await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+
+    globalThis.EventType = chrome.automation.EventType;
+    globalThis.RoleType = chrome.automation.RoleType;
   }
 
   get testServer() {

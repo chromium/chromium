@@ -29,6 +29,9 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
         '/chromevox/common/panel_command.js');
     await importModule('CursorRange', '/common/cursors/range.js');
     await importModule('LocalStorage', '/common/local_storage.js');
+
+    globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
+    globalThis.RoleType = chrome.automation.RoleType;
   }
 
   fireMockEvent(key) {

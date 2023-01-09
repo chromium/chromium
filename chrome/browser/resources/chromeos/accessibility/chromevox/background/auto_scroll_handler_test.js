@@ -20,7 +20,8 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule('CursorRange', '/common/cursors/range.js');
 
-    window.EventType = chrome.automation.EventType;
+    globalThis.EventType = chrome.automation.EventType;
+    globalThis.RoleType = chrome.automation.RoleType;
     this.forceContextualLastOutput();
   }
 

@@ -68,13 +68,17 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
     await importModule('KeyCode', '/common/key_code.js');
     await importModule('LocalStorage', '/common/local_storage.js');
 
-    window.doGesture = this.doGesture;
-    window.simulateHitTestResult = this.simulateHitTestResult;
-    window.press = this.press;
-    window.doDefault = this.doDefault;
-    window.focus = this.focus;
-    window.Mod = constants.ModifierFlag;
-    window.ActionType = chrome.automation.ActionType;
+
+    globalThis.simulateHitTestResult = this.simulateHitTestResult;
+    globalThis.press = this.press;
+    globalThis.doDefault = this.doDefault;
+    globalThis.focus = this.focus;
+
+    globalThis.ActionType = chrome.automation.ActionType;
+    globalThis.EventType = chrome.automation.EventType;
+    globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
+    globalThis.Mod = constants.ModifierFlag;
+    globalThis.RoleType = chrome.automation.RoleType;
 
     this.forceContextualLastOutput();
   }

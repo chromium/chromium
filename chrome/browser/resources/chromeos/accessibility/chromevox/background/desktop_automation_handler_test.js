@@ -34,7 +34,10 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
       });
     });
 
-    window.press = this.press;
+    globalThis.EventType = chrome.automation.EventType;
+    globalThis.RoleType = chrome.automation.RoleType;
+
+    globalThis.press = this.press;
   }
 
   press(keyCode, modifiers) {

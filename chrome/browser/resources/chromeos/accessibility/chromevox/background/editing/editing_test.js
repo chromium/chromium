@@ -33,6 +33,9 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
     await importModule('LocalStorage', '/common/local_storage.js');
+
+    globalThis.EventType = chrome.automation.EventType;
+    globalThis.RoleType = chrome.automation.RoleType;
   }
 
   press(keyCode, modifiers) {

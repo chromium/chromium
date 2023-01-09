@@ -13,7 +13,9 @@ GEN_INCLUDE([
 ChromeVoxOptionsTest = class extends ChromeVoxE2ETest {
   constructor() {
     super();
-    window.press = this.press;
+    globalThis.EventType = chrome.automation.EventType;
+    globalThis.RoleType = chrome.automation.RoleType;
+    globalThis.press = this.press;
   }
 
   /** @override */
