@@ -9,7 +9,14 @@
 namespace blink {
 
 PageVisibilityObserver::PageVisibilityObserver(Page* page) {
+  // Pointer registration is needed for sorting in Page::SetVisibilityState
+  recordreplay::RegisterPointer("PageVisibilityObserver", this);
+
   SetPage(page);
+}
+
+PageVisibilityObserver::~PageVisibilityObserver() {
+  recordreplay::UnregisterPointer(this);
 }
 
 void PageVisibilityObserver::ObserverSetWillBeCleared() {
