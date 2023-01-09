@@ -36,7 +36,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/consolidated_consent_field_trial.h"
-#include "chrome/browser/ash/login/hid_detection_revamp_field_trial.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
 
@@ -62,8 +61,6 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
     base::FeatureList* feature_list) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::consolidated_consent_field_trial::Create(
-      entropy_providers.default_entropy(), feature_list, local_state_);
-  ash::hid_detection_revamp_field_trial::Create(
       entropy_providers.default_entropy(), feature_list, local_state_);
 #endif
 

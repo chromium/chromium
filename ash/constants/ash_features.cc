@@ -1499,7 +1499,7 @@ BASE_FEATURE(kOobeConsolidatedConsent,
 // https://crbug.com/1299099.
 BASE_FEATURE(kOobeHidDetectionRevamp,
              "OobeHidDetectionRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
