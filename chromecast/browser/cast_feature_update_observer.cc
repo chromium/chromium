@@ -44,8 +44,8 @@ void CastFeatureUpdateObserver::BindFeatureUpdateService() {
                      base::Unretained(this)));
 }
 
-void CastFeatureUpdateObserver::OnFeaturesUpdated(base::Value features) {
-  pref_service_->Set(prefs::kLatestDCSFeatures, std::move(features));
+void CastFeatureUpdateObserver::OnFeaturesUpdated(base::Value::Dict features) {
+  pref_service_->SetDict(prefs::kLatestDCSFeatures, std::move(features));
   pref_service_->CommitPendingWrite();
 }
 

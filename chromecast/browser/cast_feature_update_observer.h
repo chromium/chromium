@@ -31,7 +31,7 @@ class CastFeatureUpdateObserver
 
  private:
   // chromecast::mojom::FeatureUpdateObserver implementation:
-  void OnFeaturesUpdated(base::Value features) override;
+  void OnFeaturesUpdated(base::Value::Dict features) override;
 
   void BindFeatureUpdateService();
 

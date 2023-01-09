@@ -11,7 +11,7 @@ interface FeatureUpdateObserver {
   // Triggered when there is an update to base::Feature configs because a
   // DCS download is completed. `features` is a dictionary which is ready to be
   // persisted to disk (via PrefService).
-  OnFeaturesUpdated(mojo_base.mojom.DeprecatedDictionaryValue features);
+  OnFeaturesUpdated(mojo_base.mojom.DictionaryValue features);
 };
 
 // This interface is implemented in the Cast Service process and allows the
