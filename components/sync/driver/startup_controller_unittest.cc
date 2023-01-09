@@ -25,7 +25,6 @@ class StartupControllerTest : public testing::Test {
                             base::Unretained(this)),
         base::BindRepeating(&StartupControllerTest::FakeStartBackend,
                             base::Unretained(this)));
-    controller_->Reset();
   }
 
   void SetPreferredDataTypes(const ModelTypeSet& types) {

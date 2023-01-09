@@ -50,21 +50,12 @@ base::TimeDelta GetDeferredInitDelay() {
 StartupController::StartupController(
     base::RepeatingCallback<ModelTypeSet()> get_preferred_data_types,
     base::RepeatingCallback<bool()> should_start,
-    base::RepeatingClosure start_engine)
+    base::OnceClosure start_engine)
     : get_preferred_data_types_callback_(std::move(get_preferred_data_types)),
       should_start_callback_(std::move(should_start)),
-      start_engine_callback_(std::move(start_engine)),
-      bypass_deferred_startup_(false) {}
+      start_engine_callback_(std::move(start_engine)) {}
 
 StartupController::~StartupController() = default;
-
-void StartupController::Reset() {
-  bypass_deferred_startup_ = false;
-  start_up_time_ = base::Time();
-  start_engine_time_ = base::Time();
-  // Don't let previous timers affect us post-reset.
-  weak_factory_.InvalidateWeakPtrs();
-}
 
 void StartupController::StartUp(StartUpDeferredOption deferred_option) {
   const bool first_start = start_up_time_.is_null();
@@ -84,9 +75,8 @@ void StartupController::StartUp(StartUpDeferredOption deferred_option) {
     return;
   }
 
-  if (start_engine_time_.is_null()) {
-    start_engine_time_ = base::Time::Now();
-    start_engine_callback_.Run();
+  if (start_engine_callback_) {
+    std::move(start_engine_callback_).Run();
   }
 }
 
@@ -122,7 +112,7 @@ void StartupController::RecordTimeDeferred(DeferredInitTrigger trigger) {
 }
 
 void StartupController::OnFallbackStartupTimerExpired() {
-  if (!start_engine_time_.is_null()) {
+  if (!start_engine_callback_) {
     return;
   }
 
@@ -135,7 +125,7 @@ void StartupController::OnFallbackStartupTimerExpired() {
 }
 
 StartupController::State StartupController::GetState() const {
-  if (!start_engine_time_.is_null()) {
+  if (!start_engine_callback_) {
     return State::STARTED;
   }
   if (!start_up_time_.is_null()) {
@@ -145,7 +135,7 @@ StartupController::State StartupController::GetState() const {
 }
 
 void StartupController::OnDataTypeRequestsSyncStartup(ModelType type) {
-  if (!start_engine_time_.is_null()) {
+  if (!start_engine_callback_) {
     return;
   }
 

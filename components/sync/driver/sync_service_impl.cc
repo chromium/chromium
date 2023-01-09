@@ -182,8 +182,8 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
                           base::Unretained(this)),
       base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
                           base::Unretained(this)),
-      base::BindRepeating(&SyncServiceImpl::StartUpSlowEngineComponents,
-                          base::Unretained(this)));
+      base::BindOnce(&SyncServiceImpl::StartUpSlowEngineComponents,
+                     base::Unretained(this)));
 
   sync_stopped_reporter_ = std::make_unique<SyncStoppedReporter>(
       sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_);
@@ -545,7 +545,13 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
 
   sync_enabled_weak_factory_.InvalidateWeakPtrs();
 
-  startup_controller_->Reset();
+  startup_controller_ = std::make_unique<StartupController>(
+      base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
+                          base::Unretained(this)),
+      base::BindRepeating(&SyncServiceImpl::IsEngineAllowedToRun,
+                          base::Unretained(this)),
+      base::BindOnce(&SyncServiceImpl::StartUpSlowEngineComponents,
+                     base::Unretained(this)));
 
   // Clear various state.
   crypto_.Reset();
