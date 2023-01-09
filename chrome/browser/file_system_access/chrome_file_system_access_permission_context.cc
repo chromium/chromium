@@ -248,11 +248,18 @@ const struct {
     // Similar Mac specific blocks.
     {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_HOME, FILE_PATH_LITERAL("Library"), kBlockAllChildren},
-    // Allow access to iCloud files.
-    {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
-     kDontBlockChildren},
     // Allow access to other cloud files, such as Google Drive.
     {base::DIR_HOME, FILE_PATH_LITERAL("Library/CloudStorage"),
+     kDontBlockChildren},
+    // Allow the site to interact with data from its corresponding natively
+    // installed (sandboxed) application. It would be nice to limit a site to
+    // access only _its_ corresponding natively installed application,
+    // but unfortunately there's no straightforward way to do that. See
+    // https://crbug.com/984641#c22.
+    {base::DIR_HOME, FILE_PATH_LITERAL("Library/Containers"),
+     kDontBlockChildren},
+    // Allow access to iCloud files.
+    {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
      kDontBlockChildren},
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
