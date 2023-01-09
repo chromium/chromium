@@ -133,15 +133,9 @@ String AttemptStaticStringCreation(const UChar*, wtf_size_t, CharacterWidth);
 
 template <wtf_size_t inlineCapacity>
 inline static String AttemptStaticStringCreation(
-    const UCharLiteralBuffer<inlineCapacity>& vector,
-    CharacterWidth width) {
-  if (g_literal_buffer_create_string_with_encoding) {
-    // TODO(sky): once this is made the default, remove `width` parameter.
-    return AttemptStaticStringCreation(
-        vector.data(), vector.size(),
-        vector.Is8Bit() ? kForce8Bit : kForce16Bit);
-  }
-  return AttemptStaticStringCreation(vector.data(), vector.size(), width);
+    const UCharLiteralBuffer<inlineCapacity>& vector) {
+  return AttemptStaticStringCreation(
+      vector.data(), vector.size(), vector.Is8Bit() ? kForce8Bit : kForce16Bit);
 }
 
 template <wtf_size_t inlineCapacity>
@@ -151,7 +145,7 @@ inline static String AttemptStaticStringCreation(
   return AttemptStaticStringCreation(vector.data(), vector.size(), width);
 }
 
-inline static String AttemptStaticStringCreation(const String str) {
+inline static String AttemptStaticStringCreation(const String& str) {
   if (!str.Is8Bit())
     return AttemptStaticStringCreation(str.Characters16(), str.length(),
                                        kForce16Bit);

@@ -48,7 +48,7 @@ bool HTMLMetaCharsetParser::ProcessMeta(const HTMLToken& token) {
   HTMLAttributeList attributes;
   for (const HTMLToken::Attribute& token_attribute : token_attributes) {
     String attribute_name = token_attribute.NameAttemptStaticStringCreation();
-    String attribute_value = token_attribute.Value8BitIfNecessary();
+    String attribute_value = token_attribute.Value();
     attributes.push_back(std::make_pair(attribute_name, attribute_value));
   }
 

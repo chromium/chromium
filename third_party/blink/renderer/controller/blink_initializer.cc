@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/display_cutout_client_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -102,12 +101,6 @@ class EndOfTaskRunner : public Thread::TaskObserver {
     V8Initializer::ReportRejectedPromisesOnMainThread();
   }
 };
-
-// See description of `g_literal_buffer_create_string_with_encoding` in
-// LiteralBuffer as to what this controls.
-BASE_FEATURE(kLiteralBufferCreateStringWithEncoding,
-             "LiteralBufferCreateStringWithEncoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 Thread::TaskObserver* g_end_of_task_runner = nullptr;
 
@@ -163,9 +156,6 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
 
   // Initialize performance manager.
   RendererResourceCoordinatorImpl::MaybeInitialize();
-
-  g_literal_buffer_create_string_with_encoding =
-      base::FeatureList::IsEnabled(kLiteralBufferCreateStringWithEncoding);
 }
 
 }  // namespace

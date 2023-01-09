@@ -27,12 +27,6 @@
 #define BUFFER_INLINE_CAPACITY kInlineSize
 #endif
 
-// Controls whether strings created by LiteralBuffer have an encoding specified.
-// Specifying the encoding may avoid unnecessary allocations and checks to
-// determine encoding, and allows for a fast path when copying UChars to
-// LChars.
-CORE_EXPORT extern bool g_literal_buffer_create_string_with_encoding;
-
 // LiteralBufferBase is an optimized version of Vector for LChar and UChar
 // characters. In particular `AddChar` is faster than `push_back`, since
 // it avoids unnecessary register spills. See https://crbug.com/1205338.
@@ -280,8 +274,9 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   }
 
   String AsString() const {
-    if (g_literal_buffer_create_string_with_encoding && Is8Bit())
+    if (Is8Bit()) {
       return String::Make8BitFrom16BitSource(this->data(), this->size());
+    }
     return String(this->data(), this->size());
   }
 
@@ -290,8 +285,6 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   }
 
   AtomicString AsAtomicString() const {
-    if (!g_literal_buffer_create_string_with_encoding)
-      return AtomicString(this->data(), this->size());
     return AtomicString(this->data(), this->size(),
                         Is8Bit() ? WTF::AtomicStringUCharEncoding::kIs8Bit
                                  : WTF::AtomicStringUCharEncoding::kIs16Bit);

@@ -87,19 +87,12 @@ class HTMLToken {
     const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
 
     String NameAttemptStaticStringCreation() const {
-      return AttemptStaticStringCreation(name_, kLikely8Bit);
+      return AttemptStaticStringCreation(name_);
     }
 
     bool NameIsEmpty() const { return name_.IsEmpty(); }
     void AppendToName(UChar c) { name_.AddChar(c); }
 
-    String Value8BitIfNecessary() const {
-      // TODO(sky): remove this function and convert callers to Value() once
-      // `g_literal_buffer_create_string_with_encoding` is removed.
-      if (!g_literal_buffer_create_string_with_encoding)
-        return StringImpl::Create8BitIfPossible(value_.data(), value_.size());
-      return value_.AsString();
-    }
     String Value() const { return value_.AsString(); }
 
     void AppendToValue(UChar c) { value_.AddChar(c); }
