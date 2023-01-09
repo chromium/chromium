@@ -105,9 +105,6 @@ export const FilesSafeMedia = Polymer({
     const node =
         /** @type {!HTMLIFrameElement} */ (document.createElement('iframe'));
     this.contentsNode_ = node;
-    node.style.width = '100%';
-    node.style.height = '100%';
-    node.style.border = '0px';
     // Allow autoplay for audio files.
     if (this.type === 'audio') {
       node.setAttribute('allow', 'autoplay');
