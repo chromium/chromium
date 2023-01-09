@@ -9,7 +9,6 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/test/gl_image_bind_test_template.h"
 #include "ui/gl/test/gl_image_test_template.h"
-#include "ui/gl/test/gl_image_zero_initialize_test_template.h"
 
 namespace gl {
 namespace {
@@ -88,6 +87,56 @@ class GLImageD3DTestDelegate : public GLImageTestDelegateBase {
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 };
+
+template <typename GLImageTestDelegate>
+class GLImageZeroInitializeTest : public GLImageTest<GLImageTestDelegate> {};
+
+// This test verifies that if an uninitialized image is bound to a texture, the
+// result is zero-initialized.
+TYPED_TEST_SUITE_P(GLImageZeroInitializeTest);
+
+TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
+  if (this->delegate_.SkipTest(this->display_)) {
+    GTEST_SKIP() << "Skip ZeroInitialize because GL initialization failed";
+  }
+
+  const gfx::Size image_size(256, 256);
+
+  GLuint framebuffer =
+      GLTestHelper::SetupFramebuffer(image_size.width(), image_size.height());
+  ASSERT_TRUE(framebuffer);
+  glBindFramebufferEXT(GL_FRAMEBUFFER, framebuffer);
+  glViewport(0, 0, image_size.width(), image_size.height());
+
+  // Create an uninitialized image of preferred format.
+  scoped_refptr<GLImage> image = this->delegate_.CreateImage(image_size);
+
+  // Create a texture that |image| will be bound to.
+  GLenum target = this->delegate_.GetTextureTarget();
+  GLuint texture = GLTestHelper::CreateTexture(target);
+  glBindTexture(target, texture);
+
+  // Bind |image| to |texture|.
+  bool rv = image->BindTexImageForTesting(target);
+  EXPECT_TRUE(rv);
+
+  // Draw |texture| to viewport.
+  internal::DrawTextureQuad(target, image_size);
+
+  // Release |image| from |texture|.
+  image->ReleaseTexImageForTesting(target);
+
+  // Read back pixels to check expectations.
+  const uint8_t zero_color[] = {0, 0, 0, 0};
+  GLTestHelper::CheckPixels(0, 0, image_size.width(), image_size.height(),
+                            zero_color);
+
+  // Clean up.
+  glDeleteTextures(1, &texture);
+  glDeleteFramebuffersEXT(1, &framebuffer);
+}
+
+REGISTER_TYPED_TEST_SUITE_P(GLImageZeroInitializeTest, ZeroInitialize);
 
 using GLImageTestTypes =
     testing::Types<GLImageD3DTestDelegate<DXGI_FORMAT_B8G8R8A8_UNORM,
