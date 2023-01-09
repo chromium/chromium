@@ -166,33 +166,57 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       content_settings::SettingSource* source,
       QueryReason query_reason) const override;
 
-  // An enum that represents the result of applying the user's
-  // third-party-cookie-blocking setting in a given context.
-  enum class ThirdPartyBlockingOutcome {
-    // Access is not blocked due to the third-party-cookie-blocking setting,
-    // either because there's a more specific reason to block access, or because
-    // the context isn't "third-party", or because the access isn't blocked at
-    // all.
-    kIrrelevant = 1,
+  // An enum that represents the scope of cookies to which the user's
+  // third-party-cookie-blocking setting applies, in a given context.
+  enum class ThirdPartyBlockingScope {
     // Access to all cookies (partitioned or unpartitioned) is blocked in this
     // context.
-    kAllStateDisallowed,
+    kUnpartitionedAndPartitioned,
     // Access to unpartitioned cookies is blocked in this context, but access to
     // partitioned cookies is allowed.
-    kPartitionedStateAllowed,
+    kUnpartitionedOnly,
   };
 
-  struct CookieSettingWithMetadata {
-    ContentSetting cookie_setting;
-    // Only relevant if access to the cookie is blocked for some reason (i.e. if
-    // `IsAllow(cookie_setting)` is false).
-    ThirdPartyBlockingOutcome third_party_blocking_outcome;
+  class CookieSettingWithMetadata {
+   public:
+    CookieSettingWithMetadata(
+        ContentSetting cookie_setting,
+        absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope);
+
+    // Returns true iff the setting is "block" due to the user's
+    // third-party-cookie-blocking setting.
+    bool BlockedByThirdPartyCookieBlocking() const;
+
+    // Returns whether the given cookie should be allowed to be sent, according
+    // to the user's settings. Assumes that the `cookie.access_result` has been
+    // correctly filled in by the cookie store. Note that the cookie may be
+    // "excluded" for other reasons, even if this method returns true.
+    bool IsCookieAllowed(const net::CanonicalCookie& cookie) const;
+
+    // Computes the PrivacySetting that should be used in this context.
+    net::NetworkDelegate::PrivacySetting PrivacySetting() const;
+
+    ContentSetting cookie_setting() const { return cookie_setting_; }
+
+   private:
+    // Returns true iff a Partitioned cookie could be allowed to be sent in this
+    // context.
+    bool IsPartitionedStateAllowed() const;
+
+    // The setting itself.
+    ContentSetting cookie_setting_;
+
+    // The scope of cookies blocked by third-party-cookie-blocking.  The scope
+    // must only be nullopt if `cookie_setting_` is not "allow", and if the
+    // reason for blocking cookies is the third-party cookie blocking setting
+    // (rather than a site-specific setting).
+    absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope_;
   };
 
   // Determines the scope of third-party-cookie-blocking, i.e. whether it
   // applies to all cookies or just unpartitioned cookies. Assumes that
   // checks have already determined to block third-party cookies.
-  ThirdPartyBlockingOutcome GetThirdPartyBlockingScope(
+  ThirdPartyBlockingScope GetThirdPartyBlockingScope(
       const GURL& first_party_url) const;
 
   // Returns the cookie setting for the given request, along with metadata
@@ -213,34 +237,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const url::Origin* top_frame_origin,
       net::CookieSettingOverrides overrides,
       QueryReason query_reason) const;
-
-  // Returns whether the given cookie should be allowed to be sent, according to
-  // the user's settings. Assumes that the `cookie.access_result` has been
-  // correctly filled in by the cookie store. Note that the cookie may be
-  // "excluded" for other reasons, even if this method returns true.
-  bool IsCookieAllowed(
-      const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
-      const net::CookieWithAccessResult& cookie) const;
-
-  // Returns true iff a cookie with the given `is_partitioned` property should
-  // be accessible in a context with the given
-  // `third_party_blocking_outcome`.
-  static bool IsAllowedPartitionedCookie(
-      bool is_partitioned,
-      ThirdPartyBlockingOutcome third_party_blocking_outcome);
-
-  // Checks if a cookie was blocked by third-party cookie blocking but the
-  // cookie belongs to a site in the same First-Party Set as the top-level site.
-  static bool IsThirdPartyCookieBlockedInSamePartySites(
-      ThirdPartyBlockingOutcome third_party_blocking_outcome,
-      const net::FirstPartySetMetadata& first_party_set_metadata);
-
-  // Returns whether *some* cookie would be allowed to be sent in this context,
-  // according to the user's settings. Note that cookies may still be "excluded"
-  // for other reasons, even if this method returns true.
-  bool IsHypotheticalCookieAllowed(
-      const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
-      bool is_partitioned) const;
 
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
