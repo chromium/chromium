@@ -247,7 +247,6 @@ common_lib_list="\
   libcups2
   libdrm2
   libegl1
-  libegl1:i386
   libevdev2
   libexpat1
   libfontconfig1
@@ -255,12 +254,10 @@ common_lib_list="\
   libgbm1
   libglib2.0-0
   libgl1
-  libgl1:i386
   libgtk-3-0
   libpam0g
   libpango-1.0-0
   libpangocairo-1.0-0
-  libpangocairo-1.0-0:i386
   libpci3
   libpcre3
   libpixman-1-0
@@ -269,7 +266,6 @@ common_lib_list="\
   libsqlite3-0
   libuuid1
   libwayland-egl1
-  libwayland-egl1:i386
   libwayland-egl1-mesa
   libx11-6
   libx11-xcb1
@@ -317,11 +313,15 @@ lib32_list="$lib32_list
   libatk1.0-0:i386
   libatspi2.0-0:i386
   libdbus-1-3:i386
+  libegl1:i386
+  libgl1:i386
   libglib2.0-0:i386
   libncurses5:i386
   libnss3:i386
   libpango-1.0-0:i386
+  libpangocairo-1.0-0:i386
   libstdc++6:i386
+  libwayland-egl1:i386
   libx11-xcb1:i386
   libxcomposite1:i386
   libxdamage1:i386
