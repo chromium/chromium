@@ -1137,6 +1137,7 @@
     "AutofillImprovedLabelForInference": [
         {
             "platforms": [
+                "android_webview",
                 "android",
                 "chromeos",
                 "chromeos_lacros",
