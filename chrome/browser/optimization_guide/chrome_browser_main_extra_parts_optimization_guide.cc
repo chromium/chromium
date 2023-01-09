@@ -35,23 +35,3 @@ void ChromeBrowserMainExtraPartsOptimizationGuide::PreCreateThreads() {
   optimization_guide::PredictionModelStore::GetInstance()->Initialize(
       g_browser_process->local_state(), model_downloads_dir);
 }
-
-void ChromeBrowserMainExtraPartsOptimizationGuide::PostProfileInit(
-    Profile* profile,
-    bool is_initial_profile) {
-  if (!optimization_guide::features::IsInstallWideModelStoreEnabled())
-    return;
-
-  if (profile->IsOffTheRecord())
-    return;
-
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_keyed_service)
-    return;
-
-  optimization_guide_keyed_service->GetPredictionManager()
-      ->MaybeInitializeModelDownloads(
-          optimization_guide_keyed_service
-              ->BackgroundDownloadServiceProvider());
-}

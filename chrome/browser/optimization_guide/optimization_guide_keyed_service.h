@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -63,7 +65,8 @@ class OptimizationGuideKeyedService
     : public KeyedService,
       public optimization_guide::NewOptimizationGuideDecider,
       public optimization_guide::OptimizationGuideDecider,
-      public optimization_guide::OptimizationGuideModelProvider {
+      public optimization_guide::OptimizationGuideModelProvider,
+      public ProfileObserver {
  public:
   explicit OptimizationGuideKeyedService(
       content::BrowserContext* browser_context);
@@ -172,6 +175,9 @@ class OptimizationGuideKeyedService
   // KeyedService implementation:
   void Shutdown() override;
 
+  // ProfileObserver implementation:
+  void OnProfileInitializationComplete(Profile* profile) override;
+
   // optimization_guide::OptimizationGuideDecider implementation:
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
@@ -215,6 +221,9 @@ class OptimizationGuideKeyedService
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
+
+  // Used to observe profile initialization event.
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

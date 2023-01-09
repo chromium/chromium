@@ -7,8 +7,6 @@
 
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
-class Profile;
-
 // This class is used to initialize the optimization guide model store which is
 // install-wide, as part of Chrome browser process startup.
 class ChromeBrowserMainExtraPartsOptimizationGuide
@@ -18,7 +16,6 @@ class ChromeBrowserMainExtraPartsOptimizationGuide
 
   // ChromeBrowserMainExtraParts implementation:
   void PreCreateThreads() override;
-  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_BROWSER_MAIN_EXTRA_PARTS_OPTIMIZATION_GUIDE_H_
