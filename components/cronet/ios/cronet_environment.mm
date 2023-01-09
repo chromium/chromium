@@ -17,6 +17,8 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/synchronization/waitable_event.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/cronet/cronet_buildflags.h"

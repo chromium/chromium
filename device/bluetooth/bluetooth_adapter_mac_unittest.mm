@@ -5,6 +5,7 @@
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 
 #include "base/memory/raw_ptr.h"
+#import "base/task/sequenced_task_runner.h"
 
 #import <Foundation/Foundation.h>
 

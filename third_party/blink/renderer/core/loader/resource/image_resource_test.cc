@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 
 #include <memory>
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"

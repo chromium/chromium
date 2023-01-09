@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
 #include "components/feature_engagement/internal/event_model_impl.h"
 #include "components/feature_engagement/internal/feature_config_condition_validator.h"

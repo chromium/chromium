@@ -48,6 +48,10 @@
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace cc {
 struct ApplyViewportChangesArgs;
 class LayerTreeHost;

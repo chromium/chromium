@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/singleton.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"

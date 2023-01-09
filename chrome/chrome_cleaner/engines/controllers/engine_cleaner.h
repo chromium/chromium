@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/chrome_cleaner/cleaner/cleaner.h"
 #include "chrome/chrome_cleaner/engines/broker/engine_client.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"

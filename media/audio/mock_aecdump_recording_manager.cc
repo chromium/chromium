@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/audio/mock_aecdump_recording_manager.h"
+#include "base/task/single_thread_task_runner.h"
 
 #include <utility>
 

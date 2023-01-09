@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "media/gpu/android/codec_image_group.h"
 #include "media/gpu/android/codec_surface_bundle.h"

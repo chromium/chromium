@@ -5,6 +5,7 @@
 #include "media/remoting/remoting_renderer_factory.h"
 
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/remoting_message_factories.h"
 #include "media/base/demuxer.h"
 #include "media/remoting/receiver.h"

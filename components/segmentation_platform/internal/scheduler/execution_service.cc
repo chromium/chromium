@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"

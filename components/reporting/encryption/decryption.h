@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/util/status.h"

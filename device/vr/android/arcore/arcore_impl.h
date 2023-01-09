@@ -6,6 +6,7 @@
 #define DEVICE_VR_ANDROID_ARCORE_ARCORE_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "device/vr/android/arcore/arcore.h"

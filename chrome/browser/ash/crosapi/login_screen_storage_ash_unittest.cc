@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"

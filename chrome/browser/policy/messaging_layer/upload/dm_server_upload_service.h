@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

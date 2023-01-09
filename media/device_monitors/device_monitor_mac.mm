@@ -16,6 +16,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 
 namespace {

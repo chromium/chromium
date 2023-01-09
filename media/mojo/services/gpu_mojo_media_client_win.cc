@@ -4,6 +4,8 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
 #include "media/base/audio_decoder.h"

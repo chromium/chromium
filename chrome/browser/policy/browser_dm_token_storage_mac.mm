@@ -26,7 +26,6 @@
 #include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/common/chrome_paths.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

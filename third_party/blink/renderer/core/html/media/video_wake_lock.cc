@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/media/video_wake_lock.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"

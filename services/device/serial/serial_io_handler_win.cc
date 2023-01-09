@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 

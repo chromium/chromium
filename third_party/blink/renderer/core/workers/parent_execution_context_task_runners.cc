@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"

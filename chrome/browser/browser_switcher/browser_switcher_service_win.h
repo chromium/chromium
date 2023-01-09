@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 
 namespace browser_switcher {

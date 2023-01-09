@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "services/network/public/cpp/resource_request.h"

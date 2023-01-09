@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/bert_model_handler.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/bert_model_executor.h"
 
 namespace optimization_guide {

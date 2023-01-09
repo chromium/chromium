@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_
 
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/renderer/media/android/flinging_renderer_client.h"
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"

@@ -7,6 +7,7 @@
 
 #include <atomic>
 
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"

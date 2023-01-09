@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"

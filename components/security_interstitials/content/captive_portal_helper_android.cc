@@ -12,7 +12,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/security_interstitials/content/android/jni_headers/CaptivePortalHelper_jni.h"
 #include "components/security_interstitials/content/ssl_error_assistant.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"

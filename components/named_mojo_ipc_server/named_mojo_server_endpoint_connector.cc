@@ -4,6 +4,7 @@
 
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 
 namespace named_mojo_ipc_server {

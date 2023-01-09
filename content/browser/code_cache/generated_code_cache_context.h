@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"

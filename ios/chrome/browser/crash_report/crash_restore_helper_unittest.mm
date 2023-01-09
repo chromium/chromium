@@ -9,7 +9,6 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"

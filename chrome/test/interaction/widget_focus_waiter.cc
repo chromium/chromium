@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/test/interaction/widget_focus_waiter.h"
+#include "base/task/single_thread_task_runner.h"
 
 WidgetFocusWaiter::WidgetFocusWaiter(views::Widget* widget) : widget_(widget) {
   views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);

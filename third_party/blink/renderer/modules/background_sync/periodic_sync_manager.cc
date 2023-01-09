@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/background_sync/periodic_sync_manager.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

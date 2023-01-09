@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_upload_data_stream.h"
 #include "components/cronet/cronet_url_request.h"

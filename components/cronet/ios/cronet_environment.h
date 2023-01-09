@@ -15,6 +15,8 @@
 #include "base/files/scoped_file.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "components/cronet/url_request_context_config.h"

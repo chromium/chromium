@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 
 #include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"

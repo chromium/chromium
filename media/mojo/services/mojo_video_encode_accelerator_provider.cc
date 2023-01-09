@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"

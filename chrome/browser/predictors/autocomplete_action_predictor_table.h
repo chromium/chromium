@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/sqlite_proto/table_manager.h"
 #include "url/gurl.h"
 

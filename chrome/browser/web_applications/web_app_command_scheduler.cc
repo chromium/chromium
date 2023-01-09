@@ -152,7 +152,7 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
     const WebAppInstallParams& install_params,
     const std::vector<AppId>& apps_to_uninstall) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(install_callback), AppId(),
@@ -176,7 +176,7 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
     base::WeakPtr<content::WebContents> contents,
     std::unique_ptr<WebAppDataRetriever> data_retriever) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(install_callback), AppId(),
@@ -198,7 +198,7 @@ void WebAppCommandScheduler::InstallPlaceholder(
                             bool did_uninstall_and_replace)> callback,
     base::WeakPtr<content::WebContents> web_contents) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback), AppId(),

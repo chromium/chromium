@@ -14,6 +14,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_jni_headers/VideoEncodeAcceleratorUtil_jni.h"

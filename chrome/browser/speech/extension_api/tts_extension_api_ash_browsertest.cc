@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_extension_apitest.h"

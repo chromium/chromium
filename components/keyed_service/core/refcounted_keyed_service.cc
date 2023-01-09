@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/keyed_service/core/refcounted_keyed_service.h"
+#include "base/task/sequenced_task_runner.h"
 
 #include <utility>
 

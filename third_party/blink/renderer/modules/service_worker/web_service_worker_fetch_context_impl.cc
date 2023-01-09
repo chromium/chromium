@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.h"
 
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"

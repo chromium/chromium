@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"

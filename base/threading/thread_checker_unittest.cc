@@ -10,12 +10,12 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_token.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -64,8 +64,9 @@ void ExpectNotCalledOnValidThread(ThreadCheckerImpl* thread_checker) {
 void ExpectNotCalledOnValidThreadWithSequenceTokenAndThreadTaskRunnerHandle(
     ThreadCheckerImpl* thread_checker,
     SequenceToken sequence_token) {
-  ThreadTaskRunnerHandle thread_task_runner_handle(
-      MakeRefCounted<TestSimpleTaskRunner>());
+  SingleThreadTaskRunner::CurrentDefaultHandle
+      single_thread_task_runner_current_default_handle(
+          MakeRefCounted<TestSimpleTaskRunner>());
   ScopedSetSequenceTokenForCurrentThread
       scoped_set_sequence_token_for_current_thread(sequence_token);
   ExpectNotCalledOnValidThread(thread_checker);
@@ -80,8 +81,9 @@ TEST(ThreadCheckerTest, AllowedSameThreadNoSequenceToken) {
 
 TEST(ThreadCheckerTest,
      AllowedSameThreadAndSequenceDifferentTasksWithThreadTaskRunnerHandle) {
-  ThreadTaskRunnerHandle thread_task_runner_handle(
-      MakeRefCounted<TestSimpleTaskRunner>());
+  SingleThreadTaskRunner::CurrentDefaultHandle
+      single_thread_task_runner_current_default_handle(
+          MakeRefCounted<TestSimpleTaskRunner>());
 
   std::unique_ptr<ThreadCheckerImpl> thread_checker;
   const SequenceToken sequence_token = SequenceToken::Create();
@@ -131,8 +133,9 @@ TEST(ThreadCheckerTest, DisallowedDifferentThreadsNoSequenceToken) {
 }
 
 TEST(ThreadCheckerTest, DisallowedDifferentThreadsSameSequence) {
-  ThreadTaskRunnerHandle thread_task_runner_handle(
-      MakeRefCounted<TestSimpleTaskRunner>());
+  SingleThreadTaskRunner::CurrentDefaultHandle
+      single_thread_task_runner_current_default_handle(
+          MakeRefCounted<TestSimpleTaskRunner>());
   const SequenceToken sequence_token(SequenceToken::Create());
 
   ScopedSetSequenceTokenForCurrentThread
@@ -148,8 +151,9 @@ TEST(ThreadCheckerTest, DisallowedDifferentThreadsSameSequence) {
 TEST(ThreadCheckerTest, DisallowedSameThreadDifferentSequence) {
   std::unique_ptr<ThreadCheckerImpl> thread_checker;
 
-  ThreadTaskRunnerHandle thread_task_runner_handle(
-      MakeRefCounted<TestSimpleTaskRunner>());
+  SingleThreadTaskRunner::CurrentDefaultHandle
+      single_thread_task_runner_current_default_handle(
+          MakeRefCounted<TestSimpleTaskRunner>());
 
   {
     ScopedSetSequenceTokenForCurrentThread
@@ -181,8 +185,9 @@ TEST(ThreadCheckerTest, DetachFromThread) {
 }
 
 TEST(ThreadCheckerTest, DetachFromThreadWithSequenceToken) {
-  ThreadTaskRunnerHandle thread_task_runner_handle(
-      MakeRefCounted<TestSimpleTaskRunner>());
+  SingleThreadTaskRunner::CurrentDefaultHandle
+      single_thread_task_runner_current_default_handle(
+          MakeRefCounted<TestSimpleTaskRunner>());
   ScopedSetSequenceTokenForCurrentThread
       scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
   ThreadCheckerImpl thread_checker;

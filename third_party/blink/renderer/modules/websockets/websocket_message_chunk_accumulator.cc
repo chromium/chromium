@@ -7,6 +7,7 @@
 #include <string.h>
 #include <algorithm>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 
 namespace blink {

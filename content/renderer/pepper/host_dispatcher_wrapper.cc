@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/pepper_browser_connection.h"

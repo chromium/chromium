@@ -5,6 +5,7 @@
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"

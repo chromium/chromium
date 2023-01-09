@@ -35,7 +35,8 @@ namespace test {
 // This header exposes SingleThreadTaskEnvironment and TaskEnvironment.
 //
 // SingleThreadTaskEnvironment enables the following APIs within its scope:
-//  - (Thread|Sequenced)TaskRunnerHandle on the main thread
+//  - (SingleThread|Sequenced)TaskRunner::CurrentDefaultHandle on the main
+//    thread
 //  - RunLoop on the main thread
 //
 // TaskEnvironment additionally enables:
@@ -46,9 +47,9 @@ namespace test {
 // Tests should prefer SingleThreadTaskEnvironment over TaskEnvironment when the
 // former is sufficient.
 //
-// Tasks posted to the (Thread|Sequenced)TaskRunnerHandle run synchronously when
-// RunLoop::Run(UntilIdle) or TaskEnvironment::RunUntilIdle is called on the
-// main thread.
+// Tasks posted to the (SingleThread|Sequenced)TaskRunner::CurrentDefaultHandle
+// run synchronously when RunLoop::Run(UntilIdle) or
+// TaskEnvironment::RunUntilIdle is called on the main thread.
 //
 // The TaskEnvironment requires TestTimeouts::Initialize() to be called in order
 // to run posted tasks, so that it can watch for problematic long-running tasks.
@@ -218,7 +219,8 @@ class TaskEnvironment {
   TaskEnvironment& operator=(const TaskEnvironment&) = delete;
 
   // Waits until no undelayed ThreadPool tasks remain. Then, unregisters the
-  // ThreadPoolInstance and the (Thread|Sequenced)TaskRunnerHandle.
+  // ThreadPoolInstance and the
+  // (SingleThread|Sequenced)TaskRunner::CurrentDefaultHandle.
   virtual ~TaskEnvironment();
 
   // Returns a TaskRunner that schedules tasks on the main thread.
@@ -228,11 +230,12 @@ class TaskEnvironment {
   // always return true if called right after RunUntilIdle.
   bool MainThreadIsIdle() const;
 
-  // Runs tasks until both the (Thread|Sequenced)TaskRunnerHandle and the
-  // ThreadPool's non-delayed queues are empty.
-  // While RunUntilIdle() is quite practical and sometimes even necessary -- for
-  // example, to flush all tasks bound to Unretained() state before destroying
-  // test members -- it should be used with caution per the following warnings:
+  // Runs tasks until both the
+  // (SingleThread|Sequenced)TaskRunner::CurrentDefaultHandle and the
+  // ThreadPool's non-delayed queues are empty.  While RunUntilIdle() is quite
+  // practical and sometimes even necessary -- for example, to flush all tasks
+  // bound to Unretained() state before destroying test members -- it should be
+  // used with caution per the following warnings:
   //
   // WARNING #1: This may run long (flakily timeout) and even never return! Do
   //             not use this when repeating tasks such as animated web pages

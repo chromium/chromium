@@ -6,6 +6,7 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_DOWNLOAD_REQUEST_HANDLE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/url_download_handler.h"
 

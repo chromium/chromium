@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/simple_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
 #include "third_party/blink/public/platform/task_type.h"

@@ -4,6 +4,7 @@
 
 #include "chromecast/media/common/test_media_resource_tracker.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {

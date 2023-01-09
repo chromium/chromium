@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/safe_browsing/content/renderer/websocket_sb_handshake_throttle.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"

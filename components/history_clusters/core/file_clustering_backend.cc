@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

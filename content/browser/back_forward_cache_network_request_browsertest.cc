@@ -4,6 +4,7 @@
 
 #include "content/browser/back_forward_cache_browsertest.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"

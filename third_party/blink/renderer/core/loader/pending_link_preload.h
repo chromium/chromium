@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PENDING_LINK_PRELOAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PENDING_LINK_PRELOAD_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 

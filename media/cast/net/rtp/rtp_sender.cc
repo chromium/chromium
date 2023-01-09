@@ -9,6 +9,7 @@
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/constants.h"
 

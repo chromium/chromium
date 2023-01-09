@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/domain_reliability/test_util.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"

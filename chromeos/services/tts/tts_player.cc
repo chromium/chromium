@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/tts/tts_player.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace chromeos {
 namespace tts {

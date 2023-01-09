@@ -5,6 +5,7 @@
 #include "media/mojo/services/stable_video_decoder_factory_service.h"
 
 #include "base/command_line.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/viz/common/switches.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"

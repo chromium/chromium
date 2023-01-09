@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_TASK_RUNNER_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_TASK_RUNNER_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/openscreen/src/platform/api/task_runner.h"
 #include "third_party/openscreen/src/platform/api/time.h"

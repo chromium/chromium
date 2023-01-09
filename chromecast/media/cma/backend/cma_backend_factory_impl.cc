@@ -4,6 +4,7 @@
 
 #include "chromecast/media/cma/backend/cma_backend_factory_impl.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/common/media_pipeline_backend_manager.h"

@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

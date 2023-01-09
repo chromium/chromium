@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 
 #include <memory>
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 
 namespace blink {

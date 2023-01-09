@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 
 namespace ui {

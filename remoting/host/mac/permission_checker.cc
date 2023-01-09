@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/mac/permission_process_utils.h"
 #include "remoting/host/version.h"
 

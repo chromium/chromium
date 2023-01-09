@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

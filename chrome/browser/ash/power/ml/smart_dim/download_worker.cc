@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"

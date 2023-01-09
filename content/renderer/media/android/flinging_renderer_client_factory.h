@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/base/media_status.h"
 #include "media/base/renderer_factory.h"

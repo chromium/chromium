@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "ios/web/public/thread/web_thread.h"
 
 namespace base {

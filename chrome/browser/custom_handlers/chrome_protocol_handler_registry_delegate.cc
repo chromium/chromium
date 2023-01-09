@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/common/pref_names.h"

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/client_certificate_fetcher.h"
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"

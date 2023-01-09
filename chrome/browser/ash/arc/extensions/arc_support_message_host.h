@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/native_message_host.h"

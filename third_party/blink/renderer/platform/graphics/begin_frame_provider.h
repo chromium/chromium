@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

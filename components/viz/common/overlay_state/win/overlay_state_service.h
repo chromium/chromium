@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_OVERLAY_STATE_WIN_OVERLAY_STATE_SERVICE_H_
 
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/overlay_state/win/overlay_state_aggregator.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox.h"

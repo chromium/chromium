@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/public/browser/child_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"

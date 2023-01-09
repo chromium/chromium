@@ -11,6 +11,7 @@
 #import "base/feature_list.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/common/policy_service.h"
 #import "components/prefs/json_pref_store.h"

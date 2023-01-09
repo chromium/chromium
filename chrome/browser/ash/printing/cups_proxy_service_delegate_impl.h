@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chromeos/printing/printer_configuration.h"

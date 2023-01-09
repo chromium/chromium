@@ -6,6 +6,7 @@
 #define CONTENT_TEST_FUZZER_MOJOLPM_FUZZER_SUPPORT_H_
 
 #include "base/at_exit.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"

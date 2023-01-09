@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace blink {

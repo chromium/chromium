@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/process/process_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/renderer/pepper/pepper_hung_plugin_filter.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/ppp.h"

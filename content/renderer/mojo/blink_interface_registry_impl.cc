@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace content {

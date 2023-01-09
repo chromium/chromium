@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "ui/gl/hdr_metadata_helper_win.h"

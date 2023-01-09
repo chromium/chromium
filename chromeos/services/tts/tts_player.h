@@ -8,6 +8,7 @@
 #include <queue>
 
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"

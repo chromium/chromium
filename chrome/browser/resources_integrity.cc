@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)

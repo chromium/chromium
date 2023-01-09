@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "fuchsia_web/webengine/mojom/web_engine_media_resource_provider.mojom.h"
 #include "media/base/renderer_factory.h"
 #include "mojo/public/cpp/bindings/remote.h"

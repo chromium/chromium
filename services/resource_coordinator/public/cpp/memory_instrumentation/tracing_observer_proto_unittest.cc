@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/trace_test_utils.h"
 #include "base/trace_event/memory_dump_manager.h"

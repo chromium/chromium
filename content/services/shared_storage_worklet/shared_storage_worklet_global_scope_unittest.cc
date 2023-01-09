@@ -5,6 +5,7 @@
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 
 #include "base/check_op.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"

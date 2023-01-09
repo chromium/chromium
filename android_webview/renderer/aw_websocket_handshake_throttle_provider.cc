@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/safe_browsing/content/renderer/websocket_sb_handshake_throttle.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"

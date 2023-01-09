@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"

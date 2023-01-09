@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace service_manager {
 

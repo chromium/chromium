@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 
 namespace chromecast {

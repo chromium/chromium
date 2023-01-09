@@ -32,6 +32,7 @@
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"

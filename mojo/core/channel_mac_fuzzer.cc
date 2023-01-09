@@ -9,6 +9,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/entrypoints.h"
 #include "mojo/core/test/data/channel_mac/channel_mac.pb.h"

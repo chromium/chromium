@@ -16,7 +16,6 @@
 #include "base/environment.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/url_util.h"

@@ -4,6 +4,7 @@
 
 #include "content/browser/site_per_process_browsertest.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"

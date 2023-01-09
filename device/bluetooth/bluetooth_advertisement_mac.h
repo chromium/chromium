@@ -9,6 +9,7 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 
+#include "base/task/single_thread_task_runner.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"

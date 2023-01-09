@@ -9,7 +9,6 @@
 #include <list>
 
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace payments {
 

@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_brightness_monitor.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_light_provider.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/fake_model_config_loader.h"

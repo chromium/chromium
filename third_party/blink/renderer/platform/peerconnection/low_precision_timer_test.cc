@@ -4,6 +4,7 @@
 
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/codec_factory.h"
 #include "media/base/decoder.h"

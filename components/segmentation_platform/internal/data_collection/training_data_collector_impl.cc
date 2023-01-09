@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"

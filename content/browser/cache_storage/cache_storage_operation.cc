@@ -4,6 +4,7 @@
 
 #include "content/browser/cache_storage/cache_storage_operation.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 
 namespace content {

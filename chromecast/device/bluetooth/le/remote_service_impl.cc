@@ -4,6 +4,7 @@
 
 #include "chromecast/device/bluetooth/le/remote_service_impl.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic_impl.h"
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/web_test/web_test_web_frame_widget_impl.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "content/web_test/renderer/event_sender.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "third_party/blink/public/common/features.h"

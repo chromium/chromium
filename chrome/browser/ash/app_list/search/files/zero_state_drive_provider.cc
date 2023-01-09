@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"

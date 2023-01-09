@@ -19,9 +19,9 @@
 #include "base/trace_event/trace_event.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_database.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetch_throttler.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_fetcher_factory_impl.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/affiliation/facet_manager.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_fetcher_factory_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

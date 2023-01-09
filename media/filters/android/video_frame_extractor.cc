@@ -7,7 +7,6 @@
 #include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/data_source.h"
 #include "media/ffmpeg/ffmpeg_common.h"

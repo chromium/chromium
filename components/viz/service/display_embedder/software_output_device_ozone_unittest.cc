@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

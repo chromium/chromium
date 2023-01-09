@@ -5,6 +5,7 @@
 #ifndef CONTENT_SERVICES_ISOLATED_XR_DEVICE_XR_TEST_HOOK_WRAPPER_H_
 #define CONTENT_SERVICES_ISOLATED_XR_DEVICE_XR_TEST_HOOK_WRAPPER_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 #include "device/vr/test/test_hook.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

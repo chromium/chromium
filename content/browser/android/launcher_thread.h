@@ -8,6 +8,7 @@
 #include "base/android/java_handler_thread.h"
 
 #include "base/lazy_instance.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace content {
 namespace android {

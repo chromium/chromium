@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/dbus/power/native_timer.h"

@@ -16,7 +16,6 @@
 #include "base/memory/aligned_memory.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"

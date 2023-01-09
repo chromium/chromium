@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/android/usage_stats/website_event.pb.h"
 #include "chrome/browser/profiles/profile.h"

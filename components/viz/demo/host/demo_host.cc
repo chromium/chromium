@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/rand_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/demo/client/demo_client.h"
 #include "components/viz/host/renderer_settings_creation.h"

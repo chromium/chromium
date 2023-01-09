@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/storage/backend_task_runner.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_file_task_runner.h"
 
 namespace extensions {

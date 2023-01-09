@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"

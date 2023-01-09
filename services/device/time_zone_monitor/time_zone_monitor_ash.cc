@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 

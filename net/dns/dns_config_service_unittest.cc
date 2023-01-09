@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_hosts.h"

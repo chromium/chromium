@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_ANDROID_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
 #include <memory>

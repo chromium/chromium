@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"

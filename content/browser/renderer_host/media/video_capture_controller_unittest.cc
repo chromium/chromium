@@ -12,6 +12,7 @@
 #include <utility>
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

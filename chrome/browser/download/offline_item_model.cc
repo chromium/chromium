@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_commands.h"

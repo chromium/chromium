@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"

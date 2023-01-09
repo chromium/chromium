@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"

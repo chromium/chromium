@@ -4,6 +4,7 @@
 
 #include "services/audio/output_device_mixer.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "services/audio/mixing_graph.h"
 #include "services/audio/output_device_mixer_impl.h"
 

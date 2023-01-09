@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/aura/env.h"

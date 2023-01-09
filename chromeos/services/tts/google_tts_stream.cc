@@ -8,6 +8,7 @@
 #include <sys/resource.h>
 
 #include "base/files/file_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/services/tts/constants.h"
 #include "chromeos/services/tts/tts_service.h"
 

@@ -8,6 +8,7 @@
 #include <GLES2/gl2ext.h>
 
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/video_util.h"
 
 namespace media {

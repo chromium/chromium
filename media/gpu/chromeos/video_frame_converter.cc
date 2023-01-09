@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/gpu/chromeos/video_frame_converter.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace media {
 

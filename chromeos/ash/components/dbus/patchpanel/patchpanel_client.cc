@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

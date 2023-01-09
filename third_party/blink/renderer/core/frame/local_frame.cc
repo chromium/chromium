@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"

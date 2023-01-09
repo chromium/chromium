@@ -9,6 +9,7 @@
 
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/chrome_cleaner/engines/target/engine_commands_impl.h"
 #include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 

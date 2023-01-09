@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
 namespace blink::scheduler {

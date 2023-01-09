@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ios/net/cookies/cookie_store_ios_client.h"
+#import "base/task/sequenced_task_runner.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

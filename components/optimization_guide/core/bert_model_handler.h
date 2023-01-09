@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_HANDLER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_HANDLER_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 

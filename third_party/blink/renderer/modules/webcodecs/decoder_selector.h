@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_util.h"
 #include "media/filters/decoder_selector.h"

@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_internal.h"

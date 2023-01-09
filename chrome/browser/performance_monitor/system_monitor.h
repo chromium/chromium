@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

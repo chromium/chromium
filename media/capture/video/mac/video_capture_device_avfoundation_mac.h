@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 #include "base/callback_forward.h"
+#include "base/task/single_thread_task_runner.h"
 
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_nsobject.h"

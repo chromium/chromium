@@ -5,6 +5,7 @@
 #include "remoting/host/input_monitor/local_hotkey_input_monitor.h"
 
 #include "base/memory/raw_ptr.h"
+#import "base/task/single_thread_task_runner.h"
 
 #import <AppKit/AppKit.h>
 

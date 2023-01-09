@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"

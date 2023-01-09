@@ -11,6 +11,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"

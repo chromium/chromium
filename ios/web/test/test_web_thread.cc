@@ -5,6 +5,7 @@
 #include "ios/web/public/test/test_web_thread.h"
 
 #include "base/message_loop/message_pump_type.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ios/web/web_sub_thread.h"
 #include "ios/web/web_thread_impl.h"
 

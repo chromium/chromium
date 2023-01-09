@@ -4,6 +4,7 @@
 
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/base/win/mf_helpers.h"

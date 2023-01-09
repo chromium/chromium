@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
 

@@ -37,7 +37,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/scoped_observation.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ui/aura/client/drag_drop_client.h"

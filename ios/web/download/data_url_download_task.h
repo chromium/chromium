@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_DOWNLOAD_DATA_URL_DOWNLOAD_TASK_H_
 #define IOS_WEB_DOWNLOAD_DATA_URL_DOWNLOAD_TASK_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "ios/web/download/download_task_impl.h"
 
 namespace web {

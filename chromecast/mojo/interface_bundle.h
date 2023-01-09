@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/mojo/binder_factory.h"
 #include "chromecast/mojo/mojom/remote_interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

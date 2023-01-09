@@ -20,7 +20,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 
 namespace tracing {

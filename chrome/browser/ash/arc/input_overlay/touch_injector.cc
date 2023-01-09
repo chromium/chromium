@@ -12,6 +12,7 @@
 #include "ash/utility/transformer_util.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"

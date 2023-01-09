@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/fake_oauth_token_getter.h"

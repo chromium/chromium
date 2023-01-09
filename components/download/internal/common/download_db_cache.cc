@@ -5,6 +5,7 @@
 #include "components/download/internal/common/download_db_cache.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/download/database/download_db.h"
 #include "components/download/database/download_db_conversions.h"
 #include "components/download/database/download_db_entry.h"

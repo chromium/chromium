@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {

@@ -5,6 +5,7 @@
 #include "ui/native_theme/scrollbar_animator_mac.h"
 
 #include "base/cxx17_backports.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ui {
 

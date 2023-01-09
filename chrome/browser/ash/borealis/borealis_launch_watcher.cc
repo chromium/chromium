@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
 namespace borealis {

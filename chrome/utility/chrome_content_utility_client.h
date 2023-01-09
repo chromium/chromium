@@ -5,6 +5,7 @@
 #ifndef CHROME_UTILITY_CHROME_CONTENT_UTILITY_CLIENT_H_
 #define CHROME_UTILITY_CHROME_CONTENT_UTILITY_CLIENT_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/utility/content_utility_client.h"
 

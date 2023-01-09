@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "remoting/base/compound_buffer.h"
 
 namespace remoting::protocol {

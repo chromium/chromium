@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "services/device/wake_lock/power_save_blocker/jni_headers/PowerSaveBlocker_jni.h"
 #include "ui/android/view_android.h"
 

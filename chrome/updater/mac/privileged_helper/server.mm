@@ -13,6 +13,7 @@
 #include "base/process/launch.h"
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/updater/mac/privileged_helper/helper_branding.h"

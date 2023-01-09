@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "content/common/content_export.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"

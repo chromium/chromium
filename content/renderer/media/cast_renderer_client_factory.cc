@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/renderer/media/cast_renderer_client_factory.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_log.h"
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"

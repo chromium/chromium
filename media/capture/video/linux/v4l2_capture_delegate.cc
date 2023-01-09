@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"

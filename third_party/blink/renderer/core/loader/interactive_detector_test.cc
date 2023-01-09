@@ -5,6 +5,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 #include "base/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"

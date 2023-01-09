@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_usage_data.h"

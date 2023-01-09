@@ -13,6 +13,7 @@
 
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/child/child_thread_impl.h"
 #include "content/public/common/content_plugin_info.h"

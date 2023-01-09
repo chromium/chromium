@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"

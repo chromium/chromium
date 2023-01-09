@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 

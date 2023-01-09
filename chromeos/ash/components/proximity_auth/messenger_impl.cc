@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/proximity_auth/messenger_observer.h"
 #include "chromeos/ash/components/proximity_auth/remote_status_update.h"

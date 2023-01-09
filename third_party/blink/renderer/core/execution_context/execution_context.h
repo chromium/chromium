@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

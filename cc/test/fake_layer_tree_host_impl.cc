@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/task/sequenced_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/begin_frame_args_test.h"

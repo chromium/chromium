@@ -6,6 +6,7 @@
 #define CHROME_TEST_CHROMEDRIVER_SERVER_HTTP_SERVER_H_
 
 #include "base/json/json_reader.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/test/chromedriver/server/http_handler.h"
 #include "net/base/url_util.h"
 #include "net/server/http_server.h"

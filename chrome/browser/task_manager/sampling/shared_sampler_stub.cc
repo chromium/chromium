@@ -4,6 +4,7 @@
 
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace task_manager {

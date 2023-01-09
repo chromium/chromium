@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 

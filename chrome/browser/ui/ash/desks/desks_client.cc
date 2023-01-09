@@ -28,6 +28,7 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

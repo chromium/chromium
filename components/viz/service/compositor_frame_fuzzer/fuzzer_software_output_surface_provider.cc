@@ -10,7 +10,6 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

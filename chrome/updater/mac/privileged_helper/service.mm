@@ -5,6 +5,7 @@
 #include "chrome/updater/mac/privileged_helper/service.h"
 
 #include "base/memory/raw_ptr.h"
+#import "base/task/sequenced_task_runner.h"
 
 #import <Foundation/Foundation.h>
 #include <Security/Security.h>

@@ -10,6 +10,8 @@
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "base/functional/bind.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/decoder_status.h"

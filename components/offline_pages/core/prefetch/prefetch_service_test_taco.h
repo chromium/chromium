@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 

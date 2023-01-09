@@ -4,6 +4,7 @@
 
 #include "media/renderers/decrypting_renderer_factory.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_log.h"
 #include "media/renderers/decrypting_renderer.h"
 

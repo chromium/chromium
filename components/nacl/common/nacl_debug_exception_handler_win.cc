@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/scoped_handle.h"
 #include "native_client/src/public/win/debug_exception_handler.h"

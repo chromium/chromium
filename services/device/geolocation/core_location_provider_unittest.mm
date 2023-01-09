@@ -5,6 +5,7 @@
 #include "services/device/geolocation/core_location_provider.h"
 
 #include "base/run_loop.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

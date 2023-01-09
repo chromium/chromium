@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/metrics/statistics_recorder.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

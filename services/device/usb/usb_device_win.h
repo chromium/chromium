@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/device/usb/usb_device.h"
 
 namespace device {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/task/single_thread_task_runner.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_status.h"

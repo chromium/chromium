@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/audio_debug_recording_test.h"

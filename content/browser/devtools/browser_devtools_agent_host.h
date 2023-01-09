@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_BROWSER_DEVTOOLS_AGENT_HOST_H_
 #define CONTENT_BROWSER_DEVTOOLS_BROWSER_DEVTOOLS_AGENT_HOST_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 
 namespace content {

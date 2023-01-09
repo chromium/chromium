@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sessions/session_service_base_test_helper.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_factory.h"

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/common/power_bookmark_metrics.h"

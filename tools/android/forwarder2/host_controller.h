@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "tools/android/forwarder2/forwarders_manager.h"
 #include "tools/android/forwarder2/pipe_notifier.h"

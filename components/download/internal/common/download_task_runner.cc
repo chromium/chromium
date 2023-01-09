@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 

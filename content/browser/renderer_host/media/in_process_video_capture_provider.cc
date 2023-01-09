@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_device_launcher.h"
 
 namespace content {

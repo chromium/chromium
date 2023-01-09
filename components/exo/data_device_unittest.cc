@@ -11,6 +11,7 @@
 
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/data_device_delegate.h"

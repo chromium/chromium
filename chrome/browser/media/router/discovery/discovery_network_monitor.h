@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/discovery_network_info.h"
 #include "net/base/ip_address.h"
 #include "services/network/public/cpp/network_connection_tracker.h"

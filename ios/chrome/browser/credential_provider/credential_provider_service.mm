@@ -10,7 +10,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/threading/sequenced_task_runner_handle.h"
 #import "build/build_config.h"
 #import "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #import "components/password_manager/core/browser/affiliation/affiliation_service.h"

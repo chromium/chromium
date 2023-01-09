@@ -12,6 +12,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
+#import "base/task/single_thread_task_runner.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/ios/accept_languages_table.h"
 #include "components/cronet/ios/cronet_environment.h"

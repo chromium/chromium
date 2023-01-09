@@ -6,6 +6,7 @@
 
 #include <latch>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/cronet/cronet_global_state.h"

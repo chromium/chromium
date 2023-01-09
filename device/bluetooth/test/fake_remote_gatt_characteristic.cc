@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_read_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -4,6 +4,7 @@
 
 #include "base/callback.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 

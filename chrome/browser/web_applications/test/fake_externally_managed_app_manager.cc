@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace web_app {
 

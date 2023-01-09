@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/assistant/service_context.h"
 

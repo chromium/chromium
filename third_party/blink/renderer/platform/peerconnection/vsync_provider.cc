@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 
 namespace blink {

@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_id_list.h"
 
 namespace device {

@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

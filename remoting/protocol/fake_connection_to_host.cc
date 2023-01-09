@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/fake_connection_to_host.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/transport_context.h"
 

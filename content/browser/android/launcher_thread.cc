@@ -4,6 +4,7 @@
 
 #include "content/browser/android/launcher_thread.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/android/content_jni_headers/LauncherThread_jni.h"
 
 namespace content {

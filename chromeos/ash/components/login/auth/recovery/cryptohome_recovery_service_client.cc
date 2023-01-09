@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"

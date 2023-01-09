@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"

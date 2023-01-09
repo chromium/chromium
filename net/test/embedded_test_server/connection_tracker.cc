@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

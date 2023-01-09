@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/sys_byteorder.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/webrtc/fake_ssl_client_socket.h"
 #include "net/base/io_buffer.h"

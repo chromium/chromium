@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad_shared_memory_reader.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"

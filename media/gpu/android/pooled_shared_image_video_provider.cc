@@ -5,6 +5,7 @@
 #include "media/gpu/android/pooled_shared_image_video_provider.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

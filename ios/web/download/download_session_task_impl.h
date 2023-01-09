@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ios/web/download/download_task_impl.h"
 
 namespace web {

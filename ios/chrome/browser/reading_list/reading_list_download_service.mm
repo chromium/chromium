@@ -14,6 +14,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_util.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/reading_list/core/offline_url_utils.h"
 #import "components/reading_list/core/reading_list_entry.h"

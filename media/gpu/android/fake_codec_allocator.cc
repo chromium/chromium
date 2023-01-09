@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/gpu/android/codec_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"

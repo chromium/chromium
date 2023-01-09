@@ -12,7 +12,6 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace ash {
 namespace holding_space_util {

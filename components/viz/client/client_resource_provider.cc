@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"

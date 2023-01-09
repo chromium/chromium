@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 
 #include <memory>
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

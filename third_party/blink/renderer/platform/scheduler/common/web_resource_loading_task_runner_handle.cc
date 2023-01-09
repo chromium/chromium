@@ -1,5 +1,6 @@
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/unprioritized_resource_loading_task_runner_handle.h"
 
 namespace blink {

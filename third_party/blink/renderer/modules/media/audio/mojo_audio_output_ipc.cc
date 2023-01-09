@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/audio_output_stream.mojom-blink.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

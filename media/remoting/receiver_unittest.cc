@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "components/cast_streaming/public/remoting_proto_enum_utils.h"

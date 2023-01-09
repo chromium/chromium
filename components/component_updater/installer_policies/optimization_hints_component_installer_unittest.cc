@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"

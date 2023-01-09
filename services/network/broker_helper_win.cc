@@ -5,7 +5,6 @@
 #include "services/network/broker_helper_win.h"
 
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"

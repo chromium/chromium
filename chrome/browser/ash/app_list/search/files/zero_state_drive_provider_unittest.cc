@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/files/zero_state_drive_provider.h"
 
 #include "base/files/file_path.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

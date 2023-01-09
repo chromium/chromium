@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"

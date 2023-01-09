@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"

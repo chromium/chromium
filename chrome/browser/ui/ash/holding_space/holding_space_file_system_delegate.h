@@ -13,6 +13,7 @@
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"

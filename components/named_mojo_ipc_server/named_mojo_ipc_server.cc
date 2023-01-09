@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"

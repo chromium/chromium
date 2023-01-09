@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/feature_observer.h"

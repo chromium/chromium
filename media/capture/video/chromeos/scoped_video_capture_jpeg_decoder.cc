@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace media {
 

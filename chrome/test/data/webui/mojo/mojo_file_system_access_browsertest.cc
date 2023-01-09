@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_file_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"

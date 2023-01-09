@@ -18,6 +18,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"
 #include "content/public/child/child_thread.h"

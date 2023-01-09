@@ -23,6 +23,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"

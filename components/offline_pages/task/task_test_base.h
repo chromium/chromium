@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_TASK_TASK_TEST_BASE_H_
 #define COMPONENTS_OFFLINE_PAGES_TASK_TASK_TEST_BASE_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/offline_pages/task/task.h"
 #include "testing/gtest/include/gtest/gtest.h"

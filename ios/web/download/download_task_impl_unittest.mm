@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/test/task_environment.h"

@@ -8,6 +8,7 @@
 #include <SensorsApi.h>
 #include <wrl/client.h>
 
+#include "base/task/single_thread_task_runner.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
 namespace device {

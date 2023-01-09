@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/arc/fake_arc_data_snapshotd_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

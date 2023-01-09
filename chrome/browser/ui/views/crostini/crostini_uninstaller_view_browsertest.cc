@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"

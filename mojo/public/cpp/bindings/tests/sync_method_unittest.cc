@@ -41,6 +41,8 @@
 // This needs to be included last, since it forward declares a bunch of classes
 // but depends on those definitions to be included by headers that sort
 // lexicographically after.
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/tests/sync_method_unittest.test-mojom-params-data.h"
 
 namespace mojo {

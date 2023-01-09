@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/device_pairing_handler_impl.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/device_conversion_util.h"
 #include "components/device_event_log/device_event_log.h"
 

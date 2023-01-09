@@ -4,7 +4,6 @@
 
 #include "components/browsing_data/content/shared_worker_helper.h"
 
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"

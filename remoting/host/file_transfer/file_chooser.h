@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 
 namespace remoting {

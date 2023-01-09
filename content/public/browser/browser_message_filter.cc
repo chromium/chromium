@@ -11,6 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"

@@ -8,6 +8,7 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"  // For IOThreadDelegate.
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 
 // For this example, these are global so that each task running on each thread

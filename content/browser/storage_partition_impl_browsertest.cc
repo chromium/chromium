@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"

@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/device_event_log/device_event_log.h"
 

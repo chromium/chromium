@@ -37,7 +37,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "fuchsia_web/common/string_util.h"

@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/display.h"
 #include "components/exo/input_method_surface_manager.h"

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"

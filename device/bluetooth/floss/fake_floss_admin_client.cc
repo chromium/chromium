@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 namespace floss {

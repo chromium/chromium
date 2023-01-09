@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"

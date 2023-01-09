@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/gpu/content_gpu_client.h"
 
 namespace chromecast {

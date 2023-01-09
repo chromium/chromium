@@ -4,6 +4,7 @@
 
 #include "media/fuchsia/video/fuchsia_decoder_factory.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 #include "media/video/gpu_video_accelerator_factories.h"

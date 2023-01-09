@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 

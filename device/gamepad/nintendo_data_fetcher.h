@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/nintendo_controller.h"
 #include "device/gamepad/public/cpp/gamepads.h"

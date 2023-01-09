@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h"
 
+#import "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"

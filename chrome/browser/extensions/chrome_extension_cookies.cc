@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"

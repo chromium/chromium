@@ -4,6 +4,7 @@
 
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
 
+#import "base/task/sequenced_task_runner.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 #include "content/browser/web_contents/web_contents_view_mac.h"

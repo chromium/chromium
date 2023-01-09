@@ -10,6 +10,7 @@
 #include <memory>
 
 #import "base/mac/scoped_nsobject.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/common/content_export.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"

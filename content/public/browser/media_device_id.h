@@ -12,6 +12,7 @@
 
 #include <string>
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/resource_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

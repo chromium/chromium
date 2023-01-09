@@ -4,6 +4,7 @@
 
 #include "components/cast_streaming/renderer/playback_command_forwarding_renderer_factory.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/renderer/playback_command_forwarding_renderer.h"
 
 namespace cast_streaming {

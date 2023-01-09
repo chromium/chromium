@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "ui/ozone/public/platform_user_input_monitor.h"
 
 namespace ui {

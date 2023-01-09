@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 
 namespace blink {

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/dns/public/host_resolver_results.h"

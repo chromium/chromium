@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/android/features/vr/split_jni_headers/VrShellDelegate_jni.h"
 #include "chrome/browser/android/vr/vr_shell.h"
 #include "chrome/browser/android/vr/vrcore_install_helper.h"

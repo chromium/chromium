@@ -5,6 +5,7 @@
 #include "chrome/app_shim/app_shim_controller.h"
 
 #include "base/memory/raw_ptr.h"
+#import "base/task/single_thread_task_runner.h"
 
 #import <Cocoa/Cocoa.h>
 #include <mach/message.h>

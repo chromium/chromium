@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

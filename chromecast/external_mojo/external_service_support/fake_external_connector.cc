@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/external_mojo/external_service_support/external_service.h"
 
 namespace chromecast {

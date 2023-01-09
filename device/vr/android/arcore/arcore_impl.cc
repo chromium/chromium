@@ -12,6 +12,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "device/vr/android/arcore/arcore_math_utils.h"

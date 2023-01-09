@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"

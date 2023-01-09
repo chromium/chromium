@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtp_contributing_source_cache.h"
 
 #include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"

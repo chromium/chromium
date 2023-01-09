@@ -7,6 +7,7 @@
 #import "content/browser/accessibility/browser_accessibility_mac.h"
 
 #include "base/debug/stack_trace.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"

@@ -5,6 +5,7 @@
 #include "media/gpu/android/frame_info_helper.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/shared_image/android_video_image_backing.h"
 #include "gpu/ipc/service/command_buffer_stub.h"

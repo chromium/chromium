@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_FILE_SUGGESTION_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_FILE_SUGGESTION_PROVIDER_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/search/files/file_suggestion_provider.h"
 #include "chrome/browser/ash/app_list/search/files/item_suggest_cache.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"

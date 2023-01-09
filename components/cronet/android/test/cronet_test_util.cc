@@ -10,7 +10,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/sequence_manager/sequence_manager.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/cronet/android/cronet_context_adapter.h"
 #include "components/cronet/android/cronet_tests_jni_headers/CronetTestUtil_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"

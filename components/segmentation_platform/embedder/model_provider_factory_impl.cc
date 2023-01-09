@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
 #include "components/segmentation_platform/public/config.h"

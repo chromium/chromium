@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
 

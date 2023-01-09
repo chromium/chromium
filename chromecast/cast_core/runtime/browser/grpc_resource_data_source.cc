@@ -12,7 +12,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/cast_constants.h"
 #include "net/base/mime_util.h"
 

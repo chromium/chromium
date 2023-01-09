@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_com_initializer.h"
 

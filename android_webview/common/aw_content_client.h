@@ -9,6 +9,7 @@
 #include "content/public/common/content_client.h"
 
 #include "base/compiler_specific.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace embedder_support {
 class OriginTrialPolicyImpl;

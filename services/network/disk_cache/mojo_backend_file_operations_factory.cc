@@ -4,6 +4,7 @@
 
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "services/network/disk_cache/mojo_backend_file_operations.h"
 
 using disk_cache::BackendFileOperations;

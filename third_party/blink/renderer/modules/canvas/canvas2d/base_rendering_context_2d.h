@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"

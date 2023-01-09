@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/first_run/first_run.h"

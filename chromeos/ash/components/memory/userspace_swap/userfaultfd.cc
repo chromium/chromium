@@ -25,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/components/memory/aligned_memory.h"
 
 namespace ash {

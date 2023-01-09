@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_UNZIP_PUBLIC_CPP_UNZIP_H_
 
 #include "base/callback_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

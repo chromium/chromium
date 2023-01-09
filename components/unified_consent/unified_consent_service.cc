@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/user_selectable_type.h"

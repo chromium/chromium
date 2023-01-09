@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"

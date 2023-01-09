@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 

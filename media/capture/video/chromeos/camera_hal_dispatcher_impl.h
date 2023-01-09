@@ -19,6 +19,7 @@
 #include "base/observer_list_types.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"

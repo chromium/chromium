@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/cache_type.h"

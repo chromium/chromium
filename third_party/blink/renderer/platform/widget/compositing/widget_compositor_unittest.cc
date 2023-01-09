@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_host.h"

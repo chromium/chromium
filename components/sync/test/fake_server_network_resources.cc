@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/test/fake_server.h"

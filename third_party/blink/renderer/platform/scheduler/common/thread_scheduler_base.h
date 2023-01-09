@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"

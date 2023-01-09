@@ -13,7 +13,6 @@
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/host/file_transfer/fake_file_operations.h"

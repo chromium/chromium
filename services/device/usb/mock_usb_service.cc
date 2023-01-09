@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/threading/thread_task_runner_handle.h"
 #include "services/device/usb/usb_device.h"
 
 namespace device {

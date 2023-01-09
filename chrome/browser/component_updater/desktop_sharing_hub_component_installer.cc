@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/browser/share/core/share_targets.h"
 #include "components/component_updater/component_updater_paths.h"

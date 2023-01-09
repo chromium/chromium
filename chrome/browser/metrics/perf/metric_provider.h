@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
 
 namespace base {

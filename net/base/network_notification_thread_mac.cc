@@ -6,6 +6,7 @@
 
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 
 namespace net {

@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "skia/ext/image_operations.h"

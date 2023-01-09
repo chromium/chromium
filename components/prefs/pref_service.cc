@@ -23,7 +23,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/default_pref_store.h"

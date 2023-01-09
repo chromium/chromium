@@ -8,7 +8,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/services/unzip/public/cpp/unzip.h"

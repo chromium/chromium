@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 
 namespace leveldb {

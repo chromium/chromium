@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
+#include "base/task/sequenced_task_runner.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <ctype.h>

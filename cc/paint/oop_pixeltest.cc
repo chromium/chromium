@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/test_switches.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/base/completion_event.h"
 #include "cc/paint/display_item_list.h"

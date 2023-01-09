@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/lap_timer.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_raster_source.h"

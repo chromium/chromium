@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"

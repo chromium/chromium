@@ -4,6 +4,7 @@
 
 #include "chrome/browser/device_reauth/win/biometric_authenticator_win.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 
 #include <memory>

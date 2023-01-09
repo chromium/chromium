@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "extensions/browser/offscreen_document_host.h"
 

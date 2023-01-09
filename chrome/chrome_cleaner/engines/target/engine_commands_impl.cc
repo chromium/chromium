@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/chrome_cleaner/crash/crash_keys.h"
 #include "chrome/chrome_cleaner/engines/target/cleaner_engine_requests_proxy.h"
 #include "chrome/chrome_cleaner/engines/target/engine_cleanup_results_proxy.h"

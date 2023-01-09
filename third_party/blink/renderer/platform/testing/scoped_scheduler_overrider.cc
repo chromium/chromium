@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {

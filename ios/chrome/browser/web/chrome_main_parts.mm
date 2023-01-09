@@ -16,6 +16,7 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_tick_clock.h"
 #import "components/content_settings/core/browser/cookie_settings.h"

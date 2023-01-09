@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_TEST_FAKE_DELAY_BASED_TIME_SOURCE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 

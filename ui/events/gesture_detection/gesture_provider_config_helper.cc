@@ -4,6 +4,7 @@
 
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 

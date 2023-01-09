@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/output_stream_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace location {
 namespace nearby {

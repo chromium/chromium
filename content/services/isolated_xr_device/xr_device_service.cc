@@ -4,6 +4,7 @@
 
 #include "content/services/isolated_xr_device/xr_device_service.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/services/isolated_xr_device/xr_runtime_provider.h"
 #include "content/services/isolated_xr_device/xr_service_test_hook.h"

@@ -7,6 +7,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/vr/scheduler_delegate.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/util/fps_meter.h"

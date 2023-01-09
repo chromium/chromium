@@ -21,6 +21,7 @@
 #include "base/process/current_process.h"
 #include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "mojo/core/configuration.h"

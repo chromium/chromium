@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace dbus {
 class Bus;

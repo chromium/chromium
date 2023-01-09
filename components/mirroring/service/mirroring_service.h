@@ -6,6 +6,7 @@
 #define COMPONENTS_MIRRORING_SERVICE_MIRRORING_SERVICE_H_
 
 #include "base/component_export.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

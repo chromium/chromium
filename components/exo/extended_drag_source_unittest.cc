@@ -16,6 +16,7 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "chromeos/ui/base/window_properties.h"

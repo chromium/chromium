@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/platform/web_time_range.h"

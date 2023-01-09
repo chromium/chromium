@@ -5,6 +5,7 @@
 #include "cronet_test_base.h"
 
 #include "base/location.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"

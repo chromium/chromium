@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/mac/foundation_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/ca_layer_params.h"

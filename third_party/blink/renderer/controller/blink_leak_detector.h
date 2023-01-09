@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_BLINK_LEAK_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_BLINK_LEAK_DETECTOR_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom-blink.h"

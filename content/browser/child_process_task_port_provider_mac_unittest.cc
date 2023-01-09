@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/mac/scoped_mach_port.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"

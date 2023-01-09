@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/common/in_process_child_thread_params.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace content {
 

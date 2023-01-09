@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #import "device/bluetooth/bluetooth_adapter_mac.h"
 #import "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"

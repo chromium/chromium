@@ -4,6 +4,7 @@
 
 #include "media/mojo/services/media_foundation_mojo_media_client.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/win/media_foundation_cdm_factory.h"
 #include "media/mojo/services/media_foundation_renderer_wrapper.h"

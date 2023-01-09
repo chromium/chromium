@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/drive/drive_api_util.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"

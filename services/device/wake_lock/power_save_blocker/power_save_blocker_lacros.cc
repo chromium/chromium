@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"

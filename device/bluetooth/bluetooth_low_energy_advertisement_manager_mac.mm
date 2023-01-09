@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

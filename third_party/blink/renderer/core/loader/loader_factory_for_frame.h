@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"

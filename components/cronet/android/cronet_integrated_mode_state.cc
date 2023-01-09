@@ -5,6 +5,7 @@
 #include "components/cronet/android/cronet_integrated_mode_state.h"
 
 #include "base/atomicops.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace cronet {
 namespace {

@@ -5,6 +5,7 @@
 #include "services/network/upload_progress_tracker.h"
 
 #include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/upload_progress.h"
 #include "net/url_request/url_request.h"
 

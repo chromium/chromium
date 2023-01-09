@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/exo/wayland/clients/test/wayland_client_test.h"
 #include "components/exo/wayland/clients/test/wayland_client_test_server.h"
 

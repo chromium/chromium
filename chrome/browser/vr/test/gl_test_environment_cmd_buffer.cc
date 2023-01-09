@@ -5,7 +5,6 @@
 #include "chrome/browser/vr/test/gl_test_environment.h"
 
 #include "base/run_loop.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"

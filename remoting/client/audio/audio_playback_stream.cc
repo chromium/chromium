@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/client/audio/audio_jitter_buffer.h"
 #include "remoting/client/audio/audio_playback_sink.h"
 

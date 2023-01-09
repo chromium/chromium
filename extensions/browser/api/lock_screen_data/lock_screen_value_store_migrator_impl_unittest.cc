@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/test_value_store_factory.h"
 #include "components/value_store/testing_value_store.h"

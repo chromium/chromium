@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {

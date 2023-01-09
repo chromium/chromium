@@ -6,6 +6,7 @@
 #define MEDIA_GPU_ANDROID_POOLED_SHARED_IMAGE_VIDEO_PROVIDER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "media/gpu/android/shared_image_video_provider.h"

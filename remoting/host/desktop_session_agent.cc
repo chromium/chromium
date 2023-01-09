@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"

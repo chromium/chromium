@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "net/dns/mdns_client.h"

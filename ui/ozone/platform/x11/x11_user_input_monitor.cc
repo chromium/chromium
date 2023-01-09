@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/x11/x11_user_input_monitor.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "ui/base/x/x11_user_input_monitor.h"
 
 namespace ui {

@@ -4,6 +4,7 @@
 
 #include "content/public/browser/download_manager.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/download/public/common/download_task_runner.h"
 
 namespace content {

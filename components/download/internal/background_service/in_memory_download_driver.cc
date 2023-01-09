@@ -4,6 +4,7 @@
 
 #include "components/download/internal/background_service/in_memory_download_driver.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/background_service/in_memory_download.h"
 #include "services/network/public/cpp/resource_request_body.h"
 

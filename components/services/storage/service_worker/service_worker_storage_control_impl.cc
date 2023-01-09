@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

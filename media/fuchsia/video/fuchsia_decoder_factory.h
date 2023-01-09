@@ -5,6 +5,7 @@
 #ifndef MEDIA_FUCHSIA_VIDEO_FUCHSIA_DECODER_FACTORY_H_
 #define MEDIA_FUCHSIA_VIDEO_FUCHSIA_DECODER_FACTORY_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder_factory.h"
 #include "media/fuchsia/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"

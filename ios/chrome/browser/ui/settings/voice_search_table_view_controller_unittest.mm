@@ -10,7 +10,6 @@
 #import "base/files/file_path.h"
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"

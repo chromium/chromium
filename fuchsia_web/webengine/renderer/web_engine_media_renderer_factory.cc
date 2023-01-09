@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "fuchsia_web/webengine/renderer/web_engine_audio_renderer.h"
 #include "media/base/decoder_factory.h"
 #include "media/renderers/renderer_impl.h"

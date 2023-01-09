@@ -6,6 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ui/frame/frame_utils.h"
 
 namespace ash {

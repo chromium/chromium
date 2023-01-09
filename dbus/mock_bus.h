@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/task/sequenced_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"

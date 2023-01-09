@@ -7,6 +7,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"  // nogncheck

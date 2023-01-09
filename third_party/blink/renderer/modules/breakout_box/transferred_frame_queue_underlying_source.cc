@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"

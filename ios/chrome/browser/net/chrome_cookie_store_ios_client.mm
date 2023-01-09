@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/net/chrome_cookie_store_ios_client.h"
 
+#import "base/task/sequenced_task_runner.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 

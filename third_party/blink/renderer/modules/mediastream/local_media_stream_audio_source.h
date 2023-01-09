@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_capturer_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-locker.h"

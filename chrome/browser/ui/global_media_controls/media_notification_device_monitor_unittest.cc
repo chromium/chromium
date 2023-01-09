@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/global_media_controls/media_notification_device_monitor.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"

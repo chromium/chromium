@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_SCOPED_SCHEDULER_OVERRIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_SCOPED_SCHEDULER_OVERRIDER_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/scoped_main_thread_overrider.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

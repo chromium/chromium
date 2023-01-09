@@ -5,6 +5,7 @@
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace dbus_thread_linux {
 

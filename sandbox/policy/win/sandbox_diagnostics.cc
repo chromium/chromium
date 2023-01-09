@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 
 namespace sandbox {

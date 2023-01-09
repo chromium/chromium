@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 
+#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 

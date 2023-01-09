@@ -5,7 +5,6 @@
 #include "ui/compositor/test/fake_context_factory.h"
 
 #include "base/command_line.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"

@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/hang_watcher.h"
 #include "build/build_config.h"

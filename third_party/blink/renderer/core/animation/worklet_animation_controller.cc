@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"

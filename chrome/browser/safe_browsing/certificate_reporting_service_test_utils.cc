@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "components/security_interstitials/content/certificate_error_report.h"

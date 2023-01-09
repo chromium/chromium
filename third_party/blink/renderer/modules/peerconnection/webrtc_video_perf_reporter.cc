@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_video_perf_reporter.h"
 
 #include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/video_codecs.h"
 
 namespace blink {

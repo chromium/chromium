@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
 
 namespace blink {

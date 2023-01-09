@@ -4,6 +4,7 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"

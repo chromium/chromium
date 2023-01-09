@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_logging.h"
 #include "ipc/ipc_message.h"

@@ -16,7 +16,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 

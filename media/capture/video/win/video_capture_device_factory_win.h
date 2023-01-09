@@ -15,6 +15,7 @@
 #include <windows.devices.enumeration.h>
 #include <wrl.h>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/video/video_capture_device_factory.h"

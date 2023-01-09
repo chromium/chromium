@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/stream_consumer.h"
 #include "components/cast_streaming/public/config_conversions.h"

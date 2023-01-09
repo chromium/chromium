@@ -22,6 +22,7 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 namespace {
 
 using BlinkMessage = blink::WebMessagePort::Message;

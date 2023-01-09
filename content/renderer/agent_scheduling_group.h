@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/id_map.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"

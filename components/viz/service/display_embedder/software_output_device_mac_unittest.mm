@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display_embedder/software_output_device_mac.h"
 
+#import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/skia_conversions.h"

@@ -10,6 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/credential_provider/extension/extension_utils.h"
 #include "chrome/credential_provider/extension/user_context_enumerator.h"

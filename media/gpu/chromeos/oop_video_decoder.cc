@@ -5,6 +5,7 @@
 #include "media/gpu/chromeos/oop_video_decoder.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/cdm_factory_daemon/stable_cdm_context_impl.h"
 #include "media/base/bind_to_current_loop.h"

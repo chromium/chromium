@@ -5,6 +5,7 @@
 #include "remoting/host/mac/permission_wizard.h"
 
 #include "base/memory/raw_ptr.h"
+#import "base/task/single_thread_task_runner.h"
 
 #import <Cocoa/Cocoa.h>
 

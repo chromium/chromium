@@ -5,6 +5,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_win.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_win.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_win.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_win.h"

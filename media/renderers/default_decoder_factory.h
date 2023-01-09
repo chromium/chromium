@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_export.h"
 

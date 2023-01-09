@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "url/gurl.h"

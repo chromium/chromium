@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"

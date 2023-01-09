@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/renderer/media/codec_factory.h"
 #include "media/base/overlay_info.h"
 #include "media/mojo/clients/mojo_video_decoder.h"

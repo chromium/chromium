@@ -8,7 +8,6 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace ash {
 

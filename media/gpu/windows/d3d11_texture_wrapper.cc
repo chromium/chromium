@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"

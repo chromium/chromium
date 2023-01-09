@@ -25,7 +25,6 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"

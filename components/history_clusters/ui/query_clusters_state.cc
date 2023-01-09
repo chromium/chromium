@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service.h"

@@ -4,6 +4,7 @@
 
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

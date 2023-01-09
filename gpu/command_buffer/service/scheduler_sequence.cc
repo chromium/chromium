@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_local.h"
 #include "gpu/command_buffer/service/scheduler.h"
 

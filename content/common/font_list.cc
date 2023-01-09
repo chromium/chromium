@@ -5,6 +5,7 @@
 #include "content/common/font_list.h"
 
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace content {
 

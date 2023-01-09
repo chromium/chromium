@@ -4,6 +4,7 @@
 
 #include "components/viz/test/fake_delay_based_time_source.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 
 namespace viz {

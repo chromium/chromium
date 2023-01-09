@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_DEVICE_SERVICE_TEST_BASE_H_
 #define SERVICES_DEVICE_DEVICE_SERVICE_TEST_BASE_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"

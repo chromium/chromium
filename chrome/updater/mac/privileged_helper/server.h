@@ -8,6 +8,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/mac/privileged_helper/service.h"

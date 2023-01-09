@@ -10,6 +10,7 @@
 #include <cstdint>
 
 #include "base/callback.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"

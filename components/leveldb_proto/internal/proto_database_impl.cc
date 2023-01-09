@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
 namespace leveldb_proto {

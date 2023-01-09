@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

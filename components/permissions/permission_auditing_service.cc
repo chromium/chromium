@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/permissions/permission_auditing_database.h"
 
 namespace {

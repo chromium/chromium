@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/devtools/devtools_io_context.h"
 
 #include <string>

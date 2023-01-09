@@ -7,6 +7,7 @@
 
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
 
 class DeviceIdentityProvider;

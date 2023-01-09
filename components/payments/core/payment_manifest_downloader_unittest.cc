@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/error_logger.h"
 #include "net/base/net_errors.h"

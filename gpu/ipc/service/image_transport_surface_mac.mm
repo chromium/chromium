@@ -4,7 +4,6 @@
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
-#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gfx/native_widget_types.h"

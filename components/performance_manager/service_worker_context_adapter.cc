@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 

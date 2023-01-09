@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"

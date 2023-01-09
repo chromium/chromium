@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_TEST_TEST_RESOURCE_SCHEDULER_H_
 #define SERVICES_NETWORK_TEST_TEST_RESOURCE_SCHEDULER_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
 
 namespace network {

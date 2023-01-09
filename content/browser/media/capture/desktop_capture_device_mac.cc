@@ -6,6 +6,7 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/media/capture/io_surface_capture_device_base_mac.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/gfx/native_widget_types.h"

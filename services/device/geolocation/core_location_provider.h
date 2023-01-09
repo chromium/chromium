@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_CORE_LOCATION_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"

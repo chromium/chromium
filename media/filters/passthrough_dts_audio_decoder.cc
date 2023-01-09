@@ -4,6 +4,7 @@
 
 #include "media/filters/passthrough_dts_audio_decoder.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/formats/dts/dts_util.h"

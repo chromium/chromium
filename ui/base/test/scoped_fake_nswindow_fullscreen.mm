@@ -13,7 +13,6 @@
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/cocoa/nswindow_test_util.h"
 
 namespace ui {

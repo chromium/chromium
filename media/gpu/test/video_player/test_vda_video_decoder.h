@@ -12,6 +12,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/test/video_player/decoder_wrapper.h"

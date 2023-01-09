@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "services/tracing/perfetto/system_test_utils.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/system_tracing_service.h"

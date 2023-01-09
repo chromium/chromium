@@ -13,6 +13,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 
 namespace media_router {

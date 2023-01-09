@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 

@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"

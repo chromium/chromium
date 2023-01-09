@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_CONVERSATION_STATE_LISTENER_IMPL_H_
 
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"

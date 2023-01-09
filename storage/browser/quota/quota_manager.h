@@ -5,6 +5,7 @@
 #ifndef STORAGE_BROWSER_QUOTA_QUOTA_MANAGER_H_
 #define STORAGE_BROWSER_QUOTA_QUOTA_MANAGER_H_
 
+#include "base/task/single_thread_task_runner.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 
 namespace storage {

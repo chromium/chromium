@@ -4,7 +4,6 @@
 
 #include "cc/layers/ui_resource_layer.h"
 
-#include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/resources/ui_resource_manager.h"

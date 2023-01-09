@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/transport_security_state.h"

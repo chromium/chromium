@@ -7,13 +7,13 @@
 
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 
 namespace base {
-class SingleThreadTaskRunner;
 class TimeDelta;
 class WaitableEvent;
-}
+}  // namespace base
 
 namespace ui {
 

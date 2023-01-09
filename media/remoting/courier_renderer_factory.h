@@ -5,6 +5,7 @@
 #ifndef MEDIA_REMOTING_COURIER_RENDERER_FACTORY_H_
 #define MEDIA_REMOTING_COURIER_RENDERER_FACTORY_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/renderer_factory.h"
 #include "media/remoting/renderer_controller.h"
 

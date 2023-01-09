@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"  // [nogncheck]
 #include "content/browser/site_instance_impl.h"  // nogncheck

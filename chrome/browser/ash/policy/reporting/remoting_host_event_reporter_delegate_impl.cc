@@ -8,6 +8,7 @@
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/crd_event.pb.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"

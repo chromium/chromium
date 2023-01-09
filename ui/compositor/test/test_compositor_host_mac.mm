@@ -5,6 +5,7 @@
 #include "ui/compositor/test/test_compositor_host.h"
 
 #include "base/memory/raw_ptr.h"
+#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 
 #import <AppKit/NSApplication.h>

@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/floss/bluetooth_socket_floss.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"

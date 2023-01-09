@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/reporting/client/report_queue_factory.h"

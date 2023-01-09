@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sessions/session_service_test_helper.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "components/sessions/core/command_storage_backend.h"

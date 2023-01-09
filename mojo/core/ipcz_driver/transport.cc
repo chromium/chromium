@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"

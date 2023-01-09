@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "services/device/compute_pressure/cpu_probe.h"
 #include "services/device/compute_pressure/pressure_sample.h"

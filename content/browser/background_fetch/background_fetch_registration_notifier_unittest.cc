@@ -10,7 +10,6 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/background_fetch/background_fetch_registration_service_impl.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "testing/gtest/include/gtest/gtest.h"

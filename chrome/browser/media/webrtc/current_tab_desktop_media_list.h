@@ -7,6 +7,7 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/web_contents.h"
 
 // Implementation of DesktopMediaList that only follows a single tab.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {

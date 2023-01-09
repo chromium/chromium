@@ -24,7 +24,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_crash_keys.h"

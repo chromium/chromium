@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/memory/ref_counted.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "device/vr/android/arcore/arcore.h"
 

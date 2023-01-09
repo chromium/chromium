@@ -11,6 +11,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"

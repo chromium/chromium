@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace media {
 

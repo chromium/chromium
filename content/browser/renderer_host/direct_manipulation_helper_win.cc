@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/win/win_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/win/window_event_target.h"

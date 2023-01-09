@@ -13,6 +13,7 @@
 #import "base/logging.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/test/test_file_util.h"

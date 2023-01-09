@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
 

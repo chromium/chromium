@@ -9,7 +9,6 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/session_manager/core/session_manager.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 

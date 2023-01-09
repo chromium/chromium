@@ -56,6 +56,10 @@
 #include "ui/gfx/range/range.h"
 #include "v8/include/v8-forward.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace cc {
 class PaintCanvas;
 }  // namespace cc

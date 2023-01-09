@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chromeos/printing/printer_configuration.h"
 

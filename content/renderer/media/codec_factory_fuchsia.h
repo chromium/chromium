@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_CODEC_FACTORY_FUCHSIA_H_
 #define CONTENT_RENDERER_MEDIA_CODEC_FACTORY_FUCHSIA_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/codec_factory.h"
 #include "media/base/overlay_info.h"

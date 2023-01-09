@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include "base/task/single_thread_task_runner.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"

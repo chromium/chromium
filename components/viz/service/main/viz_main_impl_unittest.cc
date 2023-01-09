@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/viz/service/performance_hint/hint_session.h"
 #include "gpu/config/gpu_info.h"

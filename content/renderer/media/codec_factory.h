@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/base/decoder.h"
 #include "media/base/media_log.h"

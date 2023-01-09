@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_aura.h"

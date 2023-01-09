@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 
+#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #import "ui/views/cocoa/drag_drop_client_mac.h"
 

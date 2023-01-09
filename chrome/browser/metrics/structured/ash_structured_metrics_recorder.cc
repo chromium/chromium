@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
 #include <memory>
 
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"

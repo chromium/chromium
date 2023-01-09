@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/mojo/buildflags.h"

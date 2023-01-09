@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"

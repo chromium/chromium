@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/server/http_server.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/sys_addrinfo.h"

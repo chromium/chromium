@@ -4,6 +4,7 @@
 
 #include "cc/trees/frame_rate_estimator.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {

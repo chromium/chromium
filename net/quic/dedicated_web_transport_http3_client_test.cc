@@ -8,7 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/mock_cert_verifier.h"

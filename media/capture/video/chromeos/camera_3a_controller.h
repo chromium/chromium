@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "base/cancelable_callback.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"

@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"

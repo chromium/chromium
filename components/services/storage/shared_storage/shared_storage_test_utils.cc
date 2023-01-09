@@ -17,7 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "sql/database.h"
 #include "sql/test/test_helpers.h"

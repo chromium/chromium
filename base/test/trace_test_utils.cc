@@ -5,7 +5,6 @@
 
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/tracing/perfetto_platform.h"
 #include "third_party/perfetto/include/perfetto/tracing.h"
 

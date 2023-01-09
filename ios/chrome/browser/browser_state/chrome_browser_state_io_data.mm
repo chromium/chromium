@@ -23,7 +23,6 @@
 #import "base/strings/string_util.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
-#import "base/threading/thread_task_runner_handle.h"
 #import "components/content_settings/core/browser/content_settings_provider.h"
 #import "components/content_settings/core/browser/cookie_settings.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"

@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/content/browser/test_page_content_annotations_service.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
@@ -52,7 +52,7 @@ TestPageContentAnnotationsService::~TestPageContentAnnotationsService() {
   if (test_history_service_) {
     // Delete the history service on the next message pump so that PCAService's
     // |ScopedObservation| has a chance to be deleted first.
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(test_history_service_));
   }
 }

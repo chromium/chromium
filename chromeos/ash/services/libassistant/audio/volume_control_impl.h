@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_VOLUME_CONTROL_IMPL_H_
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"

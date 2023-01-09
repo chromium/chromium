@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/decoder_factory.h"
 

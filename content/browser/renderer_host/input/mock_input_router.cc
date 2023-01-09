@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/input/mock_input_router.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/input/input_router_client.h"
 
 namespace content {

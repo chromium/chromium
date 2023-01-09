@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/permissions/permission_status_listener.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"

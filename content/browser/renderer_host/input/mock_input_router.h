@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/input_router.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/input/event_with_latency_info.h"
