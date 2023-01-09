@@ -74,6 +74,8 @@ class CORE_EXPORT SVGLengthContext {
                                    const Length& y_length,
                                    const ComputedStyle&) const;
 
+  Length ConvertToLength(const SVGLength&) const;
+
   float ConvertValueToUserUnits(float,
                                 SVGLengthMode,
                                 CSSPrimitiveValue::UnitType from_unit) const;

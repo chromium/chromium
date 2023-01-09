@@ -102,6 +102,38 @@ static const ComputedStyle* RootElementStyle(const Node* context) {
   return style;
 }
 
+namespace {
+
+class CSSToLengthConversionDataContext {
+  STACK_ALLOCATED();
+
+ public:
+  explicit CSSToLengthConversionDataContext(const SVGElement* context)
+      : context_(context),
+        style_(ComputedStyleForLengthResolving(context)),
+        root_style_(RootElementStyle(context)) {}
+
+  bool HasStyle() const { return style_; }
+
+  CSSToLengthConversionData MakeConversionData() const {
+    DCHECK(context_);
+    DCHECK(HasStyle());
+    return CSSToLengthConversionData(style_, style_, root_style_,
+                                     context_->GetDocument().GetLayoutView(),
+                                     CSSToLengthConversionData::ContainerSizes(
+                                         context_->ParentOrShadowHostElement()),
+                                     1.0f, ignored_flags_);
+  }
+
+ private:
+  const SVGElement* context_ = nullptr;
+  const ComputedStyle* style_ = nullptr;
+  const ComputedStyle* root_style_ = nullptr;
+  mutable CSSToLengthConversionData::Flags ignored_flags_ = 0;
+};
+
+}  // namespace
+
 static float ConvertValueFromUserUnitsToEMS(const ComputedStyle* style,
                                             float value) {
   if (!style) {
@@ -362,6 +394,26 @@ float SVGLengthContext::ResolveLength(const SVGElement* context,
   return x.ScaleByPercentage(1);
 }
 
+float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
+                                     SVGLengthMode mode) const {
+  CSSToLengthConversionDataContext conversion_context(context_);
+  if (!conversion_context.HasStyle()) {
+    return 0;
+  }
+  const Length& length =
+      primitive_value.ConvertToLength(conversion_context.MakeConversionData());
+  return ValueForLength(length, 1.0f, mode);
+}
+
+Length SVGLengthContext::ConvertToLength(const SVGLength& length) const {
+  CSSToLengthConversionDataContext conversion_context(context_);
+  if (!conversion_context.HasStyle()) {
+    return Length::Fixed(0);
+  }
+  return length.AsCSSPrimitiveValue().ConvertToLength(
+      conversion_context.MakeConversionData());
+}
+
 float SVGLengthContext::ValueForLength(const UnzoomedLength& unzoomed_length,
                                        SVGLengthMode mode) const {
   return ValueForLength(unzoomed_length.length(), 1, mode);
@@ -613,26 +665,4 @@ bool SVGLengthContext::DetermineViewport(gfx::SizeF& viewport_size) const {
   return true;
 }
 
-float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
-                                     SVGLengthMode mode) const {
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
-  if (!style) {
-    return 0;
-  }
-
-  const ComputedStyle* root_style = RootElementStyle(context_);
-  if (!root_style) {
-    return 0;
-  }
-
-  DCHECK(context_);
-  CSSToLengthConversionData::Flags ignored_flags = 0;
-  CSSToLengthConversionData conversion_data = CSSToLengthConversionData(
-      style, style, root_style, context_->GetDocument().GetLayoutView(),
-      CSSToLengthConversionData::ContainerSizes(
-          context_->ParentOrShadowHostElement()),
-      1.0f, ignored_flags);
-  Length length = primitive_value.ConvertToLength(conversion_data);
-  return ValueForLength(length, 1.0f, mode);
-}
 }  // namespace blink
