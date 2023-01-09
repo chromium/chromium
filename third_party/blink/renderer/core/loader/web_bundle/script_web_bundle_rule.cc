@@ -53,7 +53,9 @@ absl::variant<ScriptWebBundleRule, ScriptWebBundleError>
 ScriptWebBundleRule::ParseJson(const String& inline_text,
                                const KURL& base_url,
                                ConsoleLogger* logger) {
-  std::unique_ptr<JSONValue> json = ParseJSON(inline_text);
+  // TODO(crbug.com/1264024): Deprecate JSON comments here, if possible.
+  std::unique_ptr<JSONValue> json =
+      ParseJSONWithCommentsDeprecated(inline_text);
   if (!json) {
     return ScriptWebBundleError(
         ScriptWebBundleError::Type::kSyntaxError,

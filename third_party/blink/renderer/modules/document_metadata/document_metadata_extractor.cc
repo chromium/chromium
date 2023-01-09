@@ -270,7 +270,9 @@ ExtractionStatus ExtractMetadata(const Element& root,
     if (element.HasTagName(html_names::kScriptTag) &&
         element.FastGetAttribute(html_names::kTypeAttr) ==
             "application/ld+json") {
-      std::unique_ptr<JSONValue> json = ParseJSON(element.textContent());
+      // TODO(crbug.com/1264024): Deprecate JSON comments here, if possible.
+      std::unique_ptr<JSONValue> json =
+          ParseJSONWithCommentsDeprecated(element.textContent());
       if (!json) {
         LOG(ERROR) << "Failed to parse json.";
         return ExtractionStatus::kParseFailure;

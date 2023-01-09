@@ -272,7 +272,7 @@ Error SkipComment(Cursor<CharType>* cursor, const CharType* end) {
 template <typename CharType>
 Error SkipWhitespaceAndComments(Cursor<CharType>* cursor,
                                 const CharType* end,
-                                bool* has_comments) {
+                                JSONCommentState& comment_state) {
   while (cursor->pos < end) {
     CharType c = *(cursor->pos);
     if (c == '\n') {
@@ -281,8 +281,8 @@ Error SkipWhitespaceAndComments(Cursor<CharType>* cursor,
       cursor->line_start = cursor->pos;
     } else if (c == ' ' || c == '\r' || c == '\t') {
       ++(cursor->pos);
-    } else if (c == '/') {
-      *has_comments = true;
+    } else if (c == '/' && comment_state != JSONCommentState::kDisallowed) {
+      comment_state = JSONCommentState::kAllowedAndPresent;
       Error error = SkipComment(cursor, end);
       if (error != Error::kNoError)
         return error;
@@ -298,8 +298,8 @@ Error ParseToken(Cursor<CharType>* cursor,
                  const CharType* end,
                  Token* token,
                  Cursor<CharType>* token_start,
-                 bool* has_comments) {
-  Error error = SkipWhitespaceAndComments(cursor, end, has_comments);
+                 JSONCommentState& comment_state) {
+  Error error = SkipWhitespaceAndComments(cursor, end, comment_state);
   if (error != Error::kNoError)
     return error;
   *token_start = *cursor;
@@ -457,14 +457,14 @@ template <typename CharType>
 Error BuildValue(Cursor<CharType>* cursor,
                  const CharType* end,
                  int max_depth,
-                 std::unique_ptr<JSONValue>* result,
-                 bool* has_comments) {
+                 JSONCommentState& comment_state,
+                 std::unique_ptr<JSONValue>* result) {
   if (max_depth == 0)
     return Error::kTooMuchNesting;
 
   Cursor<CharType> token_start;
   Token token;
-  Error error = ParseToken(cursor, end, &token, &token_start, has_comments);
+  Error error = ParseToken(cursor, end, &token, &token_start, comment_state);
   if (error != Error::kNoError)
     return error;
 
@@ -506,25 +506,25 @@ Error BuildValue(Cursor<CharType>* cursor,
     case kArrayBegin: {
       auto array = std::make_unique<JSONArray>();
       Cursor<CharType> before_token = *cursor;
-      error = ParseToken(cursor, end, &token, &token_start, has_comments);
+      error = ParseToken(cursor, end, &token, &token_start, comment_state);
       if (error != Error::kNoError)
         return error;
       while (token != kArrayEnd) {
         *cursor = before_token;
         std::unique_ptr<JSONValue> array_node;
         error =
-            BuildValue(cursor, end, max_depth - 1, &array_node, has_comments);
+            BuildValue(cursor, end, max_depth - 1, comment_state, &array_node);
         if (error != Error::kNoError)
           return error;
         array->PushValue(std::move(array_node));
 
         // After a list value, we expect a comma or the end of the list.
-        error = ParseToken(cursor, end, &token, &token_start, has_comments);
+        error = ParseToken(cursor, end, &token, &token_start, comment_state);
         if (error != Error::kNoError)
           return error;
         if (token == kListSeparator) {
           before_token = *cursor;
-          error = ParseToken(cursor, end, &token, &token_start, has_comments);
+          error = ParseToken(cursor, end, &token, &token_start, comment_state);
           if (error != Error::kNoError)
             return error;
           if (token == kArrayEnd) {
@@ -546,7 +546,7 @@ Error BuildValue(Cursor<CharType>* cursor,
     }
     case kObjectBegin: {
       auto object = std::make_unique<JSONObject>();
-      error = ParseToken(cursor, end, &token, &token_start, has_comments);
+      error = ParseToken(cursor, end, &token, &token_start, comment_state);
       if (error != Error::kNoError)
         return error;
       while (token != kObjectEnd) {
@@ -561,25 +561,25 @@ Error BuildValue(Cursor<CharType>* cursor,
           return error;
         }
 
-        error = ParseToken(cursor, end, &token, &token_start, has_comments);
+        error = ParseToken(cursor, end, &token, &token_start, comment_state);
         if (token != kObjectPairSeparator) {
           *cursor = token_start;
           return Error::kUnexpectedToken;
         }
 
         std::unique_ptr<JSONValue> value;
-        error = BuildValue(cursor, end, max_depth - 1, &value, has_comments);
+        error = BuildValue(cursor, end, max_depth - 1, comment_state, &value);
         if (error != Error::kNoError)
           return error;
         object->SetValue(key, std::move(value));
 
         // After a key/value pair, we expect a comma or the end of the
         // object.
-        error = ParseToken(cursor, end, &token, &token_start, has_comments);
+        error = ParseToken(cursor, end, &token, &token_start, comment_state);
         if (error != Error::kNoError)
           return error;
         if (token == kListSeparator) {
-          error = ParseToken(cursor, end, &token, &token_start, has_comments);
+          error = ParseToken(cursor, end, &token, &token_start, comment_state);
           if (error != Error::kNoError)
             return error;
           if (token == kObjectEnd) {
@@ -606,22 +606,22 @@ Error BuildValue(Cursor<CharType>* cursor,
       return Error::kUnexpectedToken;
   }
 
-  return SkipWhitespaceAndComments(cursor, end, has_comments);
+  return SkipWhitespaceAndComments(cursor, end, comment_state);
 }
 
 template <typename CharType>
 JSONParseError ParseJSONInternal(const CharType* start_ptr,
                                  unsigned length,
                                  int max_depth,
-                                 std::unique_ptr<JSONValue>* result,
-                                 bool* has_comments) {
+                                 JSONCommentState& comment_state,
+                                 std::unique_ptr<JSONValue>* result) {
   Cursor<CharType> cursor;
   cursor.pos = start_ptr;
   cursor.line = 0;
   cursor.line_start = start_ptr;
   const CharType* end = start_ptr + length;
   JSONParseError error;
-  error.type = BuildValue(&cursor, end, max_depth, result, has_comments);
+  error.type = BuildValue(&cursor, end, max_depth, comment_state, result);
   error.line = cursor.line;
   error.column = static_cast<int>(cursor.pos - cursor.line_start);
   if (error.type != Error::kNoError) {
@@ -636,15 +636,29 @@ JSONParseError ParseJSONInternal(const CharType* start_ptr,
 }  // anonymous namespace
 
 std::unique_ptr<JSONValue> ParseJSON(const String& json,
-                                     JSONParseError* opt_error,
-                                     bool* opt_has_comments) {
-  return ParseJSON(json, kMaxStackLimit, opt_error, opt_has_comments);
+                                     JSONParseError* opt_error) {
+  JSONCommentState comments = JSONCommentState::kDisallowed;
+  auto result = ParseJSON(json, comments, kMaxStackLimit, opt_error);
+  DCHECK_EQ(comments, JSONCommentState::kDisallowed);
+  return result;
+}
+
+std::unique_ptr<JSONValue> ParseJSONWithCommentsDeprecated(
+    const String& json,
+    JSONParseError* opt_error,
+    bool* opt_has_comments) {
+  JSONCommentState comment_state = JSONCommentState::kAllowedButAbsent;
+  auto result = ParseJSON(json, comment_state, kMaxStackLimit, opt_error);
+  if (opt_has_comments) {
+    *opt_has_comments = (comment_state == JSONCommentState::kAllowedAndPresent);
+  }
+  return result;
 }
 
 std::unique_ptr<JSONValue> ParseJSON(const String& json,
+                                     JSONCommentState& comment_state,
                                      int max_depth,
-                                     JSONParseError* opt_error,
-                                     bool* opt_has_comments) {
+                                     JSONParseError* opt_error) {
   if (max_depth < 0)
     max_depth = 0;
   if (max_depth > kMaxStackLimit)
@@ -652,7 +666,6 @@ std::unique_ptr<JSONValue> ParseJSON(const String& json,
 
   std::unique_ptr<JSONValue> result;
   JSONParseError error;
-  bool has_comments = false;
 
   if (json.empty()) {
     error.type = Error::kSyntaxError;
@@ -660,10 +673,10 @@ std::unique_ptr<JSONValue> ParseJSON(const String& json,
     error.column = 0;
   } else if (json.Is8Bit()) {
     error = ParseJSONInternal(json.Characters8(), json.length(), max_depth,
-                              &result, &has_comments);
+                              comment_state, &result);
   } else {
     error = ParseJSONInternal(json.Characters16(), json.length(), max_depth,
-                              &result, &has_comments);
+                              comment_state, &result);
   }
 
   if (opt_error) {
@@ -673,8 +686,6 @@ std::unique_ptr<JSONValue> ParseJSON(const String& json,
       error.message = FormatErrorMessage(error.type, error.line, error.column);
     *opt_error = error;
   }
-  if (opt_has_comments)
-    *opt_has_comments = has_comments;
   return result;
 }
 

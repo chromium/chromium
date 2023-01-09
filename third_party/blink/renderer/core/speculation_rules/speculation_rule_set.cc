@@ -280,8 +280,10 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
 
   // Let parsed be the result of parsing a JSON string to an Infra value given
   // input.
+  // TODO(crbug.com/1264024): Deprecate JSON comments here, if possible.
   JSONParseError parse_error;
-  auto parsed = JSONObject::From(ParseJSON(source_text, &parse_error));
+  auto parsed = JSONObject::From(
+      ParseJSONWithCommentsDeprecated(source_text, &parse_error));
 
   // If parsed is not a map, then return null.
   if (!parsed) {
