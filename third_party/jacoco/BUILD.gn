@@ -17,22 +17,11 @@ java_group("jacoco_all_java") {
   ]
 }
 
-# Needed to suppress stack traces being logged in every test like:
-# java.io.FileNotFoundException: /jacoco.exec: open failed: EROFS (Read-only file system).
-# https://crbug.com/1334374
-# https://github.com/jacoco/jacoco/issues/968
-java_prebuilt("jacocoagent_properties_java") {
-  include_java_resources = true
-  supports_android = true
-  jar_path = "jacoco-agent.properties.jar"
-}
-
 java_prebuilt("jacocoagent_java") {
   include_java_resources = true
   supports_android = true
   jar_path = "lib/jacocoagent.jar"
   proguard_configs = [ "jacoco_instrument.flags" ]
-  deps = [ ":jacocoagent_properties_java" ]
 }
 
 java_prebuilt("jacocoant_java") {
