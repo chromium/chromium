@@ -130,12 +130,6 @@ static_library("browser") {
     "autocomplete_provider_listener.h",
     "autocomplete_result.cc",
     "autocomplete_result.h",
-    "autocomplete_scoring_model_executor.cc",
-    "autocomplete_scoring_model_executor.h",
-    "autocomplete_scoring_model_handler.cc",
-    "autocomplete_scoring_model_handler.h",
-    "autocomplete_scoring_model_service.cc",
-    "autocomplete_scoring_model_service.h",
     "autocomplete_scoring_signals_annotator.h",
     "base_search_provider.cc",
     "base_search_provider.h",
@@ -262,6 +256,12 @@ static_library("browser") {
   ]
   if (build_with_tflite_lib) {
     sources += [
+      "autocomplete_scoring_model_executor.cc",
+      "autocomplete_scoring_model_executor.h",
+      "autocomplete_scoring_model_handler.cc",
+      "autocomplete_scoring_model_handler.h",
+      "autocomplete_scoring_model_service.cc",
+      "autocomplete_scoring_model_service.h",
       "on_device_tail_model_executor.cc",
       "on_device_tail_model_executor.h",
     ]
@@ -645,7 +645,6 @@ source_set("unit_tests") {
     "autocomplete_match_unittest.cc",
     "autocomplete_provider_unittest.cc",
     "autocomplete_result_unittest.cc",
-    "autocomplete_scoring_model_executor_unittest.cc",
     "base_search_provider_unittest.cc",
     "bookmark_provider_unittest.cc",
     "builtin_provider_unittest.cc",
@@ -698,7 +697,10 @@ source_set("unit_tests") {
     sources += [ "location_bar_model_util_unittest.cc" ]
   }
   if (build_with_tflite_lib) {
-    sources += [ "on_device_tail_model_executor_unittest.cc" ]
+    sources += [
+      "autocomplete_scoring_model_executor_unittest.cc",
+      "on_device_tail_model_executor_unittest.cc",
+    ]
   }
 
   deps = [
