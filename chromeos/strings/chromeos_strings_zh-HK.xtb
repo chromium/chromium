@@ -120,7 +120,7 @@
 <translation id="1979103255016296513">變更密碼已逾期</translation>
 <translation id="1999615961760456652">強制網絡入口</translation>
 <translation id="200669432486043882">取代檔案</translation>
-<translation id="2006864819935886708">連線問題</translation>
+<translation id="2006864819935886708">連接性</translation>
 <translation id="2008685064673031089">尖峰搜尋</translation>
 <translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">請嘗試解決疑難步驟</translation>
@@ -274,7 +274,7 @@
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3708186454126126312">之前已連接的裝置</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 個評論)</translation>
-<translation id="3748026146096797577">尚未連線</translation>
+<translation id="3748026146096797577">未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
 <translation id="3771294271822695279">影片檔</translation>
 <translation id="3784455785234192852">鎖定</translation>
@@ -529,7 +529,7 @@
 <translation id="6112878310391905610">此設定由管理員管理</translation>
 <translation id="6113701710518389813">向上箭咀</translation>
 <translation id="6117895505466548728">「<ph name="TITLE" />」和另外 <ph name="NUMBER" /> 個相簿</translation>
-<translation id="6122191549521593678">線上</translation>
+<translation id="6122191549521593678">在線</translation>
 <translation id="6122277663991249694">Chrome OS 輸入方法服務</translation>
 <translation id="6137767437444130246">使用者憑證</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入您的新密碼</translation>
@@ -568,7 +568,7 @@
 <translation id="6447630859861661624">去帳戶設定</translation>
 <translation id="6456394469623773452">良好</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃瞄頁面嗎？}=1{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}other{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}}</translation>
-<translation id="6472207088655375767">動態密碼</translation>
+<translation id="6472207088655375767">一次性密碼</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6494974875566443634">自訂</translation>
@@ -668,7 +668,7 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{完成咗掃瞄。掃瞄咗 1 個頁面}other{完成咗掃瞄。掃瞄咗 {NUMBER_OF_PAGES} 個頁面}}</translation>
 <translation id="7469648432129124067">已偵測到網絡入口</translation>
 <translation id="7481312909269577407">向前</translation>
-<translation id="7487067081878637334">科技資訊</translation>
+<translation id="7487067081878637334">科技</translation>
 <translation id="7490813197707563893">MAC 地址</translation>
 <translation id="7497215489070763236">伺服器 CA 憑證</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
@@ -811,12 +811,12 @@
 <translation id="8923267550422472772">每月重設日</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>
 <translation id="8930521118335213258">對等</translation>
-<translation id="8930622219860340959">無線</translation>
+<translation id="8930622219860340959">無線網絡</translation>
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
 <translation id="8945750210906526975">內部觸控板</translation>
 <translation id="894617464444543719">裝置類型係手機。</translation>
 <translation id="8968751544471797276">充電率</translation>
-<translation id="8970109610781093811">再執行一次</translation>
+<translation id="8970109610781093811">再次執行</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{掃瞄}=1{掃瞄第 {NUMBER_OF_PAGES} 頁}other{掃瞄第 {NUMBER_OF_PAGES} 頁}}</translation>
 <translation id="8997710128084572139">裝置有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>

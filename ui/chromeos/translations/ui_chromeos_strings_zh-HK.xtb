@@ -16,7 +16,7 @@
 <translation id="1150565364351027703">太陽眼鏡</translation>
 <translation id="115443833402798225">韓文 (安馬太正音)</translation>
 <translation id="1155759005174418845">嘉泰羅尼亞文</translation>
-<translation id="1168100932582989117">Google 名稱伺服器</translation>
+<translation id="1168100932582989117">Google 域名伺服器</translation>
 <translation id="1172970565351728681">大約剩餘 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，手機電量係 <ph name="BATTERY_STATUS" />%，詳情</translation>
@@ -344,7 +344,7 @@
 <translation id="4017788180641807848">英文 (美國)，Workman 鍵盤</translation>
 <translation id="4019998208269143058">固定至快速檔案</translation>
 <translation id="4040753847560036377">PUK 不正確</translation>
-<translation id="4057991113334098539">啟用中...</translation>
+<translation id="4057991113334098539">正在啟用…</translation>
 <translation id="4092890906744441904">愛爾蘭文</translation>
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4131235941541910880">將不需要的項目移至垃圾桶</translation>
@@ -409,7 +409,7 @@
 <translation id="4594543368593301662">宜家顯示緊 <ph name="SEARCH_TERM" /> 嘅結果。</translation>
 <translation id="4599600860674643278">重設咗篩選器。</translation>
 <translation id="4603392156942865207">正在將 <ph name="FILE_NAME" /> 複製到「<ph name="FOLDER_NAME" />」</translation>
-<translation id="4631887759990505102">演出者</translation>
+<translation id="4631887759990505102">藝術家</translation>
 <translation id="4642769377300286600">安裝緊流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">捷克文，QWERTY 鍵盤</translation>
 <translation id="4656777537938206294">將檔案設定為可離線使用</translation>
@@ -459,7 +459,7 @@
 <translation id="4943368462779413526">美式足球</translation>
 <translation id="4961158930123534723">已與 Parallels Desktop 共用 1 個資料夾</translation>
 <translation id="496656650103537022">已還原「<ph name="FILE_NAME" />」</translation>
-<translation id="4969785127455456148">相簿</translation>
+<translation id="4969785127455456148">專輯</translation>
 <translation id="4973523518332075481">請使用不多於 <ph name="MAX_LENGTH" /> 個字元的名稱</translation>
 <translation id="4973970068702235170">壓縮失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">日文</translation>
@@ -509,7 +509,7 @@
     方便共用、建立內容並與他人協同合作。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">從 Google 雲端硬碟復原檔案</translation>
 <translation id="5278111733643988471">如要還原此項目，請將項目從垃圾桶中拖曳到新資料夾。此項目的原始資料夾「<ph name="PARENT_FOLDER_NAME" />」已刪除。</translation>
-<translation id="5286194356314741248">掃描中</translation>
+<translation id="5286194356314741248">正在掃瞄</translation>
 <translation id="5288441970121584418">漢堡包</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5293615890992542006">管理員政策已禁止移動此檔案</translation>

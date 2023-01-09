@@ -7,7 +7,7 @@
 <translation id="1034259925032978114">視窗已開啟</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1045899828449635435">要一併清除這些網站的資料嗎？</translation>
-<translation id="1049743911850919806">無痕模式</translation>
+<translation id="1049743911850919806">無痕</translation>
 <translation id="10614374240317010">永不儲存</translation>
 <translation id="1062628064301375934">協助我們建立更私密的網絡</translation>
 <translation id="107147699690128016">如果變更副檔名，此檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
@@ -154,11 +154,11 @@
 <translation id="1754404134430936718">已複製文字</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
 <translation id="1779766957982586368">關閉視窗</translation>
-<translation id="1791662854739702043">安裝位置</translation>
+<translation id="1791662854739702043">已安裝</translation>
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
-<translation id="1829244130665387512">在網頁中尋找</translation>
+<translation id="1829244130665387512">喺網頁度搵</translation>
 <translation id="1832459821645506983">是，我同意使用</translation>
 <translation id="1849863543394887018">您可前往設定以停用通知</translation>
 <translation id="1854311313115643875">在試用期間，「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。
@@ -472,7 +472,7 @@
 <translation id="3524334353996115845">讓 <ph name="ORIGIN" /> 驗證您的身份</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3542235761944717775">可用空間：<ph name="KILOBYTES" /> KB</translation>
-<translation id="3549657413697417275">搜尋你的記錄</translation>
+<translation id="3549657413697417275">搜尋您的記錄</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
 <translation id="3560491354538957576">網站可以定義興趣</translation>
 <translation id="3563767357928833671">顯示咗剪貼簿嘅內容</translation>
@@ -724,7 +724,7 @@
 <translation id="49268022542405662">系統會匯出您的密碼並下載為文字檔案。任何能存取目的地資料夾的使用者和應用程式都可看到您的密碼。</translation>
 <translation id="4932247056774066048">您即將登出由 <ph name="DOMAIN_NAME" /> 管理的帳戶，因此您的 Chrome 資料亦會從此裝置上刪除，但仍會保留在您的 Google 帳戶中。</translation>
 <translation id="4943703118917034429">虛擬實境</translation>
-<translation id="4943872375798546930">沒有結果</translation>
+<translation id="4943872375798546930">搵唔到結果</translation>
 <translation id="4950924971025849764">登入同一個 Google 帳戶後，其他裝置便可使用此手機作為安全密鑰。</translation>
 <translation id="4957722034734105353">瞭解詳情…</translation>
 <translation id="4961107849584082341">將此網頁翻譯成任何語言</translation>
@@ -1316,7 +1316,7 @@
 <translation id="804335162455518893">找不到 SD 卡</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個無痕式分頁}other{<ph name="TAB_COUNT_NORMAL" /> 個無痕式分頁}}</translation>
 <translation id="8048728378294435881">將資料備份，並在任何裝置上使用</translation>
-<translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用空間</translation>
+<translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8058746566562539958">在 Chrome 新分頁中開啟</translation>
 <translation id="8062594758852531064">延伸預先載入模式：</translation>
@@ -1463,7 +1463,7 @@
 <translation id="8773160212632396039">正在處理要求</translation>
 <translation id="8788265440806329501">導覽記錄閂咗</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
-<translation id="8798449543960971550">讀取</translation>
+<translation id="8798449543960971550">已讀</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8805097383171548551">如要掃瞄 QR 碼，請使用有攝錄機的裝置。</translation>
 <translation id="8812260976093120287">在部分網站上，您可以透過裝置使用上述支援的付款應用程式付款。</translation>
