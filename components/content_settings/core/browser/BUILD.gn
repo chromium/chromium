@@ -119,6 +119,7 @@ source_set("unit_tests") {
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser:test_support",
+      "//components/privacy_sandbox:features",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
       "//third_party/blink/public/common:headers",
     ]

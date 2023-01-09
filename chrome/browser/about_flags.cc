@@ -3218,50 +3218,45 @@ const FeatureEntry::FeatureVariation
 };
 #endif
 
-constexpr FeatureEntry::FeatureParam
+const FeatureEntry::FeatureParam
     kPrivacySandboxSettings4ShowSampleDataForTesting[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.name,
+        {privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTestingName,
          "true"}};
-constexpr FeatureEntry::FeatureParam kPrivacySandboxSettings4NoticeRequired[] =
-    {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.name, "true"}};
-constexpr FeatureEntry::FeatureParam kPrivacySandboxSettings4ConsentRequired[] =
-    {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.name, "true"}};
-constexpr FeatureEntry::FeatureParam
+const FeatureEntry::FeatureParam kPrivacySandboxSettings4NoticeRequired[] = {
+    {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
+const FeatureEntry::FeatureParam kPrivacySandboxSettings4ConsentRequired[] = {
+    {privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}};
+const FeatureEntry::FeatureParam
     kPrivacySandboxSettings4ForceShowConsentForTesting[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
-             .name,
+        {privacy_sandbox::
+             kPrivacySandboxSettings4ForceShowConsentForTestingName,
          "true"}};
-constexpr FeatureEntry::FeatureParam
+const FeatureEntry::FeatureParam
     kPrivacySandboxSettings4ForceShowROWNoticeForTesting[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
-             .name,
+        {privacy_sandbox::
+             kPrivacySandboxSettings4ForceShowNoticeRowForTestingName,
          "true"}};
-constexpr FeatureEntry::FeatureParam
+const FeatureEntry::FeatureParam
     kPrivacySandboxSettings4ForceShowEEANoticeForTesting[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
-             .name,
+        {privacy_sandbox::
+             kPrivacySandboxSettings4ForceShowNoticeEeaForTestingName,
          "true"}};
 
-constexpr FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] =
-    {
-        {"Sample Data", kPrivacySandboxSettings4ShowSampleDataForTesting,
-         std::size(kPrivacySandboxSettings4ShowSampleDataForTesting), nullptr},
-        {"Notice Required", kPrivacySandboxSettings4NoticeRequired,
-         std::size(kPrivacySandboxSettings4NoticeRequired), nullptr},
-        {"Consent Required", kPrivacySandboxSettings4ConsentRequired,
-         std::size(kPrivacySandboxSettings4ConsentRequired), nullptr},
-        {"Force show consent",
-         kPrivacySandboxSettings4ForceShowConsentForTesting,
-         std::size(kPrivacySandboxSettings4ForceShowConsentForTesting),
-         nullptr},
-        {"Force show ROW notice",
-         kPrivacySandboxSettings4ForceShowROWNoticeForTesting,
-         std::size(kPrivacySandboxSettings4ForceShowROWNoticeForTesting),
-         nullptr},
-        {"Force show EEA notice",
-         kPrivacySandboxSettings4ForceShowEEANoticeForTesting,
-         std::size(kPrivacySandboxSettings4ForceShowEEANoticeForTesting),
-         nullptr},
+const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
+    {"Sample Data", kPrivacySandboxSettings4ShowSampleDataForTesting,
+     std::size(kPrivacySandboxSettings4ShowSampleDataForTesting), nullptr},
+    {"Notice Required", kPrivacySandboxSettings4NoticeRequired,
+     std::size(kPrivacySandboxSettings4NoticeRequired), nullptr},
+    {"Consent Required", kPrivacySandboxSettings4ConsentRequired,
+     std::size(kPrivacySandboxSettings4ConsentRequired), nullptr},
+    {"Force show consent", kPrivacySandboxSettings4ForceShowConsentForTesting,
+     std::size(kPrivacySandboxSettings4ForceShowConsentForTesting), nullptr},
+    {"Force show ROW notice",
+     kPrivacySandboxSettings4ForceShowROWNoticeForTesting,
+     std::size(kPrivacySandboxSettings4ForceShowROWNoticeForTesting), nullptr},
+    {"Force show EEA notice",
+     kPrivacySandboxSettings4ForceShowEEANoticeForTesting,
+     std::size(kPrivacySandboxSettings4ForceShowEEANoticeForTesting), nullptr},
 };
 
 // RECORDING USER METRICS FOR FLAGS:
