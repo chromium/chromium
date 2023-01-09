@@ -176,11 +176,11 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     PhysicalSize container_physical_content_size;
     const ContainingBlockInfo container_info;
     const WritingDirectionMode default_writing_direction;
+    const NGContainingBlock<LogicalOffset> containing_block;
     const NGContainingBlock<LogicalOffset> fixedpos_containing_block;
     const NGInlineContainer<LogicalOffset> fixedpos_inline_container;
     bool inline_container = false;
     bool requires_content_before_breaking = false;
-    bool is_fragmented_inside_clipped_container = false;
 
     NodeInfo(NGBlockNode node,
              const NGConstraintSpace constraint_space,
@@ -189,23 +189,22 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
              const ContainingBlockInfo container_info,
              const WritingDirectionMode default_writing_direction,
              bool is_fragmentainer_descendant,
+             const NGContainingBlock<LogicalOffset>& containing_block,
              const NGContainingBlock<LogicalOffset>& fixedpos_containing_block,
              const NGInlineContainer<LogicalOffset>& fixedpos_inline_container,
              bool inline_container,
-             bool requires_content_before_breaking,
-             bool is_fragmented_inside_clipped_container)
+             bool requires_content_before_breaking)
         : node(node),
           constraint_space(constraint_space),
           static_position(static_position),
           container_physical_content_size(container_physical_content_size),
           container_info(container_info),
           default_writing_direction(default_writing_direction),
+          containing_block(containing_block),
           fixedpos_containing_block(fixedpos_containing_block),
           fixedpos_inline_container(fixedpos_inline_container),
           inline_container(inline_container),
-          requires_content_before_breaking(requires_content_before_breaking),
-          is_fragmented_inside_clipped_container(
-              is_fragmented_inside_clipped_container) {}
+          requires_content_before_breaking(requires_content_before_breaking) {}
 
     void Trace(Visitor* visitor) const;
   };
@@ -402,6 +401,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void ComputeStartFragmentIndexAndRelativeOffset(
       WritingMode default_writing_mode,
       LayoutUnit block_estimate,
+      absl::optional<LayoutUnit> clipped_container_block_offset,
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 

@@ -1047,18 +1047,18 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
           NGContainingBlock<LogicalOffset>(
               containing_block_offset, containing_block_rel_offset,
               containing_block_fragment,
+              descendant.containing_block.ClippedContainerBlockOffset(),
               descendant.containing_block.IsInsideColumnSpanner(),
-              descendant.containing_block.RequiresContentBeforeBreaking(),
-              descendant.containing_block.IsFragmentedInsideClippedContainer()),
+              descendant.containing_block.RequiresContentBeforeBreaking()),
           NGContainingBlock<LogicalOffset>(
               fixedpos_containing_block_offset,
               fixedpos_containing_block_rel_offset,
               fixedpos_containing_block_fragment,
+              descendant.fixedpos_containing_block
+                  .ClippedContainerBlockOffset(),
               descendant.fixedpos_containing_block.IsInsideColumnSpanner(),
               descendant.fixedpos_containing_block
-                  .RequiresContentBeforeBreaking(),
-              descendant.fixedpos_containing_block
-                  .IsFragmentedInsideClippedContainer()),
+                  .RequiresContentBeforeBreaking()),
           fixedpos_inline_container};
       oof_nodes_to_layout.push_back(node);
     }
@@ -1308,8 +1308,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         wtf_size_t start_index = 0;
         ComputeStartFragmentIndexAndRelativeOffset(
             node_info.default_writing_direction.GetWritingMode(),
-            *node_to_layout.offset_info.block_estimate, &start_index,
-            &node_to_layout.offset_info.offset);
+            *node_to_layout.offset_info.block_estimate,
+            node_info.containing_block.ClippedContainerBlockOffset(),
+            &start_index, &node_to_layout.offset_info.offset);
         if (start_index >= descendants_to_layout.size())
           descendants_to_layout.resize(start_index + 1);
         descendants_to_layout[start_index].emplace_back(node_to_layout);
@@ -1437,15 +1438,12 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   // case, we also need to adjust the offset to account for this.
   NGLogicalStaticPosition static_position = oof_node.static_position;
   static_position.offset -= container_info.rect.offset;
-  bool is_fragmented_inside_clipped_container = false;
   if (containing_block_fragment) {
     const auto& containing_block_for_fragmentation =
         To<NGLogicalOOFNodeForFragmentation>(oof_node).containing_block;
     static_position.offset += containing_block_for_fragmentation.Offset();
     requires_content_before_breaking =
         containing_block_for_fragmentation.RequiresContentBeforeBreaking();
-    is_fragmented_inside_clipped_container =
-        containing_block_for_fragmentation.IsFragmentedInsideClippedContainer();
   }
 
   NGLogicalStaticPosition oof_static_position =
@@ -1471,23 +1469,25 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
         /* requires_content_before_breaking */ false);
   }
 
+  NGContainingBlock<LogicalOffset> containing_block;
   NGContainingBlock<LogicalOffset> fixedpos_containing_block;
   NGInlineContainer<LogicalOffset> fixedpos_inline_container;
   if (containing_block_fragment) {
+    containing_block =
+        To<NGLogicalOOFNodeForFragmentation>(oof_node).containing_block;
     fixedpos_containing_block = To<NGLogicalOOFNodeForFragmentation>(oof_node)
                                     .fixedpos_containing_block;
     fixedpos_inline_container = To<NGLogicalOOFNodeForFragmentation>(oof_node)
                                     .fixedpos_inline_container;
   }
 
-  return NodeInfo(node, builder.ToConstraintSpace(), oof_static_position,
-                  container_physical_content_size, container_info,
-                  ConstraintSpace().GetWritingDirection(),
-                  /* is_fragmentainer_descendant */ containing_block_fragment,
-                  fixedpos_containing_block, fixedpos_inline_container,
-                  oof_node.inline_container.container,
-                  requires_content_before_breaking,
-                  is_fragmented_inside_clipped_container);
+  return NodeInfo(
+      node, builder.ToConstraintSpace(), oof_static_position,
+      container_physical_content_size, container_info,
+      ConstraintSpace().GetWritingDirection(),
+      /* is_fragmentainer_descendant */ containing_block_fragment,
+      containing_block, fixedpos_containing_block, fixedpos_inline_container,
+      oof_node.inline_container.container, requires_content_before_breaking);
 }
 
 const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
@@ -1978,7 +1978,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
       // that might be. But as long as the OOF doesn't contribute to any
       // additional fragmentainers, we should be (pretty) good.
       if (is_last_fragmentainer_so_far &&
-          node_info.is_fragmented_inside_clipped_container) {
+          node_info.containing_block.IsFragmentedInsideClippedContainer()) {
         builder.DisableFurtherFragmentation();
       }
     }
@@ -2232,6 +2232,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
         result->PhysicalFragment(), oof_offset, relative_offset,
         offset_adjustment,
         /* inline_container */ nullptr, containing_block_adjustment,
+        &descendant.node_info.containing_block,
         &descendant.node_info.fixedpos_containing_block,
         &descendant.node_info.fixedpos_inline_container,
         additional_fixedpos_offset);
@@ -2395,6 +2396,7 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
 void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
     WritingMode default_writing_mode,
     LayoutUnit block_estimate,
+    absl::optional<LayoutUnit> clipped_container_block_offset,
     wtf_size_t* start_index,
     LogicalOffset* offset) const {
   wtf_size_t child_index = 0;
@@ -2404,6 +2406,23 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   LayoutUnit current_max_block_size;
   // The block size for the last fragmentainer we encountered.
   LayoutUnit fragmentainer_block_size;
+
+  LayoutUnit target_block_offset = offset->block_offset;
+  if (clipped_container_block_offset &&
+      container_builder_->Node().IsPaginatedRoot()) {
+    // If we're printing, and we have an OOF inside a clipped container, prevent
+    // the start fragmentainer from preceding that of the clipped container.
+    // This way we increase the likelihood of luring the OOF into the same
+    // fragmentainer as the clipped container, so that we get the correct clip
+    // rectangle during pre-paint.
+    //
+    // TODO(crbug.com/1371426): We might be able to get rid of this, if we
+    // either get pre-paint to handle missing ancestor fragments better, or if
+    // we rewrite OOF layout to always generate the necessary ancestor
+    // fragments.
+    target_block_offset =
+        std::max(target_block_offset, *clipped_container_block_offset);
+  }
   auto& children = FragmentationContextChildren();
   // TODO(bebeaudr): There is a possible performance improvement here as we'll
   // repeat this for each abspos in a same fragmentainer.
@@ -2423,8 +2442,8 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
       // |container_builder_| when we have a nested abspos. Because we use that
       // value to position the nested abspos, its start offset would be off by
       // exactly one fragmentainer block size.
-      if (offset->block_offset < current_max_block_size ||
-          (offset->block_offset == current_max_block_size &&
+      if (target_block_offset < current_max_block_size ||
+          (target_block_offset == current_max_block_size &&
            block_estimate == 0)) {
         *start_index = child_index;
         offset->block_offset -= used_block_size;
@@ -2599,6 +2618,7 @@ void NGOutOfFlowLayoutPart::MulticolChildInfo::Trace(Visitor* visitor) const {
 
 void NGOutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
   visitor->Trace(node);
+  visitor->Trace(containing_block);
   visitor->Trace(fixedpos_containing_block);
   visitor->Trace(fixedpos_inline_container);
 }

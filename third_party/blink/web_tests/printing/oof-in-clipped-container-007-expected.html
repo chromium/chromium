@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+  testRunner.setPrinting();
+  internals.settings.setShouldPrintBackgrounds(true);
+</script>
+There should be three pages.
+There should be a green square on the second and third page.
+No red anywhere.
+<div style="break-before:page; height:50px;"></div>
+<div style="position:relative; overflow:clip; height:100px;">
+  <div style="position:absolute; width:100px;">
+    <div style="height:2px;"></div>
+    <div style="height:100px; background:green;"></div>
+  </div>
+</div>
+<div style="break-before:page; width:100px; height:100px; background:green;"></div>

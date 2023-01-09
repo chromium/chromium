@@ -892,6 +892,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
         container_builder_.PropagateOOFFragmentainerDescendants(
             new_column.Fragment(), new_column.offset,
             /* relative_offset */ LogicalOffset(), containing_block_adjustment,
+            /* containing_block */ nullptr,
             /* fixedpos_containing_block */ nullptr,
             &column_balancing_info.out_of_flow_fragmentainer_descendants);
       }
