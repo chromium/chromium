@@ -264,42 +264,40 @@ void PerformanceMetrics::WriteToFile() const {
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
 
   // Write performance metrics to json.
-  base::Value metrics(base::Value::Type::DICT);
-  metrics.SetKey("BitstreamsEncoded",
-                 base::Value(base::checked_cast<int>(bitstreams_encoded_)));
-  metrics.SetKey("TotalDurationMs",
-                 base::Value(total_duration_.InMillisecondsF()));
-  metrics.SetKey("FPS", base::Value(bitstreams_per_second_));
-  metrics.SetKey("BitstreamDeliveryTimeAverage",
-                 base::Value(bitstream_delivery_stats_.avg_ms_));
-  metrics.SetKey("BitstreamDeliveryTimePercentile25",
-                 base::Value(bitstream_delivery_stats_.percentile_25_ms_));
-  metrics.SetKey("BitstreamDeliveryTimePercentile50",
-                 base::Value(bitstream_delivery_stats_.percentile_50_ms_));
-  metrics.SetKey("BitstreamDeliveryTimePercentile75",
-                 base::Value(bitstream_delivery_stats_.percentile_75_ms_));
-  metrics.SetKey("BitstreamEncodeTimeAverage",
-                 base::Value(bitstream_encode_stats_.avg_ms_));
-  metrics.SetKey("BitstreamEncodeTimePercentile25",
-                 base::Value(bitstream_encode_stats_.percentile_25_ms_));
-  metrics.SetKey("BitstreamEncodeTimePercentile50",
-                 base::Value(bitstream_encode_stats_.percentile_50_ms_));
-  metrics.SetKey("BitstreamEncodeTimePercentile75",
-                 base::Value(bitstream_encode_stats_.percentile_75_ms_));
+  base::Value::Dict metrics;
+  metrics.Set("BitstreamsEncoded",
+              base::checked_cast<int>(bitstreams_encoded_));
+  metrics.Set("TotalDurationMs", total_duration_.InMillisecondsF());
+  metrics.Set("FPS", bitstreams_per_second_);
+  metrics.Set("BitstreamDeliveryTimeAverage",
+              bitstream_delivery_stats_.avg_ms_);
+  metrics.Set("BitstreamDeliveryTimePercentile25",
+              bitstream_delivery_stats_.percentile_25_ms_);
+  metrics.Set("BitstreamDeliveryTimePercentile50",
+              bitstream_delivery_stats_.percentile_50_ms_);
+  metrics.Set("BitstreamDeliveryTimePercentile75",
+              bitstream_delivery_stats_.percentile_75_ms_);
+  metrics.Set("BitstreamEncodeTimeAverage", bitstream_encode_stats_.avg_ms_);
+  metrics.Set("BitstreamEncodeTimePercentile25",
+              bitstream_encode_stats_.percentile_25_ms_);
+  metrics.Set("BitstreamEncodeTimePercentile50",
+              bitstream_encode_stats_.percentile_50_ms_);
+  metrics.Set("BitstreamEncodeTimePercentile75",
+              bitstream_encode_stats_.percentile_75_ms_);
 
   // Write bitstream delivery times to json.
-  base::Value delivery_times(base::Value::Type::LIST);
+  base::Value::List delivery_times;
   for (double bitstream_delivery_time : bitstream_delivery_times_) {
     delivery_times.Append(bitstream_delivery_time);
   }
-  metrics.SetKey("BitstreamDeliveryTimes", std::move(delivery_times));
+  metrics.Set("BitstreamDeliveryTimes", std::move(delivery_times));
 
   // Write bitstream encodes times to json.
-  base::Value encode_times(base::Value::Type::LIST);
+  base::Value::List encode_times;
   for (double bitstream_encode_time : bitstream_encode_times_) {
     encode_times.Append(bitstream_encode_time);
   }
-  metrics.SetKey("BitstreamEncodeTimes", std::move(encode_times));
+  metrics.Set("BitstreamEncodeTimes", std::move(encode_times));
 
   // Write json to file.
   std::string metrics_str;
@@ -499,44 +497,40 @@ void BitstreamQualityMetrics::WriteToFile(
     base::CreateDirectory(output_folder_path);
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
   // Write quality metrics to json.
-  base::Value metrics(base::Value::Type::DICT);
+  base::Value::Dict metrics;
   if (!svc_text.empty())
-    metrics.SetKey("SVC", base::Value(svc_text));
-  metrics.SetKey("Bitrate",
-                 base::Value(base::checked_cast<int>(actual_bitrate)));
-  metrics.SetKey(
-      "BitrateDeviation",
-      base::Value((actual_bitrate * 100.0 / target_bitrate) - 100.0));
-  metrics.SetKey("SSIMAverage", base::Value(ssim_stats.avg));
-  metrics.SetKey("PSNRAverage", base::Value(psnr_stats.avg));
-  metrics.SetKey("BottomRowPSNRAverage",
-                 base::Value(bottom_row_psnr_stats.avg));
-  metrics.SetKey("LogLikelihoodRatioAverage",
-                 base::Value(log_likelihood_stats.avg));
+    metrics.Set("SVC", svc_text);
+  metrics.Set("Bitrate", base::checked_cast<int>(actual_bitrate));
+  metrics.Set("BitrateDeviation",
+              (actual_bitrate * 100.0 / target_bitrate) - 100.0);
+  metrics.Set("SSIMAverage", ssim_stats.avg);
+  metrics.Set("PSNRAverage", psnr_stats.avg);
+  metrics.Set("BottomRowPSNRAverage", bottom_row_psnr_stats.avg);
+  metrics.Set("LogLikelihoodRatioAverage", log_likelihood_stats.avg);
   // Write ssim values bitstream delivery times to json.
-  base::Value ssim_values(base::Value::Type::LIST);
+  base::Value::List ssim_values;
   for (double value : ssim_stats.values_in_order)
     ssim_values.Append(value);
-  metrics.SetKey("SSIMValues", std::move(ssim_values));
+  metrics.Set("SSIMValues", std::move(ssim_values));
 
   // Write psnr values to json.
-  base::Value psnr_values(base::Value::Type::LIST);
+  base::Value::List psnr_values;
   for (double value : psnr_stats.values_in_order)
     psnr_values.Append(value);
-  metrics.SetKey("PSNRValues", std::move(psnr_values));
+  metrics.Set("PSNRValues", std::move(psnr_values));
 
   // Write bottom row psnr values to json.
-  base::Value bottom_row_psnr_values(base::Value::Type::LIST);
+  base::Value::List bottom_row_psnr_values;
   for (double value : bottom_row_psnr_stats.values_in_order)
     bottom_row_psnr_values.Append(value);
-  metrics.SetKey("BottomRowPSNRValues", std::move(bottom_row_psnr_values));
+  metrics.Set("BottomRowPSNRValues", std::move(bottom_row_psnr_values));
 
   // Write log likelihood ratio values to json.
-  base::Value log_likelihood_values(base::Value::Type::LIST);
+  base::Value::List log_likelihood_values;
   for (double value : log_likelihood_stats.values_in_order) {
     log_likelihood_values.Append(value);
   }
-  metrics.SetKey("LogLikelihoodRatioValues", std::move(log_likelihood_values));
+  metrics.Set("LogLikelihoodRatioValues", std::move(log_likelihood_values));
 
   // Write json to file.
   std::string metrics_str;
