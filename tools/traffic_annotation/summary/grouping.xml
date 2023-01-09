@@ -281,6 +281,8 @@ after discussions on the right group.
       <annotation id="chromeos_emoji_picker_featured_fetcher"/>
       <annotation id="chromeos_emoji_picker_search_fetcher"/>
       <annotation id="app_preload_service_web_installer"/>
+      <annotation id="network_diagnostics_stun"/>
+      <annotation id="network_diagnostics_tls"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

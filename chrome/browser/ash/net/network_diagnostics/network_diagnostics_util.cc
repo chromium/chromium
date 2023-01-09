@@ -157,7 +157,7 @@ const std::array<uint8_t, kStunHeaderSize>& GetStunHeader() {
 }
 
 net::NetworkTrafficAnnotationTag GetStunNetworkAnnotationTag() {
-  return net::DefineNetworkTrafficAnnotation("network_diagnostics_routines",
+  return net::DefineNetworkTrafficAnnotation("network_diagnostics_stun",
                                              R"(
       semantics {
         sender: "NetworkDiagnosticsRoutines"
@@ -177,6 +177,8 @@ net::NetworkTrafficAnnotationTag GetStunNetworkAnnotationTag() {
       }
       policy {
         cookies_allowed: NO
+        policy_exception_justification:
+            "Not implemented. Does not contain user identifier."
       }
   )");
 }

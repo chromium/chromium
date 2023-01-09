@@ -8,8 +8,6 @@ all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
 all,components/quirks/quirks_client.cc
 all,chromeos/ash/services/device_sync/cryptauth_client_impl.cc
-all,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
-all,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
 all,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.cc
 all,chrome/browser/search/background/ntp_background_service.cc
 all,chrome/browser/apps/app_service/webapk/webapk_install_task.cc

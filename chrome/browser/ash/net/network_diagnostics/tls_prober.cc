@@ -28,7 +28,7 @@ namespace network_diagnostics {
 namespace {
 
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
-  return net::DefineNetworkTrafficAnnotation("network_diagnostics_routines",
+  return net::DefineNetworkTrafficAnnotation("network_diagnostics_tls",
                                              R"(
       semantics {
         sender: "NetworkDiagnosticsRoutines"
@@ -45,6 +45,8 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
       }
       policy {
         cookies_allowed: NO
+        policy_exception_justification:
+            "Not implemented. Does not contain user identifier."
       }
   )");
 }
