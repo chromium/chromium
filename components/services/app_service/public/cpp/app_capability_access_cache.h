@@ -20,25 +20,18 @@
 
 namespace apps {
 
-// Caches all of the apps::mojom::CapabilityAccessPtr's seen by an
-// apps::mojom::Subscriber. A Subscriber sees a stream of "deltas", or changes
-// in access state. This cache also keeps the "sum" of those previous deltas, so
-// that observers of this object are presented with CapabilityAccessUpdate's,
-// i.e. "state-and-delta"s.
+// Caches all of the apps::CapabilityAccessPtr. AppServiceProxy sees a stream of
+// "deltas", or changes in access state. This cache also keeps the "sum" of
+// those previous deltas, so that observers of this object are presented with
+// CapabilityAccessUpdate's, i.e. "state-and-delta"s.
 //
 // It can also be queried synchronously, providing answers from its in-memory
-// cache, even though the underlying CapabilityAccess (and its App Publishers)
-// communicate asynchronously, possibly across process boundaries, via Mojo
-// IPC. Synchronous APIs can be more suitable for e.g. UI programming that
+// cache. Synchronous APIs can be more suitable for e.g. UI programming that
 // should not block an event loop on I/O.
 //
 // This class is not thread-safe.
 //
 // See components/services/app_service/README.md for more details.
-//
-// // TODO(crbug.com/1253250): Remove all mojom related code.
-// 1. Modify comments.
-// 2. Replace mojom related functions with non-mojom functions.
 class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
  public:
   class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {
@@ -106,7 +99,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   // (and then c1), which means that processing c2 is delayed until after the
   // second OnCapabilityAccesses call returns.
   //
-  // The callee will consume the deltas. An apps::mojom::CapabilityAccessPtr has
+  // The callee will consume the deltas. An apps::CapabilityAccessPtr has
   // the ownership semantics of a unique_ptr, and will be deleted when out of
   // scope. The caller presumably calls OnCapabilityAccesses(std::move(deltas)).
   void OnCapabilityAccesses(std::vector<CapabilityAccessPtr> deltas);
@@ -115,7 +108,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   // apps::CapabilityAccessUpdate&), on each app in AppCapabilityAccessCache.
   //
   // f's argument is an apps::CapabilityAccessUpdate instead of an
-  // apps::mojom::CapabilityAccessPtr so that callers can more easily share code
+  // apps::CapabilityAccessPtr so that callers can more easily share code
   // with Observer::OnCapabilityAccessUpdate (which also takes an
   // apps::CapabilityAccessUpdate), and an apps::CapabilityAccessUpdate also has
   // a StateIsNull method.

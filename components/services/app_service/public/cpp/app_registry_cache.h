@@ -22,24 +22,18 @@
 
 namespace apps {
 
-// Caches all of the apps::mojom::AppPtr's seen by an apps::mojom::Subscriber.
-// A Subscriber sees a stream of "deltas", or changes in app state. This cache
-// also keeps the "sum" of those previous deltas, so that observers of this
-// object are presented with AppUpdate's, i.e. "state-and-delta"s.
+// Caches all of the apps::AppPtr. AppServiceProxy sees a stream of "deltas", or
+// changes in app state. This cache also keeps the "sum" of those previous
+// deltas, so that observers of this object are presented with AppUpdate's, i.e.
+// "state-and-delta"s.
 //
 // It can also be queried synchronously, providing answers from its in-memory
-// cache, even though the underlying App Registry (and its App Publishers)
-// communicate asynchronously, possibly across process boundaries, via Mojo
-// IPC. Synchronous APIs can be more suitable for e.g. UI programming that
+// cache. Synchronous APIs can be more suitable for e.g. UI programming that
 // should not block an event loop on I/O.
 //
 // This class is not thread-safe.
 //
 // See components/services/app_service/README.md for more details.
-//
-// TODO(crbug.com/1253250): Remove all apps::mojom related code.
-// 1. Modify comments.
-// 2. Replace mojom related functions with non-mojom functions.
 class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  public:
   class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {
@@ -113,9 +107,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // processing b1 (and then c1), which means that processing c2 is delayed
   // until after the second OnApps call returns.
   //
-  // The callee will consume the deltas. An apps::mojom::AppPtr has the
-  // ownership semantics of a unique_ptr, and will be deleted when out of
-  // scope. The caller presumably calls OnApps(std::move(deltas)).
+  // The callee will consume the deltas. An apps::AppPtr has the ownership
+  // semantics of a unique_ptr, and will be deleted when out of scope. The
+  // caller presumably calls OnApps(std::move(deltas)).
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
               apps::mojom::AppType app_type,
               bool should_notify_initialized);

@@ -306,23 +306,6 @@ struct FilePaths {
   array<mojo_base.mojom.FilePath> file_paths;
 };
 
-// Information about whether an app is accessing some capability, e.g. camera,
-// microphone.
-struct CapabilityAccess {
-  string app_id;
-
-  // The fields above are mandatory. Everything else below is optional.
-
-  // Whether the app is accessing camera.
-  OptionalBool camera;
-
-  // Whether the app is accessing microphone.
-  OptionalBool microphone;
-
-  // When adding new fields, also update the Merge method and other helpers in
-  // components/services/app_service/public/cpp/access_update.*
-};
-
 // The window mode that each app will open in.
 enum WindowMode {
   kUnknown = 0,
