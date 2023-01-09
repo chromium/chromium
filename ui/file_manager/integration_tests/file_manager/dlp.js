@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {DialogType} from '../dialog_type.js';
+import {addEntries, ENTRIES, EntryType, RootPath, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
-
 
 /**
  * Tests that DLP block toast is shown when a restricted file is cut.
@@ -471,4 +471,98 @@ testcase.openDlpRestrictedFile = async () => {
       undefined,
       await openAndWaitForClosingDialog(
           {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, closer));
+};
+
+/**
+ * Tests that the file picker disables DLP blocked files and doesn't allow
+ * opening them, while it allows selecting and opening folders.
+ */
+testcase.openFolderDlpRestricted = async () => {
+  // Make sure the file picker will open to Downloads.
+  sendBrowserTestCommand({name: 'setLastDownloadDir'}, () => {});
+
+  const directoryAjpeg = new TestEntryInfo({
+    type: EntryType.FILE,
+    targetPath: `${ENTRIES.directoryA.nameText}/deep.jpg`,
+    sourceFileName: 'small.jpg',
+    mimeType: 'image/jpeg',
+    lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
+    nameText: 'deep.jpg',
+    sizeText: '886 bytes',
+    typeText: 'JPEG image',
+  });
+  const entries = [ENTRIES.directoryA, directoryAjpeg];
+
+  // Add entries to Downloads and setup the fake source URLs.
+  await addEntries(['local'], entries);
+  await sendTestMessage({
+    name: 'setGetFilesSourcesMock',
+    fileNames: [directoryAjpeg.targetPath],
+    sourceUrls: [
+      'https://blocked.com',
+    ],
+  });
+
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setIsRestrictedByAnyRuleRestrictions'});
+  await sendTestMessage({name: 'setIsRestrictedDestinationRestriction'});
+
+  const enabledOkButton = '.button-panel button.ok:enabled';
+  const disabledOkButton = '.button-panel button.ok:disabled';
+  const cancelButton = '.button-panel button.cancel';
+
+  const closer = async (dialog) => {
+    // Wait for directoryA to appear.
+    await remoteCall.waitForElement(
+        dialog, `#file-list [file-name="${ENTRIES.directoryA.nameText}"]`);
+
+    chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+        'fakeMouseDoubleClick', dialog,
+        [`#file-list [file-name="${ENTRIES.directoryA.nameText}"]`]));
+
+    // Wait for the image file to appear.
+    await remoteCall.waitForElement(
+        dialog, `#file-list [file-name="${directoryAjpeg.nameText}"]`);
+
+    // Verify that the DLP managed icon for the image file is shown.
+    await remoteCall.waitForElementsCount(
+        dialog, ['#file-list .dlp-managed-icon'], 1);
+
+    // Verify that the image file is disabled.
+    await remoteCall.waitForElementsCount(
+        dialog, ['#file-list .file[disabled]'], 1);
+
+    // Verify that the button is disabled when the image file is selected.
+    await remoteCall.waitUntilSelected(dialog, directoryAjpeg.nameText);
+    await remoteCall.waitForElement(dialog, disabledOkButton);
+
+    // Click the close button to dismiss the dialog.
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
+  };
+
+  chrome.test.assertEq(
+      undefined,
+      await openAndWaitForClosingDialog(
+          {type: 'openFile'}, 'downloads', [ENTRIES.directoryA], closer));
+
+  // Open Files app on Downloads as a folder picker.
+  const dialog = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, entries, [], {type: DialogType.SELECT_UPLOAD_FOLDER});
+
+  // Verify that directoryA is not disabled.
+  await remoteCall.waitForElementsCount(
+      dialog, ['#file-list .file[disabled]'], 0);
+
+  // Select directoryA with the dialog.
+  await remoteCall.waitAndClickElement(
+      dialog, `#file-list [file-name="${ENTRIES.directoryA.nameText}"]`);
+
+  // Verify that directoryA selection is enabled while it contains a blocked
+  // file.
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [ENTRIES.directoryA.targetPath],
+    openType: 'open',
+  });
+  await remoteCall.waitAndClickElement(dialog, enabledOkButton);
 };

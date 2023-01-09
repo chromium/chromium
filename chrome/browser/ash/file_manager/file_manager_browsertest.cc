@@ -1402,7 +1402,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveAsNonDlpRestricted").EnableDlp(),
         TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),
         TestCase("saveAsDlpRestrictedVm").EnableDlp(),
-        TestCase("openDlpRestrictedFile").EnableDlp()));
+        TestCase("openDlpRestrictedFile").EnableDlp(),
+        TestCase("openFolderDlpRestricted").EnableDlp()));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()
