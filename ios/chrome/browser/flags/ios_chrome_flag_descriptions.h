@@ -449,6 +449,11 @@ extern const char kModernTabStripDescription[];
 extern const char kMostVisitedTilesName[];
 extern const char kMostVisitedTilesDescription[];
 
+// Title and description of the flag to enable the native Find in Page API
+// for iOS 16 and later.
+extern const char kNativeFindInPageName[];
+extern const char kNativeFindInPageDescription[];
+
 // Title and description for the flag to use the new MICe FRE.
 extern const char kNewMobileIdentityConsistencyFREName[];
 extern const char kNewMobileIdentityConsistencyFREDescription[];

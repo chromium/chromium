@@ -56,6 +56,7 @@ source_set("flags") {
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/find_in_page:features",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:constants",

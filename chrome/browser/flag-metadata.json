@@ -4736,6 +4736,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "native-find-in-page",
+    "owners": ["qpubert@google.com", "djean@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "nearby-sharing-one-page-onboarding",
     "owners": [ "pushi@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 103

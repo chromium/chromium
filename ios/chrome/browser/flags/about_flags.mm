@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/find_in_page/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/flags/system_flags.h"
@@ -552,6 +553,12 @@ const FeatureEntry::FeatureVariation kFollowingFeedDefaultSortTypeVariations[] =
       std::size(kFollowingFeedSortTypeGroupedByPublisher), nullptr},
      {"Sort by Latest", kFollowingFeedSortTypeSortByLatest,
       std::size(kFollowingFeedSortTypeSortByLatest), nullptr}};
+
+const FeatureEntry::FeatureParam kNativeFindInPageWithChromeFindBar[] = {
+    {kNativeFindInPageParameterName, kNativeFindInPageWithChromeFindBarParam}};
+const FeatureEntry::FeatureVariation kNativeFindInPageVariations[] = {
+    {"With Chrome Find Bar", kNativeFindInPageWithChromeFindBar,
+     std::size(kNativeFindInPageWithChromeFindBar), nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -1259,7 +1266,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
-
+    {"native-find-in-page", flag_descriptions::kNativeFindInPageName,
+     flag_descriptions::kNativeFindInPageDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kNativeFindInPage,
+                                    kNativeFindInPageVariations,
+                                    "NativeFindInPage")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

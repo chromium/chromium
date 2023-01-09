@@ -499,6 +499,12 @@ const char kMostVisitedTilesDescription[] =
     "websites in a tile format when the user focuses the omnibox on a search "
     "result page (SRP) or on web.";
 
+const char kNativeFindInPageName[] = "Native Find in Page";
+const char kNativeFindInPageDescription[] =
+    "When enabled, the JavaScript implementation of the Find in Page feature "
+    "is replaced with a native implementation which also enables searching "
+    "text in PDF files. Available for iOS 16 or later.";
+
 const char kNewMobileIdentityConsistencyFREName[] = "New MICE FRE";
 const char kNewMobileIdentityConsistencyFREDescription[] =
     "New Mobile Identity Consistency FRE";
