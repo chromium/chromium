@@ -74,7 +74,7 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
   base::Value::Dict value;
   value.Set("name", name);
   value.Set("version", version);
-  base::ListValue scripts;
+  base::Value::List scripts;
   scripts.Append("script.js");
   value.SetByDottedPath("app.background.scripts", std::move(scripts));
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
