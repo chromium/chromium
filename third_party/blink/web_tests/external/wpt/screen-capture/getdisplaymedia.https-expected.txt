@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 60 tests; 58 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 60 tests; 59 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getDisplayMedia in navigator.mediaDevices
 FAIL getDisplayMedia() must require user activation assert_unreached: Should have rejected: getDisplayMedia should have returned an already-rejected promise. Reached unreachable code
 PASS getDisplayMedia({"video":true}) must succeed with video
@@ -35,7 +35,7 @@ PASS getDisplayMedia({video: {"height":118}}) must be downscaled precisely
 PASS applyConstraints(width or height) must downscale precisely
 PASS getDisplayMedia({"video":{"width":{"max":0}}}) must fail with OverconstrainedError
 PASS getDisplayMedia({"video":{"height":{"max":0}}}) must fail with OverconstrainedError
-FAIL getDisplayMedia({"video":{"frameRate":{"max":0}}}) must fail with OverconstrainedError assert_unreached: getDisplayMedia should have failed Reached unreachable code
+PASS getDisplayMedia({"video":{"frameRate":{"max":0}}}) must fail with OverconstrainedError
 PASS getDisplayMedia({"video":{"width":{"max":-1}}}) must fail with OverconstrainedError
 PASS getDisplayMedia({"video":{"height":{"max":-1}}}) must fail with OverconstrainedError
 PASS getDisplayMedia({"video":{"frameRate":{"max":-1}}}) must fail with OverconstrainedError

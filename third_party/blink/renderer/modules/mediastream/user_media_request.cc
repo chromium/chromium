@@ -486,6 +486,13 @@ UserMediaRequest* UserMediaRequest::Create(
       return nullptr;
     }
 
+    if (video.Basic().frame_rate.HasMax() &&
+        video.Basic().frame_rate.Max() == 0) {
+      error_state.ThrowConstraintError("max value must be greater than 0",
+                                       "frameRate");
+      return nullptr;
+    }
+
     if (video.Basic().display_surface.HasIdeal() &&
         video.Basic().display_surface.Ideal().size() > 0) {
       display_surface_constraint =
