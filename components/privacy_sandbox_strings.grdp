@@ -62,9 +62,6 @@
   <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DECLINE_BUTTON" translateable="false" desc="Privacy Sandbox dialog consent EEA: Consent No button." formatter_data="android_java">
     Lorem
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_HEADING" translateable="false" desc="Privacy Sandbox dialog consent EEA: Header inside expand in consent." formatter_data="android_java">
-    Esed purus vestibulum velit convalli
-  </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1" translateable="false" desc="Privacy Sandbox dialog consent EEA: First bullet point in expand in consent." formatter_data="android_java">
     <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Nulla in tortor:<ph name="END_BOLD">&lt;/b&gt;</ph> a ligula scelerisque laoreet. Sed sem velit, varius non purus vitae, imperdiet porttitor elit.
   </message>
@@ -147,16 +144,10 @@
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_EXPAND_LABEL" translateable="false" desc="Privacy Sandbox dialog notice ROW: Expand text." formatter_data="android_java">
     Vestibulum orci risus consectetur
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First header inside expand section." formatter_data="android_java">
-    Esed purus vestibulum velit convalli
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First description text in body, underneath first header." formatter_data="android_java">
-    Etiam dictum sem et neque molestie lobortis. Morbi quam tellus, tincidunt eget dapibus ac, lobortis et lacus. Integer nec egestas elit. Nulla venenatis facilisis dui eget suscipit.
-  </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second heading inside expand section." formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First heading inside expand section." formatter_data="android_java">
     Class aptent taciti sociosqu ad
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second description text in body, underneath second header." formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First description text in body, underneath first header." formatter_data="android_java">
     Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu.
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_1" translateable="false" desc="Privacy Sandbox dialog notice ROW: First bullet point in ROW notice expand." formatter_data="android_java">
@@ -165,19 +156,19 @@
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second bullet point in ROW notice expand." formatter_data="android_java">
     Duis tempor nulla nisi, ac bibendum lorem tempus sit amet. Proin non blandit risus. Maecenas facilisis enim nec tristique tristique. Eelementum ut venenatis ornare, consequat ac turpis. Vestibulum orci risus, consectetur non odio vulputate, mattis dignissim purus. Cras id tempor mi.
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_3" translateable="false" desc="Privacy Sandbox dialog notice ROW: Third section in body, below bullet points." formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second section in body, below bullet points." formatter_data="android_java">
     Etiam hendrerit turpis nibh, ac maximus lectus placerat at. Vivamus ligula quam, posuere luctus felis eu, dictum egestas arcu. per conubia nostra, per inceptos himenaeos. Cras ut metus vel est molestie finibus nec ut orci.
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_4" translateable="false" desc="Privacy Sandbox dialog notice ROW: Fourth section in body, immediately below third." formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_3" translateable="false" desc="Privacy Sandbox dialog notice ROW: Third section in body, immediately below second." formatter_data="android_java">
     Aliquam euismod scelerisque metus, in aliquet est vehicula ut. Curabitur sit amet ligula quis ante maximus gravida non id magna. Pellentesque interdum venenatis leo, at ultrices felis mollis nec. Integer vulputate velit eget mauris lacinia, ut ullamcorper mauris vehicula.
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3" translateable="false" desc="Privacy Sandbox dialog notice ROW: Third header inside learn more expand." formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_2" translateable="false" desc="Privacy Sandbox dialog notice ROW: Second header inside learn more expand." formatter_data="android_java">
     Orci varius natoque penatibus et
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5" translateable="false" desc="Privacy Sandbox dialog notice ROW: Fifth section in body below header 3." formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_4" translateable="false" desc="Privacy Sandbox dialog notice ROW: Fourth section in body below header 2." formatter_data="android_java">
     Suspendisse at dui pulvinar, rhoncus orci at, porttitor nibh. Curabitur lacinia nulla sem, eu euismod dolor vulputate quis. Duis mattis eros et arcu elementum tempor. Duis pharetra eleifend sagittis.
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_6" translateable="false" desc="Privacy Sandbox dialog notice ROW: Sixth section in body, immediately below fifth." formatter_data="android_java">
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5" translateable="false" desc="Privacy Sandbox dialog notice ROW: Fifth section in body, immediately below fourth." formatter_data="android_java">
     Cras sed lacus suscipit, efficitur erat nec, semper sapien. Fusce at nunc molestie, elementum augue at, auctor nunc. Sed dui nisi, consectetur sit amet urna vitae, facilisis scelerisque justo.
   </message>
 

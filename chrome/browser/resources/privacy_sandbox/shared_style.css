@@ -120,6 +120,10 @@ li:not(:last-child) {
   padding: 8px 0;
 }
 
+.learn-more-section > ul.cr-secondary-text {
+  margin-top: 0;
+}
+
 /* Privacy sandbox banner */
 .banner {
   height: 160px;
