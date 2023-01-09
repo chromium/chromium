@@ -850,8 +850,6 @@ void CupsPrintersManager::RegisterProfilePrefs(
 // static
 void CupsPrintersManager::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kPrintingClientNameTemplate,
-                               std::string());
   PrintServersProvider::RegisterLocalStatePrefs(registry);
   printing::oauth2::ClientIdsDatabase::RegisterLocalStatePrefs(registry);
 }

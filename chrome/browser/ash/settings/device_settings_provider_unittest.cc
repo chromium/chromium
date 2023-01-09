@@ -1297,4 +1297,19 @@ TEST_F(DeviceSettingsProviderTest, DeviceEncryptedReportingPipelineDisabled) {
             *provider_->Get(kDeviceEncryptedReportingPipelineEnabled));
 }
 
+TEST_F(DeviceSettingsProviderTest, DevicePrintingClientNameTemplateUnset) {
+  device_policy_->payload().clear_device_printing_client_name_template();
+  BuildAndInstallDevicePolicy();
+  EXPECT_FALSE(provider_->Get(kDevicePrintingClientNameTemplate));
+}
+
+TEST_F(DeviceSettingsProviderTest, DevicePrintingClientNameTemplate) {
+  device_policy_->payload()
+      .mutable_device_printing_client_name_template()
+      ->set_value("chromebook-${DEVICE_ASSET_ID}");
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value("chromebook-${DEVICE_ASSET_ID}"),
+            *provider_->Get(kDevicePrintingClientNameTemplate));
+}
+
 }  // namespace ash

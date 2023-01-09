@@ -377,6 +377,9 @@ extern const char kDeviceEncryptedReportingPipelineEnabled[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kDeviceReportXDREvents[];
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kDevicePrintingClientNameTemplate[];
+
 }  // namespace ash
 
 namespace chromeos {

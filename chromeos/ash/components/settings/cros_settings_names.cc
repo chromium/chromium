@@ -576,4 +576,10 @@ const char kDeviceEncryptedReportingPipelineEnabled[] =
 // A boolean pref that indicates whether reporting XDR events is enabled or not.
 const char kDeviceReportXDREvents[] = "cros.device.device_report_xdr_events";
 
+// String representing a template for the 'client-name' member of the
+// 'client-info' IPP attribute that will be sent to IPP printers in case they
+// support it. Maps to the `DevicePrintingClientNameTemplate` policy.
+const char kDevicePrintingClientNameTemplate[] =
+    "cros.device.printing.client_name_template";
+
 }  // namespace ash
