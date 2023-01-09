@@ -8,8 +8,8 @@ import './icons.html.js';
 import './network_card.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,7 +33,7 @@ export interface NetworkListElement {
  *  and WiFi networks.
  */
 
-const NetworkListElementBase = I18nMixin(PolymerElement);
+const NetworkListElementBase = StrictQueryMixin(I18nMixin(PolymerElement));
 
 export class NetworkListElement extends NetworkListElementBase {
   static get is(): string {
@@ -130,21 +130,15 @@ export class NetworkListElement extends NetworkListElementBase {
       // fallback to focusing the element's main container.
       afterNextRender(this, () => {
         if (this.activeGuid_) {
-          const connectivityCard: ConnectivityCardElement|null =
-              this.shadowRoot!.querySelector('connectivity-card');
-          assert(connectivityCard);
-          const cardTitle: HTMLDivElement|null =
-              connectivityCard.shadowRoot!.querySelector('#cardTitle');
-          assert(cardTitle);
+          const connectivityCard = this.strictQuery(
+              ConnectivityCardElement.is, ConnectivityCardElement);
+          const cardTitle = connectivityCard.strictQueryDiv('#cardTitle');
           cardTitle.focus();
           return;
         } else if (this.otherNetworkGuids_.length > 0) {
-          const networkCard: NetworkCardElement|null =
-              this.shadowRoot!.querySelector('network-card');
-          assert(networkCard);
-          const cardTitle: HTMLDivElement|null =
-              networkCard.shadowRoot!.querySelector('#cardTitle');
-          assert(cardTitle);
+          const networkCard =
+              this.strictQuery(NetworkCardElement.is, NetworkCardElement);
+          const cardTitle = networkCard.strictQueryDiv('#cardTitle');
           cardTitle.focus();
         }
         this.$.networkListContainer.focus();

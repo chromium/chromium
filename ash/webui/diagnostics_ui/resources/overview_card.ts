@@ -5,6 +5,7 @@
 import './diagnostics_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -18,7 +19,9 @@ import {SystemDataProviderInterface, SystemInfo} from './system_data_provider.mo
  * as CPU type, version, board name, and memory.
  */
 
-export class OverviewCardElement extends PolymerElement {
+const OverviewCardElementBase = StrictQueryMixin(PolymerElement);
+
+export class OverviewCardElement extends OverviewCardElementBase {
   static get is(): string {
     return 'overview-card';
   }
