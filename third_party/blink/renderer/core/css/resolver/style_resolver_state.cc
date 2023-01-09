@@ -119,7 +119,8 @@ scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
 
 void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
-      Style(), ParentStyle(), RootElementStyle(), GetDocument().GetLayoutView(),
+      style_builder_.InternalStyle(), ParentStyle(), RootElementStyle(),
+      GetDocument().GetLayoutView(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
       StyleBuilder().EffectiveZoom(), length_conversion_flags_);
   element_style_resources_.UpdateLengthConversionData(
@@ -132,7 +133,8 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
   const ComputedStyle* root_font_style = RootElementStyle();
   CSSToLengthConversionData::FontSizes font_sizes(font_style, root_font_style);
   CSSToLengthConversionData::LineHeightSize line_height_size(
-      ParentStyle() ? *ParentStyle() : *Style(), root_font_style);
+      ParentStyle() ? *ParentStyle() : *style_builder_.InternalStyle(),
+      root_font_style);
   CSSToLengthConversionData::ViewportSize viewport_size(
       GetDocument().GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes(
@@ -148,7 +150,7 @@ CSSToLengthConversionData StyleResolverState::FontSizeConversionData() {
 }
 
 CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
-  return UnzoomedLengthConversionData(Style());
+  return UnzoomedLengthConversionData(style_builder_.InternalStyle());
 }
 
 void StyleResolverState::SetParentStyle(
@@ -167,7 +169,7 @@ void StyleResolverState::LoadPendingResources() {
   if (pseudo_request_type_ == StyleRequest::kForComputedStyle ||
       (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone()) ||
       (StyleBuilder().Display() == EDisplay::kNone &&
-       !GetElement().LayoutObjectIsNeeded(*Style())) ||
+       !GetElement().LayoutObjectIsNeeded(*style_builder_.InternalStyle())) ||
       StyleBuilder().IsEnsuredOutsideFlatTree()) {
     return;
   }
@@ -253,15 +255,16 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
 
 void StyleResolverState::UpdateFont() {
   GetFontBuilder().CreateFont(StyleBuilder(), ParentStyle());
-  SetConversionFontSizes(
-      CSSToLengthConversionData::FontSizes(Style(), RootElementStyle()));
+  SetConversionFontSizes(CSSToLengthConversionData::FontSizes(
+      style_builder_.InternalStyle(), RootElementStyle()));
   SetConversionZoom(StyleBuilder().EffectiveZoom());
 }
 
 void StyleResolverState::UpdateLineHeight() {
   css_to_length_conversion_data_.SetLineHeightSize(
       CSSToLengthConversionData::LineHeightSize(
-          *Style(), GetDocument().documentElement()->GetComputedStyle()));
+          *style_builder_.InternalStyle(),
+          GetDocument().documentElement()->GetComputedStyle()));
 }
 
 }  // namespace blink

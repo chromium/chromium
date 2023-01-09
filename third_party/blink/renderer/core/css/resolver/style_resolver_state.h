@@ -79,7 +79,7 @@ class CORE_EXPORT StyleResolverState {
     if (const auto* root_element_style = element_context_.RootElementStyle()) {
       return root_element_style;
     }
-    return Style();
+    return style_builder_.InternalStyle();
   }
   EInsideLink ElementLinkState() const {
     return element_context_.ElementLinkState();
@@ -90,7 +90,6 @@ class CORE_EXPORT StyleResolverState {
   }
 
   void SetStyle(scoped_refptr<ComputedStyle>);
-  const ComputedStyle* Style() const { return style_builder_.InternalStyle(); }
   ComputedStyleBuilder& StyleBuilder() { return style_builder_; }
   const ComputedStyleBuilder& StyleBuilder() const { return style_builder_; }
   scoped_refptr<ComputedStyle> TakeStyle();
