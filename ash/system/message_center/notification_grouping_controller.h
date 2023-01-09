@@ -19,6 +19,7 @@ namespace {
 class GroupedNotificationList;
 }  // namespace
 
+class NotificationCenterTray;
 class UnifiedSystemTray;
 
 // A controller class to manage adding, removing and updating group
@@ -26,7 +27,8 @@ class UnifiedSystemTray;
 class NotificationGroupingController
     : public message_center::MessageCenterObserver {
  public:
-  explicit NotificationGroupingController(UnifiedSystemTray* tray);
+  NotificationGroupingController(UnifiedSystemTray* system_tray,
+                                 NotificationCenterTray* notification_tray);
   NotificationGroupingController(const NotificationGroupingController& other) =
       delete;
   NotificationGroupingController& operator=(
@@ -83,7 +85,13 @@ class NotificationGroupingController
   // to prevent an infinite loop.
   bool adding_parent_grouped_notification_ = false;
 
-  UnifiedSystemTray* const tray_;
+  // Owner of this class.
+  UnifiedSystemTray* const system_tray_;
+
+  // Raw ptr to the `NotificationCenterTray` adjacent to `system_tray_`, has the
+  // same owner as `system_tray_`.
+  // TODO(b/251687017): Make this the owner of this class.
+  NotificationCenterTray* const notification_tray_;
 
   // A data structure that holds all grouped notifications along with their
   // associations with their parent notifications. This pointer is assigned to a

@@ -171,6 +171,11 @@ void AshTestBase::TearDown() {
 }
 
 // static
+NotificationCenterTray* AshTestBase::GetPrimaryNotificationCenterTray() {
+  return GetPrimaryShelf()->GetStatusAreaWidget()->notification_center_tray();
+}
+
+// static
 Shelf* AshTestBase::GetPrimaryShelf() {
   return Shell::GetPrimaryRootWindowController()->shelf();
 }

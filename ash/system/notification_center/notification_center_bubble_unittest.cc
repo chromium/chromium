@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/message_center/views/message_view.h"
 
 namespace ash {
 
@@ -121,6 +122,31 @@ TEST_F(NotificationCenterBubbleTest, BubbleHeightUpdatedByDisplayRotation) {
 
   // In landspace mode the height constraint should be back to `display_height`.
   EXPECT_LT(notification_center_view->bounds().height(), display_height);
+}
+
+// Tests that notifications from a single notifier id are grouped in a single
+// parent notification view.
+TEST_F(NotificationCenterBubbleTest, NotificationsGroupingBasic) {
+  const std::string source_url = "http://test-url.com";
+
+  std::string id0, id1;
+  id0 = test_api()->AddNotificationWithSourceUrl(source_url);
+  id1 = test_api()->AddNotificationWithSourceUrl(source_url);
+
+  // Get the notification id for the parent notification. Parent notifications
+  // are created by copying the oldest notification for a given notifier_id.
+  const std::string parent_id =
+      test_api()->NotificationIdToParentNotificationId(id0);
+
+  test_api()->ToggleBubble();
+
+  auto* parent_notification_view =
+      test_api()->GetNotificationViewForId(parent_id);
+
+  // Ensure id0, id1 exist as child notifications inside the
+  // `parent_notification_view`.
+  EXPECT_TRUE(parent_notification_view->FindGroupNotificationView(id0));
+  EXPECT_TRUE(parent_notification_view->FindGroupNotificationView(id1));
 }
 
 }  // namespace ash

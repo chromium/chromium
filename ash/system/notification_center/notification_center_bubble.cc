@@ -41,7 +41,6 @@ NotificationCenterBubble::NotificationCenterBubble(
 
   notification_center_view_ =
       bubble_view->AddChildView(std::make_unique<NotificationCenterView>());
-  notification_center_view_->Init();
 
   // Show the bubble.
   bubble_wrapper_ =
@@ -51,6 +50,11 @@ NotificationCenterBubble::NotificationCenterBubble(
 
 NotificationCenterBubble::~NotificationCenterBubble() {
   bubble_wrapper_->bubble_view()->ResetDelegate();
+}
+
+void NotificationCenterBubble::ShowBubble() {
+  notification_center_view_->Init();
+  GetBubbleView()->SizeToContents();
 }
 
 TrayBubbleView* NotificationCenterBubble::GetBubbleView() {

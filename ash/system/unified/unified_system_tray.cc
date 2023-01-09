@@ -126,8 +126,11 @@ UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
           std::make_unique<AshMessagePopupCollection>(owner->shelf())),
       owner_(owner) {
   if (features::IsNotificationsRefreshEnabled()) {
-    grouping_controller_ =
-        std::make_unique<NotificationGroupingController>(owner);
+    grouping_controller_ = std::make_unique<NotificationGroupingController>(
+        /*unified_system_tray=*/owner,
+        /*notification_center_tray=*/owner->shelf()
+            ->status_area_widget()
+            ->notification_center_tray());
   }
 
   ui_controller_->set_hide_on_last_notification(false);
@@ -150,8 +153,9 @@ void UnifiedSystemTray::UiDelegate::OnMessageCenterContentsChanged() {
 }
 
 bool UnifiedSystemTray::UiDelegate::ShowPopups() {
-  if (owner_->IsBubbleShown())
+  if (owner_->IsBubbleShown()) {
     return false;
+  }
   return true;
 }
 
@@ -160,8 +164,9 @@ void UnifiedSystemTray::UiDelegate::HidePopups() {
 }
 
 bool UnifiedSystemTray::UiDelegate::ShowMessageCenter() {
-  if (owner_->IsBubbleShown())
+  if (owner_->IsBubbleShown()) {
     return false;
+  }
 
   owner_->ShowBubbleInternal();
   return true;
@@ -217,8 +222,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
   }
 
-  if (features::IsSnoopingProtectionEnabled())
+  if (features::IsSnoopingProtectionEnabled()) {
     AddTrayItemToContainer(std::make_unique<SnoopingProtectionView>(shelf));
+  }
 
   current_locale_view_ =
       AddTrayItemToContainer(std::make_unique<CurrentLocaleView>(shelf));
@@ -281,13 +287,15 @@ UnifiedSystemTray::~UnifiedSystemTray() {
 }
 
 void UnifiedSystemTray::AddObserver(Observer* observer) {
-  if (observer)
+  if (observer) {
     observers_.AddObserver(observer);
+  }
 }
 
 void UnifiedSystemTray::RemoveObserver(Observer* observer) {
-  if (observer)
+  if (observer) {
     observers_.RemoveObserver(observer);
+  }
 }
 
 void UnifiedSystemTray::OnButtonPressed(const ui::Event& event) {
@@ -310,8 +318,9 @@ bool UnifiedSystemTray::IsSliderBubbleShown() const {
 }
 
 bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
-  if (message_center_bubble_)
+  if (message_center_bubble_) {
     return message_center_bubble_->IsMessageCenterVisible();
+  }
 
   return false;
 }
@@ -321,40 +330,47 @@ bool UnifiedSystemTray::IsBubbleActive() const {
 }
 
 void UnifiedSystemTray::ActivateBubble() {
-  if (bubble_)
+  if (bubble_) {
     bubble_->GetBubbleWidget()->Activate();
+  }
 }
 
 void UnifiedSystemTray::CloseSecondaryBubbles() {
   slider_bubble_controller_->CloseBubble();
   privacy_screen_toast_controller_->HideToast();
-  if (autozoom_toast_controller_)
+  if (autozoom_toast_controller_) {
     autozoom_toast_controller_->HideToast();
+  }
 }
 
 void UnifiedSystemTray::CollapseMessageCenter() {
-  if (message_center_bubble_)
+  if (message_center_bubble_) {
     message_center_bubble_->CollapseMessageCenter();
+  }
 }
 
 void UnifiedSystemTray::ExpandMessageCenter() {
-  if (message_center_bubble_)
+  if (message_center_bubble_) {
     message_center_bubble_->ExpandMessageCenter();
+  }
 }
 
 void UnifiedSystemTray::EnsureQuickSettingsCollapsed(bool animate) {
-  if (!bubble_)
+  if (!bubble_) {
     return;
+  }
 
-  if (animate)
+  if (animate) {
     bubble_->EnsureCollapsed();
-  else
+  } else {
     bubble_->CollapseWithoutAnimating();
+  }
 }
 
 void UnifiedSystemTray::EnsureBubbleExpanded() {
-  if (bubble_)
+  if (bubble_) {
     bubble_->EnsureExpanded();
+  }
 }
 
 void UnifiedSystemTray::ShowVolumeSliderBubble() {
@@ -379,8 +395,9 @@ void UnifiedSystemTray::SetTrayBubbleHeight(int height) {
 
 bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
                                            bool collapse_quick_settings) {
-  if (!IsMessageCenterBubbleShown())
+  if (!IsMessageCenterBubbleShown()) {
     return false;
+  }
 
   views::Widget* message_center_widget =
       message_center_bubble_->GetBubbleWidget();
@@ -390,15 +407,17 @@ bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
 
   // Focus an individual element in the message center if chrome vox is
   // disabled.
-  if (!ShouldEnableExtraKeyboardAccessibility())
+  if (!ShouldEnableExtraKeyboardAccessibility()) {
     message_center_bubble_->FocusEntered(reverse);
+  }
 
   return true;
 }
 
 bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
-  if (!IsBubbleShown())
+  if (!IsBubbleShown()) {
     return false;
+  }
 
   views::Widget* quick_settings_widget = bubble_->GetBubbleWidget();
   quick_settings_widget->widget_delegate()->SetCanActivate(true);
@@ -407,15 +426,17 @@ bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
 
   // Focus an individual element in quick settings if chrome vox is
   // disabled.
-  if (!ShouldEnableExtraKeyboardAccessibility())
+  if (!ShouldEnableExtraKeyboardAccessibility()) {
     bubble_->FocusEntered(reverse);
+  }
 
   return true;
 }
 
 void UnifiedSystemTray::NotifyLeavingCalendarView() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnLeavingCalendarView();
+  }
 }
 
 bool UnifiedSystemTray::IsQuickSettingsExplicitlyExpanded() const {
@@ -427,8 +448,9 @@ gfx::Rect UnifiedSystemTray::GetBubbleBoundsInScreen() const {
 }
 
 void UnifiedSystemTray::MaybeRecordFirstInteraction(FirstInteractionType type) {
-  if (first_interaction_recorded_)
+  if (first_interaction_recorded_) {
     return;
+  }
   first_interaction_recorded_ = true;
 
   UMA_HISTOGRAM_ENUMERATION("ChromeOS.SystemTray.FirstInteraction", type,
@@ -460,14 +482,17 @@ absl::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
 void UnifiedSystemTray::OnAnyBubbleVisibilityChanged(
     views::Widget* bubble_widget,
     bool visible) {
-  if (!features::IsQsRevampEnabled())
+  if (!features::IsQsRevampEnabled()) {
     return;
+  }
 
-  if (!IsBubbleShown())
+  if (!IsBubbleShown()) {
     return;
+  }
 
-  if (bubble_widget == GetBubbleWidget())
+  if (bubble_widget == GetBubbleWidget()) {
     return;
+  }
 
   if (visible) {
     // Another bubble is becoming visible while this bubble is being shown, so
@@ -487,14 +512,16 @@ void UnifiedSystemTray::OnShelfConfigUpdated() {
 
 void UnifiedSystemTray::OnOpeningCalendarView() {
   SetIsActive(false);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnOpeningCalendarView();
+  }
 }
 
 void UnifiedSystemTray::OnTransitioningFromCalendarToMainView() {
   SetIsActive(true);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnLeavingCalendarView();
+  }
 }
 
 void UnifiedSystemTray::OnTabletModeStarted() {
@@ -512,15 +539,17 @@ void UnifiedSystemTray::OnQuietModeChanged(bool in_quiet_mode) {
 }
 
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
-  if (!bubble_)
+  if (!bubble_) {
     ShowBubble();
+  }
   bubble_->ShowCalendarView(calendar_metrics::CalendarViewShowSource::kTimeView,
                             calendar_metrics::GetEventType(event));
 }
 
 bool UnifiedSystemTray::IsShowingCalendarView() const {
-  if (!bubble_)
+  if (!bubble_) {
     return false;
+  }
 
   return bubble_->ShowingCalendarView();
 }
@@ -534,8 +563,9 @@ bool UnifiedSystemTray::ShouldChannelIndicatorBeShown() const {
 void UnifiedSystemTray::SetTrayEnabled(bool enabled) {
   // We should close bubble at this point. If it remains opened and interactive,
   // it can be dangerous (http://crbug.com/497080).
-  if (!enabled && bubble_)
+  if (!enabled && bubble_) {
     CloseBubble();
+  }
 
   SetEnabled(enabled);
 }
@@ -550,10 +580,11 @@ void UnifiedSystemTray::ShowBubble() {
   if (!bubble_) {
     time_opened_ = base::TimeTicks::Now();
 
-    if (features::IsQsRevampEnabled())
+    if (features::IsQsRevampEnabled()) {
       ShowBubbleInternal();
-    else
+    } else {
       ui_delegate_->ui_controller()->ShowMessageCenterBubble();
+    }
 
     Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
   }
@@ -569,31 +600,35 @@ void UnifiedSystemTray::CloseBubble() {
 }
 
 std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
-  if (IsBubbleShown())
+  if (IsBubbleShown()) {
     return GetAccessibleNameForQuickSettingsBubble();
-  else
+  } else {
     return GetAccessibleNameForTray();
+  }
 }
 
 std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
   if (features::IsQsRevampEnabled()) {
-    if (bubble_->quick_settings_view()->IsDetailedViewShown())
+    if (bubble_->quick_settings_view()->IsDetailedViewShown()) {
       return bubble_->quick_settings_view()->GetDetailedViewAccessibleName();
+    }
 
     return l10n_util::GetStringUTF16(
         IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
   }
 
-  if (bubble_->unified_view()->IsDetailedViewShown())
+  if (bubble_->unified_view()->IsDetailedViewShown()) {
     return bubble_->unified_view()->GetDetailedViewAccessibleName();
+  }
 
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
 }
 
 void UnifiedSystemTray::HandleLocaleChange() {
-  for (TrayItemView* item : tray_items_)
+  for (TrayItemView* item : tray_items_) {
     item->HandleLocaleChange();
+  }
 }
 
 std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
@@ -667,14 +702,16 @@ void UnifiedSystemTray::ClickedOutsideBubble() {
 void UnifiedSystemTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
   time_view_->UpdateAlignmentForShelf(shelf());
-  if (privacy_indicators_view_)
+  if (privacy_indicators_view_) {
     privacy_indicators_view_->UpdateAlignmentForShelf(shelf());
+  }
 }
 
 void UnifiedSystemTray::ShowBubbleInternal() {
   // Never show System Tray bubble in kiosk app mode.
-  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
     return;
+  }
 
   CloseSecondaryBubbles();
 
@@ -698,8 +735,9 @@ void UnifiedSystemTray::ShowBubbleInternal() {
   // before their creation is complete resulting in crashes.
   bubble_->InitializeObservers();
 
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     ActivateBubble();
+  }
 
   first_interaction_recorded_ = false;
 
@@ -730,8 +768,9 @@ void UnifiedSystemTray::UpdateNotificationInternal() {
 void UnifiedSystemTray::UpdateNotificationAfterDelay() {
   // Notification icons will be removed from system tray with the QsRevamp
   // feature.
-  if (!features::IsQsRevampEnabled())
+  if (!features::IsQsRevampEnabled()) {
     notification_icons_controller_->UpdateNotificationIndicators();
+  }
 }
 
 message_center::MessagePopupView*
@@ -744,8 +783,9 @@ AshMessagePopupCollection* UnifiedSystemTray::GetMessagePopupCollection() {
   // We need a check here since this function might be called when UiDelegate's
   // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
   // though the UiDelegate object is still in the middle of dtor process.
-  if (!ui_delegate_)
+  if (!ui_delegate_) {
     return nullptr;
+  }
   return ui_delegate_->message_popup_collection();
 }
 
@@ -754,8 +794,9 @@ UnifiedSystemTray::GetNotificationGroupingController() {
   // We need a check here since this function might be called when UiDelegate's
   // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
   // though the UiDelegate object is still in the middle of dtor process.
-  if (!ui_delegate_)
+  if (!ui_delegate_) {
     return nullptr;
+  }
   return ui_delegate_->grouping_controller();
 }
 
@@ -770,8 +811,9 @@ T* UnifiedSystemTray::AddTrayItemToContainer(
 
 void UnifiedSystemTray::DestroyBubbles() {
   message_center_bubble_.reset();
-  if (bubble_)
+  if (bubble_) {
     bubble_->unified_system_tray_controller()->RemoveObserver(this);
+  }
   bubble_.reset();
 }
 

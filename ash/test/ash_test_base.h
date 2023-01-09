@@ -71,6 +71,7 @@ class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshPixelDiffer;
 class AshTestHelper;
+class NotificationCenterTray;
 class Shelf;
 class TestAppListClient;
 class TestShellDelegate;
@@ -106,6 +107,9 @@ class AshTestBase : public testing::Test {
   void SetUp() override;
   void SetUp(std::unique_ptr<TestShellDelegate> delegate);
   void TearDown() override;
+
+  // Returns the notification center tray on the primary display.
+  static NotificationCenterTray* GetPrimaryNotificationCenterTray();
 
   // Returns the Shelf for the primary display.
   static Shelf* GetPrimaryShelf();

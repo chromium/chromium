@@ -32,8 +32,19 @@ class NotificationCenterBubble : public ScreenLayoutObserver {
 
   ~NotificationCenterBubble() override;
 
+  // Initializes the `NotificationCenterView` which results in notifications
+  // being added to the view. This is necessary outside of the constructor
+  // because the `NotificationGroupingController` expects
+  // `NotificationCenterBubble` to be fully constructed when notifications are
+  // added to it.
+  void ShowBubble();
+
   TrayBubbleView* GetBubbleView();
   views::Widget* GetBubbleWidget();
+
+  NotificationCenterView* notification_center_view() {
+    return notification_center_view_;
+  }
 
  private:
   friend class NotificationCenterTestApi;

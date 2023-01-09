@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_container.h"
@@ -58,6 +59,11 @@ void NotificationCenterTray::OnSystemTrayVisibilityChanged(
   UpdateVisibility();
 }
 
+NotificationListView* NotificationCenterTray::GetNotificationListView() {
+  return bubble_ ? bubble_->notification_center_view()->notification_list_view()
+                 : nullptr;
+}
+
 bool NotificationCenterTray::IsBubbleShown() const {
   return !!bubble_;
 }
@@ -74,8 +80,9 @@ void NotificationCenterTray::HandleLocaleChange() {}
 
 void NotificationCenterTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {
-  if (bubble_->GetBubbleView() == bubble_view)
+  if (bubble_->GetBubbleView() == bubble_view) {
     CloseBubble();
+  }
 }
 
 void NotificationCenterTray::ClickedOutsideBubble() {
@@ -83,8 +90,9 @@ void NotificationCenterTray::ClickedOutsideBubble() {
 }
 
 void NotificationCenterTray::CloseBubble() {
-  if (!bubble_)
+  if (!bubble_) {
     return;
+  }
 
   bubble_.reset();
   SetIsActive(false);
@@ -96,16 +104,23 @@ void NotificationCenterTray::CloseBubble() {
 }
 
 void NotificationCenterTray::ShowBubble() {
-  if (bubble_)
+  if (bubble_) {
     return;
-
-  bubble_ = std::make_unique<NotificationCenterBubble>(this);
-  SetIsActive(true);
+  }
 
   // Inform the message center that the bubble is showing so that we do not
-  // create popups for incoming notifications and dismiss existing popups.
+  // create popups for incoming notifications and dismiss existing popups. This
+  // needs to happen before the bubble is created so that the
+  // `NotificationListView` is the active `NotificationViewController` when the
+  // `NotificationGroupingController` access it. This happens when notifications
+  // are added to the `NotificationListView`.
   message_center::MessageCenter::Get()->SetVisibility(
       message_center::VISIBILITY_MESSAGE_CENTER);
+
+  bubble_ = std::make_unique<NotificationCenterBubble>(this);
+  bubble_->ShowBubble();
+
+  SetIsActive(true);
 }
 
 void NotificationCenterTray::UpdateAfterLoginStatusChange() {
@@ -123,11 +138,13 @@ views::Widget* NotificationCenterTray::GetBubbleWidget() const {
 void NotificationCenterTray::OnAnyBubbleVisibilityChanged(
     views::Widget* bubble_widget,
     bool visible) {
-  if (!IsBubbleShown())
+  if (!IsBubbleShown()) {
     return;
+  }
 
-  if (bubble_widget == GetBubbleWidget())
+  if (bubble_widget == GetBubbleWidget()) {
     return;
+  }
 
   if (visible) {
     // Another bubble is becoming visible while this bubble is being shown, so
@@ -162,8 +179,9 @@ void NotificationCenterTray::UpdateVisibility() {
   const bool new_visibility =
       message_center::MessageCenter::Get()->NotificationCount() > 0 &&
       system_tray_visible_;
-  if (new_visibility == visible_preferred())
+  if (new_visibility == visible_preferred()) {
     return;
+  }
 
   SetVisiblePreferred(new_visibility);
 
@@ -171,8 +189,9 @@ void NotificationCenterTray::UpdateVisibility() {
   notification_icons_controller_->UpdateNotificationIndicators();
 
   // We should close the bubble if there are no more notifications to show.
-  if (!new_visibility && bubble_)
+  if (!new_visibility && bubble_) {
     CloseBubble();
+  }
 }
 
 BEGIN_METADATA(NotificationCenterTray, TrayBackgroundView)

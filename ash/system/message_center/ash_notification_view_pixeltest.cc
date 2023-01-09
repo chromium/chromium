@@ -7,8 +7,9 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/image_model.h"
-#include "ui/views/view.h"
+#include "ui/message_center/views/message_view.h"
 
 namespace ash {
 
@@ -75,14 +76,15 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   const std::string title = GetParam().first;
 
   const std::string id = test_api()->AddCustomNotification(
-      title, "Notification Content",
+      base::UTF8ToUTF16(title), u"Notification Content",
       ui::ImageModel::FromImageSkia(CreateSolidColorTestImage(
           gfx::Size(/*width=*/45, /*height=*/45), SK_ColorGREEN)));
 
   test_api()->ToggleBubble();
 
   // Make sure the notification view exists and is visible.
-  views::View* notification_view = test_api()->GetNotificationViewForId(id);
+  message_center::MessageView* notification_view =
+      test_api()->GetNotificationViewForId(id);
   ASSERT_TRUE(notification_view);
   EXPECT_TRUE(notification_view->GetVisible());
 

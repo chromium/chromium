@@ -3581,6 +3581,7 @@ test("ash_pixeltests") {
     "//components/viz/test:test_support",
     "//google_apis/calendar:test_support",
     "//mojo/core/embedder:embedder",
+    "//ui/message_center",
     "//ui/views:test_support",
   ]
 }

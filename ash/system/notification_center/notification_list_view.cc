@@ -694,14 +694,12 @@ message_center::MessageView*
 NotificationListView::GetMessageViewForNotificationId(const std::string& id) {
   auto it = base::ranges::find(children(), id, [](auto* child) {
     DCHECK(child->GetClassName() == kMessageViewContainerClassName);
-    return static_cast<MessageViewContainer*>(child)
-        ->message_view()
-        ->notification_id();
+    return AsMVC(child)->message_view()->notification_id();
   });
 
   if (it == children().end())
     return nullptr;
-  return static_cast<MessageViewContainer*>(*it)->message_view();
+  return AsMVC(*it)->message_view();
 }
 
 void NotificationListView::ConvertNotificationViewToGroupedNotificationView(

@@ -22,6 +22,7 @@ class Widget;
 
 namespace ash {
 
+class NotificationListView;
 class Shelf;
 class TrayBubbleView;
 
@@ -41,6 +42,8 @@ class ASH_EXPORT NotificationCenterTray
 
   // Called when UnifiedSystemTray's preferred visibility changes.
   void OnSystemTrayVisibilityChanged(bool system_tray_visible);
+
+  NotificationListView* GetNotificationListView();
 
   // True if the bubble is shown.
   bool IsBubbleShown() const;
