@@ -72,36 +72,53 @@ video::-webkit-media-controls-panel.transparent {
   transition: opacity 1s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+video::-webkit-media-controls {
+  --gradient-steps:
+    hsla(0, 0%, 0%, 0) 0%,
+    hsla(0, 0%, 0%, 0.013) 8.1%,
+    hsla(0, 0%, 0%, 0.049) 15.5%,
+    hsla(0, 0%, 0%, 0.104) 22.5%,
+    hsla(0, 0%, 0%, 0.175) 29%,
+    hsla(0, 0%, 0%, 0.259) 35.3%,
+    hsla(0, 0%, 0%, 0.352) 41.2%,
+    hsla(0, 0%, 0%, 0.45) 47.1%,
+    hsla(0, 0%, 0%, 0.55) 52.9%,
+    hsla(0, 0%, 0%, 0.648) 58.8%,
+    hsla(0, 0%, 0%, 0.741) 64.7%,
+    hsla(0, 0%, 0%, 0.825) 71%,
+    hsla(0, 0%, 0%, 0.896) 77.5%,
+    hsla(0, 0%, 0%, 0.951) 84.5%,
+    hsla(0, 0%, 0%, 0.987) 91.9%,
+    hsl(0, 0%, 0%) 100%;
+}
+
 video::-webkit-media-controls:not(.audio-only) div[pseudo="-webkit-media-controls-panel" i] {
   background:
-    -webkit-image-set(url('default_100_percent/gradient_bg.png') 1x)
-    repeat-x bottom left;
+    linear-gradient(to bottom, var(--gradient-steps)) repeat-x bottom left;
 }
 
 video::-webkit-media-controls.sizing-small div[pseudo="-webkit-media-controls-panel" i] {
-  background-size: auto 92px;
+  background-size: auto 112px;
 }
 
 video::-webkit-media-controls.sizing-large div[pseudo="-webkit-media-controls-panel" i] {
-  background-size: auto 200px;
+  background-size: auto 222px;
 }
 
 /* Need dark gradient at the top of the video when the scrubbing message is
  * shown */
 video::-webkit-media-controls:not(.audio-only) div[pseudo="-webkit-media-controls-panel" i].scrubbing-message {
   background:
-    -webkit-image-set(url('default_100_percent/top_gradient_bg.png') 1x)
-    repeat-x top left,
-    -webkit-image-set(url('default_100_percent/gradient_bg.png') 1x)
-    repeat-x bottom left;
+    linear-gradient(to top, var(--gradient-steps)) repeat-x top left,
+    linear-gradient(to bottom, var(--gradient-steps)) repeat-x bottom left;
 }
 
 video::-webkit-media-controls.sizing-small div[pseudo="-webkit-media-controls-panel" i].scrubbing-message {
-  background-size: auto 120px, auto 92px;
+  background-size: auto 120px, auto 112px;
 }
 
 video::-webkit-media-controls.sizing-large div[pseudo="-webkit-media-controls-panel" i].scrubbing-message {
-  background-size: auto 120px, auto 200px;
+  background-size: auto 120px, auto 220px;
 }
 
 audio::-internal-media-controls-button-panel,
