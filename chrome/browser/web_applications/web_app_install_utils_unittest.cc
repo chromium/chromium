@@ -1083,6 +1083,112 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_TabStrip) {
   }
 }
 
+// All home tab icons are saved from the manifest except for icons that
+// exceed the maximum allowed size.
+TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestHomeTabIcons_TabStrip) {
+  blink::mojom::Manifest manifest;
+  TabStrip tab_strip;
+  tab_strip.home_tab = web_app::TabStrip::Visibility::kAuto;
+  blink::Manifest::HomeTabParams home_tab_params;
+  for (int size = 1023; size <= 1026; ++size) {
+    blink::Manifest::ImageResource icon;
+    icon.src = GURL("http://www.chromium.org/shortcuts/icon1.png");
+    icon.purpose.push_back(web_app::Purpose::ANY);
+    icon.sizes.emplace_back(size, size);
+    home_tab_params.icons.push_back(std::move(icon));
+  }
+  tab_strip.home_tab = home_tab_params;
+  manifest.tab_strip = std::move(tab_strip);
+
+  WebAppInstallInfo web_app_info;
+
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
+  EXPECT_TRUE(web_app_info.tab_strip.has_value());
+  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+      web_app_info.tab_strip.value().home_tab);
+  EXPECT_EQ(2U, home_tab.icons.size());
+}
+
+// Tests that when PopulateOtherItemIcons is called with no home tab icon
+// urls specified, no data is written to other_icon_bitmaps.
+TEST(WebAppInstallUtils, PopulateHomeTabIconsNoHomeTabIcons_TabStrip) {
+  WebAppInstallInfo web_app_info;
+  IconsMap icons_map;
+  std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
+  std::vector<SkBitmap> bmp2 = {CreateSquareIcon(32, SK_ColorBLUE)};
+  std::vector<SkBitmap> bmp3 = {CreateSquareIcon(32, SK_ColorRED)};
+  icons_map.emplace(GURL("http://www.chromium.org/home_tab_icons/icon1.png"),
+                    bmp1);
+  icons_map.emplace(GURL("http://www.chromium.org/home_tab_icons/icon2.png"),
+                    bmp2);
+  icons_map.emplace(GURL("http://www.chromium.org/home_tab_icons/icon3.png"),
+                    bmp3);
+
+  PopulateOtherIcons(&web_app_info, icons_map);
+
+  EXPECT_EQ(0U, web_app_info.other_icon_bitmaps.size());
+}
+
+// Tests that SkBitmaps associated with home tab icons are populated in
+// their own map in web_app_info.
+TEST(WebAppInstallUtils, PopulateHomeTabIcons_TabStrip) {
+  WebAppInstallInfo web_app_info;
+
+  blink::mojom::Manifest manifest;
+  TabStrip tab_strip;
+  tab_strip.home_tab = web_app::TabStrip::Visibility::kAuto;
+  blink::Manifest::HomeTabParams home_tab_params;
+
+  const GURL kIconUrl1("http://www.chromium.org/home_tab_icons/icon1.png");
+  {
+    blink::Manifest::ImageResource icon;
+    icon.src = kIconUrl1;
+    icon.purpose.push_back(web_app::Purpose::ANY);
+    icon.sizes.emplace_back(kIconSize, kIconSize);
+    home_tab_params.icons.push_back(std::move(icon));
+  }
+
+  const GURL kIconUrl2("http://www.chromium.org/home_tab_icons/icon2.png");
+  {
+    blink::Manifest::ImageResource icon;
+    icon.src = kIconUrl1;
+    icon.purpose.push_back(web_app::Purpose::ANY);
+    // This icon is too big and will be filtered out
+    icon.sizes.emplace_back(kIconSize * 2, kIconSize * 2);
+    home_tab_params.icons.push_back(std::move(icon));
+  }
+
+  EXPECT_EQ(2U, home_tab_params.icons.size());
+
+  tab_strip.home_tab = home_tab_params;
+  manifest.tab_strip = std::move(tab_strip);
+
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
+  EXPECT_TRUE(web_app_info.tab_strip.has_value());
+  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+      web_app_info.tab_strip.value().home_tab);
+  EXPECT_EQ(2U, home_tab.icons.size());
+
+  {
+    IconsMap icons_map;
+    std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
+    std::vector<SkBitmap> bmp2 = {CreateSquareIcon(32, SK_ColorBLUE)};
+    std::vector<SkBitmap> bmp3 = {CreateSquareIcon(32, SK_ColorRED)};
+    icons_map.emplace(kIconUrl1, bmp1);
+    icons_map.emplace(kIconUrl2, bmp2);
+    icons_map.emplace(GURL("http://www.chromium.org/home_tab_icons/icon3.png"),
+                      bmp3);
+    PopulateOtherIcons(&web_app_info, icons_map);
+  }
+
+  // Ensure that reused home tab icons are processed correctly.
+  // Icons that are too big and icons that exist in icons_map, but are not in
+  // web_app_info.tab_strip are filtered out.
+  EXPECT_EQ(1U, web_app_info.other_icon_bitmaps.size());
+}
+
 class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
  public:
   FileHandlersFromManifestTest() {
@@ -1252,6 +1358,140 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
       {second_image_url, 79, apps::IconInfo::Purpose::kMaskable},
       {second_image_url, 134, apps::IconInfo::Purpose::kMaskable},
   };
+
+  const size_t num_expectations =
+      sizeof(expectations) / sizeof(expectations[0]);
+  ASSERT_EQ(num_expectations,
+            web_app_info.file_handlers[0].downloaded_icons.size());
+
+  for (size_t i = 0; i < num_expectations; ++i) {
+    const auto& icon = web_app_info.file_handlers[0].downloaded_icons[i];
+    EXPECT_EQ(expectations[i].expected_url, icon.url);
+    EXPECT_EQ(expectations[i].expected_size, icon.square_size_px);
+    EXPECT_EQ(expectations[i].expected_purpose, icon.purpose);
+  }
+}
+
+// Tests both file handlers and home tab icons as they use the same variable to
+// store their bitmaps.
+TEST_P(FileHandlersFromManifestTest, PopulateFileHandlingAndHomeTabIcons) {
+  if (!WebAppFileHandlerManager::IconsEnabled()) {
+    return;
+  }
+
+  WebAppInstallInfo web_app_info;
+
+  // Put icons in for the home tab
+  blink::mojom::Manifest manifest;
+  TabStrip tab_strip;
+  tab_strip.home_tab = web_app::TabStrip::Visibility::kAuto;
+  blink::Manifest::HomeTabParams home_tab_params;
+
+  const GURL kHomeTabIconUrl1(
+      "http://www.chromium.org/home_tab_icons/icon1.png");
+  {
+    blink::Manifest::ImageResource icon;
+    icon.src = kHomeTabIconUrl1;
+    icon.purpose.push_back(web_app::Purpose::ANY);
+    icon.sizes.emplace_back(kIconSize, kIconSize);
+    home_tab_params.icons.push_back(std::move(icon));
+  }
+
+  const GURL kHomeTabIconUrl2(
+      "http://www.chromium.org/home_tab_icons/icon2.png");
+  {
+    blink::Manifest::ImageResource icon;
+    icon.src = kHomeTabIconUrl1;
+    icon.purpose.push_back(web_app::Purpose::ANY);
+    // This icon is too big and will be filtered out
+    icon.sizes.emplace_back(kIconSize * 2, kIconSize * 2);
+    home_tab_params.icons.push_back(std::move(icon));
+  }
+
+  EXPECT_EQ(2U, home_tab_params.icons.size());
+
+  tab_strip.home_tab = home_tab_params;
+  manifest.tab_strip = std::move(tab_strip);
+
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
+  EXPECT_TRUE(web_app_info.tab_strip.has_value());
+  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+      web_app_info.tab_strip.value().home_tab);
+  EXPECT_EQ(2U, home_tab.icons.size());
+
+  // Put icons in for file handlers
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
+      CreateManifestFileHandlers(1);
+  web_app_info.file_handlers =
+      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+
+  const GURL kFileHandlerIconUrl1 = MakeImageUrlForSecondImage(0);
+  const GURL kFileHandlerIconUrl2 = MakeImageUrl(0);
+
+  IconsMap icons_map;
+
+  {
+    std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
+    std::vector<SkBitmap> bmp2 = {CreateSquareIcon(32, SK_ColorBLUE)};
+    std::vector<SkBitmap> bmp3 = {CreateSquareIcon(79, SK_ColorRED),
+                                  CreateSquareIcon(134, SK_ColorRED)};
+    std::vector<SkBitmap> bmp4 = {CreateSquareIcon(17, SK_ColorWHITE),
+                                  CreateSquareIcon(29, SK_ColorBLUE),
+                                  gfx::test::CreateBitmap(16, 15)};
+    icons_map.emplace(kHomeTabIconUrl1, bmp1);
+    icons_map.emplace(kHomeTabIconUrl2, bmp2);
+    icons_map.emplace(kFileHandlerIconUrl1, bmp3);
+    icons_map.emplace(kFileHandlerIconUrl2, bmp4);
+    PopulateOtherIcons(&web_app_info, icons_map);
+  }
+
+  // Ensure that reused home tab icons are processed correctly.
+  // Icons that are too big and icons that exist in icons_map, but are not in
+  // web_app_info.tab_strip are filtered out.
+  EXPECT_EQ(3U, web_app_info.other_icon_bitmaps.size());
+
+  // Fourth URL correlates to two bitmaps.
+  ASSERT_EQ(2U, web_app_info.other_icon_bitmaps[kFileHandlerIconUrl2].size());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      web_app_info.other_icon_bitmaps[kFileHandlerIconUrl2][0],
+      icons_map[kFileHandlerIconUrl2][0]));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      web_app_info.other_icon_bitmaps[kFileHandlerIconUrl2][1],
+      icons_map[kFileHandlerIconUrl2][1]));
+  // Third URL correlates to two more bitmaps.
+  ASSERT_EQ(2U, web_app_info.other_icon_bitmaps[kFileHandlerIconUrl1].size());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      web_app_info.other_icon_bitmaps[kFileHandlerIconUrl1][0],
+      icons_map[kFileHandlerIconUrl1][0]));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      web_app_info.other_icon_bitmaps[kFileHandlerIconUrl1][1],
+      icons_map[kFileHandlerIconUrl1][1]));
+
+  // First URL correlates to one more bitmap.
+  ASSERT_EQ(1U, web_app_info.other_icon_bitmaps[kHomeTabIconUrl1].size());
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(web_app_info.other_icon_bitmaps[kHomeTabIconUrl1][0],
+                           icons_map[kHomeTabIconUrl1][0]));
+
+  // We end up with one file handler with 6 icon infos. The second URL produces
+  // 4 IconInfos because it has two bitmaps and two purposes: 2 x 2 = 4.
+  ASSERT_EQ(1U, web_app_info.file_handlers.size());
+
+  // The metadata we expect to be saved after icons are finished downloading and
+  // processing. Note that the icon sizes saved to `apps::FileHandler::icons`
+  // match downloaded sizes, not those specified in the manifest.
+  struct {
+    GURL expected_url;
+    apps::IconInfo::SquareSizePx expected_size;
+    apps::IconInfo::Purpose expected_purpose;
+  } expectations[] = {
+      {kFileHandlerIconUrl2, 17, apps::IconInfo::Purpose::kAny},
+      {kFileHandlerIconUrl2, 29, apps::IconInfo::Purpose::kAny},
+      {kFileHandlerIconUrl1, 79, apps::IconInfo::Purpose::kAny},
+      {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kAny},
+      {kFileHandlerIconUrl1, 79, apps::IconInfo::Purpose::kMaskable},
+      {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kMaskable}};
 
   const size_t num_expectations =
       sizeof(expectations) / sizeof(expectations[0]);
