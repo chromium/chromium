@@ -181,13 +181,15 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
     const std::string* network_state =
         network_handler_test_helper_->service_test()
             ->GetServiceProperties(kWifiServicePath)
-            ->FindStringKey(shill::kStateProperty);
+            ->GetDict()
+            .FindString(shill::kStateProperty);
     if (network_state && *network_state == shill::kStateOnline) {
       connection_type = network::mojom::ConnectionType::CONNECTION_WIFI;
     }
     network_state = network_handler_test_helper_->service_test()
                         ->GetServiceProperties(kEthernetServicePath)
-                        ->FindStringKey(shill::kStateProperty);
+                        ->GetDict()
+                        .FindString(shill::kStateProperty);
     if (network_state && *network_state == shill::kStateOnline) {
       connection_type = network::mojom::ConnectionType::CONNECTION_ETHERNET;
     }

@@ -612,7 +612,7 @@ class PolicyProvidedCertsForSigninExtensionTest
           test_certs_path.AppendASCII(kRootCaCert), &x509_contents));
     }
 
-    base::Value onc_dict = BuildONCForExtensionScopedCertificate(
+    base::Value::Dict onc_dict = BuildONCForExtensionScopedCertificate(
         x509_contents, kSigninScreenExtension1);
     ASSERT_TRUE(base::JSONWriter::Write(
         onc_dict, device_policy()
@@ -668,35 +668,32 @@ class PolicyProvidedCertsForSigninExtensionTest
  private:
   // Builds an ONC policy value that specifies exactly one certificate described
   // by |x509_contents| with Web trust to be used for |extension_id|.
-  base::Value BuildONCForExtensionScopedCertificate(
+  base::Value::Dict BuildONCForExtensionScopedCertificate(
       const std::string& x509_contents,
       const std::string& extension_id) {
-    base::Value onc_cert_scope(base::Value::Type::DICTIONARY);
-    onc_cert_scope.SetKey(onc::scope::kType,
-                          base::Value(onc::scope::kExtension));
-    onc_cert_scope.SetKey(onc::scope::kId, base::Value(extension_id));
+    base::Value::Dict onc_cert_scope;
+    onc_cert_scope.Set(onc::scope::kType, onc::scope::kExtension);
+    onc_cert_scope.Set(onc::scope::kId, extension_id);
 
-    base::Value onc_cert_trust_bits(base::Value::Type::LIST);
-    onc_cert_trust_bits.Append(base::Value(onc::certificate::kWeb));
+    base::Value::List onc_cert_trust_bits;
+    onc_cert_trust_bits.Append(onc::certificate::kWeb);
 
-    base::Value onc_certificate(base::Value::Type::DICTIONARY);
-    onc_certificate.SetKey(onc::certificate::kGUID, base::Value("guid"));
-    onc_certificate.SetKey(onc::certificate::kType,
-                           base::Value(onc::certificate::kAuthority));
-    onc_certificate.SetKey(onc::certificate::kX509, base::Value(x509_contents));
-    onc_certificate.SetKey(onc::certificate::kScope, std::move(onc_cert_scope));
-    onc_certificate.SetKey(onc::certificate::kTrustBits,
-                           std::move(onc_cert_trust_bits));
+    base::Value::Dict onc_certificate;
+    onc_certificate.Set(onc::certificate::kGUID, base::Value("guid"));
+    onc_certificate.Set(onc::certificate::kType, onc::certificate::kAuthority);
+    onc_certificate.Set(onc::certificate::kX509, x509_contents);
+    onc_certificate.Set(onc::certificate::kScope, std::move(onc_cert_scope));
+    onc_certificate.Set(onc::certificate::kTrustBits,
+                        std::move(onc_cert_trust_bits));
 
-    base::Value onc_certificates(base::Value::Type::LIST);
+    base::Value::List onc_certificates;
     onc_certificates.Append(std::move(onc_certificate));
 
-    base::Value onc_dict(base::Value::Type::DICTIONARY);
-    onc_dict.SetKey(onc::toplevel_config::kCertificates,
-                    std::move(onc_certificates));
-    onc_dict.SetKey(
-        onc::toplevel_config::kType,
-        base::Value(onc::toplevel_config::kUnencryptedConfiguration));
+    base::Value::Dict onc_dict;
+    onc_dict.Set(onc::toplevel_config::kCertificates,
+                 std::move(onc_certificates));
+    onc_dict.Set(onc::toplevel_config::kType,
+                 onc::toplevel_config::kUnencryptedConfiguration);
 
     return onc_dict;
   }

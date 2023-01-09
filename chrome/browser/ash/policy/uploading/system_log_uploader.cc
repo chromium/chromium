@@ -553,12 +553,12 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
     updated_log_uploads.erase(updated_log_uploads.begin());
 
   // Create a list to be updated for the pref.
-  base::Value updated_prev_log_uploads(base::Value::Type::LIST);
+  base::Value::List updated_prev_log_uploads;
   for (auto it : updated_log_uploads) {
     updated_prev_log_uploads.Append(it.ToDoubleT());
   }
-  local_state->Set(prefs::kStoreLogStatesAcrossReboots,
-                   updated_prev_log_uploads);
+  local_state->SetList(prefs::kStoreLogStatesAcrossReboots,
+                       std::move(updated_prev_log_uploads));
 
   // Write the changes to the disk to prevent loss of changes.
   local_state->CommitPendingWrite();

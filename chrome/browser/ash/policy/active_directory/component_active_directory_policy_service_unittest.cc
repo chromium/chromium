@@ -352,18 +352,18 @@ TEST_F(ComponentActiveDirectoryPolicyServiceTest, ConvertsTypes) {
                        POLICY_SCOPE_USER, POLICY_SOURCE_ACTIVE_DIRECTORY,
                        base::Value(1.0), nullptr);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("One");
   list.Append("Two");
   expected_policy_.Set("ListAsSubkeys", POLICY_LEVEL_MANDATORY,
                        POLICY_SCOPE_USER, POLICY_SOURCE_ACTIVE_DIRECTORY,
-                       std::move(list), nullptr);
+                       base::Value(std::move(list)), nullptr);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("Key", "Value");
+  base::Value::Dict dict;
+  dict.Set("Key", "Value");
   expected_policy_.Set("DictionaryAsJsonString", POLICY_LEVEL_MANDATORY,
                        POLICY_SCOPE_USER, POLICY_SOURCE_ACTIVE_DIRECTORY,
-                       std::move(dict), nullptr);
+                       base::Value(std::move(dict)), nullptr);
 
   StorePolicy(kTestUserAccountId, login_manager::POLICY_DOMAIN_EXTENSIONS,
               kTestExtensionId);

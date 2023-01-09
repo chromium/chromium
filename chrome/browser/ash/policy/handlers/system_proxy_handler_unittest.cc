@@ -88,11 +88,11 @@ class SystemProxyHandlerTest : public testing::Test {
 
   void SetManagedProxy(Profile* profile) {
     // Configure a proxy via user policy.
-    base::Value proxy_config(base::Value::Type::DICTIONARY);
-    proxy_config.SetKey("mode",
-                        base::Value(ProxyPrefs::kFixedServersProxyModeName));
-    proxy_config.SetKey("server", base::Value(kProxyAuthUrl));
-    profile->GetPrefs()->Set(proxy_config::prefs::kProxy, proxy_config);
+    base::Value::Dict proxy_config;
+    proxy_config.Set("mode", ProxyPrefs::kFixedServersProxyModeName);
+    proxy_config.Set("server", kProxyAuthUrl);
+    profile->GetPrefs()->SetDict(proxy_config::prefs::kProxy,
+                                 std::move(proxy_config));
     task_environment_.RunUntilIdle();
   }
 

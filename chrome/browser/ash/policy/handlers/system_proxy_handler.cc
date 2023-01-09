@@ -47,22 +47,24 @@ void SystemProxyHandler::OnSystemProxySettingsPolicyChanged() {
   if (!proxy_settings)
     return;
 
+  const base::Value::Dict& proxy_settings_dict = proxy_settings->GetDict();
   bool system_proxy_enabled =
-      proxy_settings->FindBoolKey(ash::kSystemProxySettingsKeyEnabled)
+      proxy_settings_dict.FindBool(ash::kSystemProxySettingsKeyEnabled)
           .value_or(false);
-  const std::string* username = proxy_settings->FindStringKey(
+  const std::string* username = proxy_settings_dict.FindString(
       ash::kSystemProxySettingsKeySystemServicesUsername);
 
-  const std::string* password = proxy_settings->FindStringKey(
+  const std::string* password = proxy_settings_dict.FindString(
       ash::kSystemProxySettingsKeySystemServicesPassword);
 
-  const base::Value* auth_schemes =
-      proxy_settings->FindListKey(ash::kSystemProxySettingsKeyAuthSchemes);
+  const base::Value::List* auth_schemes =
+      proxy_settings_dict.FindList(ash::kSystemProxySettingsKeyAuthSchemes);
 
   std::vector<std::string> system_services_auth_schemes;
   if (auth_schemes) {
-    for (const auto& auth_scheme : auth_schemes->GetList())
+    for (const auto& auth_scheme : *auth_schemes) {
       system_services_auth_schemes.push_back(auth_scheme.GetString());
+    }
   }
 
   std::string system_services_username;

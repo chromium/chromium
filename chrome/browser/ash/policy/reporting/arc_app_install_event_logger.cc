@@ -198,11 +198,11 @@ std::set<std::string> ArcAppInstallEventLogger::GetPackagesFromPref(
 
 void ArcAppInstallEventLogger::SetPref(const std::string& pref_name,
                                        const std::set<std::string>& packages) {
-  base::Value value(base::Value::Type::LIST);
+  base::Value::List value;
   for (const std::string& package : packages) {
     value.Append(package);
   }
-  profile_->GetPrefs()->Set(pref_name, value);
+  profile_->GetPrefs()->SetList(pref_name, std::move(value));
 }
 
 void ArcAppInstallEventLogger::UpdateCollector(

@@ -114,12 +114,12 @@ TEST(ExternalDataPolicyHandlerTest, WrongType) {
 }
 
 TEST(ExternalDataPolicyHandlerTest, MissingURL) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("hash", "1234567890123456789012345678901234567890");
+  base::Value::Dict dict;
+  dict.Set("hash", "1234567890123456789012345678901234567890");
   PolicyMap policy_map;
   policy_map.Set(key::kUserAvatarImage, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(dict),
-                 nullptr);
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(dict)), nullptr);
   PolicyErrorMap errors;
   EXPECT_FALSE(ExternalDataPolicyHandler(key::kUserAvatarImage)
                    .CheckPolicySettings(policy_map, &errors));
@@ -127,13 +127,13 @@ TEST(ExternalDataPolicyHandlerTest, MissingURL) {
 }
 
 TEST(ExternalDataPolicyHandlerTest, InvalidURL) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", "http://");
-  dict.SetStringKey("hash", "1234567890123456789012345678901234567890");
+  base::Value::Dict dict;
+  dict.Set("url", "http://");
+  dict.Set("hash", "1234567890123456789012345678901234567890");
   PolicyMap policy_map;
   policy_map.Set(key::kUserAvatarImage, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(dict),
-                 nullptr);
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(dict)), nullptr);
   PolicyErrorMap errors;
   EXPECT_FALSE(ExternalDataPolicyHandler(key::kUserAvatarImage)
                    .CheckPolicySettings(policy_map, &errors));
@@ -141,12 +141,12 @@ TEST(ExternalDataPolicyHandlerTest, InvalidURL) {
 }
 
 TEST(ExternalDataPolicyHandlerTest, MissingHash) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", "http://localhost/");
+  base::Value::Dict dict;
+  dict.Set("url", "http://localhost/");
   PolicyMap policy_map;
   policy_map.Set(key::kUserAvatarImage, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(dict),
-                 nullptr);
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(dict)), nullptr);
   PolicyErrorMap errors;
   EXPECT_FALSE(ExternalDataPolicyHandler(key::kUserAvatarImage)
                    .CheckPolicySettings(policy_map, &errors));
@@ -154,13 +154,13 @@ TEST(ExternalDataPolicyHandlerTest, MissingHash) {
 }
 
 TEST(ExternalDataPolicyHandlerTest, InvalidHash) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", "http://localhost/");
-  dict.SetStringKey("hash", "1234");
+  base::Value::Dict dict;
+  dict.Set("url", "http://localhost/");
+  dict.Set("hash", "1234");
   PolicyMap policy_map;
   policy_map.Set(key::kUserAvatarImage, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(dict),
-                 nullptr);
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(dict)), nullptr);
   PolicyErrorMap errors;
   EXPECT_FALSE(ExternalDataPolicyHandler(key::kUserAvatarImage)
                    .CheckPolicySettings(policy_map, &errors));
@@ -168,17 +168,16 @@ TEST(ExternalDataPolicyHandlerTest, InvalidHash) {
 }
 
 TEST(ExternalDataPolicyHandlerTest, Valid) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", "http://localhost/");
-  dict.SetStringKey(
-      "hash",
-      "1234567890123456789012345678901234567890123456789012345678901234");
+  base::Value::Dict dict;
+  dict.Set("url", "http://localhost/");
+  dict.Set("hash",
+           "1234567890123456789012345678901234567890123456789012345678901234");
   PolicyMap policy_map;
   MockCloudExternalDataManager external_data_manager;
 
   policy_map.Set(
       key::kUserAvatarImage, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-      POLICY_SOURCE_CLOUD, std::move(dict),
+      POLICY_SOURCE_CLOUD, base::Value(std::move(dict)),
       external_data_manager.CreateExternalDataFetcher(key::kUserAvatarImage));
   PolicyErrorMap errors;
   EXPECT_TRUE(ExternalDataPolicyHandler(key::kUserAvatarImage)

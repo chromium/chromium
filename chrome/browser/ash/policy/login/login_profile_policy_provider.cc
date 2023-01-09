@@ -238,9 +238,9 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
   const base::Value* value = device_policy_map.GetValue(
       key::kDeviceLoginScreenPowerManagement, base::Value::Type::DICT);
   if (value) {
-    base::Value policy_value = value->Clone();
+    base::Value::Dict policy_dict = value->GetDict().Clone();
     const std::string* lid_close_action =
-        policy_value.FindStringKey(kLidCloseAction);
+        policy_dict.FindString(kLidCloseAction);
 
     if (lid_close_action) {
       std::unique_ptr<base::Value> action = GetAction(*lid_close_action);
@@ -248,23 +248,24 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
         ApplyValueAsMandatoryPolicy(*action, key::kLidCloseAction,
                                     &user_policy_map);
       }
-      policy_value.RemoveKey(kLidCloseAction);
+      policy_dict.Remove(kLidCloseAction);
     }
 
     const base::Value* screen_dim_delay_scale =
-        policy_value.FindKey(kUserActivityScreenDimDelayScale);
+        policy_dict.Find(kUserActivityScreenDimDelayScale);
     if (screen_dim_delay_scale) {
       ApplyValueAsMandatoryPolicy(*screen_dim_delay_scale,
                                   key::kUserActivityScreenDimDelayScale,
                                   &user_policy_map);
-      policy_value.RemoveKey(kUserActivityScreenDimDelayScale);
+      policy_dict.Remove(kUserActivityScreenDimDelayScale);
     }
 
-    // |policy_value| is expected to be a valid value for the
+    // |policy_dict| is expected to be a valid value for the
     // PowerManagementIdleSettings policy now.
-    if (!policy_value.DictEmpty()) {
-      ApplyValueAsMandatoryPolicy(
-          policy_value, key::kPowerManagementIdleSettings, &user_policy_map);
+    if (!policy_dict.empty()) {
+      ApplyValueAsMandatoryPolicy(base::Value(std::move(policy_dict)),
+                                  key::kPowerManagementIdleSettings,
+                                  &user_policy_map);
     }
   }
 

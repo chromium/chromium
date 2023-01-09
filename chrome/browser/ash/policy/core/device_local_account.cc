@@ -34,9 +34,10 @@ const char kWebKioskAppAccountDomainPrefix[] = "web-kiosk-apps";
 
 const char kDeviceLocalAccountDomainSuffix[] = ".device-local.localhost";
 
-bool GetString(const base::Value& dict, const char* key, std::string* result) {
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.FindStringKey(key);
+bool GetString(const base::Value::Dict& dict,
+               const char* key,
+               std::string* result) {
+  const std::string* value = dict.FindString(key);
   if (!value)
     return false;
   *result = *value;
@@ -251,8 +252,9 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       continue;
     }
 
+    const base::Value::Dict& entry_dict = entry.GetDict();
     std::string account_id;
-    if (!GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyId,
+    if (!GetString(entry_dict, ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    &account_id) ||
         account_id.empty()) {
       LOG(ERROR) << "Missing account ID in device-local account list at index "
@@ -261,7 +263,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     }
 
     absl::optional<int> type =
-        entry.FindIntKey(ash::kAccountsPrefDeviceLocalAccountsKeyType);
+        entry_dict.FindInt(ash::kAccountsPrefDeviceLocalAccountsKeyType);
     if (!type || type.value() < 0 ||
         type.value() >= DeviceLocalAccount::TYPE_COUNT) {
       LOG(ERROR) << "Missing or invalid account type in device-local account "
@@ -287,14 +289,14 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       case DeviceLocalAccount::TYPE_KIOSK_APP: {
         std::string kiosk_app_id;
         std::string kiosk_app_update_url;
-        if (!GetString(entry,
+        if (!GetString(entry_dict,
                        ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
                        &kiosk_app_id)) {
           LOG(ERROR) << "Missing app ID in device-local account entry at index "
                      << i << ".";
           continue;
         }
-        GetString(entry,
+        GetString(entry_dict,
                   ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                   &kiosk_app_update_url);
 
@@ -308,7 +310,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         std::string class_name;
         std::string action;
         std::string display_name;
-        if (!GetString(entry,
+        if (!GetString(entry_dict,
                        ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
                        &package_name)) {
           LOG(ERROR) << "Missing package name in ARC kiosk type device-local "
@@ -316,11 +318,13 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
                      << i << ".";
           continue;
         }
-        GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
                   &class_name);
-        GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
                   &action);
-        GetString(entry,
+        GetString(entry_dict,
                   ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
                   &display_name);
         const ArcKioskAppBasicInfo arc_kiosk_app(package_name, class_name,
@@ -333,7 +337,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         std::string url;
         std::string title;
         std::string icon_url;
-        if (!GetString(entry,
+        if (!GetString(entry_dict,
                        ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
                        &url)) {
           LOG(ERROR) << "Missing install url in Web kiosk type device-local "
@@ -342,9 +346,10 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
           continue;
         }
 
-        GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+        GetString(entry_dict,
+                  ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
                   &title);
-        GetString(entry,
+        GetString(entry_dict,
                   ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
                   &icon_url);
         accounts.push_back(DeviceLocalAccount(

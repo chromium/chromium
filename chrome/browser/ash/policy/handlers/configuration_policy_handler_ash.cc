@@ -56,11 +56,11 @@ constexpr char kPolicyEntryFileExtensionsKey[] = "file_extensions";
 constexpr char kSubkeyURL[] = "url";
 constexpr char kSubkeyHash[] = "hash";
 
-absl::optional<std::string> GetSubkeyString(const base::Value& dict,
+absl::optional<std::string> GetSubkeyString(const base::Value::Dict& dict,
                                             PolicyErrorMap* errors,
                                             const std::string& policy,
                                             const std::string& subkey) {
-  const base::Value* policy_value = dict.FindKey(subkey);
+  const base::Value* policy_value = dict.Find(subkey);
 
   if (!policy_value) {
     errors->AddError(policy, IDS_POLICY_NOT_SPECIFIED_ERROR,
@@ -171,10 +171,11 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(
 
   const base::Value* value = entry->value(base::Value::Type::DICT);
   DCHECK(value);
+  const base::Value::Dict& dict = value->GetDict();
   absl::optional<std::string> url_string =
-      GetSubkeyString(*value, errors, policy, kSubkeyURL);
+      GetSubkeyString(dict, errors, policy, kSubkeyURL);
   absl::optional<std::string> hash_string =
-      GetSubkeyString(*value, errors, policy, kSubkeyHash);
+      GetSubkeyString(dict, errors, policy, kSubkeyHash);
   if (!url_string || !hash_string)
     return false;
 

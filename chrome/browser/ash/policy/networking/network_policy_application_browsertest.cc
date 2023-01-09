@@ -131,7 +131,7 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
       return;
     }
     const std::string* property_value =
-        initial_service_properties->FindStringKey(property_name);
+        initial_service_properties->GetDict().FindString(property_name);
     if (!property_value) {
       return;
     }
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     const base::Value* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi2);
     ASSERT_TRUE(wifi_service_properties);
-    EXPECT_FALSE(wifi_service_properties->FindKey(shill::kGuidProperty));
+    EXPECT_FALSE(wifi_service_properties->GetDict().Find(shill::kGuidProperty));
   }
   {
     const base::Value* wifi_service_properties =
@@ -917,10 +917,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                 DictionaryHasValue(shill::kGuidProperty,
                                    base::Value("{DeviceLevelWifiGuid}")));
     // Expect that the EAP.Identity has been replaced
-    const std::string* eap_identity =
-        wifi_service_properties->FindStringKey(shill::kEapIdentityProperty);
-    ASSERT_TRUE(eap_identity);
-    EXPECT_EQ(*eap_identity, kSerialNumber);
+    EXPECT_THAT(*wifi_service_properties,
+                DictionaryHasValue(shill::kEapIdentityProperty,
+                                   base::Value(kSerialNumber)));
 
     // TODO(b/209084821): Also test DEVICE_ASSET_ID when it's easily
     // configurable in a browsertest.
@@ -988,10 +987,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                 DictionaryHasValue(shill::kGuidProperty,
                                    base::Value("{DeviceLevelWifiGuid}")));
     // Expect that the EAP.Identity has been replaced
-    const std::string* eap_identity =
-        wifi_service_properties->FindStringKey(shill::kEapIdentityProperty);
-    ASSERT_TRUE(eap_identity);
-    EXPECT_EQ(*eap_identity, kExpectedIdentity);
+    EXPECT_THAT(*wifi_service_properties,
+                DictionaryHasValue(shill::kEapIdentityProperty,
+                                   base::Value(kExpectedIdentity)));
   }
 }
 
@@ -1051,10 +1049,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                 DictionaryHasValue(shill::kGuidProperty,
                                    base::Value("{UserLevelWifiGuid}")));
     // Expect that the EAP.Identity has been replaced
-    const std::string* eap_identity =
-        wifi_service_properties->FindStringKey(shill::kEapIdentityProperty);
-    ASSERT_TRUE(eap_identity);
-    EXPECT_EQ(*eap_identity, test_account_id_.GetUserEmail());
+    EXPECT_THAT(
+        *wifi_service_properties,
+        DictionaryHasValue(shill::kEapIdentityProperty,
+                           base::Value(test_account_id_.GetUserEmail())));
   }
 }
 

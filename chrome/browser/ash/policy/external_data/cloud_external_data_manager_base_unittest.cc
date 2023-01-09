@@ -87,10 +87,10 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
 
   base::Value ConstructMetadata(const std::string& url,
                                 const std::string& hash);
-  void AddMetadataToWebAppPolicyValue(base::Value& value,
-                                      const std::string& app_url,
-                                      const std::string& image_url,
-                                      const std::string& image_hash);
+  void AddMetadataToWebAppPolicyList(base::Value::List& value,
+                                     const std::string& app_url,
+                                     const std::string& image_url,
+                                     const std::string& image_hash);
   void SetExternalDataReference(const std::string& policy,
                                 base::Value policy_value);
 
@@ -181,16 +181,15 @@ base::Value CloudExternalDataManagerBaseTest::ConstructMetadata(
   return base::Value(std::move(metadata));
 }
 
-void CloudExternalDataManagerBaseTest::AddMetadataToWebAppPolicyValue(
-    base::Value& value,
+void CloudExternalDataManagerBaseTest::AddMetadataToWebAppPolicyList(
+    base::Value::List& list,
     const std::string& app_url,
     const std::string& image_url,
     const std::string& image_hash) {
-  DCHECK(value.is_list());
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetStringKey("url", app_url);
-  app.SetKey("custom_icon", ConstructMetadata(image_url, image_hash));
-  value.Append(std::move(app));
+  base::Value::Dict app;
+  app.Set("url", app_url);
+  app.Set("custom_icon", ConstructMetadata(image_url, image_hash));
+  list.Append(std::move(app));
 }
 
 void CloudExternalDataManagerBaseTest::SetExternalDataReference(
@@ -779,12 +778,13 @@ TEST_F(CloudExternalDataManagerBaseTest, PolicyChangeWhileDownloadPending) {
 // external data files (every installed app can include one icon).
 TEST_F(CloudExternalDataManagerBaseTest, DownloadMultipleFilesFromPolicy) {
   // Set up the policy value with 2 apps, one icon each:
-  base::Value web_app_value(base::Value::Type::LIST);
-  AddMetadataToWebAppPolicyValue(web_app_value, k10ByteAppURL, k10BytePolicyURL,
-                                 crypto::SHA256HashString(k10ByteData));
-  AddMetadataToWebAppPolicyValue(web_app_value, k20ByteAppURL, k20BytePolicyURL,
-                                 crypto::SHA256HashString(k20ByteData));
-  SetExternalDataReference(kWebAppPolicy, std::move(web_app_value));
+  base::Value::List web_app_value;
+  AddMetadataToWebAppPolicyList(web_app_value, k10ByteAppURL, k10BytePolicyURL,
+                                crypto::SHA256HashString(k10ByteData));
+  AddMetadataToWebAppPolicyList(web_app_value, k20ByteAppURL, k20BytePolicyURL,
+                                crypto::SHA256HashString(k20ByteData));
+  SetExternalDataReference(kWebAppPolicy,
+                           base::Value(std::move(web_app_value)));
   cloud_policy_store_.NotifyStoreLoaded();
 
   // Serve valid external data for both icons.
