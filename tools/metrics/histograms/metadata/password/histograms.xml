@@ -468,18 +468,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AccountStorage.ClearedOptInForAllAccounts"
-    units="accounts" expires_after="2023-02-12">
-  <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Recorded whenever the opt-in for the account-scoped password storage is
-    cleared for all Google Accounts. This typically happens because the signin
-    cookies were cleared. The recorded value is the number of opt-ins that were
-    cleared.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted"
     enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2023-06-18">
   <owner>treib@chromium.org</owner>

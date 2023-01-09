@@ -492,9 +492,6 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptInOutHistograms) {
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 2);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 1);
-  // There was 1 remaining opt-in that was cleared.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStorage.ClearedOptInForAllAccounts", 1, 1);
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest,

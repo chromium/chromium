@@ -410,12 +410,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
 
 void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service) {
   DCHECK(pref_service);
-
-  // Record the total number of opted-in accounts before clearing them.
-  base::UmaHistogramExactLinear(
-      "PasswordManager.AccountStorage.ClearedOptInForAllAccounts",
-      GetNumberOfOptedInAccounts(pref_service), 10);
-
   pref_service->ClearPref(prefs::kAccountStoragePerAccountSettings);
 }
 
