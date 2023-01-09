@@ -67,6 +67,7 @@ try_.orchestrator_builder(
         "ci/fuchsia-arm64-rel",
     ],
     main_list_view = "try",
+    tryjob = try_.job(),
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
