@@ -3030,6 +3030,15 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-end-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-end-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-start-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-block-start-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-replaced-block-end.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-replaced-block-start.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-box/margin-trim/block-container-replaced-block.html [ Failure ]
 crbug.com/626703 [ Win11 ] external/wpt/html/semantics/forms/the-input-element/email-set-value.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/html/semantics/forms/the-input-element/email-set-value.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/semantics/forms/the-input-element/email-set-value.html [ Failure ]
