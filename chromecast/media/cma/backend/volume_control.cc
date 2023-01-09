@@ -87,8 +87,8 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
         LoadSavedVolumes(storage_path_);
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
-      stored_values_.SetDoublePath(ContentTypeToDbFSPath(type),
-                                   saved_volumes[type]);
+      stored_values_.SetByDottedPath(ContentTypeToDbFSPath(type),
+                                     saved_volumes[type]);
     }
 
     base::Thread::Options options;
@@ -204,7 +204,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     for (auto type : {AudioContentType::kMedia, AudioContentType::kAlarm,
                       AudioContentType::kCommunication}) {
       absl::optional<double> dbfs =
-          stored_values_.FindDoubleKey(ContentTypeToDbFSPath(type));
+          stored_values_.FindDouble(ContentTypeToDbFSPath(type));
       CHECK(dbfs);
       volumes_[type] = VolumeControl::DbFSToVolume(*dbfs);
       volume_multipliers_[type] = 1.0f;
@@ -276,7 +276,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
       }
     }
 
-    stored_values_.SetDoublePath(ContentTypeToDbFSPath(type), dbfs);
+    stored_values_.SetByDottedPath(ContentTypeToDbFSPath(type), dbfs);
     std::string output_js;
     base::JSONWriter::Write(stored_values_, &output_js);
     saved_volumes_writer_->WriteNow(std::make_unique<std::string>(output_js));
@@ -360,7 +360,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
   }
 
   base::FilePath storage_path_;
-  base::DictionaryValue stored_values_;
+  base::Value::Dict stored_values_;
 
   base::Lock volume_lock_;
   base::flat_map<AudioContentType, float> volumes_;
