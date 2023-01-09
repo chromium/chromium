@@ -241,6 +241,49 @@ TEST_F(WebApkIconHasherTest, SVGImage) {
   EXPECT_FALSE(runner.icon().unsafe_data.empty());
 }
 
+TEST_F(WebApkIconHasherTest, WebpImage) {
+  GURL icon_url("http://www.google.com/chrome/test/data/android/splash.webp");
+  base::FilePath source_path;
+  base::FilePath icon_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  icon_path = source_path.AppendASCII("components")
+                  .AppendASCII("test")
+                  .AppendASCII("data")
+                  .AppendASCII("webapps")
+                  .AppendASCII("splash.webp");
+  std::string icon_data;
+  ASSERT_TRUE(base::ReadFileToString(icon_path, &icon_data));
+  auto head = network::mojom::URLResponseHead::New();
+  std::string headers("HTTP/1.1 200 OK\nContent-type: image/webp\n\n");
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->mime_type = "image/webp";
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = icon_data.size();
+  test_url_loader_factory()->AddResponse(icon_url, std::move(head), icon_data,
+                                         status);
+
+  WebApkIconHasherRunner runner;
+  WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
+      test_url_loader_factory(), web_contents()->GetWeakPtr(),
+      url::Origin::Create(icon_url), icon_url, /*timeout_ms=*/300,
+      base::BindOnce(&WebApkIconHasherRunner::OnCompleted,
+                     base::Unretained(&runner)));
+  base::RunLoop().RunUntilIdle();
+
+  SkBitmap dummy_bitmap;
+  dummy_bitmap.allocN32Pixels(10, 10);
+  dummy_bitmap.setImmutable();
+  EXPECT_TRUE(content::WebContentsTester::For(web_contents())
+                  ->TestDidDownloadImage(
+                      icon_url, 200, std::vector<SkBitmap>{dummy_bitmap},
+                      std::vector<gfx::Size>{gfx::Size(10, 10)}));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ("2160198985949168049", runner.icon().hash);
+  EXPECT_FALSE(runner.icon().unsafe_data.empty());
+}
+
 TEST_F(WebApkIconHasherTest, DataUriInvalid) {
   GURL icon_url("data:image/png;base64");
   WebApkIconHasherRunner runner;
