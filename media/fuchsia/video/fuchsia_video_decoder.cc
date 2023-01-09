@@ -302,7 +302,7 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   media::mojom::VideoDecoderSecureMemoryMode secure_mode =
-      media::mojom::VideoDecoderSecureMemoryMode::CLEAR_INPUT;
+      media::mojom::VideoDecoderSecureMemoryMode::CLEAR;
   if (secure_input) {
     if (!use_overlays_for_video_) {
       DLOG(ERROR) << "Protected content can be rendered only using overlays.";
@@ -312,11 +312,13 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
       return;
     }
     secure_mode = media::mojom::VideoDecoderSecureMemoryMode::SECURE;
-  } else if (!use_overlays_for_video_) {
-    // Protected output buffers can be rendered only using overlays. If overlays
-    // are not allowed then the output buffers cannot be protected.
-    secure_mode = media::mojom::VideoDecoderSecureMemoryMode::CLEAR;
+  } else if (use_overlays_for_video_ &&
+             base::CommandLine::ForCurrentProcess()->HasSwitch(
+                 switches::kForceProtectedVideoOutputBuffers)) {
+    secure_mode = media::mojom::VideoDecoderSecureMemoryMode::SECURE_OUTPUT;
   }
+  protected_output_ =
+      secure_mode != media::mojom::VideoDecoderSecureMemoryMode::CLEAR;
 
   // Reset output buffers since we won't be able to re-use them.
   ReleaseOutputBuffers();
@@ -667,6 +669,11 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   // Allow this video frame to be promoted as an overlay, because it was
   // registered with an ImagePipe.
   frame->metadata().allow_overlay = use_overlays_for_video_;
+
+  if (protected_output_) {
+    frame->metadata().protected_video = true;
+    frame->metadata().hw_protected = true;
+  }
 
   output_cb_.Run(std::move(frame));
 }

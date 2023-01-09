@@ -152,6 +152,9 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   zx::eventpair output_buffer_collection_handle_;
   std::vector<OutputMailbox*> output_mailboxes_;
 
+  // Set to true when the output buffers are protected.
+  bool protected_output_ = false;
+
   size_t num_used_output_buffers_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);

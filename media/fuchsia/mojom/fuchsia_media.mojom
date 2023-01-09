@@ -25,9 +25,8 @@ enum VideoDecoderSecureMemoryMode {
   // Input and output buffers must be allocated in protected memory.
   SECURE,
 
-  // Input buffers are not protected. Output buffers may be allocated in
-  // protected memory.
-  CLEAR_INPUT,
+  // Input buffers are not protected. Output buffers are protected.
+  SECURE_OUTPUT,
 };
 
 // Interface used by the renderer to connect to CDM and mediacodec resources.

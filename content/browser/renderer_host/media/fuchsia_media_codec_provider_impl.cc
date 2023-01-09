@@ -127,12 +127,9 @@ void FuchsiaMediaCodecProviderImpl::CreateVideoDecoder(
           fuchsia::mediacodec::SecureMemoryMode::ON);
       break;
 
-    case media::mojom::VideoDecoderSecureMemoryMode::CLEAR_INPUT:
-      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kForceProtectedVideoOutputBuffers)) {
-        decoder_params.set_secure_output_mode(
-            fuchsia::mediacodec::SecureMemoryMode::ON);
-      }
+    case media::mojom::VideoDecoderSecureMemoryMode::SECURE_OUTPUT:
+      decoder_params.set_secure_output_mode(
+          fuchsia::mediacodec::SecureMemoryMode::ON);
       break;
   }
 
