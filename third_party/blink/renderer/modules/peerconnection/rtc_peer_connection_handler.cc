@@ -927,6 +927,10 @@ class RTCPeerConnectionHandler::Observer
           std::move(current_local_description),
           std::move(pending_remote_description),
           std::move(current_remote_description));
+    }
+    // Since OnSessionDescriptionsUpdated can fire events, it may cause
+    // garbage collection. Ensure that handler_ is still valid.
+    if (handler_) {
       handler_->OnIceCandidate(sdp, sdp_mid, sdp_mline_index, component,
                                address_family);
     }

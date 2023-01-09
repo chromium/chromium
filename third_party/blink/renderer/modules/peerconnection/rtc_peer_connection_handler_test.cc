@@ -1279,4 +1279,22 @@ TEST_F(RTCPeerConnectionHandlerTest,
   EXPECT_TRUE(pc_handler_->HasSpeedLimitUmaListener());
 }
 
+TEST_F(RTCPeerConnectionHandlerTest, CandidatesIgnoredWheHandlerDeleted) {
+  auto* observer = pc_handler_->observer();
+  std::unique_ptr<webrtc::IceCandidateInterface> native_candidate(
+      mock_dependency_factory_->CreateIceCandidate("sdpMid", 1, kDummySdp));
+  pc_handler_.reset();
+  observer->OnIceCandidate(native_candidate.get());
+}
+
+TEST_F(RTCPeerConnectionHandlerTest,
+       CandidatesIgnoredWheHandlerDeletedFromEvent) {
+  auto* observer = pc_handler_->observer();
+  std::unique_ptr<webrtc::IceCandidateInterface> native_candidate(
+      mock_dependency_factory_->CreateIceCandidate("sdpMid", 1, kDummySdp));
+  EXPECT_CALL(*mock_client_, DidChangeSessionDescriptions(_, _, _, _))
+      .WillOnce(testing::Invoke([&] { pc_handler_.reset(); }));
+  observer->OnIceCandidate(native_candidate.get());
+}
+
 }  // namespace blink
