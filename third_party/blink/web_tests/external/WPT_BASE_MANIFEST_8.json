@@ -239362,6 +239362,19 @@
        {}
       ]
      ],
+     "nth-child-of-complex-selector-many-children.html": [
+      "72f58cd93a0476cec88dad5c4b79cdc36f949437",
+      [
+       null,
+       [
+        [
+         "/css/selectors/nth-child-of-complex-selector-many-children-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nth-child-of-complex-selector.html": [
       "b751d83de2228ccfe6ed25e53d80b34be76732b2",
       [
@@ -239402,12 +239415,12 @@
       ]
      ],
      "nth-child-of-no-space-after-of.html": [
-      "57ab3acbbb8c026c91e7f8fa5fa52c5464cffdeb",
+      "613593ce668db7a97220d08932dbd2281c2bca4d",
       [
        null,
        [
         [
-         "/css/selectors/nth-child-and-nth-last-child-ref.html",
+         "/css/selectors/nth-child-of-no-space-after-of-ref.html",
          "=="
         ]
        ],
@@ -239558,12 +239571,12 @@
       ]
      ],
      "nth-last-child-of-no-space-after-of.html": [
-      "2538a2efb71ad5ec22198d5e6ddcd86ab96c81ac",
+      "d79d5733a5c3986e0c3560420471a24dba313052",
       [
        null,
        [
         [
-         "/css/selectors/nth-child-and-nth-last-child-ref.html",
+         "/css/selectors/nth-child-of-no-space-after-of-ref.html",
          "=="
         ]
        ],
@@ -261554,16 +261567,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "03a2fe6be5488fa1963895fd6dc2303b891b9679",
-     []
-    ],
-    "mtime.json": [
-     "e892f4b998082fba062877160b1c8db8414d6841",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -333186,6 +333189,10 @@
       "0c90c1838deb62c46840c9786d2052f9b290cbcf",
       []
      ],
+     "nth-child-of-complex-selector-many-children-ref.html": [
+      "031f3f1785019cb73fe25dd739a36a5a248d0b8a",
+      []
+     ],
      "nth-child-of-complex-selector-ref.html": [
       "ba38f685c64c1200173eec9094ead353d7a1742b",
       []
@@ -344429,7 +344436,7 @@
       []
      ],
      "FileSystemFileHandle-move.js": [
-      "fba0929d4155dfe233243ec1bb3565359433b9ab",
+      "dd848626e4a747f8c74dff65157704952fbff6c0",
       []
      ],
      "FileSystemSyncAccessHandle-flush.js": [
