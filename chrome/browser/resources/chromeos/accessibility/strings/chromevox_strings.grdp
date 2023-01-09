@@ -2210,6 +2210,9 @@
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_CHECK_ON_EARCON_DESCRIPTION">
     A checked checkbox
   </message>
+  <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_CHROMEVOX_LOADING_EARCON_DESCRIPTION">
+    ChromeVox is loading
+  </message>
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_EDITABLE_TEXT_EARCON_DESCRIPTION">
     An editable text field
   </message>
@@ -2222,6 +2225,9 @@
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_LISTBOX_EARCON_DESCRIPTION">
     A listbox or combo box
   </message>
+  <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_NO_POINTER_ANCHOR_EARCON_DESCRIPTION">
+    No pointer anchor
+  </message>
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_PAGE_START_LOADING_EARCON_DESCRIPTION">
     A page load in progress
   </message>
@@ -2230,6 +2236,12 @@
   </message>
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_SLIDER_EARCON_DESCRIPTION">
     A slider
+  </message>
+  <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_SMART_STICKY_MODE_OFF_EARCON_DESCRIPTION">
+    Smart sticky mode off
+  </message>
+  <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_SMART_STICKY_MODE_ON_EARCON_DESCRIPTION">
+    Smart sticky mode on
   </message>
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_WRAP_EARCON_DESCRIPTION">
     Wrap from beginning to end or end to beginning inside of a page, dialog, or other container
