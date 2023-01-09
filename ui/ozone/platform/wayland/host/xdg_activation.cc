@@ -94,6 +94,13 @@ void XdgActivation::Activate(wl_surface* surface) const {
     return;
   }
 
+  wl_surface* const active_surface = active_window->root_surface()->surface();
+  if (!active_surface) {
+    LOG(WARNING) << "Cannot activate a window because the currently active "
+                    "window has no surface!";
+    return;
+  }
+
   auto* const token =
       xdg_activation_v1_get_activation_token(xdg_activation_v1_.get());
   if (!token) {
@@ -102,8 +109,7 @@ void XdgActivation::Activate(wl_surface* surface) const {
   }
 
   token_ = std::make_unique<Token>(
-      wl::Object<xdg_activation_token_v1>(token),
-      active_window->root_surface()->surface(),
+      wl::Object<xdg_activation_token_v1>(token), active_surface,
       connection_->seat()->wl_object(),
       connection_->serial_tracker().GetSerial(
           {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
