@@ -63,8 +63,7 @@ const AppLaunchInfo& GetAppLaunchInfo(const Extension* extension) {
 
 AppLaunchInfo::AppLaunchInfo() = default;
 
-AppLaunchInfo::~AppLaunchInfo() {
-}
+AppLaunchInfo::~AppLaunchInfo() = default;
 
 // static
 const std::string& AppLaunchInfo::GetLaunchLocalPath(
@@ -96,10 +95,11 @@ int AppLaunchInfo::GetLaunchHeight(const Extension* extension) {
 // static
 GURL AppLaunchInfo::GetFullLaunchURL(const Extension* extension) {
   const AppLaunchInfo& info = GetAppLaunchInfo(extension);
-  if (info.launch_local_path_.empty())
+  if (info.launch_local_path_.empty()) {
     return info.launch_web_url_;
-  else
+  } else {
     return extension->url().Resolve(info.launch_local_path_);
+  }
 }
 
 bool AppLaunchInfo::Parse(Extension* extension, std::u16string* error) {
@@ -288,11 +288,9 @@ void AppLaunchInfo::OverrideLaunchURL(Extension* extension,
   extension->AddWebExtentPattern(pattern);
 }
 
-AppLaunchManifestHandler::AppLaunchManifestHandler() {
-}
+AppLaunchManifestHandler::AppLaunchManifestHandler() = default;
 
-AppLaunchManifestHandler::~AppLaunchManifestHandler() {
-}
+AppLaunchManifestHandler::~AppLaunchManifestHandler() = default;
 
 bool AppLaunchManifestHandler::Parse(Extension* extension,
                                      std::u16string* error) {

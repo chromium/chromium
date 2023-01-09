@@ -48,7 +48,7 @@ enum class UnloadedExtensionReason;
 // want to see "what are the enabled extensions".
 class ExtensionRegistryObserver {
  public:
-  virtual ~ExtensionRegistryObserver() {}
+  virtual ~ExtensionRegistryObserver() = default;
 
   // Called after an extension is loaded. The extension will exclusively exist
   // in the enabled_extensions set of ExtensionRegistry.

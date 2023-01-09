@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -328,7 +329,6 @@ TEST_F(FileHandlersManifestV3Test, AcceptErrors) {
           }])",
           "Invalid value for 'file_handlers[0]'. `accept` mime type "
           "must have exactly one slash.",
-
       },
       {
           "Error if `accept` has a mime type in the wrong format.",
@@ -339,7 +339,6 @@ TEST_F(FileHandlersManifestV3Test, AcceptErrors) {
           }])",
           "Invalid value for 'file_handlers[0]'. `accept` mime type "
           "must have exactly one slash.",
-
       },
       {
           "`accept` must have the correct type to represent the file "
@@ -351,7 +350,6 @@ TEST_F(FileHandlersManifestV3Test, AcceptErrors) {
           }])",
           "Invalid value for 'file_handlers[0]'. `accept` must have "
           "a valid file extension.",
-
       },
       {
           "Error if `accept` is empty.",
@@ -361,7 +359,6 @@ TEST_F(FileHandlersManifestV3Test, AcceptErrors) {
             "accept": {}
           }])",
           "Invalid value for 'file_handlers[0]'. `accept` cannot be empty.",
-
       },
       {
           "Error if `accept` is empty.",
@@ -372,7 +369,6 @@ TEST_F(FileHandlersManifestV3Test, AcceptErrors) {
           }])",
           "Invalid value for 'file_handlers[0]'. `accept` file "
           "extension must have a value.",
-
       },
       {
           "Error if `accept` is empty.",
