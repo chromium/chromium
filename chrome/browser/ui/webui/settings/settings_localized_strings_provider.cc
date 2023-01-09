@@ -3265,6 +3265,49 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");
 }
 
+void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
+                            Profile* profile) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"siteDataPageTitle", IDS_SETTINGS_SITE_DATA_PAGE_TITLE},
+      {"siteDataPageDescription", IDS_SETTINGS_SITE_DATA_PAGE_DESCRIPTION},
+      {"siteDataPageDefaultBehavior",
+       IDS_SETTINGS_SITE_DATA_PAGE_DEFAULT_BEHAVIOR_HEADING},
+      {"siteDataPagedefaultBehaviorDescription",
+       IDS_SETTINGS_SITE_DATA_PAGE_DEFAULT_BEHAVIOR_DESCRIPTION},
+      {"siteDataPageAllowRadioLabel",
+       IDS_SETTINGS_SITE_DATA_PAGE_ALLOW_RADIO_LABEL},
+      {"siteDataPageAllowRadioSubLabel",
+       IDS_SETTINGS_SITE_DATA_PAGE_ALLOW_RADIO_SUB_LABEL},
+      {"siteDataPageClearOnExitRadioLabel",
+       IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_LABEL},
+      {"siteDataPageClearOnExitRadioSubLabel",
+       IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL},
+      {"siteDataPageBlockRadioLabel",
+       IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_RADIO_LABEL},
+      {"siteDataPageBlockRadioSublabel",
+       IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_RADIO_SUB_LABEL},
+      {"siteDataPageCustomizedBehaviorHeading",
+       IDS_SETTINGS_SITE_DATA_PAGE_CUSTOMIZED_BEHAVIOR_HEADING},
+      {"siteDataPageCustomizedBehaviorDescription",
+       IDS_SETTINGS_SITE_DATA_PAGE_CUSTOMIZED_BEHAVIOR_DESCRIPTION},
+      {"siteDataPageAllowExceptionsSubHeading",
+       IDS_SETTINGS_SITE_DATA_PAGE_ALLOW_EXCEPTIONS_SUB_HEADING},
+      {"siteDataPageClearOnExitExceptionsSubHeading",
+       IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_EXCEPTIONS_SUB_HEADING},
+      {"siteDataPageBlockExceptionsSubHeading",
+       IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_EXCEPTIONS_SUB_HEADING},
+      {"siteDataPageBlockConfirmDialogTitle",
+       IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_TITLE},
+      {"siteDataPageBlockConfirmDialogDescription",
+       IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_DESCRIPTION},
+      {"siteDataPageBlockConfirmDialogConfirmButton",
+       IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CONFIRM_BUTTON},
+      {"siteDataPageBlockConfirmDialogCancelButton",
+       IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CANCEL_BUTTON},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void AddSystemStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -3485,6 +3528,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddSearchInSettingsStrings(html_source);
   AddSearchStrings(html_source);
   AddSiteSettingsStrings(html_source, profile);
+  AddSiteDataPageStrings(html_source, profile);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   AddDefaultBrowserStrings(html_source);

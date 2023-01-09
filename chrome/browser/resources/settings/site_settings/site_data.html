@@ -29,11 +29,14 @@
     padding-bottom: 10px;
   }
 </style>
-<!-- TODO(crbug.com/1378703): Update all strings in this page. -->
-<div class="content-settings-header secondary">$i18n{privacyPageTitle}</div>
+<div class="content-settings-header secondary">
+  $i18n{siteDataPageDescription}
+</div>
 <div class="radio-group">
-  <h2>$i18n{privacyPageTitle}</h2>
-  <div class="secondary radio-group-sub-heading">$i18n{privacyPageTitle}</div>
+  <h2>$i18n{siteDataPageDefaultBehavior}</h2>
+  <div class="secondary radio-group-sub-heading">
+    $i18n{siteDataPagedefaultBehaviorDescription}
+  </div>
   <settings-radio-group id="defaultGroup" no-set-pref
       pref="{{prefs.generated.cookie_default_content_setting}}"
       selectable-elements="cr-radio-button, settings-collapse-radio-button"
@@ -41,39 +44,38 @@
     <settings-collapse-radio-button id="defaultAllow" no-collapse
         name="[[contentSettingEnum_.ALLOW]]"
         pref="[[prefs.generated.cookie_default_content_setting]]"
-        label="$i18n{privacyPageTitle}"
-        sub-label="$i18n{privacyPageTitle}"
+        label="$i18n{siteDataPageAllowRadioLabel}"
+        sub-label="$i18n{siteDataPageAllowRadioSubLabel}"
         icon="settings:database">
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="defaultSessionOnly" no-collapse
         class="two-line"
         name="[[contentSettingEnum_.SESSION_ONLY]]"
         pref="[[prefs.generated.cookie_default_content_setting]]"
-        label="$i18n{privacyPageTitle}"
-        sub-label="$i18n{privacyPageTitle}"
+        label="$i18n{siteDataPageClearOnExitRadioLabel}"
+        sub-label="$i18n{siteDataPageClearOnExitRadioSubLabel}"
         icon="settings:database">
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="defaultBlock" no-collapse
         class="two-line"
         name="[[contentSettingEnum_.BLOCK]]"
         pref="[[prefs.generated.cookie_default_content_setting]]"
-        label="$i18n{privacyPageTitle}"
-        sub-label="$i18n{privacyPageTitle}"
+        label="$i18n{siteDataPageBlockRadioLabel}"
+        sub-label="$i18n{siteDataPageBlockRadioSublabel}"
         icon="settings:database-off">
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>
 <div id="exceptionHeader">
-  <!-- TODO(crbug.com/1378703): Update all strings in this page. -->
-  <h2>$i18n{privacyPageTitle}</h2>
+  <h2>$i18n{siteDataPageCustomizedBehaviorHeading}</h2>
   <div id="exceptionHeaderSubLabel" class="secondary">
-    $i18n{privacyPageTitle}
+    $i18n{siteDataPageCustomizedBehaviorDescription}
   </div>
 </div>
 <site-list id="allowExceptionsList"
     category="[[cookiesContentSettingType_]]"
     category-subtype="[[contentSettingEnum_.ALLOW]]"
-    category-header="$i18n{privacyPageTitle}"
+    category-header="$i18n{siteDataPageAllowExceptionsSubHeading}"
     read-only-list="[[exceptionListsReadOnly_]]"
     search-filter="[[searchTerm]]"
     cookies-exception-type="site-data">
@@ -81,7 +83,7 @@
 <site-list id="sessionOnlyExceptionsList"
     category="[[cookiesContentSettingType_]]"
     category-subtype="[[contentSettingEnum_.SESSION_ONLY]]"
-    category-header="$i18n{privacyPageTitle}"
+    category-header="$i18n{siteDataPageClearOnExitExceptionsSubHeading}"
     read-only-list="[[exceptionListsReadOnly_]]"
     search-filter="[[searchTerm]]"
     cookies-exception-type="site-data">
@@ -90,24 +92,23 @@
 <site-list id="blockExceptionsList"
     category="[[cookiesContentSettingType_]]"
     category-subtype="[[contentSettingEnum_.BLOCK]]"
-    category-header="$i18n{privacyPageTitle}"
+    category-header="$i18n{siteDataPageBlockExceptionsSubHeading}"
     read-only-list="[[exceptionListsReadOnly_]]"
     search-filter="[[searchTerm]]"
     cookies-exception-type="combined">
 </site-list>
 <template is="dom-if" if="[[showDefaultBlockDialog_]]" restamp>
-  <cr-dialog id="defaultBlockDialog" show-on-attach
-      close-text="$i18n{privacyPageTitle}">
-    <div slot="title">$i18n{privacyPageTitle}</div>
-    <div slot="body">$i18n{privacyPageTitle}</div>
+  <cr-dialog id="defaultBlockDialog" show-on-attach>
+    <div slot="title">$i18n{siteDataPageBlockConfirmDialogTitle}</div>
+    <div slot="body">$i18n{siteDataPageBlockConfirmDialogDescription}</div>
     <div slot="button-container">
     <cr-button id="defaultBlockDialogCancel" class="cancel-button"
         on-click="onDefaultBlockDialogCancel_">
-        $i18n{privacyPageTitle}
+        $i18n{siteDataPageBlockConfirmDialogCancelButton}
     </cr-button>
     <cr-button id="defaultBlockDialogConfirm" class="action-button"
         on-click="onDefaultBlockDialogConfirm_">
-        $i18n{privacyPageTitle}
+        $i18n{siteDataPageBlockConfirmDialogConfirmButton}
     </cr-button>
     </div>
   </cr-dialog>
