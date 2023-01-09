@@ -3774,6 +3774,9 @@ enum WebFeature {
   kLinkRelPrerenderSameOrigin = 4433,
   kLinkRelPrerenderSameSiteCrossOrigin = 4434,
   kLinkRelPrerenderCrossSite = 4435,
+  kCSSBackgroundClipBorder = 4436,
+  kCSSBackgroundClipContent = 4437,
+  kCSSBackgroundClipPadding = 4438,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

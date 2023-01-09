@@ -31,8 +31,9 @@ const char kExtensionFeaturesHistogramName[] =
 const char kExtensionUrl[] = "chrome-extension://dummysite/";
 
 int GetPageVisitsBucketforHistogram(const std::string& histogram_name) {
-  if (histogram_name.find("CSS") == std::string::npos)
+  if (histogram_name.find("CSS") == std::string::npos) {
     return static_cast<int>(blink::mojom::WebFeature::kPageVisits);
+  }
   // For CSS histograms, the page visits bucket should be 1.
   return static_cast<int>(
       blink::mojom::blink::CSSSampleId::kTotalPagesMeasured);
@@ -508,8 +509,9 @@ TEST_F(UseCounterImplTest, UniqueCSSSampleIds) {
   HashSet<CSSPropertyID> alternatives = GetAlternatives();
 
   for (CSSPropertyID property : CSSPropertyIDList()) {
-    if (IsInternal(property))
+    if (IsInternal(property)) {
       continue;
+    }
     if (alternatives.Contains(property)) {
       // Alternative properties should use the same CSSSampleId as the
       // corresponding main property.
@@ -534,13 +536,15 @@ TEST_F(UseCounterImplTest, MaximumCSSSampleId) {
   int max_sample_id = 0;
 
   for (CSSPropertyID property : CSSPropertyIDList()) {
-    if (IsInternal(property))
+    if (IsInternal(property)) {
       continue;
+    }
     max_sample_id = std::max(max_sample_id, ToSampleId(property));
   }
 
-  for (CSSPropertyID property : kCSSPropertyAliasList)
+  for (CSSPropertyID property : kCSSPropertyAliasList) {
     max_sample_id = std::max(max_sample_id, ToSampleId(property));
+  }
 
   EXPECT_EQ(static_cast<int>(mojom::blink::CSSSampleId::kMaxValue),
             max_sample_id);
@@ -598,6 +602,89 @@ TEST_F(UseCounterImplTest, CSSMarkerPseudoElementAuthor) {
   )HTML");
   UpdateAllLifecyclePhases(document);
   EXPECT_TRUE(document.IsUseCounted(feature));
+}
+
+TEST_F(UseCounterImplTest, BackgroundClip) {
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{background-clip: border-box;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{background-clip: content-box;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{background-clip: padding-box;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{-webkit-background-clip: border-box;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{-webkit-background-clip: content-box;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{-webkit-background-clip: padding-box;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{-webkit-background-clip: text;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.documentElement()->setInnerHTML(
+      "<style>html{-webkit-background-clip: border;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.ClearUseCounterForTesting(WebFeature::kCSSBackgroundClipBorder);
+  document.documentElement()->setInnerHTML(
+      "<style>html{-webkit-background-clip: content;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
+
+  document.ClearUseCounterForTesting(WebFeature::kCSSBackgroundClipContent);
+  document.documentElement()->setInnerHTML(
+      "<style>html{-webkit-background-clip: padding;}</style>");
+  UpdateAllLifecyclePhases(document);
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 }
 
 TEST_F(UseCounterImplTest, H1UserAgentFontSizeInSectionApplied) {

@@ -41733,6 +41733,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4433" label="LinkRelPrerenderSameOrigin"/>
   <int value="4434" label="LinkRelPrerenderSameSiteCrossOrigin"/>
   <int value="4435" label="LinkRelPrerenderCrossSite"/>
+  <int value="4436" label="CSSBackgroundClipBorder"/>
+  <int value="4437" label="CSSBackgroundClipContent"/>
+  <int value="4438" label="CSSBackgroundClipPadding"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

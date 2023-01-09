@@ -1663,6 +1663,7 @@
       style_builder_template_args: {
         fill_type: "Clip",
       },
+      style_builder_custom_functions: ["value"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,

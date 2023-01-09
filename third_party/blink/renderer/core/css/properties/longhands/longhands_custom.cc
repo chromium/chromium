@@ -602,6 +602,56 @@ const CSSValue* BackgroundClip::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+void UseCountBackgroundClip(Document& document, const CSSValue& value) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kBorder:
+        UseCounter::Count(document, WebFeature::kCSSBackgroundClipBorder);
+        break;
+      case CSSValueID::kContent:
+        UseCounter::Count(document, WebFeature::kCSSBackgroundClipContent);
+        break;
+      case CSSValueID::kPadding:
+        UseCounter::Count(document, WebFeature::kCSSBackgroundClipPadding);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+// TODO(crbug.com/1339290): Revert to use the generated implementation once the
+// use counters are no longer needed. Also remove UseCountBackgroundClip above.
+void BackgroundClip::ApplyValue(StyleResolverState& state,
+                                const CSSValue& value) const {
+  Document& document = state.GetDocument();
+  FillLayer* curr_child = &state.StyleBuilder().AccessBackgroundLayers();
+  FillLayer* prev_child = nullptr;
+  const auto* value_list = DynamicTo<CSSValueList>(value);
+  if (value_list && !value.IsImageSetValue()) {
+    // Walk each value and put it into a layer, creating new layers as needed.
+    const auto* curr_val = value_list->begin();
+    while (curr_child || curr_val != value_list->end()) {
+      if (!curr_child) {
+        curr_child = prev_child->EnsureNext();
+      }
+      CSSToStyleMap::MapFillClip(state, curr_child, *curr_val->Get());
+      UseCountBackgroundClip(document, *curr_val->Get());
+      prev_child = curr_child;
+      curr_child = curr_child->Next();
+      // as per https://w3c.github.io/csswg-drafts/css-backgrounds/#layering
+      if (++curr_val == value_list->end() && curr_child) {
+        curr_val = value_list->begin();
+      }
+    }
+  } else {
+    while (curr_child) {
+      CSSToStyleMap::MapFillClip(state, curr_child, value);
+      curr_child = curr_child->Next();
+    }
+  }
+}
+
 const CSSValue* BackgroundColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
