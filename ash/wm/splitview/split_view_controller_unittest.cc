@@ -1690,9 +1690,15 @@ TEST_F(SplitViewControllerTest, LongPressExitsSplitViewWithTransientChild) {
   EXPECT_EQ(right_window.get(), window_util::GetActiveWindow());
 }
 
+#if defined(NDEBUG)
+#define MAYBE_LongPressInOverviewMode LongPressInOverviewMode
+#else
+// TODO(b/264848385): Flaky on dbg configuration
+#define MAYBE_LongPressInOverviewMode DISABLED_LongPressInOverviewMode
+#endif
 // Verify that split view mode get activated when long pressing on the overview
 // button while in overview mode iff we have at least one window.
-TEST_F(SplitViewControllerTest, LongPressInOverviewMode) {
+TEST_F(SplitViewControllerTest, MAYBE_LongPressInOverviewMode) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
