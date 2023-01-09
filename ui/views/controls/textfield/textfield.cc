@@ -566,19 +566,6 @@ void Textfield::ClearEditHistory() {
   model_->ClearEditHistory();
 }
 
-std::u16string Textfield::GetAccessibleName() const {
-  return accessible_name_;
-}
-
-void Textfield::SetAccessibleName(const std::u16string& name) {
-  if (accessible_name_ == name)
-    return;
-
-  accessible_name_ = name;
-  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-}
-
 void Textfield::SetObscuredGlyphSpacing(int spacing) {
   GetRenderText()->SetObscuredGlyphSpacing(spacing);
 }
@@ -957,7 +944,7 @@ void Textfield::OnDragDone() {
 void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTextField;
 
-  node_data->SetName(accessible_name_);
+  node_data->SetName(GetAccessibleName());
   node_data->SetNameFrom(ax::mojom::NameFrom::kAttribute);
 
   // Editable state indicates support of editable interface, and is always set
@@ -2735,7 +2722,6 @@ ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Range, SelectedRange)
-ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 END_METADATA
 
 }  // namespace views

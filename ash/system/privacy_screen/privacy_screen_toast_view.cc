@@ -151,16 +151,6 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
   button_->SetToggled(enabled);
   label_->SetPrivacyScreenEnabled(enabled, managed);
 
-  std::u16string state = l10n_util::GetStringUTF16(
-      is_enabled_ ? IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ON_STATE
-                  : IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_OFF_STATE);
-  button_->SetTooltipText(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOOLTIP, state));
-
-  Layout();
-}
-
-std::u16string PrivacyScreenToastView::GetAccessibleName() {
   std::u16string enabled_state = l10n_util::GetStringUTF16(
       is_enabled_ ? IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ON_STATE
                   : IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_OFF_STATE);
@@ -168,9 +158,14 @@ std::u16string PrivacyScreenToastView::GetAccessibleName() {
       is_managed_ ? l10n_util::GetStringUTF16(
                         IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ENTERPRISE_MANAGED)
                   : std::u16string();
-  return l10n_util::GetStringFUTF16(
+  button_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOOLTIP, enabled_state));
+
+  SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
-      enabled_state, managed_state);
+      enabled_state, managed_state));
+
+  Layout();
 }
 
 bool PrivacyScreenToastView::IsButtonFocused() const {

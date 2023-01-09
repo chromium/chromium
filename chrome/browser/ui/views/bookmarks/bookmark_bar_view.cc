@@ -305,17 +305,15 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     // ui::EF_MIDDLE_MOUSE_BUTTON opens all bookmarked links in separate tabs.
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
+
+    // If the folder is unnamed, set the name to a default string for unnamed
+    // folders; otherwise set the name to the user-supplied folder name.
+    SetAccessibleName(GetText().empty() ? l10n_util::GetStringUTF16(
+                                              IDS_UNNAMED_BOOKMARK_FOLDER)
+                                        : GetText());
   }
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
-
-  // Returns an accessible name for the folder. If the folder is unnamed, it
-  // will use a default, otherwise it will use the user-supplied folder name.
-  std::u16string GetAccessibleName() const {
-    return GetText().empty()
-               ? l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER)
-               : GetText();
-  }
 
   std::u16string GetTooltipText(const gfx::Point& p) const override {
     return GetAccessibleName();

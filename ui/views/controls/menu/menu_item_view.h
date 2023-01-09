@@ -282,11 +282,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   }
   bool may_have_mnemonics() const { return may_have_mnemonics_; }
 
-  void set_accessible_name(std::u16string accessible_name) {
-    accessible_name_ = std::move(accessible_name);
-  }
-  const std::u16string& accessible_name() const { return accessible_name_; }
-
   // Called when the drop or selection status (as determined by SubmenuView) may
   // have changed.
   void OnDropOrSelectionStatusMayHaveChanged();
@@ -483,8 +478,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns the colors used in painting.
   Colors CalculateColors(bool paint_as_selected) const;
 
-  // Returns the accessible name for this menu item.
-  std::u16string GetAccessibleName() const;
+  // Calculates and returns the accessible name for this menu item.
+  std::u16string CalculateAccessibleName() const;
 
   // Calculates and returns the MenuItemDimensions.
   MenuItemDimensions CalculateDimensions() const;
@@ -594,7 +589,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   std::u16string secondary_title_;
   std::u16string minor_text_;
   ui::ImageModel minor_icon_;
-  std::u16string accessible_name_;
 
   // Does the title have a mnemonic? Only useful on the root menu item.
   bool has_mnemonics_ = false;

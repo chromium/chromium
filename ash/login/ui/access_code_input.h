@@ -73,8 +73,6 @@ class FlexCodeInput : public AccessCodeInput {
 
   void OnThemeChanged() override;
 
-  void SetAccessibleName(const std::u16string& name);
-
   // Appends |value| to the code
   void InsertDigit(int value) override;
 
@@ -106,6 +104,8 @@ class FlexCodeInput : public AccessCodeInput {
                       const ui::KeyEvent& key_event) override;
 
  private:
+  void OnAccessibleNameChanged(const std::u16string& new_name) override;
+
   views::Textfield* code_field_;
 
   // To be called when access input code changes (character is inserted, deleted

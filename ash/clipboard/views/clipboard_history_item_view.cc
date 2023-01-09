@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -53,10 +54,6 @@ void ClipboardHistoryItemView::ContentsView::OnHostPseudoFocusUpdated() {
     delete_button_->NotifyAccessibilityEvent(ax::mojom::Event::kHover,
                                              /*send_native_event*/ true);
   }
-}
-
-const char* ClipboardHistoryItemView::ContentsView::GetClassName() const {
-  return "ContenstView";
 }
 
 // Accepts the event only when |delete_button_| should be the handler.
@@ -342,5 +339,11 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
   contents_view_->OnHostPseudoFocusUpdated();
   main_button_->OnHostPseudoFocusUpdated();
 }
+
+BEGIN_METADATA(ClipboardHistoryItemView, ContentsView, views::View)
+END_METADATA
+
+BEGIN_METADATA(ClipboardHistoryItemView, views::View)
+END_METADATA
 
 }  // namespace ash

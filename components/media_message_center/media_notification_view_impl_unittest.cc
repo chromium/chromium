@@ -162,7 +162,7 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
   }
 
   const std::u16string& accessible_name() const {
-    return view()->accessible_name_;
+    return view()->GetAccessibleName();
   }
 
   views::View* button_row() const { return view()->button_row_; }

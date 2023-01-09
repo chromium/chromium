@@ -134,11 +134,7 @@ std::u16string MessageView::CreateAccessibleName(
 
 void MessageView::UpdateWithNotification(const Notification& notification) {
   pinned_ = notification.pinned();
-  std::u16string new_accessible_name = CreateAccessibleName(notification);
-  if (new_accessible_name != accessible_name_) {
-    accessible_name_ = new_accessible_name;
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-  }
+  SetAccessibleName(CreateAccessibleName(notification));
   slide_out_controller_.set_slide_mode(CalculateSlideMode());
 }
 
@@ -232,10 +228,11 @@ void MessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       ax::mojom::StringAttribute::kRoleDescription,
       l10n_util::GetStringUTF8(IDS_MESSAGE_NOTIFICATION_ACCESSIBLE_NAME));
 
-  if (accessible_name_.empty())
+  if (GetAccessibleName().empty()) {
     node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 
-  node_data->SetNameChecked(accessible_name_);
+  node_data->SetNameChecked(GetAccessibleName());
 }
 
 bool MessageView::OnMousePressed(const ui::MouseEvent& event) {

@@ -101,10 +101,6 @@ class VIEWS_EXPORT EditableCombobox
   // Selects the specified logical text range for the textfield.
   void SelectRange(const gfx::Range& range);
 
-  // Sets the accessible name. Use SetAssociatedLabel instead if there is a
-  // label associated with this combobox.
-  void SetAccessibleName(const std::u16string& name);
-
   // Sets the associated label; use this instead of SetAccessibleName if there
   // is a label associated with this combobox.
   void SetAssociatedLabel(View* labelling_view);
@@ -143,6 +139,7 @@ class VIEWS_EXPORT EditableCombobox
   void RequestFocus() override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
+  void OnAccessibleNameChanged(const std::u16string& new_name) override;
 
   // Overridden from TextfieldController:
   void ContentsChanged(Textfield* sender,

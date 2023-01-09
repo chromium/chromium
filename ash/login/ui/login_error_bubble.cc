@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -51,13 +52,9 @@ void LoginErrorBubble::SetTextContent(const std::u16string& message) {
   SetContent(login_views_utils::CreateBubbleLabel(message, this));
 }
 
-const char* LoginErrorBubble::GetClassName() const {
-  return "LoginErrorBubble";
-}
-
 void LoginErrorBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlertDialog;
-  node_data->SetName(accessible_name_);
+  node_data->SetName(GetAccessibleName());
 }
 
 void LoginErrorBubble::OnThemeChanged() {
@@ -73,5 +70,8 @@ void LoginErrorBubble::OnThemeChanged() {
     SetTextContent(message_);
   }
 }
+
+BEGIN_METADATA(LoginErrorBubble, LoginBaseBubbleView)
+END_METADATA
 
 }  // namespace ash

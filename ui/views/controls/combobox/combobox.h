@@ -102,10 +102,6 @@ class VIEWS_EXPORT Combobox : public View,
   std::u16string GetTooltipTextAndAccessibleName() const;
   void SetTooltipTextAndAccessibleName(const std::u16string& tooltip_text);
 
-  // Set the accessible name of the combobox.
-  void SetAccessibleName(const std::u16string& name);
-  std::u16string GetAccessibleName() const;
-
   // Visually marks the combobox as having an invalid value selected.
   // When invalid, it paints with white text on a red background.
   // Callers are responsible for restoring validity with selection changes.
@@ -244,9 +240,6 @@ class VIEWS_EXPORT Combobox : public View,
   // Overriding ColorId for the combobox foreground (text and caret icon).
   absl::optional<ui::ColorId> foreground_color_id_;
 
-  // The accessible name of this combobox.
-  std::u16string accessible_name_;
-
   // A helper used to select entries by keyboard input.
   std::unique_ptr<PrefixSelector> selector_;
 
@@ -290,7 +283,6 @@ VIEW_BUILDER_PROPERTY(ui::ComboboxModel*, Model)
 VIEW_BUILDER_PROPERTY(absl::optional<size_t>, SelectedIndex)
 VIEW_BUILDER_PROPERTY(bool, Invalid)
 VIEW_BUILDER_PROPERTY(bool, SizeToLargestLabel)
-VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)
 VIEW_BUILDER_PROPERTY(std::u16string, TooltipTextAndAccessibleName)
 END_VIEW_BUILDER
 

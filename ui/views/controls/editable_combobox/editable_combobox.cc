@@ -406,10 +406,10 @@ void EditableCombobox::SelectRange(const gfx::Range& range) {
   textfield_->SetSelectedRange(range);
 }
 
-void EditableCombobox::SetAccessibleName(const std::u16string& name) {
-  textfield_->SetAccessibleName(name);
+void EditableCombobox::OnAccessibleNameChanged(const std::u16string& new_name) {
+  textfield_->SetAccessibleName(new_name);
   if (arrow_)
-    arrow_->SetAccessibleName(name);
+    arrow_->SetAccessibleName(new_name);
 }
 
 void EditableCombobox::SetAssociatedLabel(View* labelling_view) {

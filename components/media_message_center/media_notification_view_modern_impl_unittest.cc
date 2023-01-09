@@ -147,7 +147,7 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
   MediaNotificationViewModernImpl* view() const { return view_; }
 
   const std::u16string& accessible_name() const {
-    return view()->accessible_name_;
+    return view()->GetAccessibleName();
   }
 
   test::MockMediaNotificationItem& item() { return item_; }

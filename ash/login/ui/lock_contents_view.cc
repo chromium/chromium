@@ -2470,7 +2470,12 @@ void LockContentsView::ShowAuthErrorMessage() {
   auth_error_bubble_->SetAnchorView(
       big_view->auth_user()->GetActiveInputView());
   auth_error_bubble_->SetContent(std::move(container));
-  auth_error_bubble_->set_accessible_name(error_text);
+
+  // We set an accessible name when content is not accessible. This happens if
+  // content is a container (e.g. a text and a "learn more" button). In such a
+  // case, it will have multiple subviews but only one which needs to be read
+  // on bubble show – when the alert event occurs.
+  auth_error_bubble_->SetAccessibleName(error_text);
   auth_error_bubble_->Show();
 }
 

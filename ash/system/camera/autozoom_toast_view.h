@@ -27,9 +27,6 @@ class ASH_EXPORT AutozoomToastView : public views::View,
   // Updates the toast with whether autozoom is enabled.
   void SetAutozoomEnabled(bool enabled);
 
-  // Returns the accessible name for the view.
-  std::u16string GetAccessibleName();
-
   // Returns true if the toggle button is focused.
   bool IsButtonFocused() const;
 

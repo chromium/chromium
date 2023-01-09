@@ -860,9 +860,18 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
   std::u16string test_tooltip_text = u"Test Tooltip Text";
   test::AXEventCounter counter(AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
+
+  // `SetTooltipTextAndAccessibleName` does two things:
+  // 1. sets the tooltip text on the arrow button. `Button::SetTooltipText`
+  //    fires a text-changed event.
+  // 2. if the accessible name is empty, calls `View::SetAccessibleName`
+  //    on the combobox. `SetAccessibleName` fires a text-changed event.
   combobox_->SetTooltipTextAndAccessibleName(test_tooltip_text);
   EXPECT_EQ(test_tooltip_text, combobox_->GetTooltipTextAndAccessibleName());
-  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged,
+                                ax::mojom::Role::kButton));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged,
+                                ax::mojom::Role::kPopUpButton));
   EXPECT_EQ(test_tooltip_text, combobox_->GetAccessibleName());
   ui::AXNodeData data;
   combobox_->GetAccessibleNodeData(&data);

@@ -19,6 +19,8 @@
 #include "ash/test_shell_delegate.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/version_info/channel.h"
 #include "ui/views/test/ax_event_counter.h"
 
@@ -34,7 +36,8 @@ class UnifiedSystemInfoViewTest
     : public AshTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  UnifiedSystemInfoViewTest() = default;
+  UnifiedSystemInfoViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   UnifiedSystemInfoViewTest(const UnifiedSystemInfoViewTest&) = delete;
   UnifiedSystemInfoViewTest& operator=(const UnifiedSystemInfoViewTest&) =
       delete;
@@ -187,6 +190,9 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseUserManagedVisible) {
 }
 
 TEST_P(UnifiedSystemInfoViewTest, UpdateFiresAccessibilityEvents) {
+  // Set the current time to 08:00 for testing.
+  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                   base::Hours(32) - base::Time::Now());
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   auto* date_view = info_view()->GetDateViewForTesting();
   auto* date_view_label = info_view()->GetDateViewLabelForTesting();
@@ -194,8 +200,11 @@ TEST_P(UnifiedSystemInfoViewTest, UpdateFiresAccessibilityEvents) {
   EXPECT_EQ(0,
             counter.GetCount(ax::mojom::Event::kTextChanged, date_view_label));
 
-  // `DateView::Update` emits text-changed accessibility events on both
-  // itself and its label.
+  // `DateView::Update` sets the accessible name of both itself and its label.
+  // This will result in text-changed events being emitted, but only if the
+  // accessible name has actually changed. Therefore advance the clock by a
+  // minute before calling `Update`.
+  task_environment()->FastForwardBy(base::Minutes(1));
   info_view()->UpdateDateViewForTesting();
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, date_view));
   EXPECT_EQ(1,

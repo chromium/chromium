@@ -5,6 +5,7 @@
 #include "ash/clipboard/views/clipboard_history_label.h"
 
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
@@ -20,8 +21,7 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
   SetEnabledColorId(cros_tokens::kTextColorPrimary);
 }
 
-const char* ClipboardHistoryLabel::GetClassName() const {
-  return "ClipboardHistoryLabel";
-}
+BEGIN_METADATA(ClipboardHistoryLabel, views::Label)
+END_METADATA
 
 }  // namespace ash

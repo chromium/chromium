@@ -6,6 +6,7 @@
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_TEXT_ITEM_VIEW_H_
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class MenuItemView;
@@ -16,6 +17,7 @@ namespace ash {
 // The menu item showing the plain text.
 class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
  public:
+  METADATA_HEADER(ClipboardHistoryTextItemView);
   ClipboardHistoryTextItemView(
       const ClipboardHistoryItem* clipboard_history_item,
       views::MenuItemView* container);
@@ -33,10 +35,6 @@ class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
 
  private:
   class TextContentsView;
-
-  // ClipboardHistoryItemView:
-  std::u16string GetAccessibleName() const override;
-  const char* GetClassName() const override;
 
   // Text to show.
   const std::u16string text_;

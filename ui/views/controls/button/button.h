@@ -132,8 +132,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   virtual void SetCallback(PressedCallback callback);
 
-  void SetAccessibleName(const std::u16string& name);
-  const std::u16string& GetAccessibleName() const;
+  const std::u16string& GetAccessibleName() const override;
 
   // Get/sets the current display state of the button.
   ButtonState GetState() const;
@@ -304,9 +303,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // The text shown in a tooltip.
   std::u16string tooltip_text_;
-
-  // Accessibility data.
-  std::u16string accessible_name_;
 
   // The button's listener. Notified when clicked.
   PressedCallback callback_;

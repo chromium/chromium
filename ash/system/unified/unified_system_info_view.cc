@@ -162,8 +162,6 @@ void DateView::Update() {
   } else {
     SetAccessibleName(TimeFormatFriendlyDateAndTime(now));
   }
-  label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 gfx::Insets DateView::GetInsets() const {

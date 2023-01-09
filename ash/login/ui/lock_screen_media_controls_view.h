@@ -238,10 +238,6 @@ class ASH_EXPORT LockScreenMediaControlsView
   std::unique_ptr<base::OneShotTimer> hide_artwork_timer_ =
       std::make_unique<base::OneShotTimer>();
 
-  // Caches the text to be read by screen readers describing the media controls
-  // view.
-  std::u16string accessible_name_;
-
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 

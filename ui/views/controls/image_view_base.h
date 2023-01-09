@@ -48,9 +48,8 @@ class VIEWS_EXPORT ImageViewBase : public View {
   void SetTooltipText(const std::u16string& tooltip);
   const std::u16string& GetTooltipText() const;
 
-  // Set / Get the accessible name text.
-  void SetAccessibleName(const std::u16string& name);
-  const std::u16string& GetAccessibleName() const;
+  // If `accessible_name_` has not been set, the tooltip text value is used.
+  const std::u16string& GetAccessibleName() const override;
 
   // Overridden from View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -84,16 +83,12 @@ class VIEWS_EXPORT ImageViewBase : public View {
 
   // The current tooltip text.
   std::u16string tooltip_text_;
-
-  // The current accessible name text.
-  std::u16string accessible_name_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageViewBase, View)
 VIEW_BUILDER_PROPERTY(gfx::Size, ImageSize)
 VIEW_BUILDER_PROPERTY(ImageViewBase::Alignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(ImageViewBase::Alignment, VerticalAlignment)
-VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)
 VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
 END_VIEW_BUILDER
 

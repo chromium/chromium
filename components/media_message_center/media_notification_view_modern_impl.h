@@ -145,10 +145,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 
-  // Stores the text to be read by screen readers describing the notification.
-  // Contains the title, artist and album separated by hyphens.
-  std::u16string accessible_name_;
-
   raw_ptr<MediaNotificationBackground> background_;
 
   media_session::MediaPosition position_;

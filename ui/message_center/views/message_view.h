@@ -276,7 +276,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   void UpdateNestedBorder();
 
   std::string notification_id_;
-  std::u16string accessible_name_;
   const NotifierId notifier_id_;
   base::Time timestamp_;
 

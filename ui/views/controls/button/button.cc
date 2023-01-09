@@ -176,16 +176,9 @@ void Button::SetCallback(PressedCallback callback) {
   callback_ = std::move(callback);
 }
 
-void Button::SetAccessibleName(const std::u16string& name) {
-  if (name == accessible_name_)
-    return;
-  accessible_name_ = name;
-  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-}
-
 const std::u16string& Button::GetAccessibleName() const {
-  return accessible_name_.empty() ? tooltip_text_ : accessible_name_;
+  return View::GetAccessibleName().empty() ? tooltip_text_
+                                           : View::GetAccessibleName();
 }
 
 Button::ButtonState Button::GetState() const {
@@ -717,7 +710,6 @@ void Button::OnEnabledChanged() {
 }
 
 BEGIN_METADATA(Button, View)
-ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(PressedCallback, Callback)
 ADD_PROPERTY_METADATA(bool, AnimateOnStateChange)
 ADD_PROPERTY_METADATA(bool, HasInkDropActionOnClick)

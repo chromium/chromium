@@ -75,17 +75,9 @@ const std::u16string& ImageViewBase::GetTooltipText() const {
   return tooltip_text_;
 }
 
-void ImageViewBase::SetAccessibleName(const std::u16string& accessible_name) {
-  if (accessible_name_ == accessible_name)
-    return;
-
-  accessible_name_ = accessible_name;
-  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-}
-
 const std::u16string& ImageViewBase::GetAccessibleName() const {
-  return accessible_name_.empty() ? tooltip_text_ : accessible_name_;
+  return View::GetAccessibleName().empty() ? tooltip_text_
+                                           : View::GetAccessibleName();
 }
 
 std::u16string ImageViewBase::GetTooltipText(const gfx::Point& p) const {
@@ -166,7 +158,6 @@ void ImageViewBase::PreferredSizeChanged() {
 BEGIN_METADATA(ImageViewBase, View)
 ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
-ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 END_METADATA
 

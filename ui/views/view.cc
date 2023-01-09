@@ -1901,6 +1901,20 @@ ViewAccessibility& View::GetViewAccessibility() const {
   return *view_accessibility_;
 }
 
+void View::SetAccessibleName(const std::u16string& name) {
+  if (name == accessible_name_) {
+    return;
+  }
+  accessible_name_ = name;
+  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
+  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  OnAccessibleNameChanged(name);
+}
+
+const std::u16string& View::GetAccessibleName() const {
+  return accessible_name_;
+}
+
 bool View::HandleAccessibleAction(const ui::AXActionData& action_data) {
   switch (action_data.action) {
     case ax::mojom::Action::kBlur:

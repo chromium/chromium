@@ -81,8 +81,8 @@ void FlexCodeInput::OnThemeChanged() {
   SetInputColor(color);
 }
 
-void FlexCodeInput::SetAccessibleName(const std::u16string& name) {
-  code_field_->SetAccessibleName(name);
+void FlexCodeInput::OnAccessibleNameChanged(const std::u16string& new_name) {
+  code_field_->SetAccessibleName(new_name);
 }
 
 void FlexCodeInput::InsertDigit(int value) {

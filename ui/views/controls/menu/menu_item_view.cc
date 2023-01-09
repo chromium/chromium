@@ -218,7 +218,7 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       break;
   }
 
-  node_data->SetName(GetAccessibleName());
+  node_data->SetName(CalculateAccessibleName());
 
   switch (type_) {
     case Type::kSubMenu:
@@ -1193,8 +1193,8 @@ MenuItemView::Colors MenuItemView::CalculateColors(
   return colors;
 }
 
-std::u16string MenuItemView::GetAccessibleName() const {
-  std::u16string item_text = accessible_name();
+std::u16string MenuItemView::CalculateAccessibleName() const {
+  std::u16string item_text = View::GetAccessibleName();
   if (!item_text.empty())
     return item_text;
 

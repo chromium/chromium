@@ -503,8 +503,9 @@ void MediaNotificationViewModernImpl::GetAccessibleNodeData(
       l10n_util::GetStringUTF8(
           IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 
-  if (!accessible_name_.empty())
-    node_data->SetNameChecked(accessible_name_);
+  if (!GetAccessibleName().empty()) {
+    node_data->SetNameChecked(GetAccessibleName());
+  }
 }
 
 void MediaNotificationViewModernImpl::UpdateWithMediaSessionInfo(
@@ -542,7 +543,9 @@ void MediaNotificationViewModernImpl::UpdateWithMediaMetadata(
   title_label_->SetText(metadata.title);
   subtitle_label_->SetText(metadata.source_title);
 
-  accessible_name_ = GetAccessibleNameFromMetadata(metadata);
+  // Stores the text to be read by screen readers describing the notification.
+  // Contains the title, artist and album separated by hyphens.
+  SetAccessibleName(GetAccessibleNameFromMetadata(metadata));
 
   // The title label should only be a11y-focusable when there is text to be
   // read.

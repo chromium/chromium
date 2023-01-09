@@ -1407,6 +1407,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // view.
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) {}
 
+  // Sets/gets the accessible name.
+  // The value of the accessible name is a localized, end-user-consumable string
+  // which may be derived from visible information (e.g. the text on a button)
+  // or invisible information (e.g. the alternative text describing an icon).
+  // In the case of focusable objects, the name will be presented by the screen
+  // reader when that object gains focus and is critical to understanding the
+  // purpose of that object non-visually.
+  void SetAccessibleName(const std::u16string& name);
+  virtual const std::u16string& GetAccessibleName() const;
+
   // Handle a request from assistive technology to perform an action on this
   // view. Returns true on success, but note that the success/failure is
   // not propagated to the client that requested the action, since the
@@ -1477,6 +1487,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     // Coordinates of the mouse press.
     gfx::Point start_pt;
   };
+
+  // Accessibility -------------------------------------------------------------
+
+  // Called when the accessible name of the View changed.
+  virtual void OnAccessibleNameChanged(const std::u16string& new_name) {}
 
   // Size and disposition ------------------------------------------------------
 
@@ -2217,6 +2232,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // a View is ready to paint it should also be set up to be accessible.
   bool has_run_accessibility_paint_checks_ = false;
 
+  // The current accessible name.
+  std::u16string accessible_name_;
+
   // Observers -----------------------------------------------------------------
 
   base::ObserverList<ViewObserver>::Unchecked observers_;
@@ -2241,6 +2259,7 @@ template <typename LayoutManager>
 BuilderT&& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) && {
   return std::move(this->SetLayoutManager(std::move(layout_manager)));
 }
+VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, Background)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<Border>, Border)
 VIEW_BUILDER_PROPERTY(gfx::Rect, BoundsRect)

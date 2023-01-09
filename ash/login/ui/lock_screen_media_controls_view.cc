@@ -489,8 +489,8 @@ void LockScreenMediaControlsView::GetAccessibleNodeData(
       l10n_util::GetStringUTF8(
           IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACCESSIBLE_NAME));
 
-  if (!accessible_name_.empty()) {
-    node_data->SetName(accessible_name_);
+  if (!GetAccessibleName().empty()) {
+    node_data->SetName(GetAccessibleName());
   }
 }
 
@@ -572,8 +572,8 @@ void LockScreenMediaControlsView::MediaSessionMetadataChanged(
   title_label_->SetText(session_metadata.title);
   artist_label_->SetText(session_metadata.artist);
 
-  accessible_name_ =
-      media_message_center::GetAccessibleNameFromMetadata(session_metadata);
+  SetAccessibleName(
+      media_message_center::GetAccessibleNameFromMetadata(session_metadata));
 }
 
 void LockScreenMediaControlsView::MediaSessionActionsChanged(

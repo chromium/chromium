@@ -122,7 +122,7 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
   menu_item_view->set_may_have_mnemonics(
       model->MayHaveMnemonicsAt(model_index));
-  menu_item_view->set_accessible_name(model->GetAccessibleNameAt(model_index));
+  menu_item_view->SetAccessibleName(model->GetAccessibleNameAt(model_index));
   const ui::ElementIdentifier element_id =
       model->GetElementIdentifierAt(model_index);
   if (element_id)

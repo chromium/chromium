@@ -96,7 +96,7 @@ ChannelIndicatorView::~ChannelIndicatorView() = default;
 
 void ChannelIndicatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kLabelText;
-  node_data->SetName(accessible_name_);
+  node_data->SetName(GetAccessibleName());
 }
 
 views::View* ChannelIndicatorView::GetTooltipHandlerForPoint(
@@ -150,8 +150,12 @@ void ChannelIndicatorView::Update() {
 
   SetImageOrText();
   SetVisible(true);
-  SetAccessibleName();
   SetTooltip();
+
+  DCHECK(channel_indicator_utils::IsDisplayableChannel(channel_));
+  SetAccessibleName(l10n_util::GetStringUTF16(
+      channel_indicator_utils::GetChannelNameStringResourceID(
+          channel_, /*append_channel=*/true)));
 }
 
 void ChannelIndicatorView::SetImageOrText() {
@@ -215,22 +219,18 @@ void ChannelIndicatorView::SetImageOrText() {
   PreferredSizeChanged();
 }
 
-void ChannelIndicatorView::SetAccessibleName() {
-  DCHECK(channel_indicator_utils::IsDisplayableChannel(channel_));
-  accessible_name_ = l10n_util::GetStringUTF16(
-      channel_indicator_utils::GetChannelNameStringResourceID(
-          channel_, /*append_channel=*/true));
-
+void ChannelIndicatorView::OnAccessibleNameChanged(
+    const std::u16string& new_name) {
   // If icon is showing, set it on the image view.
   if (image_view()) {
     DCHECK(!label());
-    image_view()->SetAccessibleName(accessible_name_);
+    image_view()->SetAccessibleName(new_name);
     return;
   }
 
   // Otherwise set it on the label.
   if (label())
-    label()->SetAccessibleName(accessible_name_);
+    label()->SetAccessibleName(new_name);
 }
 
 void ChannelIndicatorView::SetTooltip() {

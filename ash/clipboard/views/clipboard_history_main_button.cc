@@ -11,6 +11,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -64,10 +65,6 @@ void ClipboardHistoryMainButton::SetShouldHighlight(bool should_highlight) {
 
   should_highlight_ = should_highlight;
   SchedulePaint();
-}
-
-const char* ClipboardHistoryMainButton::GetClassName() const {
-  return "ClipboardHistoryMainButton";
 }
 
 void ClipboardHistoryMainButton::OnClickCanceled(const ui::Event& event) {
@@ -124,5 +121,8 @@ void ClipboardHistoryMainButton::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawRect(GetLocalBounds(), flags);
 }
+
+BEGIN_METADATA(ClipboardHistoryMainButton, views::Button)
+END_METADATA
 
 }  // namespace ash

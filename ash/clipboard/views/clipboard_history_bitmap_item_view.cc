@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -153,6 +154,7 @@ class FadeImageView : public views::ImageView,
 class ClipboardHistoryBitmapItemView::BitmapContentsView
     : public ClipboardHistoryBitmapItemView::ContentsView {
  public:
+  METADATA_HEADER(BitmapContentsView);
   explicit BitmapContentsView(ClipboardHistoryBitmapItemView* container)
       : ContentsView(container), container_(container) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -291,6 +293,9 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   base::WeakPtrFactory<BitmapContentsView> weak_ptr_factory_{this};
 };
 
+BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)
+END_METADATA
+
 ////////////////////////////////////////////////////////////////////////////////
 // ClipboardHistoryBitmapItemView
 
@@ -301,29 +306,29 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
     : ClipboardHistoryItemView(clipboard_history_item, container),
       resource_manager_(resource_manager),
       data_format_(*clipboard_history_util::CalculateMainFormat(
-          clipboard_history_item->data())) {}
+          clipboard_history_item->data())) {
+  switch (data_format_) {
+    case ui::ClipboardInternalFormat::kHtml:
+      SetAccessibleName(
+          l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE));
+      break;
+    case ui::ClipboardInternalFormat::kPng:
+      SetAccessibleName(
+          l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_PNG_IMAGE));
+      break;
+    default:
+      NOTREACHED();
+  }
+}
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
-
-const char* ClipboardHistoryBitmapItemView::GetClassName() const {
-  return "ClipboardHistoryBitmapItemView";
-}
 
 std::unique_ptr<ClipboardHistoryBitmapItemView::ContentsView>
 ClipboardHistoryBitmapItemView::CreateContentsView() {
   return std::make_unique<BitmapContentsView>(this);
 }
 
-std::u16string ClipboardHistoryBitmapItemView::GetAccessibleName() const {
-  switch (data_format_) {
-    case ui::ClipboardInternalFormat::kHtml:
-      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE);
-    case ui::ClipboardInternalFormat::kPng:
-      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_PNG_IMAGE);
-    default:
-      NOTREACHED();
-      return std::u16string();
-  }
-}
+BEGIN_METADATA(ClipboardHistoryBitmapItemView, ClipboardHistoryItemView)
+END_METADATA
 
 }  // namespace ash

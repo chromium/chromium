@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -42,8 +43,7 @@ ClipboardHistoryFileItemView::CreateContentsView() {
   return contents_view;
 }
 
-const char* ClipboardHistoryFileItemView::GetClassName() const {
-  return "ClipboardHistoryFileItemView";
-}
+BEGIN_METADATA(ClipboardHistoryFileItemView, ClipboardHistoryTextItemView)
+END_METADATA
 
 }  // namespace ash

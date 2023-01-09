@@ -62,7 +62,7 @@ gfx::Size PowerTrayView::CalculatePreferredSize() const {
 void PowerTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // A valid role must be set prior to setting the name.
   node_data->role = ax::mojom::Role::kImage;
-  node_data->SetNameChecked(accessible_name_);
+  node_data->SetNameChecked(GetAccessibleName());
 }
 
 views::View* PowerTrayView::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -94,11 +94,11 @@ void PowerTrayView::OnPowerStatusChanged() {
 void PowerTrayView::UpdateStatus() {
   UpdateImage(/*icon_color_changed=*/false);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
-  accessible_name_ = PowerStatus::Get()->GetAccessibleNameString(true);
+  SetAccessibleName(PowerStatus::Get()->GetAccessibleNameString(true));
   tooltip_ = PowerStatus::Get()->GetInlinedStatusString();
   // Currently ChromeVox only reads the inner view when touching the icon.
   // As a result this node's accessible node data will not be read.
-  image_view()->SetAccessibleName(accessible_name_);
+  image_view()->SetAccessibleName(GetAccessibleName());
 }
 
 void PowerTrayView::UpdateImage(bool icon_color_changed) {

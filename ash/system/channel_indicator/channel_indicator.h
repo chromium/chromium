@@ -61,11 +61,8 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
  private:
   void Update();
   void SetImageOrText();
-  void SetAccessibleName();
+  void OnAccessibleNameChanged(const std::u16string& new_name) override;
   void SetTooltip();
-
-  // The localized string used to announce this view in accessibility mode.
-  std::u16string accessible_name_;
 
   // The localized string displayed when this view is hovered-over.
   std::u16string tooltip_;

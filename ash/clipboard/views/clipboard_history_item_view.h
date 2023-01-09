@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -23,6 +24,7 @@ class ClipboardHistoryResourceManager;
 // The base class for menu items of the clipboard history menu.
 class ASH_EXPORT ClipboardHistoryItemView : public views::View {
  public:
+  METADATA_HEADER(ClipboardHistoryItemView);
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(
       const ClipboardHistoryItem& item,
@@ -71,6 +73,7 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // Used by subclasses to draw contents, such as text or bitmaps.
   class ContentsView : public views::View, public views::ViewTargeterDelegate {
    public:
+    METADATA_HEADER(ContentsView);
     explicit ContentsView(ClipboardHistoryItemView* container);
     ContentsView(const ContentsView& rhs) = delete;
     ContentsView& operator=(const ContentsView& rhs) = delete;
@@ -92,9 +95,6 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
     ClipboardHistoryItemView* container() { return container_; }
 
    private:
-    // views::View:
-    const char* GetClassName() const override;
-
     // views::ViewTargeterDelegate:
     bool DoesIntersectRect(const views::View* target,
                            const gfx::Rect& rect) const override;
@@ -114,9 +114,6 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   // Creates the contents view.
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
-
-  // Returns the name of the accessible node.
-  virtual std::u16string GetAccessibleName() const = 0;
 
   const ClipboardHistoryItem* clipboard_history_item() const {
     return clipboard_history_item_;

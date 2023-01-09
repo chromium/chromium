@@ -5,6 +5,7 @@
 #ifndef ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_MAIN_BUTTON_H_
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_MAIN_BUTTON_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -13,6 +14,7 @@ class ClipboardHistoryItemView;
 // The view responding to mouse click or gesture tap events.
 class ClipboardHistoryMainButton : public views::Button {
  public:
+  METADATA_HEADER(ClipboardHistoryMainButton);
   explicit ClipboardHistoryMainButton(ClipboardHistoryItemView* container);
   ClipboardHistoryMainButton(const ClipboardHistoryMainButton& rhs) = delete;
   ClipboardHistoryMainButton& operator=(const ClipboardHistoryMainButton& rhs) =
@@ -25,7 +27,6 @@ class ClipboardHistoryMainButton : public views::Button {
   void SetShouldHighlight(bool should_highlight);
 
   // views::Button:
-  const char* GetClassName() const override;
   void OnClickCanceled(const ui::Event& event) override;
   void OnThemeChanged() override;
   void OnGestureEvent(ui::GestureEvent* event) override;

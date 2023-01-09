@@ -379,8 +379,9 @@ void MediaNotificationViewImpl::GetAccessibleNodeData(
       l10n_util::GetStringUTF8(
           IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 
-  if (!accessible_name_.empty())
-    node_data->SetNameChecked(accessible_name_);
+  if (!GetAccessibleName().empty()) {
+    node_data->SetNameChecked(GetAccessibleName());
+  }
 }
 
 void MediaNotificationViewImpl::UpdateWithMediaSessionInfo(
@@ -428,7 +429,7 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
   title_label_->SetText(metadata.title);
   artist_label_->SetText(metadata.artist);
 
-  accessible_name_ = GetAccessibleNameFromMetadata(metadata);
+  SetAccessibleName(GetAccessibleNameFromMetadata(metadata));
 
   // The title label should only be a11y-focusable when there is text to be
   // read.

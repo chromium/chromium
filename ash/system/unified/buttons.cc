@@ -150,9 +150,6 @@ void BatteryLabelView::Update() {
   separator_view_->SetVisible(!percentage_text.empty() &&
                               !use_smart_charging_ui_ && !status_text.empty());
   status_->SetVisible(!status_text.empty());
-
-  percentage_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-  status_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 BEGIN_METADATA(BatteryLabelView, BatteryInfoViewBase)
@@ -201,7 +198,6 @@ void BatteryIconView::Update() {
 
   percentage_->SetText(percentage_text);
   percentage_->SetVisible(!percentage_text.empty());
-  percentage_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 
   ConfigureIcon();
 }

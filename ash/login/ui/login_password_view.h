@@ -13,6 +13,7 @@
 #include "ash/public/cpp/session/user_info.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -60,6 +61,7 @@ class ASH_EXPORT LoginPasswordView
       public ui::ImplicitAnimationObserver,
       public base::SupportsWeakPtr<LoginPasswordView> {
  public:
+  METADATA_HEADER(LoginPasswordView);
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
    public:
@@ -112,9 +114,6 @@ class ASH_EXPORT LoginPasswordView
   void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
                          const std::u16string& accessibility_label);
 
-  // Set the textfield name used for accessibility.
-  void SetAccessibleName(const std::u16string& name);
-
   // Enable or disable focus on the child elements (i.e.: password field and
   // submit button, or display password button if it is shown).
   void SetFocusEnabledForTextfield(bool enable);
@@ -141,7 +140,6 @@ class ASH_EXPORT LoginPasswordView
   bool IsReadOnly() const;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -192,6 +190,8 @@ class ASH_EXPORT LoginPasswordView
   // UpdateUiState enables/disables the submit button, and the display password
   // button when it is visible.
   void UpdateUiState();
+
+  void OnAccessibleNameChanged(const std::u16string& new_name) override;
 
   OnPasswordSubmit on_submit_;
   OnPasswordTextChanged on_password_text_changed_;

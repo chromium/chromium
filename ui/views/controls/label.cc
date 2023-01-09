@@ -108,27 +108,21 @@ const std::u16string& Label::GetText() const {
 void Label::SetText(const std::u16string& new_text) {
   if (new_text == GetText())
     return;
+
+  if (GetAccessibleName().empty() || GetAccessibleName() == GetText()) {
+    SetAccessibleName(new_text);
+  }
+
   full_text_->SetText(new_text);
   ClearDisplayText();
   OnPropertyChanged(&full_text_ + kLabelText,
                     kPropertyEffectsPreferredSizeChanged);
-  if (accessible_name_.empty()) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-  }
   stored_selection_range_ = gfx::Range::InvalidRange();
 }
 
-void Label::SetAccessibleName(const std::u16string& name) {
-  if (name == accessible_name_)
-    return;
-  accessible_name_ = name;
-  OnPropertyChanged(&accessible_name_, kPropertyEffectsNone);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-}
-
 const std::u16string& Label::GetAccessibleName() const {
-  return accessible_name_.empty() ? full_text_->GetDisplayText()
-                                  : accessible_name_;
+  return View::GetAccessibleName().empty() ? full_text_->GetDisplayText()
+                                           : View::GetAccessibleName();
 }
 
 int Label::GetTextContext() const {
@@ -1344,7 +1338,6 @@ ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, HandlesTooltips)
 ADD_PROPERTY_METADATA(bool, CollapseWhenHidden)
 ADD_PROPERTY_METADATA(int, MaximumWidth)
-ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 END_METADATA
 
 }  // namespace views

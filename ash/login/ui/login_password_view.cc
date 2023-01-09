@@ -26,6 +26,7 @@
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -140,8 +141,6 @@ constexpr base::TimeDelta kClearPasswordAfterDelay = base::Seconds(30);
 
 // Delay after which the password gets back to hidden state, for security.
 constexpr base::TimeDelta kHidePasswordAfterDelay = base::Seconds(5);
-
-constexpr const char kLoginPasswordViewName[] = "LoginPasswordView";
 
 struct FrameParams {
   FrameParams(int duration_in_ms, float opacity_param)
@@ -731,8 +730,9 @@ void LoginPasswordView::SetEasyUnlockIcon(
   HandleLeftIconsVisibilities(false /*handling_capslock*/);
 }
 
-void LoginPasswordView::SetAccessibleName(const std::u16string& name) {
-  textfield_->SetAccessibleName(name);
+void LoginPasswordView::OnAccessibleNameChanged(
+    const std::u16string& new_name) {
+  textfield_->SetAccessibleName(new_name);
 }
 
 void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
@@ -794,10 +794,6 @@ void LoginPasswordView::SetReadOnly(bool read_only) {
 
 bool LoginPasswordView::IsReadOnly() const {
   return textfield_->GetReadOnly();
-}
-
-const char* LoginPasswordView::GetClassName() const {
-  return kLoginPasswordViewName;
 }
 
 gfx::Size LoginPasswordView::CalculatePreferredSize() const {
@@ -966,5 +962,8 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
       kLockScreenCapsLockIcon, highlight ? kColorAshIconColorPrimary
                                          : kColorAshIconPrimaryDisabledColor));
 }
+
+BEGIN_METADATA(LoginPasswordView, views::View)
+END_METADATA
 
 }  // namespace ash

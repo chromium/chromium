@@ -266,7 +266,7 @@ class FingerprintLabel : public views::Label {
   // views::Label:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kStaticText;
-    node_data->SetNameChecked(accessible_name_);
+    node_data->SetNameChecked(GetAccessibleName());
   }
 
   // views::Label:
@@ -277,13 +277,6 @@ class FingerprintLabel : public views::Label {
   }
 
  private:
-  void SetAccessibleName(const std::u16string& name) {
-    accessible_name_ = name;
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                             true /*send_native_event*/);
-  }
-
-  std::u16string accessible_name_;
 };
 
 // The content needed to render the disabled auth message view.
@@ -867,8 +860,7 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
       message_warning_->SetText(message_warning);
 
       if (time_left.InMinutes() != prev_time_left_.InMinutes()) {
-        message_warning_->NotifyAccessibilityEvent(
-            ax::mojom::Event::kTextChanged, true);
+        message_warning_->SetAccessibleName(message_warning);
       }
       prev_time_left_ = time_left;
     }
