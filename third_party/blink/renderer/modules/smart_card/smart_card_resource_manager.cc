@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/smart_card/smart_card_error.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_reader_presence_event.h"
 #include "third_party/blink/renderer/modules/smart_card/smart_card_reader_presence_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -118,7 +119,8 @@ ScriptPromise SmartCardResourceManager::getReaders(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   get_readers_promises_.insert(resolver);
 
   EnsureServiceConnection();
@@ -156,12 +158,19 @@ ScriptPromise SmartCardResourceManager::watchForReaders(
 
 void SmartCardResourceManager::FinishGetReaders(
     ScriptPromiseResolver* resolver,
-    Vector<device::mojom::blink::SmartCardReaderInfoPtr> reader_infos) {
+    mojom::blink::SmartCardGetReadersResultPtr result) {
   DCHECK(get_readers_promises_.Contains(resolver));
   get_readers_promises_.erase(resolver);
 
+  if (result->is_response_code()) {
+    auto* error =
+        MakeGarbageCollected<SmartCardError>(result->get_response_code());
+    resolver->Reject(error);
+    return;
+  }
+
   HeapVector<Member<SmartCardReader>> readers;
-  for (auto& reader_info : reader_infos) {
+  for (auto& reader_info : result->get_readers()) {
     readers.push_back(GetOrCreateReader(std::move(reader_info)));
   }
 

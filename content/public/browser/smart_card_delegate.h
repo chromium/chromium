@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "services/device/public/mojom/smart_card.mojom-forward.h"
+#include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
 
 namespace content {
 
@@ -16,8 +17,8 @@ namespace content {
 // API.
 class CONTENT_EXPORT SmartCardDelegate {
  public:
-  using GetReadersCallback = base::OnceCallback<void(
-      std::vector<device::mojom::SmartCardReaderInfoPtr>)>;
+  using GetReadersCallback =
+      base::OnceCallback<void(blink::mojom::SmartCardGetReadersResultPtr)>;
 
   // Observer class for changes to smart card readers.
   //

@@ -19,23 +19,44 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 
 using device::mojom::SmartCardReaderInfo;
 using device::mojom::SmartCardReaderInfoPtr;
 using device::mojom::SmartCardReaderState;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
 
 namespace content {
 
 namespace {
+
+class MockSmartCardDelegate : public SmartCardDelegate {
+ public:
+  MOCK_METHOD(void, GetReaders, (GetReadersCallback), (override));
+  MOCK_METHOD(bool,
+              SupportsReaderAddedRemovedNotifications,
+              (),
+              (const, override));
+};
 
 class FakeSmartCardDelegate : public SmartCardDelegate {
  public:
   void GetReaders(GetReadersCallback) override;
   bool SupportsReaderAddedRemovedNotifications() const override { return true; }
 
+  bool AddReader(const std::string& name) {
+    std::vector<uint8_t> atr = {1, 2, 3, 4};
+    SmartCardReaderInfoPtr reader =
+        SmartCardReaderInfo::New(name, SmartCardReaderState::kEmpty, atr);
+    return AddReader(std::move(reader));
+  }
   bool AddReader(SmartCardReaderInfoPtr reader_info);
+
   bool RemoveReader(const std::string& name);
 
  private:
@@ -51,7 +72,7 @@ class SmartCardTestContentBrowserClient : public ContentBrowserClient {
       SmartCardTestContentBrowserClient&) = delete;
   ~SmartCardTestContentBrowserClient() override;
 
-  FakeSmartCardDelegate& delegate() { return delegate_; }
+  void SetSmartCardDelegate(std::unique_ptr<SmartCardDelegate>);
 
   // ContentBrowserClient:
   SmartCardDelegate* GetSmartCardDelegate(
@@ -65,13 +86,11 @@ class SmartCardTestContentBrowserClient : public ContentBrowserClient {
       const url::Origin& app_origin) override;
 
  private:
-  FakeSmartCardDelegate delegate_;
+  std::unique_ptr<SmartCardDelegate> delegate_;
 };
 
 class SmartCardTest : public ContentBrowserTest {
  public:
-  FakeSmartCardDelegate& delegate() { return test_client_.delegate(); }
-
   GURL GetIsolatedContextUrl() {
     return https_server_.GetURL(
         "a.com",
@@ -80,15 +99,20 @@ class SmartCardTest : public ContentBrowserTest {
         "Permissions-Policy: smart-card%3D(self)");
   }
 
-  bool AddReader(const std::string& name) {
-    std::vector<uint8_t> atr = {1, 2, 3, 4};
-    SmartCardReaderInfoPtr reader =
-        SmartCardReaderInfo::New(name, SmartCardReaderState::kEmpty, atr);
-    return delegate().AddReader(std::move(reader));
+  FakeSmartCardDelegate* CreateFakeSmartCardDelegate() {
+    auto unique_delegate = std::make_unique<FakeSmartCardDelegate>();
+    FakeSmartCardDelegate* delegate = unique_delegate.get();
+    test_client_.SetSmartCardDelegate(std::move(unique_delegate));
+    return delegate;
   }
 
-  bool RemoveReader(const std::string& name) {
-    return delegate().RemoveReader(name);
+  MockSmartCardDelegate* CreateMockSmartCardDelegate() {
+    auto unique_delegate = std::make_unique<MockSmartCardDelegate>();
+    MockSmartCardDelegate* delegate = unique_delegate.get();
+    test_client_.SetSmartCardDelegate(std::move(unique_delegate));
+    ON_CALL(*delegate, SupportsReaderAddedRemovedNotifications)
+        .WillByDefault(Return(true));
+    return delegate;
   }
 
  private:
@@ -152,7 +176,12 @@ SmartCardTestContentBrowserClient::~SmartCardTestContentBrowserClient() =
 
 SmartCardDelegate* SmartCardTestContentBrowserClient::GetSmartCardDelegate(
     content::BrowserContext* browser_context) {
-  return &delegate_;
+  return delegate_.get();
+}
+
+void SmartCardTestContentBrowserClient::SetSmartCardDelegate(
+    std::unique_ptr<SmartCardDelegate> delegate) {
+  delegate_ = std::move(delegate);
 }
 
 bool SmartCardTestContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
@@ -185,7 +214,8 @@ void FakeSmartCardDelegate::GetReaders(GetReadersCallback callback) {
     readers.push_back(reader.second->Clone());
   }
 
-  std::move(callback).Run(std::move(readers));
+  std::move(callback).Run(
+      blink::mojom::SmartCardGetReadersResult::NewReaders(std::move(readers)));
 }
 
 bool FakeSmartCardDelegate::AddReader(SmartCardReaderInfoPtr reader_info) {
@@ -216,7 +246,9 @@ bool FakeSmartCardDelegate::RemoveReader(const std::string& name) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReaders) {
-  ASSERT_TRUE(AddReader("Fake Reader"));
+  FakeSmartCardDelegate* delegate = CreateFakeSmartCardDelegate();
+
+  ASSERT_TRUE(delegate->AddReader("Fake Reader"));
 
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
@@ -229,6 +261,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReaders) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderAdd) {
+  FakeSmartCardDelegate* delegate = CreateFakeSmartCardDelegate();
+
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
   EXPECT_TRUE(ExecJs(shell(), R"((async () => {
@@ -240,14 +274,16 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderAdd) {
     });
   })())"));
 
-  ASSERT_TRUE(AddReader("New Fake Reader"));
+  ASSERT_TRUE(delegate->AddReader("New Fake Reader"));
 
   EXPECT_EQ("New Fake Reader", EvalJs(shell(), "window.promise"));
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderRemove) {
+  FakeSmartCardDelegate* delegate = CreateFakeSmartCardDelegate();
   const std::string reader_name = "Fake Reader";
-  ASSERT_TRUE(AddReader(reader_name));
+
+  ASSERT_TRUE(delegate->AddReader(reader_name));
 
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
@@ -260,9 +296,34 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ReaderRemove) {
     });
   })())"));
 
-  ASSERT_TRUE(RemoveReader(reader_name));
+  ASSERT_TRUE(delegate->RemoveReader(reader_name));
 
   EXPECT_EQ(reader_name, EvalJs(shell(), "window.promise"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, GetReadersFails) {
+  MockSmartCardDelegate* delegate = CreateMockSmartCardDelegate();
+
+  EXPECT_CALL(*delegate, SupportsReaderAddedRemovedNotifications);
+
+  EXPECT_CALL(*delegate, GetReaders(_))
+      .WillRepeatedly([&](SmartCardDelegate::GetReadersCallback cb) {
+        std::move(cb).Run(
+            blink::mojom::SmartCardGetReadersResult::NewResponseCode(
+                blink::mojom::SmartCardResponseCode::kNoService));
+      });
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  EXPECT_EQ("SmartCardError: no-service", EvalJs(shell(), R"(
+    (async () => {
+      try {
+        let readers = await navigator.smartCard.getReaders();
+      } catch (e) {
+        return `${e.name}: ${e.responseCode}`;
+      }
+    })()
+  )"));
 }
 
 }  // namespace content

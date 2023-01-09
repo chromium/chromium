@@ -6,6 +6,30 @@ module blink.mojom;
 
 import "services/device/public/mojom/smart_card.mojom";
 
+// Maps to the namesake enum in
+// https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+enum SmartCardResponseCode {
+  kNoService,
+  kNoSmartCard,
+  kNotReady,
+  kNotTransacted,
+  kProtoMismatch,
+  kReaderUnavailable,
+  kRemovedCard,
+  kResetCard,
+  kSharingViolation,
+  kSystemCancelled,
+  kUnpoweredCard,
+  kUnresponsiveCard,
+  kUnsupportedCard,
+  kUnsupportedFeature
+};
+
+union SmartCardGetReadersResult {
+  SmartCardResponseCode response_code;
+  array<device.mojom.SmartCardReaderInfo> readers;
+};
+
 // Interface for accessing smart card readers from the render process.
 // The implementation is responsible for checking access permissions.
 interface SmartCardService {
@@ -16,9 +40,11 @@ interface SmartCardService {
   RegisterClient(pending_associated_remote<device.mojom.SmartCardManagerClient> client)
       => (bool can_notify_added_removed);
 
-  // Enumerates all smart card readers in the system. Returns an empty array
-  // if the client is denied access to smart cards.
-  GetReaders() => (array<device.mojom.SmartCardReaderInfo> readers);
+  // Enumerates all smart card readers in the system.
+  // If the client is denied access to smart cards, the call succeeds but the
+  // `result.readers` array will be empty.
+  // If the call fails a `result.response_code` will be returned instead.
+  GetReaders() => (SmartCardGetReadersResult result);
 
   // TODO(crbug.com/1386175): Expose SmartCardConnection
 };

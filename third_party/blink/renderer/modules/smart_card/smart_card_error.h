@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_ERROR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_ERROR_H_
 
+#include "third_party/blink/public/mojom/smart_card/smart_card.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -21,7 +22,7 @@ class MODULES_EXPORT SmartCardError : public DOMException {
   // Constructor exposed to script. Called by the V8 bindings.
   static SmartCardError* Create(String message, const SmartCardErrorOptions*);
 
-  SmartCardError(String message, V8SmartCardResponseCode::Enum);
+  explicit SmartCardError(mojom::SmartCardResponseCode mojom_response_code);
   SmartCardError(String message, V8SmartCardResponseCode);
   ~SmartCardError() override;
 

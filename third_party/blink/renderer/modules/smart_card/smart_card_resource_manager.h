@@ -63,7 +63,8 @@ class MODULES_EXPORT SmartCardResourceManager final
   void EnsureServiceConnection();
   void CloseServiceConnection();
 
-  void FinishGetReaders(ScriptPromiseResolver*, Vector<SmartCardReaderInfoPtr>);
+  void FinishGetReaders(ScriptPromiseResolver*,
+                        mojom::blink::SmartCardGetReadersResultPtr);
 
   void OnManagerClientRegistered(bool supports_reader_presence_observer);
   void ResolveWatchForReadersPromise(ScriptPromiseResolver* resolver);
