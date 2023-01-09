@@ -223,6 +223,7 @@ class PageNodeImpl
   const absl::optional<freezing::FreezingVote>& GetFreezingVote()
       const override;
   uint64_t EstimateResidentSetSize() const override;
+  uint64_t EstimatePrivateFootprintSize() const override;
 
   // NodeBase:
   void OnJoiningGraph() override;

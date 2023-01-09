@@ -250,6 +250,11 @@ uint64_t FrameNodeImpl::resident_set_kb_estimate() const {
   return resident_set_kb_estimate_;
 }
 
+uint64_t FrameNodeImpl::private_footprint_kb_estimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb_estimate_;
+}
+
 void FrameNodeImpl::SetIsCurrent(bool is_current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_current_.SetAndMaybeNotify(this, is_current);
@@ -303,6 +308,12 @@ void FrameNodeImpl::SetVisibility(Visibility visibility) {
 void FrameNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   resident_set_kb_estimate_ = rss_estimate;
+}
+
+void FrameNodeImpl::SetPrivateFootprintKbEstimate(
+    uint64_t private_footprint_estimate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  private_footprint_kb_estimate_ = private_footprint_estimate;
 }
 
 void FrameNodeImpl::OnNavigationCommitted(const GURL& url, bool same_document) {
@@ -581,6 +592,11 @@ FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
 uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resident_set_kb_estimate();
+}
+
+uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb_estimate();
 }
 
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {

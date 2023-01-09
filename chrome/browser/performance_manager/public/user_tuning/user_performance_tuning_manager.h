@@ -98,19 +98,19 @@ class UserPerformanceTuningManager
       : public content::WebContentsUserData<PreDiscardResourceUsage> {
    public:
     PreDiscardResourceUsage(content::WebContents* contents,
-                            uint64_t resident_set_size_estimate);
+                            uint64_t memory_footprint_estimate);
     ~PreDiscardResourceUsage() override;
 
     // Returns the resource usage estimate in kilobytes.
-    uint64_t resident_set_size_estimate_kb() const {
-      return resident_set_size_estimate_;
+    uint64_t memory_footprint_estimate_kb() const {
+      return memory_footprint_estimate_;
     }
 
    private:
     friend WebContentsUserData;
     WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-    uint64_t resident_set_size_estimate_ = 0;
+    uint64_t memory_footprint_estimate_ = 0;
   };
 
   static UserPerformanceTuningManager* GetInstance();

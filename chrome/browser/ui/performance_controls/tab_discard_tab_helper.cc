@@ -43,7 +43,7 @@ uint64_t TabDiscardTabHelper::GetMemorySavingsInBytes() const {
           PreDiscardResourceUsage::FromWebContents(&GetWebContents());
   return pre_discard_resource_usage == nullptr
              ? 0
-             : pre_discard_resource_usage->resident_set_size_estimate_kb() *
+             : pre_discard_resource_usage->memory_footprint_estimate_kb() *
                    kKiloByte;
 }
 

@@ -86,9 +86,9 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
     content::WebContents* contents,
-    uint64_t resident_set_size_estimate)
+    uint64_t memory_footprint_estimate)
     : content::WebContentsUserData<PreDiscardResourceUsage>(*contents),
-      resident_set_size_estimate_(resident_set_size_estimate) {}
+      memory_footprint_estimate_(memory_footprint_estimate) {}
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::
     ~PreDiscardResourceUsage() = default;

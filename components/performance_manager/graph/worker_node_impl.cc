@@ -109,6 +109,11 @@ void WorkerNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {
   resident_set_kb_estimate_ = rss_estimate;
 }
 
+void WorkerNodeImpl::SetPrivateFootprintKbEstimate(uint64_t pmf_estimate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  private_footprint_kb_estimate_ = pmf_estimate;
+}
+
 void WorkerNodeImpl::OnFinalResponseURLDetermined(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url_.is_empty());
@@ -166,6 +171,11 @@ const PriorityAndReason& WorkerNodeImpl::priority_and_reason() const {
 uint64_t WorkerNodeImpl::resident_set_kb_estimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resident_set_kb_estimate_;
+}
+
+uint64_t WorkerNodeImpl::private_footprint_kb_estimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb_estimate_;
 }
 
 void WorkerNodeImpl::OnJoiningGraph() {
@@ -256,6 +266,10 @@ const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
 
 uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
   return resident_set_kb_estimate();
+}
+
+uint64_t WorkerNodeImpl::GetPrivateFootprintKbEstimate() const {
+  return private_footprint_kb_estimate();
 }
 
 void WorkerNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {

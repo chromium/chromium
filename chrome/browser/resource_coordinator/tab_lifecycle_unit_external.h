@@ -42,7 +42,7 @@ class TabLifecycleUnitExternal {
 
   // Discards the tab.
   virtual bool DiscardTab(mojom::LifecycleUnitDiscardReason reason,
-                          uint64_t resident_set_size_estimate = 0) = 0;
+                          uint64_t memory_footprint_estimate = 0) = 0;
 
   // Returns true if the tab is discarded.
   virtual bool IsDiscarded() const = 0;

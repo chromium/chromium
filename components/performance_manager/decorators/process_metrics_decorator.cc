@@ -155,8 +155,8 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
     if (!process_node)
       continue;
 
-    process_node->set_private_footprint_kb(
-        process_dump_iter.os_dump().private_footprint_kb);
+    uint64_t process_pmf = process_dump_iter.os_dump().private_footprint_kb;
+    process_node->set_private_footprint_kb(process_pmf);
 
     uint64_t process_rss = process_dump_iter.os_dump().resident_set_kb;
     process_node->set_resident_set_kb(process_rss);
@@ -165,18 +165,21 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
                                          process_node->worker_nodes().size();
 
     if (frame_and_worker_node_count > 0) {
-      // For now, equally split the process' RSS among all of its frames and
-      // workers.
+      // For now, equally split the process' RSS and PMF among all of its frames
+      // and workers.
       // TODO(anthonyvd): This should be more sophisticated, like attributing
-      // the RSS to each node proportionally to its V8 heap size.
+      // the RSS and PMF to each node proportionally to its V8 heap size.
       uint64_t rss_estimate_part = process_rss / frame_and_worker_node_count;
+      uint64_t pmf_estimate_part = process_pmf / frame_and_worker_node_count;
 
       for (FrameNodeImpl* frame : process_node->frame_nodes()) {
         frame->SetResidentSetKbEstimate(rss_estimate_part);
+        frame->SetPrivateFootprintKbEstimate(pmf_estimate_part);
       }
 
       for (WorkerNodeImpl* worker : process_node->worker_nodes()) {
         worker->SetResidentSetKbEstimate(rss_estimate_part);
+        worker->SetPrivateFootprintKbEstimate(pmf_estimate_part);
       }
     }
   }

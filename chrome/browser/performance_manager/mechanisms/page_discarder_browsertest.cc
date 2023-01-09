@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
              uint64_t* total_ptr) {
             EXPECT_TRUE(page_node);
 
-            // Simulate that there are RSS estimates available for the frames in
+            // Simulate that there are PMF estimates available for the frames in
             // this page.
             performance_manager::GraphOperations::VisitFrameTreePreOrder(
                 page_node.get(),
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
                     [](uint64_t* total, const FrameNode* frame_node) {
                       *total += 1;
                       FrameNodeImpl::FromNode(frame_node)
-                          ->SetResidentSetKbEstimate(1);
+                          ->SetPrivateFootprintKbEstimate(1);
                       return true;
                     },
                     total_ptr));
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(new_contents);
   EXPECT_TRUE(pre_discard_resource_usage);
-  EXPECT_EQ(total, pre_discard_resource_usage->resident_set_size_estimate_kb());
+  EXPECT_EQ(total, pre_discard_resource_usage->memory_footprint_estimate_kb());
 }
 
 }  // namespace performance_manager

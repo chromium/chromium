@@ -100,7 +100,7 @@ class TabLifecycleUnitSource::TabLifecycleUnit
                   DecisionDetails* decision_details) const override;
   LifecycleUnitDiscardReason GetDiscardReason() const override;
   bool Discard(LifecycleUnitDiscardReason discard_reason,
-               uint64_t resident_set_size_estimate) override;
+               uint64_t memory_footprint_estimate) override;
   ukm::SourceId GetUkmSourceId() const override;
 
   // Implementations of some functions from TabLifecycleUnitExternal. These are

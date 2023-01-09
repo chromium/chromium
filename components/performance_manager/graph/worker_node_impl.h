@@ -57,6 +57,9 @@ class WorkerNodeImpl
   // Sets the Resident Set Size estimate.
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
 
+  // Sets the Private Footprint Size estimate.
+  void SetPrivateFootprintKbEstimate(uint64_t pmf_estimate);
+
   // Invoked when the worker script was fetched and the final response URL is
   // available.
   void OnFinalResponseURLDetermined(const GURL& url);
@@ -74,6 +77,7 @@ class WorkerNodeImpl
   const base::flat_set<WorkerNodeImpl*>& child_workers() const;
   const PriorityAndReason& priority_and_reason() const;
   uint64_t resident_set_kb_estimate() const;
+  uint64_t private_footprint_kb_estimate() const;
 
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -109,6 +113,7 @@ class WorkerNodeImpl
   bool VisitChildDedicatedWorkers(const WorkerNodeVisitor&) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
   uint64_t GetResidentSetKbEstimate() const override;
+  uint64_t GetPrivateFootprintKbEstimate() const override;
 
   // Invoked when |worker_node| becomes a child of this worker.
   void AddChildWorker(WorkerNodeImpl* worker_node);
@@ -150,6 +155,8 @@ class WorkerNodeImpl
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   uint64_t resident_set_kb_estimate_ = 0;
+
+  uint64_t private_footprint_kb_estimate_ = 0;
 
   // Worker priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<

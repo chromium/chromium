@@ -218,6 +218,8 @@ class PageNode : public Node {
   virtual PageState GetPageState() const = 0;
 
   virtual uint64_t EstimateResidentSetSize() const = 0;
+
+  virtual uint64_t EstimatePrivateFootprintSize() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to

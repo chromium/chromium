@@ -582,6 +582,18 @@ uint64_t PageNodeImpl::EstimateResidentSetSize() const {
   return total;
 }
 
+uint64_t PageNodeImpl::EstimatePrivateFootprintSize() const {
+  uint64_t total = 0;
+  performance_manager::GraphOperations::VisitFrameTreePreOrder(
+      this, base::BindRepeating(
+                [](uint64_t* total, const FrameNode* frame_node) {
+                  *total += frame_node->GetPrivateFootprintKbEstimate();
+                  return true;
+                },
+                &total));
+  return total;
+}
+
 void PageNodeImpl::SetLifecycleState(LifecycleState lifecycle_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lifecycle_state_.SetAndMaybeNotify(this, lifecycle_state);
