@@ -22,12 +22,11 @@ const char kPairingSecretKey[] = "secret";
 static remoting::Keychain* g_keychain =
     remoting::RemotingKeychain::GetInstance();
 
-std::unique_ptr<base::Value> GetHostPairingListForUser(
-    const std::string& user_id) {
+base::Value::Dict GetHostPairingListForUser(const std::string& user_id) {
   std::string data =
       g_keychain->GetData(remoting::Keychain::Key::PAIRING_INFO, user_id);
   if (data.empty()) {
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
   }
   JSONStringValueDeserializer deserializer(data);
   int error_code = 0;
@@ -37,13 +36,13 @@ std::unique_ptr<base::Value> GetHostPairingListForUser(
   if (error_code || !error_message.empty()) {
     LOG(ERROR) << "Failed to decode host pairing list. Code: " << error_code
                << " message: " << error_message;
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
   }
   if (!value->is_dict()) {
     LOG(ERROR) << "Decoded host list is not a dictionary.";
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
   }
-  return value;
+  return std::move(*value).TakeDict();
 }
 
 }  // namespace
@@ -66,36 +65,31 @@ HostPairingInfo::~HostPairingInfo() {}
 // static
 HostPairingInfo HostPairingInfo::GetPairingInfo(const std::string& user_id,
                                                 const std::string& host_id) {
-  std::unique_ptr<base::Value> host_pairings =
-      GetHostPairingListForUser(user_id);
-
-  base::Value* pairing_id = host_pairings->FindPath({host_id, kPairingIdKey});
-  base::Value* pairing_secret =
-      host_pairings->FindPath({host_id, kPairingSecretKey});
-  if (pairing_id && pairing_id->is_string() && pairing_secret &&
-      pairing_secret->is_string()) {
-    return HostPairingInfo(user_id, host_id, pairing_id->GetString(),
-                           pairing_secret->GetString());
+  base::Value::Dict host_pairings = GetHostPairingListForUser(user_id);
+  base::Value::Dict* host_pairing = host_pairings.FindDict(host_id);
+  if (host_pairing) {
+    std::string* pairing_id = host_pairing->FindString(kPairingIdKey);
+    std::string* pairing_secret = host_pairing->FindString(kPairingSecretKey);
+    if (pairing_id && pairing_secret) {
+      return HostPairingInfo(user_id, host_id, *pairing_id, *pairing_secret);
+    }
   }
-
   // Pairing not exist or entry corrupted.
   return HostPairingInfo(user_id, host_id, "", "");
 }
 
 void HostPairingInfo::Save() {
-  std::unique_ptr<base::Value> host_pairings =
-      GetHostPairingListForUser(user_id_);
+  base::Value::Dict host_pairings = GetHostPairingListForUser(user_id_);
 
-  if (!host_pairings) {
-    host_pairings.reset(new base::DictionaryValue());
-  }
+  base::Value::Dict host_pairing;
+  host_pairing.Set(kPairingIdKey, pairing_id_);
+  host_pairing.Set(kPairingSecretKey, pairing_secret_);
 
-  host_pairings->SetPath({host_id_, kPairingIdKey}, base::Value(pairing_id_));
-  host_pairings->SetPath({host_id_, kPairingSecretKey},
-                         base::Value(pairing_secret_));
+  host_pairings.Set(host_id_, std::move(host_pairing));
+
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);
-  serializer.Serialize(*host_pairings);
+  serializer.Serialize(host_pairings);
   g_keychain->SetData(remoting::Keychain::Key::PAIRING_INFO, user_id_,
                       json_string);
 }
