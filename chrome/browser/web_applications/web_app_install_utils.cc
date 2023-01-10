@@ -509,6 +509,47 @@ apps::FileHandlers CreateFileHandlersFromManifest(
 }
 
 // Create the WebAppInstallInfo icons list *outside* of |web_app_info|, so
+// that we can decide later whether or not to replace the existing icons.
+std::vector<apps::IconInfo> CreateWebAppInstallInfoIcons(
+    const std::vector<blink::Manifest::ImageResource> icons) {
+  std::vector<apps::IconInfo> web_app_icons;
+  for (const auto& icon : icons) {
+    // An icon's purpose vector should never be empty (the manifest parser
+    // should have added ANY if there was no purpose specified in the manifest).
+    DCHECK(!icon.purpose.empty());
+
+    for (IconPurpose purpose : icon.purpose) {
+      apps::IconInfo info;
+
+      if (!icon.sizes.empty()) {
+        // Filter out non-square or too large icons.
+        auto valid_size =
+            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+              return size.width() == size.height() &&
+                     size.width() <= kMaxIconSize;
+            });
+        if (valid_size == icon.sizes.end()) {
+          continue;
+        }
+        // TODO(https://crbug.com/1071308): Take the declared icon density and
+        // sizes into account.
+        info.square_size_px = valid_size->width();
+      }
+
+      info.url = icon.src;
+      info.purpose = ManifestPurposeToIconInfoPurpose(purpose);
+      web_app_icons.push_back(std::move(info));
+
+      // Limit the number of icons we store on the user's machine.
+      if (web_app_icons.size() == kMaxIcons) {
+        return web_app_icons;
+      }
+    }
+  }
+  return web_app_icons;
+}
+
+// Create the WebAppInstallInfo icons list *outside* of |web_app_info|, so
 // that we can decide later whether or not to replace the existing
 // home tab icons.
 // Icons are replaced if we filter out icons that are too large or non-square
@@ -608,41 +649,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   // Create the WebAppInstallInfo icons list *outside* of |web_app_info|, so
   // that we can decide later whether or not to replace the existing icons.
-  std::vector<apps::IconInfo> web_app_icons;
-  for (const auto& icon : manifest.icons) {
-    // An icon's purpose vector should never be empty (the manifest parser
-    // should have added ANY if there was no purpose specified in the manifest).
-    DCHECK(!icon.purpose.empty());
-
-    for (IconPurpose purpose : icon.purpose) {
-      apps::IconInfo info;
-
-      if (!icon.sizes.empty()) {
-        // Filter out non-square or too large icons.
-        auto valid_size =
-            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
-              return size.width() == size.height() &&
-                     size.width() <= kMaxIconSize;
-            });
-        if (valid_size == icon.sizes.end())
-          continue;
-        // TODO(https://crbug.com/1071308): Take the declared icon density and
-        // sizes into account.
-        info.square_size_px = valid_size->width();
-      }
-
-      info.url = icon.src;
-      info.purpose = ManifestPurposeToIconInfoPurpose(purpose);
-      web_app_icons.push_back(std::move(info));
-
-      // Limit the number of icons we store on the user's machine.
-      if (web_app_icons.size() == kMaxIcons)
-        break;
-    }
-    // Limit the number of icons we store on the user's machine.
-    if (web_app_icons.size() == kMaxIcons)
-      break;
-  }
+  std::vector<apps::IconInfo> web_app_icons =
+      CreateWebAppInstallInfoIcons(manifest.icons);
 
   // If any icons are correctly specified in the manifest, they take precedence
   // over any we picked up from web page metadata.
