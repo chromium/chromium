@@ -476,6 +476,17 @@ void CastMediaSinkServiceImpl::OpenChannel(
 
   const net::IPEndPoint& ip_endpoint = cast_sink.cast_data().ip_endpoint;
   if (!allow_all_ips_ && ip_endpoint.address().IsPubliclyRoutable()) {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kWarning, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
+        base::StrCat({"Did not open a channel to the IP endpoint: ",
+                      ip_endpoint.ToString(),
+                      " because it is publicly "
+                      "routable."}),
+        cast_sink.sink().id(), "", "");
+    if (callback) {
+      std::move(callback).Run(false);
+    }
     return;
   }
 
@@ -494,12 +505,19 @@ void CastMediaSinkServiceImpl::OpenChannel(
     // DIAL-discovered
     // sinks contain incomplete information which should not be used for
     // updates.
-    if (sink_source != SinkSource::kMdns)
+    if (sink_source != SinkSource::kMdns) {
+      if (callback) {
+        std::move(callback).Run(true);
+      }
       return;
+    }
 
     if (existing_sink->sink().name() == cast_sink.sink().name() &&
         existing_sink->cast_data().capabilities ==
             cast_sink.cast_data().capabilities) {
+      if (callback) {
+        std::move(callback).Run(true);
+      }
       return;
     }
 
@@ -507,10 +525,16 @@ void CastMediaSinkServiceImpl::OpenChannel(
     MediaSinkInternal existing_sink_copy = *existing_sink;
     UpdateCastSink(cast_sink, &existing_sink_copy);
     AddOrUpdateSink(existing_sink_copy);
+    if (callback) {
+      std::move(callback).Run(true);
+    }
     return;
   }
 
   if (!pending_for_open_ip_endpoints_.insert(ip_endpoint).second) {
+    if (callback) {
+      std::move(callback).Run(false);
+    }
     return;
   }
 

@@ -43,6 +43,8 @@ namespace media_router {
 
 namespace {
 
+const char kPubliclyRoutableIPv4Address[] = "172.32.0.0";
+
 MATCHER_P(RetryParamEq, expected, "") {
   return expected.initial_delay_in_milliseconds ==
              arg.initial_delay_in_milliseconds &&
@@ -642,8 +644,9 @@ TEST_P(CastMediaSinkServiceImplTest, TestOnChannelErrorNoRetryForMissingSink) {
 
 TEST_P(CastMediaSinkServiceImplTest, TestOnSinkAddedOrUpdated) {
   // If the DialMediaSinkService is not enabled, bypass this test.
-  if (!GetParam())
+  if (!GetParam()) {
     return;
+  }
 
   // Make sure |media_sink_service_impl_| adds itself as an observer to
   // |dial_media_sink_service_|.
@@ -1531,6 +1534,32 @@ TEST_P(CastMediaSinkServiceImplTest, TestAccessCodeSinkNotAddedToNetworkCache) {
 
   content::RunAllTasksUntilIdle();
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
+}
+
+TEST_P(CastMediaSinkServiceImplTest,
+       TestOpenChannelFailsForPubliclyRoutableIP) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+
+  net::IPAddress address;
+  EXPECT_TRUE(address.AssignFromIPLiteral(kPubliclyRoutableIPv4Address));
+  ASSERT_TRUE(address.IsValid());
+
+  auto ip_endpoint = net::IPEndPoint(address, 8009);
+  ASSERT_TRUE(ip_endpoint.address().IsPubliclyRoutable());
+
+  CastSinkExtraData extra_data = cast_sink.cast_data();
+  extra_data.ip_endpoint = ip_endpoint;
+  cast_sink.set_cast_data(extra_data);
+
+  MockBoolCallback mock_callback;
+  EXPECT_CALL(mock_callback, Run(false)).Times(1);
+
+  // No pending sink
+  EXPECT_CALL(*mock_cast_socket_service_, OpenSocket_(ip_endpoint, _)).Times(0);
+  media_sink_service_impl_.OpenChannel(
+      cast_sink, nullptr, CastMediaSinkServiceImpl::SinkSource::kMdns,
+      mock_callback.Get(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink));
 }
 
 INSTANTIATE_TEST_SUITE_P(DialMediaSinkServiceEnabled,
