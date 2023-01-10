@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -63,11 +64,15 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
     ScriptPromise promise;
-    {
+    if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
       // different from the realm of the readable stream.
       ScriptState::Scope scope(underlying_byte_source_->GetScriptState());
       promise = underlying_byte_source_->Pull(controller_, exception_state);
+    } else {
+      return PromiseReject(script_state,
+                           V8ThrowException::CreateTypeError(
+                               script_state->GetIsolate(), "invalid realm"));
     }
     if (exception_state.HadException()) {
       auto exception = exception_state.GetException();
@@ -107,11 +112,15 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kUnknownContext, "", "");
     ScriptPromise promise;
-    {
+    if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
       // different from the realm of the readable stream.
       ScriptState::Scope scope(underlying_byte_source_->GetScriptState());
       promise = underlying_byte_source_->Cancel(argv[0], exception_state);
+    } else {
+      return PromiseReject(script_state,
+                           V8ThrowException::CreateTypeError(
+                               script_state->GetIsolate(), "invalid realm"));
     }
     if (exception_state.HadException()) {
       auto exception = exception_state.GetException();
