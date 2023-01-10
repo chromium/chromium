@@ -29,6 +29,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/paint/paint_result.h"
+#include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 
 namespace blink {
@@ -107,6 +109,20 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void UpdateAfterLayout() override;
 
+  class MutableForPainting : public LayoutObject::MutableForPainting {
+   public:
+    void UpdatePaintResult(PaintResult, const CullRect& paint_rect);
+
+   private:
+    friend class LayoutImage;
+    explicit MutableForPainting(const LayoutImage& image)
+        : LayoutObject::MutableForPainting(image) {}
+  };
+  MutableForPainting GetMutableForPainting() const {
+    NOT_DESTROYED();
+    return MutableForPainting(*this);
+  }
+
  protected:
   bool NeedsPreferredWidthsRecalculation() const final;
   SVGImage* EmbeddedSVGImage() const;
@@ -179,6 +195,10 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   // This field stores whether this image is generated with 'content'.
   bool is_generated_content_ = false;
+
+  friend class MutableForPainting;
+  PaintResult last_paint_result_ = kMayBeClippedByCullRect;
+  CullRect last_paint_rect_;
 };
 
 template <>

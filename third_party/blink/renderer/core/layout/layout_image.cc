@@ -469,4 +469,20 @@ void LayoutImage::UpdateAfterLayout() {
   }
 }
 
+void LayoutImage::MutableForPainting::UpdatePaintResult(
+    PaintResult paint_result,
+    const CullRect& paint_rect) {
+  // As an optimization for sprite sheets, an image may use the cull rect when
+  // generating the display item. If we didn't fully invalidate paint and the
+  // cull rect changes, we need to invalidate the display item.
+  auto& image = To<LayoutImage>(layout_object_);
+  if (image.last_paint_result_ != kFullyPainted &&
+      image.last_paint_rect_ != paint_rect) {
+    static_cast<const DisplayItemClient&>(layout_object_).Invalidate();
+  }
+
+  image.last_paint_result_ = paint_result;
+  image.last_paint_rect_ = paint_rect;
+}
+
 }  // namespace blink
