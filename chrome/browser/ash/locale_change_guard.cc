@@ -54,14 +54,16 @@ LocaleChangeGuard::~LocaleChangeGuard() {
 }
 
 void LocaleChangeGuard::OnLogin() {
-  if (session_observation_.IsObserving()) {
-    DCHECK(session_observation_.IsObservingSource(
-        session_manager::SessionManager::Get()));
-    return;
+  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
+    Check();
+  } else {
+    if (session_observation_.IsObserving()) {
+      DCHECK(session_observation_.IsObservingSource(
+          session_manager::SessionManager::Get()));
+      return;
+    }
+    session_observation_.Observe(session_manager::SessionManager::Get());
   }
-  session_observation_.Observe(session_manager::SessionManager::Get());
-  registrar_.Add(this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-                 content::NotificationService::AllBrowserContextsAndSources());
 }
 
 void LocaleChangeGuard::RevertLocaleChange() {
@@ -78,25 +80,9 @@ void LocaleChangeGuard::RevertLocaleChange() {
   chrome::AttemptUserExit();
 }
 
-void LocaleChangeGuard::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(type, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME);
-  if (profile_ != content::Source<WebContents>(source)->GetBrowserContext())
-    return;
-
-  main_frame_loaded_ = true;
-  // We need to perform locale change check only once, so unsubscribe.
-  registrar_.Remove(this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-                    content::NotificationService::AllSources());
-  if (session_manager::SessionManager::Get()->IsSessionStarted())
-    Check();
-}
-
 void LocaleChangeGuard::OnUserSessionStarted(bool is_primary_user) {
   session_observation_.Reset();
-  if (main_frame_loaded_)
-    Check();
+  Check();
 }
 
 void LocaleChangeGuard::OwnershipStatusChanged() {

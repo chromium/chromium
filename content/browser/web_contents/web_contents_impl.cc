@@ -7790,11 +7790,6 @@ void WebContentsImpl::DocumentOnLoadCompleted(
 
   observers_.NotifyObservers(
       &WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame);
-
-  // TODO(avi): Remove. http://crbug.com/170921
-  NotificationService::current()->Notify(NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-                                         Source<WebContents>(this),
-                                         NotificationService::NoDetails());
 }
 
 void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,

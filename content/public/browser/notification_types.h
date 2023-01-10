@@ -35,12 +35,6 @@ enum NotificationType {
 
   // Other load-related (not from NavigationController) ----------------------
 
-  // DEPRECATED: Use
-  // WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame() when this
-  // is fired.
-  // TODO(https://crbug.com/1174761): Remove.
-  NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-
   // A content load is starting.  The source will be a
   // Source<NavigationController> corresponding to the tab in which the load
   // is occurring.  No details are expected for this notification.
