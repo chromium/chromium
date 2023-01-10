@@ -105,57 +105,12 @@ void ExtensionTestNotificationObserver::NotificationSet::WebContentsDestroyed(
 
 ExtensionTestNotificationObserver::ExtensionTestNotificationObserver(
     content::BrowserContext* context)
-    : context_(context),
-      crx_installers_done_observed_(0) {
+    : context_(context) {
   if (context_)
     registry_observation_.Observe(ExtensionRegistry::Get(context_));
 }
 
 ExtensionTestNotificationObserver::~ExtensionTestNotificationObserver() {}
-
-void ExtensionTestNotificationObserver::WaitForNotification(
-    int notification_type) {
-  // TODO(bauerb): Using a WindowedNotificationObserver like this can break
-  // easily, if the notification we're waiting for is sent before this method.
-  // Change it so that the WindowedNotificationObserver is constructed earlier.
-  content::NotificationRegistrar registrar;
-  registrar.Add(this, notification_type,
-                content::NotificationService::AllSources());
-  content::WindowedNotificationObserver(
-      notification_type, content::NotificationService::AllSources())
-      .Wait();
-}
-
-bool ExtensionTestNotificationObserver::WaitForCrxInstallerDone() {
-  int before = crx_installers_done_observed_;
-  WaitForNotification(NOTIFICATION_CRX_INSTALLER_DONE);
-  return crx_installers_done_observed_ == before + 1 &&
-         !last_loaded_extension_id_.empty();
-}
-
-void ExtensionTestNotificationObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case NOTIFICATION_CRX_INSTALLER_DONE:
-      VLOG(1) << "Got CRX_INSTALLER_DONE notification.";
-      {
-        const Extension* extension =
-            content::Details<const Extension>(details).ptr();
-        if (extension)
-          last_loaded_extension_id_ = extension->id();
-        else
-          last_loaded_extension_id_.clear();
-      }
-      ++crx_installers_done_observed_;
-      break;
-
-    default:
-      NOTREACHED();
-      break;
-  }
-}
 
 void ExtensionTestNotificationObserver::OnExtensionLoaded(
     content::BrowserContext* browser_context,

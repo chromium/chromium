@@ -32,12 +32,6 @@ enum NotificationType {
   // WARNING: This need to match chrome/browser/chrome_notification_types.h.
   NOTIFICATION_EXTENSIONS_START = content::NOTIFICATION_CONTENT_END,
 
-  // Sent when a CrxInstaller finishes. Source is the CrxInstaller that
-  // finished. The details are the extension which was installed.
-  // DEPRECATED: Use extensions::InstallObserver::OnFinishCrxInstall()
-  // TODO(https://crbug.com/1174728): Remove.
-  NOTIFICATION_CRX_INSTALLER_DONE = NOTIFICATION_EXTENSIONS_START,
-
   // An error occurred during extension install. The details are a string with
   // details about why the install failed.
   // TODO(https://crbug.com/1174734): Remove.

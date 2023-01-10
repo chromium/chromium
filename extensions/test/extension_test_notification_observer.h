@@ -24,14 +24,12 @@ namespace content {
 class BrowserContext;
 class NotificationDetails;
 class WebContents;
-class WindowedNotificationObserver;
 }
 
 namespace extensions {
 
 // Test helper class for observing extension-related events.
-class ExtensionTestNotificationObserver : public content::NotificationObserver,
-                                          ExtensionRegistryObserver {
+class ExtensionTestNotificationObserver : ExtensionRegistryObserver {
  public:
   explicit ExtensionTestNotificationObserver(content::BrowserContext* context);
 
@@ -42,10 +40,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
 
   ~ExtensionTestNotificationObserver() override;
 
-  // Wait for the crx installer to be done. Returns true if it has finished
-  // successfully.
-  bool WaitForCrxInstallerDone();
-
   const std::string& last_loaded_extension_id() {
     return last_loaded_extension_id_;
   }
@@ -53,11 +47,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
       const std::string& last_loaded_extension_id) {
     last_loaded_extension_id_ = last_loaded_extension_id;
   }
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -117,19 +106,13 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   void WaitForCondition(const base::RepeatingCallback<bool(void)>& condition,
                         NotificationSet* notification_set);
 
-  void WaitForNotification(int notification_type);
-
   // Quits the message loop if |condition_| is met.
   void MaybeQuit();
 
   raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
 
  private:
-  content::NotificationRegistrar registrar_;
-  std::unique_ptr<content::WindowedNotificationObserver> observer_;
-
   std::string last_loaded_extension_id_;
-  int crx_installers_done_observed_;
 
   // The condition for which we are waiting. This should be checked in any
   // observing methods that could trigger it.

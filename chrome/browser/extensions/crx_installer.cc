@@ -1119,15 +1119,6 @@ void CrxInstaller::NotifyCrxInstallComplete(
     }
   }
 
-  // Some users (such as the download shelf) need to know when a
-  // CRXInstaller is done.  Listening for the EXTENSION_* events
-  // is problematic because they don't know anything about the
-  // extension before it is unpacked, so they cannot filter based
-  // on the extension.
-  content::NotificationService::current()->Notify(
-      NOTIFICATION_CRX_INSTALLER_DONE, content::Source<CrxInstaller>(this),
-      content::Details<const Extension>(success ? extension() : nullptr));
-
   InstallTrackerFactory::GetForBrowserContext(profile())
       ->OnFinishCrxInstall(success ? extension()->id() : expected_id_, success);
 

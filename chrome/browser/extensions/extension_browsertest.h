@@ -288,12 +288,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     return observer_->WaitForPageActionVisibilityChangeTo(count);
   }
 
-  // Wait for the crx installer to be done. Returns true if it has finished
-  // successfully.
-  bool WaitForCrxInstallerDone() {
-    return observer_->WaitForCrxInstallerDone();
-  }
-
   // Wait for all extension views to load.
   bool WaitForExtensionViewsToLoad() {
     return observer_->WaitForExtensionViewsToLoad();

@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -59,6 +60,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -484,11 +486,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       new content::DownloadTestObserverTerminal(
           download_manager, kNumDownloadsExpected,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT));
+
+  TestExtensionRegistryObserver registry_observer(extension_registry());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
 
-  EXPECT_TRUE(WaitForCrxInstallerDone());
+  EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());
   EXPECT_TRUE(mock_prompt->confirmation_requested());
 }
 
@@ -1016,8 +1020,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, DoNotSync) {
   scoped_refptr<CrxInstaller> crx_installer(
       CrxInstaller::CreateSilent(extension_service()));
   crx_installer->set_do_not_sync(true);
+
+  base::test::TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+  crx_installer->AddInstallerCallback(
+      installer_done_future
+          .GetCallback<const absl::optional<CrxInstallError>&>());
   crx_installer->InstallCrx(test_data_dir_.AppendASCII("good.crx"));
-  EXPECT_TRUE(WaitForCrxInstallerDone());
+  EXPECT_FALSE(installer_done_future.Get().has_value());
   ASSERT_TRUE(crx_installer->extension());
 
   const ExtensionPrefs* extension_prefs =
@@ -1049,8 +1058,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, UpdateWithFileAccess) {
   {
     // Install extension.
     scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service));
+    base::test::TestFuture<absl::optional<CrxInstallError>>
+        installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const absl::optional<CrxInstallError>&>());
     installer->InstallCrx(crx_with_file_permission);
-    EXPECT_TRUE(WaitForCrxInstallerDone());
+    EXPECT_FALSE(installer_done_future.Get().has_value());
     const Extension* extension = installer->extension();
     ASSERT_TRUE(extension);
     // IDs must match, otherwise the test doesn't make any sense.
@@ -1069,8 +1083,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, UpdateWithFileAccess) {
     EXPECT_FALSE(ExtensionPrefs::Get(profile())->AllowFileAccess(extension_id));
 
     scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service));
+    base::test::TestFuture<absl::optional<CrxInstallError>>
+        installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const absl::optional<CrxInstallError>&>());
     installer->InstallCrx(crx_with_file_permission);
-    EXPECT_TRUE(WaitForCrxInstallerDone());
+    EXPECT_FALSE(installer_done_future.Get().has_value());
     const Extension* extension = installer->extension();
     ASSERT_TRUE(extension);
     ASSERT_EQ(extension_id, extension->id());
@@ -1085,8 +1104,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, UpdateWithFileAccess) {
     base::FilePath crx_update_with_file_permission = PackExtension(ext_source);
 
     scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service));
+    base::test::TestFuture<absl::optional<CrxInstallError>>
+        installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const absl::optional<CrxInstallError>&>());
     installer->InstallCrx(crx_update_with_file_permission);
-    EXPECT_TRUE(WaitForCrxInstallerDone());
+    EXPECT_FALSE(installer_done_future.Get().has_value());
     const Extension* extension = installer->extension();
     ASSERT_TRUE(extension);
     ASSERT_EQ(extension_id, extension->id());
