@@ -36,12 +36,15 @@ Process Process::Current() {
 
 // static
 Process Process::Open(ProcessId pid) {
+  if (pid == GetCurrentProcId()) {
+    return Current();
+  }
   return Process(pid);
 }
 
 // static
 Process Process::OpenWithExtraPrivileges(ProcessId pid) {
-  return Process(pid);
+  return Open(pid);
 }
 
 // static
