@@ -5671,6 +5671,21 @@
             ]
         }
     ],
+    "IOSForceTranslateEnabled": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSForceTranslateEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSGhostCards": [
         {
             "platforms": [
