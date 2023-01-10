@@ -1900,5 +1900,40 @@ TEST_F(PointerTest, PointerStylus2) {
   pointer.reset();
 }
 
+TEST_F(PointerTest, DontSendMouseEventDuringMove) {
+  Seat seat;
+  testing::NiceMock<MockPointerDelegate> pointer_delegate;
+  auto pointer = std::make_unique<Pointer>(&pointer_delegate, &seat);
+
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(pointer_delegate, OnPointerMotion).Times(0);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64})
+          .SetOrigin({10, 10})
+          .BuildShellSurface();
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseRelativeTo(shell_surface->GetWidget()->GetNativeWindow(),
+                                 {1, 1});
+  generator->PressLeftButton();
+  shell_surface->StartMove();
+  EXPECT_EQ(shell_surface->GetWidget()->GetWindowBoundsInScreen().origin(),
+            gfx::Point(10, 10));
+
+  ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+
+  // Make sure that we don't send mouse motion event while dragging a window.
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(pointer_delegate, OnPointerMotion).Times(0);
+  generator->MoveMouseBy(1, 1);
+  EXPECT_EQ(shell_surface->GetWidget()->GetWindowBoundsInScreen().origin(),
+            gfx::Point(11, 11));
+
+  ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+}
+
 }  // namespace
 }  // namespace exo

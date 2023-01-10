@@ -103,7 +103,6 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
       capture_scale_(GetCaptureDisplayInfo().device_scale_factor()),
       cursor_capture_source_id_(base::UnguessableToken::Create()) {
   WMHelper* helper = WMHelper::GetInstance();
-  helper->AddPreTargetHandler(this);
   // TODO(sky): CursorClient does not exist in mash
   // yet. https://crbug.com/631103.
   aura::client::CursorClient* cursor_client = helper->GetCursorClient();
@@ -114,15 +113,24 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
   auto* drag_drop_client = helper->GetDragDropClient();
   if (drag_drop_client)
     drag_drop_client->AddObserver(this);
+
+  ash::Shell::Get()->AddShellObserver(this);
+  for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
+    root->AddPreTargetHandler(this);
+  }
 }
 
 Pointer::~Pointer() {
+  ash::Shell::Get()->RemoveShellObserver(this);
+  for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
+    root->RemovePreTargetHandler(this);
+  }
+
   WMHelper* helper = WMHelper::GetInstance();
   // Remove the pretarget handler in case the pointer is deleted
   // w/o disabling pointer capture.
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
 
-  helper->RemovePreTargetHandler(this);
   delegate_->OnPointerDestroying(this);
   if (focus_surface_)
     focus_surface_->RemoveSurfaceObserver(this);
@@ -793,6 +801,16 @@ void Pointer::OnWindowFocused(aura::Window* gained_focus,
   }
   if (gained_focus)
     MaybeReactivatePointerConstraint(Surface::AsSurface(gained_focus));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ash::ShellObserver:
+void Pointer::OnRootWindowAdded(aura::Window* root_window) {
+  root_window->AddPreTargetHandler(this);
+}
+
+void Pointer::OnRootWindowWillShutdown(aura::Window* root_window) {
+  root_window->RemovePreTargetHandler(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

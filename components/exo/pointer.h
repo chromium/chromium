@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/shell_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/exo/surface_observer.h"
@@ -51,7 +52,8 @@ class Pointer : public SurfaceTreeHost,
                 public ui::EventHandler,
                 public aura::client::DragDropClientObserver,
                 public aura::client::CursorClientObserver,
-                public aura::client::FocusChangeObserver {
+                public aura::client::FocusChangeObserver,
+                public ash::ShellObserver {
  public:
   Pointer(PointerDelegate* delegate, Seat* seat);
 
@@ -76,13 +78,13 @@ class Pointer : public SurfaceTreeHost,
   // Set delegate for pinch events.
   void SetGesturePinchDelegate(PointerGesturePinchDelegate* delegate);
 
-  // Overridden from SurfaceDelegate:
+  // SurfaceDelegate:
   void OnSurfaceCommit() override;
 
-  // Overridden from SurfaceObserver:
+  // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
 
-  // Overridden from ui::EventHandler:
+  // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -91,13 +93,17 @@ class Pointer : public SurfaceTreeHost,
   void OnDragStarted() override;
   void OnDragCompleted(const ui::DropTargetEvent& event) override;
 
-  // Overridden from aura::client::CursorClientObserver:
+  // aura::client::CursorClientObserver:
   void OnCursorSizeChanged(ui::CursorSize cursor_size) override;
   void OnCursorDisplayChanged(const display::Display& display) override;
 
-  // Overridden from aura::client::FocusChangeObserver;
+  // aura::client::FocusChangeObserver;
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
+
+  // ash::ShellObserver:
+  void OnRootWindowAdded(aura::Window* root_window) override;
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
   // Relative motion registration.
   void RegisterRelativePointerDelegate(RelativePointerDelegate* delegate);

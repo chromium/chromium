@@ -456,6 +456,10 @@ void Shell::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void Shell::OnRootWindowWillShutdown(aura::Window* root_window) {
+  DCHECK(toplevel_window_event_handler_);
+  root_window->RemovePreTargetHandler(toplevel_window_event_handler_.get());
+  root_window->RemovePostTargetHandler(toplevel_window_event_handler_.get());
+
   for (auto& observer : shell_observers_) {
     observer.OnRootWindowWillShutdown(root_window);
   }
@@ -718,8 +722,6 @@ Shell::~Shell() {
   if (back_gesture_event_handler_) {
     RemovePreTargetHandler(back_gesture_event_handler_.get());
   }
-  RemovePreTargetHandler(toplevel_window_event_handler_.get());
-  RemovePostTargetHandler(toplevel_window_event_handler_.get());
   RemovePreTargetHandler(system_gesture_filter_.get());
   RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
   RemovePreTargetHandler(modality_filter_.get());
