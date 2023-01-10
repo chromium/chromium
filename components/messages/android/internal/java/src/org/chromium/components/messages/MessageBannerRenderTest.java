@@ -213,29 +213,31 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Feature({"RenderTest", "Messages"})
     @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testBasic_resetPrimaryButtonText() throws Exception {
-        Activity activity = getActivity();
-        final String veryLongButtonText = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 81 19 20 21"
-                + " 22 23 24 25 26 27 28 29 30 31 32 33 34";
-        PropertyModel model =
-                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                MessageIdentifier.TEST_MESSAGE)
-                        .with(MessageBannerProperties.TITLE, "Primary Title")
-                        .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
-                        .with(MessageBannerProperties.DESCRIPTION_MAX_LINES, 2)
-                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, veryLongButtonText)
-                        .build();
-        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
-                R.layout.message_banner_view, null, false);
-        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
-        LayoutParams params =
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        MessageBannerView result = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            Activity activity = getActivity();
+            final String veryLongButtonText =
+                    "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 81 19 20 21"
+                    + " 22 23 24 25 26 27 28 29 30 31 32 33 34";
+            PropertyModel model =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.TITLE, "Primary Title")
+                            .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
+                            .with(MessageBannerProperties.DESCRIPTION_MAX_LINES, 2)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, veryLongButtonText)
+                            .build();
+            MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                    R.layout.message_banner_view, null, false);
+            PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+            LayoutParams params =
+                    new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { getActivity().setContentView(view, params); });
-
-        model.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Reset");
-        mRenderTestRule.render(view, "message_banner_basic_with_reset_primary_button_text");
+            getActivity().setContentView(view, params);
+            model.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Reset");
+            return view;
+        });
+        mRenderTestRule.render(result, "message_banner_basic_with_reset_primary_button_text");
     }
 
     @Test
