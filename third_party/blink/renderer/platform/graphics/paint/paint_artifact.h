@@ -54,7 +54,8 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   // shared with the embedder after copying to cc::DisplayItemList.
   size_t ApproximateUnsharedMemoryUsage() const;
 
-  PaintRecord GetPaintRecord(const PropertyTreeState& replay_state) const;
+  PaintRecord GetPaintRecord(const PropertyTreeState& replay_state,
+                             const gfx::Rect* cull_rect = nullptr) const;
 
   void RecordDebugInfo(DisplayItemClientId, const String&, DOMNodeId);
   // Note that ClientDebugName() returns the debug name at the time the client

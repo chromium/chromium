@@ -188,8 +188,11 @@ class CORE_EXPORT SVGImage final : public Image {
   void PopulatePaintRecordForCurrentFrameForContainer(const DrawInfo&,
                                                       PaintImageBuilder&);
 
-  // Paints the current frame. Returns new PaintRecord.
-  absl::optional<PaintRecord> PaintRecordForCurrentFrame(const DrawInfo&);
+  // Paints the current frame. Returns new PaintRecord. |cull_rect| is an
+  // optional additional cull rect.
+  absl::optional<PaintRecord> PaintRecordForCurrentFrame(
+      const DrawInfo&,
+      const gfx::Rect* cull_rect);
 
   void DrawInternal(const DrawInfo&,
                     cc::PaintCanvas*,

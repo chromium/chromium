@@ -109,7 +109,8 @@ class ConversionContext {
   // At last, close all pushed states to balance pairs (this happens when the
   // context object is destructed):
   //   Output: End_C4 End_C3 End_C2 End_C1
-  void Convert(const PaintChunkSubset&);
+  void Convert(const PaintChunkSubset&,
+               const gfx::Rect* additional_cull_rect = nullptr);
 
  private:
   // Adjust the translation of the whole display list relative to layer offset.
@@ -253,7 +254,7 @@ class ConversionContext {
   gfx::Vector2dF layer_offset_;
   bool translated_for_layer_offset_ = false;
 
-  // These fields are neve nullptr.
+  // These fields are never nullptr.
   const TransformPaintPropertyNode* current_transform_;
   const ClipPaintPropertyNode* current_clip_;
   const EffectPaintPropertyNode* current_effect_;
@@ -767,7 +768,8 @@ void ConversionContext<Result>::EndTransform() {
 }
 
 template <typename Result>
-void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks) {
+void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
+                                        const gfx::Rect* additional_cull_rect) {
   for (auto it = chunks.begin(); it != chunks.end(); ++it) {
     const auto& chunk = *it;
     if (chunk.effectively_invisible)
@@ -789,8 +791,9 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks) {
       // might be for a mask with empty content which should make the masked
       // content fully invisible. We need to "draw" this record to ensure that
       // the effect has correct visual rect.
-      if (record.empty() &&
-          &chunk_state.Effect() == &EffectPaintPropertyNode::Root()) {
+      bool can_ignore_record =
+          &chunk_state.Effect() == &EffectPaintPropertyNode::Root();
+      if (record.empty() && can_ignore_record) {
         continue;
       }
 
@@ -799,12 +802,18 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks) {
         switched_to_chunk_state = true;
       }
 
+      gfx::Rect visual_rect =
+          chunk_to_layer_mapper_.MapVisualRect(item.VisualRect());
+      if (additional_cull_rect && can_ignore_record &&
+          !additional_cull_rect->Intersects(visual_rect)) {
+        continue;
+      }
+
       result_.StartPaint();
       if (!record.empty()) {
         push<cc::DrawRecordOp>(std::move(record));
       }
-      result_.EndPaintOfUnpaired(
-          chunk_to_layer_mapper_.MapVisualRect(item.VisualRect()));
+      result_.EndPaintOfUnpaired(visual_rect);
     }
 
     // If we have an empty paint chunk, then we would prefer ignoring it.
@@ -851,11 +860,12 @@ void PaintChunksToCcLayer::ConvertInto(
   }
 }
 
-PaintRecord PaintChunksToCcLayer::Convert(
-    const PaintChunkSubset& chunks,
-    const PropertyTreeState& layer_state) {
+PaintRecord PaintChunksToCcLayer::Convert(const PaintChunkSubset& chunks,
+                                          const PropertyTreeState& layer_state,
+                                          const gfx::Rect* cull_rect) {
   PaintOpBufferExt buffer;
-  ConversionContext(layer_state, gfx::Vector2dF(), buffer).Convert(chunks);
+  ConversionContext(layer_state, gfx::Vector2dF(), buffer)
+      .Convert(chunks, cull_rect);
   return buffer.ReleaseAsRecord();
 }
 

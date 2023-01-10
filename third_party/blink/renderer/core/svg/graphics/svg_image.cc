@@ -506,7 +506,10 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
                                    const SkMatrix& local_matrix) {
   if (draw_info.ContainerSize().IsEmpty())
     return false;
-  absl::optional<PaintRecord> record = PaintRecordForCurrentFrame(draw_info);
+  // TODO(pdr): Pass a tighter cull rect based on the src rect to optimize out
+  // parts of the paint record that are not visible (see: crbug.com/1401086).
+  absl::optional<PaintRecord> record =
+      PaintRecordForCurrentFrame(draw_info, nullptr);
   if (!record)
     return false;
 
@@ -554,7 +557,8 @@ void SVGImage::Draw(cc::PaintCanvas* canvas,
 }
 
 absl::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
-    const DrawInfo& draw_info) {
+    const DrawInfo& draw_info,
+    const gfx::Rect* cull_rect) {
   if (!page_) {
     return absl::nullopt;
   }
@@ -583,7 +587,8 @@ absl::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   page_->GetSettings().SetForceDarkModeEnabled(draw_info.IsDarkModeEnabled());
 
   view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
-  return view->GetPaintRecord();
+
+  return view->GetPaintRecord(cull_rect);
 }
 
 static bool DrawNeedsLayer(const cc::PaintFlags& flags) {
@@ -603,7 +608,9 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
                             const cc::PaintFlags& flags,
                             const gfx::RectF& dst_rect,
                             const gfx::RectF& unzoomed_src_rect) {
-  absl::optional<PaintRecord> record = PaintRecordForCurrentFrame(draw_info);
+  gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
+  absl::optional<PaintRecord> record =
+      PaintRecordForCurrentFrame(draw_info, &cull_rect);
   if (!record)
     return;
 

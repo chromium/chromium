@@ -4105,12 +4105,12 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
       .UpdateForTesting(CullRect::Infinite());
 }
 
-PaintRecord LocalFrameView::GetPaintRecord() const {
+PaintRecord LocalFrameView::GetPaintRecord(const gfx::Rect* cull_rect) const {
   DCHECK_EQ(DocumentLifecycle::kPaintClean, Lifecycle().GetState());
   DCHECK(frame_->IsLocalRoot());
   DCHECK(paint_controller_);
   return paint_controller_->GetPaintArtifact().GetPaintRecord(
-      PropertyTreeState::Root());
+      PropertyTreeState::Root(), cull_rect);
 }
 
 gfx::Rect LocalFrameView::ConvertToRootFrame(

@@ -9,6 +9,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -401,6 +403,71 @@ id ID #REQUIRED>
   // check the histogram updated in |DidCommitLoad|.
   histograms.ExpectBucketCount("Blink.UseCounter.Extensions.Features",
                                WebFeature::kPageVisits, 1);
+}
+
+namespace {
+
+size_t CountDrawOval(const cc::PaintRecord& record) {
+  size_t count = 0;
+  for (const cc::PaintOp& op : record) {
+    if (op.GetType() == cc::PaintOpType::DrawOval) {
+      ++count;
+    } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
+      count += CountDrawOval(record_op.record);
+    }
+  }
+  return count;
+}
+
+}  // namespace
+
+// Tests the culling of invisible sprites from a larger sprite sheet.
+TEST_F(SVGImageSimTest, SpriteSheetCulling) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      "<style>"
+      "  body { zoom: 2.5; }"
+      "  #div {"
+      "    width: 100px;"
+      "    height: 100px;"
+      "    background-image: url(\"data:image/svg+xml,"
+      "      <svg xmlns='http://www.w3.org/2000/svg' width='100' height='300'>"
+      "        <circle cx='50' cy='50' r='10' fill='red'/>"
+      "        <circle cx='50' cy='150' r='10' fill='green'/>"
+      "        <circle cx='25' cy='250' r='10' fill='blue'/>"
+      "        <circle cx='50' cy='250' r='10' fill='blue'/>"
+      "        <circle cx='75' cy='250' r='10' fill='blue'/>"
+      "      </svg>\");"
+      "    background-position-y: -100px;"
+      "    background-repeat: no-repeat;"
+      "  }"
+      "</style>"
+      "<div id='div'></div>");
+
+  Compositor().BeginFrame();
+
+  // Initially, only the green circle should be recorded.
+  PaintRecord record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(1U, CountDrawOval(record));
+
+  // Adjust the height so one green circle and three blue circles are visible,
+  // and ensure four circles are recorded.
+  Element* div = GetDocument().getElementById("div");
+  div->setAttribute(html_names::kStyleAttr, "height: 200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(4U, CountDrawOval(record));
+
+  // Adjust the background position so only the three blue circles are visible,
+  // and ensure three circles are recorded.
+  div->setAttribute(html_names::kStyleAttr,
+                    "height: 200px; background-position-y: -200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(3U, CountDrawOval(record));
 }
 
 }  // namespace blink
