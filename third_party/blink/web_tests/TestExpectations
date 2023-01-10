@@ -1520,6 +1520,11 @@ crbug.com/1347984 fragmentation/table-row-dimensions-break-freely.html [ Failure
 crbug.com/1347984 fragmentation/table-row-dimensions-with-thead.html [ Failure ]
 crbug.com/1347984 fragmentation/table-row-dimensions.html [ Failure ]
 
+# Rowspan cells need to grow for fragmentation expansion.
+crbug.com/1396218 fragmentation/fragmented-rowspan-alignment.html [ Failure ]
+crbug.com/1396218 fragmentation/fragmented-rowspan.html [ Failure ]
+crbug.com/1396218 fragmentation/table-overlapping-rowspan.html [ Failure ]
+
 ### Tests failing with LayoutNGFlexFragmentation enabled:
 crbug.com/1367912 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-058.html [ Failure ]
 crbug.com/1367912 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-043.html [ Failure ]

@@ -423,6 +423,7 @@ crbug.com/1078927 external/wpt/css/css-break/table/table-collapsed-borders-paint
 crbug.com/1078927 external/wpt/css/css-break/table/table-parts-offsetheight.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/table-row-paint-vlr-rtl.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/table-row-paint-vrl-rtl.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/table-rowspan-001.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/table-section-paint-vrl-rtl.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-block-000.tentative.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/tall-content-inside-constrained-block-001.tentative.html [ Failure ]
