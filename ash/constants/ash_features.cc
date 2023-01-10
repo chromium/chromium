@@ -371,12 +371,6 @@ BASE_FEATURE(kCameraAppLowStorageWarning,
              "CameraAppLowStorageWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables to show multi-page UI when for document scanning feature in the
-// camera app.
-BASE_FEATURE(kCameraAppMultiPageDocScan,
-             "CameraAppMultiPageDocScan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 BASE_FEATURE(kCameraPrivacySwitchNotifications,
