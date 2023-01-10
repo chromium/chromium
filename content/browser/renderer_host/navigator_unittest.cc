@@ -1236,8 +1236,8 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
   // 2) Convert a descriptor pointing an instance unrelated to the current one,
   // with a different site.
   GURL kUrl2("http://b.com");
-  scoped_refptr<SiteInstance> unrelated_instance(
-      SiteInstance::CreateForURL(browser_context(), kUrl2));
+  scoped_refptr<SiteInstanceImpl> unrelated_instance(
+      SiteInstanceImpl::CreateForURL(browser_context(), kUrl2));
   EXPECT_FALSE(
       current_instance->IsRelatedSiteInstance(unrelated_instance.get()));
   {

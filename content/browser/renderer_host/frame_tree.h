@@ -231,7 +231,7 @@ class CONTENT_EXPORT FrameTree {
   // in the root node's replication_state.
   // TODO(carlscab): It would be great if initialization could happened in the
   // constructor so we do not leave objects in a half initialized state.
-  void Init(SiteInstance* main_frame_site_instance,
+  void Init(SiteInstanceImpl* main_frame_site_instance,
             bool renderer_initiated_creation,
             const std::string& main_frame_name,
             RenderFrameHostImpl* opener_for_origin,
@@ -369,7 +369,7 @@ class CONTENT_EXPORT FrameTree {
   // from the BrowsingContextState in |source| during cross-origin cross-
   // browsing-instance navigations.
   void CreateProxiesForSiteInstance(FrameTreeNode* source,
-                                    SiteInstance* site_instance,
+                                    SiteInstanceImpl* site_instance,
                                     const scoped_refptr<BrowsingContextState>&
                                         source_new_browsing_context_state);
 
@@ -392,7 +392,7 @@ class CONTENT_EXPORT FrameTree {
   // The RenderFrameHostImpls and the RenderFrameProxyHosts will share ownership
   // of this object.
   scoped_refptr<RenderViewHostImpl> CreateRenderViewHost(
-      SiteInstance* site_instance,
+      SiteInstanceImpl* site_instance,
       int32_t main_frame_routing_id,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state);

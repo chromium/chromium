@@ -113,14 +113,13 @@ bool RenderFrameProxyHost::IsFrameTokenInUse(
 }
 
 RenderFrameProxyHost::RenderFrameProxyHost(
-    SiteInstance* site_instance,
+    SiteInstanceImpl* site_instance,
     scoped_refptr<RenderViewHostImpl> render_view_host,
     FrameTreeNode* frame_tree_node,
     const blink::RemoteFrameToken& frame_token)
     : routing_id_(site_instance->GetProcess()->GetNextRoutingID()),
       site_instance_(site_instance),
-      site_instance_group_(
-          static_cast<SiteInstanceImpl*>(site_instance)->group()),
+      site_instance_group_(site_instance->group()),
       process_(site_instance->GetProcess()),
       frame_tree_node_(frame_tree_node),
       render_frame_proxy_created_(false),
@@ -436,8 +435,7 @@ void RenderFrameProxyHost::ChildProcessGone() {
 void RenderFrameProxyHost::DidFocusFrame() {
   TRACE_EVENT("navigation", "RenderFrameProxyHost::DidFocusFrame",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
-              ChromeTrackEvent::kSiteInstance,
-              *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
+              ChromeTrackEvent::kSiteInstance, *GetSiteInstance());
   // If a fenced frame has requested focus something wrong has gone on. We do
   // not support programmatic focus between the embedder and embeddee because
   // that could be a side channel.
@@ -830,11 +828,9 @@ void RenderFrameProxyHost::WriteIntoTrace(
   proto->set_is_render_frame_proxy_live(is_render_frame_proxy_live());
   auto* site_instance = GetSiteInstance();
   if (site_instance) {
-    proto->set_rvh_map_id(
-        frame_tree_node_->frame_tree()
-            .GetRenderViewHostMapId(
-                static_cast<SiteInstanceImpl*>(site_instance)->group())
-            .value());
+    proto->set_rvh_map_id(frame_tree_node_->frame_tree()
+                              .GetRenderViewHostMapId(site_instance->group())
+                              .value());
     proto->set_site_instance_id(site_instance->GetId().value());
   }
 }

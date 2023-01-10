@@ -832,6 +832,13 @@ scoped_refptr<SiteInstance> SiteInstance::Create(
 scoped_refptr<SiteInstance> SiteInstance::CreateForURL(
     BrowserContext* browser_context,
     const GURL& url) {
+  return SiteInstanceImpl::CreateForURL(browser_context, url);
+}
+
+// static
+scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForURL(
+    BrowserContext* browser_context,
+    const GURL& url) {
   DCHECK(browser_context);
   return SiteInstanceImpl::CreateForUrlInfo(browser_context,
                                             UrlInfo(UrlInfoInit(url)),

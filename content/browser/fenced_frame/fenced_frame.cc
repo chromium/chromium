@@ -169,7 +169,7 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
   DCHECK(remote_frame_interfaces);
   DCHECK(outer_delegate_frame_tree_node_);
 
-  scoped_refptr<SiteInstance> site_instance =
+  scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForFencedFrame(
           owner_render_frame_host_->GetSiteInstance());
 

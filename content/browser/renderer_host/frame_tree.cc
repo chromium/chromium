@@ -456,11 +456,10 @@ void FrameTree::RemoveFrame(FrameTreeNode* child) {
 
 void FrameTree::CreateProxiesForSiteInstance(
     FrameTreeNode* source,
-    SiteInstance* site_instance,
+    SiteInstanceImpl* site_instance,
     const scoped_refptr<BrowsingContextState>&
         source_new_browsing_context_state) {
-  SiteInstanceGroup* group =
-      static_cast<SiteInstanceImpl*>(site_instance)->group();
+  SiteInstanceGroup* group = site_instance->group();
   // Create the RenderFrameProxyHost for the new SiteInstance.
   if (!source || !source->IsMainFrame()) {
     RenderViewHostImpl* render_view_host = GetRenderViewHost(group).get();
@@ -512,7 +511,7 @@ void FrameTree::CreateProxiesForSiteInstance(
     // that SiteInstance don't need a proxy for the new frame.
     RenderFrameHostImpl* current_host =
         node->render_manager()->current_frame_host();
-    SiteInstance* current_instance = current_host->GetSiteInstance();
+    SiteInstanceImpl* current_instance = current_host->GetSiteInstance();
     if (current_instance != site_instance) {
       if (node == source && !current_host->IsRenderFrameLive()) {
         // We don't create a proxy at |source| when the current RenderFrameHost
@@ -611,7 +610,7 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node,
 }
 
 scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
-    SiteInstance* site_instance,
+    SiteInstanceImpl* site_instance,
     int32_t main_frame_routing_id,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state) {
@@ -620,7 +619,7 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
   }
   RenderViewHostImpl* rvh =
       static_cast<RenderViewHostImpl*>(RenderViewHostFactory::Create(
-          this, static_cast<SiteInstanceImpl*>(site_instance)->group(),
+          this, site_instance->group(),
           site_instance->GetStoragePartitionConfig(), render_view_delegate_,
           render_widget_delegate_, main_frame_routing_id,
           renderer_initiated_creation, std::move(main_browsing_context_state)));
@@ -741,7 +740,7 @@ void FrameTree::RegisterExistingOriginAsHavingDefaultIsolation(
   controller().RegisterExistingOriginAsHavingDefaultIsolation(
       previously_visited_origin);
 
-  std::unordered_set<SiteInstance*> matching_site_instances;
+  std::unordered_set<SiteInstanceImpl*> matching_site_instances;
 
   // Be sure to visit all RenderFrameHosts associated with this frame that might
   // have an origin that could script other frames. We skip RenderFrameHosts
@@ -775,12 +774,11 @@ void FrameTree::RegisterExistingOriginAsHavingDefaultIsolation(
 
   // Update any SiteInstances found to contain |origin|.
   for (auto* site_instance : matching_site_instances) {
-    static_cast<SiteInstanceImpl*>(site_instance)
-        ->RegisterAsDefaultOriginIsolation(previously_visited_origin);
+    site_instance->RegisterAsDefaultOriginIsolation(previously_visited_origin);
   }
 }
 
-void FrameTree::Init(SiteInstance* main_frame_site_instance,
+void FrameTree::Init(SiteInstanceImpl* main_frame_site_instance,
                      bool renderer_initiated_creation,
                      const std::string& main_frame_name,
                      RenderFrameHostImpl* opener_for_origin,

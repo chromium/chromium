@@ -34,6 +34,7 @@ CONTENT_EXPORT BrowsingContextStateImplementationType GetBrowsingContextMode();
 namespace content {
 
 class RenderFrameHostImpl;
+class SiteInstanceImpl;
 
 // BrowsingContextState is intended to store all state associated with a given
 // browsing context (BrowsingInstance in the code, as defined in the HTML spec
@@ -223,7 +224,7 @@ class CONTENT_EXPORT BrowsingContextState
   // reference to FrameTreeNode should be replaced by a BrowsingContextState
   // instead; FrameTreeNode will need to be removed from here as well.
   RenderFrameProxyHost* CreateRenderFrameProxyHost(
-      SiteInstance* site_instance,
+      SiteInstanceImpl* site_instance,
       const scoped_refptr<RenderViewHostImpl>& rvh,
       FrameTreeNode* frame_tree_node,
       ProxyAccessMode proxy_access_mode = ProxyAccessMode::kRegular,
@@ -233,7 +234,7 @@ class CONTENT_EXPORT BrowsingContextState
   // RenderFrameProxyHost in its outer WebContents's SiteInstance,
   // |outer_contents_site_instance|.
   RenderFrameProxyHost* CreateOuterDelegateProxy(
-      SiteInstance* outer_contents_site_instance,
+      SiteInstanceImpl* outer_contents_site_instance,
       FrameTreeNode* frame_tree_node,
       const blink::RemoteFrameToken& frame_token);
 

@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
@@ -113,7 +114,7 @@ void BrowsingContextState::DeleteRenderFrameProxyHost(
 }
 
 RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
-    SiteInstance* site_instance,
+    SiteInstanceImpl* site_instance,
     const scoped_refptr<RenderViewHostImpl>& rvh,
     FrameTreeNode* frame_tree_node,
     ProxyAccessMode proxy_access_mode,
@@ -121,8 +122,7 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
   TRACE_EVENT_BEGIN(
       "navigation", "BrowsingContextState::CreateRenderFrameProxyHost",
       ChromeTrackEvent::kBrowsingContextState, this,
-      ChromeTrackEvent::kSiteInstanceGroup,
-      static_cast<SiteInstanceImpl*>(site_instance)->group(),
+      ChromeTrackEvent::kSiteInstanceGroup, site_instance->group(),
       ChromeTrackEvent::kRenderViewHost, rvh ? rvh.get() : nullptr,
       ChromeTrackEvent::kFrameTreeNodeInfo, frame_tree_node);
 
@@ -142,14 +142,13 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
              site_instance->GetBrowsingInstanceId());
   }
 
-  auto site_instance_group_id =
-      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId();
+  auto site_instance_group_id = site_instance->group()->GetId();
   CHECK(proxy_hosts_.find(site_instance_group_id) == proxy_hosts_.end())
       << "A proxy already existed for this SiteInstanceGroup.";
   RenderFrameProxyHost* proxy_host = new RenderFrameProxyHost(
       site_instance, std::move(rvh), frame_tree_node, frame_token);
   proxy_hosts_[site_instance_group_id] = base::WrapUnique(proxy_host);
-  static_cast<SiteInstanceImpl*>(site_instance)->group()->AddObserver(this);
+  site_instance->group()->AddObserver(this);
 
   TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost,
                   proxy_host);
@@ -157,7 +156,7 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
 }
 
 RenderFrameProxyHost* BrowsingContextState::CreateOuterDelegateProxy(
-    SiteInstance* outer_contents_site_instance,
+    SiteInstanceImpl* outer_contents_site_instance,
     FrameTreeNode* frame_tree_node,
     const blink::RemoteFrameToken& frame_token) {
   // We only get here when Delegate for this manager is an inner delegate.

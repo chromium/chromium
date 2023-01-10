@@ -229,14 +229,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
   ~RenderFrameHostManager();
 
   // Initialize this frame as the root of a new FrameTree.
-  void InitRoot(SiteInstance* site_instance,
+  void InitRoot(SiteInstanceImpl* site_instance,
                 bool renderer_initiated_creation,
                 blink::FramePolicy initial_main_frame_policy,
                 const std::string& name,
                 const base::UnguessableToken& devtools_frame_token);
 
   // Initialize this frame as the child of another frame.
-  void InitChild(SiteInstance* site_instance,
+  void InitChild(SiteInstanceImpl* site_instance,
                  int32_t frame_routing_id,
                  mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                  const blink::LocalFrameToken& frame_token,
@@ -342,7 +342,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // BrowsingContextState that will be stored in the speculative
   // RenderFrameHost.
   std::unique_ptr<RenderFrameHostImpl> CreateSpeculativeRenderFrame(
-      SiteInstance* instance,
+      SiteInstanceImpl* instance,
       bool for_early_commit,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
@@ -350,7 +350,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // |browsing_context_state| is the BrowsingContextState in which the newly
   // created RenderFrameProxyHost will be stored.
   void CreateRenderFrameProxy(
-      SiteInstance* instance,
+      SiteInstanceImpl* instance,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
   // Creates proxies for a new child frame at FrameTreeNode |child| in all
@@ -474,7 +474,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // |browsing_context_state| is the BrowsingContextState that is used in the
   // speculative RenderFrameHost for cross browsing-instance navigations.
   void CreateOpenerProxies(
-      SiteInstance* instance,
+      SiteInstanceImpl* instance,
       FrameTreeNode* skip_this_node,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
@@ -509,7 +509,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // RenderFrameHostManager. The `callback` is called synchronously and the
   // `instance_to_skip` won't be referenced after this method returns.
   void ExecutePageBroadcastMethod(PageBroadcastMethodCallback callback,
-                                  SiteInstance* instance_to_skip = nullptr);
+                                  SiteInstanceImpl* instance_to_skip = nullptr);
 
   // Executes a RemoteMainFrame Mojo method to every instance in |proxy_hosts|.
   // This should only be called in the top-level RenderFrameHostManager.
@@ -517,7 +517,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // be referenced after this method returns.
   void ExecuteRemoteFramesBroadcastMethod(
       RemoteFramesBroadcastMethodCallback callback,
-      SiteInstance* instance_to_skip = nullptr);
+      SiteInstanceImpl* instance_to_skip = nullptr);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
@@ -565,14 +565,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // engineer-readable information describing the reason for the method
   // behavior.  The returned |reason| should fit into
   // base::debug::CrashKeySize::Size256.
-  scoped_refptr<SiteInstance> GetSiteInstanceForNavigationRequest(
+  scoped_refptr<SiteInstanceImpl> GetSiteInstanceForNavigationRequest(
       NavigationRequest* navigation_request,
       IsSameSiteGetter& is_same_site,
       std::string* reason = nullptr);
 
   // Calls GetSiteInstanceForNavigationRequest with an IsSameSiteGetter that
   // does not have a cached value.
-  scoped_refptr<SiteInstance> GetSiteInstanceForNavigationRequest(
+  scoped_refptr<SiteInstanceImpl> GetSiteInstanceForNavigationRequest(
       NavigationRequest* navigation_request,
       std::string* reason = nullptr);
 
@@ -646,7 +646,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // It can point to an existing one or store the details needed to create a new
   // one.
   struct CONTENT_EXPORT SiteInstanceDescriptor {
-    explicit SiteInstanceDescriptor(SiteInstance* site_instance)
+    explicit SiteInstanceDescriptor(SiteInstanceImpl* site_instance)
         : existing_site_instance(site_instance),
           relation(SiteInstanceRelation::PREEXISTING) {}
 
@@ -654,7 +654,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
                            SiteInstanceRelation relation_to_current);
 
     // Set with an existing SiteInstance to be reused.
-    raw_ptr<SiteInstance> existing_site_instance;
+    raw_ptr<SiteInstanceImpl> existing_site_instance;
 
     // In case |existing_site_instance| is null, specify a destination URL.
     UrlInfo dest_url_info;
@@ -693,7 +693,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool current_is_view_source_mode,
       SiteInstanceImpl* source_instance,
       SiteInstanceImpl* current_instance,
-      SiteInstance* destination_instance,
+      SiteInstanceImpl* destination_instance,
       const UrlInfo& destination_url_info,
       bool destination_is_view_source_mode,
       ui::PageTransition transition,
@@ -714,7 +714,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Returns the SiteInstance to use for the navigation.
   //
   // This is a helper function for GetSiteInstanceForNavigationRequest.
-  scoped_refptr<SiteInstance> GetSiteInstanceForNavigation(
+  scoped_refptr<SiteInstanceImpl> GetSiteInstanceForNavigation(
       const UrlInfo& dest_url_info,
       SiteInstanceImpl* source_instance,
       SiteInstanceImpl* dest_instance,
@@ -800,7 +800,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the
   // description, it is returned as is.
-  scoped_refptr<SiteInstance> ConvertToSiteInstance(
+  scoped_refptr<SiteInstanceImpl> ConvertToSiteInstance(
       const SiteInstanceDescriptor& descriptor,
       SiteInstanceImpl* candidate_instance);
 
@@ -821,8 +821,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // is used in the speculative RenderFrameHost for cross browsing-instance
   // navigations.
   void CreateProxiesForNewRenderFrameHost(
-      SiteInstance* old_instance,
-      SiteInstance* new_instance,
+      SiteInstanceImpl* old_instance,
+      SiteInstanceImpl* new_instance,
       bool recovering_without_early_commit,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
@@ -846,7 +846,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // is used in the speculative RenderFrameHost for cross browsing-instance
   // navigations.
   void CreateOpenerProxiesForFrameTree(
-      SiteInstance* instance,
+      SiteInstanceImpl* instance,
       FrameTreeNode* skip_this_node,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
@@ -870,7 +870,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // renderer_initiated_creation.
   std::unique_ptr<RenderFrameHostImpl> CreateRenderFrameHost(
       CreateFrameCase create_frame_case,
-      SiteInstance* site_instance,
+      SiteInstanceImpl* site_instance,
       int32_t frame_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
@@ -884,8 +884,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // redirected to a different SiteInstance. |recovering_without_early_commit|
   // is true if we are reviving a crashed render frame by creating a proxy and
   // committing later rather than doing an immediate commit.
-  bool CreateSpeculativeRenderFrameHost(SiteInstance* old_instance,
-                                        SiteInstance* new_instance,
+  bool CreateSpeculativeRenderFrameHost(SiteInstanceImpl* old_instance,
+                                        SiteInstanceImpl* new_instance,
                                         bool recovering_without_early_commit);
 
   // Initialization for RenderFrameHost uses the same sequence as InitRenderView

@@ -45,6 +45,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // with the same name.
   static scoped_refptr<SiteInstanceImpl> Create(
       BrowserContext* browser_context);
+  static scoped_refptr<SiteInstanceImpl> CreateForURL(
+      BrowserContext* browser_context,
+      const GURL& url);
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
       BrowserContext* browser_context,
       const StoragePartitionConfig& partition_config);

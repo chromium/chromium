@@ -174,8 +174,8 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
         PreloadingTriggeringOutcome::kTriggeredButPending);
   }
 
-  scoped_refptr<SiteInstance> site_instance =
-      SiteInstance::Create(web_contents.GetBrowserContext());
+  scoped_refptr<SiteInstanceImpl> site_instance =
+      SiteInstanceImpl::Create(web_contents.GetBrowserContext());
   frame_tree_->Init(site_instance.get(),
                     /*renderer_initiated_creation=*/false,
                     /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,

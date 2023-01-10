@@ -3142,12 +3142,12 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   if (!params.last_active_time.is_null())
     last_active_time_ = params.last_active_time;
 
-  scoped_refptr<SiteInstance> site_instance = params.site_instance;
+  scoped_refptr<SiteInstanceImpl> site_instance =
+      static_cast<SiteInstanceImpl*>(params.site_instance.get());
   if (!site_instance)
-    site_instance = SiteInstance::Create(params.browser_context);
+    site_instance = SiteInstanceImpl::Create(params.browser_context);
   if (params.desired_renderer_state == CreateParams::kNoRendererProcess) {
-    static_cast<SiteInstanceImpl*>(site_instance.get())
-        ->PreventAssociationWithSpareProcess();
+    site_instance->PreventAssociationWithSpareProcess();
   }
 
   // Iniitalize the primary FrameTree.
@@ -3203,9 +3203,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   if (params.desired_renderer_state ==
       CreateParams::kInitializeAndWarmupRendererProcess) {
     if (!GetRenderManager()->current_frame_host()->IsRenderFrameLive()) {
-      GetRenderManager()->InitRenderView(
-          static_cast<SiteInstanceImpl*>(site_instance.get())->group(),
-          GetRenderViewHost(), nullptr);
+      GetRenderManager()->InitRenderView(site_instance->group(),
+                                         GetRenderViewHost(), nullptr);
     }
   }
 
@@ -4009,10 +4008,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     return nullptr;
 
   int render_process_id = opener->GetProcess()->GetID();
-
-  auto* source_site_instance =
-      static_cast<SiteInstanceImpl*>(opener->GetSiteInstance());
-
+  SiteInstanceImpl* source_site_instance = opener->GetSiteInstance();
   const auto& partition_config =
       source_site_instance->GetStoragePartitionConfig();
 
