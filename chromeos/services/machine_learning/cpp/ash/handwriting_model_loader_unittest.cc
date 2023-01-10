@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -14,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
+#include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -77,7 +77,7 @@ class HandwritingModelLoaderTest : public testing::Test {
   // Sets "ondevice_handwriting" value.
   void SetSwitchValue(const std::string& switch_value) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        ash::switches::kOndeviceHandwritingSwitch, switch_value);
+        ::switches::kOndeviceHandwritingSwitch, switch_value);
   }
 
  private:

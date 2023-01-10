@@ -16,7 +16,7 @@
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
+#include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -35,9 +35,9 @@ bool IsCrOSLibHandwritingRootfsEnabled() {
   // TODO(https://crbug.com/1168978): mlservice should provide an interface to
   // query this.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(ash::switches::kOndeviceHandwritingSwitch) &&
+  return command_line->HasSwitch(::switches::kOndeviceHandwritingSwitch) &&
          command_line->GetSwitchValueASCII(
-             ash::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
+             ::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->OndeviceHandwritingSupport() ==
          crosapi::mojom::OndeviceHandwritingSupport::kUseRootfs;

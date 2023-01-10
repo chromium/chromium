@@ -928,10 +928,6 @@ const char kWaitForInitialPolicyFetchForTest[] =
 const char kWebUiDataSourcePathForTesting[] =
     "web-ui-data-source-path-for-testing";
 
-// Used to determine if and how on-device handwriting recognition is supported
-// (e.g. via rootfs or downloadable content).
-const char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
-
 // Enable the getAccessToken autotest API which creates access tokens using
 // the internal OAuth client ID.
 const char kGetAccessTokenForTest[] = "get-access-token-for-test";

@@ -125,6 +125,7 @@
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
+#include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
 #include "chromeos/ui/wm/features.h"
@@ -497,10 +498,10 @@ void InjectBrowserInitParams(
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kOndeviceHandwritingSwitch)) {
+          ::switches::kOndeviceHandwritingSwitch)) {
     const auto handwriting_switch =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            ash::switches::kOndeviceHandwritingSwitch);
+            ::switches::kOndeviceHandwritingSwitch);
 
     // TODO(https://crbug.com/1168978): Query mlservice instead of using
     // hard-coded values.

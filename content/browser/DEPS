@@ -98,7 +98,6 @@ include_rules = [
   "+third_party/zlib",
 
   # Allow non-browser Chrome OS code to be used.
-  "+ash/constants",
   "+chromeos",
   "+third_party/cros_system_api",
 

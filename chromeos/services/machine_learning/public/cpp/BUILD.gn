@@ -8,6 +8,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 source_set("cpp") {
   sources = [
+    "ml_switches.cc",
+    "ml_switches.h",
     "service_connection.cc",
     "service_connection.h",
   ]
