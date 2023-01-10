@@ -846,14 +846,6 @@ void Av1Decoder::SetupFrameParams(
     }
   }
 
-  // These params looks duplicated with |ref_frame_idx|, but they are required
-  // and used when |frame_refs_short_signaling| is set according to the AV1
-  // spec. https://aomediacodec.github.io/av1-spec/#uncompressed-header-syntax
-  v4l2_frame_params->last_frame_idx =
-      frm_header.reference_frame_index[libgav1::kReferenceFrameLast];
-  v4l2_frame_params->gold_frame_idx =
-      frm_header.reference_frame_index[libgav1::kReferenceFrameGolden];
-
   // TODO(b/230891887): use uint64_t when v4l2_timeval_to_ns() function is used.
   constexpr uint32_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
 
