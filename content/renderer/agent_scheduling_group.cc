@@ -375,6 +375,22 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       // both the placeholder main RemoteFrame and the previous page's local
       // frame will be swapped out, and the provisional frame will be swapped in
       // to become the main frame for the new WebView's blink::Page.
+      //
+      // In summary, the steps involved in main frame LocalFrame <-> LocalFrame
+      // swaps are:
+      // 1. Create a new WebView with a placeholder main RemoteFrame, and a
+      // provisional main LocalFrame for the RemoteFrame (see code below).
+      // 2. Wait for the navigation to either commit or get canceled.
+      // 2a. If the navigation gets canceled, the provisional main LocalFrame
+      // will get deleted. Separately, the new WebView will also get deleted,
+      // which will delete the placeholder main RemoteFrame along with it.
+      // 2b. If the navigation gets committed:
+      // - The new WebView will swap out the placeholder main RemoteFrame, and
+      // swap in the provisional main LocalFrame, and commit the navigation to
+      // that LocalFrame.
+      // - The old WebView will swap out its main LocalFrame, and we will swap
+      // in a newly created placeholder main RemoteFrame, so that the old
+      // WebView still have a valid main frame.
 
       // Create the placeholder RemoteFrame.
       CreateRemoteMainFrame(
@@ -383,7 +399,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
           mojo::NullAssociatedReceiver(), params->devtools_main_frame_token,
           params->replication_state.Clone(), opener_frame, web_view);
 
-      // Create the provisional main frame.
+      // Create the provisional main LocalFrame.
       RenderFrameImpl::CreateFrame(
           *this, local_params->frame_token, local_params->routing_id,
           std::move(local_params->frame),
