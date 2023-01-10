@@ -717,6 +717,12 @@ const char kSmartSortingNewOverflowMenuName[] =
 const char kSmartSortingNewOverflowMenuDescription[] =
     "Enables smart sorting the new overflow menu carousel by frecency.";
 
+const char kSmartSortingPriceTrackingDestinationName[] =
+    "Price Tracking destination (with Smart Sorting)";
+const char kSmartSortingPriceTrackingDestinationDescription[] =
+    "Adds the Price Tracking destination (with Smart Sorting) to the "
+    "new overflow menu.";
+
 const char kNewOverflowMenuShareChromeActionName[] =
     "Share Chrome App action in the new overflow menu";
 const char kNewOverflowMenuShareChromeActionDescription[] =

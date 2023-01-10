@@ -638,6 +638,11 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSmartSortingNewOverflowMenuName[];
 extern const char kSmartSortingNewOverflowMenuDescription[];
 
+// Title and description for the flag to add the Price Tracking destination
+// (with Smart Sorting) to the new overflow menu.
+extern const char kSmartSortingPriceTrackingDestinationName[];
+extern const char kSmartSortingPriceTrackingDestinationDescription[];
+
 // Title and description for the flag to enable the Share Chrome App action
 // in the new overflow menu.
 extern const char kNewOverflowMenuShareChromeActionName[];

@@ -6353,6 +6353,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "smart-sorting-price-tracking-destination",
+    "owners": [ "bwwilliams@google.com", "danieltwhite@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 100

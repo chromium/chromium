@@ -18,6 +18,10 @@ BASE_FEATURE(kSmartSortingNewOverflowMenu,
              "kSmartSortingNewOverflowMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSmartSortingPriceTrackingDestination,
+             "kSmartSortingPriceTrackingDestination",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNewOverflowMenuShareChromeAction,
              "kNewOverflowMenuShareChromeAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -38,6 +42,11 @@ bool IsNewOverflowMenuEnabled() {
 bool IsSmartSortingNewOverflowMenuEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kSmartSortingNewOverflowMenu);
+}
+
+bool IsSmartSortingPriceTrackingDestinationEnabled() {
+  return IsSmartSortingNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kSmartSortingPriceTrackingDestination);
 }
 
 bool IsNewOverflowMenuShareChromeActionEnabled() {
