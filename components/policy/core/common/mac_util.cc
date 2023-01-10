@@ -28,8 +28,8 @@ void DictionaryEntryToValue(const void* key, const void* value, void* context) {
     if (converted) {
       const std::string string = base::SysCFStringRefToUTF8(cf_key);
       // Policy dictionary values may contain dots in key names.
-      static_cast<base::Value*>(context)->GetDict().Set(string,
-                                                        std::move(*converted));
+      static_cast<base::Value::Dict*>(context)->Set(string,
+                                                    std::move(*converted));
     }
   }
 }
@@ -78,10 +78,9 @@ std::unique_ptr<base::Value> PropertyToValue(CFPropertyListRef property) {
   }
 
   if (CFDictionaryRef dict = CFCast<CFDictionaryRef>(property)) {
-    std::unique_ptr<base::DictionaryValue> dict_value(
-        new base::DictionaryValue());
-    CFDictionaryApplyFunction(dict, DictionaryEntryToValue, dict_value.get());
-    return std::move(dict_value);
+    base::Value::Dict dict_value;
+    CFDictionaryApplyFunction(dict, DictionaryEntryToValue, &dict_value);
+    return std::make_unique<base::Value>(std::move(dict_value));
   }
 
   if (CFArrayRef array = CFCast<CFArrayRef>(property)) {
