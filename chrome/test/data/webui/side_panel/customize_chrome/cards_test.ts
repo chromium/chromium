@@ -19,15 +19,19 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
+
 import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
 suite('CardsTest', () => {
   let customizeCards: CardsElement;
+  let metrics: MetricsTracker;
   let handler: TestBrowserProxy<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metrics = fakeMetricsPrivate();
     handler = installMock(
         CustomizeChromePageHandlerRemote,
         (mock: CustomizeChromePageHandlerRemote) =>
@@ -156,6 +160,35 @@ suite('CardsTest', () => {
         });
   });
 
+  test(`cards can be disabled and enabled`, async () => {
+    // Arrange & Act.
+    await setupTest(
+        [
+          {id: 'foo', name: 'foo name', enabled: true},
+        ],
+        /*modulesManaged=*/ false,
+        /*modulesVisible=*/ true);
+
+    const cards = getCardsMap();
+    const fooCheckbox = cards.get('foo name')!.querySelector('cr-checkbox')!;
+
+    // Act.
+    fooCheckbox.click();
+
+    // Assert.
+    assertDeepEquals(['foo', true], handler.getArgs('setModuleDisabled')[0]);
+    assertCardCheckedStatus(cards, 'foo name', false);
+    assertEquals(1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
+
+    // Act.
+    fooCheckbox.click();
+
+    // Assert.
+    assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
+    assertCardCheckedStatus(cards, 'foo name', true);
+    assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
+  });
+
   suite('Chrome Cart', () => {
     let cartHandler: TestBrowserProxy<CartHandlerRemote>;
 
@@ -263,8 +296,8 @@ suite('CardsTest', () => {
       cards = getCardsMap();
       assertCardCheckedStatus(cards, 'Chrome Cart', false);
       assertCardCheckedStatus(cards, 'bar name', false);
+      assertEquals(
+          1, metrics.count('NewTabPage.Modules.Disabled', 'chrome_cart'));
     });
   });
-
-  // TODO(crbug.com/1384258): Add metric related tests.
 });

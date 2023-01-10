@@ -51,4 +51,5 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 }

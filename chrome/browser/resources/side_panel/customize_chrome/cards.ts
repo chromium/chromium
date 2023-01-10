@@ -113,8 +113,8 @@ export class CardsElement extends PolymerElement {
     const id: string = e.model.item.id;
     const checked: boolean = e.detail;
     this.pageHandler_.setModuleDisabled(id, !checked);
-
-    // TODO(crbug.com/1384258): Add metrics.
+    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+        'NewTabPage.Modules.' + (checked ? 'Enabled' : 'Disabled'), id);
   }
 
   private showDiscountCheckbox_(
