@@ -14,6 +14,8 @@
 #include <shlobj.h>
 #include <userenv.h>
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -26,7 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/shlwapi.h"
-#include "base/win/windows_version.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
@@ -258,13 +259,11 @@ HRESULT CreateDirectoryWithRestrictedAccess(const base::FilePath& path) {
   return hr;
 }
 
-HRESULT UpdateProfilePicturesForWindows8AndNewer(
-    const std::wstring& sid,
-    const std::wstring& picture_url,
-    bool force_update) {
+HRESULT UpdateProfilePictures(const std::wstring& sid,
+                              const std::wstring& picture_url,
+                              bool force_update) {
   DCHECK(!sid.empty());
   DCHECK(!picture_url.empty());
-  DCHECK(base::win::GetVersion() >= base::win::Version::WIN8);
 
   // Try to download profile pictures of all required sizes for windows.
   // Needed profile picture sizes are in |kProfilePictureSizes|.
@@ -590,24 +589,20 @@ HRESULT ScopedUserProfile::SaveAccountInfo(const base::Value& properties) {
     }
   }
 
-  // This code for setting profile pictures is specific for windows 8+.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    std::wstring picture_url = GetDictString(properties, kKeyPicture);
-    if (!picture_url.empty() && !sid.empty()) {
-      wchar_t old_picture_url[512];
-      ULONG url_size = std::size(old_picture_url);
-      hr = GetUserProperty(sid, kUserPictureUrl, old_picture_url, &url_size);
+  std::wstring picture_url = GetDictString(properties, kKeyPicture);
+  if (!picture_url.empty() && !sid.empty()) {
+    wchar_t old_picture_url[512];
+    ULONG url_size = std::size(old_picture_url);
+    hr = GetUserProperty(sid, kUserPictureUrl, old_picture_url, &url_size);
 
-      UpdateProfilePicturesForWindows8AndNewer(
-          sid, picture_url, FAILED(hr) || old_picture_url != picture_url);
-      hr = SetUserProperty(sid.c_str(), kUserPictureUrl, picture_url.c_str());
-      if (FAILED(hr)) {
-        LOGFN(ERROR) << "SetUserProperty(pic) hr=" << putHR(hr);
-        return hr;
-      }
+    UpdateProfilePictures(sid, picture_url,
+                          FAILED(hr) || old_picture_url != picture_url);
+    hr = SetUserProperty(sid.c_str(), kUserPictureUrl, picture_url.c_str());
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "SetUserProperty(pic) hr=" << putHR(hr);
+      return hr;
     }
   }
-
   return S_OK;
 }
 

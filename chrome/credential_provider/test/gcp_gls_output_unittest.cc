@@ -72,16 +72,6 @@ class GcpUsingChromeTest : public ::testing::Test {
   std::string RunProcessAndExtractOutput(
       const base::CommandLine& command_line) const;
 
-  bool ShouldRunTestOnThisOS() const {
-    // TODO(crbug.com/909722) Enable tests again once they are all passing. Currently, all tests are
-    // flaky on all bots except win-asan.
-    return false;
-    // TODO(crbug.com/906793). For some reason handle inheritance does not work
-    // correctly on Windows7 and causes all the tests to stall indefinetely.
-    // Since GCPW is only targeted for Windows 10 currently, disable these
-    // unit tests for now until the problem can be resolved.
-    // return base::win::GetVersion() >= base::win::Version::WIN10;
-  }
   std::unique_ptr<net::test_server::HttpResponse> GaiaHtmlResponseHandler(
       const net::test_server::HttpRequest& request);
   std::unique_ptr<net::test_server::HttpResponse> GoogleApisHtmlResponseHandler(
@@ -102,9 +92,6 @@ GcpUsingChromeTest::GcpUsingChromeTest()
     : proxy_server_(net::SpawnedTestServer::TYPE_PROXY, base::FilePath()) {}
 
 void GcpUsingChromeTest::SetUp() {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
   // Redirect connections to signin related pages to a handler that will
   // generate the needed headers and content to move the signin flow
   // forward automatically.
@@ -124,9 +111,6 @@ void GcpUsingChromeTest::SetUp() {
 }
 
 void GcpUsingChromeTest::TearDown() {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
   EXPECT_TRUE(gaia_server_.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(google_apis_server_.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(proxy_server_.Stop());
@@ -344,10 +328,9 @@ GcpUsingChromeTest::GoogleApisHtmlResponseHandler(
   return std::move(http_response);
 }
 
-TEST_F(GcpUsingChromeTest, VerifyMissingSigninInfoOutput) {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
+// TODO(crbug.com/909722): Enable tests again once they are all passing.
+// Currently, all tests are flaky on all bots except win-asan.
+TEST_F(GcpUsingChromeTest, DISABLED_VerifyMissingSigninInfoOutput) {
   SetPasswordForSignin(std::string());
   SetTokenInfoResponse(
       {net::HTTP_OK, test_data_storage_.GetSuccessfulTokenInfoFetchResult()});
@@ -367,10 +350,7 @@ TEST_F(GcpUsingChromeTest, VerifyMissingSigninInfoOutput) {
   EXPECT_FALSE(mdm_token_response_.response_given_);
 }
 
-TEST_F(GcpUsingChromeTest, VerifySigninFailureOutput) {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
+TEST_F(GcpUsingChromeTest, DISABLED_VerifySigninFailureOutput) {
   SetTokenInfoResponse(
       {net::HTTP_OK, test_data_storage_.GetSuccessfulTokenInfoFetchResult()});
   SetUserInfoResponse(
@@ -390,10 +370,7 @@ TEST_F(GcpUsingChromeTest, VerifySigninFailureOutput) {
   EXPECT_FALSE(mdm_token_response_.response_given_);
 }
 
-TEST_F(GcpUsingChromeTest, VerifyTokenInfoFailureOutput) {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
+TEST_F(GcpUsingChromeTest, DISABLED_VerifyTokenInfoFailureOutput) {
   SetTokenInfoResponse({net::HTTP_OK,
                         CredentialProviderSigninDialogTestDataStorage::
                             kInvalidTokenInfoResponse});
@@ -411,10 +388,7 @@ TEST_F(GcpUsingChromeTest, VerifyTokenInfoFailureOutput) {
   EXPECT_TRUE(token_info_response_.response_given_);
 }
 
-TEST_F(GcpUsingChromeTest, VerifyUserInfoFailureOutput) {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
+TEST_F(GcpUsingChromeTest, DISABLED_VerifyUserInfoFailureOutput) {
   SetTokenInfoResponse(
       {net::HTTP_OK, test_data_storage_.GetSuccessfulTokenInfoFetchResult()});
   SetUserInfoResponse({net::HTTP_OK,
@@ -433,10 +407,7 @@ TEST_F(GcpUsingChromeTest, VerifyUserInfoFailureOutput) {
   EXPECT_TRUE(mdm_token_response_.response_given_);
 }
 
-TEST_F(GcpUsingChromeTest, VerifyMdmFailureOutput) {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
+TEST_F(GcpUsingChromeTest, DISABLED_VerifyMdmFailureOutput) {
   SetTokenInfoResponse(
       {net::HTTP_OK, test_data_storage_.GetSuccessfulTokenInfoFetchResult()});
   SetUserInfoResponse(
@@ -454,10 +425,7 @@ TEST_F(GcpUsingChromeTest, VerifyMdmFailureOutput) {
   EXPECT_FALSE(user_info_response_.response_given_);
 }
 
-TEST_F(GcpUsingChromeTest, VerifySuccessOutput) {
-  if (!ShouldRunTestOnThisOS())
-    return;
-
+TEST_F(GcpUsingChromeTest, DISABLED_VerifySuccessOutput) {
   SetTokenInfoResponse(
       {net::HTTP_OK, test_data_storage_.GetSuccessfulTokenInfoFetchResult()});
   SetUserInfoResponse(
