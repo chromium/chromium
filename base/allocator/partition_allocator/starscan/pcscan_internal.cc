@@ -51,10 +51,6 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "build/build_config.h"
 
-// TODO(bikineev): Temporarily disable inlining in *Scan to get clearer
-// stacktraces.
-#define PA_STARSCAN_NOINLINE_SCAN_FUNCTIONS
-
 #if defined(PA_STARSCAN_NOINLINE_SCAN_FUNCTIONS)
 #define PA_SCAN_INLINE PA_NOINLINE
 #else

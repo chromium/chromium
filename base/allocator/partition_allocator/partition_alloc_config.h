@@ -82,6 +82,14 @@ static_assert(sizeof(void*) != 8, "");
 // scanner thread and appends to the slot-span's freelist only once.
 #define PA_STARSCAN_BATCHED_FREE 1
 
+// TODO(bikineev): Temporarily disable inlining in *Scan to get clearer
+// stacktraces.
+#define PA_STARSCAN_NOINLINE_SCAN_FUNCTIONS
+
+// TODO(bikineev): Temporarily disable *Scan in MemoryReclaimer as it seems to
+// cause significant jank.
+#define PA_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM 0
+
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -205,6 +213,12 @@ static_assert(sizeof(void*) == 8);
 #if BUILDFLAG(PA_DCHECK_IS_ON) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
 #define PA_HAS_ALLOCATION_GUARD
+#endif
+
+// On Android, we have to go through emutls, since this is always a shared
+// library, so don't bother.
+#if defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
+#define PA_THREAD_CACHE_FAST_TLS
 #endif
 
 // Lazy commit should only be enabled on Windows, because commit charge is

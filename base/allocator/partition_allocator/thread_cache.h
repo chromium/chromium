@@ -70,11 +70,6 @@ class ThreadCacheInspector;
 namespace internal {
 
 extern PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
-// On Android, we have to go through emutls, since this is always a shared
-// library, so don't bother.
-#if defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
-#define PA_THREAD_CACHE_FAST_TLS
-#endif
 
 #if defined(PA_THREAD_CACHE_FAST_TLS)
 extern PA_COMPONENT_EXPORT(

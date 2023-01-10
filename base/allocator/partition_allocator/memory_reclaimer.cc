@@ -14,10 +14,6 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif  // BUILDFLAG(STARSCAN)
 
-// TODO(bikineev): Temporarily disable *Scan in MemoryReclaimer as it seems to
-// cause significant jank.
-#define PA_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM 0
-
 namespace partition_alloc {
 
 // static
