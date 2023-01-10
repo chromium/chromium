@@ -31,7 +31,7 @@ extern const char kJsonCheckAndroidNetworkInfoKey[];
 class SystemInfo;
 
 // Provides the system information likes board/device names for EcheApp and
-// exposes the interface via mojoa.
+// exposes the interface via mojom.
 class SystemInfoProvider
     : public mojom::SystemInfoProvider,
       public ScreenBacklightObserver,
@@ -46,6 +46,7 @@ class SystemInfoProvider
   SystemInfoProvider(const SystemInfoProvider&) = delete;
   SystemInfoProvider& operator=(const SystemInfoProvider&) = delete;
 
+  std::string GetHashedWiFiSsid();
   // mojom::SystemInfoProvider:
   void GetSystemInfo(
       base::OnceCallback<void(const std::string&)> callback) override;
@@ -53,6 +54,19 @@ class SystemInfoProvider
       mojo::PendingRemote<mojom::SystemInfoObserver> observer) override;
 
   void Bind(mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
+
+  // Fetches the hashed SSID of the WiFi network the device is currently
+  // connected to.
+  virtual void FetchWifiNetworkSsidHash();
+
+  // Sends the value of is_different_network & android_device_on_cellular to a
+  // remote observer on the TS/JS layer via mojo.
+  void SetAndroidDeviceNetworkInfoChanged(bool is_different_network,
+                                          bool android_device_on_cellular);
+
+ protected:
+  SystemInfoProvider();
+  std::string hashed_wifi_ssid_;
 
  private:
   friend class SystemInfoProviderTest;
@@ -65,14 +79,17 @@ class SystemInfoProvider
   void OnTabletModeEnded() override;
 
   void SetTabletModeChanged(bool enabled);
-  void SetAndroidDeviceNetworkInfoChanged(bool is_different_network,
-                                          bool android_device_on_cellular);
 
   // network_config::CrosNetworkConfigObserver overrides:
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
       override;
 
+  // Callback invoked from within FetchWifiNetworkSsidHash() that produces a
+  // list of networks.
+  void OnWifiNetworkListSsidFetch(
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks);
   void FetchWifiNetworkList();
   void OnWifiNetworkList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>

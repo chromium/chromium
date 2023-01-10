@@ -4,10 +4,14 @@
 
 #include "ash/webui/eche_app_ui/eche_signaler.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
+#include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "crypto/sha2.h"
 
 namespace ash {
 
@@ -60,6 +64,12 @@ void EcheSignaler::SetSignalingMessageObserver(
   probably_connection_failed_reason_ = EcheTray::ConnectionFailReason::kUnknown;
 }
 
+void EcheSignaler::SetSystemInfoProvider(
+    SystemInfoProvider* system_info_provider) {
+  PA_LOG(INFO) << "echeapi EcheSignaler SetSystemInfoProvider";
+  system_info_provider_ = system_info_provider;
+}
+
 void EcheSignaler::TearDownSignaling() {
   PA_LOG(INFO) << "echeapi EcheSignaler TearDownSignaling";
   proto::SignalingAction action;
@@ -92,8 +102,15 @@ void EcheSignaler::OnMessageReceived(const std::string& payload) {
   } else if (message.has_response()) {
     PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived has response";
     signal = message.response().data();
-    probably_connection_failed_reason_ =
-        EcheTray::ConnectionFailReason::kSignalingHasLateResponse;
+
+    if (base::FeatureList::IsEnabled(
+            features::kEcheSWACheckAndroidNetworkInfo)) {
+      ProcessAndroidNetworkInfo(message);
+    } else {
+      probably_connection_failed_reason_ =
+          EcheTray::ConnectionFailReason::kSignalingHasLateResponse;
+    }
+
   } else {
     PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived return";
     return;
@@ -101,6 +118,41 @@ void EcheSignaler::OnMessageReceived(const std::string& payload) {
   PA_LOG(INFO) << "echeapi EcheSignaler OnMessageReceived";
   std::vector<uint8_t> encoded_signal(signal.begin(), signal.end());
   observer_->OnReceivedSignalingMessage(encoded_signal);
+}
+
+void EcheSignaler::ProcessAndroidNetworkInfo(const proto::ExoMessage& message) {
+  if (!message.response().has_network_info()) {
+    probably_connection_failed_reason_ =
+        EcheTray::ConnectionFailReason::kSignalingHasLateResponse;
+    return;
+  }
+
+  system_info_provider_->FetchWifiNetworkSsidHash();
+
+  const proto::NetworkInfo& network_info = message.response().network_info();
+
+  bool remote_on_cellular = network_info.mobile_network();
+  bool is_different_network = false;
+
+  if (!remote_on_cellular) {
+    std::string local_hashed_ssid = system_info_provider_->GetHashedWiFiSsid();
+    std::string remote_hashed_ssid = network_info.ssid();
+
+    if (local_hashed_ssid.compare(remote_hashed_ssid) == 0) {
+      probably_connection_failed_reason_ =
+          EcheTray::ConnectionFailReason::kSignalingHasLateResponse;
+    } else {
+      is_different_network = true;
+      probably_connection_failed_reason_ =
+          EcheTray::ConnectionFailReason::kConnectionFailSsidDifferent;
+    }
+  } else {
+    probably_connection_failed_reason_ =
+        EcheTray::ConnectionFailReason::kConnectionFailRemoteDeviceOnCellular;
+  }
+
+  system_info_provider_->SetAndroidDeviceNetworkInfoChanged(
+      is_different_network, remote_on_cellular);
 }
 
 void EcheSignaler::RecordSignalingTimeout() {
@@ -140,6 +192,12 @@ std::ostream& operator<<(
       break;
     case EcheTray::ConnectionFailReason::kConnectionFailInTabletMode:
       stream << "[Connection Fail In Tablet Mode]";
+      break;
+    case EcheTray::ConnectionFailReason::kConnectionFailSsidDifferent:
+      stream << "[Connection Fail Different Network]";
+      break;
+    case EcheTray::ConnectionFailReason::kConnectionFailRemoteDeviceOnCellular:
+      stream << "[Connection Fail Remote Device On Cellular]";
       break;
   }
   return stream;

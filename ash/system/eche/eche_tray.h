@@ -98,7 +98,15 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
     // from EcheTray.
     kConnectionFailInTabletMode = 5,
 
-    kMaxValue = kConnectionFailInTabletMode,
+    // Connection fail because the devices are on different networks. Report
+    // this from EcheTray.
+    kConnectionFailSsidDifferent = 6,
+
+    // Connection fail because the remote device is on cellular network. Report
+    // this from EcheTray.
+    kConnectionFailRemoteDeviceOnCellular = 7,
+
+    kMaxValue = kConnectionFailRemoteDeviceOnCellular,
   };
 
   using GracefulCloseCallback = base::OnceCallback<void()>;

@@ -8,6 +8,7 @@
 #include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/gtest_prod_util.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -34,6 +35,7 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   void SendSignalingMessage(const std::vector<uint8_t>& signal) override;
   void SetSignalingMessageObserver(
       mojo::PendingRemote<mojom::SignalingMessageObserver> observer) override;
+  void SetSystemInfoProvider(SystemInfoProvider* system_info_provider);
   void TearDownSignaling() override;
 
   void Bind(mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver);
@@ -51,8 +53,15 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
                            TestConnectionFailWhenSignalingHasLateResponse);
   FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
                            TestConnectionFailWhenSecurityChannelDisconnected);
+  FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
+                           TestConnectionFailWhenWiFiNetworksDifferent);
+  FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
+                           TestConnectionFailWhenWiFiNetworksSame);
+  FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
+                           TestConnectionFailWhenRemoteDeviceOnCellular);
 
   void RecordSignalingTimeout();
+  void ProcessAndroidNetworkInfo(const proto::ExoMessage& message);
 
   // The signaling timer to log fail reason in case response timeout.
   std::unique_ptr<base::DelayTimer> signaling_timeout_timer_;
@@ -61,8 +70,9 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   EcheTray::ConnectionFailReason probably_connection_failed_reason_ =
       EcheTray::ConnectionFailReason::kUnknown;
 
-  EcheConnector* eche_connector_;
-  secure_channel::ConnectionManager* connection_manager_;
+  SystemInfoProvider* system_info_provider_ = nullptr;
+  EcheConnector* eche_connector_ = nullptr;
+  secure_channel::ConnectionManager* connection_manager_ = nullptr;
   mojo::Remote<mojom::SignalingMessageObserver> observer_;
   mojo::Receiver<mojom::SignalingMessageExchanger> exchanger_{this};
 };

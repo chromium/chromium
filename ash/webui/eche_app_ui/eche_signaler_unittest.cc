@@ -7,10 +7,15 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
+#include "ash/webui/eche_app_ui/system_info.h"
+#include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
@@ -99,7 +104,9 @@ class FakeObserver : public mojom::SignalingMessageObserver {
 
 class FakeEcheConnector : public EcheConnector {
  public:
-  FakeEcheConnector(TaskRunner* task_runner) { task_runner_ = task_runner; }
+  explicit FakeEcheConnector(TaskRunner* task_runner) {
+    task_runner_ = task_runner;
+  }
   ~FakeEcheConnector() override = default;
 
   const std::vector<proto::ExoMessage>& sent_messages() const {
@@ -119,6 +126,32 @@ class FakeEcheConnector : public EcheConnector {
  private:
   TaskRunner* task_runner_;
   std::vector<proto::ExoMessage> sent_messages_;
+};
+
+class FakeSystemInfoProvider : public SystemInfoProvider {
+ public:
+  FakeSystemInfoProvider(
+      std::unique_ptr<SystemInfo> system_info,
+      chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config)
+      : SystemInfoProvider(std::move(system_info), cros_network_config) {}
+  FakeSystemInfoProvider() {
+    PA_LOG(INFO) << "echeapi FakeSystemInfoProvider FakeSystemInfoProvider";
+  }
+  ~FakeSystemInfoProvider() override = default;
+
+  void FetchWifiNetworkSsidHash() override {
+    PA_LOG(INFO) << "echeapi FakeSystemInfoProvider FetchWifiNetworkSsidHash";
+    // SHA256 hash for the string 'network'
+    hashed_wifi_ssid_ =
+        "3009be769fb8f956e8413ee9f3e0836e34968bc40457d0a10c549d2edcf00cc1";
+  }
+
+  // mojom::SystemInfoProvider:
+  void GetSystemInfo(
+      base::OnceCallback<void(const std::string&)> callback) override {}
+  void SetSystemInfoObserver(
+      mojo::PendingRemote<mojom::SystemInfoObserver> observer) override {}
+  void Bind(mojo::PendingReceiver<mojom::SystemInfoProvider> receiver) {}
 };
 
 }  // namespace
@@ -159,13 +192,19 @@ class EcheSignalerTest : public testing::Test {
     return message;
   }
 
-  proto::ExoMessage getResponseMessage(std::string data) {
+  proto::ExoMessage getResponseMessage(std::string data,
+                                       std::string ssid,
+                                       bool mobile_network) {
     std::vector<uint8_t> signal(data.begin(), data.end());
     std::string encoded_signal(signal.begin(), signal.end());
-    proto::SignalingResponse response;
-    response.set_data(encoded_signal);
+
     proto::ExoMessage message;
-    *message.mutable_response() = std::move(response);
+    proto::SignalingResponse* response = message.mutable_response();
+    response->set_data(std::move(encoded_signal));
+    proto::NetworkInfo* network_info = response->mutable_network_info();
+    network_info->set_mobile_network(mobile_network);
+    network_info->set_ssid(std::move(ssid));
+
     return message;
   }
 
@@ -178,6 +217,7 @@ class EcheSignalerTest : public testing::Test {
   secure_channel::FakeConnectionManager fake_connection_manager_;
 
   std::unique_ptr<EcheSignaler> signaler_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests SendSignalingMessage.
@@ -189,7 +229,7 @@ TEST_F(EcheSignalerTest, TestSendSignalingMessage) {
   fake_exchanger_client.SendSignalingMessage(signal);
   task_runner_.WaitForResult();
 
-  EXPECT_TRUE(fake_connector_.sent_messages().size() > 0);
+  EXPECT_GT(fake_connector_.sent_messages().size(), (unsigned long)0);
 }
 
 // Tests TearDownSignaling.
@@ -216,7 +256,7 @@ TEST_F(EcheSignalerTest, TestSetSignalingMessageObserverAndReceiveMessage) {
   signaler_->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
 
-  EXPECT_TRUE(fake_observer.received_signals().size() > 0);
+  EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
 }
 
 TEST_F(EcheSignalerTest, TestConnectionFailWhenNoReceiveAnyMessage) {
@@ -235,7 +275,7 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenNoReceiveAnyMessage) {
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kSignalingNotTriggered, 1);
-  EXPECT_TRUE(fake_observer.received_signals().size() == 0);
+  EXPECT_EQ(fake_observer.received_signals().size(), (unsigned long)0);
 }
 
 TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateRequest) {
@@ -257,29 +297,7 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateRequest) {
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kSignalingHasLateRequest, 1);
-  EXPECT_TRUE(fake_observer.received_signals().size() > 0);
-}
-
-TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
-  base::HistogramTester histograms;
-  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
-  FakeObserver fake_observer(&observer, &task_runner_);
-  proto::ExoMessage message = getResponseMessage("123");
-  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
-
-  histograms.ExpectUniqueSample(
-      "Eche.StreamEvent.ConnectionFail",
-      EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 0);
-
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->OnMessageReceived(message.SerializeAsString());
-  task_runner_.WaitForResult();
-  signaler_->RecordSignalingTimeout();
-
-  histograms.ExpectUniqueSample(
-      "Eche.StreamEvent.ConnectionFail",
-      EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 1);
-  EXPECT_TRUE(fake_observer.received_signals().size() > 0);
+  EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
 }
 
 TEST_F(EcheSignalerTest, TestConnectionFailWhenSecurityChannelDisconnected) {
@@ -298,6 +316,122 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSecurityChannelDisconnected) {
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kSecurityChannelDisconnected, 1);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksDifferent) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          ash::features::kEcheSWACheckAndroidNetworkInfo,
+      },
+      /*disabled_features=*/{});
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  FakeSystemInfoProvider fake_system_info_provider;
+  proto::ExoMessage message = getResponseMessage(
+      "123", "4f7beaf7ab9d5e2c52a2faa3aef34560ad49071957d3029800e85f42931cd5ab",
+      false);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kConnectionFailSsidDifferent, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler_->OnMessageReceived(message.SerializeAsString());
+  task_runner_.WaitForResult();
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kConnectionFailSsidDifferent, 1);
+  EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksSame) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          ash::features::kEcheSWACheckAndroidNetworkInfo,
+      },
+      /*disabled_features=*/{});
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  FakeSystemInfoProvider fake_system_info_provider;
+  proto::ExoMessage message = getResponseMessage(
+      "123", "3009be769fb8f956e8413ee9f3e0836e34968bc40457d0a10c549d2edcf00cc1",
+      false);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kConnectionFailSsidDifferent, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler_->OnMessageReceived(message.SerializeAsString());
+  task_runner_.WaitForResult();
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 1);
+  EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenRemoteDeviceOnCellular) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          ash::features::kEcheSWACheckAndroidNetworkInfo,
+      },
+      /*disabled_features=*/{});
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  FakeSystemInfoProvider fake_system_info_provider;
+  proto::ExoMessage message = getResponseMessage("123", "network", true);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kConnectionFailRemoteDeviceOnCellular, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler_->OnMessageReceived(message.SerializeAsString());
+  task_runner_.WaitForResult();
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kConnectionFailRemoteDeviceOnCellular, 1);
+  EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
+}
+
+TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
+  base::HistogramTester histograms;
+  mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
+  FakeObserver fake_observer(&observer, &task_runner_);
+  proto::ExoMessage message = getResponseMessage("123", "network", false);
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 0);
+
+  signaler_->SetSignalingMessageObserver(std::move(observer));
+  signaler_->OnMessageReceived(message.SerializeAsString());
+  task_runner_.WaitForResult();
+  signaler_->RecordSignalingTimeout();
+
+  histograms.ExpectUniqueSample(
+      "Eche.StreamEvent.ConnectionFail",
+      EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 1);
+  EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
 }
 
 }  // namespace eche_app

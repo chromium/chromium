@@ -111,6 +111,8 @@ EcheAppManager::EcheAppManager(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
       std::move(system_info), remote_cros_network_config_.get());
+  // assign system_info_provider_ to eche signaler
+  signaler_->SetSystemInfoProvider(system_info_provider_.get());
 }
 
 EcheAppManager::~EcheAppManager() = default;
