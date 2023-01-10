@@ -453,7 +453,7 @@ void AudioDecoderAndroid::OnBufferDecoded(
     got_eos_ = true;
     LOG(INFO) << __func__ << ": decoded buffer marked EOS";
   } else {
-    int input_frames =
+    int64_t input_frames =
         decoded->data_size() / (config_.channel_number * sizeof(float));
 
     DCHECK(!rate_shifter_info_.empty());
