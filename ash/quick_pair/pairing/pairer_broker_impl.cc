@@ -206,13 +206,18 @@ void PairerBrokerImpl::OnHandshakeFailure(scoped_refptr<Device> device,
 void PairerBrokerImpl::StartBondingAttempt(scoped_refptr<Device> device) {
   if (!base::Contains(pair_failure_counts_, device->ble_address())) {
     pair_failure_counts_[device->ble_address()] = 0;
+
+    // `OnPairingStart` is used in metrics to signal the beginning of the
+    // initialization. We only want to signal this when pairing begins on the
+    // first pairing attempt, otherwise observers will be notified on each retry
+    // and incorrectly capture initialization in our metrics three times instead
+    // of one when it begins.
+    for (auto& observer : observers_) {
+      observer.OnPairingStart(device);
+    }
   }
 
   QP_LOG(INFO) << __func__ << ": " << device;
-
-  for (auto& observer : observers_) {
-    observer.OnPairingStart(device);
-  }
 
   DCHECK(adapter_);
   fast_pair_pairers_[device->ble_address()] =
