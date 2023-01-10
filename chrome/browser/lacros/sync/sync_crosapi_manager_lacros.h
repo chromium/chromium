@@ -7,22 +7,31 @@
 
 #include <memory>
 
+#include "components/sync/driver/sync_service_observer.h"
+
 class Profile;
 class SyncExplicitPassphraseClientLacros;
 class SyncUserSettingsClientLacros;
 
+namespace syncer {
+class SyncService;
+}
+
 // Controls lifetime of sync-related Crosapi clients.
-class SyncCrosapiManagerLacros {
+class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver {
  public:
   SyncCrosapiManagerLacros();
-  ~SyncCrosapiManagerLacros();
+  ~SyncCrosapiManagerLacros() override;
 
   void PostProfileInit(Profile* profile);
 
+  // SyncServiceObserver implementation.
+  // Note: |this| observes only SyncService from the main profile.
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
+
  private:
-  // TODO(crbug.com/1327602): Destroy `sync_explicit_passphrase_client_` upon
-  // main profile SyncService shutdown and remove handling of SyncService
-  // from the client code.
+  // The objects below are created for main profile PostProfileInit() and
+  // destroyed upon main profile SyncService shutdown.
   std::unique_ptr<SyncExplicitPassphraseClientLacros>
       sync_explicit_passphrase_client_;
   std::unique_ptr<SyncUserSettingsClientLacros> sync_user_settings_client_;

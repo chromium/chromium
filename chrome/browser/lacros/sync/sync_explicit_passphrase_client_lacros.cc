@@ -68,13 +68,6 @@ void SyncExplicitPassphraseClientLacros::LacrosSyncServiceObserver::
   is_passphrase_available_ = new_is_passphrase_available;
 }
 
-void SyncExplicitPassphraseClientLacros::LacrosSyncServiceObserver::
-    OnSyncShutdown(syncer::SyncService* sync_service) {
-  explicit_passphrase_client_->OnLacrosSyncShutdown();
-  sync_service_->RemoveObserver(this);
-  sync_service_ = nullptr;
-}
-
 SyncExplicitPassphraseClientLacros::AshSyncExplicitPassphraseClientObserver::
     AshSyncExplicitPassphraseClientObserver(
         SyncExplicitPassphraseClientLacros* explicit_passphrase_client,
@@ -141,13 +134,6 @@ void SyncExplicitPassphraseClientLacros::OnLacrosPassphraseAvailable() {
   if (ash_explicit_passphrase_client_observer_->is_passphrase_required()) {
     SendDecryptionKeyToAsh();
   }
-}
-
-void SyncExplicitPassphraseClientLacros::OnLacrosSyncShutdown() {
-  // Disconnect mojo to ensure no methods will access the SyncService anymore.
-  remote_.reset();
-  ash_explicit_passphrase_client_observer_.reset();
-  sync_service_ = nullptr;
 }
 
 void SyncExplicitPassphraseClientLacros::OnAshPassphraseRequired() {

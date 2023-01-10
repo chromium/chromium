@@ -20,10 +20,10 @@ class SyncService;
 // Once created, observes changes of passphrase state in both Lacros SyncService
 // (via SyncServiceObserver) and Ash SyncService (via crosapi) and passes
 // decryption nigori key from one to another when needed.
-// Stops working upon Lacros SyncService Shutdown().
 class SyncExplicitPassphraseClientLacros {
  public:
-  // |remote| must be bound. |sync_service| must not be null.
+  // |remote| must be bound. |sync_service| must not be null and must outlive
+  // |this| object.
   SyncExplicitPassphraseClientLacros(
       mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient> remote,
       syncer::SyncService* sync_service);
@@ -47,7 +47,6 @@ class SyncExplicitPassphraseClientLacros {
     ~LacrosSyncServiceObserver() override;
 
     void OnStateChanged(syncer::SyncService* sync_service) override;
-    void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
     bool is_passphrase_required() const { return is_passphrase_required_; }
 
@@ -94,7 +93,6 @@ class SyncExplicitPassphraseClientLacros {
 
   void OnLacrosPassphraseRequired();
   void OnLacrosPassphraseAvailable();
-  void OnLacrosSyncShutdown();
   void OnAshPassphraseRequired();
   void OnAshPassphraseAvailable();
 

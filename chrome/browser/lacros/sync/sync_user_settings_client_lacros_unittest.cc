@@ -12,7 +12,7 @@
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/sync/test/fake_sync_mojo_service.h"
 #include "components/sync/test/fake_sync_user_settings_client_ash.h"
-#include "components/sync/test/mock_sync_service.h"
+#include "components/sync/test/sync_user_settings_mock.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,21 +27,18 @@ class SyncUserSettingsClientLacrosTest : public testing::Test {
   SyncUserSettingsClientLacros CreateClientLacros() {
     mojo::Remote<crosapi::mojom::SyncUserSettingsClient> remote;
     client_ash_.BindReceiver(remote.BindNewPipeAndPassReceiver());
-    return SyncUserSettingsClientLacros(std::move(remote), &sync_service_);
+    return SyncUserSettingsClientLacros(std::move(remote),
+                                        &sync_user_settings_);
   }
 
-  syncer::MockSyncService& sync_service() { return sync_service_; }
-
-  syncer::SyncUserSettingsMock& user_settings() {
-    return *sync_service_.GetMockUserSettings();
-  }
+  syncer::SyncUserSettingsMock& user_settings() { return sync_user_settings_; }
 
   syncer::FakeSyncUserSettingsClientAsh& client_ash() { return client_ash_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  testing::NiceMock<syncer::MockSyncService> sync_service_;
+  testing::NiceMock<syncer::SyncUserSettingsMock> sync_user_settings_;
 
   syncer::FakeSyncUserSettingsClientAsh client_ash_;
 };

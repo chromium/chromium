@@ -17,6 +17,8 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/sync/base/features.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
@@ -62,9 +64,9 @@ MaybeCreateSyncExplicitPassphraseClient(chromeos::LacrosService* lacros_service,
 // `lacros_service` and `sync_service` must not be null.
 std::unique_ptr<SyncUserSettingsClientLacros> MaybeCreateSyncUserSettingsClient(
     chromeos::LacrosService* lacros_service,
-    syncer::SyncService* sync_service) {
+    syncer::SyncUserSettings* sync_user_settings) {
   DCHECK(lacros_service);
-  DCHECK(sync_service);
+  DCHECK(sync_user_settings);
 
   if (!base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
     return nullptr;
@@ -83,7 +85,7 @@ std::unique_ptr<SyncUserSettingsClientLacros> MaybeCreateSyncUserSettingsClient(
   lacros_service->GetRemote<crosapi::mojom::SyncService>()
       ->BindUserSettingsClient(client_remote.BindNewPipeAndPassReceiver());
   return std::make_unique<SyncUserSettingsClientLacros>(
-      std::move(client_remote), sync_service);
+      std::move(client_remote), sync_user_settings);
 }
 
 }  // namespace
@@ -102,12 +104,20 @@ void SyncCrosapiManagerLacros::PostProfileInit(Profile* profile) {
   if (!lacros_service || !sync_service) {
     return;
   }
+  sync_service->AddObserver(this);
 
   DCHECK(!sync_explicit_passphrase_client_);
   sync_explicit_passphrase_client_ =
       MaybeCreateSyncExplicitPassphraseClient(lacros_service, sync_service);
 
   DCHECK(!sync_user_settings_client_);
-  sync_user_settings_client_ =
-      MaybeCreateSyncUserSettingsClient(lacros_service, sync_service);
+  sync_user_settings_client_ = MaybeCreateSyncUserSettingsClient(
+      lacros_service, sync_service->GetUserSettings());
+}
+
+void SyncCrosapiManagerLacros::OnSyncShutdown(
+    syncer::SyncService* sync_service) {
+  sync_explicit_passphrase_client_.reset();
+  sync_user_settings_client_.reset();
+  sync_service->RemoveObserver(this);
 }
