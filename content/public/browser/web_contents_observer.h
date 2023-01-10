@@ -242,6 +242,13 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) {}
 
+  // This method is invoked when a WebContents swaps its visible RenderViewHost
+  // with another one, possibly changing processes. The RenderViewHost that has
+  // been replaced is in |old_host|, which is nullptr if the old RVH was shut
+  // down.
+  virtual void RenderViewHostChanged(RenderViewHost* old_host,
+                                     RenderViewHost* new_host) {}
+
   // This method is invoked when a process in the WebContents becomes
   // unresponsive.
   virtual void OnRendererUnresponsive(RenderProcessHost* render_process_host) {}

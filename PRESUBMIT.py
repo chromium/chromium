@@ -6452,6 +6452,7 @@ def CheckMPArchApiUsage(input_api, output_api):
         'DidFinishNavigation',
         'RenderViewReady',
         'RenderViewDeleted',
+        'RenderViewHostChanged',
         'DOMContentLoaded',
         'DidFinishLoad',
     ]
