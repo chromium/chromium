@@ -87,12 +87,8 @@ void TailoredSecurityTabHelper::OnTailoredSecurityServiceDestroyed() {
 
 void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
     bool is_enabled) {
-  if (!web_state_) {
-    if (is_enabled) {
-      // Record BrowserState/WebContents not being available.
-      safe_browsing::RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kNoWebContentsAvailable);
-    }
+  // Notification shouldn't show for non-visible WebStates.
+  if (!web_state_->IsVisible()) {
     return;
   }
 
