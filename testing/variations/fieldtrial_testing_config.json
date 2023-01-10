@@ -2549,6 +2549,21 @@
             ]
         }
     ],
+    "ChromeOSLibAssistantV2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LibAssistantV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSMemoryPressureSignalStudy": [
         {
             "platforms": [
