@@ -1284,10 +1284,6 @@ const char kEditContextDescription[] =
     "Allows web pages to use the experimental EditContext API to better "
     "control text input.";
 
-const char kEnableAutomaticSnoozeName[] = "Enable Automatic Snooze";
-const char kEnableAutomaticSnoozeDescription[] =
-    "Enables automatic snoozing on In-Product Help with no snooze button.";
-
 const char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
 const char kEnableLensStandaloneName[] = "Enable Lens features in Chrome.";
 const char kEnableLensStandaloneDescription[] =

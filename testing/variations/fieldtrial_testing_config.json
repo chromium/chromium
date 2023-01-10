@@ -10645,9 +10645,6 @@
                         "IPH_DownloadHome",
                         "IPH_Snooze",
                         "IPH_TabSwitcherButton"
-                    ],
-                    "disable_features": [
-                        "EnableAutomaticSnooze"
                     ]
                 }
             ]

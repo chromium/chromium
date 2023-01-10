@@ -111,7 +111,6 @@ public final class UserEducationHelperTest {
     @MediumTest
     public void testShowIPHWithSnooze() throws Throwable {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, true);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE, false);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
         FeatureList.setTestValues(mTestValues);

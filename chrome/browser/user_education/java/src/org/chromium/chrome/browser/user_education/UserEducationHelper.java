@@ -116,11 +116,7 @@ public class UserEducationHelper {
 
         // Automatic snoozes are handled separately. If automatic snoozing is enabled, we won't show
         // snooze UI in the IPH, but we will treat the dismiss as an implicit snooze action.
-        boolean shouldShowSnoozeButton = triggerDetails.shouldShowSnooze
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE);
-        boolean treatDismissAsImplicitSnooze =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE)
-                && triggerDetails.shouldShowSnooze;
+        boolean shouldShowSnoozeButton = triggerDetails.shouldShowSnooze;
         if (shouldShowSnoozeButton) {
             // TODO(crbug.com/1243973): Implement explicit dismiss.
             boolean showExplicitDismiss = false;
@@ -147,9 +143,6 @@ public class UserEducationHelper {
         textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
         textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
-            if (treatDismissAsImplicitSnooze) {
-                tracker.dismissedWithSnooze(featureName, SnoozeAction.SNOOZED);
-            }
             if (featureName != null) tracker.dismissed(featureName);
             iphCommand.onDismissCallback.run();
             if (highlightParams != null) {

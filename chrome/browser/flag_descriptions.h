@@ -441,9 +441,6 @@ extern const char kUseDnsHttpsSvcbAlpnDescription[];
 extern const char kEditContextName[];
 extern const char kEditContextDescription[];
 
-extern const char kEnableAutomaticSnoozeName[];
-extern const char kEnableAutomaticSnoozeDescription[];
-
 extern const char kEnableFirstPartySetsName[];
 extern const char kEnableFirstPartySetsDescription[];
 
