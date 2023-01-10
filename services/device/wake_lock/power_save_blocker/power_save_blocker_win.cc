@@ -102,7 +102,7 @@ void PowerSaveBlocker::Delegate::ApplyBlock() {
   handle_.Set(CreatePowerRequest(RequestType(), description_));
   // See comment on instance variable above
   if (type_ == mojom::WakeLockType::kPreventDisplaySleep &&
-      base::win::GetVersion() <= base::win::Version::WIN10) {
+      base::win::GetVersion() < base::win::Version::WIN11) {
     system_sleep_prevention_handle_.Set(
         CreatePowerRequest(PowerRequestSystemRequired, description_));
   }
