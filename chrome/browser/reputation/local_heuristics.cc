@@ -14,7 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/reputation/core/safety_tips_config.h"
+#include "components/lookalikes/core/safety_tips_config.h"
 
 bool ShouldTriggerSafetyTipFromLookalike(
     const GURL& url,

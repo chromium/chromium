@@ -21,7 +21,7 @@
 #include "chrome/browser/reputation/local_heuristics.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/reputation/core/safety_tips_config.h"
+#include "components/lookalikes/core/safety_tips_config.h"
 #include "components/security_state/core/security_state.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"

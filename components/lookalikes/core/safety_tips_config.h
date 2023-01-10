@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REPUTATION_CORE_SAFETY_TIPS_CONFIG_H_
-#define COMPONENTS_REPUTATION_CORE_SAFETY_TIPS_CONFIG_H_
+#ifndef COMPONENTS_LOOKALIKES_CORE_SAFETY_TIPS_CONFIG_H_
+#define COMPONENTS_LOOKALIKES_CORE_SAFETY_TIPS_CONFIG_H_
 
 #include <memory>
 #include <string>
 
-#include "components/reputation/core/safety_tips.pb.h"
+#include "components/lookalikes/core/safety_tips.pb.h"
 #include "components/security_state/core/security_state.h"
 
 class GURL;
@@ -45,4 +45,4 @@ bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,
 
 }  // namespace reputation
 
-#endif  // COMPONENTS_REPUTATION_CORE_SAFETY_TIPS_CONFIG_H_
+#endif  // COMPONENTS_LOOKALIKES_CORE_SAFETY_TIPS_CONFIG_H_

@@ -7,7 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/lookalikes/core/features.h"
-#import "components/reputation/core/safety_tip_test_utils.h"
+#import "components/lookalikes/core/safety_tip_test_utils.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"

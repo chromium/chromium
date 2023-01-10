@@ -1,4 +1,10 @@
-This directory contains shared code used for the Lookalike URL blocking page.
+This directory contains shared code related to Chrome's lookalike warnings.
 
-The lookalike interstitial is triggered when a user visits a domain that is
-similar to that of a domain of a popular site.
+If Chrome believes a site a user is visiting is a lookalike URL, Chrome may
+warn users about this state. This warning may either be a full-page interstitial
+warning or a pop-up while visiting the page.
+
+These warnings will not trigger on sites that are not likely to be actively
+malicious, such as popular sites or sites with high engagement scores.
+
+See docs/security/lookalikes/lookalike-domains.md for details.

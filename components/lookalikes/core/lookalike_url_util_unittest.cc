@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/lookalikes/core/features.h"
-#include "components/reputation/core/safety_tip_test_utils.h"
-#include "components/reputation/core/safety_tips_config.h"
+#include "components/lookalikes/core/safety_tip_test_utils.h"
+#include "components/lookalikes/core/safety_tips_config.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

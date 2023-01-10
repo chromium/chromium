@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 static_library("core") {
   sources = [
     "lookalike_url_ui_util.cc",
@@ -11,11 +13,11 @@ static_library("core") {
   ]
   deps = [
     ":features",
+    ":proto",
+    ":safety_tips",
     "//base",
     "//components/pref_registry",
     "//components/prefs:prefs",
-    "//components/reputation/core:core",
-    "//components/reputation/core:proto",
     "//components/security_interstitials/core",
     "//components/strings",
     "//components/url_formatter",
@@ -31,14 +33,34 @@ static_library("core") {
   ]
 }
 
+static_library("safety_tips") {
+  sources = [
+    "safety_tip_test_utils.cc",
+    "safety_tip_test_utils.h",
+    "safety_tips_config.cc",
+    "safety_tips_config.h",
+  ]
+  deps = [
+    ":proto",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/security_state/core",
+    "//third_party/re2",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "lookalike_url_util_unittest.cc" ]
+  sources = [
+    "lookalike_url_util_unittest.cc",
+    "safety_tips_config_unittest.cc",
+  ]
 
   deps = [
     ":core",
     ":features",
-    "//components/reputation/core",
+    ":proto",
+    ":safety_tips",
     "//components/version_info:channel",
     "//net:test_support",
     "//testing/gtest",
@@ -55,4 +77,8 @@ component("features") {
   ]
 
   deps = [ "//base" ]
+}
+
+proto_library("proto") {
+  sources = [ "safety_tips.proto" ]
 }

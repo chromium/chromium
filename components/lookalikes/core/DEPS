@@ -3,6 +3,12 @@ include_rules = [
   # should not be introduced.
   "-content",
   "-ios/web",
-  # components/reputation contains the lookalike (safety tips) component.
-  "+components/reputation/core",
+  "+components/safe_browsing/core",
+  "+third_party/re2",
+  "+url",
+
+  # This code is shared with ios, so content/ dependencies
+  # should not be introduced.
+  "-content",
+  "-ios/web",
 ]

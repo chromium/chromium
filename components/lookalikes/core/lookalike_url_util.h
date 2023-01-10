@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "components/lookalikes/core/safety_tips.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/reputation/core/safety_tips.pb.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/version_info/channel.h"
 #include "url/gurl.h"

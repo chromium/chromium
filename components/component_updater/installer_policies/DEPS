@@ -5,6 +5,6 @@ include_rules = [
   "+components/omnibox/common",
   "+components/optimization_guide/core",
   "+components/prefs",
-  "+components/reputation/core",
+  "+components/lookalikes/core",
   "+services/network/public",
 ]

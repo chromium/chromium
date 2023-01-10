@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REPUTATION_CORE_SAFETY_TIP_TEST_UTILS_H_
-#define COMPONENTS_REPUTATION_CORE_SAFETY_TIP_TEST_UTILS_H_
+#ifndef COMPONENTS_LOOKALIKES_CORE_SAFETY_TIP_TEST_UTILS_H_
+#define COMPONENTS_LOOKALIKES_CORE_SAFETY_TIP_TEST_UTILS_H_
 
 #include <string>
 #include <vector>
 
-#include "components/reputation/core/safety_tips.pb.h"
+#include "components/lookalikes/core/safety_tips.pb.h"
 
 namespace reputation {
 
@@ -43,4 +43,4 @@ void InitializeBlankLookalikeAllowlistForTesting();
 
 }  // namespace reputation
 
-#endif  // COMPONENTS_REPUTATION_CORE_SAFETY_TIP_TEST_UTILS_H_
+#endif  // COMPONENTS_LOOKALIKES_CORE_SAFETY_TIP_TEST_UTILS_H_

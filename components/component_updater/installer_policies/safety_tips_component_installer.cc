@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "components/reputation/core/safety_tips.pb.h"
-#include "components/reputation/core/safety_tips_config.h"
+#include "components/lookalikes/core/safety_tips.pb.h"
+#include "components/lookalikes/core/safety_tips_config.h"
 
 using component_updater::ComponentUpdateService;
 

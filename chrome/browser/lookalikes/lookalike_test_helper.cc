@@ -5,8 +5,8 @@
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
 
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/reputation/core/safety_tip_test_utils.h"
-#include "components/reputation/core/safety_tips_config.h"
+#include "components/lookalikes/core/safety_tip_test_utils.h"
+#include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_top500_domains.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

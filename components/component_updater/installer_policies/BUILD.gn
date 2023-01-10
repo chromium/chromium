@@ -30,9 +30,9 @@ static_library("installer_policies_no_content_deps") {
     "//base",
     "//components/autofill/core/browser",
     "//components/component_updater",
+    "//components/lookalikes/core:proto",
+    "//components/lookalikes/core:safety_tips",
     "//components/prefs:prefs",
-    "//components/reputation/core",
-    "//components/reputation/core:proto",
   ]
 
   # Disallow depending on content.

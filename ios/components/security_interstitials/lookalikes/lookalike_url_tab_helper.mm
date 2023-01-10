@@ -8,7 +8,7 @@
 #import "components/lookalikes/core/features.h"
 #import "components/lookalikes/core/lookalike_url_ui_util.h"
 #import "components/lookalikes/core/lookalike_url_util.h"
-#import "components/reputation/core/safety_tips_config.h"
+#import "components/lookalikes/core/safety_tips_config.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
