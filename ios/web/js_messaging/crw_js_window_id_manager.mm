@@ -30,14 +30,6 @@ const size_t kUniqueKeyLength = 16;
 // of the window ID. The wait time will be logged if the time exceeds this
 // value.
 const double kSignificantInjectionTime = 0.1;
-
-// Returns whether `error` represents a failure to execute JavaScript due to
-// JavaScript execution being disallowed.
-bool IsJavaScriptExecutionProhibitedError(NSError* error) {
-  return error.code == WKErrorJavaScriptExceptionOccurred &&
-         [@"Cannot execute JavaScript in this document"
-             isEqualToString:error.userInfo[@"WKJavaScriptExceptionMessage"]];
-}
 #endif
 
 }  // namespace
@@ -91,16 +83,6 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
                if (!strongSelf)
                  return;
                if (error) {
-#if DCHECK_IS_ON()
-                 BOOL isExpectedError =
-                     error.code == WKErrorWebViewInvalidated ||
-                     error.code == WKErrorWebContentProcessTerminated ||
-                     IsJavaScriptExecutionProhibitedError(error);
-                 DCHECK(isExpectedError)
-                     << base::SysNSStringToUTF8(error.domain) << "-"
-                     << error.code << " "
-                     << base::SysNSStringToUTF16(scriptWithResult);
-#endif
                  return;
                }
 
