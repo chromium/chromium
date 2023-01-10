@@ -1009,13 +1009,23 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     else:
       browser = tester_config['browser_config']
 
+    extra_browser_args = []
+
     # Most platforms require --enable-logging=stderr to get useful browser logs.
     # However, this actively messes with logging on CrOS (because Chrome's
     # stderr goes nowhere on CrOS) AND --log-level=0 is required for some reason
     # in order to see JavaScript console messages. See
     # https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/chrome_os_logging.md
-    logging_arg = '--log-level=0' if self.is_chromeos(
-        tester_config) else '--enable-logging=stderr'
+    if self.is_chromeos(tester_config):
+      extra_browser_args.append('--log-level=0')
+    elif not self.is_fuchsia(tester_config) or browser != 'fuchsia-chrome':
+      # Stderr logging is not needed for Chrome browser on Fuchsia, as ordinary
+      # logging via syslog is captured.
+      extra_browser_args.append('--enable-logging=stderr')
+
+    # --expose-gc allows the WebGL conformance tests to more reliably
+    # reproduce GC-related bugs in the V8 bindings.
+    extra_browser_args.append('--js-flags=--expose-gc')
 
     args = [
         test_to_run,
@@ -1027,7 +1037,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         '--passthrough',
         '-v',
         '--stable-jobs',
-        '--extra-browser-args=%s --js-flags=--expose-gc' % logging_arg,
+        '--extra-browser-args=%s' % ' '.join(extra_browser_args),
     ] + args
     result['args'] = self.maybe_fixup_args_array(self.substitute_gpu_args(
       tester_config, result['swarming'], args))

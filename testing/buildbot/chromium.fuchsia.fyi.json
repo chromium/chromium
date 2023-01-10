@@ -3967,7 +3967,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--extra-browser-args=--js-flags=--expose-gc",
           "--expected-vendor-id",
           "1ae0",
           "--custom-image=workstation_eng.qemu-x64",
@@ -4006,7 +4006,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
+          "--extra-browser-args=--js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
           "--custom-image=workstation_eng.qemu-x64"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -4041,7 +4041,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--extra-browser-args=--js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -4085,7 +4085,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--extra-browser-args=--js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--custom-image=workstation_eng.qemu-x64"
         ],
@@ -4121,7 +4121,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--extra-browser-args=--js-flags=--expose-gc",
           "--custom-image=workstation_eng.qemu-x64"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -4156,7 +4156,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--extra-browser-args=--js-flags=--expose-gc",
           "--custom-image=workstation_eng.qemu-x64"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",

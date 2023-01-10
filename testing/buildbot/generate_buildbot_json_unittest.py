@@ -1818,7 +1818,7 @@ GPU_TELEMETRY_TEST_OUTPUT_FUCHSIA = """\
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
