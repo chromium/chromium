@@ -37,13 +37,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gles2_conform_d3d9_test 8086:5912 or 8086:3e92",
+        "name": "gles2_conform_d3d9_test 8086:9bc5",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -52,7 +52,7 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -90,13 +90,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gles2_conform_gl_test 8086:5912 or 8086:3e92",
+        "name": "gles2_conform_gl_test 8086:9bc5",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -105,7 +105,7 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -139,13 +139,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gles2_conform_test 8086:5912 or 8086:3e92",
+        "name": "gles2_conform_test 8086:9bc5",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -154,7 +154,7 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [],
@@ -184,13 +184,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_unittests 8086:5912 or 8086:3e92",
+        "name": "gpu_unittests 8086:9bc5",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -199,7 +199,7 @@
         },
         "test": "gpu_unittests",
         "test_id_prefix": "ninja://gpu:gpu_unittests/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -233,13 +233,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "xr_browser_tests 8086:5912 or 8086:3e92",
+        "name": "xr_browser_tests 8086:9bc5",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -248,7 +248,7 @@
         },
         "test": "xr_browser_tests",
         "test_id_prefix": "ninja://chrome/test:xr_browser_tests/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       }
     ],
     "isolated_scripts": [
@@ -304,16 +304,14 @@
           "--expected-vendor-id",
           "8086",
           "--expected-device-id",
-          "3e92",
-          "--expected-device-id",
-          "5912"
+          "9bc5"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "info_collection_tests 8086:5912 or 8086:3e92",
+        "name": "info_collection_tests 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -324,7 +322,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -333,7 +331,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -386,7 +384,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "mediapipe_passthrough_tests 8086:5912 or 8086:3e92",
+        "name": "mediapipe_passthrough_tests 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -397,7 +395,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -406,7 +404,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -438,43 +436,6 @@
         },
         "test_id_prefix": "ninja://gpu:command_buffer_perftests/",
         "variant_id": "10de:2184"
-      },
-      {
-        "args": [
-          "power",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "power_measurement_test 8086:5912 or 8086:3e92",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
-              "os": "Windows-10",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
       },
       {
         "args": [
@@ -527,7 +488,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "trace_test 8086:5912 or 8086:3e92",
+        "name": "trace_test 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -538,7 +499,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -547,7 +508,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -600,7 +561,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webcodecs_tests 8086:5912 or 8086:3e92",
+        "name": "webcodecs_tests 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -611,7 +572,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -620,7 +581,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -673,14 +634,14 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
-          "--jobs=2"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl2_conformance_d3d11_passthrough_tests 8086:5912 or 8086:3e92",
+        "name": "webgl2_conformance_d3d11_passthrough_tests 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -691,7 +652,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -701,7 +662,7 @@
           "shards": 20
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -752,14 +713,14 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
-          "--jobs=2"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_d3d11_passthrough_tests 8086:5912 or 8086:3e92",
+        "name": "webgl_conformance_d3d11_passthrough_tests 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -770,7 +731,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -780,7 +741,7 @@
           "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -831,14 +792,14 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d9 --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
-          "--jobs=2"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_d3d9_passthrough_tests 8086:5912 or 8086:3e92",
+        "name": "webgl_conformance_d3d9_passthrough_tests 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -849,7 +810,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -859,7 +820,7 @@
           "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       },
       {
         "args": [
@@ -908,14 +869,14 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu",
-          "--jobs=2"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_vulkan_passthrough_tests 8086:5912 or 8086:3e92",
+        "name": "webgl_conformance_vulkan_passthrough_tests 8086:9bc5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -926,7 +887,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "gpu": "8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141",
+              "gpu": "8086:9bc5-31.0.101.2111",
               "os": "Windows-10",
               "pool": "chromium.tests.gpu"
             }
@@ -936,7 +897,7 @@
           "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "8086:5912 or 8086:3e92"
+        "variant_id": "8086:9bc5"
       }
     ]
   }

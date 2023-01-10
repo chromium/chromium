@@ -175,7 +175,8 @@ def GPUParallelJobs(test_config, _, tester_config):
   if os_type == 'win' and (is_webgl_cts or is_webgpu_cts):
     for gpu in _GetGpusFromTestConfig(test_config):
       if gpu.startswith('8086'):
-        if is_webgpu_cts:
+        # Especially flaky on '8086:9bc5' per crbug.com/1392149
+        if is_webgpu_cts or gpu.startswith('8086:9bc5'):
           return ['--jobs=1']
         return ['--jobs=2']
 
