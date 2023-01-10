@@ -692,7 +692,7 @@ TEST_F(WebTransportTest, CloseWithReasonOnly) {
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  EXPECT_CALL(*mock_web_transport_, Close());
+  EXPECT_CALL(*mock_web_transport_, Close(0, String("because")));
 
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
                                    web_transport->ready());
@@ -1970,8 +1970,8 @@ TEST_F(WebTransportTest, OnClosedWithNull) {
   ASSERT_TRUE(value.IsObject());
   WebTransportCloseInfo* close_info = WebTransportCloseInfo::Create(
       isolate, value.V8Value(), ASSERT_NO_EXCEPTION);
-  EXPECT_FALSE(close_info->hasCloseCode());
-  EXPECT_FALSE(close_info->hasReason());
+  EXPECT_TRUE(close_info->hasCloseCode());
+  EXPECT_TRUE(close_info->hasReason());
 }
 
 TEST_F(WebTransportTest, ReceivedResetStream) {

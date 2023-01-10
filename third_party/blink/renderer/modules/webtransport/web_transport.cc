@@ -897,11 +897,9 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
       WebTransportError::Source::kSession);
 
   network::mojom::blink::WebTransportCloseInfoPtr close_info_to_pass;
-  if (close_info && close_info->hasCloseCode()) {
-    String reason_string =
-        close_info->hasReason() ? close_info->reason() : g_empty_string;
+  if (close_info) {
     close_info_to_pass = network::mojom::blink::WebTransportCloseInfo::New(
-        close_info->closeCode(), reason_string);
+        close_info->closeCode(), close_info->reason());
   }
 
   transport_remote_->Close(std::move(close_info_to_pass));
