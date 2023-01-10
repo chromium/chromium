@@ -363,16 +363,17 @@ gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
 
 void PictureInPictureBrowserFrameView::OnThemeChanged() {
   const auto* color_provider = GetColorProvider();
+  window_title_->SetBackgroundColor(
+      color_provider->GetColor(kColorPipWindowTopBarBackground));
   window_title_->SetEnabledColor(
       color_provider->GetColor(kColorPipWindowForeground));
   for (ContentSettingImageView* view : content_setting_views_)
-    view->SetIconColor(color_provider->GetColor(kColorOmniboxResultsIcon));
+    view->SetIconColor(color_provider->GetColor(kColorPipWindowForeground));
 
 #if !BUILDFLAG(IS_LINUX)
   // On Linux the top bar background will be drawn in OnPaint().
   top_bar_container_view_->SetBackground(views::CreateSolidBackground(
-      SkColorSetA(color_provider->GetColor(kColorPipWindowControlsBackground),
-                  SK_AlphaOPAQUE)));
+      color_provider->GetColor(kColorPipWindowTopBarBackground)));
 #endif
 
   BrowserNonClientFrameView::OnThemeChanged();
@@ -512,12 +513,12 @@ ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
 SkColor
 PictureInPictureBrowserFrameView::GetIconLabelBubbleSurroundingForegroundColor()
     const {
-  return GetColorProvider()->GetColor(kColorOmniboxText);
+  return GetColorProvider()->GetColor(kColorOmniboxSecurityChipSecure);
 }
 
 SkColor PictureInPictureBrowserFrameView::GetIconLabelBubbleBackgroundColor()
     const {
-  return GetColorProvider()->GetColor(kColorLocationBarBackground);
+  return GetColorProvider()->GetColor(kColorPipWindowTopBarBackground);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -582,7 +583,7 @@ void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   } else {
     DCHECK(frame_background_);
     frame_background_->set_frame_color(
-        GetFrameColor(BrowserFrameActiveState::kUseCurrent));
+        GetColorProvider()->GetColor(kColorPipWindowTopBarBackground));
     frame_background_->set_use_custom_frame(frame()->UseCustomFrame());
     frame_background_->set_is_active(ShouldPaintAsActive());
     frame_background_->set_theme_image(GetFrameImage());
@@ -654,7 +655,8 @@ void PictureInPictureBrowserFrameView::UpdateTopBarView(bool render_active) {
   }
 
   const SkColor color = GetColorProvider()->GetColor(
-      render_active ? kColorPipWindowForeground : kColorOmniboxResultsIcon);
+      render_active ? kColorPipWindowForeground
+                    : kColorPipWindowForegroundInactive);
   window_title_->SetEnabledColor(color);
   for (ContentSettingImageView* view : content_setting_views_)
     view->SetIconColor(color);

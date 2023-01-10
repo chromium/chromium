@@ -440,6 +440,5 @@ bool BrowserFrame::RegenerateFrameOnThemeChange(
 }
 
 bool BrowserFrame::ShouldUseDarkTheme() const {
-  return browser_view_->browser()->profile()->IsIncognitoProfile() ||
-         browser_view_->GetIsPictureInPictureType();
+  return browser_view_->browser()->profile()->IsIncognitoProfile();
 }
