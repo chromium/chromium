@@ -80,13 +80,6 @@ suite('Lens search', () => {
     document.body.appendChild(realbox);
   });
 
-  test('Lens search button does not show by default', () => {
-    // Assert
-    const lensButton =
-        realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
-    assertFalse(!!lensButton);
-  });
-
   test('Lens search button is visible when feature is flipped', async () => {
     // Arrange.
     loadTimeData.overrideValues({

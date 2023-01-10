@@ -3681,6 +3681,25 @@
             ]
         }
     ],
+    "DesktopNtpRealboxLensEntrypoint": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Lens_Entrypoint_Enabled_20230104",
+                    "enable_features": [
+                        "NtpRealboxLensSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxBookmarkPaths": [
         {
             "platforms": [
