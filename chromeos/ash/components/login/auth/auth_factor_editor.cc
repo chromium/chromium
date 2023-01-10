@@ -502,6 +502,12 @@ void AuthFactorEditor::OnListAuthFactors(
   }
   cryptohome::AuthFactorsSet supported_factors;
   for (const auto proto_type : reply->supported_auth_factors()) {
+    // TODO(crbug.com/1406025): This is temporary workaround on the client side
+    // before issue is fixed on the cryptohome side.
+    //  AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT is not supported for editing anyhow.
+    if (proto_type == user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT) {
+      continue;
+    }
     cryptohome::AuthFactorType type = cryptohome::ConvertFactorTypeFromProto(
         static_cast<user_data_auth::AuthFactorType>(proto_type));
     if (type == cryptohome::AuthFactorType::kUnknownLegacy) {
