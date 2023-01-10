@@ -49,6 +49,12 @@ bool PThreadTLSSystem::Setup(
 }
 
 bool PThreadTLSSystem::TearDownForTesting() {
+#if DCHECK_IS_ON()
+  // TearDownForTesting must happen outside of the allocation path. Therefore,
+  // it is secure to verify with DCHECK.
+  DCHECK(initialized_.exchange(false, std::memory_order_acq_rel));
+#endif
+
   auto const key_delete_res = pthread_key_delete(data_access_key_);
   return (0 == key_delete_res);
 }

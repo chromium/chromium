@@ -109,36 +109,66 @@ TEST_F(BaseThreadLocalStorageTest, VerifyDistinctEntriesForEachThread) {
   using TLSType = decltype(sut);
 
   std::array<std::thread, 2 * TLSType::ItemsPerChunk> threads;
+  std::mutex thread_worker_mutex;
+  std::condition_variable thread_counter_cv;
+  std::atomic_uint32_t thread_counter{0};
   std::unordered_set<void*> stored_object_addresses;
-  std::mutex stored_object_addresses_mutex;
-  std::condition_variable cv;
-  std::mutex jam_threads_mutex;
-  std::atomic_uint32_t values_inserted_counter(0);
+
+  std::mutex threads_can_finish_mutex;
+  std::condition_variable threads_can_finish_cv;
+  std::atomic_bool threads_can_finish{false};
 
   for (auto& t : threads) {
     t = std::thread{[&] {
       {
-        std::lock_guard<std::mutex> lock(stored_object_addresses_mutex);
+        std::lock_guard<std::mutex> lock(thread_worker_mutex);
         stored_object_addresses.insert(sut.GetThreadLocalData());
+        ++thread_counter;
+        thread_counter_cv.notify_one();
       }
 
-      ++values_inserted_counter;
-
-      std::unique_lock<std::mutex> lock(jam_threads_mutex);
-      cv.wait(lock,
-              [&] { return values_inserted_counter.load() == threads.size(); });
+      {
+        std::unique_lock<std::mutex> lock(threads_can_finish_mutex);
+        threads_can_finish_cv.wait(lock,
+                                   [&] { return threads_can_finish.load(); });
+      }
     }};
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  {
+    std::unique_lock<std::mutex> lock(thread_worker_mutex);
+    thread_counter_cv.wait(
+        lock, [&] { return thread_counter.load() == threads.size(); });
+  }
 
-  cv.notify_all();
+  {
+    std::unique_lock<std::mutex> lock(threads_can_finish_mutex);
+    threads_can_finish = true;
+    threads_can_finish_cv.notify_all();
+  }
 
   for (auto& t : threads) {
     t.join();
   }
 
   EXPECT_EQ(stored_object_addresses.size(), threads.size());
+}
+
+TEST_F(BaseThreadLocalStorageTest, VerifyEntriesAreReusedForNewThreads) {
+  auto sut = CreateThreadLocalStorage<DataToStore>();
+  using TLSType = decltype(sut);
+
+  std::unordered_set<void*> stored_object_addresses;
+
+  for (size_t thread_count = 0; thread_count < (2 * TLSType::ItemsPerChunk);
+       ++thread_count) {
+    auto thread = std::thread{
+        [&] { stored_object_addresses.insert(sut.GetThreadLocalData()); }};
+
+    thread.join();
+  }
+
+  EXPECT_EQ(stored_object_addresses.size(), 1ul);
 }
 
 TEST_F(BaseThreadLocalStorageTest, VerifyDataIsSameWithinEachThread) {
@@ -148,8 +178,13 @@ TEST_F(BaseThreadLocalStorageTest, VerifyDataIsSameWithinEachThread) {
   std::array<std::thread, 2 * TLSType::ItemsPerChunk> threads;
 
   for (auto& t : threads) {
-    t = std::thread{
-        [&] { EXPECT_EQ(sut.GetThreadLocalData(), sut.GetThreadLocalData()); }};
+    t = std::thread{[&] {
+      EXPECT_EQ(sut.GetThreadLocalData(), sut.GetThreadLocalData());
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      // Check once again to verify the data doesn't change in the course of a
+      // thread's lifetime.
+      EXPECT_EQ(sut.GetThreadLocalData(), sut.GetThreadLocalData());
+    }};
   }
 
   for (auto& t : threads) {
@@ -198,13 +233,15 @@ TEST_F(BaseThreadLocalStorageTest, VerifyAllocatorIsUsedForMultipleChunks) {
   AllocatorMock allocator_mock;
   TLSSystemMock tlsSystem_mock;
 
+  constexpr auto number_of_chunks = 5;
+
   EXPECT_CALL(allocator_mock, AllocateMemory(_))
-      .Times(5)
+      .Times(number_of_chunks)
       .WillRepeatedly(
           [](size_t size_in_bytes) { return malloc(size_in_bytes); });
 
   EXPECT_CALL(allocator_mock, FreeMemoryForTesting(_, _))
-      .Times(5)
+      .Times(number_of_chunks)
       .WillRepeatedly([](void* pointer_to_allocated, size_t size_in_bytes) {
         free(pointer_to_allocated);
         return true;
@@ -213,25 +250,46 @@ TEST_F(BaseThreadLocalStorageTest, VerifyAllocatorIsUsedForMultipleChunks) {
   auto sut =
       CreateThreadLocalStorage<DataToStore>(allocator_mock, tlsSystem_mock);
 
-  std::array<std::thread, 5 * decltype(sut)::ItemsPerChunk> threads;
-  std::condition_variable cv;
-  std::mutex jam_threads_mutex;
-  std::atomic_uint32_t threads_spawned_counter(0);
+  std::array<std::thread, number_of_chunks* decltype(sut)::ItemsPerChunk>
+      threads;
+  std::mutex thread_worker_mutex;
+  std::condition_variable thread_counter_cv;
+  std::atomic_uint32_t thread_counter{0};
+  std::unordered_set<void*> stored_object_addresses;
+
+  std::mutex threads_can_finish_mutex;
+  std::condition_variable threads_can_finish_cv;
+  std::atomic_bool threads_can_finish{false};
 
   for (auto& t : threads) {
     t = std::thread{[&] {
       sut.GetThreadLocalData();
-      ++threads_spawned_counter;
 
-      std::unique_lock<std::mutex> lock(jam_threads_mutex);
-      cv.wait(lock,
-              [&] { return threads_spawned_counter.load() == threads.size(); });
+      {
+        std::lock_guard<std::mutex> lock(thread_worker_mutex);
+        ++thread_counter;
+        thread_counter_cv.notify_one();
+      }
+
+      {
+        std::unique_lock<std::mutex> lock(threads_can_finish_mutex);
+        threads_can_finish_cv.wait(lock,
+                                   [&] { return threads_can_finish.load(); });
+      }
     }};
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  {
+    std::unique_lock<std::mutex> lock(thread_worker_mutex);
+    thread_counter_cv.wait(
+        lock, [&] { return thread_counter.load() == threads.size(); });
+  }
 
-  cv.notify_all();
+  {
+    std::unique_lock<std::mutex> lock(threads_can_finish_mutex);
+    threads_can_finish = true;
+    threads_can_finish_cv.notify_all();
+  }
 
   for (auto& t : threads) {
     t.join();
@@ -363,8 +421,10 @@ std::atomic<size_t> BasePThreadTLSSystemTest::thread_termination_counter{0};
 TEST_F(BasePThreadTLSSystemTest, VerifySetupNTeardownSequence) {
   internal::PThreadTLSSystem sut;
 
-  EXPECT_TRUE(sut.Setup(nullptr));
-  EXPECT_TRUE(sut.TearDownForTesting());
+  for (size_t idx = 0; idx < 5; ++idx) {
+    EXPECT_TRUE(sut.Setup(nullptr));
+    EXPECT_TRUE(sut.TearDownForTesting());
+  }
 }
 
 TEST_F(BasePThreadTLSSystemTest, VerifyThreadTerminationFunctionIsCalled) {
@@ -408,33 +468,63 @@ TEST_F(BasePThreadTLSSystemTest, VerifyGetAfterTeardownReturnsNull) {
 }
 
 TEST_F(BasePThreadTLSSystemTest, VerifyGetAfterTeardownReturnsNullThreaded) {
-  std::array<std::thread, 10> threads;
+  std::array<std::thread, 50> threads;
 
-  std::condition_variable cv;
-  std::mutex jam_threads_mutex;
-  std::atomic_bool sut_torn_down{false};
+  std::mutex thread_worker_mutex;
+  std::condition_variable thread_counter_cv;
+  std::atomic_uint32_t thread_counter{0};
+
+  std::mutex threads_can_finish_mutex;
+  std::condition_variable threads_can_finish_cv;
+  std::atomic_bool threads_can_finish{false};
 
   internal::PThreadTLSSystem sut;
-  sut.Setup(nullptr);
+  ASSERT_TRUE(sut.Setup(nullptr));
 
   for (auto& t : threads) {
     t = std::thread{[&] {
+      // Set some thread specific data. At this stage retrieving the data must
+      // return the pointer that was originally set.
       int x = 0;
       ASSERT_TRUE(sut.SetThreadSpecificData(&x));
+      ASSERT_EQ(sut.GetThreadSpecificData(), &x);
 
-      std::unique_lock<std::mutex> lock(jam_threads_mutex);
-      cv.wait(lock, [&]() -> bool { return sut_torn_down; });
+      // Notify the main thread that one more test thread has started.
+      {
+        std::lock_guard<std::mutex> lock(thread_worker_mutex);
+        ++thread_counter;
+        thread_counter_cv.notify_one();
+      }
 
+      // Wait for the main thread to notify about teardown of the sut.
+      {
+        std::unique_lock<std::mutex> lock(threads_can_finish_mutex);
+        threads_can_finish_cv.wait(lock,
+                                   [&] { return threads_can_finish.load(); });
+      }
+
+      // After teardown, thread local data must be nullptr for all threads.
       EXPECT_EQ(sut.GetThreadSpecificData(), nullptr);
     }};
   }
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  // Wait for notification from threads that they started and passed the initial
+  // check.
+  {
+    std::unique_lock<std::mutex> lock(thread_worker_mutex);
+    thread_counter_cv.wait(
+        lock, [&] { return thread_counter.load() == threads.size(); });
+  }
 
-  sut.TearDownForTesting();
+  ASSERT_TRUE(sut.TearDownForTesting());
 
-  sut_torn_down = true;
-  cv.notify_all();
+  // Notify all threads that the subject under test was torn down and they can
+  // proceed.
+  {
+    std::unique_lock<std::mutex> lock(threads_can_finish_mutex);
+    threads_can_finish = true;
+    threads_can_finish_cv.notify_all();
+  }
 
   for (auto& t : threads) {
     t.join();
@@ -484,6 +574,12 @@ TEST_F(BasePThreadTLSSystemDeathTest, VerifyDeathIfSetupTwice) {
 
   EXPECT_TRUE(sut.Setup(nullptr));
   EXPECT_DEATH(sut.Setup(nullptr), "");
+}
+
+TEST_F(BasePThreadTLSSystemDeathTest, VerifyDeathIfTearDownWithoutSetup) {
+  internal::PThreadTLSSystem sut;
+
+  EXPECT_DEATH(sut.TearDownForTesting(), "");
 }
 #endif
 }  // namespace base::allocator::dispatcher
