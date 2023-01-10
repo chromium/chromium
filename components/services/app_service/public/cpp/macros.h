@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_MACROS_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_MACROS_H_
 
-#include <string>
-
 namespace apps {
 
 #define SET_OPTIONAL_VALUE(VALUE) \
@@ -205,6 +203,20 @@ namespace apps {
   std::string EnumToString(CLASSNAME input) {                       \
     switch (input) { FOREACH_(PRINT_ELEM, CLASSNAME, __VA_ARGS__) } \
   }
+
+// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
+// AppService.
+#define CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(VALUE)           \
+  if (mojom_delta_ &&                                                 \
+      (mojom_delta_->VALUE != apps::mojom::OptionalBool::kUnknown)) { \
+    return mojom_delta_->VALUE == apps::mojom::OptionalBool::kTrue;   \
+  }                                                                   \
+  if (mojom_state_) {                                                 \
+    if (mojom_state_->VALUE == apps::mojom::OptionalBool::kUnknown)   \
+      return absl::nullopt;                                           \
+    return mojom_state_->VALUE == apps::mojom::OptionalBool::kTrue;   \
+  }                                                                   \
+  return absl::nullopt;
 
 }  // namespace apps
 

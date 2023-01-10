@@ -24,6 +24,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/permission_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
