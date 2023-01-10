@@ -568,6 +568,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawTextInternal(const Font&,
                         const TextPaintInfo&,
                         const gfx::PointF&,
+                        const cc::PaintFlags& flags,
                         DOMNodeId,
                         const AutoDarkMode& auto_dark_mode);
 

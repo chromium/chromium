@@ -8,12 +8,14 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "cc/paint/paint_op.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace blink {
 
@@ -121,6 +123,7 @@ void PaintController::RecordSelection(
 bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
                                               DisplayItem::Type type) {
   last_matching_item_ = kNotFound;
+  last_matching_client_invalidation_reason_ = PaintInvalidationReason::kNone;
 
   if (usage_ == kTransient)
     return false;
@@ -157,6 +160,8 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
 
   if (!ClientCacheIsValid(client)) {
     last_matching_item_ = cached_item;
+    last_matching_client_invalidation_reason_ =
+        client.GetPaintInvalidationReason();
     return false;
   }
 
@@ -192,7 +197,28 @@ void PaintController::AssertLastCheckedCachedItem(
 }
 #endif
 
-DisplayItem* PaintController::MatchingCachedItemToBeRepainted() {
+sk_sp<SkTextBlob> PaintController::CachedTextBlob() const {
+  if (!IsNonLayoutFullPaintInvalidationReason(
+          last_matching_client_invalidation_reason_)) {
+    return nullptr;
+  }
+  const auto* cached_item =
+      DynamicTo<DrawingDisplayItem>(MatchingCachedItemToBeRepainted());
+  if (!cached_item) {
+    return nullptr;
+  }
+  const PaintRecord& record = cached_item->GetPaintRecord();
+  if (record.size() != 1) {
+    return nullptr;
+  }
+  const cc::PaintOp& op = record.GetFirstOp();
+  if (op.GetType() != cc::PaintOpType::DrawTextBlob) {
+    return nullptr;
+  }
+  return static_cast<const cc::DrawTextBlobOp&>(op).blob;
+}
+
+const DisplayItem* PaintController::MatchingCachedItemToBeRepainted() const {
   if (last_matching_item_ == kNotFound) {
     return nullptr;
   }
@@ -709,6 +735,7 @@ void PaintController::CommitNewDisplayItems() {
   next_item_to_match_ = 0;
   next_item_to_index_ = 0;
   last_matching_item_ = kNotFound;
+  last_matching_client_invalidation_reason_ = PaintInvalidationReason::kNone;
   out_of_order_item_id_index_map_.clear();
 
 #if DCHECK_IS_ON()
