@@ -368,8 +368,10 @@ void NGSvgTextLayoutAttributesBuilder::Build(
       // then set result[index + j] to result[index + j − 1].
       data.rotate = attr_stack.MatchedOrLastRotate();
 
-      if (HasUpdated(data))
+      if (HasUpdated(data)) {
         resolved_.push_back(std::make_pair(addressable_index, data));
+        ifc_text_content_offsets_.push_back(item.StartOffset() + i);
+      }
       ++addressable_index;
       attr_stack.Advance();
       i = item_string.NextCodePointOffset(i);
@@ -383,6 +385,7 @@ void NGSvgTextLayoutAttributesBuilder::Build(
     text_length_stack.pop_back();
   }
   attr_stack.Pop();
+  DCHECK_EQ(resolved_.size(), ifc_text_content_offsets_.size());
 }
 
 SvgInlineNodeData* NGSvgTextLayoutAttributesBuilder::CreateSvgInlineNodeData() {
@@ -391,6 +394,11 @@ SvgInlineNodeData* NGSvgTextLayoutAttributesBuilder::CreateSvgInlineNodeData() {
   svg_node_data->text_length_range_list = std::move(text_length_range_list_);
   svg_node_data->text_path_range_list = std::move(text_path_range_list_);
   return svg_node_data;
+}
+
+unsigned NGSvgTextLayoutAttributesBuilder::IfcTextContentOffsetAt(
+    wtf_size_t index) {
+  return ifc_text_content_offsets_.at(index);
 }
 
 }  // namespace blink

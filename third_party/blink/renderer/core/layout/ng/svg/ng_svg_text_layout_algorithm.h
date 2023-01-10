@@ -76,6 +76,13 @@ class NGSvgTextLayoutAlgorithm {
   };
   // This data member represents "result" defined in the specification, but it
   // contains only addressable characters.
+  //
+  // This is built from NGFragmentItem text sequence. For example, if the input
+  // is two NGFragmenItems like:
+  //  0: <code point 1>, <a lead surrogate>
+  //  1: <a trail surrogate>, <code point 2>
+  // it produces four entries for <code point 1>, <a lead surroagte>,
+  // <a trail surrogate>, and <code point 2>.
   Vector<SvgPerCharacterInfo> result_;
 
   // This data member represents "CSS_positions" defined in the specification,

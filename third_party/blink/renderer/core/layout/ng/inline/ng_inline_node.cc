@@ -1125,31 +1125,19 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
   // Compute DOM offsets of text chunks.
   mapping_builder.SetDestinationString(ifc_text_content);
   NGOffsetMapping* mapping = mapping_builder.Build();
-  // Index in a UTF-32 sequence
-  unsigned last_addressable = 0;
-  // Index in a UTF-16 sequence for last_addressable.
-  unsigned text_content_offset = 0;
   StringView ifc_text_view(ifc_text_content);
-  for (const auto& char_data : data.svg_node_data_->character_data_list) {
+  for (wtf_size_t i = 0; i < data.svg_node_data_->character_data_list.size();
+       ++i) {
+    const std::pair<unsigned, NGSvgCharacterData>& char_data =
+        data.svg_node_data_->character_data_list[i];
     if (!char_data.second.anchored_chunk)
       continue;
     unsigned addressable_offset = char_data.first;
     if (addressable_offset == 0u)
       continue;
-    while (last_addressable < addressable_offset) {
-      ++last_addressable;
-      text_content_offset =
-          ifc_text_view.NextCodePointOffset(text_content_offset);
-    }
+    unsigned text_content_offset = svg_attr_builder.IfcTextContentOffsetAt(i);
     const auto* unit = mapping->GetLastMappingUnit(text_content_offset);
-    // |text_content_offset| might point a control character not in any
-    // DOM nodes.
-    while (!unit) {
-      text_content_offset =
-          ifc_text_view.NextCodePointOffset(text_content_offset);
-      DCHECK_LT(text_content_offset, ifc_text_view.length());
-      unit = mapping->GetLastMappingUnit(text_content_offset);
-    }
+    DCHECK(unit);
     auto result = data.svg_node_data_->chunk_offsets.insert(
         To<LayoutText>(&unit->GetLayoutObject()), Vector<unsigned>());
     result.stored_value->value.push_back(

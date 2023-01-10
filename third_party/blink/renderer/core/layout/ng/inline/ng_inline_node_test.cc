@@ -1652,4 +1652,24 @@ TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash2) {
   // Pass if no DCHECK() failures.
 }
 
+// crbug.com/1403838
+TEST_F(NGInlineNodeTest, FindSvgTextChunksCrash3) {
+  SetBodyInnerHTML(R"SVG(
+      <svg><text id='text'>
+      <tspan x='0' id='target'>PA</tspan>
+      <tspan x='0' y='24'>PASS</tspan>
+      </text></svg>)SVG");
+  auto* tspan = GetElementById("target");
+  // A trail surrogate, then a lead surrogate.
+  constexpr UChar kText[2] = {0xDE48, 0xD864};
+  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no CHECK() failures in FindSvgTextChunks().
+}
+
 }  // namespace blink
