@@ -8,15 +8,18 @@
 #include <string>
 #include <vector>
 
+#include "ash/system/accessibility/dictation_bubble_controller.h"
+#include "base/functional/callback_forward.h"
+
 namespace ash {
 
 class DictationBubbleController;
 enum class DictationBubbleIconType;
 
-class DictationBubbleTestHelper {
+class DictationBubbleTestHelper : public DictationBubbleController::Observer {
  public:
   DictationBubbleTestHelper();
-  ~DictationBubbleTestHelper() = default;
+  ~DictationBubbleTestHelper() override;
   DictationBubbleTestHelper(const DictationBubbleTestHelper&) = delete;
   DictationBubbleTestHelper& operator=(const DictationBubbleTestHelper&) =
       delete;
@@ -30,6 +33,15 @@ class DictationBubbleTestHelper {
   // Returns true if the currently visible hints match `expected`.
   bool HasVisibleHints(const std::vector<std::u16string>& expected);
 
+  // Waiter functions.
+  void WaitForVisibility(bool visible);
+  void WaitForVisibleIcon(DictationBubbleIconType icon);
+  void WaitForVisibleText(const std::u16string& text);
+  void WaitForVisibleHints(const std::vector<std::u16string>& hints);
+
+  // DictationBubbleController::Observer
+  void OnBubbleUpdated() override;
+
  private:
   // Returns true if the standby view is visible in the top row.
   bool IsStandbyViewVisible();
@@ -41,6 +53,18 @@ class DictationBubbleTestHelper {
   std::vector<std::u16string> GetVisibleHints();
   // Returns controller for the DicatationBubbleView.
   DictationBubbleController* GetController();
+
+  // Expected properties.
+  bool expected_visible_;
+  DictationBubbleIconType expected_icon_;
+  std::u16string expected_text_;
+  std::vector<std::u16string> expected_hints_;
+
+  // Functions that run once the expected property is shown in the bubble UI.
+  base::OnceClosure visible_closure_;
+  base::OnceClosure icon_closure_;
+  base::OnceClosure text_closure_;
+  base::OnceClosure hints_closure_;
 };
 
 }  // namespace ash

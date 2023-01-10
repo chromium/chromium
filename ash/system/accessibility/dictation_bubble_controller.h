@@ -10,6 +10,8 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/input_method.h"
@@ -36,11 +38,20 @@ class DictationBubbleView;
 class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
                                              public views::ViewObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called whenever the Dictation bubble UI is updated.
+    virtual void OnBubbleUpdated() = 0;
+  };
+
   DictationBubbleController();
   DictationBubbleController(const DictationBubbleController&) = delete;
   DictationBubbleController& operator=(const DictationBubbleController&) =
       delete;
   ~DictationBubbleController() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Updates the bubble's visibility and text content.
   void UpdateBubble(
@@ -71,6 +82,8 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
       DictationBubbleIconType icon,
       const absl::optional<std::u16string>& text,
       const absl::optional<std::vector<DictationBubbleHintType>>& hints);
+
+  base::ObserverList<Observer> observers_;
 
   // Owned by views hierarchy.
   DictationBubbleView* dictation_bubble_view_ = nullptr;

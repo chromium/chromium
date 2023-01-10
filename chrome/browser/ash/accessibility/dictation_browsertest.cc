@@ -157,19 +157,6 @@ void EnableChromeVox() {
   GetManager()->EnableSpokenFeedback(true);
 }
 
-std::string ToString(DictationBubbleIconType icon) {
-  switch (icon) {
-    case DictationBubbleIconType::kHidden:
-      return "hidden";
-    case DictationBubbleIconType::kStandby:
-      return "standby";
-    case DictationBubbleIconType::kMacroSuccess:
-      return "macro success";
-    case DictationBubbleIconType::kMacroFail:
-      return "macro fail";
-  }
-}
-
 // The type of editable field to use in tests.
 enum class EditableType { kContentEditable, kInput, kTextArea };
 
@@ -1523,12 +1510,13 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest, Metrics) {
 
 // Tests the behavior of the Dictation bubble UI.
 class DictationUITest : public DictationTest {
- protected:
+ public:
   DictationUITest() = default;
   ~DictationUITest() override = default;
   DictationUITest(const DictationUITest&) = delete;
   DictationUITest& operator=(const DictationUITest&) = delete;
 
+ protected:
   void SetUpOnMainThread() override {
     DictationTest::SetUpOnMainThread();
     dictation_bubble_test_helper_ =
@@ -1540,57 +1528,15 @@ class DictationUITest : public DictationTest {
       DictationBubbleIconType icon,
       const absl::optional<std::u16string>& text,
       const absl::optional<std::vector<std::u16string>>& hints) {
-    WaitForVisibility(visible);
-    WaitForVisibleIcon(icon);
+    dictation_bubble_test_helper_->WaitForVisibility(visible);
+    dictation_bubble_test_helper_->WaitForVisibleIcon(icon);
     if (text.has_value())
-      WaitForVisibleText(text.value());
+      dictation_bubble_test_helper_->WaitForVisibleText(text.value());
     if (hints.has_value())
-      WaitForVisibleHints(hints.value());
+      dictation_bubble_test_helper_->WaitForVisibleHints(hints.value());
   }
 
  private:
-  void WaitForVisibility(bool visible) {
-    std::string error_message = "Still waiting for UI visibility: ";
-    error_message += visible ? "true" : "false";
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_->IsVisible() ==
-                           visible;
-                  }),
-                  error_message)
-        .Wait();
-  }
-
-  void WaitForVisibleIcon(DictationBubbleIconType icon) {
-    std::string error_message = "Still waiting for UI icon: " + ToString(icon);
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_->GetVisibleIcon() ==
-                           icon;
-                  }),
-                  error_message)
-        .Wait();
-  }
-
-  void WaitForVisibleText(const std::u16string& text) {
-    std::string error_message =
-        "Still waiting for UI text: " + base::UTF16ToUTF8(text);
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_->GetText() == text;
-                  }),
-                  error_message)
-        .Wait();
-  }
-
-  void WaitForVisibleHints(const std::vector<std::u16string>& hints) {
-    std::string error_message = base::UTF16ToUTF8(
-        u"Still waiting for UI hints: " + base::JoinString(hints, u","));
-    SuccessWaiter(
-        base::BindLambdaForTesting([&]() {
-          return dictation_bubble_test_helper_->HasVisibleHints(hints);
-        }),
-        error_message)
-        .Wait();
-  }
-
   std::unique_ptr<DictationBubbleTestHelper> dictation_bubble_test_helper_;
 };
 
@@ -2090,13 +2036,7 @@ class DictationContextCheckingTest : public DictationTest {
   }
 
   void WaitForVisibleIcon(DictationBubbleIconType icon) {
-    std::string error_message = "Still waiting for UI icon: " + ToString(icon);
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return dictation_bubble_test_helper_->GetVisibleIcon() ==
-                           icon;
-                  }),
-                  error_message)
-        .Wait();
+    dictation_bubble_test_helper_->WaitForVisibleIcon(icon);
   }
 
  private:

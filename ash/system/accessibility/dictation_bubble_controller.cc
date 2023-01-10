@@ -98,6 +98,18 @@ void DictationBubbleController::Update(
           widget_->GetNativeWindow()),
       new_bounds, CollisionDetectionUtils::RelativePriority::kDictationBubble);
   widget_->SetBounds(resting_bounds);
+
+  for (Observer& observer : observers_) {
+    observer.OnBubbleUpdated();
+  }
+}
+
+void DictationBubbleController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DictationBubbleController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash
