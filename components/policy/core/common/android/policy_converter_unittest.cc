@@ -141,10 +141,10 @@ TEST_F(PolicyConverterTest, ConvertToListValue) {
   Schema list_schema = schema_.GetKnownProperty("list");
   ASSERT_TRUE(list_schema.valid());
 
-  Value list = Value(Value::Type::LIST);
+  Value::List list;
   list.Append("foo");
   list.Append("bar");
-  EXPECT_EQ("[\"foo\",\"bar\"]", Convert(std::move(list), list_schema));
+  EXPECT_EQ("[\"foo\",\"bar\"]", Convert(Value(std::move(list)), list_schema));
   EXPECT_EQ("[\"baz\",\"blurp\"]",
             Convert(Value("[\"baz\", \"blurp\"]"), list_schema));
   EXPECT_EQ("\"hurz\"", Convert(Value("hurz"), list_schema));

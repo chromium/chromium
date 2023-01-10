@@ -83,10 +83,10 @@ base::Value DecodeStringProto(const em::StringPolicyProto& proto) {
 // Convert a StringListPolicyProto to a List base::Value, where each list value
 // is of Type::STRING.
 base::Value DecodeStringListProto(const em::StringListPolicyProto& proto) {
-  base::Value list_value(base::Value::Type::LIST);
+  base::Value::List list_value;
   for (const auto& entry : proto.value().entries())
     list_value.Append(entry);
-  return list_value;
+  return base::Value(std::move(list_value));
 }
 
 // Convert a StringPolicyProto to a base::Value of any type (for example,

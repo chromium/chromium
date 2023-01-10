@@ -151,24 +151,23 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetBlocklistUrlPattern(const std::string& pattern) {
-    auto value = std::make_unique<base::Value>(base::Value::Type::LIST);
-    value->Append(base::Value(pattern));
+    base::Value::List value;
+    value.Append(pattern);
     pref_service_.SetManagedPref(policy::policy_prefs::kUrlBlocklist,
                                  std::move(value));
     task_environment()->RunUntilIdle();
   }
 
   void SetAllowlistUrlPattern(const std::string& pattern) {
-    auto value = std::make_unique<base::Value>(base::Value::Type::LIST);
-    value->Append(base::Value(pattern));
+    base::Value::List value;
+    value.Append(pattern);
     pref_service_.SetManagedPref(policy::policy_prefs::kUrlAllowlist,
                                  std::move(value));
     task_environment()->RunUntilIdle();
   }
 
   void SetSafeSitesFilterBehavior(SafeSitesFilterBehavior filter_behavior) {
-    auto value =
-        std::make_unique<base::Value>(static_cast<int>(filter_behavior));
+    base::Value value(static_cast<int>(filter_behavior));
     pref_service_.SetManagedPref(policy::policy_prefs::kSafeSitesFilterBehavior,
                                  std::move(value));
   }

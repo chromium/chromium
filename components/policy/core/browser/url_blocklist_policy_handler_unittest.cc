@@ -191,9 +191,9 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_MergeSuccessful) {
 // per policy limit.
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitExceeded_2) {
-  base::Value in_disabled_schemes(base::Value::Type::LIST);
+  base::Value::List in_disabled_schemes;
   in_disabled_schemes.Append(kTestDisabledScheme);
-  SetPolicy(key::kDisabledSchemes, std::move(in_disabled_schemes));
+  SetPolicy(key::kDisabledSchemes, base::Value(std::move(in_disabled_schemes)));
 
   size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =

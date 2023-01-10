@@ -169,11 +169,11 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
 
   auto new_conflict = policy->DeepCopy();
   if (value_changed) {
-    base::Value new_value(base::Value::Type::LIST);
+    base::Value::List new_value;
     for (const base::Value* it : merged_values)
       new_value.Append(it->Clone());
 
-    policy->set_value(std::move(new_value));
+    policy->set_value(base::Value(std::move(new_value)));
   }
   policy->ClearConflicts();
   policy->AddConflictingPolicy(std::move(new_conflict));

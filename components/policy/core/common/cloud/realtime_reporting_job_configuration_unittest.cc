@@ -80,7 +80,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
     context.SetByDottedPath("browser.userAgent", "dummyAgent");
     base::Value::List events;
     for (size_t i = 0; i < ids.size(); ++i) {
-      base::Value event = CreateEvent(ids[i], i);
+      base::Value::Dict event = CreateEvent(ids[i], i);
       events.Append(std::move(event));
     }
 
@@ -90,13 +90,13 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
   }
 
  protected:
-  static base::Value CreateEvent(std::string& event_id, int type) {
-    base::Value event(base::Value::Type::DICTIONARY);
-    event.SetStringKey(kAppPackage, kPackage);
-    event.SetIntKey(kEventType, type);
-    base::Value wrapper(base::Value::Type::DICTIONARY);
-    wrapper.SetKey(kAppInstallEvent, std::move(event));
-    wrapper.SetStringKey(kEventId, event_id);
+  static base::Value::Dict CreateEvent(std::string& event_id, int type) {
+    base::Value::Dict event;
+    event.Set(kAppPackage, kPackage);
+    event.Set(kEventType, type);
+    base::Value::Dict wrapper;
+    wrapper.Set(kAppInstallEvent, std::move(event));
+    wrapper.Set(kEventId, event_id);
     return wrapper;
   }
 
@@ -105,34 +105,41 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
       const std::set<std::string>& failed_ids,
       const std::set<std::string>& permanent_failed_ids) {
     base::Value::Dict response;
-    if (success_ids.size()) {
-      base::Value* list =
-          response.Set(RealtimeReportingJobConfiguration::kUploadedEventsKey,
-                       base::Value(base::Value::Type::LIST));
+    if (!success_ids.empty()) {
+      base::Value::List& list =
+          response
+              .Set(RealtimeReportingJobConfiguration::kUploadedEventsKey,
+                   base::Value(base::Value::Type::LIST))
+              ->GetList();
       for (const auto& id : success_ids) {
-        list->Append(id);
+        list.Append(id);
       }
     }
-    if (failed_ids.size()) {
-      base::Value* list =
-          response.Set(RealtimeReportingJobConfiguration::kFailedUploadsKey,
-                       base::Value(base::Value::Type::LIST));
+    if (!failed_ids.empty()) {
+      base::Value::List& list =
+          response
+              .Set(RealtimeReportingJobConfiguration::kFailedUploadsKey,
+                   base::Value(base::Value::Type::LIST))
+              ->GetList();
       for (const auto& id : failed_ids) {
-        base::Value failure(base::Value::Type::DICTIONARY);
-        failure.SetStringKey(kEventId, id);
-        failure.SetIntKey(kStatusCode, 8 /* RESOURCE_EXHAUSTED */);
-        list->Append(std::move(failure));
+        base::Value::Dict failure;
+        failure.Set(kEventId, id);
+        failure.Set(kStatusCode, 8 /* RESOURCE_EXHAUSTED */);
+        list.Append(std::move(failure));
       }
     }
-    if (permanent_failed_ids.size()) {
-      base::Value* list = response.Set(
-          RealtimeReportingJobConfiguration::kPermanentFailedUploadsKey,
-          base::Value(base::Value::Type::LIST));
+    if (!permanent_failed_ids.empty()) {
+      base::Value::List& list =
+          response
+              .Set(
+                  RealtimeReportingJobConfiguration::kPermanentFailedUploadsKey,
+                  base::Value(base::Value::Type::LIST))
+              ->GetList();
       for (const auto& id : permanent_failed_ids) {
-        base::Value failure(base::Value::Type::DICTIONARY);
-        failure.SetStringKey(kEventId, id);
-        failure.SetIntKey(kStatusCode, 9 /* FAILED_PRECONDITION */);
-        list->Append(std::move(failure));
+        base::Value::Dict failure;
+        failure.Set(kEventId, id);
+        failure.Set(kStatusCode, 9 /* FAILED_PRECONDITION */);
+        list.Append(std::move(failure));
       }
     }
 

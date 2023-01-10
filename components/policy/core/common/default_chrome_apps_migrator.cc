@@ -88,7 +88,7 @@ DefaultChromeAppsMigrator::RemoveChromeAppsFromExtensionForcelist(
     return std::vector<std::string>();
 
   std::vector<std::string> chrome_app_ids;
-  base::Value new_forcelist_value(base::Value::Type::LIST);
+  base::Value::List new_forcelist_value;
   for (const auto& list_entry : forcelist_value->GetList()) {
     if (!list_entry.is_string()) {
       new_forcelist_value.Append(list_entry.Clone());
@@ -105,7 +105,7 @@ DefaultChromeAppsMigrator::RemoveChromeAppsFromExtensionForcelist(
       new_forcelist_value.Append(entry);
   }
 
-  forcelist_entry->set_value(std::move(new_forcelist_value));
+  forcelist_entry->set_value(base::Value(std::move(new_forcelist_value)));
   return chrome_app_ids;
 }
 
