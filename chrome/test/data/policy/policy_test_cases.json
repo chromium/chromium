@@ -15983,7 +15983,7 @@
     ]
   },
   "DeviceBorealisAllowed": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "reason_for_missing_test": "Policy was removed"
   },
   "DeviceAllowedBluetoothServices": {
     "reason_for_missing_test": "Maps into CrosSettings"

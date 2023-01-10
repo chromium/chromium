@@ -1,8 +1,11 @@
 caption: Allow devices to use <ph name="BOREALIS_NAME">Borealis</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google
   ChromeOS</ex></ph>
 default: true
+deprecated: True
 desc: |-
-  Controls the availability of <ph name="BOREALIS_NAME">Borealis</ph> for this device.
+  This policy is deprecated, please use <ph name="USER_BOREALIS_ALLOWED_NAME">UserBorealisAllowed</ph> instead.
+
+        Controls the availability of <ph name="BOREALIS_NAME">Borealis</ph> for this device.
 
         If the policy is set to false, <ph name="BOREALIS_NAME">Borealis</ph> will be unavailable for all users of the device. Otherwise (when the policy is unset, or true) <ph name="BOREALIS_NAME">Borealis</ph> will be available if and only if no other policy or setting disables it.
 device_only: true
@@ -21,6 +24,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:91-
+- chrome_os:91-110
 tags: []
 type: main

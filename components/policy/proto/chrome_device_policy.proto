@@ -1671,7 +1671,7 @@ message DevicePciPeripheralDataAccessEnabledProtoV2 {
 }
 
 // Setting that controls whether Borealis will be allowed on the device.
-message DeviceBorealisAllowedProto {
+message OBSOLETE_DeviceBorealisAllowedProto {
   optional bool allowed = 1 [default = true];
 }
 
@@ -1885,7 +1885,8 @@ message ChromeDeviceSettingsProto {
       device_system_wide_tracing_enabled = 117;
   optional DevicePciPeripheralDataAccessEnabledProto
       device_pci_peripheral_data_access_enabled = 118;
-  optional DeviceBorealisAllowedProto device_borealis_allowed = 119;
+  optional OBSOLETE_DeviceBorealisAllowedProto device_borealis_allowed = 119
+      [deprecated = true];
   optional DeviceAllowedBluetoothServicesProto
       device_allowed_bluetooth_services = 120;
   optional DeviceDebugPacketCaptureAllowedProto

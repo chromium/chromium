@@ -72,7 +72,6 @@ const char* const kKnownSettings[] = {
     kAllowedConnectionTypesForUpdate,
     kAllowRedeemChromeOsRegistrationOffers,
     kAttestationForContentProtectionEnabled,
-    kBorealisAllowedForDevice,
     kCastReceiverName,
     kDeviceAllowedBluetoothServices,
     kDeviceAttestationEnabled,
@@ -1195,15 +1194,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
     new_values_cache->SetValue(kUsbDetachableAllowlist,
                                base::Value(std::move(allowlist)));
-  }
-
-  if (policy.has_device_borealis_allowed()) {
-    const em::DeviceBorealisAllowedProto& container(
-        policy.device_borealis_allowed());
-    if (container.has_allowed()) {
-      new_values_cache->SetValue(kBorealisAllowedForDevice,
-                                 base::Value(container.allowed()));
-    }
   }
 
   if (policy.has_device_allowed_bluetooth_services()) {
