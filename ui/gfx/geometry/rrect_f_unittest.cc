@@ -211,8 +211,6 @@ TEST(RRectFTest, Contains) {
 }
 
 TEST(RRectFTest, Scale) {
-  // Note that SKRRect (the backing for RRectF) does not support scaling by NaN,
-  // or scaling out of numerical bounds. So this test doesn't exercise those.
   static const struct Test {
     float x1;  // source
     float y1;
@@ -246,6 +244,22 @@ TEST(RRectFTest, Scale) {
        0.0f, 0.0f},
       {3.0f, 4.0f, 5.0f, 6.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
        0.0f, 0.0f},
+      {3.0f, 4.0f, 5.0f, 6.0f, 1.0f, 1.0f, std::numeric_limits<float>::max(),
+       1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+      {3.0f, 4.0f, 5.0f, 6.0f, 1.0f, 1.0f, 1.0f,
+       std::numeric_limits<float>::max(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+      {3.0f, 4.0f, 5.0f, 6.0f, 1.0f, 1.0f, std::numeric_limits<float>::max(),
+       std::numeric_limits<float>::max(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+      {3.0f, 4.0f, 5.0f, 6.0f, 1.0f, 1.0f,
+       std::numeric_limits<double>::quiet_NaN(), 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+       0.0f, 0.0f},
+      {3.0f, 4.0f, 5.0f, 6.0f, 1.0f, 1.0f, 1.0f,
+       std::numeric_limits<double>::quiet_NaN(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+       0.0f},
+      {3.0f, 4.0f, 5.0f, 6.0f, 1.0f, 1.0f,
+       std::numeric_limits<double>::quiet_NaN(),
+       std::numeric_limits<double>::quiet_NaN(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+       0.0f},
   };
 
   for (auto& test : tests) {

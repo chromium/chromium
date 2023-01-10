@@ -134,8 +134,10 @@ void RRectF::Scale(float x_scale, float y_scale) {
   }
   SkMatrix scale = SkMatrix::Scale(x_scale, y_scale);
   SkRRect result;
-  bool success = skrrect_.transform(scale, &result);
-  DCHECK(success);
+  if (!skrrect_.transform(scale, &result)) {
+    skrrect_ = SkRRect::MakeEmpty();
+    return;
+  }
   skrrect_ = result;
 }
 
