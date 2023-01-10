@@ -198,6 +198,19 @@ void RetroactivePairingDetectorImpl::DevicePairedChanged(
 void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
     const std::string& classic_address,
     bool is_device_saved_to_account) {
+  // This check handles the case where the request for checked if the device is
+  // saved takes longer than expected. We register `AttemptRetroactivePairing`
+  // as a callback for when this request completes, but it gets called after
+  // we get the call to `OnDevicePaired`, which removes the device information.
+  // If the device is removed via `OnDevicePaired`, this indicated a Fast Pair
+  // pairing event, in which case we will never show a retroactive pairing
+  // notification, so we can stop the flow here for this device.
+  if (!base::Contains(potential_retroactive_addresses_, classic_address)) {
+    QP_LOG(VERBOSE) << __func__ << ": device at " << classic_address
+                    << ": was removed before call to Footprints completed";
+    return;
+  }
+
   if (is_device_saved_to_account) {
     QP_LOG(INFO) << __func__ << ": device already saved to user's account";
     RemoveDeviceInformation(classic_address);

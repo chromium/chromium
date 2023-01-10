@@ -1930,5 +1930,41 @@ TEST_F(RetroactivePairingDetectorTest, NotifyAfterDeviceRepairs) {
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
+TEST_F(RetroactivePairingDetectorTest, NoCrashWhenFootprintsResponseIsSlow) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFastPairSavedDevices,
+                             features::kFastPairSavedDevicesStrictOptIn});
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  // Delay the response so we can trigger it after OnDevicePaired.
+  fast_pair_repository_.SetIsDeviceSavedToAccountCallbackDelayed(
+      /*is_delayed=*/true);
+
+  // The naming for these are confusing.
+  // This calls DevicePairedChanged.
+  PairFastPairDeviceWithClassicBluetooth(true, kTestDeviceAddress);
+
+  // This calls OnDevicePaired.
+  PairFastPairDeviceWithFastPair(kTestDeviceAddress);
+
+  fake_socket_->TriggerReceiveCallback();
+  base::RunLoop().RunUntilIdle();
+
+  // Add a real message stream so the check passes.
+  AddMessageStream(kModelIdBleAddressBytes);
+  NotifyMessageStreamConnected(kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
+
+  // Trigger the response.
+  fast_pair_repository_.TriggerIsDeviceSavedToAccountCallback();
+}
+
 }  // namespace quick_pair
 }  // namespace ash
