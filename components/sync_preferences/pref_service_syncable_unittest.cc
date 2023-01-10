@@ -641,8 +641,7 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldIgnoreUpdatesToNotSyncablePrefs) {
       pref_name, base::Value("remote_value2"), SyncChange::ACTION_UPDATE));
   pref_sync_service_->ProcessSyncChanges(FROM_HERE, remote_changes);
   // The pref isn't synced.
-  EXPECT_THAT(pref_sync_service_->GetAllSyncDataForTesting(syncer::PREFERENCES),
-              IsEmpty());
+  EXPECT_FALSE(pref_sync_service_->IsPrefSyncedForTesting(pref_name));
   EXPECT_THAT(GetPreferenceValue(pref_name).GetString(), Eq("default_value"));
 }
 
