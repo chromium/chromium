@@ -42,8 +42,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   // Returns whether the event is a peek key event.
   virtual bool IsPeekKeyEvent(const ui::KeyEvent& key_event) = 0;
 
-  // Tells the system IME for the cursor rect which is relative to the
-  // client window rect.
+  // Takes cursor rect in screen coordinates. Result used by system IME.
   virtual void SetCursorLocation(const gfx::Rect& rect) = 0;
 
   // Tells the system IME the surrounding text around the cursor location.

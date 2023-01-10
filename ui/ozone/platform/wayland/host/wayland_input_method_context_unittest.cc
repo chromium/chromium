@@ -403,13 +403,18 @@ TEST_F(WaylandInputMethodContextTest, Reset) {
 }
 
 TEST_F(WaylandInputMethodContextTest, SetCursorLocation) {
-  constexpr gfx::Rect cursor_location(50, 0, 1, 1);
-  PostToServerAndWait([cursor_location](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(
-        *server->text_input_manager_v1()->text_input(),
-        SetCursorRect(cursor_location.x(), cursor_location.y(),
-                      cursor_location.width(), cursor_location.height()));
-  });
+  constexpr gfx::Rect cursor_location(50, 20, 1, 1);
+  constexpr gfx::Rect window_bounds(20, 10, 100, 100);
+  PostToServerAndWait(
+      [cursor_location, window_bounds](wl::TestWaylandServerThread* server) {
+        EXPECT_CALL(
+            *server->text_input_manager_v1()->text_input(),
+            SetCursorRect(cursor_location.x() - window_bounds.x(),
+                          cursor_location.y() - window_bounds.y(),
+                          cursor_location.width(), cursor_location.height()));
+      });
+  window_->SetBoundsInDIP(window_bounds);
+  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
   input_method_context_->SetCursorLocation(cursor_location);
   connection_->Flush();
 }

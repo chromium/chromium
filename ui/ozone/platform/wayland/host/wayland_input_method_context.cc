@@ -30,6 +30,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 #include "ui/ozone/public/ozone_switches.h"
 
@@ -238,8 +239,16 @@ void WaylandInputMethodContext::Blur(bool skip_virtual_keyboard_update) {
 }
 
 void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
-  if (text_input_)
-    text_input_->SetCursorRect(rect);
+  if (!text_input_) {
+    return;
+  }
+  WaylandWindow* focused_window =
+      connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
+  if (!focused_window) {
+    return;
+  }
+  text_input_->SetCursorRect(
+      rect - focused_window->GetBoundsInDIP().OffsetFromOrigin());
 }
 
 void WaylandInputMethodContext::SetSurroundingText(
