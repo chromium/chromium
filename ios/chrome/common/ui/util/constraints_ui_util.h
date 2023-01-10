@@ -6,6 +6,7 @@
 #define IOS_CHROME_COMMON_UI_UTIL_CONSTRAINTS_UI_UTIL_H_
 
 #import <UIKit/UIKit.h>
+#import <type_traits>
 
 // A bitmask to refer to sides of a layout rectangle.
 enum class LayoutSides {
