@@ -115,9 +115,10 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-        },
+        # TODO(crbug.com/1342987): All DUTs are dead.
+        # 'test_suites': {
+        #  'gtest_tests': 'chromeos_device_gtests',
+        #},
         'swarming': {
           'dimension_sets': [
             {
@@ -152,9 +153,10 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-        },
+        # TODO(crbug.com/1342987): All DUTs are dead.
+        # 'test_suites': {
+        #   'gtest_tests': 'chromeos_device_gtests',
+        # },
         'swarming': {
           'dimension_sets': [
             {
