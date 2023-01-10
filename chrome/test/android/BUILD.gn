@@ -3,7 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//chrome/android/chrome_test_apk_tmpl.gni")
 import("//components/feed/features.gni")
+
+chrome_public_test_apk_manifest =
+    "$root_gen_dir/chrome_public_test_apk_manifest/AndroidManifest.xml"
 
 android_library("chrome_java_test_pagecontroller") {
   testonly = true
@@ -51,10 +55,11 @@ android_library("chrome_java_test_pagecontroller") {
   ]
 }
 
-instrumentation_test_apk("chrome_java_test_pagecontroller_tests") {
+chrome_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
   apk_name = "ChromePageControllerTests"
-  apk_under_test = "//chrome/android:chrome_public_apk"
-  android_manifest = "javatests/src/org/chromium/chrome/test/pagecontroller/tests/AndroidManifest.xml"
+  android_manifest = chrome_public_test_apk_manifest
+  android_manifest_dep = "//chrome/android:chrome_public_test_apk_manifest"
+  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/ExampleTest.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/FirstRunControllerTest.java",
@@ -70,17 +75,13 @@ instrumentation_test_apk("chrome_java_test_pagecontroller_tests") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
   ]
-
-  if (!is_java_debug) {
-    proguard_enabled = true
-    proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
-  }
 }
 
-instrumentation_test_apk("chrome_java_test_wpr_tests") {
+chrome_test_apk_tmpl("chrome_java_test_wpr_tests") {
   apk_name = "ChromeWPRTests"
-  apk_under_test = "//chrome/android:chrome_public_apk"
-  android_manifest = "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/network_fetch/AndroidManifest.xml"
+  android_manifest = chrome_public_test_apk_manifest
+  android_manifest_dep = "//chrome/android:chrome_public_test_apk_manifest"
+  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [ "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/network_fetch/FeedNewTabPageCardInstrumentationTest.java" ]
   data = [
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/wpr_tests",
@@ -112,17 +113,13 @@ instrumentation_test_apk("chrome_java_test_wpr_tests") {
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
   ]
-
-  if (!is_java_debug) {
-    proguard_enabled = true
-    proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
-  }
 }
 
-instrumentation_test_apk("chrome_java_test_feed_test") {
+chrome_test_apk_tmpl("chrome_java_test_feed_test") {
   apk_name = "ChromeFeedTests"
-  apk_under_test = "//chrome/android:chrome_public_apk"
-  android_manifest = "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/network_fetch/AndroidManifest.xml"
+  android_manifest = chrome_public_test_apk_manifest
+  android_manifest_dep = "//chrome/android:chrome_public_test_apk_manifest"
+  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedSurfaceCoordinatorIntegrationTest.java",
     "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/feedmanagement/FeedManagementTest.java",
@@ -149,18 +146,14 @@ instrumentation_test_apk("chrome_java_test_feed_test") {
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
   ]
-
-  if (!is_java_debug) {
-    proguard_enabled = true
-    proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
-  }
 }
 
 # WebAPK tests which require additional_apks should be in this test suite.
-instrumentation_test_apk("chrome_webapk_integration_tests") {
+chrome_test_apk_tmpl("chrome_webapk_integration_tests") {
   apk_name = "ChromeWebApkIntegrationTests"
-  apk_under_test = "//chrome/android:chrome_public_apk"
-  android_manifest = "javatests/src/org/chromium/chrome/test/pagecontroller/tests/webapk/AndroidManifest.xml"
+  android_manifest = chrome_public_test_apk_manifest
+  android_manifest_dep = "//chrome/android:chrome_public_test_apk_manifest"
+  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/webapk/MapsGoFirstRunTest.java" ]
   deps = [
     ":chrome_java_test_pagecontroller",
@@ -184,17 +177,13 @@ instrumentation_test_apk("chrome_webapk_integration_tests") {
     "//chrome/android/webapk/shell_apk:javatests_webapk",
     "//chrome/android/webapk/shell_apk:uiautomator_maps_go_webapk",
   ]
-
-  if (!is_java_debug) {
-    proguard_enabled = true
-    proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
-  }
 }
 
-instrumentation_test_apk("chrome_java_test_pagecontroller_codelab") {
+chrome_test_apk_tmpl("chrome_java_test_pagecontroller_codelab") {
   apk_name = "ChromePageControllerCodelab"
-  apk_under_test = "//chrome/android:chrome_public_apk"
-  android_manifest = "javatests/src/org/chromium/chrome/test/pagecontroller/tests/AndroidManifest.xml"
+  android_manifest = chrome_public_test_apk_manifest
+  android_manifest_dep = "//chrome/android:chrome_public_test_apk_manifest"
+  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/codelab/SettingsForCodelabTest.java" ]
   deps = [
     ":chrome_java_test_pagecontroller",
@@ -202,11 +191,6 @@ instrumentation_test_apk("chrome_java_test_pagecontroller_codelab") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
-
-  if (!is_java_debug) {
-    proguard_enabled = true
-    proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
-  }
 }
 
 robolectric_binary("chrome_java_test_pagecontroller_junit_tests") {

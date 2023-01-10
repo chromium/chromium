@@ -1,0 +1,116 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/android/chrome_public_apk_tmpl.gni")
+
+# Dependencies that are common to any chrome_public derivative targets.
+chrome_public_shared_deps = [
+  "//chrome/android:chrome_public_apk_base_module_resources",
+  "//chrome/android:chrome_public_apk_resources",
+  "//chrome/android:chrome_public_base_module_java",
+  "//chrome/android:chrome_public_non_pak_assets",
+  "//chrome/android:chrome_public_v8_assets",
+  "//third_party/icu:icu_assets",
+]
+
+template("chrome_test_apk_tmpl") {
+  chrome_public_common_apk_or_module_tmpl(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "apk_name",
+                             "android_manifest",
+                             "android_manifest_dep",
+                             "data_deps",
+                             "enable_lint",
+                             "enforce_resource_overlays_in_tests",
+                             "extra_args",
+                             "is_unit_test",
+                             "shared_libraries",
+                             "sources",
+                             "data",
+                           ])
+
+    testonly = true
+    target_type = "instrumentation_test_apk"
+    bundles_supported = true
+
+    deps = chrome_public_shared_deps + invoker.deps + [
+             "//chrome/android:chrome_apk_pak_assets",
+             "//chrome/android:chrome_public_base_module_java_for_test",
+             "//third_party/android_sdk:android_test_base_java",
+             "//third_party/android_sdk:android_test_mock_java",
+             "//third_party/android_sdk:android_test_runner_java",
+             "//third_party/android_support_test_runner:runner_java",
+           ]
+    if (add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm") {
+      deps += [ "//chrome/android:libchromefortest_unwind_table_assets" ]
+    }
+    if (enable_vr) {
+      # Contains VrFirstRunActivity, which is referenced by AndroidManifest.xml.
+      deps += [ "//chrome/android/features/vr:java" ]
+    }
+
+    additional_apks = [ "//net/android:net_test_support_apk" ]
+    if (defined(invoker.additional_apks)) {
+      additional_apks += invoker.additional_apks
+    }
+    if (!is_java_debug) {
+      proguard_enabled = true
+      proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
+    }
+
+    # TODO(crbug.com/993340): Update test goldens with webp versions of images.
+    png_to_webp = false
+  }
+}
+
+template("monochrome_test_apk_tmpl") {
+  monochrome_public_common_apk_or_module_tmpl(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "android_manifest",
+                             "android_manifest_dep",
+                             "apk_name",
+                             "data_deps",
+                             "is_64_bit_browser",
+                             "include_64_bit_webview",
+                             "include_32_bit_webview",
+                             "loadable_modules",
+                             "min_sdk_version",
+                             "proguard_configs",
+                             "secondary_abi_loadable_modules",
+                             "shared_libraries",
+                             "target_sdk_version",
+                           ])
+
+    testonly = true
+    target_type = "instrumentation_test_apk"
+
+    deps = chrome_public_shared_deps + invoker.deps + [
+             "//android_webview:platform_service_bridge_upstream_implementation_java",
+             "//chrome/android:chrome_public_base_module_java_for_test",
+             "//chrome/android:monochrome_apk_pak_assets",
+             "//third_party/android_sdk:android_test_base_java",
+             "//third_party/android_sdk:android_test_mock_java",
+             "//third_party/android_sdk:android_test_runner_java",
+             "//third_party/android_support_test_runner:runner_java",
+           ]
+
+    if (webview_includes_weblayer) {
+      deps += [ "//weblayer/browser/java:upstream_java" ]
+    }
+
+    additional_apks = [ "//net/android:net_test_support_apk" ]
+    if (defined(invoker.additional_apks)) {
+      additional_apks += invoker.additional_apks
+    }
+    if (!is_java_debug) {
+      if (!defined(proguard_configs)) {
+        proguard_configs = []
+      }
+      proguard_enabled = true
+      proguard_configs += [ "//chrome/android/proguard/apk_for_test.flags" ]
+    }
+  }
+}
