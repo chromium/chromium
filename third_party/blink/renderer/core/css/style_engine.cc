@@ -1353,8 +1353,7 @@ void StyleEngine::ClassChangedForElement(
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
-  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      features.NeedsHasInvalidationForClassChange() &&
+  if (features.NeedsHasInvalidationForClassChange() &&
       PossiblyAffectingHasState(element)) {
     unsigned changed_size = changed_classes.size();
     for (unsigned i = 0; i < changed_size; ++i) {
@@ -1399,7 +1398,6 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
 
   bool needs_schedule_invalidation = !IsSubtreeAndSiblingsStyleDirty(element);
   bool possibly_affecting_has_state =
-      RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       features.NeedsHasInvalidationForClassChange() &&
       PossiblyAffectingHasState(element);
   if (!needs_schedule_invalidation && !possibly_affecting_has_state) {
@@ -1498,8 +1496,7 @@ void StyleEngine::AttributeChangedForElement(
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
-  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      features.NeedsHasInvalidationForAttributeChange() &&
+  if (features.NeedsHasInvalidationForAttributeChange() &&
       PossiblyAffectingHasState(element)) {
     if (features.NeedsHasInvalidationForAttribute(attribute_name)) {
       InvalidateChangedElementAffectedByLogicalCombinationsInHas(
@@ -1537,8 +1534,7 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
-  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      features.NeedsHasInvalidationForIdChange() &&
+  if (features.NeedsHasInvalidationForIdChange() &&
       PossiblyAffectingHasState(element)) {
     if ((!old_id.empty() && features.NeedsHasInvalidationForId(old_id)) ||
         (!new_id.empty() && features.NeedsHasInvalidationForId(new_id))) {
@@ -1582,7 +1578,6 @@ void StyleEngine::PseudoStateChangedForElement(
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   if (invalidate_ancestors_or_siblings &&
-      RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       features.NeedsHasInvalidationForPseudoStateChange() &&
       PossiblyAffectingHasState(element)) {
     if (features.NeedsHasInvalidationForPseudoClass(pseudo_type)) {
@@ -1820,7 +1815,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
     Element* parent,
     Node* node_before_change,
     Element& inserted_element) {
-  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent) {
+  if (!parent) {
     return;
   }
 
@@ -1902,7 +1897,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
     Element* parent,
     Node* node_before_change,
     Element& removed_element) {
-  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent) {
+  if (!parent) {
     return;
   }
 
@@ -1956,10 +1951,6 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
 
 void StyleEngine::ScheduleInvalidationsForHasPseudoWhenAllChildrenRemoved(
     Element& parent) {
-  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled()) {
-    return;
-  }
-
   if (ShouldSkipInvalidationFor(parent)) {
     return;
   }

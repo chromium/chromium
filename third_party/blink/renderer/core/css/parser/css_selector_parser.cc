@@ -1279,10 +1279,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       return true;
     }
     case CSSSelector::kPseudoHas: {
-      if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled()) {
-        return false;
-      }
-
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
 
@@ -2027,7 +2023,6 @@ static void RecordUsageAndDeprecationsOneSelector(
       feature = WebFeature::kCSSSelectorPseudoDir;
       break;
     case CSSSelector::kPseudoHas:
-      DCHECK(RuntimeEnabledFeatures::CSSPseudoHasEnabled());
       if (context->IsLiveProfile()) {
         feature = WebFeature::kCSSSelectorPseudoHasInLiveProfile;
       } else {
