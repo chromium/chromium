@@ -91,15 +91,21 @@ struct SetupProgress {
   // of the setup process and left unchanged afterwards.
   int64_t free_space = 0;
 
-  // Estimated number of bytes that are required to downsync the files to pin.
-  // Estimated at the beginning of the setup process and left unchanged
-  // afterwards.
+  // Estimated number of bytes that are required to store the files to pin. This
+  // is a pessimistic estimate based on the assumption that each file uses an
+  // integral number of fixed-size blocks. Estimated at the beginning of the
+  // setup process and left unchanged afterwards.
   int64_t required_space = 0;
 
-  // Number of bytes that have been downloaded so far to downsync the files.
-  int64_t pinned_space = 0;
+  // Estimated number of bytes that are required to download the files to pin.
+  // Estimated at the beginning of the setup process and left unchanged
+  // afterwards.
+  int64_t total_bytes = 0;
 
-  // Number of pinned and downsynced files so far.
+  // Number of bytes that have been downloaded so far.
+  int64_t transferred_bytes = 0;
+
+  // Number of pinned and downloaded files so far.
   int32_t pinned_files = 0;
 
   // Number of errors encountered so far.

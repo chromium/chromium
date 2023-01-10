@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
+#include "third_party/cros_system_api/constants/cryptohome.h"
 
 namespace drivefs::pinning {
 namespace {
@@ -340,7 +341,7 @@ bool DriveFsPinManager::Remove(const std::string& path,
       << "Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
       << HumanReadableSize(bytes_transferred) << " for " << Quote(path);
-  progress_.pinned_space += bytes_transferred - progress.transferred;
+  progress_.transferred_bytes += bytes_transferred - progress.transferred;
 
   VLOG(3) << "Stopped tracking " << Quote(path);
   return true;
@@ -377,7 +378,7 @@ bool DriveFsPinManager::Update(const std::string& path,
       << HumanReadableSize(progress.total) << " to "
       << HumanReadableSize(bytes_to_transfer);
 
-  progress_.pinned_space += bytes_transferred - progress.transferred;
+  progress_.transferred_bytes += bytes_transferred - progress.transferred;
   progress.transferred = bytes_transferred;
   progress.total = bytes_to_transfer;
   return true;
@@ -490,9 +491,10 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
   if (items->empty()) {
     VLOG(1) << "Calculated required space in "
             << timer_.Elapsed().InMilliseconds() << " ms";
+    VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
     VLOG(1) << "Required space: "
             << HumanReadableSize(progress_.required_space);
-    VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
+    VLOG(1) << "To download: " << HumanReadableSize(progress_.total_bytes);
     return StartPinning();
   }
 
@@ -510,16 +512,25 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     }
 
     DCHECK_GE(md.size, 0) << " for " << Quote(path);
-    progress_.required_space += GetSize(md);
+    const int64_t size = GetSize(md);
+    progress_.total_bytes += size;
+
+    // Assumes that the underlying filesystem works with 4-KB blocks.
+    const int64_t block_size = 4096;
+    const int64_t block_count = (size + (block_size - 1)) / block_size;
+    progress_.required_space += block_count * block_size;
   }
 
-  // TODO(b/259454320): This should really not use up all free space but instead
-  // include a buffer threshold. Update this once the thresholds have been
-  // identified.
-  if (progress_.required_space >= progress_.free_space) {
-    LOG(ERROR) << "Not enough space: Required = "
+  // The free space should not go below this limit.
+  const int64_t storage_floor = cryptohome::kMinFreeSpaceInBytes;
+  const int64_t required_with_margin = progress_.required_space + storage_floor;
+
+  if (progress_.free_space < required_with_margin) {
+    LOG(ERROR) << "Not enough space: Required: "
                << HumanReadableSize(progress_.required_space)
-               << ", Free = " << HumanReadableSize(progress_.free_space);
+               << ", Required plus margin: "
+               << HumanReadableSize(required_with_margin)
+               << ", Free: " << HumanReadableSize(progress_.free_space);
     return Complete(SetupStage::kNotEnoughSpace);
   }
 

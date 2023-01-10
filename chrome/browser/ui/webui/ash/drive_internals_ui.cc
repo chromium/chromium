@@ -629,9 +629,9 @@ class DriveInternalsWebUIHandler
     setup_progress.Set("availableDiskSpace",
                        ToString(HumanReadableSize(progress.free_space)));
     setup_progress.Set("requiredDiskSpace",
-                       ToString(HumanReadableSize(progress.required_space)));
+                       ToString(HumanReadableSize(progress.total_bytes)));
     setup_progress.Set("pinnedDiskSpace",
-                       ToString(HumanReadableSize(progress.pinned_space)));
+                       ToString(HumanReadableSize(progress.transferred_bytes)));
     MaybeCallJavascript("onBulkPinningProgress",
                         base::Value(std::move(setup_progress)));
   }

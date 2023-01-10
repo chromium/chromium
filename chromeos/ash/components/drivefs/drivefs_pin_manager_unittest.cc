@@ -568,7 +568,7 @@ TEST_F(DriveFsPinManagerTest,
   status->item_events.at(0)->bytes_transferred = 10;
   EXPECT_CALL(mock_pin_observer,
               OnSetupProgress(
-                  AllOf(Field(&SetupProgress::pinned_space, 10),
+                  AllOf(Field(&SetupProgress::transferred_bytes, 10),
                         Field(&SetupProgress::stage, SetupStage::kSyncing))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
@@ -593,7 +593,7 @@ TEST_F(DriveFsPinManagerTest,
   status->item_events.at(0)->bytes_transferred = 128;
   EXPECT_CALL(mock_pin_observer,
               OnSetupProgress(
-                  AllOf(Field(&SetupProgress::pinned_space, 128),
+                  AllOf(Field(&SetupProgress::transferred_bytes, 128),
                         Field(&SetupProgress::stage, SetupStage::kSuccess))))
       .Times(1)
       .WillOnce(RunClosure(setup_progress_run_loop.QuitClosure()));
