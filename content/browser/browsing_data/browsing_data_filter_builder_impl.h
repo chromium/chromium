@@ -19,6 +19,8 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
  public:
   explicit BrowsingDataFilterBuilderImpl(Mode mode);
 
+  BrowsingDataFilterBuilderImpl(Mode mode, OriginMatchingMode origin_mode);
+
   BrowsingDataFilterBuilderImpl(const BrowsingDataFilterBuilderImpl&) = delete;
   BrowsingDataFilterBuilderImpl& operator=(
       const BrowsingDataFilterBuilderImpl&) = delete;
@@ -52,6 +54,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   bool IsEqual(const BrowsingDataFilterBuilder& other) const override;
 
   Mode mode_;
+  OriginMatchingMode origin_mode_;
 
   std::set<url::Origin> origins_;
   std::set<std::string> domains_;

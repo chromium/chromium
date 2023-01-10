@@ -494,11 +494,23 @@ TEST(BrowsingDataFilterBuilderImplTest, StorageKey) {
       blink::StorageKey::CreateWithOptionalNonce(
           origin1, net::SchemefulSite(origin1), nullptr,
           blink::mojom::AncestorChainBit::kCrossSite),
+      // Bar
+      blink::StorageKey::CreateWithOptionalNonce(
+          origin2, net::SchemefulSite(origin2), nullptr,
+          blink::mojom::AncestorChainBit::kSameSite),
+      // Bar -> Foo
+      blink::StorageKey::CreateWithOptionalNonce(
+          origin2, net::SchemefulSite(origin1), nullptr,
+          blink::mojom::AncestorChainBit::kCrossSite),
   };
+
+  // Test for OriginMatchingMode::kThirdPartiesIncluded.
   for (size_t i = 0; i < std::size(keys); ++i) {
     const auto& storage_key = keys[i];
     BrowsingDataFilterBuilderImpl builder(
-        BrowsingDataFilterBuilderImpl::Mode::kDelete);
+        BrowsingDataFilterBuilderImpl::Mode::kDelete,
+        BrowsingDataFilterBuilderImpl::OriginMatchingMode::
+            kThirdPartiesIncluded);
     builder.AddOrigin((storage_key.has_value()) ? storage_key.value().origin()
                                                 : origin1);
     builder.SetStorageKey(storage_key);
@@ -515,6 +527,33 @@ TEST(BrowsingDataFilterBuilderImplTest, StorageKey) {
            key_to_compare.value().MatchesOriginForTrustedStorageDeletion(
                origin1));
       bool expected = same_key || origin_match;
+      EXPECT_EQ(expected,
+                std::move(matcher_function).Run(key_to_compare.value()));
+    }
+  }
+
+  // Test for OriginMatchingMode::kOriginInAllContexts
+  for (size_t i = 0; i < std::size(keys); ++i) {
+    const auto& storage_key = keys[i];
+    BrowsingDataFilterBuilderImpl builder(
+        BrowsingDataFilterBuilderImpl::Mode::kDelete,
+        BrowsingDataFilterBuilderImpl::OriginMatchingMode::
+            kOriginInAllContexts);
+    builder.AddOrigin((storage_key.has_value()) ? storage_key.value().origin()
+                                                : origin1);
+    builder.SetStorageKey(storage_key);
+    EXPECT_EQ(storage_key.has_value(), builder.HasStorageKey());
+    // Start from 1 to ignore the nullopt key.
+    for (size_t j = 1; j < std::size(keys); ++j) {
+      const auto& key_to_compare = keys[j];
+      auto matcher_function = builder.BuildStorageKeyFilter();
+      // Only matches either when the keys are exactly the same, or when there
+      // is no stored key and the origin is the same.
+      bool same_key = (i == j);
+      bool same_origin =
+          (!storage_key.has_value() && key_to_compare.has_value() &&
+           key_to_compare.value().origin() == origin1);
+      bool expected = same_key || same_origin;
       EXPECT_EQ(expected,
                 std::move(matcher_function).Run(key_to_compare.value()));
     }

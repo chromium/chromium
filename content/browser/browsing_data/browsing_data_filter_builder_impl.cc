@@ -17,6 +17,9 @@
 using net::registry_controlled_domains::GetDomainAndRegistry;
 using net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
 
+using OriginMatchingMode =
+    content::BrowsingDataFilterBuilder::OriginMatchingMode;
+
 namespace content {
 
 namespace {
@@ -40,10 +43,16 @@ bool IsSubdomainOfARegistrableDomain(const std::string& domain) {
 bool MatchesStorageKey(const std::set<url::Origin>& origins,
                        const std::set<std::string>& registerable_domains,
                        BrowsingDataFilterBuilder::Mode mode,
+                       BrowsingDataFilterBuilder::OriginMatchingMode match_mode,
                        const blink::StorageKey& storage_key) {
   bool is_delete_list = mode == BrowsingDataFilterBuilder::Mode::kDelete;
   for (const auto& origin : origins) {
-    if (storage_key.MatchesOriginForTrustedStorageDeletion(origin)) {
+    if (match_mode == OriginMatchingMode::kThirdPartiesIncluded &&
+        storage_key.MatchesOriginForTrustedStorageDeletion(origin)) {
+      return is_delete_list;
+    }
+    if (match_mode == OriginMatchingMode::kOriginInAllContexts &&
+        storage_key.origin() == origin) {
       return is_delete_list;
     }
   }
@@ -63,10 +72,11 @@ bool MatchesStorageKey(const std::set<url::Origin>& origins,
 bool MatchesURL(const std::set<url::Origin>& origins,
                 const std::set<std::string>& registerable_domains,
                 BrowsingDataFilterBuilder::Mode mode,
+                BrowsingDataFilterBuilder::OriginMatchingMode origin_mode,
                 bool is_cross_site_clear_site_data,
                 const GURL& url) {
   DCHECK(!is_cross_site_clear_site_data);
-  return MatchesStorageKey(origins, registerable_domains, mode,
+  return MatchesStorageKey(origins, registerable_domains, mode, origin_mode,
                            blink::StorageKey(url::Origin::Create(url)));
 }
 
@@ -104,13 +114,27 @@ BrowsingDataFilterBuilder::Create(Mode mode) {
 }
 
 // static
+std::unique_ptr<BrowsingDataFilterBuilder> BrowsingDataFilterBuilder::Create(
+    Mode mode,
+    OriginMatchingMode origin_mode) {
+  return std::make_unique<BrowsingDataFilterBuilderImpl>(mode, origin_mode);
+}
+
+// static
 base::RepeatingCallback<bool(const GURL&)>
 BrowsingDataFilterBuilder::BuildNoopFilter() {
   return base::BindRepeating([](const GURL&) { return true; });
 }
 
 BrowsingDataFilterBuilderImpl::BrowsingDataFilterBuilderImpl(Mode mode)
-    : mode_(mode) {}
+    : mode_(mode),
+      origin_mode_(BrowsingDataFilterBuilder::OriginMatchingMode::
+                       kThirdPartiesIncluded) {}
+
+BrowsingDataFilterBuilderImpl::BrowsingDataFilterBuilderImpl(
+    Mode mode,
+    OriginMatchingMode origin_mode)
+    : mode_(mode), origin_mode_(origin_mode) {}
 
 BrowsingDataFilterBuilderImpl::~BrowsingDataFilterBuilderImpl() {}
 
@@ -191,6 +215,7 @@ BrowsingDataFilterBuilderImpl::BuildUrlFilter() {
   if (MatchesAllOriginsAndDomains())
     return base::BindRepeating([](const GURL&) { return true; });
   return base::BindRepeating(&MatchesURL, origins_, domains_, mode_,
+                             origin_mode_,
                              IsCrossSiteClearSiteDataForCookies());
 }
 
@@ -206,7 +231,8 @@ BrowsingDataFilterBuilderImpl::BuildStorageKeyFilter() {
         &BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey,
         base::Unretained(this));
   }
-  return base::BindRepeating(&MatchesStorageKey, origins_, domains_, mode_);
+  return base::BindRepeating(&MatchesStorageKey, origins_, domains_, mode_,
+                             origin_mode_);
 }
 
 network::mojom::ClearDataFilterPtr

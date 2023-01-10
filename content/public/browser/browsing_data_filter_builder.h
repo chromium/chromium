@@ -42,8 +42,30 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
     kPreserve
   };
 
+  // This determines how StorageKeys will be matched given an origin that was
+  // added to the filter.
+  enum class OriginMatchingMode {
+    // Default mode: StorageKeys are matched on origin in 1P context and on
+    // top-level-site in 3P contexts. For deletion that means that the origin
+    // and everything embedded on it is deleted, but the instances when the
+    // origin itself is embedded are left untouched.
+    kThirdPartiesIncluded,
+    // Second option: StorageKeys are matched on origin only in all contexts.
+    // For deletion that means that the origin is deleted in both 1P and 3P
+    // contexts, but anything embedded on it is left untouched.
+    kOriginInAllContexts
+  };
+
   // Constructs a filter with the given |mode|: delete or preserve.
+  // The |OriginMatchingMode| is |kThirdPartiesIncluded| in this case by
+  // default.
   static std::unique_ptr<BrowsingDataFilterBuilder> Create(Mode mode);
+
+  // Same as above, but also allows to choose how origins are matched with
+  // storage keys.
+  static std::unique_ptr<BrowsingDataFilterBuilder> Create(
+      Mode mode,
+      OriginMatchingMode origin_mode);
 
   virtual ~BrowsingDataFilterBuilder() = default;
 
