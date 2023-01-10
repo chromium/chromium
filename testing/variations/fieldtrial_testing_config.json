@@ -9349,6 +9349,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "grace_period_seconds_loaded": "60"
+                    },
                     "enable_features": [
                         "QuickIntensiveWakeUpThrottlingAfterLoading"
                     ]
