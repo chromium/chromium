@@ -48,25 +48,6 @@ enum AppType {
   kBruschetta,            // Bruschetta app, see go/bruschetta.
 };
 
-// Whether an app is ready to launch, i.e. installed.
-// Note the enumeration is used in UMA histogram so entries should not be
-// re-ordered or removed. New entries should be added at the bottom.
-enum Readiness {
-  kUnknown = 0,
-  kReady,                // Installed and launchable.
-  kDisabledByBlocklist,  // Disabled by SafeBrowsing.
-  kDisabledByPolicy,     // Disabled by admin policy.
-  kDisabledByUser,       // Disabled by explicit user action.
-  kTerminated,           // Renderer process crashed.
-  kUninstalledByUser,
-  // Removed apps are purged from the registry cache and have their
-  // associated memory freed. Subscribers are not notified of removed
-  // apps, so publishers must set the app as uninstalled before
-  // removing it.
-  kRemoved,
-  kUninstalledByMigration,
-};
-
 // How the app was installed.
 // This should be kept in sync with histogram.xml, and InstallSource in
 // enums.xml.
