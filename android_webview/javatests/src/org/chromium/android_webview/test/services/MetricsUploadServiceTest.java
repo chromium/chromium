@@ -38,7 +38,7 @@ public class MetricsUploadServiceTest {
 
     @MediumTest
     @Test
-    public void testLogUnchagned() throws Throwable {
+    public void testLogUnchanged() throws Throwable {
         ChromeUserMetricsExtension metricsLog =
                 ChromeUserMetricsExtension.newBuilder().setClientId(123456789L).build();
 
