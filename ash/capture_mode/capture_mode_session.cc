@@ -40,6 +40,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -536,13 +537,11 @@ class CaptureModeSession::ParentContainerObserver
 
   // aura::WindowObserver:
   void OnWindowAdded(aura::Window* window) override {
-    capture_mode_session_->RefreshStackingOrder();
-    capture_mode_session_->MaybeUpdateCaptureUisOpacity();
+    DeferredRefreshStackingOrder();
   }
 
   void OnWindowRemoved(aura::Window* window) override {
-    capture_mode_session_->RefreshStackingOrder();
-    capture_mode_session_->MaybeUpdateCaptureUisOpacity();
+    DeferredRefreshStackingOrder();
   }
 
   void OnWindowDestroying(aura::Window* window) override {
@@ -551,6 +550,22 @@ class CaptureModeSession::ParentContainerObserver
   }
 
  private:
+  // There might be other classes that track window hierarchy and re-ordering
+  // windows during window adding / deleting will break them. Therefore, defer
+  // the re-ordering.
+  void DeferredRefreshStackingOrder() {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<CaptureModeSession> capture_mode_session) {
+              if (capture_mode_session) {
+                capture_mode_session->RefreshStackingOrder();
+                capture_mode_session->MaybeUpdateCaptureUisOpacity();
+              }
+            },
+            capture_mode_session_->weak_ptr_factory_.GetWeakPtr()));
+  }
+
   aura::Window* parent_container_;
 
   // Pointer to current capture session. Not nullptr during this lifecycle.

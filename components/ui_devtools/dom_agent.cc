@@ -168,6 +168,7 @@ void DOMAgent::OnUIElementReordered(UIElement* parent, UIElement* child) {
 
   const auto& children = parent->children();
   auto iter = base::ranges::find(children, child);
+  CHECK(iter != children.end());
   int prev_node_id =
       (iter == children.begin()) ? 0 : (*std::prev(iter))->node_id();
   RemoveDomNode(child, false);

@@ -891,6 +891,7 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInFullscreen) {
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  base::RunLoop().RunUntilIdle();
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
   EXPECT_TRUE(camera_preview_widget);
@@ -2805,6 +2806,7 @@ TEST_F(CaptureModeCameraTest, ToastStackingOrderChangeOnCaptureModeTurnedOn) {
   // Turn on capture mode again through the quick settings, verify that the
   // stacking order for capture toast relative to other capture UIs is correct.
   controller->Start(CaptureModeEntryType::kQuickSettings);
+  base::RunLoop().RunUntilIdle();
   auto* capture_session = controller->capture_mode_session();
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   auto* capture_toast_widget = capture_toast_controller->capture_toast_widget();
