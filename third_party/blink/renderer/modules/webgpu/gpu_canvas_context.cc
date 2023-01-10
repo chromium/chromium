@@ -137,7 +137,6 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
 
 bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
-  DCHECK_EQ(source_buffer, kBackBuffer);
   if (!swap_buffers_)
     return false;
 
@@ -156,7 +155,13 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
 bool GPUCanvasContext::CopyRenderingResultsFromDrawingBuffer(
     CanvasResourceProvider* resource_provider,
     SourceDrawingBuffer source_buffer) {
-  DCHECK_EQ(source_buffer, kBackBuffer);
+  // TODO(crbug.com/1367056): Handle source_buffer == kFrontBuffer.
+  // By returning false here the canvas will show up as black in the scenarios
+  // that copy the front buffer, such as printing.
+  if (source_buffer != kBackBuffer) {
+    return false;
+  }
+
   if (!texture_)
     return false;
 
