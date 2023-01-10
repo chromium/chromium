@@ -387,12 +387,12 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
   // Int properties.
   int traversal_before = -1, traversal_after = -1;
   if (GetProperty(AXIntProperty::TRAVERSAL_BEFORE, &traversal_before)) {
-    out_data->AddIntAttribute(ax::mojom::IntAttribute::kPreviousFocusId,
+    out_data->AddIntAttribute(ax::mojom::IntAttribute::kNextFocusId,
                               traversal_before);
   }
 
   if (GetProperty(AXIntProperty::TRAVERSAL_AFTER, &traversal_after)) {
-    out_data->AddIntAttribute(ax::mojom::IntAttribute::kNextFocusId,
+    out_data->AddIntAttribute(ax::mojom::IntAttribute::kPreviousFocusId,
                               traversal_after);
   }
 
