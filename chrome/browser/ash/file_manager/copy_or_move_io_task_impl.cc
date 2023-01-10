@@ -516,17 +516,25 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
   if (idx < progress_.sources.size() - 1) {
     progress_callback_.Run(progress_);
     GenerateDestinationURL(idx + 1);
-  } else {
-    for (const auto& source : progress_.sources) {
-      if (source.error != base::File::FILE_OK) {
-        LOG(ERROR) << "Error on complete: error " << error << " "
-                   << base::File::ErrorToString(error);
-        Complete(State::kError);
-        return;
-      }
-    }
-    Complete(State::kSuccess);
+    return;
   }
+
+  // Complete: assume State::kSuccess.
+  file_manager::io_task::State complete_state = State::kSuccess;
+
+  // Look for source errors and set the complete state to State::Error if any
+  // source errors are found.
+  for (const auto& source : progress_.sources) {
+    DCHECK(source.error.has_value());
+    if (source.error != base::File::FILE_OK) {
+      LOG(ERROR) << "Error on complete: error " << source.error.value() << " "
+                 << base::File::ErrorToString(source.error.value());
+      complete_state = State::kError;
+      break;
+    }
+  }
+
+  Complete(complete_state);
 }
 
 void CopyOrMoveIOTaskImpl::SetCurrentOperationID(
