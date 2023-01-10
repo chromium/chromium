@@ -349,8 +349,11 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptChangeArrayByCopy,
                          "--harmony-change-array-by-copy",
                          "--no-harmony-change-array-by-copy");
-  SetV8FlagsIfOverridden(features::kJavaScriptRabGsab, "--harmony-rab-gsab",
-                         "--no-harmony-rab-gsab");
+  if (base::FeatureList::IsEnabled(features::kJavaScriptRabGsab)) {
+    SetV8Flags("--harmony-rab-gsab");
+  } else {
+    SetV8Flags("--no-harmony-rab-gsab");
+  }
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
