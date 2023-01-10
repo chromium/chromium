@@ -67,8 +67,6 @@ const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
 const char kDesktopVersionRequested[] = "desktop_version_requested";
 const char kDefaultSiteViewUsed[] = "default_site_view_used";
-const char kPasswordSuggestionsShown[] = "password_suggestions_shown";
-const char kPasswordSuggestionSelected[] = "password_suggestion_selected";
 const char kOverflowMenuNoHorizontalScrollOrAction[] =
     "overflow_menu_no_horizontal_scroll_or_action";
 #endif  // BUILDFLAG(IS_IOS)

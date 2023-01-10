@@ -10,7 +10,6 @@
 @class FormSuggestion;
 @protocol FormSuggestionClient;
 @class FormSuggestionView;
-@class LayoutGuideCenter;
 
 @protocol FormSuggestionViewDelegate <NSObject>
 
@@ -38,9 +37,6 @@
 // A view added at the end of the current suggestions.
 @property(nonatomic, strong) UIView* trailingView;
 
-// The layout guide center to use to refer to the first suggestion label.
-@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
-
 // Updates with `suggestions`.
 - (void)updateSuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
@@ -51,9 +47,6 @@
 // Animates the content insets so the trailing view is showed as the first
 // thing.
 - (void)lockTrailingView;
-
-// Animates the first suggestion label.
-- (void)animateSuggestionLabel;
 
 @end
 

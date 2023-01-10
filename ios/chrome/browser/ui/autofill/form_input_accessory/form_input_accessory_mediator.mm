@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
-#import "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -534,9 +533,6 @@ using base::UmaHistogramEnumeration;
     if (provider.type == SuggestionProviderTypeAutofill) {
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
     }
-    if (provider.type == SuggestionProviderTypePassword) {
-      [self.handler showPasswordSuggestionIPHIfNeeded];
-    }
   }
 }
 
@@ -558,7 +554,6 @@ using base::UmaHistogramEnumeration;
     }
     if (strongSelf.currentProvider.type == SuggestionProviderTypePassword) {
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-      [self.handler notifyPasswordSuggestionSelected];
     }
     [strongSelf.currentProvider didSelectSuggestion:formSuggestion];
   };

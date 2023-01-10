@@ -11,7 +11,6 @@
 
 @protocol BrandingViewControllerDelegate;
 @protocol FormSuggestionClient;
-@class LayoutGuideCenter;
 @class ManualFillAccessoryViewController;
 @protocol ManualFillAccessoryViewControllerDelegate;
 
@@ -22,9 +21,6 @@
 
 // Client in charge of handling actions in suggestions.
 @property(nonatomic, weak) id<FormSuggestionClient> formSuggestionClient;
-
-// The layout guide center to use to refer to the first suggestion label.
-@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Delegate object for the branding view controller.
 @property(nonatomic, weak) id<BrandingViewControllerDelegate>

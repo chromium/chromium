@@ -8,7 +8,6 @@
 #import <memory>
 
 #import "base/test/ios/wait_util.h"
-#import "components/feature_engagement/public/feature_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/password_manager_app_interface.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -88,15 +87,6 @@ BOOL WaitForKeyboardToAppear() {
 - (void)tearDown {
   [PasswordManagerAppInterface clearCredentials];
   [super tearDown];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  // Disabling IPH suggestions because they interfere with
-  // the tests and are not part of the scope of this test file.
-  config.features_disabled.push_back(
-      feature_engagement::kIPHPasswordSuggestionsFeature);
-  return config;
 }
 
 #pragma mark - Helper methods

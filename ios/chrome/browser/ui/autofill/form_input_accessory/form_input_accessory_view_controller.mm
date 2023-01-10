@@ -142,10 +142,6 @@
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];
 }
 
-- (void)animateSuggestionLabel {
-  [self.formSuggestionView animateSuggestionLabel];
-}
-
 #pragma mark - Getter
 
 - (BOOL)isBrandingVisible {
@@ -229,7 +225,6 @@
   if (!self.formSuggestionView) {
     self.formSuggestionView = [[FormSuggestionView alloc] init];
     self.formSuggestionView.formSuggestionViewDelegate = self;
-    self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
     self.formSuggestionView.translatesAutoresizingMaskIntoConstraints = NO;
   }
 }

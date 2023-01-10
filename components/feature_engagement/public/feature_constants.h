@@ -179,7 +179,6 @@ BASE_DECLARE_FEATURE(kIPHReadingListMessagesFeature);
 BASE_DECLARE_FEATURE(kIPHBadgedTranslateManualTriggerFeature);
 BASE_DECLARE_FEATURE(kIPHDiscoverFeedHeaderFeature);
 BASE_DECLARE_FEATURE(kIPHDefaultSiteViewFeature);
-BASE_DECLARE_FEATURE(kIPHPasswordSuggestionsFeature);
 BASE_DECLARE_FEATURE(kIPHFollowWhileBrowsingFeature);
 BASE_DECLARE_FEATURE(kIPHOverflowMenuTipFeature);
 BASE_DECLARE_FEATURE(kIPHPriceNotificationsWhileBrowsingFeature);

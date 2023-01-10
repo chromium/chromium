@@ -81,7 +81,6 @@
 #import "ios/chrome/browser/text_selection/text_selection_util.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
-#import "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
@@ -459,25 +458,6 @@ const FeatureEntry::FeatureVariation
          std::size(kNewMICEFREWithTangibleSyncF), nullptr},
         {"new FRE with 2 steps", kNewMICEFREWithTwoSteps,
          std::size(kNewMICEFREWithTwoSteps), nullptr}};
-
-const FeatureEntry::FeatureParam kBubbleRichIPHTargetHighlight[] = {
-    {kBubbleRichIPHParameterName, kBubbleRichIPHParameterTargetHighlight}};
-const FeatureEntry::FeatureParam kBubbleRichIPHExplicitDismissal[] = {
-    {kBubbleRichIPHParameterName, kBubbleRichIPHParameterExplicitDismissal}};
-const FeatureEntry::FeatureParam kBubbleRichIPHRich[] = {
-    {kBubbleRichIPHParameterName, kBubbleRichIPHParameterRich}};
-const FeatureEntry::FeatureParam kBubbleRichIPHRichWithSnooze[] = {
-    {kBubbleRichIPHParameterName, kBubbleRichIPHParameterRichWithSnooze}};
-const FeatureEntry::FeatureVariation kBubbleRichIPHVariations[] = {
-    {"Target Highlight", kBubbleRichIPHTargetHighlight,
-     std::size(kBubbleRichIPHTargetHighlight), nullptr},
-    {"Explicit dismissal", kBubbleRichIPHExplicitDismissal,
-     std::size(kBubbleRichIPHExplicitDismissal), nullptr},
-    {"Dismissal and rich content", kBubbleRichIPHRich,
-     std::size(kBubbleRichIPHRich), nullptr},
-    {"Dismissal, rich content, and snooze", kBubbleRichIPHRichWithSnooze,
-     std::size(kBubbleRichIPHRichWithSnooze), nullptr},
-};
 
 const FeatureEntry::FeatureParam kDmTokenDeletionParam[] = {{"forced", "true"}};
 const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
@@ -900,11 +880,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfSigninPromoName,
      flag_descriptions::kSendTabToSelfSigninPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfSigninPromo)},
-    {"bubble-rich-iph", flag_descriptions::kBubbleRichIPHName,
-     flag_descriptions::kBubbleRichIPHDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBubbleRichIPH,
-                                    kBubbleRichIPHVariations,
-                                    "BubbleRichIPH")},
     {"autofill-enforce-delays-in-strike-database",
      flag_descriptions::kAutofillEnforceDelaysInStrikeDatabaseName,
      flag_descriptions::kAutofillEnforceDelaysInStrikeDatabaseDescription,

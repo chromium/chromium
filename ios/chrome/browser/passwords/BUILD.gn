@@ -253,7 +253,6 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
-    "//components/feature_engagement/public",
     "//components/password_manager/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",

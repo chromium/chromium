@@ -148,13 +148,6 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
-const char kBubbleRichIPHName[] = "Bubble rich IPH";
-const char kBubbleRichIPHDescription[] =
-    "When enabled, displays a rich description (ex: title, image, etc..) of "
-    "the feature presented in the bubble. Also enables password suggestion "
-    "highlight IPH. When enabled with no option, uses the default bubble "
-    "style.";
-
 extern const char kCalendarExperienceKitName[] = "Experience Kit Calendar";
 extern const char kCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Calendar "

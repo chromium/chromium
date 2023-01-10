@@ -21,11 +21,3 @@ imageset("monotone_branding_icon") {
     "monotone_branding_icon.imageset/monotone_branding_icon_light@3x.png",
   ]
 }
-
-imageset("password_suggestion_icon") {
-  sources = [
-    "password_suggestion_icon.imageset/Contents.json",
-    "password_suggestion_icon.imageset/password_suggestion_icon@2x.png",
-    "password_suggestion_icon.imageset/password_suggestion_icon@3x.png",
-  ]
-}

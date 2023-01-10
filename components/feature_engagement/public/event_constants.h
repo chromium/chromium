@@ -119,12 +119,6 @@ extern const char kDesktopVersionRequested[];
 // The default site view mode has been used.
 extern const char kDefaultSiteViewUsed[];
 
-// Autofill displayed password suggestions.
-extern const char kPasswordSuggestionsShown[];
-
-// The user has selected an Autofill password suggestion.
-extern const char kPasswordSuggestionSelected[];
-
 // The user has exited the overflow menu without scrolling horizontally and
 // without taking an action.
 extern const char kOverflowMenuNoHorizontalScrollOrAction[];

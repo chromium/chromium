@@ -190,7 +190,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync:sync",
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
-    "//ios/chrome/browser/ui/bubble:features",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/settings:test_support",
     "//ios/chrome/browser/web:web_internal",

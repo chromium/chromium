@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
-#import "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -461,54 +460,6 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   EXPECT_NSEQ(@"field_id", [provider fieldIdentifier]);
   EXPECT_NSEQ(@"frame_id", [provider frameID]);
   EXPECT_NSEQ(suggestions[0], [provider suggestion]);
-}
-
-// Tests that the password suggestion IPH is triggered when suggesting a
-// password.
-TEST_F(FormSuggestionControllerTest, PasswordSuggestionIPH) {
-  NSArray* suggestions = @[
-    [FormSuggestion suggestionWithValue:@"foo"
-                     displayDescription:nil
-                                   icon:@""
-                             identifier:0
-                         requiresReauth:NO],
-  ];
-  TestSuggestionProvider* provider =
-      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
-  provider.type = SuggestionProviderTypePassword;
-  SetUpController(@[ provider ]);
-  GURL url("http://foo.com");
-  fake_web_state_.SetCurrentURL(url);
-  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
-  autofill::FormActivityParams params;
-
-  OCMExpect([mock_handler_ showPasswordSuggestionIPHIfNeeded]);
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
-                                                        params);
-  [mock_handler_ verify];
-}
-
-// Tests that the password suggestion IPH is not triggered when not suggesting a
-// password.
-TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoIPH) {
-  NSArray* suggestions = @[
-    [FormSuggestion suggestionWithValue:@"foo"
-                     displayDescription:nil
-                                   icon:@""
-                             identifier:1
-                         requiresReauth:NO],
-  ];
-  TestSuggestionProvider* provider =
-      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
-  SetUpController(@[ provider ]);
-  GURL url("http://foo.com");
-  fake_web_state_.SetCurrentURL(url);
-  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
-  autofill::FormActivityParams params;
-
-  [[mock_handler_ reject] showPasswordSuggestionIPHIfNeeded];
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
-                                                        params);
 }
 
 }  // namespace

@@ -50,11 +50,6 @@
 // FeatureEngagementTracker failed to load.
 + (BOOL)enableDefaultSiteViewTipTriggering [[nodiscard]];
 
-// Enables the Password Suggestions tip to be triggered. The tip is triggered
-// only once the first time Autofill password suggestions are shown. Returns NO
-// if FeatureEngagementTracker failed to load.
-+ (BOOL)enablePasswordSuggestionsTipTriggering [[nodiscard]];
-
 // Enables the Overflow Menu tip to be triggered. The tip is triggered
 // after the user has opened the overflow menu twice and not scrolled. Returns
 // NO if FeatureEngagementTracker failed to load.

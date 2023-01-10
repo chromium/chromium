@@ -45,9 +45,6 @@
 // And form navigation buttons on iPhone (iPad already includes those).
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
-// Animates the first form suggestion label.
-- (void)animateSuggestionLabel;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_CONSUMER_H_

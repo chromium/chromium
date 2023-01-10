@@ -412,9 +412,6 @@ BASE_FEATURE(kIPHDiscoverFeedHeaderFeature,
 BASE_FEATURE(kIPHDefaultSiteViewFeature,
              "IPH_DefaultSiteView",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHPasswordSuggestionsFeature,
-             "IPH_PasswordSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHFollowWhileBrowsingFeature,
              "IPH_FollowWhileBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);

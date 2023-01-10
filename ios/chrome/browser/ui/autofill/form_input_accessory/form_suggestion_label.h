@@ -34,9 +34,6 @@
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Animates the view using a highlight effect.
-- (void)animateWithHighlight;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_SUGGESTION_LABEL_H_

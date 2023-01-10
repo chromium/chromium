@@ -59,12 +59,3 @@ source_set("unit_tests") {
   ]
   frameworks = [ "CoreGraphics.framework" ]
 }
-
-source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "bubble_features.cc",
-    "bubble_features.h",
-  ]
-  public_deps = [ "//base" ]
-}

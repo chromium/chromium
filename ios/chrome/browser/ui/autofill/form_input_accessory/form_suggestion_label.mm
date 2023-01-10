@@ -36,11 +36,6 @@ const CGFloat kBorderWidth = 14.0f;
 // The space between items in the label.
 const CGFloat kSpacing = 4.0f;
 
-// Duration of animation transition.
-const NSTimeInterval animationTransitionDuration = 0.5;
-// Duration of animation effect.
-const NSTimeInterval animationOnScreenDuration = 3.0;
-
 // Structure that record the image for each icon.
 struct IconImageMap {
   const char* const icon_name;
@@ -65,14 +60,6 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 }
 
 }  // namespace
-
-@interface FormSuggestionLabel ()
-
-@property(strong, nonatomic) UILabel* suggestionLabel;
-@property(strong, nonatomic) UILabel* descriptionLabel;
-@property(nonatomic, getter=isHighlighted) BOOL highlighted;
-
-@end
 
 @implementation FormSuggestionLabel {
   // Client of this view.
@@ -113,18 +100,13 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
     UILabel* label = TextLabel(suggestion.value,
                                [UIColor colorNamed:kTextPrimaryColor], YES);
-    [label setHighlightedTextColor:[UIColor colorNamed:kBlue700Color]];
     [stackView addArrangedSubview:label];
     if ([suggestion.displayDescription length] > 0) {
       UILabel* description =
           TextLabel(suggestion.displayDescription,
                     [UIColor colorNamed:kTextSecondaryColor], NO);
       [stackView addArrangedSubview:description];
-      self.descriptionLabel = description;
     }
-    self.suggestionLabel = label;
-
-    [self setHighlighted:NO];
 
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
@@ -148,59 +130,9 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   self.layer.cornerRadius = self.bounds.size.height / 2.0;
 }
 
-// Animates `highlight` property to YES for a duration of
-// `animationOnScreenDuration`.
-- (void)animateWithHighlight {
-  __weak __typeof(self) weakSelf = self;
-  [self animateWithHighlight:YES
-                  completion:^(BOOL finished) {
-                    if (finished) {
-                      dispatch_after(
-                          dispatch_time(DISPATCH_TIME_NOW,
-                                        (int64_t)(animationOnScreenDuration *
-                                                  NSEC_PER_SEC)),
-                          dispatch_get_main_queue(), ^{
-                            [weakSelf animateWithHighlight:NO completion:nil];
-                          });
-                    } else {
-                      weakSelf.highlighted = NO;
-                    }
-                  }];
-}
-
-#pragma mark - Private
-
-// Animates `highlight` property from current state to `highlighted`.
-- (void)animateWithHighlight:(BOOL)highlighted
-                  completion:(void (^)(BOOL))completion {
-  if (self.highlighted == highlighted) {
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  [UIView transitionWithView:weakSelf
-                    duration:animationTransitionDuration
-                     options:UIViewAnimationOptionTransitionCrossDissolve
-                  animations:^{
-                    weakSelf.highlighted = highlighted;
-                  }
-                  completion:completion];
-}
-
-#pragma mark - Property
-
-- (void)setHighlighted:(BOOL)highlighted {
-  _highlighted = highlighted;
-  self.suggestionLabel.highlighted = highlighted;
-  self.descriptionLabel.highlighted = highlighted;
-  self.backgroundColor =
-      highlighted ? [UIColor colorNamed:kTextfieldHighlightBackgroundColor]
-                  : [UIColor colorNamed:kGrey100Color];
-}
-
 #pragma mark - UIResponder
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  self.highlighted = NO;
   [self setBackgroundColor:[UIColor colorNamed:kGrey300Color]];
 }
 
@@ -209,11 +141,11 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 }
 
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  self.highlighted = NO;
+  [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
 }
 
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  self.highlighted = NO;
+  [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
 
   // Don't count touches ending outside the view as as taps.
   CGPoint locationInView = [touches.anyObject locationInView:self];
