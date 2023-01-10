@@ -93,8 +93,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // `preloading_attempt` is the attempt corresponding to this prerender, the
   // default value is set to nullptr as every case of prerendering trigger is
   // not yet integrated with PreloadingAttempt.
-  // TODO(crbug.com/1325073): Remove the default value as nullptr for
-  // preloading_attempt once prerendering is integrated with Preloading APIs.
+  // TODO(crbug.com/1350676): Remove the default value as nullptr for
+  // preloading_attempt once new-tab-prerender is integrated with Preloading
+  // APIs.
   int CreateAndStartHost(const PrerenderAttributes& attributes,
                          PreloadingAttempt* preloading_attempt = nullptr);
 
