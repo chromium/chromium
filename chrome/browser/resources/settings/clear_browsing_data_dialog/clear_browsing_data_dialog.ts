@@ -24,6 +24,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -239,6 +240,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private googleSearchHistoryString_: TrustedHTML;
   private isNonGoogleDse_: boolean;
   private nonGoogleSearchHistoryString_: TrustedHTML;
+  private focusOutlineManager_: FocusOutlineManager;
 
   private browserProxy_: ClearBrowsingDataBrowserProxy =
       ClearBrowsingDataBrowserProxyImpl.getInstance();
@@ -267,6 +269,17 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     this.browserProxy_.initialize().then(() => {
       this.$.clearBrowsingDataDialog.showModal();
+
+      // AutoFocus is not visible in mouse navigation by default. But in this
+      // dialog the default focus is on cancel which is not a default button. To
+      // make this clear to the user we make it visible to the user and remove
+      // the focus after the next mouse event.
+      this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
+
+      this.focusOutlineManager_.visible = true;
+      document.addEventListener('mousedown', () => {
+        this.focusOutlineManager_.visible = false;
+      }, {once: true});
     });
   }
 
