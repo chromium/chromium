@@ -266,9 +266,8 @@ class GpuIntegrationTest(
     cls._last_launched_profile = (profile_dir, profile_type)
     cls.SetBrowserOptions(cls._finder_options)
 
-  @classmethod
   def RestartBrowserIfNecessaryWithArgs(
-      cls,
+      self,
       additional_args: Optional[List[str]] = None,
       force_restart: bool = False,
       profile_dir: Optional[str] = None,
@@ -292,6 +291,12 @@ class GpuIntegrationTest(
           used to seed a new temporary directory which is used, or 'exact' which
           means the exact specified directory will be used instead.
     """
+    # cls is largely used here since this used to be a class method and we want
+    # to maintain the previous behavior with regards to storing browser launch
+    # information between tests. As such, we also disable protected access
+    # checks since those would be allowed if this were actually a class method.
+    # pylint: disable=protected-access
+    cls = self.__class__
     new_browser_args = cls._GenerateAndSanitizeBrowserArgs(additional_args)
 
     diff_browser_args = set(new_browser_args) != cls._last_launched_browser_args
@@ -306,15 +311,25 @@ class GpuIntegrationTest(
                                         profile_type)
       cls.StartBrowser()
 
-  @classmethod
-  def RestartBrowserWithArgs(cls,
+    # If we restarted due to a change in browser args, it's possible that a
+    # Skip expectation now applies to the test, so check for that.
+    if diff_browser_args:
+      expected_results, _ = self.GetExpectationsForTest()
+      if ResultType.Skip in expected_results:
+        message = (
+            'Determined that Skip expectation applies after browser restart')
+        logging.warning(message)
+        self.skipTest(message)
+    # pylint: enable=protected-access
+
+  def RestartBrowserWithArgs(self,
                              additional_args: Optional[List[str]] = None,
                              profile_dir: Optional[str] = None,
                              profile_type: str = 'clean') -> None:
-    cls.RestartBrowserIfNecessaryWithArgs(additional_args,
-                                          force_restart=True,
-                                          profile_dir=profile_dir,
-                                          profile_type=profile_type)
+    self.RestartBrowserIfNecessaryWithArgs(additional_args,
+                                           force_restart=True,
+                                           profile_dir=profile_dir,
+                                           profile_type=profile_type)
 
   # The following is the rest of the framework for the GPU integration tests.
 
