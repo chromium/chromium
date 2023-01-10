@@ -82,6 +82,9 @@
 @property(nonatomic, strong)
     OmniboxKeyboardAccessoryView* keyboardAccessoryView;
 
+// Redefined as readwrite.
+@property(nonatomic, strong) OmniboxPopupCoordinator* popupCoordinator;
+
 @end
 
 @implementation OmniboxCoordinator {
@@ -97,6 +100,8 @@
 #pragma mark - public
 
 - (void)start {
+  DCHECK(!self.popupCoordinator);
+
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
 
   self.viewController =
@@ -161,9 +166,15 @@
           initWithWebStateList:self.browser->GetWebStateList()
         autocompleteController:_editView->model()->autocomplete_controller()];
   }
+
+  self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];
+  [self.popupCoordinator start];
 }
 
 - (void)stop {
+  [self.popupCoordinator stop];
+  self.popupCoordinator = nil;
+
   self.viewController.textChangeDelegate = nil;
   self.returnDelegate.acceptDelegate = nil;
   _editView.reset();
@@ -235,6 +246,7 @@
 
 - (OmniboxPopupCoordinator*)createPopupCoordinator:
     (id<OmniboxPopupPresenterDelegate>)presenterDelegate {
+  DCHECK(!_popupCoordinator);
   std::unique_ptr<OmniboxPopupViewIOS> popupView =
       std::make_unique<OmniboxPopupViewIOS>(_editView->model(),
                                             _editView.get());
@@ -256,6 +268,7 @@
   self.viewController.returnKeyDelegate = coordinator.popupReturnDelegate;
   self.viewController.popupKeyboardDelegate = coordinator.KeyboardDelegate;
 
+  _popupCoordinator = coordinator;
   return coordinator;
 }
 

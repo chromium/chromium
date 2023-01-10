@@ -294,12 +294,15 @@ bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
 }
 
 void OmniboxPedal::RecordActionShown(size_t /*position*/, bool executed) const {
+  // Action metrics are recorded in the UI layer on iOS.
+#if !BUILDFLAG(IS_IOS)
   base::UmaHistogramEnumeration("Omnibox.PedalShown", GetMetricsId(),
                                 OmniboxPedalId::TOTAL_COUNT);
   if (executed) {
     base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
                                   GetMetricsId(), OmniboxPedalId::TOTAL_COUNT);
   }
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 size_t OmniboxPedal::EstimateMemoryUsage() const {
