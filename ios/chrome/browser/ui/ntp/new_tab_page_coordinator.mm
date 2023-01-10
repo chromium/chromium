@@ -570,10 +570,6 @@
   self.NTPViewController.feedHeaderViewController =
       self.feedHeaderViewController;
 
-  if ([self isFeedTopSectionVisible]) {
-    self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
-  }
-
   // Requests feeds here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeVisible]) {
     if ([self isFollowingFeedAvailable]) {
@@ -588,6 +584,12 @@
     } else {
       self.feedViewController = [self discoverFeed];
     }
+  }
+
+  // Feed top section visibility is based on feed visibility, so this should
+  // always be below the block that sets `feedViewController`.
+  if ([self isFeedTopSectionVisible]) {
+    self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
   }
 }
 
