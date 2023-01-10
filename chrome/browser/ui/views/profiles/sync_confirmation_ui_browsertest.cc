@@ -43,6 +43,7 @@ struct TestParam {
   bool use_tangible_sync = false;
   bool use_right_to_left_language = false;
   bool use_small_window = false;
+  bool use_managed_account = false;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
 };
 
@@ -59,6 +60,7 @@ const TestParam kWindowTestParams[] = {
     {.test_suffix = "LegacySyncDarkTheme", .use_dark_theme = true},
     {.test_suffix = "LegacySyncRtl", .use_right_to_left_language = true},
     {.test_suffix = "LegacySyncSmallWindow", .use_small_window = true},
+    {.test_suffix = "LegacySyncManagedAccount", .use_managed_account = true},
     {.test_suffix = "TangibleSync", .use_tangible_sync = true},
     {.test_suffix = "TangibleSyncDarkTheme",
      .use_dark_theme = true,
@@ -69,6 +71,9 @@ const TestParam kWindowTestParams[] = {
     {.test_suffix = "TangibleSyncSmallWindow",
      .use_tangible_sync = true,
      .use_small_window = true},
+    {.test_suffix = "TangibleSyncManagedAccount",
+     .use_tangible_sync = true,
+     .use_managed_account = true},
 };
 
 const TestParam kDialogTestParams[] = {
@@ -82,6 +87,9 @@ const TestParam kDialogTestParams[] = {
     {.test_suffix = "LegacySyncRtl",
      .use_right_to_left_language = true,
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+    {.test_suffix = "LegacySyncManagedAccount",
+     .use_managed_account = true,
+     .sync_style = SyncConfirmationStyle::kSigninInterceptModal},
     {.test_suffix = "TangibleSync",
      .use_tangible_sync = true,
      .sync_style = SyncConfirmationStyle::kDefaultModal},
@@ -96,6 +104,10 @@ const TestParam kDialogTestParams[] = {
      .use_tangible_sync = true,
      .use_right_to_left_language = true,
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+    {.test_suffix = "TangibleSyncManagedAccount",
+     .use_tangible_sync = true,
+     .use_managed_account = true,
+     .sync_style = SyncConfirmationStyle::kDefaultModal},
 };
 
 GURL BuildSyncConfirmationWindowURL() {
@@ -104,8 +116,11 @@ GURL BuildSyncConfirmationWindowURL() {
                                            SyncConfirmationStyle::kWindow);
 }
 
-AccountInfo FillAccountInfo(const CoreAccountInfo& core_info) {
+AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
+                            bool is_managed_account) {
   AccountInfo account_info;
+  const char kHostedDomain[] = "example.com";
+
   account_info.email = core_info.email;
   account_info.gaia = core_info.gaia;
   account_info.account_id = core_info.account_id;
@@ -113,20 +128,21 @@ AccountInfo FillAccountInfo(const CoreAccountInfo& core_info) {
       core_info.is_under_advanced_protection;
   account_info.full_name = "Test Full Name";
   account_info.given_name = "Joe";
-  account_info.hosted_domain = kNoHostedDomainFound;
+  account_info.hosted_domain =
+      is_managed_account ? kHostedDomain : kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
   return account_info;
 }
 
-void SignInWithPrimaryAccount(Profile* profile) {
+void SignInWithPrimaryAccount(Profile* profile, bool is_managed_account) {
   DCHECK(profile);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto core_account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, "joe.consumer@gmail.com",
       signin::ConsentLevel::kSignin);
-  auto account_info = FillAccountInfo(core_account_info);
+  auto account_info = FillAccountInfo(core_account_info, is_managed_account);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
 
@@ -222,7 +238,8 @@ class SyncConfirmationUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(browser()->profile());
+    SignInWithPrimaryAccount(browser()->profile(),
+                             GetParam().use_managed_account);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -289,7 +306,8 @@ class SyncConfirmationUIDialogPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(browser()->profile());
+    SignInWithPrimaryAccount(browser()->profile(),
+                             GetParam().use_managed_account);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
       url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);
