@@ -33,8 +33,6 @@ grit("resources") {
     "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
   ]
   deps = [
-    "//components/media_router/common/mojom:media_controller_js",
-    "//components/media_router/common/mojom:media_router_js",
     "//services/network/public/mojom:mojom_js",
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",

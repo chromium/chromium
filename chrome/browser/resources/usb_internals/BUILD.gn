@@ -19,17 +19,20 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_ts__generator",
     "//services/device/public/mojom:usb_js__generator",
     "//services/device/public/mojom:usb_test_js__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.ts",
+
+    # Remaining files are stuck in JavaScript to support Blink.
     "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_device.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_enumeration_options.mojom-webui.js",
     "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager_client.mojom-webui.js",
     "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager_test.mojom-webui.js",
   ]
-
   ts_deps = [
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",

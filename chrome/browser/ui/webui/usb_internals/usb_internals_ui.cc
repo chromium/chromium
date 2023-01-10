@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/usb_internals_resources.h"
 #include "chrome/grit/usb_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -19,14 +18,6 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
   // Set up the chrome://usb-internals source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIUsbInternalsHost);
-
-  static constexpr webui::ResourcePath kPaths[] = {
-      {"usb_enumeration_options.mojom-webui.js",
-       IDR_USB_ENUMERATION_OPTIONS_MOJOM_WEBUI_JS},
-      {"usb_manager_client.mojom-webui.js",
-       IDR_USB_DEVICE_MANAGER_CLIENT_MOJOM_WEBUI_JS},
-  };
-  source->AddResourcePaths(kPaths);
 
   webui::SetupWebUIDataSource(
       source,

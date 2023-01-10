@@ -20,8 +20,8 @@ preprocess_if_expr("preprocess") {
 }
 
 copy("copy_mojom") {
-  deps = [ "//chrome/browser/ui/webui/feed:mojo_bindings_js__generator" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/feed/feed.mojom-webui.js" ]
+  deps = [ "//chrome/browser/ui/webui/feed:mojo_bindings_ts__generator" ]
+  sources = [ "$root_gen_dir/chrome/browser/ui/webui/feed/feed.mojom-webui.ts" ]
   outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
@@ -46,12 +46,12 @@ grit("resources") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files = [
     "feed.ts",
     "feed_side_panel_handler.ts",
-    "feed.mojom-webui.js",
+    "feed.mojom-webui.ts",
   ]
+  deps = [ "//ui/webui/resources/mojo:library" ]
   extra_deps = [
     ":copy_mojom",
     ":preprocess",

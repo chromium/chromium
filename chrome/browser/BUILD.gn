@@ -7872,11 +7872,8 @@ grit("resources") {
 
   deps = [
     ":chrome_internal_resources_gen",
-    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js__generator",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_js",
     "//device/bluetooth/public/mojom:mojom_js",
-    "//services/device/public/mojom:usb_js__generator",
-    "//services/device/public/mojom:usb_test_js__generator",
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]

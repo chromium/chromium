@@ -99,8 +99,6 @@
       <if expr="chromeos_ash">
         <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>
-      <include name="IDR_USB_ENUMERATION_OPTIONS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_enumeration_options.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_USB_DEVICE_MANAGER_CLIENT_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_manager_client.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBSTORE_MANIFEST" file="resources\webstore_app\manifest.json" type="BINDATA" />
       <if expr="is_chromeos">
         <include name="IDR_ECHO_MANIFEST" file="resources\chromeos\echo\manifest.json" type="BINDATA" />

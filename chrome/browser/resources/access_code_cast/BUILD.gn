@@ -20,11 +20,11 @@ build_webui("build") {
   non_web_component_files = [ "browser_proxy.ts" ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_ts__generator",
     "//components/media_router/common/mojom:route_request_result_code_js__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom-webui.ts",
     "$root_gen_dir/mojom-webui/components/media_router/common/mojom/route_request_result_code.mojom-webui.js",
   ]
 
