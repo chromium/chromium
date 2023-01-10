@@ -333,8 +333,9 @@ RootWindowController* Shell::GetPrimaryRootWindowController() {
 Shell::RootWindowControllerList Shell::GetAllRootWindowControllers() {
   CHECK(HasInstance());
   RootWindowControllerList root_window_controllers;
-  for (aura::Window* root : GetAllRootWindows())
+  for (aura::Window* root : GetAllRootWindows()) {
     root_window_controllers.push_back(RootWindowController::ForWindow(root));
+  }
   return root_window_controllers;
 }
 
@@ -391,16 +392,18 @@ const aura::Window* Shell::GetContainer(const aura::Window* root_window,
 // static
 int Shell::GetOpenSystemModalWindowContainerId() {
   // The test boolean is not static to avoid leaking state between tests.
-  if (Get()->simulate_modal_window_open_for_test_)
+  if (Get()->simulate_modal_window_open_for_test_) {
     return kShellWindowId_SystemModalContainer;
+  }
 
   // Traverse all system modal containers, and find its direct child window
   // with "SystemModal" setting, and visible.
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     for (int modal_window_id : kSystemModalContainerIds) {
       aura::Window* system_modal = root->GetChildById(modal_window_id);
-      if (!system_modal)
+      if (!system_modal) {
         continue;
+      }
       for (const aura::Window* child : system_modal->children()) {
         if (child->GetProperty(aura::client::kModalKey) ==
                 ui::MODAL_TYPE_SYSTEM &&
@@ -441,28 +444,33 @@ Shell::CreateDefaultNonClientFrameView(views::Widget* widget) {
 }
 
 void Shell::OnCastingSessionStartedOrStopped(bool started) {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnCastingSessionStartedOrStopped(started);
+  }
 }
 
 void Shell::OnRootWindowAdded(aura::Window* root_window) {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnRootWindowAdded(root_window);
+  }
 }
 
 void Shell::OnRootWindowWillShutdown(aura::Window* root_window) {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnRootWindowWillShutdown(root_window);
+  }
 }
 
 void Shell::OnDictationStarted() {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnDictationStarted();
+  }
 }
 
 void Shell::OnDictationEnded() {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnDictationEnded();
+  }
 }
 
 bool Shell::IsInTabletMode() const {
@@ -505,8 +513,9 @@ void Shell::SetCursorCompositingEnabled(bool enabled) {
   CursorWindowController* cursor_window_controller =
       window_tree_host_manager_->cursor_window_controller();
 
-  if (cursor_window_controller->is_cursor_compositing_enabled() == enabled)
+  if (cursor_window_controller->is_cursor_compositing_enabled() == enabled) {
     return;
+  }
   cursor_window_controller->SetCursorCompositingEnabled(enabled);
   native_cursor_manager_->SetNativeCursorEnabled(!enabled);
 }
@@ -541,45 +550,53 @@ void Shell::RemoveShellObserver(ShellObserver* observer) {
 }
 
 void Shell::ShutdownEventDispatch() {
-  for (aura::Window* root : GetAllRootWindows())
+  for (aura::Window* root : GetAllRootWindows()) {
     aura::client::SetDragDropClient(root, nullptr);
+  }
 
   // Stop dispatching events (e.g. synthesized mouse exits from window close).
   // https://crbug.com/874156
-  for (RootWindowController* rwc : GetAllRootWindowControllers())
+  for (RootWindowController* rwc : GetAllRootWindowControllers()) {
     rwc->GetHost()->dispatcher()->Shutdown();
+  }
 }
 
 void Shell::UpdateAfterLoginStatusChange(LoginStatus status) {
-  for (auto* root_window_controller : GetAllRootWindowControllers())
+  for (auto* root_window_controller : GetAllRootWindowControllers()) {
     root_window_controller->UpdateAfterLoginStatusChange(status);
+  }
 }
 
 void Shell::NotifyFullscreenStateChanged(bool is_fullscreen,
                                          aura::Window* container) {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnFullscreenStateChanged(is_fullscreen, container);
+  }
 }
 
 void Shell::NotifyPinnedStateChanged(aura::Window* pinned_window) {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnPinnedStateChanged(pinned_window);
+  }
 }
 
 void Shell::NotifyUserWorkAreaInsetsChanged(aura::Window* root_window) {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnUserWorkAreaInsetsChanged(root_window);
+  }
 }
 
 void Shell::NotifyShelfAlignmentChanged(aura::Window* root_window,
                                         ShelfAlignment old_alignment) {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnShelfAlignmentChanged(root_window, old_alignment);
+  }
 }
 
 void Shell::NotifyDisplayForNewWindowsChanged() {
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnDisplayForNewWindowsChanged();
+  }
 }
 
 void Shell::AddAccessibilityEventHandler(
@@ -643,8 +660,9 @@ Shell::~Shell() {
 #if DCHECK_IS_ON()
   // All WindowEventDispatchers should be shutdown before the Shell is
   // destroyed.
-  for (RootWindowController* rwc : GetAllRootWindowControllers())
+  for (RootWindowController* rwc : GetAllRootWindowControllers()) {
     DCHECK(rwc->GetHost()->dispatcher()->in_shutdown());
+  }
 #endif
   login_unlock_throughput_recorder_.reset();
 
@@ -654,8 +672,9 @@ Shell::~Shell() {
   privacy_hub_controller_.reset();
   microphone_privacy_switch_controller_.reset();
 
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnShellDestroying();
+  }
 
   ash_dbus_services_.reset();
 
@@ -676,8 +695,9 @@ Shell::~Shell() {
   aura::client::GetFocusClient(GetPrimaryRootWindow())->FocusWindow(nullptr);
 
   // Please keep in reverse order as in Init() because it's easy to miss one.
-  if (window_modality_controller_)
+  if (window_modality_controller_) {
     window_modality_controller_.reset();
+  }
 
   RemovePreTargetHandler(shell_tab_handler_.get());
   shell_tab_handler_.reset();
@@ -695,8 +715,9 @@ Shell::~Shell() {
   RemovePreTargetHandler(accelerator_tracker_.get());
   RemovePreTargetHandler(accelerator_filter_.get());
   RemovePreTargetHandler(event_transformation_handler_.get());
-  if (back_gesture_event_handler_)
+  if (back_gesture_event_handler_) {
     RemovePreTargetHandler(back_gesture_event_handler_.get());
+  }
   RemovePreTargetHandler(toplevel_window_event_handler_.get());
   RemovePostTargetHandler(toplevel_window_event_handler_.get());
   RemovePreTargetHandler(system_gesture_filter_.get());
@@ -952,12 +973,14 @@ Shell::~Shell() {
 
   laser_pointer_controller_.reset();
 
-  if (display_change_observer_)
+  if (display_change_observer_) {
     display_manager_->configurator()->RemoveObserver(
         display_change_observer_.get());
-  if (display_error_observer_)
+  }
+  if (display_error_observer_) {
     display_manager_->configurator()->RemoveObserver(
         display_error_observer_.get());
+  }
   display_change_observer_.reset();
   display_shutdown_observer_.reset();
 
@@ -1017,11 +1040,13 @@ Shell::~Shell() {
   // Must be shut down after detachable_base_handler_.
   HammerdClient::Shutdown();
 
-  if (FwupdClient::Get())
+  if (FwupdClient::Get()) {
     FwupdClient::Shutdown();
+  }
 
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnShellDestroyed();
+  }
 
   DCHECK(instance_ == this);
   instance_ = nullptr;
@@ -1157,8 +1182,9 @@ void Shell::Init(
   // This will initialize aura::Env which requires |display_manager_| to
   // be initialized first.
   aura::Env* env = aura::Env::GetInstance();
-  if (context_factory)
+  if (context_factory) {
     env->set_context_factory(context_factory);
+  }
 
   ash_color_provider_ = std::make_unique<AshColorProvider>();
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
@@ -1184,8 +1210,9 @@ void Shell::Init(
   // display manager was properly initialized.
   privacy_screen_controller_ = std::make_unique<PrivacyScreenController>();
 
-  if (media::ShouldEnableAutoFraming())
+  if (media::ShouldEnableAutoFraming()) {
     autozoom_controller_ = std::make_unique<AutozoomControllerImpl>();
+  }
 
   // Fast Pair depends on the display manager, so initialize it after
   // display manager was properly initialized.
@@ -1216,8 +1243,9 @@ void Shell::Init(
   frame_throttling_controller_ = std::make_unique<FrameThrottlingController>(
       context_factory->GetHostFrameSinkManager());
 
-  if (features::IsTabClusterUIEnabled())
+  if (features::IsTabClusterUIEnabled()) {
     tab_cluster_ui_controller_ = std::make_unique<TabClusterUIController>();
+  }
 
   window_tree_host_manager_->Start();
   AshWindowTreeHostInitParams ash_init_params;
@@ -1463,8 +1491,9 @@ void Shell::Init(
   // WmModeController should be created before initializing the window tree
   // hosts, since the latter will initialize the shelf on each display, which
   // hosts the WM mode tray button.
-  if (features::IsWmModeEnabled())
+  if (features::IsWmModeEnabled()) {
     wm_mode_controller_ = std::make_unique<WmModeController>();
+  }
 
   window_tree_host_manager_->InitHosts();
 
@@ -1527,11 +1556,13 @@ void Shell::Init(
         glanceables_controller_.get()));
   }
 
-  if (features::IsProjectorEnabled())
+  if (features::IsProjectorEnabled()) {
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
+  }
 
-  if (chromeos::wm::features::IsFloatWindowEnabled())
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
     float_controller_ = std::make_unique<FloatController>();
+  }
 
   if (features::IsFederatedServiceEnabled()) {
     federated_service_controller_ =
@@ -1548,8 +1579,9 @@ void Shell::Init(
                                                                      textfield);
           }));
 
-  for (auto& observer : shell_observers_)
+  for (auto& observer : shell_observers_) {
     observer.OnShellInitialized();
+  }
 
   user_metrics_recorder_->OnShellInitialized();
 
@@ -1604,8 +1636,9 @@ void Shell::InitializeDisplayManager() {
   display_color_manager_ =
       std::make_unique<DisplayColorManager>(display_manager_->configurator());
 
-  if (!display_initialized)
+  if (!display_initialized) {
     display_manager_->InitDefaultDisplay();
+  }
 }
 
 void Shell::InitRootWindow(aura::Window* root_window) {
@@ -1645,8 +1678,9 @@ void Shell::CloseAllRootWindowChildWindows() {
 bool Shell::CanWindowReceiveEvents(aura::Window* window) {
   RootWindowControllerList controllers = GetAllRootWindowControllers();
   for (RootWindowController* controller : controllers) {
-    if (controller->CanWindowReceiveEvents(window))
+    if (controller->CanWindowReceiveEvents(window)) {
       return true;
+    }
   }
   return false;
 }
@@ -1675,8 +1709,9 @@ void Shell::OnWindowActivated(
     ::wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  if (!gained_active)
+  if (!gained_active) {
     return;
+  }
 
   Shell::SetRootWindowForNewWindows(gained_active->GetRootWindow());
 }
@@ -1690,8 +1725,9 @@ void Shell::OnFirstSessionStarted() {
   SpokenFeedbackToggler::SetEnabled(session_controller_->IsRunningInAppMode());
 
   // Reset user prefs related to contextual tooltips.
-  if (switches::ContextualNudgesResetShownCount())
+  if (switches::ContextualNudgesResetShownCount()) {
     contextual_tooltip::ClearPrefs();
+  }
 
   // The launcher is not available before login, so start tracking usage after
   // the session starts.
@@ -1741,8 +1777,9 @@ void Shell::OnLockStateChanged(bool locked) {
   if (!locked) {
     aura::Window::Windows containers = GetContainersForAllRootWindows(
         kShellWindowId_LockSystemModalContainer, GetPrimaryRootWindow());
-    for (aura::Window* container : containers)
+    for (aura::Window* container : containers) {
       DCHECK(container->children().empty());
+    }
   }
 #endif
 }
