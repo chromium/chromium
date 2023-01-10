@@ -13,6 +13,8 @@ namespace profiles::testing {
 class ScopedProfileSelectionsForFactoryTesting;
 }
 
+// Detailed doc: "./profile_keyed_service_factory.md"
+//
 // Purpose of this API:
 // Provide a Profile type specific implementation logic for
 // `KeyedServiceFactory` under chrome/.
