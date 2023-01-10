@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -18,15 +18,9 @@ import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_brow
 // clang-format on
 
 suite('SiteSettingsPage', function() {
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let page: SettingsSiteSettingsPageElement;
 
-  const testLabels: string[] = ['test label 1', 'test label 2'];
-
   function setupPage() {
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]!);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-site-settings-page');
     page.prefs = {
@@ -38,6 +32,12 @@ suite('SiteSettingsPage', function() {
         cookie_default_content_setting: {
           type: chrome.settingsPrivate.PrefType.STRING,
           value: ContentSetting.ALLOW,
+        },
+      },
+      profile: {
+        cookie_controls_mode: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: CookieControlsMode.OFF,
         },
       },
     };
@@ -79,15 +79,33 @@ suite('SiteSettingsPage', function() {
 
   test('CookiesLinkRowSublabel', async function() {
     setupPage();
-    await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
-    flush();
     const cookiesLinkRow =
         page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
             .querySelector<CrLinkRowElement>('#cookies')!;
-    assertEquals(testLabels[0], cookiesLinkRow.subLabel);
 
-    webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
-    assertEquals(testLabels[1], cookiesLinkRow.subLabel);
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.BLOCK_THIRD_PARTY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelDisabled'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.INCOGNITO_ONLY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString(
+            'thirdPartyCookiesLinkRowSublabelDisabledIncognito'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
+        cookiesLinkRow.subLabel);
   });
 
   test('NotificationsLinkRowSublabel', async function() {
@@ -173,6 +191,9 @@ suite('SiteSettingsPage', function() {
 // TODO(crbug/1378703): Remove after crbug/1378703 launched.
 suite('PrivacySandboxSettings4Disabled', function() {
   let page: SettingsSiteSettingsPageElement;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  const testLabels: string[] = ['test label 1', 'test label 2'];
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -181,6 +202,10 @@ suite('PrivacySandboxSettings4Disabled', function() {
   });
 
   setup(function() {
+    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]!);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-site-settings-page');
     document.body.appendChild(page);
@@ -205,6 +230,18 @@ suite('PrivacySandboxSettings4Disabled', function() {
         page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
             .querySelector<CrLinkRowElement>('#cookies')!.label;
     assertEquals(labelExpected, labelActual);
+  });
+
+  test('CookiesLinkRowSublabel', async function() {
+    await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
+    flush();
+    const cookiesLinkRow =
+        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#cookies')!;
+    assertEquals(testLabels[0], cookiesLinkRow.subLabel);
+
+    webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
+    assertEquals(testLabels[1], cookiesLinkRow.subLabel);
   });
 });
 

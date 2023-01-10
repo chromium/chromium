@@ -132,7 +132,7 @@ suite('PrivacyPage', function() {
         'prefs.profile.cookie_controls_mode.value',
         CookieControlsMode.INCOGNITO_ONLY);
     assertEquals(
-        page.i18n('thirdPartyCookiesLinkRowSublabelDisabledInIncognito'),
+        page.i18n('thirdPartyCookiesLinkRowSublabelDisabledIncognito'),
         page.shadowRoot!
             .querySelector<CrLinkRowElement>(
                 '#thirdPartyCookiesLinkRow')!.subLabel);
