@@ -123,8 +123,8 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
   // Simulate connected state. Expect a new message to be sent.
   fake_connection_manager_->SetStatus(
       secure_channel::ConnectionManager::Status::kConnected);
-  EXPECT_TRUE(fake_message_sender_->GetRecentCrosState().first);
-  EXPECT_TRUE(fake_message_sender_->GetRecentCrosState().second);
+  EXPECT_TRUE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_TRUE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 
   // Phone model is populated.
@@ -135,8 +135,8 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
   // Simulate disconnected state, this should not trigger a new request.
   fake_connection_manager_->SetStatus(
       secure_channel::ConnectionManager::Status::kDisconnected);
-  EXPECT_TRUE(fake_message_sender_->GetRecentCrosState().first);
-  EXPECT_TRUE(fake_message_sender_->GetRecentCrosState().second);
+  EXPECT_TRUE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_TRUE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
   EXPECT_FALSE(mock_timer_->IsRunning());
 }
@@ -151,8 +151,8 @@ TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
   EXPECT_TRUE(mock_timer_->IsRunning());
 
   // Expect new messages to be sent when connection state is connected.
-  EXPECT_FALSE(fake_message_sender_->GetRecentCrosState().first);
-  EXPECT_FALSE(fake_message_sender_->GetRecentCrosState().second);
+  EXPECT_FALSE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_FALSE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
   mock_timer_->Fire();
 
@@ -160,7 +160,7 @@ TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
   // enabled.
   fake_multidevice_setup_client_->SetFeatureState(
       Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
-  EXPECT_TRUE(fake_message_sender_->GetRecentCrosState().first);
+  EXPECT_TRUE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(2u, fake_message_sender_->GetCrosStateCallCount());
   mock_timer_->Fire();
 
@@ -168,7 +168,7 @@ TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
   // cros state.
   fake_multidevice_setup_client_->SetFeatureState(
       Feature::kSmartLock, FeatureState::kDisabledByUser);
-  EXPECT_TRUE(fake_message_sender_->GetRecentCrosState().first);
+  EXPECT_TRUE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(3u, fake_message_sender_->GetCrosStateCallCount());
   mock_timer_->Fire();
 
@@ -176,14 +176,14 @@ TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
   // disabled.
   fake_multidevice_setup_client_->SetFeatureState(
       Feature::kPhoneHubNotifications, FeatureState::kDisabledByUser);
-  EXPECT_FALSE(fake_message_sender_->GetRecentCrosState().first);
+  EXPECT_FALSE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(4u, fake_message_sender_->GetCrosStateCallCount());
 
   // Simulate enabling camera roll feature state and expect cros state to be
   // updated.
   fake_multidevice_setup_client_->SetFeatureState(Feature::kPhoneHubCameraRoll,
                                                   FeatureState::kEnabledByUser);
-  EXPECT_TRUE(fake_message_sender_->GetRecentCrosState().second);
+  EXPECT_TRUE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(5u, fake_message_sender_->GetCrosStateCallCount());
 
   // Firing the timer does not cause the cros state to be sent again.

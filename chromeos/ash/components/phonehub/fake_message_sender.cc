@@ -11,9 +11,11 @@ FakeMessageSender::FakeMessageSender() = default;
 FakeMessageSender::~FakeMessageSender() = default;
 
 void FakeMessageSender::SendCrosState(bool notification_enabled,
-                                      bool camera_roll_enabled) {
-  cros_states_.push_back(
-      std::make_pair(notification_enabled, camera_roll_enabled));
+                                      bool camera_roll_enabled,
+                                      const std::vector<std::string>* certs) {
+  auto new_message =
+      std::make_tuple(notification_enabled, camera_roll_enabled, certs);
+  cros_states_.push_back(new_message);
 }
 
 void FakeMessageSender::SendUpdateNotificationModeRequest(
@@ -115,7 +117,8 @@ size_t FakeMessageSender::GetPingRequestCallCount() const {
   return send_ping_requests_.size();
 }
 
-std::pair<bool, bool> FakeMessageSender::GetRecentCrosState() const {
+std::tuple<bool, bool, const std::vector<std::string>*>
+FakeMessageSender::GetRecentCrosState() const {
   return cros_states_.back();
 }
 

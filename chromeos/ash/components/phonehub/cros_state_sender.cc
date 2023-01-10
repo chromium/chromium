@@ -98,7 +98,8 @@ void CrosStateSender::PerformUpdateCrosState() {
                << " and camera roll enabled state as: "
                << is_camera_roll_enabled;
   message_sender_->SendCrosState(are_notifications_enabled,
-                                 is_camera_roll_enabled);
+                                 is_camera_roll_enabled,
+                                 /*attestation_certs=*/nullptr);
 
   retry_timer_->Start(FROM_HERE, retry_delay_,
                       base::BindOnce(&CrosStateSender::OnRetryTimerFired,

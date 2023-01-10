@@ -61,18 +61,42 @@ class MessageSenderImplTest : public testing::Test {
   std::unique_ptr<MessageSenderImpl> message_sender_;
 };
 
-TEST_F(MessageSenderImplTest, SendCrosState) {
+TEST_F(MessageSenderImplTest, SendCrosStateWithoutAttestation) {
   proto::CrosState request;
   request.set_notification_setting(
       proto::NotificationSetting::NOTIFICATIONS_ON);
   request.set_camera_roll_setting(proto::CameraRollSetting::CAMERA_ROLL_OFF);
+  request.set_allocated_attestation_data(nullptr);
   if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
     request.set_notification_icon_styling(
         proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
   }
 
   message_sender_->SendCrosState(/*notification_enabled=*/true,
-                                 /*camera_roll_enabled=*/false);
+                                 /*camera_roll_enabled=*/false,
+                                 /*certs=*/nullptr);
+  VerifyMessage(proto::MessageType::PROVIDE_CROS_STATE, &request,
+                fake_connection_manager_->sent_messages().back());
+}
+
+TEST_F(MessageSenderImplTest, SendCrosStateWithAttestation) {
+  proto::CrosState request;
+  request.set_notification_setting(
+      proto::NotificationSetting::NOTIFICATIONS_ON);
+  request.set_camera_roll_setting(proto::CameraRollSetting::CAMERA_ROLL_OFF);
+  request.mutable_attestation_data()->set_type(
+      proto::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
+  request.mutable_attestation_data()->add_certificates("certificate");
+  if (features::IsPhoneHubMonochromeNotificationIconsEnabled()) {
+    request.set_notification_icon_styling(
+        proto::NotificationIconStyling::ICON_STYLE_MONOCHROME_SMALL_ICON);
+  }
+
+  std::vector<std::string> certificates = {"certificate"};
+
+  message_sender_->SendCrosState(/*notification_enabled=*/true,
+                                 /*camera_roll_enabled=*/false,
+                                 /*certs=*/&certificates);
   VerifyMessage(proto::MessageType::PROVIDE_CROS_STATE, &request,
                 fake_connection_manager_->sent_messages().back());
 }

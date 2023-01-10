@@ -24,7 +24,8 @@ class FakeMessageSender : public MessageSender {
 
   // MessageSender:
   void SendCrosState(bool notification_enabled,
-                     bool camera_roll_enabled) override;
+                     bool camera_roll_enabled,
+                     const std::vector<std::string>* certs) override;
   void SendUpdateNotificationModeRequest(bool do_not_disturb_enabled) override;
   void SendUpdateBatteryModeRequest(bool battery_saver_mode_enabled) override;
   void SendDismissNotificationRequest(int64_t notification_id) override;
@@ -42,7 +43,8 @@ class FakeMessageSender : public MessageSender {
   void SendPingRequest(const proto::PingRequest& request) override;
   void SendFeatureSetupRequest(bool camera_roll, bool notifications) override;
 
-  std::pair<bool, bool> GetRecentCrosState() const;
+  std::tuple<bool, bool, const std::vector<std::string>*> GetRecentCrosState()
+      const;
   bool GetRecentUpdateNotificationModeRequest() const;
   bool GetRecentUpdateBatteryModeRequest() const;
   int64_t GetRecentDismissNotificationRequest() const;
@@ -85,8 +87,9 @@ class FakeMessageSender : public MessageSender {
   size_t GetPingRequestCallCount() const;
 
  private:
-  std::vector<std::pair</*is_notifications_setting_enabled*/ bool,
-                        /*is_camera_roll_setting_enabled*/ bool>>
+  std::vector<std::tuple</*is_notifications_setting_enabled*/ bool,
+                         /*is_camera_roll_setting_enabled*/ bool,
+                         /*attestation_data*/ const std::vector<std::string>*>>
       cros_states_;
   std::vector<bool> update_notification_mode_requests_;
   std::vector<bool> update_battery_mode_requests_;

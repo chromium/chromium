@@ -22,8 +22,10 @@ class MessageSender {
   virtual ~MessageSender() = default;
 
   // Sends whether the notification setting is enabled in the Chrome OS device.
-  virtual void SendCrosState(bool notification_setting_enabled,
-                             bool camera_roll_setting_enabled) = 0;
+  virtual void SendCrosState(
+      bool notification_setting_enabled,
+      bool camera_roll_setting_enabled,
+      const std::vector<std::string>* attestation_certs) = 0;
 
   // Requests that the phone enables or disables Do Not Disturb mode.
   virtual void SendUpdateNotificationModeRequest(
