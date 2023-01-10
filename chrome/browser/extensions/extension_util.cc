@@ -56,15 +56,8 @@ namespace util {
 namespace {
 
 // Returns |extension_id|. See note below.
-std::string ReloadExtensionIfEnabled(const std::string& extension_id,
-                                     content::BrowserContext* context) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
-  bool extension_is_enabled =
-      registry->enabled_extensions().Contains(extension_id);
-
-  if (!extension_is_enabled)
-    return extension_id;
-
+std::string ReloadExtension(const std::string& extension_id,
+                            content::BrowserContext* context) {
   // When we reload the extension the ID may be invalidated if we've passed it
   // by const ref everywhere. Make a copy to be safe. http://crbug.com/103762
   std::string id = extension_id;
@@ -73,6 +66,18 @@ std::string ReloadExtensionIfEnabled(const std::string& extension_id,
   CHECK(service);
   service->ReloadExtension(id);
   return id;
+}
+
+std::string ReloadExtensionIfEnabled(const std::string& extension_id,
+                                     content::BrowserContext* context) {
+  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
+  bool extension_is_enabled =
+      registry->enabled_extensions().Contains(extension_id);
+
+  if (!extension_is_enabled) {
+    return extension_id;
+  }
+  return ReloadExtension(extension_id, context);
 }
 
 }  // namespace
@@ -166,14 +171,15 @@ bool AllowFileAccess(const std::string& extension_id,
 void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow) {
-  // Reload to update browser state. Only bother if the value changed and the
-  // extension is actually enabled, since there is no UI otherwise.
+  // Reload to update browser state if the value changed. We need to reload even
+  // if the extension is disabled, in order to make sure file access is
+  // reinitialized correctly.
   if (allow == AllowFileAccess(extension_id, context))
     return;
 
   ExtensionPrefs::Get(context)->SetAllowFileAccess(extension_id, allow);
 
-  ReloadExtensionIfEnabled(extension_id, context);
+  ReloadExtension(extension_id, context);
 }
 
 bool IsAppLaunchable(const std::string& extension_id,
