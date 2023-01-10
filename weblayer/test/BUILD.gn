@@ -89,7 +89,7 @@ test("weblayer_browsertests") {
   use_xvfb = use_xvfb_in_this_config
 
   data = [
-    "$root_out_dir/weblayer_shell.pak",
+    "$root_out_dir/webengine_shell.pak",
     "data/",
     "//components/test/data",
     "//net/tools/testserver/",
@@ -158,7 +158,7 @@ test("weblayer_browsertests") {
     "//ui/display",
     "//ui/gfx:test_support",
     "//weblayer:resources",
-    "//weblayer/shell:weblayer_shell_lib",
+    "//weblayer/shell:webengine_shell_lib",
   ]
 
   sources = [
