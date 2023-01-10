@@ -6400,6 +6400,7 @@ crbug.com/1403736 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dis
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
 crbug.com/1395840 [ Mac ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1404767 [ Debug Linux ] external/wpt/css/css-cascade/all-prop-revert-layer-noop.html [ Timeout Failure ]
+crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
@@ -6416,10 +6417,9 @@ crbug.com/1280883 [ Debug Linux ] virtual/compositor-threaded-percent-based-scro
 crbug.com/1280883 [ Win ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta.html [ Failure Pass ]
 
 # Temporarily disable tests to investigate test_driver.click issue
-crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio+video.https.sub.html [ Failure Crash ]
-crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio.https.sub.html [ Failure Crash ]
-crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure Crash ]
-
+crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio+video.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-10-04
 crbug.com/1145491 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-overlay-menu.html [ Crash Failure Pass Timeout ]
