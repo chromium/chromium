@@ -181,18 +181,18 @@ TEST_F(CrosSettingsTest, SetAllowlistWithListOps) {
 
   auto* oss = CreateOwnerSettingsService(kOwner);
 
-  base::Value original_list(base::Value::Type::LIST);
+  base::Value::List original_list;
   original_list.Append(kOwner);
-  oss->Set(kAccountsPrefUsers, original_list);
+  oss->Set(kAccountsPrefUsers, base::Value(std::move(original_list)));
   task_environment_.RunUntilIdle();
 
-  base::Value modified_list(base::Value::Type::LIST);
+  base::Value::List modified_list;
   modified_list.Append(kOwner);
   modified_list.Append(kUser1);
 
   // Add some user to the allowlist.
   oss->AppendToList(kAccountsPrefUsers, base::Value(kUser1));
-  ExpectPref(kAccountsPrefUsers, modified_list);
+  ExpectPref(kAccountsPrefUsers, base::Value(std::move(modified_list)));
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
@@ -224,9 +224,9 @@ TEST_F(CrosSettingsTest, RestrictSignInToAListOfUsers) {
   StoreDevicePolicy();
 
   // Expect the same - a non-empty allowlist and no new users allowed.
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append(kOwner);
-  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
@@ -266,9 +266,9 @@ TEST_F(CrosSettingsTest, ConsumerOwnedDefaultState) {
   StoreDevicePolicy();
 
   // Expect the same - a non-empty allowlist and new users allowed.
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append(kOwner);
-  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(true));
 }
 
@@ -290,9 +290,9 @@ TEST_F(CrosSettingsTest, WhitelistUsedWhenAllowlistNotPresent) {
                                        1);
 
   // Expect the same - a non-empty allowlist and no new users allowed.
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append(kOwner);
-  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
@@ -315,22 +315,22 @@ TEST_F(CrosSettingsTest, AllowlistUsedWhenAllowlistAndWhitelistPresent) {
                                        1);
 
   // Expect the same - a non-empty allowlist and no new users allowed.
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append(kUser1);
-  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
 TEST_F(CrosSettingsTest, FindEmailInList) {
   auto* oss = CreateOwnerSettingsService(kOwner);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("user@example.com");
   list.Append("nodomain");
   list.Append("with.dots@gmail.com");
   list.Append("Upper@example.com");
 
-  oss->Set(kAccountsPrefUsers, list);
+  oss->Set(kAccountsPrefUsers, base::Value(std::move(list)));
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(IsAllowlisted("user@example.com"));
@@ -357,11 +357,11 @@ TEST_F(CrosSettingsTest, FindEmailInList) {
 TEST_F(CrosSettingsTest, FindEmailInListWildcard) {
   auto* oss = CreateOwnerSettingsService(kOwner);
 
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   list.Append("user@example.com");
   list.Append("*@example.com");
 
-  oss->Set(kAccountsPrefUsers, list);
+  oss->Set(kAccountsPrefUsers, base::Value(std::move(list)));
   task_environment_.RunUntilIdle();
 
   bool wildcard_match = false;
@@ -416,10 +416,10 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithFeatureDisabled) {
 
   StoreDevicePolicy();
 
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append(kOwner);
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
-  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(false));
 
   EXPECT_TRUE(IsUserAllowed(kOwner, absl::nullopt));
@@ -441,10 +441,10 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
 
   StoreDevicePolicy();
 
-  base::Value allowlist(base::Value::Type::LIST);
+  base::Value::List allowlist;
   allowlist.Append(kOwner);
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
-  ExpectPref(kAccountsPrefUsers, allowlist);
+  ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(true));
 
   EXPECT_TRUE(IsUserAllowed(kOwner, absl::nullopt));
