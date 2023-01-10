@@ -28,6 +28,7 @@ source_set("test_support") {
     "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser",
+    "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
@@ -67,6 +68,7 @@ source_set("test_support_ui") {
 
   deps = [
     "//chrome/browser",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/profiles:profile",

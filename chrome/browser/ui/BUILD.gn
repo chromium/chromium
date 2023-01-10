@@ -1754,6 +1754,7 @@ static_library("ui") {
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_themes",
       "//chrome/browser:theme_properties",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
@@ -1864,8 +1865,13 @@ static_library("ui") {
       "//ui/base/dragdrop/mojom:mojom_headers",
     ]
 
-    # TODO(crbug.com/1030821): Resolve circular dependencies.
-    allow_circular_includes_from += [ "//chrome/browser/media/router" ]
+    allow_circular_includes_from += [
+      # TODO(crbug.com/1030821): Resolve circular dependencies.
+      "//chrome/browser/media/router",
+
+      # TODO(crbug.com/1402145): Remove circular dependencies.
+      "//chrome/browser/apps/app_service",
+    ]
 
     if (use_ozone && !is_chromeos_ash) {
       deps += [

@@ -17,10 +17,15 @@ source_set("app_service") {
     ]
   }
 
-  allow_circular_includes_from = [ "//chrome/browser/ui" ]
+  # TODO(crbug.com/1402145): Remove circular dependencies.
+  allow_circular_includes_from = [
+    "//chrome/browser/ui",
+    "//chrome/browser/apps/app_service",
+  ]
 
   deps = [
     "//base",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

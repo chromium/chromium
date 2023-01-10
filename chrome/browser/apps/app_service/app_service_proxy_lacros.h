@@ -72,6 +72,8 @@ struct IntentLaunchInfo {
 // lock screen apps profile, but not for the signin profile.
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1402872): Inherit from a common AppServiceProxy interface.
 class AppServiceProxyLacros : public KeyedService,
                               public apps::IconLoader,
                               public crosapi::mojom::AppServiceSubscriber {

@@ -31,8 +31,11 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+// TODO(crbug.com/1402145): Remove or at least isolate circular dependencies on
+// app service by moving this code to //c/b/web_applications/adjustments, or
+// flip entire dependency so web_applications depends on app_service.
+#include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"

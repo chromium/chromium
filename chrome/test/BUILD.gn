@@ -187,6 +187,7 @@ static_library("test_support") {
     ]
 
     deps += [
+      "//chrome/browser/apps/app_service",
       "//components/media_router/browser:test_support",
       "//components/media_router/common:test_support",
       "//extensions/renderer",
@@ -735,6 +736,7 @@ static_library("test_support") {
 
     deps += [
       "//build:chromeos_buildflags",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/web_package",
       "//components/web_package/test_support",
@@ -1246,6 +1248,8 @@ if (!is_android) {
       "//chrome/browser:buildflags",
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:test_support",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/autofill",
@@ -4916,6 +4920,7 @@ if (is_chromeos_lacros) {
       ":test_support_ui",
       ":webrtc_browser_tests_base",
       "//chrome/app:command_ids",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/extensions/vpn_provider",
@@ -7195,6 +7200,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome:packed_resources_integrity_hash",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/image_editor:image_editor_component_util",
@@ -9233,6 +9239,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:browser_process",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/devtools",
@@ -9592,11 +9599,6 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     ldflags = []
 
-    allow_circular_includes_from = [
-      # Allows to include test util headers.
-      "//chrome/browser/web_applications:interactive_ui_tests",
-    ]
-
     deps = [
       ":sync_integration_test_support",
       ":test_support",
@@ -9610,6 +9612,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:buildflags",
       "//chrome/browser:unexpire_flags",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:interactive_ui_tests",
       "//chrome/browser/autofill:test_support_ui",
@@ -9885,6 +9888,7 @@ if (!is_android) {
         sources += [ "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc" ]
         deps += [
           "//ash:ash",
+          "//chrome/browser/apps/app_service",
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
@@ -10398,6 +10402,7 @@ source_set("sync_integration_test_support") {
     deps += [ ":sync_integration_test_support_jni_headers" ]
   } else {
     deps += [
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/send_tab_to_self",
       "//components/webapps/browser",

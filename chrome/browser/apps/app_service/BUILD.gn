@@ -2,6 +2,309 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(!is_android)
+
+source_set("app_service") {
+  sources = [
+    "app_icon/app_icon_factory.cc",
+    "app_icon/app_icon_factory.h",
+    "app_icon/app_icon_loader.cc",
+    "app_icon/app_icon_loader.h",
+    "app_icon/app_icon_source.cc",
+    "app_icon/app_icon_source.h",
+    "app_icon/app_icon_util.cc",
+    "app_icon/app_icon_util.h",
+    "app_icon/dip_px_util.cc",
+    "app_icon/dip_px_util.h",
+    "app_icon/icon_key_util.cc",
+    "app_icon/icon_key_util.h",
+    "app_service_proxy.h",
+    "app_service_proxy_factory.cc",
+    "app_service_proxy_factory.h",
+    "app_service_proxy_forward.h",
+    "browser_app_launcher.cc",
+    "browser_app_launcher.h",
+    "extension_uninstaller.cc",
+    "extension_uninstaller.h",
+    "intent_util.cc",
+    "intent_util.h",
+    "launch_result_type.cc",
+    "launch_result_type.h",
+    "launch_utils.cc",
+    "launch_utils.h",
+    "metrics/app_service_metrics.cc",
+    "metrics/app_service_metrics.h",
+    "package_id.cc",
+    "package_id.h",
+    "paused_apps.cc",
+    "paused_apps.h",
+    "policy_util.cc",
+    "policy_util.h",
+    "publishers/app_publisher.cc",
+    "publishers/app_publisher.h",
+    "publishers/extension_apps_enable_flow.cc",
+    "publishers/extension_apps_enable_flow.h",
+    "publishers/extension_apps_util.cc",
+    "publishers/extension_apps_util.h",
+    "web_contents_app_id_utils.cc",
+    "web_contents_app_id_utils.h",
+  ]
+
+  public_deps = [ ":constants" ]
+
+  deps = [
+    "//base",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/extensions",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/extensions",
+    "//components/app_constants",
+    "//components/crx_file",
+    "//components/favicon/core",
+    "//components/keyed_service/content",
+    "//components/services/app_service:lib",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:icon_loader",
+    "//components/services/app_service/public/cpp:icon_types",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:preferred_apps",
+    "//components/services/app_service/public/cpp:types",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  # TODO(crbug.com/1402145): Remove circular dependencies. Possibly flip
+  # dependency direction so AppService doesn't depend on extensions
+  # (crbug.com/1402146).
+  allow_circular_includes_from = [
+    "//chrome/browser/extensions",
+    "//chrome/browser/web_applications/extensions",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "app_notifications.cc",
+      "app_notifications.h",
+      "app_web_contents_data.cc",
+      "app_web_contents_data.h",
+      "browser_app_instance.cc",
+      "browser_app_instance.h",
+      "browser_app_instance_map.h",
+      "browser_app_instance_observer.cc",
+      "browser_app_instance_observer.h",
+      "browser_app_instance_tracker.cc",
+      "browser_app_instance_tracker.h",
+      "extension_apps_utils.cc",
+      "extension_apps_utils.h",
+      "media_requests.cc",
+      "media_requests.h",
+      "menu_item_constants.h",
+      "webapk/webapk_utils.cc",
+      "webapk/webapk_utils.h",
+    ]
+
+    deps += [
+      "//ash/webui/projector_app/public/cpp",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/startup",
+      "//components/webapk:proto",
+      "//third_party/smhasher:murmurhash2",
+      "//ui/views",
+      "//ui/wm/public",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_icon/app_icon_decoder.cc",
+      "app_icon/app_icon_decoder.h",
+      "app_icon/app_icon_reader.cc",
+      "app_icon/app_icon_reader.h",
+      "app_icon/app_icon_writer.cc",
+      "app_icon/app_icon_writer.h",
+      "app_icon/arc_activity_adaptive_icon_impl.cc",
+      "app_icon/arc_activity_adaptive_icon_impl.h",
+      "app_icon/arc_icon_once_loader.cc",
+      "app_icon/arc_icon_once_loader.h",
+      "app_service_proxy_ash.cc",
+      "app_service_proxy_ash.h",
+      "app_shortcut_item.cc",
+      "app_shortcut_item.h",
+      "browser_app_instance_registry.cc",
+      "browser_app_instance_registry.h",
+      "file_utils.cc",
+      "file_utils.h",
+      "instance_registry_updater.cc",
+      "instance_registry_updater.h",
+      "menu_util.cc",
+      "menu_util.h",
+      "metrics/app_platform_input_metrics.cc",
+      "metrics/app_platform_input_metrics.h",
+      "metrics/app_platform_metrics.cc",
+      "metrics/app_platform_metrics.h",
+      "metrics/app_platform_metrics_service.cc",
+      "metrics/app_platform_metrics_service.h",
+      "metrics/app_platform_metrics_utils.cc",
+      "metrics/app_platform_metrics_utils.h",
+      "metrics/browser_to_tab_list.cc",
+      "metrics/browser_to_tab_list.h",
+      "metrics/website_metrics.cc",
+      "metrics/website_metrics.h",
+      "publishers/arc_apps.cc",
+      "publishers/arc_apps.h",
+      "publishers/arc_apps_factory.cc",
+      "publishers/arc_apps_factory.h",
+      "publishers/borealis_apps.cc",
+      "publishers/borealis_apps.h",
+      "publishers/bruschetta_apps.cc",
+      "publishers/bruschetta_apps.h",
+      "publishers/built_in_chromeos_apps.cc",
+      "publishers/built_in_chromeos_apps.h",
+      "publishers/crostini_apps.cc",
+      "publishers/crostini_apps.h",
+      "publishers/extension_apps_chromeos.cc",
+      "publishers/extension_apps_chromeos.h",
+      "publishers/guest_os_apps.cc",
+      "publishers/guest_os_apps.h",
+      "publishers/plugin_vm_apps.cc",
+      "publishers/plugin_vm_apps.h",
+      "publishers/remote_apps.cc",
+      "publishers/remote_apps.h",
+      "publishers/standalone_browser_apps.cc",
+      "publishers/standalone_browser_apps.h",
+      "publishers/standalone_browser_extension_apps.cc",
+      "publishers/standalone_browser_extension_apps.h",
+      "publishers/standalone_browser_extension_apps_factory.cc",
+      "publishers/standalone_browser_extension_apps_factory.h",
+      "publishers/web_apps_crosapi.cc",
+      "publishers/web_apps_crosapi.h",
+      "publishers/web_apps_crosapi_factory.cc",
+      "publishers/web_apps_crosapi_factory.h",
+      "subscriber_crosapi.cc",
+      "subscriber_crosapi.h",
+      "subscriber_crosapi_factory.cc",
+      "subscriber_crosapi_factory.h",
+      "uninstall_dialog.cc",
+      "uninstall_dialog.h",
+      "webapk/webapk_install_queue.cc",
+      "webapk/webapk_install_queue.h",
+      "webapk/webapk_install_task.cc",
+      "webapk/webapk_install_task.h",
+      "webapk/webapk_manager.cc",
+      "webapk/webapk_manager.h",
+      "webapk/webapk_metrics.cc",
+      "webapk/webapk_metrics.h",
+      "webapk/webapk_prefs.cc",
+      "webapk/webapk_prefs.h",
+    ]
+
+    deps += [
+      "//ash",
+      "//ash/components/arc",
+      "//ash/components/arc:arc_base",
+      "//ash/components/arc:arc_base_utils",
+      "//ash/components/arc:arc_metrics_constants",
+      "//ash/components/arc/mojom",
+      "//ash/components/arc/session",
+      "//ash/components/arc/session:connection_holder",
+      "//ash/public/cpp",
+      "//ash/webui/system_apps/public:system_web_app_type",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/image_decoder",
+      "//chrome/browser/resources",
+      "//chrome/browser/resources/chromeos:app_icon_resources",
+      "//chromeos/ash/components/login/login_state",
+      "//components/app_restore",
+      "//components/arc",
+      "//components/arc/common",
+      "//components/arc/common:arc_intent_helper_constants",
+      "//components/exo",
+      "//components/resources:components_resources",
+      "//components/services/app_service/public/cpp:crosapi_utils",
+      "//components/services/app_service/public/cpp:instance_update",
+      "//components/services/app_service/public/cpp:permission_utils",
+      "//components/ukm",
+      "//components/webapps/browser",
+      "//services/metrics/public/cpp:ukm_builders",
+    ]
+
+    # TODO(crbug.com/1402145): Remove circular dependencies.
+    allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "app_service_proxy_lacros.cc",
+      "app_service_proxy_lacros.h",
+      "browser_app_instance_forwarder.cc",
+      "browser_app_instance_forwarder.h",
+      "metrics/website_metrics.cc",
+      "metrics/website_metrics.h",
+      "metrics/website_metrics_service_lacros.cc",
+      "metrics/website_metrics_service_lacros.h",
+    ]
+
+    deps += [
+      "//chromeos/lacros",
+      "//components/keep_alive_registry",
+      "//components/webapps/browser",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//ui/wm",
+    ]
+  }
+
+  if (!is_chromeos) {
+    sources += [
+      "app_service_proxy_desktop.cc",
+      "app_service_proxy_desktop.h",
+    ]
+
+    deps += [ "//components/services/app_service/public/cpp:run_on_os_login" ]
+  }
+
+  if (!is_chromeos_lacros) {
+    sources += [
+      # TODO(crbug.com/1402872): Make this safe to include in lacros by removing
+      # redefinition of types in app_service_proxy_lacros.
+      "app_service_proxy_base.cc",
+      "app_service_proxy_base.h",
+      "publisher_host.cc",
+      "publisher_host.h",
+      "publishers/extension_apps.cc",
+      "publishers/extension_apps.h",
+      "publishers/extension_apps_base.cc",
+      "publishers/extension_apps_base.h",
+    ]
+  }
+}
+
+source_set("constants") {
+  sources = [
+    "app_launch_params.cc",
+    "app_launch_params.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:intents",
+    "//ui/base:types",
+    "//ui/display/types",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -11,6 +314,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    ":app_service",
     "//build:chromeos_buildflags",
     "//chrome/test:test_support",
     "//components/services/app_service/public/cpp:app_types",
@@ -19,4 +323,13 @@ source_set("test_support") {
     "//components/services/app_service/public/mojom",
     "//skia",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "webapk/webapk_test_server.cc",
+      "webapk/webapk_test_server.h",
+    ]
+
+    deps += [ "//components/webapk:proto" ]
+  }
 }

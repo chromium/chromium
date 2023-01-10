@@ -527,6 +527,7 @@ test("chromevox_tests") {
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/browser",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/web_applications",
     "//chrome/renderer",
     "//chrome/test:browser_tests_runner",

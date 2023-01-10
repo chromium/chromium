@@ -352,6 +352,7 @@ source_set("browser_tests") {
       "//ash/components/arc:arc_test_support",
       "//ash/components/arc:prefs",
       "//ash/components/arc/session:session",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/ash",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chromeos/ash/components/audio",
@@ -412,6 +413,8 @@ source_set("browser_tests") {
 
   if (is_win || is_linux || is_chromeos) {
     sources += [ "test/full_screen_allowed_policy_browsertest.cc" ]
+
+    deps += [ "//chrome/browser/apps/app_service" ]
   }
 
   if (!is_chromeos) {

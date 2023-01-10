@@ -19,6 +19,10 @@ source_set("system_web_apps") {
 
   deps = [
     "//base",
+    "//chrome/browser/apps/app_service",
+
+    # TODO(crbug.com/1402148): Remove crosapi dep. Needed only to allow circular includes.
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
@@ -29,4 +33,7 @@ source_set("system_web_apps") {
     "//ui/base",
     "//ui/display",
   ]
+
+  # TODO(crbug.com/1402148): Remove circular includes.
+  allow_circular_includes_from = [ "//chrome/browser/ash/crosapi" ]
 }

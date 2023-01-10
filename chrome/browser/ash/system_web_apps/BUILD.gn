@@ -91,6 +91,7 @@ source_set("browser_tests") {
     ":system_web_apps",
     "//base",
     "//chrome/app:command_ids",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ash/system_web_apps/types",

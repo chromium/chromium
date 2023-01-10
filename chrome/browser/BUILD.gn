@@ -3506,52 +3506,6 @@ static_library("browser") {
       "accessibility/live_caption_unavailability_notifier.h",
       "accessibility/live_translate_controller_factory.cc",
       "accessibility/live_translate_controller_factory.h",
-      "apps/app_service/app_icon/app_icon_factory.cc",
-      "apps/app_service/app_icon/app_icon_factory.h",
-      "apps/app_service/app_icon/app_icon_loader.cc",
-      "apps/app_service/app_icon/app_icon_loader.h",
-      "apps/app_service/app_icon/app_icon_source.cc",
-      "apps/app_service/app_icon/app_icon_source.h",
-      "apps/app_service/app_icon/app_icon_util.cc",
-      "apps/app_service/app_icon/app_icon_util.h",
-      "apps/app_service/app_icon/dip_px_util.cc",
-      "apps/app_service/app_icon/dip_px_util.h",
-      "apps/app_service/app_icon/icon_key_util.cc",
-      "apps/app_service/app_icon/icon_key_util.h",
-      "apps/app_service/app_launch_params.cc",
-      "apps/app_service/app_launch_params.h",
-      "apps/app_service/app_service_proxy.h",
-      "apps/app_service/app_service_proxy_base.cc",
-      "apps/app_service/app_service_proxy_base.h",
-      "apps/app_service/app_service_proxy_factory.cc",
-      "apps/app_service/app_service_proxy_factory.h",
-      "apps/app_service/app_service_proxy_forward.h",
-      "apps/app_service/browser_app_launcher.cc",
-      "apps/app_service/browser_app_launcher.h",
-      "apps/app_service/extension_uninstaller.cc",
-      "apps/app_service/extension_uninstaller.h",
-      "apps/app_service/intent_util.cc",
-      "apps/app_service/intent_util.h",
-      "apps/app_service/launch_result_type.cc",
-      "apps/app_service/launch_result_type.h",
-      "apps/app_service/launch_utils.cc",
-      "apps/app_service/launch_utils.h",
-      "apps/app_service/metrics/app_service_metrics.cc",
-      "apps/app_service/metrics/app_service_metrics.h",
-      "apps/app_service/package_id.cc",
-      "apps/app_service/package_id.h",
-      "apps/app_service/paused_apps.cc",
-      "apps/app_service/paused_apps.h",
-      "apps/app_service/policy_util.cc",
-      "apps/app_service/policy_util.h",
-      "apps/app_service/publishers/app_publisher.cc",
-      "apps/app_service/publishers/app_publisher.h",
-      "apps/app_service/publishers/extension_apps_enable_flow.cc",
-      "apps/app_service/publishers/extension_apps_enable_flow.h",
-      "apps/app_service/publishers/extension_apps_util.cc",
-      "apps/app_service/publishers/extension_apps_util.h",
-      "apps/app_service/web_contents_app_id_utils.cc",
-      "apps/app_service/web_contents_app_id_utils.h",
       "apps/intent_helper/apps_navigation_throttle.cc",
       "apps/intent_helper/apps_navigation_throttle.h",
       "apps/intent_helper/apps_navigation_types.cc",
@@ -4408,6 +4362,7 @@ static_library("browser") {
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/app/vector_icons",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/enterprise/connectors/analysis:features",
@@ -4502,15 +4457,16 @@ static_library("browser") {
       "//extensions/buildflags",
     ]
     allow_circular_includes_from += [
+      # TODO(crbug.com/1402145): Remove circular dependencies.
+      "//chrome/browser/apps/app_service",
+
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
 
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
 
-      # TODO(crbug.com/1292435): Remove once AppServiceProxy is extracted from
-      # //chrome/browser.
-      "//chrome/browser/web_applications/adjustments",
+      # TODO(crbug.com/1402145): Remove circular dependencies.
       "//chrome/browser/web_applications/app_service",
     ]
     if (!is_android && !is_chromeos) {
@@ -4521,8 +4477,6 @@ static_library("browser") {
     }
     if (!is_chromeos) {
       sources += [
-        "apps/app_service/app_service_proxy_desktop.cc",
-        "apps/app_service/app_service_proxy_desktop.h",
         "external_protocol/auto_launch_protocols_policy_handler.cc",
         "external_protocol/auto_launch_protocols_policy_handler.h",
         "net/disk_cache_dir_policy_handler.cc",
@@ -4595,16 +4549,6 @@ static_library("browser") {
       deps += [
         "//chrome/browser/enterprise/connectors/device_trust:features",
         "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
-      ]
-    }
-    if (!is_chromeos_lacros) {
-      sources += [
-        "apps/app_service/publisher_host.cc",
-        "apps/app_service/publisher_host.h",
-        "apps/app_service/publishers/extension_apps.cc",
-        "apps/app_service/publishers/extension_apps.h",
-        "apps/app_service/publishers/extension_apps_base.cc",
-        "apps/app_service/publishers/extension_apps_base.h",
       ]
     }
     if (enable_extensions) {
@@ -4709,86 +4653,6 @@ static_library("browser") {
       "apps/app_preload_service/web_app_preload_installer.h",
       "apps/app_provisioning_service/app_provisioning_data_manager.cc",
       "apps/app_provisioning_service/app_provisioning_data_manager.h",
-      "apps/app_service/app_icon/app_icon_decoder.cc",
-      "apps/app_service/app_icon/app_icon_decoder.h",
-      "apps/app_service/app_icon/app_icon_reader.cc",
-      "apps/app_service/app_icon/app_icon_reader.h",
-      "apps/app_service/app_icon/app_icon_writer.cc",
-      "apps/app_service/app_icon/app_icon_writer.h",
-      "apps/app_service/app_icon/arc_activity_adaptive_icon_impl.cc",
-      "apps/app_service/app_icon/arc_activity_adaptive_icon_impl.h",
-      "apps/app_service/app_icon/arc_icon_once_loader.cc",
-      "apps/app_service/app_icon/arc_icon_once_loader.h",
-      "apps/app_service/app_service_proxy_ash.cc",
-      "apps/app_service/app_service_proxy_ash.h",
-      "apps/app_service/app_shortcut_item.cc",
-      "apps/app_service/app_shortcut_item.h",
-      "apps/app_service/browser_app_instance_registry.cc",
-      "apps/app_service/browser_app_instance_registry.h",
-      "apps/app_service/file_utils.cc",
-      "apps/app_service/file_utils.h",
-      "apps/app_service/instance_registry_updater.cc",
-      "apps/app_service/instance_registry_updater.h",
-      "apps/app_service/menu_util.cc",
-      "apps/app_service/menu_util.h",
-      "apps/app_service/metrics/app_platform_input_metrics.cc",
-      "apps/app_service/metrics/app_platform_input_metrics.h",
-      "apps/app_service/metrics/app_platform_metrics.cc",
-      "apps/app_service/metrics/app_platform_metrics.h",
-      "apps/app_service/metrics/app_platform_metrics_service.cc",
-      "apps/app_service/metrics/app_platform_metrics_service.h",
-      "apps/app_service/metrics/app_platform_metrics_utils.cc",
-      "apps/app_service/metrics/app_platform_metrics_utils.h",
-      "apps/app_service/metrics/browser_to_tab_list.cc",
-      "apps/app_service/metrics/browser_to_tab_list.h",
-      "apps/app_service/metrics/website_metrics.cc",
-      "apps/app_service/metrics/website_metrics.h",
-      "apps/app_service/publishers/arc_apps.cc",
-      "apps/app_service/publishers/arc_apps.h",
-      "apps/app_service/publishers/arc_apps_factory.cc",
-      "apps/app_service/publishers/arc_apps_factory.h",
-      "apps/app_service/publishers/borealis_apps.cc",
-      "apps/app_service/publishers/borealis_apps.h",
-      "apps/app_service/publishers/bruschetta_apps.cc",
-      "apps/app_service/publishers/bruschetta_apps.h",
-      "apps/app_service/publishers/built_in_chromeos_apps.cc",
-      "apps/app_service/publishers/built_in_chromeos_apps.h",
-      "apps/app_service/publishers/crostini_apps.cc",
-      "apps/app_service/publishers/crostini_apps.h",
-      "apps/app_service/publishers/extension_apps_chromeos.cc",
-      "apps/app_service/publishers/extension_apps_chromeos.h",
-      "apps/app_service/publishers/guest_os_apps.cc",
-      "apps/app_service/publishers/guest_os_apps.h",
-      "apps/app_service/publishers/plugin_vm_apps.cc",
-      "apps/app_service/publishers/plugin_vm_apps.h",
-      "apps/app_service/publishers/remote_apps.cc",
-      "apps/app_service/publishers/remote_apps.h",
-      "apps/app_service/publishers/standalone_browser_apps.cc",
-      "apps/app_service/publishers/standalone_browser_apps.h",
-      "apps/app_service/publishers/standalone_browser_extension_apps.cc",
-      "apps/app_service/publishers/standalone_browser_extension_apps.h",
-      "apps/app_service/publishers/standalone_browser_extension_apps_factory.cc",
-      "apps/app_service/publishers/standalone_browser_extension_apps_factory.h",
-      "apps/app_service/publishers/web_apps_crosapi.cc",
-      "apps/app_service/publishers/web_apps_crosapi.h",
-      "apps/app_service/publishers/web_apps_crosapi_factory.cc",
-      "apps/app_service/publishers/web_apps_crosapi_factory.h",
-      "apps/app_service/subscriber_crosapi.cc",
-      "apps/app_service/subscriber_crosapi.h",
-      "apps/app_service/subscriber_crosapi_factory.cc",
-      "apps/app_service/subscriber_crosapi_factory.h",
-      "apps/app_service/uninstall_dialog.cc",
-      "apps/app_service/uninstall_dialog.h",
-      "apps/app_service/webapk/webapk_install_queue.cc",
-      "apps/app_service/webapk/webapk_install_queue.h",
-      "apps/app_service/webapk/webapk_install_task.cc",
-      "apps/app_service/webapk/webapk_install_task.h",
-      "apps/app_service/webapk/webapk_manager.cc",
-      "apps/app_service/webapk/webapk_manager.h",
-      "apps/app_service/webapk/webapk_metrics.cc",
-      "apps/app_service/webapk/webapk_metrics.h",
-      "apps/app_service/webapk/webapk_prefs.cc",
-      "apps/app_service/webapk/webapk_prefs.h",
       "apps/digital_goods/digital_goods_ash.cc",
       "apps/digital_goods/digital_goods_ash.h",
       "apps/digital_goods/digital_goods_factory_impl.cc",
@@ -5315,10 +5179,7 @@ static_library("browser") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps",
-      "//chrome/browser/ui/ash/system_web_apps",
-    ]
 
-    allow_circular_includes_from += [
       # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
       # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
       "//chrome/browser/ash/system_extensions/api/window_management",
@@ -5383,14 +5244,6 @@ static_library("browser") {
   if (is_chromeos_lacros) {
     assert(enable_system_notifications)
     sources += [
-      "apps/app_service/app_service_proxy_lacros.cc",
-      "apps/app_service/app_service_proxy_lacros.h",
-      "apps/app_service/browser_app_instance_forwarder.cc",
-      "apps/app_service/browser_app_instance_forwarder.h",
-      "apps/app_service/metrics/website_metrics.cc",
-      "apps/app_service/metrics/website_metrics.h",
-      "apps/app_service/metrics/website_metrics_service_lacros.cc",
-      "apps/app_service/metrics/website_metrics_service_lacros.h",
       "apps/digital_goods/digital_goods_factory_stub.cc",
       "apps/digital_goods/digital_goods_factory_stub.h",
       "apps/digital_goods/digital_goods_lacros.cc",
@@ -5571,6 +5424,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
+      "//chrome/browser/chromeos/office_web_app",
       "//chrome/common/chromeos/extensions",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
@@ -5600,24 +5454,6 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
-      "apps/app_service/app_notifications.cc",
-      "apps/app_service/app_notifications.h",
-      "apps/app_service/app_web_contents_data.cc",
-      "apps/app_service/app_web_contents_data.h",
-      "apps/app_service/browser_app_instance.cc",
-      "apps/app_service/browser_app_instance.h",
-      "apps/app_service/browser_app_instance_map.h",
-      "apps/app_service/browser_app_instance_observer.cc",
-      "apps/app_service/browser_app_instance_observer.h",
-      "apps/app_service/browser_app_instance_tracker.cc",
-      "apps/app_service/browser_app_instance_tracker.h",
-      "apps/app_service/extension_apps_utils.cc",
-      "apps/app_service/extension_apps_utils.h",
-      "apps/app_service/media_requests.cc",
-      "apps/app_service/media_requests.h",
-      "apps/app_service/menu_item_constants.h",
-      "apps/app_service/webapk/webapk_utils.cc",
-      "apps/app_service/webapk/webapk_utils.h",
       "apps/intent_helper/chromeos_intent_picker_helpers.cc",
       "apps/intent_helper/chromeos_intent_picker_helpers.h",
       "apps/intent_helper/common_apps_navigation_throttle.cc",
@@ -5692,11 +5528,6 @@ static_library("browser") {
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/telemetry",
-
-      # This is a dependency only to allow `allow_circular_includes_from` to
-      # include this target (which actually depends on //chrome/browser).
-      # TODO(b/262484731): Remove this when app service has its own target.
-      "//chrome/browser/chromeos/office_web_app",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/quick_answers",
@@ -5735,9 +5566,6 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/chromeos",
       "//chrome/browser/policy:onc",
-
-      # TODO(b/262484731): Remove this when app service has its own target.
-      "//chrome/browser/chromeos/office_web_app",
 
       # TODO(b/215757706): Find a way to avoid the circular include.
       "//chrome/browser/ui/quick_answers",
@@ -8181,13 +8009,14 @@ static_library("test_support") {
       "ui/tabs/tab_activity_simulator.cc",
       "ui/tabs/tab_activity_simulator.h",
     ]
-    deps += [ "//components/services/app_service/public/cpp:preferred_apps" ]
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//components/services/app_service/public/cpp:preferred_apps",
+    ]
   }
 
   if (is_chromeos_ash) {
     sources += [
-      "apps/app_service/webapk/webapk_test_server.cc",
-      "apps/app_service/webapk/webapk_test_server.h",
       "ash/accessibility/caret_bounds_changed_waiter.cc",
       "ash/accessibility/caret_bounds_changed_waiter.h",
       "ash/accessibility/html_test_utils.cc",
@@ -8399,7 +8228,7 @@ if (!is_android) {
     ]
 
     public_deps = [
-      "//chrome/browser/web_applications/app_service:app_service",
+      "//chrome/browser/web_applications/app_service",
       "//net:test_support",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
     ]

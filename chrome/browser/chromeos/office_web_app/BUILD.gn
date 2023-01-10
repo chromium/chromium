@@ -10,12 +10,11 @@ source_set("office_web_app") {
     "office_web_app.h",
   ]
   deps = [
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/web_applications",
 
-    # The actual dependency of this target on "//chrome/browser" is set up in
-    # //c/b/BUILD.gn. crosapi is a transitive public dependency of
-    # "//chrome/browser" we include headers from (app service).
-    # TODO(b/262484731): Remove this dependency.
+    # CrosAPI is a transitive dependency of //c/b/apps/app_service, but
+    # compilation breaks unless it is depended upon directly here.
     "//chromeos/crosapi/mojom",
     "//components/webapps/browser",
     "//url",

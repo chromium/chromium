@@ -25,6 +25,7 @@ source_set("window_management") {
 
   deps = [
     "//ash",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/system_extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -50,6 +51,7 @@ source_set("browser_tests") {
     ":test_helper",
     ":test_helper_js_data_deps",
     ":window_management",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/system_extensions",
     "//chrome/browser/ash/system_extensions/api/test_support",
     "//chrome/browser/ash/system_web_apps/test_support",

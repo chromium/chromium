@@ -8,6 +8,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"  // IWYU pragma: export
 
+// TODO(crbug.com/1402872): Extract a common AppServiceProxy interface and
+// inherit from it instead of swapping out separate (re)definitions of the same
+// interface.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"  // IWYU pragma: export
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

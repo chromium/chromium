@@ -16,6 +16,7 @@ source_set("unit_tests") {
 
   deps = [
     "//chrome/browser",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -66,6 +67,7 @@ source_set("browser_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser:browser_themes",
     "//chrome/browser:theme_properties",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -119,6 +121,7 @@ source_set("app_service_browser_tests") {
 
   deps = [
     "//chrome/app:command_ids",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/ui/web_applications/diagnostics:app_service_browser_tests",
     "//chrome/browser/web_applications",

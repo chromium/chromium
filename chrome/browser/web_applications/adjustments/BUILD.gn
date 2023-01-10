@@ -16,6 +16,7 @@ source_set("adjustments") {
 
   deps = [
     "//base",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",
@@ -57,6 +58,7 @@ source_set("adjustments_browser_tests") {
 
   deps = [
     ":adjustments",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",

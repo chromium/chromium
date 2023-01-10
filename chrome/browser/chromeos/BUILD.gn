@@ -157,7 +157,10 @@ source_set("chromeos") {
     "extensions/wallpaper_api.cc",
     "extensions/wallpaper_api.h",
   ]
-  allow_circular_includes_from = [ "//chrome/browser/extensions" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/extensions",
+    "//chrome/browser/apps/app_service",
+  ]
   public_deps = [
     ":dlp_policy_event_proto",
     "//base",
@@ -208,6 +211,7 @@ source_set("chromeos") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/favicon",
     "//chrome/browser/resources:component_extension_resources",
