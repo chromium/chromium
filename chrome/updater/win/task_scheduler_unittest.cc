@@ -113,6 +113,12 @@ class TaskSchedulerTests : public ::testing::Test {
     command_line.AppendSwitchNative(kTestEventToSignal, event_holder.name);
     EXPECT_TRUE(task_scheduler_->RegisterTask(
         kTaskName1, kTaskDescription1, command_line, trigger_type, false));
+
+    // Check that the created task matches the trigger it was created with.
+    TaskScheduler::TaskInfo info;
+    EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+    EXPECT_EQ(info.trigger_type, trigger_type);
+
     if (trigger_type != TaskScheduler::TRIGGER_TYPE_NOW) {
       EXPECT_TRUE(task_scheduler_->StartTask(kTaskName1));
     }
