@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_LICENSE_DATABASE_H_
 
 #include "base/sequence_checker.h"
+#include "content/browser/media/media_license_storage_host.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
 
@@ -20,7 +21,9 @@ class MediaLicenseDatabase {
   // The database will be in-memory if `path` is empty.
   explicit MediaLicenseDatabase(const base::FilePath& path);
 
-  bool OpenFile(const media::CdmType& cdm_type, const std::string& file_name);
+  MediaLicenseStorageHost::MediaLicenseStorageHostOpenError OpenFile(
+      const media::CdmType& cdm_type,
+      const std::string& file_name);
   absl::optional<std::vector<uint8_t>> ReadFile(const media::CdmType& cdm_type,
                                                 const std::string& file_name);
   bool WriteFile(const media::CdmType& cdm_type,
@@ -32,7 +35,8 @@ class MediaLicenseDatabase {
 
  private:
   // Opens and sets up a database if one is not already set up.
-  bool OpenDatabase(bool is_retry = false);
+  MediaLicenseStorageHost::MediaLicenseStorageHostOpenError OpenDatabase(
+      bool is_retry = false);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

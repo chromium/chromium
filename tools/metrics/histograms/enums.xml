@@ -66731,6 +66731,16 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Unknown"/>
 </enum>
 
+<enum name="MediaLicenseStorageHostOpenError">
+  <int value="0" label="InvalidBucket"/>
+  <int value="1" label="kNoFileSpecified"/>
+  <int value="2" label="kInvalidFileName"/>
+  <int value="3" label="kDatabaseOpenError"/>
+  <int value="4" label="kBucketNotFound"/>
+  <int value="5" label="kDatabaseRazeError"/>
+  <int value="6" label="kSQLExecutionError"/>
+</enum>
+
 <enum name="MediaLoadType">
   <int value="0" label="URL"/>
   <int value="1" label="MediaSource"/>
