@@ -36,6 +36,8 @@ using mojom::blink::SubAppsServiceResult;
 
 namespace {
 
+const int kMaximumNumberOfSubappsPerAddCall = 7;
+
 Vector<std::pair<String, String>> AddResultsFromMojo(
     Vector<SubAppsServiceAddResultPtr> add_results_mojo) {
   Vector<std::pair<String, String>> add_results_idl;
@@ -157,6 +159,19 @@ ScriptPromise SubApps::add(
         DOMExceptionCode::kNotAllowedError,
         "Unable to add sub-app. This API can only be called shortly after a "
         "user activation.");
+    return ScriptPromise();
+  }
+
+  // TODO(crbug.com/1326843): Maybe we don't need to limit add() if the
+  // right policy is set, we mainly want to avoid overwhelming the user with
+  // a permissions prompt that lists dozens of apps to install.
+  if (sub_apps.size() > kMaximumNumberOfSubappsPerAddCall) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Unable to add sub-apps. The maximum number of apps added per call "
+        "is " +
+            String::Number(kMaximumNumberOfSubappsPerAddCall) + ", but " +
+            String::Number(sub_apps.size()) + " were provided.");
     return ScriptPromise();
   }
 
