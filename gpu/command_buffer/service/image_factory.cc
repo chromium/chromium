@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/image_factory.h"
 
-#include "ui/gl/gl_image.h"
+#include "base/notreached.h"
 
 namespace gpu {
 

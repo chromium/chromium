@@ -5,12 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_IMAGE_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_IMAGE_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
-#include "build/buildflag.h"
 #include "gpu/gpu_export.h"
-#include "gpu/ipc/common/surface_handle.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 namespace gles2 {
@@ -27,10 +22,8 @@ class GPU_EXPORT ImageFactory {
   ImageFactory();
 
  private:
-  // This class is used by validating command decoder for NaCL swapchain and
-  // IOSurfaceImageBackingFactory for getting IOSurface from GMB.
+  // This class is used by validating command decoder for NaCL swapchain.
   friend class gles2::GLES2DecoderImpl;
-  friend class IOSurfaceImageBackingFactory;
 
   // An image can only be bound to a texture with the appropriate type.
   virtual unsigned RequiredTextureType();

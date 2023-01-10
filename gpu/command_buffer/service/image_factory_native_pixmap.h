@@ -5,8 +5,12 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_IMAGE_FACTORY_NATIVE_PIXMAP_H_
 #define GPU_COMMAND_BUFFER_SERVICE_IMAGE_FACTORY_NATIVE_PIXMAP_H_
 
+#include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/gpu_gles2_export.h"
+#include "gpu/ipc/common/surface_handle.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gl {
 class GLImageNativePixmap;
