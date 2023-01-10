@@ -11,8 +11,11 @@ build_webui("build") {
 
   web_component_files = [ "app_service_internals.ts" ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/app_service_internals:mojo_bindings_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom-webui.js" ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/app_service_internals:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom-webui.ts" ]
 
-  ts_deps = [ "//third_party/polymer/v3_0:library" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/mojo:library",
+  ]
 }

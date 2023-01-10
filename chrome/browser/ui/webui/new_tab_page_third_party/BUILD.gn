@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "new_tab_page_third_party.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
   public_deps = [
     "//skia/public/mojom",
     "//ui/webui/resources/cr_components/most_visited:mojom",

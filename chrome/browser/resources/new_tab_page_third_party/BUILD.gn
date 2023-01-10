@@ -12,8 +12,8 @@ build_webui("build") {
     "new_tab_page_third_party.ts",
   ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom-webui.js" ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom-webui.ts" ]
 
   ts_deps = [
     "//third_party/polymer/v3_0:library",
@@ -21,4 +21,5 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/most_visited:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
+  ts_use_local_config = false
 }

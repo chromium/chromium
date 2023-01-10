@@ -14,6 +14,7 @@ mojom("mojo_bindings") {
     "//ui/gfx/geometry/mojom",
   ]
   webui_module_path = "/$cur_dir"
+  use_typescript_sources = true
 }
 
 source_set("image_editor_ui") {

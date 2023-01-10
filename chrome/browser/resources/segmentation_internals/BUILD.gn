@@ -11,7 +11,11 @@ build_webui("build") {
     "segmentation_internals.ts",
     "segmentation_internals_browser_proxy.ts",
   ]
-  mojo_files_deps = [ "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings_js__generator" ]
-  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom-webui.js" ]
-  ts_deps = [ "//ui/webui/resources:library" ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom-webui.ts" ]
+  ts_deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  ts_use_local_config = false
 }
