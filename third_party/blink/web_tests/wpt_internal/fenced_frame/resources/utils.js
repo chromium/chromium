@@ -28,6 +28,8 @@ function getRemoteContextURL(origin) {
 // @param {string} href - The base url of the page being navigated to
 // @param {string list} keylist - The list of key UUIDs to be used. Note that
 //                                order matters when extracting the keys
+// Note: There is a limit of 3 calls per origin per pageload for
+// `sharedStorage.selectURL()`, so `generateURN()` must also respect this limit.
 async function generateURN(href, keylist = []) {
   try {
     await sharedStorage.worklet.addModule(

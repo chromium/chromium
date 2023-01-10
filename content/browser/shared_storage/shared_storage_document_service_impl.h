@@ -25,6 +25,7 @@ class SharedStorageWorkletHostManager;
 extern CONTENT_EXPORT const char kSharedStorageDisabledMessage[];
 extern CONTENT_EXPORT const char kSharedStorageSelectURLDisabledMessage[];
 extern CONTENT_EXPORT const char kSharedStorageAddModuleDisabledMessage[];
+extern CONTENT_EXPORT const char kSharedStorageSelectURLLimitReachedMessage[];
 
 // Handle renderer-initiated shared storage access and worklet operations. The
 // worklet operations (i.e. `addModule()`, `selectURL()`, `run()`) will be

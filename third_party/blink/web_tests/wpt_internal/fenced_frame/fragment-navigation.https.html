@@ -14,11 +14,11 @@ async function runTest(first_url_opaque, second_url_opaque) {
   let fragment_url = base_url + "#foo";
 
   if (first_url_opaque) {
-    base_url = await generateURN(base_url);
+      base_url = await generateURNFromFledge(base_url, []);
   }
 
   if (second_url_opaque) {
-    fragment_url = await generateURN(fragment_url);
+      fragment_url = await generateURNFromFledge(fragment_url, []);
   }
 
   // Start the fenced frame at about:blank.

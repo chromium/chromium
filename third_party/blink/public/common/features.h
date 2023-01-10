@@ -131,6 +131,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // main frame has fenced frame depth 1, etc).
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kSharedStorageMaxAllowedFencedFrameDepthForSelectURL;
+// Maximum number of times per origin per pageload that
+// `sharedStorage.selectURL()` is allowed to be invoked.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad;
 
 // Enables the multiple prerendering in a sequential way:
 // https://crbug.com/1355151

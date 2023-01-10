@@ -46,6 +46,9 @@ const char kSharedStorageAddModuleDisabledMessage[] =
     "is disabled or both sharedStorage.selectURL and privateAggregation are "
     "disabled";
 
+const char kSharedStorageSelectURLLimitReachedMessage[] =
+    "sharedStorage.selectURL limit has been reached";
+
 // static
 bool& SharedStorageDocumentServiceImpl::
     GetBypassIsSharedStorageAllowedForTesting() {
@@ -177,6 +180,16 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     std::move(callback).Run(
         /*success=*/false,
         /*error_message=*/kSharedStorageSelectURLDisabledMessage,
+        /*result_config=*/absl::nullopt);
+    return;
+  }
+
+  if (!static_cast<PageImpl&>(
+           render_frame_host().GetOutermostMainFrame()->GetPage())
+           .IsSelectURLAllowed(render_frame_host().GetLastCommittedOrigin())) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageSelectURLLimitReachedMessage,
         /*result_config=*/absl::nullopt);
     return;
   }

@@ -310,6 +310,10 @@ const base::FeatureParam<int>
     kSharedStorageMaxAllowedFencedFrameDepthForSelectURL = {
         &kSharedStorageAPI,
         "SharedStorageMaxAllowedFencedFrameDepthForSelectURL", 1};
+const base::FeatureParam<int>
+    kSharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad = {
+        &kSharedStorageAPI,
+        "SharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad", 3};
 
 BASE_FEATURE(kSameSiteCrossOriginForSpeculationRulesPrerender,
              "SameSiteCrossOriginForSpeculationRulesPrerender",

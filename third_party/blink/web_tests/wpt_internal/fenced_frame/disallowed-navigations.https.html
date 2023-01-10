@@ -133,7 +133,6 @@ for (const mode of ['opaque-ads', 'default']) {
 //   - data: URL
 //   - blob: URL
 //   - javascript: URL
-//   - http: URL
 promise_test(async t => {
   const key = token();
   const urn = await generateURN(`data:text/html,${createLocalSource(key)}`);
@@ -153,28 +152,6 @@ promise_test(async t => {
   const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
   assert_equals(result, "NOT LOADED");
 }, "fenced frame opaque URN => blob: URL");
-
-promise_test(async () => {
-  const fencedframe = attachFencedFrameContext(
-      {attributes: ['mode', 'opaque-ads']});
-  const urn = await generateURN("javascript:window.jsURLExecuted = true;");
-  fencedframe.src = urn;
-  // Just in case the javascript URL executes asynchronously, let's wait for it.
-  await fencedframe.execute(async () => {
-    assert_equals(window.jsURLExecuted, undefined);
-  });
-}, "fenced frame opaque URN => javascript: URL");
-
-promise_test(async t => {
-  const key = token();
-  const http_url = new URL("resources/embeddee.html",
-      get_host_info().HTTP_ORIGIN + location.pathname);
-  const urn = await generateURN(http_url, [key]);
-  const fencedframe = attachFencedFrame(urn, /*mode=*/'opaque-ads');
-  const loaded_promise = nextValueFromServer(key);
-  const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
-  assert_equals(result, "NOT LOADED");
-}, "fenced frame opaque URN => http: URL");
 </script>
 
 </body>

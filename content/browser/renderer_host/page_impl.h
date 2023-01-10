@@ -20,6 +20,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
@@ -175,6 +176,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Returns the keyboard layout mapping.
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
+  // Returns whether a pending call to `sharedStorage.selectURL()` should be
+  // allowed for `origin`, incrementing the corresponding count in
+  // `select_url_count_` if so.
+  bool IsSelectURLAllowed(const url::Origin& origin);
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 
@@ -237,6 +243,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Fenced frames:
   // Any fenced frames created within this page will access this map.
   FencedFrameURLMapping fenced_frame_urls_map_;
+
+  // A map of origins to the number of unblocked calls made to
+  // `sharedStorage.selectURL()` from the given origin during this page load.
+  // `select_url_count_` is not cleared until `this` is destroyed, and it does
+  // not rely on any assumptions about when specifically `this` is destroyed
+  // (e.g. during navigation or not).
+  base::flat_map<url::Origin, int> select_url_count_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.

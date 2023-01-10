@@ -304,4 +304,16 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
 
+bool PageImpl::IsSelectURLAllowed(const url::Origin& origin) {
+  int& count = select_url_count_[origin];
+  if (count >=
+      blink::features::
+          kSharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad.Get()) {
+    return false;
+  }
+
+  ++count;
+  return true;
+}
+
 }  // namespace content

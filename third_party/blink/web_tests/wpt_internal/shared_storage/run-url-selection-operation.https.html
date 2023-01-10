@@ -39,6 +39,19 @@ promise_test(async () => {
   attachFencedFrame(uuid2, 'opaque-ads');
   const result2 = await nextValueFromServer(ancestor_key);
   assert_equals(result2, "frame0_loaded");
+
+  // The per-origin per-pageload call limit for `selectURL()` has been
+  // reached. The next call should be blocked.
+  try {
+    await sharedStorage.selectURL(
+      "test-url-selection-operation", [{url: url0}, {url: url1}],
+	{data: {'mockResult': 0}});
+  } catch (e) {
+      assert_equals(e.name, 'OperationError');
+      assert_equals(e.message, 'sharedStorage.selectURL limit has been reached');
+      return;
+  }
+  assert_unreached("did not reject final call");
 }, 'selectURL()');
 
 </script>
