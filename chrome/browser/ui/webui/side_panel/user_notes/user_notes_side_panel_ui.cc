@@ -43,7 +43,10 @@ void UserNotesSidePanelUI::CreatePageHandler(
     mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
     mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler> receiver) {
   DCHECK(page);
-
+  if (!browser_) {
+    return;
+  }
   user_notes_page_handler_ = std::make_unique<UserNotesPageHandler>(
-      std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()), this);
+      std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()),
+      browser_, this);
 }

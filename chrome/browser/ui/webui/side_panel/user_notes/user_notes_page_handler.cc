@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/common/power_overview.h"
@@ -89,17 +90,24 @@ UserNotesPageHandler::UserNotesPageHandler(
     mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler> receiver,
     mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
     Profile* profile,
+    Browser* browser,
     UserNotesSidePanelUI* user_notes_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile),
       service_(PowerBookmarkServiceFactory::GetForBrowserContext(profile_)),
+      browser_(browser),
       user_notes_ui_(user_notes_ui) {
   service_->AddObserver(this);
+  DCHECK(browser_);
+  browser_->tab_strip_model()->AddObserver(this);
+  Observe(browser_->tab_strip_model()->GetActiveWebContents());
 }
 
 UserNotesPageHandler::~UserNotesPageHandler() {
   service_->RemoveObserver(this);
+  browser_->tab_strip_model()->RemoveObserver(this);
+  Observe(nullptr);
 }
 
 void UserNotesPageHandler::ShowUI() {
@@ -145,6 +153,11 @@ void UserNotesPageHandler::GetNotesForCurrentTab(
 }
 void UserNotesPageHandler::NewNoteFinished(const std::string& text,
                                            NewNoteFinishedCallback callback) {
+  if (current_tab_url_.is_empty()) {
+    LOG(ERROR) << "Note cannot be created with empty url.";
+    std::move(callback).Run(false);
+    return;
+  }
   std::string guid = base::GUID::GenerateRandomV4().AsLowercaseString();
   service_->CreatePower(
       MakePower(guid, text, current_tab_url_, /*is_create=*/true),
@@ -156,6 +169,11 @@ void UserNotesPageHandler::NewNoteFinished(const std::string& text,
 void UserNotesPageHandler::UpdateNote(const std::string& guid,
                                       const std::string& text,
                                       UpdateNoteCallback callback) {
+  if (current_tab_url_.is_empty()) {
+    LOG(ERROR) << "Note cannot be updated with empty url.";
+    std::move(callback).Run(false);
+    return;
+  }
   service_->UpdatePower(
       MakePower(guid, text, current_tab_url_, /*is_create=*/false),
       base::BindOnce([](UpdateNoteCallback callback,
@@ -184,4 +202,23 @@ void UserNotesPageHandler::DeleteNotesForUrl(
 
 void UserNotesPageHandler::OnPowersChanged() {
   page_->NotesChanged();
+}
+
+void UserNotesPageHandler::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (!selection.active_tab_changed()) {
+    return;
+  }
+  Observe(selection.new_contents);
+  current_tab_url_ = selection.new_contents
+                         ? selection.new_contents->GetLastCommittedURL()
+                         : GURL();
+}
+
+void UserNotesPageHandler::PrimaryPageChanged(content::Page& page) {
+  current_tab_url_ = browser_->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL();
 }

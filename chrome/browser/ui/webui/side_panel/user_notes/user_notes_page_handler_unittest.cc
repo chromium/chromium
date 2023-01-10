@@ -21,11 +21,13 @@ class TestUserNotesPageHandler : public UserNotesPageHandler {
  public:
   explicit TestUserNotesPageHandler(
       mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
-      Profile* profile)
+      Profile* profile,
+      Browser* browser)
       : UserNotesPageHandler(
             mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler>(),
             std::move(page),
             profile,
+            browser,
             nullptr) {}
 };
 
@@ -54,7 +56,7 @@ class UserNotesPageHandlerTest : public BrowserWithTestWindowTest {
     features_.InitAndEnableFeature(power_bookmarks::kPowerBookmarkBackend);
     BrowserWithTestWindowTest::SetUp();
     handler_ = std::make_unique<TestUserNotesPageHandler>(
-        page_.BindAndGetRemote(), profile());
+        page_.BindAndGetRemote(), profile(), browser());
 
     GURL url1(u"https://url1");
     GURL url2(u"https://url2");
@@ -125,6 +127,15 @@ TEST_F(UserNotesPageHandlerTest, CreateAndDeleteNote) {
   ASSERT_EQ(0u, notes2.size());
 }
 
+TEST_F(UserNotesPageHandlerTest, ShouldNotCreateNoteWithEmptyURL) {
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL::EmptyGURL());
+  ASSERT_FALSE(waiter.NewNoteFinished("note5"));
+
+  auto notes = waiter.GetNotesForCurrentTab();
+  ASSERT_EQ(0u, notes.size());
+}
+
 TEST_F(UserNotesPageHandlerTest, UpdateNote) {
   EXPECT_CALL(page_, NotesChanged()).Times(3);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
@@ -152,6 +163,30 @@ TEST_F(UserNotesPageHandlerTest, DeleteNotesForUrl) {
   handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
   auto notes = waiter.GetNotesForCurrentTab();
   ASSERT_EQ(0u, notes.size());
+}
+
+TEST_F(UserNotesPageHandlerTest, CurrentTabUrlChangedWithTabStripModelChanged) {
+  ASSERT_EQ(GURL(u"https://url1"), handler()->GetCurrentTabUrlForTesting());
+  AddTab(browser(), GURL(u"https://newurl1"));
+  ASSERT_EQ(GURL(u"https://newurl1"), handler()->GetCurrentTabUrlForTesting());
+  AddTab(browser(), GURL(u"https://newurl2"));
+  ASSERT_EQ(GURL(u"https://newurl2"), handler()->GetCurrentTabUrlForTesting());
+  browser()->tab_strip_model()->SelectNextTab();
+  ASSERT_EQ(GURL(u"https://newurl1"), handler()->GetCurrentTabUrlForTesting());
+  browser()->tab_strip_model()->CloseWebContentsAt(1,
+                                                   TabCloseTypes::CLOSE_NONE);
+  ASSERT_EQ(GURL(u"https://newurl2"), handler()->GetCurrentTabUrlForTesting());
+}
+
+TEST_F(UserNotesPageHandlerTest, CurrentTabUrlChangedWithNavigation) {
+  AddTab(browser(), GURL(u"https://newurl1"));
+  ASSERT_EQ(GURL(u"https://newurl1"), handler()->GetCurrentTabUrlForTesting());
+  NavigateAndCommitActiveTab(GURL(u"https://newurl2"));
+  ASSERT_EQ(GURL(u"https://newurl2"), handler()->GetCurrentTabUrlForTesting());
+  AddTab(browser(), GURL(u"https://newurl3"));
+  ASSERT_EQ(GURL(u"https://newurl3"), handler()->GetCurrentTabUrlForTesting());
+  NavigateAndCommitActiveTab(GURL(u"https://newurl4"));
+  ASSERT_EQ(GURL(u"https://newurl4"), handler()->GetCurrentTabUrlForTesting());
 }
 
 }  // namespace

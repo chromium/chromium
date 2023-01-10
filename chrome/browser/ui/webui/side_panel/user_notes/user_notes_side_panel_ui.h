@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
+class Browser;
 class UserNotesPageHandler;
 
 class UserNotesSidePanelUI
@@ -26,6 +27,8 @@ class UserNotesSidePanelUI
       mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandlerFactory>
           factory);
 
+  void set_browser(Browser* browser) { browser_ = browser; }
+
  private:
   // user_notes::mojom::UserNotesPageHandlerFactory
   void CreatePageHandler(
@@ -37,6 +40,8 @@ class UserNotesSidePanelUI
       page_factory_receiver_{this};
 
   std::unique_ptr<UserNotesPageHandler> user_notes_page_handler_;
+
+  raw_ptr<Browser> browser_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

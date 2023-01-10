@@ -406,13 +406,19 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
 }
 
 std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesWebUIView() {
+  auto wrapper = std::make_unique<BubbleContentsWrapperT<UserNotesSidePanelUI>>(
+      GURL(chrome::kChromeUIUserNotesSidePanelURL), browser_->profile(),
+      IDS_USER_NOTE_TITLE,
+      /*webui_resizes_host=*/false,
+      /*esc_closes_ui=*/false);
+  auto* raw_wrapper = wrapper.get();
   auto view = std::make_unique<SidePanelWebUIViewT<UserNotesSidePanelUI>>(
-      base::RepeatingClosure(), base::RepeatingClosure(),
-      std::make_unique<BubbleContentsWrapperT<UserNotesSidePanelUI>>(
-          GURL(chrome::kChromeUIUserNotesSidePanelURL), browser_->profile(),
-          IDS_USER_NOTE_TITLE,
-          /*webui_resizes_host=*/false,
-          /*esc_closes_ui=*/false));
+      base::RepeatingClosure(), base::RepeatingClosure(), std::move(wrapper));
+  // Need to set browser after SidePanelWebUIViewT is constructed since it
+  // creates the WebUIController.
+  UserNotesSidePanelUI* notes_ui = raw_wrapper->GetWebUIController();
+  DCHECK(notes_ui);
+  notes_ui->set_browser(browser_);
   // TODO(corising): Remove this and appropriately update availability based on
   // notes ui readiness.
   view->SetVisible(true);
