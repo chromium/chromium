@@ -79,6 +79,16 @@ if (enable_me2me_host) {
   }
 }
 
+if (remoting_use_x11 || remoting_use_wayland) {
+  source_set("wayland") {
+    sources = [
+      "wayland_utils.cc",
+      "wayland_utils.h",
+    ]
+    deps = [ "//base" ]
+  }
+}
+
 if (remoting_use_x11) {
   source_set("x11") {
     sources = [

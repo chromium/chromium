@@ -43,6 +43,10 @@
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if defined(REMOTING_USE_WAYLAND) || defined(REMOTING_USE_X11)
+#include "remoting/host/linux/wayland_utils.h"
+#endif  // defined(REMOTING_USE_WAYLAND) || defined(REMOTING_USE_X11)
+
 #if defined(REMOTING_USE_WAYLAND)
 #include "remoting/host/linux/wayland_manager.h"
 #endif  // defined(REMOTING_USE_WAYLAND)
@@ -144,7 +148,9 @@ void It2MeHost::Connect(
   OnPolicyUpdate(std::move(policies));
 
 #if defined(REMOTING_USE_WAYLAND)
-  WaylandManager::Get()->Init(host_context_->ui_task_runner());
+  if (IsRunningWayland()) {
+    WaylandManager::Get()->Init(host_context_->ui_task_runner());
+  }
 #endif  // defined(REMOTING_USE_WAYLAND)
 
   desktop_environment_factory_ =
@@ -281,7 +287,9 @@ void It2MeHost::ConnectOnNetworkThread(
   // Set up the desktop environment options.
   DesktopEnvironmentOptions options(DesktopEnvironmentOptions::CreateDefault());
 #if defined(REMOTING_USE_WAYLAND)
-  options.desktop_capture_options()->set_prefer_cursor_embedded(true);
+  if (IsRunningWayland()) {
+    options.desktop_capture_options()->set_prefer_cursor_embedded(true);
+  }
 #endif
   options.set_enable_user_interface(enable_dialogs_);
   options.set_enable_notifications(enable_notifications_);

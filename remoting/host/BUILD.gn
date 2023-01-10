@@ -508,6 +508,7 @@ static_library("common") {
       "x11_display_util.h",
     ]
     deps += [
+      "//remoting/host/linux:wayland",
       "//remoting/host/linux:x11",
       "//ui/base/x",
       "//ui/events/platform/x11",
@@ -552,6 +553,7 @@ static_library("common") {
       "linux/wayland_seat.h",
     ]
     public_deps += [
+      "//remoting/host/linux:wayland",
       "//third_party/wayland:wayland_client",
       "//third_party/wayland-protocols:xdg_output_protocol",
     ]
@@ -1058,7 +1060,10 @@ if (enable_me2me_host) {
 
     if (remoting_use_x11) {
       defines += [ "REMOTING_USE_X11" ]
-      deps += [ "//ui/events/platform/x11:x11" ]
+      deps += [
+        "//remoting/host/linux:wayland",
+        "//ui/events/platform/x11:x11",
+      ]
     } else if (remoting_use_wayland && is_linux) {
       defines += [ "REMOTING_USE_WAYLAND" ]
       deps += [ "//ui/gtk:gtk_config" ]

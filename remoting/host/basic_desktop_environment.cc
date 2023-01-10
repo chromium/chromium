@@ -38,6 +38,7 @@
 
 #if defined(REMOTING_USE_X11)
 #include "base/threading/watchdog.h"
+#include "remoting/host/linux/wayland_utils.h"
 #include "remoting/host/linux/x11_util.h"
 #endif
 
@@ -196,12 +197,14 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
 
 #if defined(REMOTING_USE_X11)
-  // Workaround for http://crbug.com/1361502: Run each capturer (and
-  // mouse-cursor-monitor) on a separate X11 Display.
-  auto new_options = webrtc::DesktopCaptureOptions::CreateDefault();
-  mutable_desktop_capture_options()->set_x_display(
-      std::move(new_options.x_display()));
-  desktop_capture_options().x_display()->IgnoreXServerGrabs();
+  if (!IsRunningWayland()) {
+    // Workaround for http://crbug.com/1361502: Run each capturer (and
+    // mouse-cursor-monitor) on a separate X11 Display.
+    auto new_options = webrtc::DesktopCaptureOptions::CreateDefault();
+    mutable_desktop_capture_options()->set_x_display(
+        std::move(new_options.x_display()));
+    desktop_capture_options().x_display()->IgnoreXServerGrabs();
+  }
 #endif  // REMOTING_USE_X11
 
   std::unique_ptr<DesktopCapturer> desktop_capturer;
@@ -240,13 +243,15 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
       options_(options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 #if defined(REMOTING_USE_X11)
-  // TODO(yuweih): The watchdog is just to test the hypothesis.
-  // The IgnoreXServerGrabs() call should probably be moved to whichever
-  // thread that created desktop_capture_options().x_display().
-  IgnoreXServerGrabsWatchdog watchdog;
-  watchdog.Arm();
-  desktop_capture_options().x_display()->IgnoreXServerGrabs();
-  watchdog.Disarm();
+  if (!IsRunningWayland()) {
+    // TODO(yuweih): The watchdog is just to test the hypothesis.
+    // The IgnoreXServerGrabs() call should probably be moved to whichever
+    // thread that created desktop_capture_options().x_display().
+    IgnoreXServerGrabsWatchdog watchdog;
+    watchdog.Arm();
+    desktop_capture_options().x_display()->IgnoreXServerGrabs();
+    watchdog.Disarm();
+  }
 #elif BUILDFLAG(IS_WIN)
   options_.desktop_capture_options()->set_allow_directx_capturer(
       IsD3DAvailable());
