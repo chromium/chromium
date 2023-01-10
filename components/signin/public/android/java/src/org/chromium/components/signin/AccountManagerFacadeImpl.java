@@ -239,10 +239,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Fetches gaia ids, wraps them into {@link CoreAccountInfo} and returns them.
+     * Fetches gaia ids, wraps them into {@link CoreAccountInfo} and updates {@link
+     * #mCoreAccountInfosPromise}.
      */
     @MainThread
-    private void fetchGaiaIdsAndFulfillCoreAccountInfosPromise() {
+    private void fetchGaiaIdsAndUpdateCoreAccountInfos() {
         ThreadUtils.assertOnUiThread();
         getAccounts().then(accounts -> {
             List<String> emails = AccountUtils.toAccountNames(accounts);
@@ -251,7 +252,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 public @Nullable List<String> doInBackground() {
                     final long seedingStartTime = SystemClock.elapsedRealtime();
                     List<String> gaiaIds = new ArrayList<>();
-                    for (String email : AccountUtils.toAccountNames(accounts)) {
+                    for (String email : emails) {
                         final String gaiaId = getAccountGaiaId(email);
                         if (gaiaId == null) {
                             return null;
@@ -266,7 +267,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 @Override
                 public void onPostExecute(@Nullable List<String> gaiaIds) {
                     if (gaiaIds == null) {
-                        fetchGaiaIdsAndFulfillCoreAccountInfosPromise();
+                        fetchGaiaIdsAndUpdateCoreAccountInfos();
                         return;
                     }
                     List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
@@ -299,7 +300,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             protected void onPostExecute(List<Account> allAccounts) {
                 mAllAccounts.set(allAccounts);
                 updateAccounts();
-                fetchGaiaIdsAndFulfillCoreAccountInfosPromise();
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
@@ -323,6 +323,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         for (AccountsChangeObserver observer : mObservers) {
             observer.onAccountsChanged();
         }
+
+        fetchGaiaIdsAndUpdateCoreAccountInfos();
     }
 
     private List<Account> getFilteredAccounts() {
