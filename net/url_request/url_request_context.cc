@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/http_user_agent_settings.h"
@@ -125,9 +126,9 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     NetworkTrafficAnnotationTag traffic_annotation,
     bool is_for_websockets,
     const absl::optional<net::NetLogSource> net_log_source) const {
-  return base::WrapUnique(new URLRequest(url, priority, delegate, this,
-                                         traffic_annotation, is_for_websockets,
-                                         net_log_source));
+  return std::make_unique<URLRequest>(
+      base::PassKey<URLRequestContext>(), url, priority, delegate, this,
+      traffic_annotation, is_for_websockets, net_log_source);
 }
 
 void URLRequestContext::AssertNoURLRequests() const {

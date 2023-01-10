@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "net/base/auth.h"
 #include "net/base/io_buffer.h"
@@ -574,7 +575,8 @@ void URLRequest::Start() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-URLRequest::URLRequest(const GURL& url,
+URLRequest::URLRequest(base::PassKey<URLRequestContext> pass_key,
+                       const GURL& url,
                        RequestPriority priority,
                        Delegate* delegate,
                        const URLRequestContext* context,

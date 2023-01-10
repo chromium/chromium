@@ -18,6 +18,7 @@
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "net/base/auth.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/idempotency.h"
@@ -205,6 +206,16 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
    protected:
     virtual ~Delegate() = default;
   };
+
+  // URLRequests are always created by calling URLRequestContext::CreateRequest.
+  URLRequest(base::PassKey<URLRequestContext> pass_key,
+             const GURL& url,
+             RequestPriority priority,
+             Delegate* delegate,
+             const URLRequestContext* context,
+             NetworkTrafficAnnotationTag traffic_annotation,
+             bool is_for_websockets,
+             absl::optional<net::NetLogSource> net_log_source);
 
   URLRequest(const URLRequest&) = delete;
   URLRequest& operator=(const URLRequest&) = delete;
@@ -861,20 +872,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
  private:
   friend class URLRequestJob;
-  friend class URLRequestContext;
 
   // For testing purposes.
   // TODO(maksims): Remove this.
   friend class TestNetworkDelegate;
-
-  // URLRequests are always created by calling URLRequestContext::CreateRequest.
-  URLRequest(const GURL& url,
-             RequestPriority priority,
-             Delegate* delegate,
-             const URLRequestContext* context,
-             NetworkTrafficAnnotationTag traffic_annotation,
-             bool is_for_websockets,
-             absl::optional<net::NetLogSource> net_log_source);
 
   // Resumes or blocks a request paused by the NetworkDelegate::OnBeforeRequest
   // handler. If |blocked| is true, the request is blocked and an error page is
