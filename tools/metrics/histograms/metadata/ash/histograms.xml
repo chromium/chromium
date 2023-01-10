@@ -1211,6 +1211,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Ash.CaptureModeController.Projector.RecordingStartsWithDemoTools.{TabletOrClamshell}"
+    enum="BooleanEnabled" expires_after="2024-01-12">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether a Projector-initiated recording starts with demo tools
+    feature enabled or not in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
     name="Ash.CaptureModeController.Projector.ScreenRecordingLength.{TabletOrClamshell}"
     units="seconds" expires_after="2023-10-17">
   <owner>afakhry@chromium.org</owner>
@@ -1264,8 +1276,20 @@ chromium-metrics-reviews@google.com.
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
-    Records whether a capture session starts with camera or not in
+    Records whether a capture mode video recording starts with camera or not in
     {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.RecordingStartsWithDemoTools.{TabletOrClamshell}"
+    enum="BooleanEnabled" expires_after="2024-01-12">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether a capture mode video recording starts with demo tools
+    feature enabled or not in {TabletOrClamshell}.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>

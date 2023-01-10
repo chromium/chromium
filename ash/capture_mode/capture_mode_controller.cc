@@ -1508,6 +1508,8 @@ void CaptureModeController::BeginVideoRecording(
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::InterruptVideoRecording,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  RecordRecordingStartsWithDemoTools(enable_demo_tools_, for_projector);
 }
 
 void CaptureModeController::InterruptVideoRecording() {

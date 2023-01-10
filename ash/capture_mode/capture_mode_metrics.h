@@ -197,6 +197,10 @@ void RecordCameraSizeOnStart(CaptureModeCameraSize camera_size);
 // Records the camera position when recording starts.
 void RecordCameraPositionOnStart(CameraPreviewSnapPosition camera_position);
 
+// Records how often recording starts with demo tools feature enabled.
+void RecordRecordingStartsWithDemoTools(bool demo_tools_enabled,
+                                        bool is_in_projector_mode);
+
 // Appends the proper suffix to `prefix` based on whether the user is in tablet
 // mode or not.
 ASH_EXPORT std::string GetCaptureModeHistogramName(std::string prefix);

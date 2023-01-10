@@ -23,6 +23,8 @@ constexpr char kCaptureRegionAdjustmentHistogramName[] =
     "Ash.CaptureModeController.CaptureRegionAdjusted";
 constexpr char kConsecutiveScreenshotHistogramName[] =
     "Ash.CaptureModeController.ConsecutiveScreenshots";
+constexpr char kDemoToolsEnabledOnRecordingStart[] =
+    "Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart";
 constexpr char kEntryHistogramName[] = "Ash.CaptureModeController.EntryPoint";
 constexpr char kQuickActionHistogramName[] =
     "Ash.CaptureModeController.QuickAction";
@@ -46,6 +48,8 @@ constexpr char kProjectorRecordTimeHistogramName[] =
     "Ash.CaptureModeController.Projector.ScreenRecordingLength";
 constexpr char kRecordingStartsWithCamera[] =
     "Ash.CaptureModeController.RecordingStartsWithCamera";
+constexpr char kProjectorDemoToolsEnabledOnRecordingStart[] =
+    "Ash.CaptureModeController.Projector.DemoToolsEnabledOnRecordingStart";
 constexpr char kProjectorRecordingStartsWithCamera[] =
     "Ash.CaptureModeController.Projector.RecordingStartsWithCamera";
 constexpr char kCameraDisconnectionsDuringRecordings[] =
@@ -206,6 +210,15 @@ void RecordCameraPositionOnStart(CameraPreviewSnapPosition camera_position) {
   base::UmaHistogramEnumeration(
       GetCaptureModeHistogramName(kRecordingCameraPositionOnStart),
       camera_position);
+}
+
+void RecordRecordingStartsWithDemoTools(bool demo_tools_enabled,
+                                        bool is_in_projector_mode) {
+  const std::string histogram_name =
+      is_in_projector_mode ? kProjectorDemoToolsEnabledOnRecordingStart
+                           : kDemoToolsEnabledOnRecordingStart;
+  base::UmaHistogramBoolean(GetCaptureModeHistogramName(histogram_name),
+                            demo_tools_enabled);
 }
 
 std::string GetCaptureModeHistogramName(std::string prefix) {

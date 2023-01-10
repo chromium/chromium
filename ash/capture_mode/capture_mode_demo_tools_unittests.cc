@@ -12,6 +12,8 @@
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 #include "ash/capture_mode/capture_mode_demo_tools_test_api.h"
 #include "ash/capture_mode/capture_mode_menu_toggle_button.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
@@ -27,6 +29,7 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_tree_host.h"
@@ -66,14 +69,15 @@ constexpr ui::KeyboardCode kIconKeyCodes[] = {ui::VKEY_BROWSER_BACK,
 
 class CaptureModeDemoToolsTest : public AshTestBase {
  public:
-  CaptureModeDemoToolsTest() = default;
+  CaptureModeDemoToolsTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kCaptureModeDemoTools);
+  }
   CaptureModeDemoToolsTest(const CaptureModeDemoToolsTest&) = delete;
   CaptureModeDemoToolsTest& operator=(const CaptureModeDemoToolsTest&) = delete;
   ~CaptureModeDemoToolsTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kCaptureModeDemoTools);
     AshTestBase::SetUp();
     window_ = CreateTestWindow(gfx::Rect(20, 30, 601, 300));
 
@@ -630,6 +634,48 @@ TEST_F(CaptureModeDemoToolsTest,
   FireTimerAndVerifyWidget(/*should_hide_view=*/true);
 }
 
+// Tests that the metrics that record if a recording starts with demo tools
+// feature enabled are recorded correctly in a capture session both in clamshell
+// and tablet mode.
+TEST_F(CaptureModeDemoToolsTest,
+       DemoToolsEnabledOnRecordingStartHistogramTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart";
+
+  struct {
+    bool enable_tablet_mode;
+    bool enable_demo_tools;
+  } kTestCases[]{
+      {/*enable_tablet_mode=*/false, /*enable_demo_tools=*/false},
+      {/*enable_tablet_mode=*/false, /*enable_demo_tools=*/true},
+      {/*enable_tablet_mode=*/true, /*enable_demo_tools=*/false},
+      {/*enable_tablet_mode=*/true, /*enable_demo_tools=*/true},
+  };
+
+  for (const auto test_case : kTestCases) {
+    if (test_case.enable_tablet_mode) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    const auto histogram_name = GetCaptureModeHistogramName(kHistogramNameBase);
+    histogram_tester.ExpectBucketCount(histogram_name,
+                                       test_case.enable_demo_tools, 0);
+    auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                           CaptureModeType::kVideo);
+    controller->EnableDemoTools(test_case.enable_demo_tools);
+    StartVideoRecordingImmediately();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    WaitForCaptureFileToBeSaved();
+    histogram_tester.ExpectBucketCount(histogram_name,
+                                       test_case.enable_demo_tools, 1);
+  }
+}
+
 class CaptureModeDemoToolsTestWithAllSources
     : public CaptureModeDemoToolsTest,
       public testing::WithParamInterface<CaptureModeSource> {
@@ -882,5 +928,74 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(CaptureModeSource::kFullscreen,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
+
+class ProjectorCaptureModeDemoToolsTest : public CaptureModeDemoToolsTest {
+ public:
+  ProjectorCaptureModeDemoToolsTest() = default;
+  ~ProjectorCaptureModeDemoToolsTest() override = default;
+
+  // CaptureModeDemoToolsTest:
+  void SetUp() override {
+    CaptureModeDemoToolsTest::SetUp();
+    projector_helper_.SetUp();
+  }
+
+  void StartProjectorModeSession() {
+    projector_helper_.StartProjectorModeSession();
+  }
+
+ private:
+  ProjectorCaptureModeIntegrationHelper projector_helper_;
+};
+
+// Tests that the metrics that record if a recording starts with demo tools
+// feature enabled are recorded correctly in a projector-initiated capture
+// session both in clamshell and tablet mode.
+TEST_F(ProjectorCaptureModeDemoToolsTest,
+       ProjectorDemoToolsEnabledOnRecordingStartHistogramTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.Projector.DemoToolsEnabledOnRecordingStart";
+
+  struct {
+    bool enable_tablet_mode;
+    bool enable_demo_tools;
+  } kTestCases[]{
+      {/*enable_tablet_mode=*/false, /*enable_demo_tools=*/false},
+      {/*enable_tablet_mode=*/false, /*enable_demo_tools=*/true},
+      {/*enable_tablet_mode=*/true, /*enable_demo_tools=*/false},
+      {/*enable_tablet_mode=*/true, /*enable_demo_tools=*/true},
+  };
+
+  for (const auto test_case : kTestCases) {
+    if (test_case.enable_tablet_mode) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    const auto histogram_name = GetCaptureModeHistogramName(kHistogramNameBase);
+    histogram_tester.ExpectBucketCount(histogram_name,
+                                       test_case.enable_demo_tools, 0);
+    auto* controller = CaptureModeController::Get();
+    controller->SetType(CaptureModeType::kVideo);
+    controller->SetSource(CaptureModeSource::kFullscreen);
+
+    StartProjectorModeSession();
+    controller->EnableDemoTools(test_case.enable_demo_tools);
+    EXPECT_TRUE(controller->IsActive());
+    EXPECT_TRUE(controller->capture_mode_session()->is_in_projector_mode());
+
+    StartVideoRecordingImmediately();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    WaitForSeconds(1);
+
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    WaitForCaptureFileToBeSaved();
+    histogram_tester.ExpectBucketCount(histogram_name,
+                                       test_case.enable_demo_tools, 1);
+  }
+}
 
 }  // namespace ash
