@@ -3007,16 +3007,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
                     FROM_HERE);
 }
 
-// TODO(crbug.com/1405319): Re-enable this test
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_EvictOnServiceWorkerUnregistration \
-  DISABLED_EvictOnServiceWorkerUnregistration
-#else
-#define MAYBE_EvictOnServiceWorkerUnregistration \
-  EvictOnServiceWorkerUnregistration
-#endif
+// TODO(crbug.com/1405319): Test is flaky on every platform.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_EvictOnServiceWorkerUnregistration) {
+                       DISABLED_EvictOnServiceWorkerUnregistration) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(
       base::BindRepeating(&RequestHandlerForUpdateWorker));
