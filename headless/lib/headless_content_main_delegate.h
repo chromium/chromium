@@ -31,7 +31,6 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
  public:
   explicit HeadlessContentMainDelegate(
       std::unique_ptr<HeadlessBrowserImpl> browser);
-  explicit HeadlessContentMainDelegate(HeadlessBrowser::Options options);
 
   HeadlessContentMainDelegate(const HeadlessContentMainDelegate&) = delete;
   HeadlessContentMainDelegate& operator=(const HeadlessContentMainDelegate&) =
@@ -64,8 +63,6 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
  private:
   friend class HeadlessBrowserTest;
 
-  void Init();
-
   HeadlessBrowser::Options* options();
 
   static HeadlessContentMainDelegate* GetInstance();
@@ -79,7 +76,6 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   HeadlessContentClient content_client_;
 
   std::unique_ptr<HeadlessBrowserImpl> browser_;
-  std::unique_ptr<HeadlessBrowser::Options> options_;
 };
 
 }  // namespace headless

@@ -158,16 +158,7 @@ void InitApplicationLocale(const base::CommandLine& command_line) {
 HeadlessContentMainDelegate::HeadlessContentMainDelegate(
     std::unique_ptr<HeadlessBrowserImpl> browser)
     : browser_(std::move(browser)) {
-  Init();
-}
-
-HeadlessContentMainDelegate::HeadlessContentMainDelegate(
-    HeadlessBrowser::Options options)
-    : options_(std::make_unique<HeadlessBrowser::Options>(std::move(options))) {
-  Init();
-}
-
-void HeadlessContentMainDelegate::Init() {
+  DCHECK(browser_);
   DCHECK(!g_current_headless_content_main_delegate);
   g_current_headless_content_main_delegate = this;
 }
@@ -431,9 +422,7 @@ HeadlessContentMainDelegate* HeadlessContentMainDelegate::GetInstance() {
 }
 
 HeadlessBrowser::Options* HeadlessContentMainDelegate::options() {
-  if (browser_)
-    return browser_->options();
-  return options_.get();
+  return browser_->options();
 }
 
 content::ContentClient* HeadlessContentMainDelegate::CreateContentClient() {
@@ -455,8 +444,7 @@ HeadlessContentMainDelegate::CreateContentRendererClient() {
 
 content::ContentUtilityClient*
 HeadlessContentMainDelegate::CreateContentUtilityClient() {
-  utility_client_ =
-      std::make_unique<HeadlessContentUtilityClient>(options()->user_agent);
+  utility_client_ = std::make_unique<HeadlessContentUtilityClient>();
   return utility_client_.get();
 }
 

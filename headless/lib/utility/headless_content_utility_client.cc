@@ -4,15 +4,13 @@
 
 #include "headless/lib/utility/headless_content_utility_client.h"
 
-#include "base/bind.h"
-#include "content/public/utility/utility_thread.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "components/services/print_compositor/print_compositor_impl.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
+#include "content/public/utility/utility_thread.h"
+#include "mojo/public/cpp/bindings/service_factory.h"
 #endif
 
 namespace headless {
@@ -30,10 +28,7 @@ auto RunPrintCompositor(
 
 }  // namespace
 
-HeadlessContentUtilityClient::HeadlessContentUtilityClient(
-    const std::string& user_agent)
-    : user_agent_(user_agent) {}
-
+HeadlessContentUtilityClient::HeadlessContentUtilityClient() = default;
 HeadlessContentUtilityClient::~HeadlessContentUtilityClient() = default;
 
 void HeadlessContentUtilityClient::RegisterMainThreadServices(

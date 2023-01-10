@@ -184,13 +184,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   // |browser_| may have already been destroyed.
 
   command_line->AppendSwitch(::switches::kHeadless);
-  const base::CommandLine& old_command_line(
-      *base::CommandLine::ForCurrentProcess());
-  if (old_command_line.HasSwitch(switches::kUserAgent)) {
-    command_line->AppendSwitchNative(
-        switches::kUserAgent,
-        old_command_line.GetSwitchValueNative(switches::kUserAgent));
-  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int fd;
@@ -202,6 +195,8 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+  const base::CommandLine& old_command_line(
+      *base::CommandLine::ForCurrentProcess());
   if (old_command_line.HasSwitch(switches::kDisablePDFTagging))
     command_line->AppendSwitch(switches::kDisablePDFTagging);
 

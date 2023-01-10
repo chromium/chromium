@@ -5,9 +5,6 @@
 #ifndef HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_
 #define HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_
 
-#include <string>
-
-#include "base/callback.h"
 #include "content/public/utility/content_utility_client.h"
 #include "headless/public/headless_export.h"
 
@@ -16,7 +13,7 @@ namespace headless {
 class HEADLESS_EXPORT HeadlessContentUtilityClient
     : public content::ContentUtilityClient {
  public:
-  explicit HeadlessContentUtilityClient(const std::string& user_agent);
+  HeadlessContentUtilityClient();
 
   HeadlessContentUtilityClient(const HeadlessContentUtilityClient&) = delete;
   HeadlessContentUtilityClient& operator=(const HeadlessContentUtilityClient&) =
@@ -24,11 +21,9 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
 
   ~HeadlessContentUtilityClient() override;
 
+ private:
   // content::ContentUtilityClient:
   void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
-
- private:
-  const std::string user_agent_;
 };
 
 }  // namespace headless
