@@ -87,8 +87,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
     public ChromeOriginVerifier(String packageName, @Relation int relation,
             @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
             ChromeVerificationResultStore verificationResultStore) {
-        super(packageName, relationToRelationship(relation), webContents, null,
-                verificationResultStore);
+        super(packageName, relationToRelationship(relation), webContents, verificationResultStore);
         mExternalAuthUtils = externalAuthUtils;
     }
 
@@ -99,12 +98,8 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * @param listener The listener who will get the verification result.
      * @param origin The postMessage origin the application is claiming to have. Can't be null.
      */
-    @Override
     public void start(@NonNull OriginVerificationListener listener, @NonNull Origin origin) {
         ThreadUtils.assertOnUiThread();
-        if (!isNativeOriginVerifierInitialized()) {
-            initNativeOriginVerifier(Profile.getLastUsedRegularProfile());
-        }
         if (mListeners.containsKey(origin)) {
             // We already have an ongoing verification for that origin, just add the listener.
             mListeners.get(origin).add(listener);
@@ -124,7 +119,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
                     UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, true, null));
             return;
         }
-        validate(origin);
+        validate(Profile.getLastUsedRegularProfile(), origin);
     }
 
     @Override
@@ -238,9 +233,8 @@ public class ChromeOriginVerifier extends OriginVerifier {
     }
 
     @Override
-    public void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
-        setNativeOriginVerifier(ChromeOriginVerifierJni.get().init(
-                ChromeOriginVerifier.this, browserContextHandle));
+    public long initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
+        return ChromeOriginVerifierJni.get().init(ChromeOriginVerifier.this, browserContextHandle);
     }
 
     @Override

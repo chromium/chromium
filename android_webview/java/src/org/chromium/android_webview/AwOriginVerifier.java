@@ -17,9 +17,8 @@ import java.util.List;
  */
 public class AwOriginVerifier extends OriginVerifier {
     public AwOriginVerifier(String packageName, String relationship,
-            AwBrowserContext browserContext,
             @Nullable AwVerificationResultStore verificationResultStore) {
-        super(packageName, relationship, null, browserContext, verificationResultStore);
+        super(packageName, relationship, null, verificationResultStore);
     }
 
     @Override

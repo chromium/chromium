@@ -124,12 +124,9 @@ public abstract class OriginVerifier {
      * "delegate_permission/common.handle_all_urls".
      * @param webContents The web contents of the tab used for reporting errors to DevTools. Can be
      *         null if unavailable.
-     * @param browserContextHandle handle to retrieve the browser context for creating the url
-     *         loader factory. If null, initialize the native side before calling {@code start}
      * @param verificationResultStore The {@link VerificationResultStore} for persisting results.
      */
     public OriginVerifier(String packageName, String relation, @Nullable WebContents webContents,
-            @Nullable BrowserContextHandle browserContextHandle,
             VerificationResultStore verificationResultStore) {
         mPackageName = packageName;
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
@@ -141,10 +138,6 @@ public abstract class OriginVerifier {
         mWebContents = webContents;
 
         mVerificationResultStore = verificationResultStore;
-
-        if (browserContextHandle != null) {
-            initNativeOriginVerifier(browserContextHandle);
-        }
     }
 
     /**
@@ -152,9 +145,12 @@ public abstract class OriginVerifier {
      * making a network request for non-cached origins with a URLFetcher using the last used
      * profile as context.
      * @param listener The listener who will get the verification result.
+     * @param browserContextHandle handle to retrieve the browser context for creating the url
+     *         loader factory.
      * @param origin The postMessage origin the application is claiming to have. Can't be null.
      */
-    public void start(@NonNull OriginVerificationListener listener, @NonNull Origin origin) {
+    public void start(@NonNull OriginVerificationListener listener,
+            BrowserContextHandle browserContextHandle, @NonNull Origin origin) {
         ThreadUtils.assertOnUiThread();
         if (mListeners.containsKey(origin)) {
             // We already have an ongoing verification for that origin, just add the listener.
@@ -164,18 +160,14 @@ public abstract class OriginVerifier {
             mListeners.put(origin, new HashSet<>());
             mListeners.get(origin).add(listener);
         }
-        validate(origin);
+        validate(browserContextHandle, origin);
     }
 
     /**
      * Performs the DAL-validation, do not call directly, call #start to register listeners for
      * receiving the results of the validation.
      */
-    public void validate(@NonNull Origin origin) {
-        assert mNativeOriginVerifier
-                != 0 : "Either provide a browserContextHandle to "
-                       + "OriginVerifier#ctor or call initNativeOriginVerifier.";
-
+    public void validate(BrowserContextHandle browserContextHandle, @NonNull Origin origin) {
         String scheme = origin.uri().getScheme();
         String host = origin.uri().getHost();
         if (TextUtils.isEmpty(scheme)
@@ -204,6 +196,12 @@ public abstract class OriginVerifier {
         }
 
         if (mWebContents != null && mWebContents.isDestroyed()) mWebContents = null;
+
+        // If the native side doesn't exist, create it.
+        if (mNativeOriginVerifier == 0) {
+            mNativeOriginVerifier = initNativeOriginVerifier(browserContextHandle);
+            assert mNativeOriginVerifier != 0;
+        }
 
         mVerificationStartTime = SystemClock.uptimeMillis();
         String[] fingerprints = mSignatureFingerprints == null
@@ -320,17 +318,10 @@ public abstract class OriginVerifier {
     /**
      * Initialization of the native OriginVerifier.
      */
-    public void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
-        mNativeOriginVerifier =
-                OriginVerifierJni.get().init(OriginVerifier.this, browserContextHandle);
-    }
-
-    public boolean isNativeOriginVerifierInitialized() {
-        return mNativeOriginVerifier != 0;
-    }
-
-    public void setNativeOriginVerifier(long nativeOriginVerifier) {
-        mNativeOriginVerifier = nativeOriginVerifier;
+    public long initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
+        // TODO(swestphal): Refactor native origin verifier to receive WebContent only when
+        // verifying to support having one OriginVerifier for several Tabs/BrowserFragments.
+        return OriginVerifierJni.get().init(OriginVerifier.this, browserContextHandle);
     }
 
     @VisibleForTesting

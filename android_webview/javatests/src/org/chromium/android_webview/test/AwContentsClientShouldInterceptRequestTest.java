@@ -1471,9 +1471,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mActivityTestRule.runOnUiThread(
-                ()
-                        -> AwOriginVerificationScheduler.init(context.getPackageName(),
-                                mActivityTestRule.getAwBrowserContext(), context));
+                () -> AwOriginVerificationScheduler.init(context.getPackageName(), context));
 
         Assert.assertEquals(1,
                 AwOriginVerificationScheduler.getInstance().getPendingOriginsForTesting().size());
@@ -1495,9 +1493,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mActivityTestRule.runOnUiThread(
-                ()
-                        -> AwOriginVerificationScheduler.init(context.getPackageName(),
-                                mActivityTestRule.getAwBrowserContext(), context));
+                () -> AwOriginVerificationScheduler.init(context.getPackageName(), context));
 
         Set<Origin> pendingOrigins =
                 AwOriginVerificationScheduler.getInstance().getPendingOriginsForTesting();
@@ -1526,9 +1522,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String assetLinksUrl =
                 addAssetListToTestServer(mWebServer, mSignatureFingerprints.get(0));
         mActivityTestRule.runOnUiThread(
-                ()
-                        -> AwOriginVerificationScheduler.init(context.getPackageName(),
-                                mActivityTestRule.getAwBrowserContext(), context));
+                () -> AwOriginVerificationScheduler.init(context.getPackageName(), context));
 
         // Inject current base url of the test server for verifying the url.
         AwOriginVerificationScheduler.getInstance().addPendingOriginForTesting(
