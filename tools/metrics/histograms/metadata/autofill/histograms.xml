@@ -278,6 +278,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
     units="ms" expires_after="M108">
+  <expired_intentionally>
+    This is for an ablation study that we may want to reactivate at some points
+    in the future.
+  </expired_intentionally>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -293,6 +297,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.Ablation.FormSubmissionAfterInteraction.{FormType}.{Group}"
     enum="Boolean" expires_after="M108">
+  <expired_intentionally>
+    This is for an ablation study that we may want to reactivate at some points
+    in the future.
+  </expired_intentionally>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
