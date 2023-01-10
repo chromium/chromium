@@ -5977,6 +5977,14 @@ New install
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TURN_OFF" desc="Label for a button on the 'Do not disturb' notification that turns off 'Do not disturb' mode.">
         Turn off
       </message>
+
+      <!-- security curtain -->
+      <message name="IDS_ASH_CURTAIN_TITLE" desc="Title text displayed to inform the user a remote admin has taken control of the ChromeOs device.">
+        Your administrator is controlling your device
+      </message>
+      <message name="IDS_ASH_CURTAIN_DESCRIPTION" desc="Detailed description displayed to inform the user a remote admin has taken control of the ChromeOs device.">
+        Your administrator has logged in to look into an issue. You can continue to use the device after the administrator gives the control back to you.
+      </message>
     </messages>
   </release>
 </grit>

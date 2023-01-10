@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/curtain/remote_maintenance_curtain_view.h"
 #include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,8 +14,6 @@
 #include "remoting/host/chromeos/ash_proxy.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
-#include "ui/views/background.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace remoting {
@@ -31,10 +30,7 @@ FilterResult OnlyEventsFromSource(ui::EventDeviceId source_device_id,
 }
 
 std::unique_ptr<views::View> CreateCurtainOverlay() {
-  return views::Builder<views::View>()
-      .SetLayoutManager(std::make_unique<views::FillLayout>())
-      .SetBackground(views::CreateSolidBackground(SK_ColorYELLOW))
-      .Build();
+  return std::make_unique<ash::curtain::RemoteMaintenanceCurtainView>();
 }
 
 }  // namespace
