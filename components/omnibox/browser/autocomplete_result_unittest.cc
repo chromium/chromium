@@ -1856,7 +1856,7 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
       {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
       {5, 2, 1000, false, {}, AutocompleteMatchType::HISTORY_BODY},
       {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-      {7, 3, 600, false, {}, AutocompleteMatchType::STARTER_PACK},
+      {7, 3, 650, false, {}, AutocompleteMatchType::STARTER_PACK},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);
@@ -1872,7 +1872,7 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
       // default match unmoved
       {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
       // Starter pack type
-      {7, 3, 600, false, {}, AutocompleteMatchType::STARTER_PACK},
+      {7, 3, 650, false, {}, AutocompleteMatchType::STARTER_PACK},
       // search types
       {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
       {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_HISTORY},
