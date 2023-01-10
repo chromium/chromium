@@ -23969,7 +23969,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="11" label="Disable download EXTRA_DISABLE_DOWNLOAD_BUTTON"/>
   <int value="12" label="Disable star EXTRA_DISABLE_STAR_BUTTON"/>
   <int value="13" label="Exit animation EXTRA_EXIT_ANIMATION_BUNDLE"/>
-  <int value="14" label="GSA experiment ids EXPERIMENT_IDS"/>
+  <int value="14" label="AGA experiment ids EXPERIMENT_IDS"/>
   <int value="15" label="Incognito EXTRA_OPEN_NEW_INCOGNITO_TAB"/>
   <int value="16" label="Initial height EXTRA_INITIAL_ACTIVITY_HEIGHT_PX"/>
   <int value="17" label="Media EXTRA_ENABLE_EMBEDDED_MEDIA_EXPERIENCE"/>
@@ -23998,6 +23998,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="40" label="TWA origins EXTRA_ADDITIONAL_TRUSTED_ORIGINS"/>
   <int value="41" label="Url bar hiding EXTRA_ENABLE_URLBAR_HIDING"/>
   <int value="42" label="Translate specified EXTRA_AUTO_TRANSLATE_LANGUAGE"/>
+  <int value="43" label="Experiment override EXTRA_AGA_EXPERIMENT_ENABLE"/>
 </enum>
 
 <enum name="CustomTabsParallelRequestStatusOnStart">
