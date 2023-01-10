@@ -110,7 +110,11 @@ external/wpt/css/compositing/root-element-background-transparency.html [ Failure
 crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 
 # Extra box in the output:
-crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
+crbug.com/1254933 [ Fuchsia ] css3/filters/filterRegions.html [ Failure ]
+crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure ]
+crbug.com/1254933 [ Win ] css3/filters/filterRegions.html [ Failure ]
+# It also flakily timeouts on Mac.
+crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure Timeout ]
 
 # Script preloaded: No
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
@@ -512,7 +516,6 @@ crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-ifr
 
 # These fail when device_scale_factor is changed, but only for anti-aliasing:
 crbug.com/968791 [ Mac ] virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Failure Pass ]
-crbug.com/968791 virtual/scalefactor200/css3/filters/filterRegions.html [ Failure ]
 
 # These appear to be actually incorrect at device_scale_factor 2.0:
 crbug.com/1051044 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-feimage-001.html [ Failure ]
