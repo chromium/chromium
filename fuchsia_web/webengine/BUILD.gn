@@ -183,6 +183,7 @@ component("web_engine_core") {
   assert_no_deps = _disallowed_deps
 
   deps = [
+    ":context_provider",
     ":switches",
     ":web_engine_export_from_implementation",
     "//base",
@@ -397,7 +398,6 @@ source_set("context_provider") {
 source_set("switches") {
   visibility += [
     "//fuchsia_web/shell:cast_streaming_shell_exe",
-    "//fuchsia_web/webinstance_host:webinstance_host",
     "//fuchsia_web/webinstance_host:webinstance_host_v1",
   ]
   deps = [ "//base" ]

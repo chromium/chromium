@@ -37,6 +37,7 @@ source_set("common") {
     ":buildflags",
     "//base",
     "//fuchsia_web/runners/common/modular",
+    "//fuchsia_web/webinstance_host:webinstance_host_v1",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx/geometry",
     "//url",
@@ -84,7 +85,6 @@ source_set("cast_runner_core") {
     "//components/fuchsia_component_support:dynamic_component_host",
     "//fuchsia_web/cast_streaming",
     "//fuchsia_web/runners/common/modular",
-    "//fuchsia_web/webinstance_host",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.decl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.diagnostics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
@@ -122,7 +122,7 @@ executable("cast_runner_exe") {
     "//build:chromecast_buildflags",
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
-    "//fuchsia_web/webinstance_host",
+    "//fuchsia_web/webinstance_host:webinstance_host_v1",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
 
@@ -249,12 +249,7 @@ test("cast_runner_integration_tests") {
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
-
-  # Include cast_runner.cm as a component in the test's package.
   fuchsia_package_deps = [ ":cast_runner_component" ]
-
-  # Deploy the cast_runner and web_engine packages. cast_runner is needed only
-  # for the v1 shim integration tests.
   package_deps = [
     [
       ":cast_runner_pkg",
