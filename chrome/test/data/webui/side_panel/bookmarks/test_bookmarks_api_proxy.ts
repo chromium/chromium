@@ -39,6 +39,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'renameBookmark',
       'showContextMenu',
       'showUi',
+      'undo',
     ]);
 
     this.callbackRouter = {
@@ -126,5 +127,9 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   showUi() {
     this.methodCalled('showUi');
+  }
+
+  undo() {
+    this.methodCalled('undo');
   }
 }

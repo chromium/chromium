@@ -135,6 +135,13 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
         // one entry.
         this.bookmarksApi_.contextMenuDelete(
             this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        this.dispatchEvent(new CustomEvent('delete-clicked', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            id: this.bookmarks_[0]!.id,
+          },
+        }));
         break;
     }
     this.$.menu.close();

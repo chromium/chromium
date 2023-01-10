@@ -30,6 +30,7 @@ export interface BookmarksApiProxy {
   renameBookmark(id: string, title: string): void;
   showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
   showUi(): void;
+  undo(): void;
 }
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
@@ -138,6 +139,10 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   showUi() {
     this.handler.showUI();
+  }
+
+  undo() {
+    chrome.bookmarkManagerPrivate.undo();
   }
 
   static getInstance(): BookmarksApiProxy {

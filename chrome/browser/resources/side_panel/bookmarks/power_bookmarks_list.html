@@ -29,6 +29,11 @@
     margin: 0;
   }
 
+  cr-toast {
+    justify-content: space-between;
+    margin: 58px 8px;
+  }
+
   cr-toolbar-search-field {
     margin: 14px;
     width: auto;
@@ -376,6 +381,19 @@
 
 <cr-lazy-render id="contextMenu">
   <template>
-    <power-bookmarks-context-menu></power-bookmarks-context-menu>
+    <power-bookmarks-context-menu
+        on-delete-clicked="onContextMenuDeleteClicked_">
+    </power-bookmarks-context-menu>
+  </template>
+</cr-lazy-render>
+
+<cr-lazy-render id="deletionToast">
+  <template>
+    <cr-toast duration="5000">
+      <div>[[deletionDescription_]]</div>
+      <cr-button on-click="onUndoClicked_">
+        $i18n{undoBookmarkDeletion}
+      </cr-button>
+    </cr-toast>
   </template>
 </cr-lazy-render>

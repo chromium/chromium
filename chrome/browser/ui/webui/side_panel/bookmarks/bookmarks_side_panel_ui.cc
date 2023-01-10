@@ -90,6 +90,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"menuOpenIncognitoWithCount",
        IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT},
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
+      {"undoBookmarkDeletion", IDS_UNDO_BOOKMARK_DELETION},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
@@ -131,6 +132,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString("bookmarkFolderChildCount",
                                             IDS_BOOKMARK_FOLDER_CHILD_COUNT);
+  plural_string_handler->AddLocalizedString("bookmarkDeletionCount",
+                                            IDS_BOOKMARK_DELETION_COUNT);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   content::URLDataSource::Add(profile,
