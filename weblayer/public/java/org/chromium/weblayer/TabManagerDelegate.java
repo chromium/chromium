@@ -33,7 +33,9 @@ class TabManagerDelegate extends ITabManagerDelegate.Stub {
 
     @Override
     public void notifyInitialTabs() {
-        mTabListDelegate.notifyInitialTabs(mBrowser.getTabs(), mBrowser.getActiveTab());
+        mHandler.post(() -> {
+            mTabListDelegate.notifyInitialTabs(mBrowser.getTabs(), mBrowser.getActiveTab());
+        });
     }
 
     @Override
