@@ -1018,7 +1018,7 @@ void AutomationTreeManagerOwner::OnAccessibilityEvents(
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   bool is_new_tree = tree_wrapper == nullptr;
   if (is_new_tree) {
-    tree_wrapper = new AutomationAXTreeWrapper(tree_id, this);
+    tree_wrapper = new AutomationAXTreeWrapper(this);
     CacheAutomationTreeWrapperForTreeID(tree_id, tree_wrapper);
   }
 

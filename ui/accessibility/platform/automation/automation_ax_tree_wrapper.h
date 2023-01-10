@@ -23,7 +23,7 @@ class AutomationTreeManagerOwner;
 class COMPONENT_EXPORT(AX_PLATFORM) AutomationAXTreeWrapper
     : public AXTreeManager {
  public:
-  AutomationAXTreeWrapper(AXTreeID tree_id, AutomationTreeManagerOwner* owner);
+  explicit AutomationAXTreeWrapper(AutomationTreeManagerOwner* owner);
 
   AutomationAXTreeWrapper(const AutomationAXTreeWrapper&) = delete;
   AutomationAXTreeWrapper& operator=(const AutomationAXTreeWrapper&) = delete;

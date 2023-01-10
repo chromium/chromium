@@ -72,18 +72,13 @@ AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
   DCHECK(ax_tree_);
-  GetMap().AddTreeManager(ax_tree_id_, this);
-  tree_observation_.Observe(ax_tree());
-}
 
-AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
-                             std::unique_ptr<AXTree> tree)
-    : connected_to_parent_tree_node_(false),
-      ax_tree_id_(tree_id),
-      ax_tree_(std::move(tree)),
-      event_generator_(ax_tree()) {
-  DCHECK(ax_tree_);
-  GetMap().AddTreeManager(ax_tree_id_, this);
+  // Do not register the tree in the map if it has no ID. It will be registered
+  // later in OnTreeDataChanged().
+  if (ax_tree_id_ != AXTreeIDUnknown()) {
+    GetMap().AddTreeManager(ax_tree_id_, this);
+  }
+
   tree_observation_.Observe(ax_tree());
 }
 

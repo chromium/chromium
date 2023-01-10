@@ -19,6 +19,14 @@ class AXTreeManagerMap;
 // Abstract interface for a class that owns an AXTree and manages its
 // connections to other AXTrees in the same page or desktop (parent and child
 // trees).
+//
+// Note, the tree manager may be created for a tree which has unknown (not
+// valid) tree id. A such tree is not registered with the tree map and thus
+// cannot be retrieved from the map. When the tree gets data and tree id, then
+// it is registered in the map automatically (see OnTreeDataChanged callback
+// notification). The mechanism implements the tree id data integrirty between
+// the tree map and trees, also it doesn't allow to register two different trees
+// with unknown IDs.
 class AX_EXPORT AXTreeManager : public AXTreeObserver {
  public:
   static AXTreeManager* FromID(const AXTreeID& ax_tree_id);
@@ -118,7 +126,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
  protected:
   AXTreeManager();
   explicit AXTreeManager(std::unique_ptr<AXTree> tree);
-  explicit AXTreeManager(const AXTreeID& tree_id, std::unique_ptr<AXTree> tree);
 
   virtual AXTreeManager* GetParentManager() const;
 

@@ -140,8 +140,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     WebAXPlatformTreeManagerDelegate* delegate)
-    : AXPlatformTreeManager(ui::AXTreeIDUnknown(),
-                            std::make_unique<ui::AXSerializableTree>()),
+    : AXPlatformTreeManager(std::make_unique<ui::AXSerializableTree>()),
       WebContentsObserver(delegate
                               ? WebContents::FromRenderFrameHost(
                                     delegate->AccessibilityRenderFrameHost())
