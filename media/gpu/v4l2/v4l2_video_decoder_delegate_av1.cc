@@ -672,13 +672,6 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
         base::checked_cast<__u8>(frame_header.reference_frame_index[i]);
   }
 
-  // These params are duplicated with |ref_frame_idx|, and they are trending to
-  // be removed in AV1 uAPI RFC v4.
-  v4l2_frame_params.last_frame_idx =
-      frame_header.reference_frame_index[libgav1::kReferenceFrameLast];
-  v4l2_frame_params.gold_frame_idx =
-      frame_header.reference_frame_index[libgav1::kReferenceFrameGolden];
-
   v4l2_frame_params.skip_mode_frame[0] =
       base::checked_cast<__u8>(frame_header.skip_mode_frame[0]);
   v4l2_frame_params.skip_mode_frame[1] =
