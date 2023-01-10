@@ -12,6 +12,7 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
@@ -37,6 +38,7 @@ class ASH_EXPORT NetworkFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  std::unique_ptr<FeatureTile> CreateTile() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
@@ -61,8 +63,12 @@ class ASH_EXPORT NetworkFeaturePodController
   // Updates |button_| state to reflect the current state of networks.
   void UpdateButtonStateIfExists();
 
+  // Owned by the views hierarchy.
   FeaturePodButton* button_ = nullptr;
+  FeatureTile* tile_ = nullptr;
   UnifiedSystemTrayController* tray_controller_;
+
+  base::WeakPtrFactory<NetworkFeaturePodController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

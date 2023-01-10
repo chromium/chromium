@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_FEATURE_TILE_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -57,7 +58,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
                        TileType type = TileType::kPrimary);
   FeatureTile(const FeatureTile&) = delete;
   FeatureTile& operator=(const FeatureTile&) = delete;
-  ~FeatureTile() override = default;
+  ~FeatureTile() override;
 
   // Creates child views of Feature Tile. The constructed view will vary
   // depending on the button's `type_`.
@@ -82,6 +83,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the vector icon.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
+  // Sets the tile icon from an ImageSkia.
+  void SetImage(gfx::ImageSkia image);
+
   // Sets the text of `label_`.
   void SetLabel(const std::u16string& label);
 
@@ -91,9 +95,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets visibility of `sub_label_`.
   void SetSubLabelVisibility(bool visible);
 
-  // Sets the tooltip text of `drill_container_` and `drill_in_button_`.
+  // Sets the tooltip text of `drill_in_button_`.
   void SetDrillInButtonTooltipText(const std::u16string& text);
 
+  views::ImageView* icon() { return icon_; }
   views::Label* label() { return label_; }
   views::Label* sub_label() { return sub_label_; }
   views::LabelButton* drill_in_button() { return drill_in_button_; }
@@ -119,6 +124,12 @@ class ASH_EXPORT FeatureTile : public views::Button {
 
   // The type of the feature tile that determines how it lays out its view.
   TileType type_;
+
+  // Used to set the drill-in button enabled state when the button state
+  // changes.
+  base::CallbackListSubscription enabled_changed_subscription_;
+
+  base::WeakPtrFactory<FeatureTile> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

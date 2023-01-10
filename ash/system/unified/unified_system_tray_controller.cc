@@ -664,6 +664,8 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
         controllers.push_back(std::move(controller));
       };
 
+  create_tile(std::make_unique<NetworkFeaturePodController>(this),
+              feature_pod_controllers_, tiles);
   create_tile(std::make_unique<BluetoothFeaturePodController>(this),
               feature_pod_controllers_, tiles);
   create_tile(std::make_unique<CaptureModeFeaturePodController>(this),

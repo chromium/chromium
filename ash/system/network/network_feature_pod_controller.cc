@@ -18,6 +18,7 @@
 #include "ash/system/network/network_icon_animation.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
@@ -183,12 +184,25 @@ FeaturePodButton* NetworkFeaturePodController::CreateButton() {
   return button.release();
 }
 
+std::unique_ptr<FeatureTile> NetworkFeaturePodController::CreateTile() {
+  DCHECK(features::IsQsRevampEnabled());
+  auto tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*is_togglable=*/true);
+  tile_ = tile.get();
+  UpdateButtonStateIfExists();
+  TrackVisibilityUMA();
+  return tile;
+}
+
 QsFeatureCatalogName NetworkFeaturePodController::GetCatalogName() {
   return QsFeatureCatalogName::kNetwork;
 }
 
 void NetworkFeaturePodController::OnIconPressed() {
-  bool was_enabled = button_->IsToggled();
+  bool was_enabled =
+      features::IsQsRevampEnabled() ? tile_->IsToggled() : button_->IsToggled();
   bool can_toggle = SetNetworkTypeEnabled(!was_enabled);
   if (can_toggle)
     TrackToggleUMA(/*target_toggle_state=*/!was_enabled);
@@ -223,9 +237,18 @@ void NetworkFeaturePodController::ActiveNetworkStateChanged() {
 }
 
 void NetworkFeaturePodController::UpdateButtonStateIfExists() {
-  // Check |button_| here so that calling functions don't need to.
-  if (!button_)
-    return;
+  bool is_qs_revamp_enabled = features::IsQsRevampEnabled();
+
+  // Check button exists here so that calling functions don't need to.
+  if (is_qs_revamp_enabled) {
+    if (!tile_) {
+      return;
+    }
+  } else {
+    if (!button_) {
+      return;
+    }
+  }
 
   TrayNetworkStateModel* model =
       Shell::Get()->system_tray_model()->network_state_model();
@@ -239,30 +262,51 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
       toggled ? network_icon::ICON_TYPE_FEATURE_POD_TOGGLED
               : network_icon::ICON_TYPE_FEATURE_POD;
 
-  button_->SetToggled(toggled);
+  if (is_qs_revamp_enabled) {
+    tile_->SetToggled(toggled);
+  } else {
+    button_->SetToggled(toggled);
+  }
 
   bool image_animating = false;
   ActiveNetworkIcon* active_network_icon =
       Shell::Get()->system_tray_model()->active_network_icon();
 
-  button_->icon_button()->SetImage(
-      views::Button::STATE_NORMAL,
-      active_network_icon->GetImage(ActiveNetworkIcon::Type::kSingle, icon_type,
-                                    &image_animating));
-  button_->icon_button()->SetImage(
-      views::Button::STATE_DISABLED,
-      active_network_icon->GetImage(
-          ActiveNetworkIcon::Type::kSingle,
-          network_icon::ICON_TYPE_FEATURE_POD_DISABLED, &image_animating));
+  // Modifying network state is not allowed when the screen is locked.
+  if (is_qs_revamp_enabled) {
+    tile_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
+  } else {
+    button_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
+  }
+
+  // TODO(263975225): Update colors of ActiveNetworkIcon in QsRevamp.
+  if (is_qs_revamp_enabled) {
+    tile_->SetImage(
+        tile_->GetEnabled()
+            ? active_network_icon->GetImage(ActiveNetworkIcon::Type::kSingle,
+                                            icon_type, &image_animating)
+            : active_network_icon->GetImage(
+                  ActiveNetworkIcon::Type::kSingle,
+                  network_icon::ICON_TYPE_FEATURE_POD_DISABLED,
+                  &image_animating));
+
+  } else {
+    button_->icon_button()->SetImage(
+        views::Button::STATE_NORMAL,
+        active_network_icon->GetImage(ActiveNetworkIcon::Type::kSingle,
+                                      icon_type, &image_animating));
+    button_->icon_button()->SetImage(
+        views::Button::STATE_DISABLED,
+        active_network_icon->GetImage(
+            ActiveNetworkIcon::Type::kSingle,
+            network_icon::ICON_TYPE_FEATURE_POD_DISABLED, &image_animating));
+  }
 
   if (image_animating) {
     network_icon::NetworkIconAnimation::GetInstance()->AddObserver(this);
   } else {
     network_icon::NetworkIconAnimation::GetInstance()->RemoveObserver(this);
   }
-
-  // Modifying network state is not allowed when the screen is locked.
-  button_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
 
   std::u16string tooltip;
   Shell::Get()
@@ -272,31 +316,72 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
                                    /*a11y_name=*/nullptr,
                                    /*a11y_desc=*/nullptr, &tooltip);
 
-  button_->SetLabel(ComputeButtonLabel(default_network));
-  button_->SetSubLabel(ComputeButtonSubLabel(default_network));
+  if (is_qs_revamp_enabled) {
+    tile_->SetLabel(ComputeButtonLabel(default_network));
+    tile_->SetSubLabel(ComputeButtonSubLabel(default_network));
+  } else {
+    button_->SetLabel(ComputeButtonLabel(default_network));
+    button_->SetSubLabel(ComputeButtonSubLabel(default_network));
+  }
 
-  if (!button_->GetEnabled()) {
-    button_->SetIconAndLabelTooltips(tooltip);
-    return;
+  if (is_qs_revamp_enabled) {
+    if (!tile_->drill_in_button()) {
+      tile_->CreateDrillInButton(
+          base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                              weak_ptr_factory_.GetWeakPtr()),
+          tooltip);
+    }
+  }
+
+  if (is_qs_revamp_enabled) {
+    if (!tile_->GetEnabled()) {
+      tile_->SetTooltipText(tooltip);
+      tile_->SetDrillInButtonTooltipText(tooltip);
+      return;
+    }
+  } else {
+    if (!button_->GetEnabled()) {
+      button_->SetIconAndLabelTooltips(tooltip);
+      return;
+    }
   }
 
   // Make sure the tooltip only indicates the network type will be toggled by
   // pressing the icon only when it can be toggled (e.g. not ethernet).
   if (!NetworkTypeCanBeToggled(default_network, !toggled)) {
-    button_->SetIconAndLabelTooltips(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP, tooltip));
+    if (is_qs_revamp_enabled) {
+      const std::u16string tooltip_text = l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP, tooltip);
+      tile_->SetTooltipText(tooltip_text);
+      tile_->SetDrillInButtonTooltipText(tooltip_text);
+    } else {
+      button_->SetIconAndLabelTooltips(l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP, tooltip));
+    }
     return;
   }
 
-  button_->SetIconTooltip(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP, tooltip));
+  if (is_qs_revamp_enabled) {
+    tile_->SetTooltipText(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP, tooltip));
+  } else {
+    button_->SetIconTooltip(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP, tooltip));
+  }
 
   // Make sure the tooltip indicates the network type will be toggled by
   // pressing the label if the network type is disabled.
-  button_->SetLabelTooltip(l10n_util::GetStringFUTF16(
-      toggled ? IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP
-              : IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP,
-      tooltip));
+  if (is_qs_revamp_enabled) {
+    tile_->SetDrillInButtonTooltipText(l10n_util::GetStringFUTF16(
+        toggled ? IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP
+                : IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP,
+        tooltip));
+  } else {
+    button_->SetLabelTooltip(l10n_util::GetStringFUTF16(
+        toggled ? IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP
+                : IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP,
+        tooltip));
+  }
 }
 
 std::u16string NetworkFeaturePodController::ComputeButtonLabel(
