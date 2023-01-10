@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_SEARCH_COMPANION_FETCH_IMAGES_JS" file="../../chrome/browser/ui/views/side_panel/search_companion/resources/fetch_images.js" type="BINDATA" />
+</grit-part>

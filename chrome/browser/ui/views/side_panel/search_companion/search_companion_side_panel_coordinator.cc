@@ -20,11 +20,20 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
+#include "components/grit/components_resources.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+
 using optimization_guide::proto::PageEntitiesMetadata;
+
+constexpr base::TimeDelta kTimerInterval = base::Seconds(5);
 
 SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
     Browser* browser)
     : BrowserUserData<SearchCompanionSidePanelCoordinator>(*browser),
+      browser_(browser),
       weak_ptr_factory_(this) {
   zero_suggest_cache_service_observation_.Observe(
       ZeroSuggestCacheServiceFactory::GetForProfile(browser->profile()));
@@ -77,9 +86,9 @@ void SearchCompanionSidePanelCoordinator::UpdateContentAnnotations(
 
 void SearchCompanionSidePanelCoordinator::UpdateSidePanelContent() {
   if (side_panel_view_) {
-    side_panel_view_->UpdateContent(latest_page_url_,
-                                    latest_suggest_response_string_,
-                                    latest_content_annotation_string_);
+    side_panel_view_->UpdateContent(
+        latest_page_url_, latest_suggest_response_string_,
+        latest_content_annotation_string_, latest_image_content_string_);
   }
 }
 
@@ -92,8 +101,9 @@ void SearchCompanionSidePanelCoordinator::OnZeroSuggestResponseUpdated(
   UpdateSidePanelContent();
 
   // Use zero suggest returning as the trigger to request entities from
-  // optimization guide. In the future this probably should be triggered
-  // by web navigation in the main frame.
+  // optimization guide.
+  // TODO(benwgold): In the future use web navigation in the main frame to
+  // trigger.
   if (opt_guide_) {
     opt_guide_->CanApplyOptimization(
         GURL(page_url),
@@ -102,6 +112,32 @@ void SearchCompanionSidePanelCoordinator::OnZeroSuggestResponseUpdated(
                            HandleOptGuidePageEntitiesResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  // Use zero suggest returning as the trigger to start a recurring timer to
+  // fetch images from the main frame.
+  // TODO(benwgold): Rather than using a timer explore listening to page scroll
+  // events.
+  fetch_images_timer_.Start(
+      FROM_HERE, kTimerInterval, this,
+      &SearchCompanionSidePanelCoordinator::ExecuteFetchImagesJavascript);
+}
+
+void SearchCompanionSidePanelCoordinator::ExecuteFetchImagesJavascript() {
+  content::RenderFrameHost* main_frame_render_host =
+      browser_->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame();
+
+  std::string script =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_SEARCH_COMPANION_FETCH_IMAGES_JS);
+
+  main_frame_render_host->ExecuteJavaScriptInIsolatedWorld(
+      base::UTF8ToUTF16(script),
+      base::BindOnce(
+          &SearchCompanionSidePanelCoordinator::OnFetchImagesJavascriptResult,
+          weak_ptr_factory_.GetWeakPtr(), GURL(latest_page_url_)),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
 
 void SearchCompanionSidePanelCoordinator::HandleOptGuidePageEntitiesResponse(
@@ -115,6 +151,30 @@ void SearchCompanionSidePanelCoordinator::HandleOptGuidePageEntitiesResponse(
   if (page_entities_metadata) {
     PageEntitiesMetadata entities_metadata = *page_entities_metadata;
     UpdateContentAnnotations(entities_metadata);
+    UpdateSidePanelContent();
+  }
+}
+
+void SearchCompanionSidePanelCoordinator::OnFetchImagesJavascriptResult(
+    const GURL url,
+    base::Value result) {
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      result.GetString(),
+      base::BindOnce(&SearchCompanionSidePanelCoordinator::
+                         OnImageFetchJsonSanitizationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), url));
+}
+
+void SearchCompanionSidePanelCoordinator::OnImageFetchJsonSanitizationCompleted(
+    const GURL url,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value() || !result.value().is_dict()) {
+    return;
+  }
+  std::string new_image_content =
+      *(result.value().GetDict().FindString("images"));
+  if (latest_image_content_string_ != new_image_content) {
+    latest_image_content_string_ = new_image_content;
     UpdateSidePanelContent();
   }
 }
@@ -136,7 +196,7 @@ SearchCompanionSidePanelCoordinator::CreateCompanionWebView() {
   auto side_panel_view =
       std::make_unique<search_companion::SearchCompanionSidePanelView>(
           GetBrowserView());
-  side_panel_view->UpdateContent("", "", "");
+  side_panel_view->UpdateContent("", "", "", "");
   side_panel_view_ = side_panel_view->GetWeakPtr();
   return std::move(side_panel_view);
 }

@@ -38,7 +38,8 @@ class SearchCompanionSidePanelView : public views::FlexLayoutView {
 
   void UpdateContent(const std::string& page_url,
                      const std::string& suggest_response,
-                     const std::string& content_annotation_response);
+                     const std::string& content_annotation_response,
+                     const std::string& image_content_response);
 
   base::WeakPtr<SearchCompanionSidePanelView> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

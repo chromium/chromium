@@ -88,7 +88,8 @@ static const char kStaticResponseTemplate[] =
     "data:text/html;charset=utf-8,"
     "<!DOCTYPE html>"
     "<p>Page URL: %s</p><p>Suggest Response: \"%s\"</p><p>Content Annotation "
-    "Response: \"%s\"</p>";
+    "Response: \"%s\"</p>"
+    "Image Content Response: \"%s\"</p>";
 
 SearchCompanionSidePanelView::SearchCompanionSidePanelView(
     BrowserView* browser_view)
@@ -124,7 +125,8 @@ void SearchCompanionSidePanelView::OnBoundsChanged(
 void SearchCompanionSidePanelView::UpdateContent(
     const std::string& page_url,
     const std::string& suggest_response,
-    const std::string& content_annotation_response) {
+    const std::string& content_annotation_response,
+    const std::string& image_content_response) {
   GetWebContents()->Resize(bounds());
   if (suggest_response.empty() && content_annotation_response.empty()) {
     web_view_->GetWebContents()->GetController().LoadURL(
@@ -136,7 +138,8 @@ void SearchCompanionSidePanelView::UpdateContent(
         GURL(base::StringPrintf(
             kStaticResponseTemplate, page_url.c_str(),
             EscapeStringForHTML(suggest_response.substr(4)).c_str(),
-            EscapeStringForHTML(content_annotation_response).c_str())),
+            EscapeStringForHTML(content_annotation_response).c_str(),
+            EscapeStringForHTML(image_content_response).c_str())),
         content::Referrer(), ui::PAGE_TRANSITION_FROM_API, std::string());
   }
 }
