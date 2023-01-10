@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CloseButtonPosition;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -334,8 +335,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     public void setHandleStrategy(HandleStrategy strategy) {
         mHandleStrategy = strategy;
         mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
-
-        if (!ChromeFeatureList.sCctBrandTransparency.isEnabled()) {
+        if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
+                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
             mLocationBar.showBranding();
         }
     }
@@ -946,7 +947,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mLocationBarModel.notifyUrlChanged();
                 mLocationBarModel.notifySecurityStateChanged();
             } else {
-                if (ChromeFeatureList.sCctBrandTransparency.isEnabled()) {
+                if (CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
+                            ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
                     if (mState == STATE_EMPTY) {
                         // If state is empty, that means Location bar is recovering from empty
                         // location bar to what ever new state it is. We skip the state assertion

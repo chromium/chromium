@@ -114,7 +114,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         return ChromeFeatureList.sCctIncognitoAvailableToThirdParty.isEnabled();
     }
 
-    private static boolean isIntentFromFirstParty(Intent intent) {
+    static boolean isIntentFromFirstParty(Intent intent) {
         String sendersPackageName = getSendersPackageNameFromIntent(intent);
         return !TextUtils.isEmpty(sendersPackageName)
                 && ChromeApplicationImpl.getComponent().resolveExternalAuthUtils().isGoogleSigned(

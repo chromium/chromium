@@ -41,6 +41,7 @@
     <string name="pcct_height_resizable_text">PCCT Height Resizable</string>
     <string name="pcct_initial_height_text">PCCT Initial Height</string>
     <string name="pcct_initial_height_slider_label_desc">PCCT initial height slider</string>
+    <string name="force_engagement_signals">Force Engagement Signals</string>
     <string name="px_template">%dpx</string>
     <string name="url_hiding_text">Enable URL Bar Hiding (PCCT ignores)</string>
     <string name="color">Toolbar Color:</string>

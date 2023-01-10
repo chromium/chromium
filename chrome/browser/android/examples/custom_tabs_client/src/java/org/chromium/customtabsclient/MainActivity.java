@@ -78,6 +78,7 @@ public class MainActivity
     private static final String SHARED_PREF_SHOW_TITLE = "ShowTitle";
     private static final String SHARED_PREF_THEME = "Theme";
     private static final String SHARED_PREF_URL_HIDING = "UrlHiding";
+    private static final String SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS = "ForceEngagementSignals";
     private static final int CLOSE_ICON_X = 0;
     private static final int CLOSE_ICON_BACK = 1;
     private static final int CLOSE_ICON_CHECK = 2;
@@ -114,6 +115,7 @@ public class MainActivity
     private CheckBox mShowTitleCheckbox;
     private CheckBox mUrlHidingCheckbox;
     private CheckBox mBackgroundInteractCheckbox;
+    private CheckBox mForceEngagementSignalsCheckbox;
     private TextView mPcctInitialHeightLabel;
     private SeekBar mPcctInitialHeightSlider;
     private SharedPreferences mSharedPref;
@@ -389,7 +391,9 @@ public class MainActivity
         mBackgroundInteractCheckbox = findViewById(R.id.background_interact_checkbox);
         mBackgroundInteractCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_BACKGROUND_INTERACT, CHECKED) == CHECKED);
-
+        mForceEngagementSignalsCheckbox = findViewById(R.id.force_engagement_signals_checkbox);
+        mForceEngagementSignalsCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS, CHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -601,10 +605,10 @@ public class MainActivity
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
             prepareMenuItems(builder);
             prepareActionButton(builder);
+            CustomTabsIntent customTabsIntent = builder.build();
             if (mCctType.equals("Partial CCT")) {
                 editor.putString(SHARED_PREF_CCT, "Partial CCT");
                 prepareAesthetics(builder, /*isPcct=*/true);
-                CustomTabsIntent customTabsIntent = builder.build();
                 int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
                 int toolbarCornerRadiusPx = Math.round(
                         toolbarCornerRadiusDp * getResources().getDisplayMetrics().density);
@@ -630,15 +634,12 @@ public class MainActivity
                             "androix.browser.customtabs.extra.ENABLE_BACKGROUND_INTERACTION",
                             BACKGROUND_INTERACT_OFF_VALUE);
                 }
-                configSessionConnection(session, customTabsIntent);
-                customTabsIntent.launchUrl(this, Uri.parse(url));
             } else {
                 editor.putString(SHARED_PREF_CCT, mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
                 prepareAesthetics(builder, /*isPcct=*/false);
                 if (session != null && mBottomToolbarCheckbox.isChecked()) {
                     prepareBottombar(builder);
                 }
-                CustomTabsIntent customTabsIntent = builder.build();
                 // NOTE: opening in incognito may be restricted. This assumes it is not.
                 customTabsIntent.intent.putExtra(
                         "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
@@ -646,9 +647,18 @@ public class MainActivity
                 customTabsIntent.intent.putExtra(
                         "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION",
                         closeButtonPosition);
-                configSessionConnection(session, customTabsIntent);
-                customTabsIntent.launchUrl(this, Uri.parse(url));
             }
+            if (mForceEngagementSignalsCheckbox.isChecked()) {
+                // NOTE: this may not work because this app is not a trusted 1st party app,
+                // and CCT requires that for this feature currently.
+                // Set the command-line-flag --cct-client-firstparty-override to fake 1st-party!
+                customTabsIntent.intent.putStringArrayListExtra(
+                        "org.chromium.chrome.browser.customtabs.EXPERIMENTS_ENABLE",
+                        new ArrayList<String>(
+                                List.of("CCTRealTimeEngagementSignals", "CCTBrandTransparency")));
+            }
+            configSessionConnection(session, customTabsIntent);
+            customTabsIntent.launchUrl(this, Uri.parse(url));
 
             editor.putInt(SHARED_PREF_HEIGHT, mPcctInitialHeightSlider.getProgress());
             editor.putInt(SHARED_PREF_PROGRESS, mToolbarCornerRadiusSlider.getProgress());
@@ -669,6 +679,11 @@ public class MainActivity
             editor.putInt(SHARED_PREF_URL_HIDING, CHECKED);
         } else {
             editor.putInt(SHARED_PREF_URL_HIDING, UNCHECKED);
+        }
+        if (mForceEngagementSignalsCheckbox.isChecked()) {
+            editor.putInt(SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS, CHECKED);
+        } else {
+            editor.putInt(SHARED_PREF_FORCE_ENGAGEMENT_SIGNALS, UNCHECKED);
         }
         boolean backgroundInteract = mBackgroundInteractCheckbox.isChecked();
         if (backgroundInteract) {
@@ -697,9 +712,9 @@ public class MainActivity
             builder.setToolbarColor(Color.parseColor(mToolbarColor));
         }
         editor.putString(SHARED_PREF_COLOR, mColorName);
-        builder.setShowTitle(showTitle);
-        builder.setColorScheme(colorScheme);
-        builder.setUrlBarHidingEnabled(urlHiding);
+        builder.setShowTitle(showTitle)
+                .setColorScheme(colorScheme)
+                .setUrlBarHidingEnabled(urlHiding);
         if (isPcct) {
             builder.setStartAnimations(this, R.anim.slide_in_up, R.anim.slide_out_bottom);
             builder.setExitAnimations(this, R.anim.slide_in_bottom, R.anim.slide_out_up);

@@ -176,7 +176,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
 
-        if (ChromeFeatureList.sCctBrandTransparency.isEnabled()
+        if (CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
+                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY)
                 && intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
                 && !intentDataProvider.get().isOpenedByChrome()
                 && !intentDataProvider.get().isIncognito()) {

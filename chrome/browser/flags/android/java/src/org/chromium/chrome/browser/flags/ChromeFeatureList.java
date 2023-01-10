@@ -222,6 +222,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_INCOGNITO = "CCTIncognito";
     public static final String CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY =
             "CCTIncognitoAvailableToThirdParty";
+    public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_NEW_DOWNLOAD_TAB = "CCTNewDownloadTab";
     public static final String CCT_PACKAGE_NAME_RECORDING = "CCTPackageNameRecording";
     public static final String CCT_POST_MESSAGE_API = "CCTPostMessageAPI";
@@ -615,6 +616,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctIncognito = new CachedFlag(CCT_INCOGNITO, true);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =
             new CachedFlag(CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
+    public static final CachedFlag sCctIntentFeatureOverrides =
+            new CachedFlag(CCT_INTENT_FEATURE_OVERRIDES, true);
     public static final CachedFlag sCctRemoveRemoteViewIds =
             new CachedFlag(CCT_REMOVE_REMOTE_VIEW_IDS, true);
     public static final CachedFlag sCctResizable90MaximumHeight =

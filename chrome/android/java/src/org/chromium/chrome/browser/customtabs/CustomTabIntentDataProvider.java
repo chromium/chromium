@@ -198,6 +198,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXPERIMENT_IDS =
             "org.chromium.chrome.browser.customtabs.AGA_EXPERIMENT_IDS";
 
+    // These Extra Intent parameters allow an Intent to enable or disable a set of Features.
+    // The set of Features that may be enabled or disabled is restricted by the code,
+    // and initially only two Features may be enabled together, or disabled together.
+    public static final String EXPERIMENTS_ENABLE =
+            "org.chromium.chrome.browser.customtabs.EXPERIMENTS_ENABLE";
+    public static final String EXPERIMENTS_DISABLE =
+            "org.chromium.chrome.browser.customtabs.EXPERIMENTS_DISABLE";
+
     /**
      * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
      * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
@@ -488,6 +496,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 ScreenOrientation.DEFAULT));
 
         mGsaExperimentIds = IntentUtils.safeGetIntArrayExtra(intent, EXPERIMENT_IDS);
+        boolean usingDynamicFeatures =
+                CustomTabsConnection.getInstance().setupDynamicFeatures(intent);
 
         mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
         mPartialTabToolbarCornerRadius = getToolbarCornerRadiusFromIntent(context, intent);
