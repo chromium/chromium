@@ -26,9 +26,6 @@ class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
       PrefService* local_prefs) override;
 
   // DeviceTrustTestEnvironment:
-  void SetUploadResult(HttpResponseCode upload_response_code) override;
-
-  // DeviceTrustTestEnvironment:
   void SetUpExistingKey() override;
 
   // RegistryOverrideManager for testing with registry

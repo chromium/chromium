@@ -17,7 +17,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/win_key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
@@ -96,18 +95,10 @@ DeviceTrustTestEnvironmentWin::CreateCommand(
       worker_thread_.task_runner());
 }
 
-void DeviceTrustTestEnvironmentWin::SetUploadResult(
-    HttpResponseCode upload_response_code) {
-  upload_response_code_ = upload_response_code;
-}
-
 void DeviceTrustTestEnvironmentWin::SetUpExistingKey() {
-  auto* factory = KeyPersistenceDelegateFactory::GetInstance();
   auto trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
-  std::unique_ptr<KeyPersistenceDelegate> win_key_persistence_delegate =
-      factory->CreateKeyPersistenceDelegate();
-  auto key_pair = win_key_persistence_delegate->CreateKeyPair();
-  EXPECT_TRUE(win_key_persistence_delegate->StoreKeyPair(
+  auto key_pair = key_persistence_delegate_->CreateKeyPair();
+  EXPECT_TRUE(key_persistence_delegate_->StoreKeyPair(
       trust_level, key_pair->key()->GetWrappedKey()));
 }
 

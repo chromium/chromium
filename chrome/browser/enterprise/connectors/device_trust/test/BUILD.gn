@@ -6,14 +6,14 @@ source_set("test_support") {
   testonly = true
   public = [ "device_trust_test_environment.h" ]
 
-  sources = []
+  sources = [ "device_trust_test_environment.cc" ]
 
   public_deps = [
     "//base",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:network",
   ]
 
-  deps = []
+  deps = [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence" ]
 
   if (is_win) {
     public += [ "device_trust_test_environment_win.h" ]
@@ -28,7 +28,6 @@ source_set("test_support") {
 
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:persistence",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:rotate_util",
       "//chrome/install_static:install_static_util",

@@ -134,12 +134,15 @@ constexpr char kLatencySuccessHistogramName[] =
 constexpr char kLatencyFailureHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.ResponseLatency.Failure";
 
+#if BUILDFLAG(IS_WIN)
+constexpr int kSuccessCode = 200;
+constexpr int kHardFailureCode = 400;
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
  public:
-  DeviceTrustBrowserTestBase() {}
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
@@ -209,8 +212,8 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     return embedded_test_server()->GetURL(kOtherHost, "/simple.html");
   }
 
-  void ExpectFunnelStep(DTAttestationFunnelStep step) {
-    histogram_tester_.ExpectBucketCount(kFunnelHistogramName, step, 1);
+  void ExpectFunnelStep(DTAttestationFunnelStep step, int attempts = 1) {
+    histogram_tester_.ExpectBucketCount(kFunnelHistogramName, step, attempts);
   }
 
   // This function needs to reflect how IdP are expected to behave.
@@ -255,7 +258,7 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     return active_browser->profile()->GetPrefs();
   }
 
-  std::string GetChallengeResponseHeader() {
+  std::string GetChallengeResponseHeader(int attempts = 1) {
     // Attestation flow should be fully done.
     EXPECT_TRUE(initial_attestation_request_);
 
@@ -272,8 +275,9 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     // when using v1 header).
     EXPECT_TRUE(challenge_response_request_.has_value());
 
-    ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
-    ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
+    ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted,
+                     attempts);
+    ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived, attempts);
 
     EXPECT_EQ(challenge_response_request_->GetURL().path(),
               GetRedirectLocationUrl().path());
@@ -282,17 +286,24 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
         ->second;
   }
 
-  void VerifyAttestationFlowSuccessful() {
-    std::string challenge_response = GetChallengeResponseHeader();
+  void VerifyAttestationFlowSuccessful(int failed_attempts = 0) {
+    const int total_attempts = failed_attempts + 1;
+    std::string challenge_response = GetChallengeResponseHeader(total_attempts);
     // TODO(crbug.com/1241857): Add challenge-response validation.
     EXPECT_TRUE(!challenge_response.empty());
-
-    ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
+    ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected,
+                     total_attempts);
     ExpectFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
-    histogram_tester_.ExpectUniqueSample(kResultHistogramName,
-                                         DTAttestationResult::kSuccess, 1);
+    if (failed_attempts == 0) {
+      histogram_tester_.ExpectUniqueSample(kResultHistogramName,
+                                           DTAttestationResult::kSuccess, 1);
+    } else {
+      histogram_tester_.ExpectBucketCount(kResultHistogramName,
+                                          DTAttestationResult::kSuccess, 1);
+    }
     histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 1);
-    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName,
+                                       failed_attempts);
   }
 
   void VerifyAttestationFlowFailure() {
@@ -315,7 +326,7 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     TestNavigationManager first_navigation(web_contents(), redirect_url);
 
 #if !BUILDFLAG(IS_WIN)
-    // "KeyCreation" test case is not available to non-Windows for now
+    // "KeyCreation" test case is not available to non-Windows for now.
     ASSERT_TRUE(key_exists);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -393,7 +404,7 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
 
     SetPolicy(false);
 
-    // Make the current context unmanaged
+    // Make the current context unmanaged.
     auto* management_service =
         policy::ManagementServiceFactory::GetForProfile(browser()->profile());
     management_service->SetManagementAuthoritiesForTesting(
@@ -403,7 +414,7 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
     EXPECT_TRUE(enterprise_connectors::DeviceTrustNavigationThrottle::
                     MaybeCreateThrottleFor(&mock_nav_handle) == nullptr);
 
-    // Make the current context managed again
+    // Make the current context managed again.
     management_service->SetManagementAuthoritiesForTesting(
         static_cast<int>(policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
 
@@ -468,7 +479,7 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
 
   void AttestationFullFlowKeyExistsTest(bool key_exists) override {
     // Windows DT test environment mocks the register and we need to manually
-    // create the DT key first
+    // create the DT key first.
 #if BUILDFLAG(IS_WIN)
     if (key_exists) {
       device_trust_test_environment_win_->SetUpExistingKey();
@@ -616,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the device trust navigation throttle does not get created when
 // there is no management and later gets created when management is added to the
-// same context
+// same context.
 IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
                        ManagementAddedAfterFirstCreationTry) {
   ManagementAddedAfterFirstCreationTry(/*is_enabled=*/true);
@@ -657,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
 
 #if BUILDFLAG(IS_WIN)
 // Windows DT test environment mocks the registry and DT key does not exist by
-// default In this test case a key will be created by DeviceTrustKeyManager
+// default, in this test case a key will be created by DeviceTrustKeyManager.
 IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlowKeyCreation) {
   AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
   VerifyAttestationFlowSuccessful();
@@ -674,6 +685,30 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustDisabledBrowserTest,
                        AttestationFullFlowKeyCreation) {
   AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
   VerifyDisabledFeatureFlow();
+  ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
+                       AttestationFullFlowSucceedOnThirdAttempt) {
+  // First attestation flow attempt fails when a DT attestation key does not
+  // exist, and KeyRotationCommand fails to upload the newly created key.
+  device_trust_test_environment_win_->SetUploadResult(kHardFailureCode);
+  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  // DT attestation key should not be created if attestation fails.
+  ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
+
+  // Second attestation flow attempt fails when key upload fails again, this is
+  // for testing that consecutive failures does not break anything
+  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
+
+  // Third attestation flow attempt succeeds after two failed attempts, this is
+  // for testing that previous failed attempts does not affect new attempts from
+  // succeeding AND that metrics is working at the same time.
+  device_trust_test_environment_win_->SetUploadResult(kSuccessCode);
+  AttestationFullFlowKeyExistsTest(/*key_exists=*/false);
+  VerifyAttestationFlowSuccessful(/*failed_attempts=*/2);
+  ASSERT_TRUE(device_trust_test_environment_win_->KeyExists());
 }
 #endif
 

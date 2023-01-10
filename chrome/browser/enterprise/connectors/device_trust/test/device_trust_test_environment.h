@@ -5,29 +5,35 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_TEST_ENVIRONMENT_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_TEST_ENVIRONMENT_H_
 
+#include <memory>
+
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 
 namespace enterprise_connectors {
 
+class KeyPersistenceDelegate;
+
 class DeviceTrustTestEnvironment {
  public:
   using HttpResponseCode = KeyNetworkDelegate::HttpResponseCode;
 
   DeviceTrustTestEnvironment(base::StringPiece thread_name,
-                             HttpResponseCode upload_response_code)
-      : worker_thread_(std::string(thread_name)),
-        upload_response_code_(upload_response_code) {}
-  virtual ~DeviceTrustTestEnvironment() = default;
+                             HttpResponseCode upload_response_code);
 
-  // Set the result of key upload to test different behaviours of
-  // KeyNetworkDelegate
-  virtual void SetUploadResult(HttpResponseCode upload_response_code) = 0;
+  virtual ~DeviceTrustTestEnvironment();
 
   // Set up an existing device trust key on the device, to test the case where a
-  // key already exists on the device
+  // key already exists on the device.
   virtual void SetUpExistingKey() = 0;
+
+  // Set the result of key upload to test different behaviours of
+  // KeyNetworkDelegate.
+  void SetUploadResult(HttpResponseCode upload_response_code);
+
+  // Check if device trust key exists on the device.
+  bool KeyExists();
 
  protected:
   // Use a non-ThreadPool worker thread as the code that will run in the
@@ -36,8 +42,12 @@ class DeviceTrustTestEnvironment {
   base::Thread worker_thread_;
 
   // Preset response code of key upload, used to test different behaviours of
-  // KeyNetworkDelegate
+  // KeyNetworkDelegate.
   HttpResponseCode upload_response_code_;
+
+  // Instance of platform-dependent KeyPersistenceDelegate to interact with
+  // Device Trust keys.
+  std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate_;
 };
 
 }  // namespace enterprise_connectors
