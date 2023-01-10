@@ -20,5 +20,12 @@
 
     readonly attribute GPUSize64 size;
     readonly attribute GPUBufferUsageFlags usage;
+    readonly attribute GPUBufferMapState mapState;
 };
 GPUBuffer includes GPUObjectBase;
+
+enum GPUBufferMapState {
+    "unmapped",
+    "pending",
+    "mapped"
+};

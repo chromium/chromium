@@ -1162,6 +1162,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_operation.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_map_state.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_map_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_compare_function.cc",

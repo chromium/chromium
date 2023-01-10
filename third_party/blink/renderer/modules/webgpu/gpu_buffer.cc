@@ -245,6 +245,10 @@ uint32_t GPUBuffer::usage() const {
   return GetProcs().bufferGetUsage(GetHandle());
 }
 
+String GPUBuffer::mapState() const {
+  return FromDawnEnum(GetProcs().bufferGetMapState(GetHandle()));
+}
+
 ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
                                       uint32_t mode,
                                       uint64_t offset,

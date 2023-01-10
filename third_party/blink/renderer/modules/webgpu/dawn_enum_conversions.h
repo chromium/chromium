@@ -83,6 +83,7 @@ WGPURenderPassTimestampLocation AsDawnEnum(
 const char* FromDawnEnum(WGPUQueryType dawn_enum);
 const char* FromDawnEnum(WGPUTextureDimension dawn_enum);
 const char* FromDawnEnum(WGPUTextureFormat dawn_enum);
+const char* FromDawnEnum(WGPUBufferMapState dawn_enum);
 
 }  // namespace blink
 

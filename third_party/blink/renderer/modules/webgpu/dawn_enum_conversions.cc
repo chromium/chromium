@@ -924,4 +924,18 @@ WGPURenderPassTimestampLocation AsDawnEnum(
   }
 }
 
+const char* FromDawnEnum(WGPUBufferMapState dawn_enum) {
+  switch (dawn_enum) {
+    case WGPUBufferMapState_Unmapped:
+      return "unmapped";
+    case WGPUBufferMapState_Pending:
+      return "pending";
+    case WGPUBufferMapState_Mapped:
+      return "mapped";
+    case WGPUBufferMapState_Force32:
+      NOTREACHED();
+  }
+  return "";
+}
+
 }  // namespace blink
