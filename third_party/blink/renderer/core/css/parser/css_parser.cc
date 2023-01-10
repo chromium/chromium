@@ -367,8 +367,12 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
   CSSTokenizer tokenizer(string);
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  return css_parsing_utils::ConsumeLengthOrPercent(
+  // Trim whitespace from the string. It's only necessary to consume leading
+  // whitespaces, since ConsumeLengthOrPercent always consumes trailing ones.
+  range.ConsumeWhitespace();
+  CSSPrimitiveValue* parsed_value = css_parsing_utils::ConsumeLengthOrPercent(
       range, *context, CSSPrimitiveValue::ValueRange::kAll);
+  return range.AtEnd() ? parsed_value : nullptr;
 }
 
 MutableCSSPropertyValueSet* CSSParser::ParseFont(

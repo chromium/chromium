@@ -32,16 +32,18 @@ void MathMLPaddedElement::AddMathPaddedLSpaceIfNeeded(
     ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
-          conversion_data, mathml_names::kLspaceAttr))
+          conversion_data, mathml_names::kLspaceAttr, AllowPercentages::kNo)) {
     builder.SetMathLSpace(std::move(*length_or_percentage_value));
+  }
 }
 
 void MathMLPaddedElement::AddMathPaddedVOffsetIfNeeded(
     ComputedStyleBuilder& builder,
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
-          conversion_data, mathml_names::kVoffsetAttr))
+          conversion_data, mathml_names::kVoffsetAttr, AllowPercentages::kNo)) {
     builder.SetMathPaddedVOffset(std::move(*length_or_percentage_value));
+  }
 }
 
 void MathMLPaddedElement::ParseAttribute(
@@ -75,9 +77,10 @@ void MathMLPaddedElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == mathml_names::kWidthAttr) {
-    if (!value.EndsWith('%')) {
+    if (const CSSPrimitiveValue* width_value =
+            ParseMathLength(name, AllowPercentages::kNo)) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
-                                              value);
+                                              *width_value);
     }
   } else {
     MathMLElement::CollectStyleForPresentationAttribute(name, value, style);

@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class CSSPrimitiveValue;
 class CSSToLengthConversionData;
 class QualifiedName;
 
@@ -45,6 +46,9 @@ class CORE_EXPORT MathMLElement : public Element {
       MutableCSSPropertyValueSet*) override;
 
   enum class AllowPercentages { kYes, kNo };
+  const CSSPrimitiveValue* ParseMathLength(
+      const QualifiedName& attr_name,
+      AllowPercentages allow_percentages = AllowPercentages::kYes);
   absl::optional<Length> AddMathLengthToComputedStyle(
       const CSSToLengthConversionData&,
       const QualifiedName&,

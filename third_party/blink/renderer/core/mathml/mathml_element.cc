@@ -163,21 +163,32 @@ absl::optional<bool> MathMLElement::BooleanAttribute(
   return absl::nullopt;
 }
 
-absl::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
-    const CSSToLengthConversionData& conversion_data,
+const CSSPrimitiveValue* MathMLElement::ParseMathLength(
     const QualifiedName& attr_name,
     AllowPercentages allow_percentages) {
   if (!FastHasAttribute(attr_name))
-    return absl::nullopt;
+    return nullptr;
   auto value = FastGetAttribute(attr_name);
   const CSSPrimitiveValue* parsed_value = CSSParser::ParseLengthPercentage(
       value,
       StrictCSSParserContext(GetExecutionContext()->GetSecureContextMode()));
   if (!parsed_value || parsed_value->IsCalculated() ||
       (parsed_value->IsPercentage() &&
-       (!value.EndsWith('%') || allow_percentages == AllowPercentages::kNo)))
-    return absl::nullopt;
-  return parsed_value->ConvertToLength(conversion_data);
+       allow_percentages == AllowPercentages::kNo)) {
+    return nullptr;
+  }
+  return parsed_value;
+}
+
+absl::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
+    const CSSToLengthConversionData& conversion_data,
+    const QualifiedName& attr_name,
+    AllowPercentages allow_percentages) {
+  if (const CSSPrimitiveValue* parsed_value =
+          ParseMathLength(attr_name, allow_percentages)) {
+    return parsed_value->ConvertToLength(conversion_data);
+  }
+  return absl::nullopt;
 }
 
 LayoutObject* MathMLElement::CreateLayoutObject(const ComputedStyle& style,
