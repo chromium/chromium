@@ -1590,9 +1590,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // `raw_ptr` and `raw_ptr<U>` in the friend declaration itself does not work,
   // because a comparison operator defined inline would not be allowed to call
   // `raw_ptr<U>`'s private `GetForComparison()` method.
-  template <typename U, typename V, typename I>
+  template <typename U, typename V, typename I, typename J>
   friend PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
-                                          const raw_ptr<V, I>& rhs);
+                                          const raw_ptr<V, J>& rhs);
   template <typename U>
   friend PA_ALWAYS_INLINE bool operator!=(const raw_ptr& lhs,
                                           const raw_ptr<U, Impl>& rhs) {
@@ -1719,9 +1719,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   friend class raw_ptr;
 };
 
-template <typename U, typename V, typename I>
+template <typename U, typename V, typename I, typename J>
 PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
-                                 const raw_ptr<V, I>& rhs) {
+                                 const raw_ptr<V, J>& rhs) {
   return lhs.GetForComparison() == rhs.GetForComparison();
 }
 
