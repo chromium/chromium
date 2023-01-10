@@ -1170,7 +1170,7 @@ BASE_FEATURE(kSnoopingProtection,
 // response time).
 BASE_FEATURE(kStartAssistantAudioDecoderOnDemand,
              "StartAssistantAudioDecoderOnDemand",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable or disable a new header bar for the ChromeOS virtual keyboard.
 BASE_FEATURE(kVirtualKeyboardNewHeader,

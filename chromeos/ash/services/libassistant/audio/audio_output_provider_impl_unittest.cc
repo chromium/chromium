@@ -76,8 +76,9 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
     // Otherwise, the |run_loop_| may not block because the QuitClosure() is
     // called before Run(), right after it is created in Reset(), which will
     // cause timing issue in the test.
-    if (num_bytes == 0)
+    if (num_bytes == 0) {
       quit_closure_.Run();
+    }
   }
 
   bool end_of_stream() { return end_of_stream_; }
@@ -146,7 +147,10 @@ class AssistantAudioDeviceOwnerTest : public testing::Test {
 };
 
 TEST(AudioOutputProviderImplTest, StartDecoderServiceWithBindCall) {
-  ASSERT_FALSE(features::IsStartAssistantAudioDecoderOnDemandEnabled());
+  ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kStartAssistantAudioDecoderOnDemand);
+
   SingleThreadTaskEnvironment task_environment;
 
   auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
@@ -182,8 +186,7 @@ TEST(AudioOutputProviderImplTest, StartDecoderServiceWithBindCall) {
 }
 
 TEST(AudioOutputProviderImplTest, StartDecoderServiceOnDemand) {
-  ScopedFeatureList scoped_feature_list(
-      features::kStartAssistantAudioDecoderOnDemand);
+  ASSERT_TRUE(features::IsStartAssistantAudioDecoderOnDemandEnabled());
   SingleThreadTaskEnvironment task_environment;
 
   auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
