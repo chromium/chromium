@@ -49,7 +49,7 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
         WebLayerOriginVerificationScheduler originVerifier =
                 WebLayerOriginVerificationScheduler.getInstance();
 
-        originVerifier.verify(url, mProfile, (verified) -> {
+        originVerifier.verify(url, (verified) -> {
             if (!verified) {
                 try {
                     callback.onException(ExceptionType.RESTRICTED_API,
@@ -74,7 +74,7 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
         WebLayerOriginVerificationScheduler originVerifier =
                 WebLayerOriginVerificationScheduler.getInstance();
 
-        originVerifier.verify(url, mProfile, (verified) -> {
+        originVerifier.verify(url, (verified) -> {
             if (!verified) {
                 try {
                     callback.onException(ExceptionType.RESTRICTED_API,

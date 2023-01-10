@@ -42,15 +42,16 @@ public class WebLayerOriginVerificationScheduler extends OriginVerificationSched
      * This should be called exactly only once as it parses the AndroidManifest and statement list.
      *
      * @param packageName the package name of the host application.
+     * @param profile the profile to use for the simpleUrlLoader to download the asset links file.
      * @param context a context associated with an Activity/Service to load resources.
      */
-    static void init(String packageName, Context context) {
+    static void init(String packageName, BrowserContextHandle profile, Context context) {
         ThreadUtils.assertOnUiThread();
         assert sInstance
                 == null : "`init(String packageName, Context context)` must only be called once";
 
         sInstance = new WebLayerOriginVerificationScheduler(
-                new WebLayerOriginVerifier(packageName, OriginVerifier.HANDLE_ALL_URLS,
+                new WebLayerOriginVerifier(packageName, OriginVerifier.HANDLE_ALL_URLS, profile,
                         WebLayerVerificationResultStore.getInstance()),
                 OriginVerifierHelper.getClaimedOriginsFromManifest(packageName, context));
     }
@@ -62,11 +63,11 @@ public class WebLayerOriginVerificationScheduler extends OriginVerificationSched
     }
 
     @Override
-    public void verify(String url, BrowserContextHandle profile, Callback<Boolean> callback) {
+    public void verify(String url, Callback<Boolean> callback) {
         if (mOriginVerifier.skipOriginVerification()) {
             callback.onResult(true);
             return;
         }
-        super.verify(url, profile, callback);
+        super.verify(url, callback);
     }
 }

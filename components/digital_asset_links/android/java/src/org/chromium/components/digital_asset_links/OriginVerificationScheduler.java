@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,13 +51,11 @@ public class OriginVerificationScheduler {
         mPendingOrigins.add(origin);
     }
 
-    public void verify(
-            String url, BrowserContextHandle browserContextHandle, Callback<Boolean> callback) {
-        verify(Origin.create(url), browserContextHandle, callback);
+    public void verify(String url, Callback<Boolean> callback) {
+        verify(Origin.create(url), callback);
     }
 
-    public void verify(
-            Origin origin, BrowserContextHandle browserContextHandle, Callback<Boolean> callback) {
+    public void verify(Origin origin, Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
         if (origin == null) {
             callback.onResult(false);
@@ -75,20 +72,19 @@ public class OriginVerificationScheduler {
                 mPendingOrigins.remove(origin);
 
                 callback.onResult(verified);
-            }, browserContextHandle, origin);
+            }, origin);
             return;
         }
         callback.onResult(mOriginVerifier.wasPreviouslyVerified(origin));
     }
 
-    public void scheduleAllPendingVerifications(
-            BrowserContextHandle browserContextHandle, @Nullable Callback<Boolean> callback) {
+    public void scheduleAllPendingVerifications(@Nullable Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
         if (callback == null) {
             callback = (res) -> {};
         }
         for (Origin origin : mPendingOrigins) {
-            verify(origin, browserContextHandle, callback);
+            verify(origin, callback);
         }
     }
 

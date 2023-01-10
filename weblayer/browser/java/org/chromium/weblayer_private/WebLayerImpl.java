@@ -225,7 +225,8 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         // This issues JNI calls which require native code to be loaded.
         MetricsServiceClient.init();
 
-        WebLayerOriginVerificationScheduler.init(appContext.getPackageName(), appContext);
+        WebLayerOriginVerificationScheduler.init(appContext.getPackageName(),
+                mProfileManager.getProfile(/* name= */ "", true), appContext);
 
         assert mInited;
         WebLayerImplJni.get().setIsWebViewCompatMode(mIsWebViewCompatMode);
