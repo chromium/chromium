@@ -33,6 +33,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.InputMethodManagement.guest",
   "inputs.PhysicalKeyboardEmojiSuggestion.guest",
 
+  # https://crbug.com/1406269
+  "inputs.InputMethodShelfInputs",
+
   # b/251833060
   "peripherals.LaunchAppFromGuestSession.diagnostics",
 
