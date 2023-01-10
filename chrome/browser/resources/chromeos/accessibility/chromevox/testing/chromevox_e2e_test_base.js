@@ -163,6 +163,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
       this.originalOutputContextValues_[role] =
           OutputRoleInfo[role]['contextOrder'];
     }
+    await MockFeedback.imports();
     await ChromeVoxState.ready();
   }
 

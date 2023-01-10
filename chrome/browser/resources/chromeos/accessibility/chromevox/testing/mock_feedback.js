@@ -51,57 +51,63 @@ MockFeedback = class {
    */
   constructor(opt_finishedCallback) {
     /**
-     * @type {function}
-     * @private
+     * @private {function(): undefined}
      */
     this.finishedCallback_ = opt_finishedCallback || null;
     /**
      * True when |replay| has been called and actions are being replayed.
-     * @type {boolean}
-     * @private
+     * @private {boolean}
      */
     this.replaying_ = false;
     /**
      * True when inside the |process| function to prevent nested calls.
-     * @type {boolean}
-     * @private
+     * @private {boolean}
      */
     this.inProcess_ = false;
     /**
      * Pending expectations and callbacks.
-     * @type {Array<{perform(): boolean, toString(): string}>}
-     * @private
+     * @private {Array<{
+     *     perform: (function(): boolean),
+     *     toString: (function(): string)
+     * }>}
      */
     this.pendingActions_ = [];
     /**
      * Pending speech utterances.
-     * @type {Array<{text: string, callback: (function|undefined)}>}
-     * @private
+     * @private {Array<{text: string, callback: (function()|undefined)}>}
      */
     this.pendingUtterances_ = [];
     /**
      * Pending braille output.
-     * @type {Array<{text: string, callback: (function|undefined)}>}
-     * @private
+     * @private {Array<{text: string, callback: (function()|undefined)}>}
      */
     this.pendingBraille_ = [];
     /**
      * Pending earcons.
-     * @type {Array<{text: string, callback: (function|undefined)}>}
-     * @private
+     * @private {Array<{text: string, callback: (function()|undefined)}>}
      */
     this.pendingEarcons_ = [];
     /**
      * Handle for the timeout set for debug logging.
-     * @type {number}
-     * @private
+     * @private {number}
      */
     this.logTimeoutId_ = 0;
-    /**
-     * @type {NavBraille}
-     * @private
-     */
+    /** @private {NavBraille} */
     this.lastMatchedBraille_ = null;
+  }
+
+  static async imports() {
+    // Alphabetical based on file path.
+    await importModule(
+        'AbstractEarcons', '/chromevox/background/abstract_earcons.js');
+    await importModule(
+        'BrailleInterface',
+        '/chromevox/background/braille/braille_interface.js');
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+    await importModule(
+        'NavBraille', '/chromevox/common/braille/nav_braille.js');
+    await importModule('TtsInterface', '/chromevox/common/tts_interface.js');
+    await importModule('QueueMode', '/chromevox/common/tts_types.js');
   }
 
   /**
