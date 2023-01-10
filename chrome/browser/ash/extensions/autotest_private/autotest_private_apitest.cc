@@ -577,15 +577,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutotestPrivateSearchTest,
                          /* tablet_mode= */ ::testing::Bool());
 
-// TODO(b/261659507): This test is flaky.
-#if (BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG))
-#define MAYBE_LauncherSearchBoxStateAPITest \
-  DISABLED_LauncherSearchBoxStateAPITest
-#else
-#define MAYBE_LauncherSearchBoxStateAPITest LauncherSearchBoxStateAPITest
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG))
 IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
-                       MAYBE_LauncherSearchBoxStateAPITest) {
+                       LauncherSearchBoxStateAPITest) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
   test::GetAppListClient()->ShowAppList(ash::AppListShowSource::kSearchKey);
   if (!GetParam()) {
