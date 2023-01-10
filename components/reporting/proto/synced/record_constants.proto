@@ -92,6 +92,10 @@ enum Destination {
   // client side.
   LEGACY_TECH = 25;
 
+  // |CROS_SECURITY_NETWORK| is for events that are occurring over
+  // the network.
+  CROS_SECURITY_NETWORK = 26;
+
   reserved 8;
 }
 
