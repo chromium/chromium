@@ -930,8 +930,11 @@ bool ViewTransitionStyleTracker::HasActiveAnimations() const {
       return;
 
     for (auto& animation_pair : animations->Animations()) {
-      if (auto* effect = animation_pair.key->effect())
-        has_animations = has_animations || effect->IsCurrent();
+      auto animation_play_state =
+          animation_pair.key->CalculateAnimationPlayState();
+      has_animations = has_animations ||
+                       animation_play_state == Animation::kRunning ||
+                       animation_play_state == Animation::kPaused;
     }
   };
   ViewTransitionUtils::ForEachTransitionPseudo(*document_, accumulate_pseudo);
