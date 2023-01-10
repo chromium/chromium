@@ -6875,6 +6875,8 @@ void WebContentsImpl::NotifyViewSwapped(RenderViewHost* old_view,
   // notification so that clients that pick up a pointer to |this| can NULL the
   // pointer.  See Bug 1230284.
   notify_disconnection_ = true;
+  observers_.NotifyObservers(&WebContentsObserver::RenderViewHostChanged,
+                             old_view, new_view);
   view_->RenderViewHostChanged(old_view, new_view);
 
   // If this is an inner WebContents that has swapped views, we need to reattach
@@ -8200,6 +8202,10 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   DCHECK_NE(new_frame->lifecycle_state(),
             RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
 
+  // Only fire RenderViewHostChanged if it is related to our FrameTree, as
+  // observers can not deal with events coming from non-primary FrameTree.
+  // TODO(https://crbug.com/1168562): Update observers to deal with the events,
+  // and fire events for all frame trees.
   if (new_frame->IsInPrimaryMainFrame()) {
     // The |new_frame| and its various compadres are already swapped into place
     // for the WebContentsImpl when this method is called.
@@ -8245,8 +8251,11 @@ void WebContentsImpl::NotifySwappedFromRenderManagerWithoutFallbackContent(
 void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
     RenderFrameHostImpl* old_frame,
     RenderFrameHostImpl* new_frame) {
-  // Only notify about RenderViewHost changes if it is related to our FrameTree,
-  // as observers cannot deal with events coming from non-primary FrameTree.
+  // Only fire RenderViewHostChanged if it is
+  // related to our FrameTree, as observers cannot deal with events coming
+  // from non-primary FrameTree.
+  // TODO(https://crbug.com/1168562): Update observers to deal with the events,
+  // and fire events for all frame trees.
   if (!new_frame->IsInPrimaryMainFrame()) {
     return;
   }
