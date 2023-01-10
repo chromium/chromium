@@ -14,7 +14,7 @@ WaylandConnection::WaylandConnection(std::string wl_socket)
       display_(wl_display_connect(wl_socket_.c_str())),
       registry_(wl_display_get_registry(display_.get())) {
   wl_registry_add_listener(registry_.get(), &wl_registry_listener_, this);
-  timer_.Start(FROM_HERE, base::Milliseconds(5), this,
+  timer_.Start(FROM_HERE, base::Microseconds(100), this,
                &WaylandConnection::DispatchWaylandEvents);
 }
 
