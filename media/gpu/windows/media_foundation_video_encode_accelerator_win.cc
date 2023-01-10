@@ -27,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/bitstream_buffer.h"
@@ -38,13 +37,13 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
+#include "media/gpu/windows/vp9_video_rate_control_wrapper.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-#include "vp9_video_rate_control_wrapper.h"
 #if BUILDFLAG(ENABLE_LIBAOM)
-#include "av1_video_rate_control_wrapper.h"
+#include "media/gpu/windows/av1_video_rate_control_wrapper.h"
 #include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 #endif
 
@@ -113,13 +112,8 @@ eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
                                  : eAVEncH264VProfile_Base;
     case H264PROFILE_MAIN:
       return eAVEncH264VProfile_Main;
-    case H264PROFILE_HIGH: {
-      // eAVEncH264VProfile_High requires Windows 8.
-      if (base::win::GetVersion() < base::win::Version::WIN8) {
-        return eAVEncH264VProfile_unknown;
-      }
+    case H264PROFILE_HIGH:
       return eAVEncH264VProfile_High;
-    }
     default:
       return eAVEncH264VProfile_unknown;
   }
@@ -255,14 +249,8 @@ MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
 }
 
 uint32_t EnumerateHardwareEncoders(VideoCodec codec,
-                                   IMFActivate*** pp_activate,
-                                   bool compatible_with_win7) {
+                                   IMFActivate*** pp_activate) {
   DVLOG(3) << __func__;
-
-  if (!compatible_with_win7 &&
-      base::win::GetVersion() < base::win::Version::WIN8) {
-    return 0;
-  }
 
   if (codec != VideoCodec::kH264 && codec != VideoCodec::kVP9 &&
       codec != VideoCodec::kAV1
@@ -417,16 +405,11 @@ struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
   const size_t size;
 };
 
-// TODO(zijiehe): Respect |compatible_with_win7_| in the implementation. Some
-// attributes are not supported by Windows 7, setting them will return errors.
-// See bug: http://crbug.com/777659.
 MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     CHROME_LUID luid)
-    : compatible_with_win7_(
-          gpu_preferences.enable_media_foundation_vea_on_windows7),
-      frame_rate_(kMaxFrameRateNumerator / kMaxFrameRateDenominator),
+    : frame_rate_(kMaxFrameRateNumerator / kMaxFrameRateDenominator),
       bitrate_allocation_(Bitrate::Mode::kConstant),
       input_required_(false),
       main_client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
@@ -483,8 +466,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   }
 
   IMFActivate** pp_activate = nullptr;
-  uint32_t encoder_count =
-      EnumerateHardwareEncoders(codec, &pp_activate, compatible_with_win7_);
+  uint32_t encoder_count = EnumerateHardwareEncoders(codec, &pp_activate);
   if (!encoder_count) {
     DVLOG(1)
         << "Hardware encode acceleration is not available on this platform for "
@@ -660,8 +642,7 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
   HRESULT hr = S_OK;
   IMFActivate** pp_activates = nullptr;
 
-  uint32_t encoder_count =
-      EnumerateHardwareEncoders(codec_, &pp_activates, compatible_with_win7_);
+  uint32_t encoder_count = EnumerateHardwareEncoders(codec_, &pp_activates);
   NOTIFY_RETURN_ON_FAILURE(encoder_count == 0,
                            "Failed finding a hardware encoder MFT.", );
 
@@ -1077,13 +1058,7 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     }
   }
   hr = codec_api_->SetValue(&CODECAPI_AVEncCommonRateControlMode, &var);
-  if (!compatible_with_win7_) {
-    // Though CODECAPI_AVEncCommonRateControlMode is supported by Windows 7, but
-    // according to a discussion on MSDN,
-    // https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/6da521e9-7bb3-4b79-a2b6-b31509224638/win7-h264-encoder-imfsinkwriter-cant-use-quality-vbr-encoding?forum=mediafoundationdevelopment
-    // setting it on Windows 7 returns error.
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);
-  }
+  RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);
 
   // Intel drivers want the layer count to be set explicitly for H.264/HEVC,
   // even if it's one.
@@ -1094,35 +1069,27 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
   if (set_svc_layer_count) {
     var.ulVal = num_temporal_layers_;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoTemporalLayerCount, &var);
-    if (!compatible_with_win7_) {
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set temporal layer count", false);
-    }
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set temporal layer count", false);
   }
 
   if (!rate_ctrl_) {
     var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
                                          configured_frame_rate_, frame_rate_);
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
-    if (!compatible_with_win7_) {
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
-    }
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
   }
 
   if (bitrate_allocation_.GetMode() == Bitrate::Mode::kVariable) {
     var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
                                          configured_frame_rate_, frame_rate_);
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
-    if (!compatible_with_win7_) {
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
-    }
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
   }
 
   if (S_OK == codec_api_->IsModifiable(&CODECAPI_AVEncAdaptiveMode)) {
     var.ulVal = eAVEncAdaptiveMode_Resolution;
     hr = codec_api_->SetValue(&CODECAPI_AVEncAdaptiveMode, &var);
-    if (!compatible_with_win7_) {
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set adaptive mode", false);
-    }
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set adaptive mode", false);
   }
 
   var.ulVal = gop_length_;
@@ -1133,9 +1100,7 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     var.vt = VT_BOOL;
     var.boolVal = low_latency_mode_ ? VARIANT_TRUE : VARIANT_FALSE;
     hr = codec_api_->SetValue(&CODECAPI_AVLowLatencyMode, &var);
-    if (!compatible_with_win7_) {
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set low latency mode", false);
-    }
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set low latency mode", false);
   }
 
   return true;
@@ -1227,7 +1192,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     var.vt = VT_UI4;
     var.ulVal = 1;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
-    if (!compatible_with_win7_ && FAILED(hr)) {
+    if (FAILED(hr)) {
       LOG(WARNING) << "Failed to set CODECAPI_AVEncVideoForceKeyFrame, "
                       "HRESULT: 0x"
                    << std::hex << hr;
@@ -1870,17 +1835,13 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
                                        configured_frame_rate_, framerate);
   HRESULT hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
-  if (!compatible_with_win7_) {
-    RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
-  }
+  RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
 
   if (bitrate_allocation_.GetMode() == Bitrate::Mode::kVariable) {
     var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
                                          configured_frame_rate_, framerate);
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
-    if (!compatible_with_win7_) {
-      RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );
-    }
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );
   }
 }
 

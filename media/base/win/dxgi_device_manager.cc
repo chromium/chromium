@@ -8,9 +8,10 @@
 #include <mferror.h>
 #include <mfreadwrite.h>
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/win/windows_version.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace media {
@@ -59,12 +60,10 @@ Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceScopedHandle::GetDevice() {
 }
 
 scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create(CHROME_LUID luid) {
-  if (base::win::GetVersion() < base::win::Version::WIN8 ||
-      (!::GetModuleHandle(L"mfplat.dll") && !::LoadLibrary(L"mfplat.dll"))) {
-    // The MF DXGI Device manager is only supported on Win8 or later
-    // Additionally, it is not supported when mfplat.dll isn't available
-    DLOG(ERROR)
-        << "MF DXGI Device Manager not supported on current version of Windows";
+  if (!::GetModuleHandle(L"mfplat.dll") && !::LoadLibrary(L"mfplat.dll")) {
+    // The MF DXGI Device manager is not supported when mfplat.dll isn't
+    // available.
+    DLOG(ERROR) << "MF DXGI Device Manager is not available";
     return nullptr;
   }
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager;

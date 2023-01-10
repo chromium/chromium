@@ -17,6 +17,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/atomicops.h"
 #include "base/base_paths_win.h"
@@ -36,7 +38,6 @@
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -763,23 +764,8 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-// On Windows 8+ mfplat.dll provides the MFCreateDXGIDeviceManager API.
-// On Windows 7 mshtmlmedia.dll provides it.
+  // mfplat.dll provides the MFCreateDXGIDeviceManager API.
 
-// TODO(ananta)
-// The code below works, as in we can create the DX11 device manager for
-// Windows 7. However the IMFTransform we use for texture conversion and
-// copy does not exist on Windows 7. Look into an alternate approach
-// and enable the code below.
-#if defined(ENABLE_DX11_FOR_WIN7)
-  if (base::win::GetVersion() == base::win::Version::WIN7) {
-    dxgi_manager_dll = ::GetModuleHandle(L"mshtmlmedia.dll");
-    if (!dxgi_manager_dll) {
-      LOG(ERROR) << "DXVAVDA fatal error: Could not load mshtmlmedia.dll";
-      return false;
-    }
-  }
-#endif
   // If we don't find the MFCreateDXGIDeviceManager API we fallback to D3D9
   // decoding.
   if (dxgi_manager_dll && !create_dxgi_device_manager_) {
@@ -1443,15 +1429,8 @@ void DXVAVideoDecodeAccelerator::PreSandboxInitialization() {
   if (!::LoadLibrary(L"dxva2.dll"))
     PLOG(ERROR) << "DXVAVDA fatal error: could not LoadLibrary: dxva2.dll";
 
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    if (!LoadLibrary(L"msvproc.dll"))
-      PLOG(ERROR) << "DXVAVDA fatal error: could not LoadLibrary: msvproc.dll";
-  } else {
-#if defined(ENABLE_DX11_FOR_WIN7)
-    if (!LoadLibrary(L"mshtmlmedia.dll"))
-      PLOG(ERROR)
-          << "DXVAVDA fatal error: could not LoadLibrary: mshtmlmedia.dll";
-#endif
+  if (!LoadLibrary(L"msvproc.dll")) {
+    PLOG(ERROR) << "DXVAVDA fatal error: could not LoadLibrary: msvproc.dll";
   }
 }
 

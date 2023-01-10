@@ -4,9 +4,9 @@
 
 #include "media/renderers/win/media_foundation_renderer.h"
 
-#include <memory>
-
 #include <mfapi.h>
+
+#include <memory>
 
 #include "base/win/windows_version.h"
 #include "media/base/media_util.h"
@@ -20,11 +20,6 @@ namespace {
 // TODO(xhwang): Generalize this to support more codecs, or use CanPlay() or
 // IsTypeSupported() which can take mime types directly.
 bool CanDecodeVp9() {
-  if (!MediaFoundationRenderer::IsSupported()) {
-    LOG(WARNING) << "MediaFoundationRenderer not supported";
-    return false;
-  }
-
   MFT_REGISTER_TYPE_INFO input_type = {MFMediaType_Video, MFVideoFormat_VP90};
   IMFActivate** activates = nullptr;
   UINT32 count = 0;
@@ -37,8 +32,9 @@ bool CanDecodeVp9() {
     return false;
   }
 
-  for (UINT32 i = 0; i < count; ++i)
+  for (UINT32 i = 0; i < count; ++i) {
     activates[i]->Release();
+  }
   CoTaskMemFree(activates);
 
   if (count == 0) {

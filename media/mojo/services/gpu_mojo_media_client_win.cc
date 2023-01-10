@@ -7,7 +7,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/win/windows_version.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/media_switches.h"
 #include "media/base/offloading_audio_encoder.h"
@@ -31,8 +30,7 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
 
 bool ShouldUseD3D11VideoDecoder(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
-  return !gpu_workarounds.disable_d3d11_video_decoder &&
-         base::win::GetVersion() > base::win::Version::WIN7;
+  return !gpu_workarounds.disable_d3d11_video_decoder;
 }
 
 }  // namespace

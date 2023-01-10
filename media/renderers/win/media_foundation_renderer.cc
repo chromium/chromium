@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
@@ -23,7 +24,6 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_propvariant.h"
-#include "base/win/windows_version.h"
 #include "base/win/wrapped_window_proc.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
@@ -108,11 +108,6 @@ bool IsInvalidHandle(const HANDLE& handle) {
 void MediaFoundationRenderer::ReportErrorReason(ErrorReason reason) {
   base::UmaHistogramEnumeration("Media.MediaFoundationRenderer.ErrorReason",
                                 reason);
-}
-
-// static
-bool MediaFoundationRenderer::IsSupported() {
-  return base::win::GetVersion() >= base::win::Version::WIN10;
 }
 
 MediaFoundationRenderer::MediaFoundationRenderer(
@@ -521,7 +516,7 @@ void MediaFoundationRenderer::SetMediaFoundationRenderingMode(
                << " is unsupported";
       MEDIA_LOG(ERROR, media_log_)
           << "MediaFoundationRenderer SetMediaFoundationRenderingMode: "
-          << (int)render_mode
+          << static_cast<int>(render_mode)
           << " is not defined. No change to the rendering mode.";
       hr = E_NOT_SET;
     }

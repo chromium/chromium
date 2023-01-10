@@ -34,7 +34,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <mfcaptureengine.h>
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/windows_version.h"  // For fine-grained suppression.
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #endif
@@ -687,18 +686,13 @@ void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
         << "Skipped on Chrome OS device where HAL v3 camera service is used";
     return;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_info = GetFirstDeviceSupportingPixelFormat(PIXEL_FORMAT_MJPEG);
   ASSERT_TRUE(device_info);
 
 #if BUILDFLAG(IS_WIN)
-  base::win::Version version = base::win::GetVersion();
-  if (version >= base::win::Version::WIN10) {
-    VLOG(1) << "Skipped on Win10: http://crbug.com/570604, current: "
-            << static_cast<int>(version);
-    return;
-  }
-#endif
+  GTEST_SKIP() << "Skipped on Windows:  https://crbug.com/570604";
+#else
   VideoCaptureErrorOrDevice device_status =
       video_capture_device_factory_->CreateDevice(device_info->descriptor);
   ASSERT_TRUE(device_status.ok());
@@ -721,6 +715,7 @@ void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
             media::VideoFrame::AllocationSize(last_format().pixel_format,
                                               last_format().frame_size));
   device->StopAndDeAllocate();
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 #define MAYBE_UsingRealWebcam_NoCameraSupportsPixelFormatMax \

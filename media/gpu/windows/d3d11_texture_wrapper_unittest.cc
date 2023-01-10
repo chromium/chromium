@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/win/windows_version.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,18 +29,9 @@ using ::testing::Values;
 
 namespace media {
 
-#define STOP_IF_WIN7()                                       \
-  do {                                                       \
-    if (base::win::GetVersion() <= base::win::Version::WIN7) \
-      return;                                                \
-  } while (0);
-
 class D3D11TextureWrapperUnittest : public ::testing::Test {
  public:
   void SetUp() override {
-    // Surface creation fails sometimes on win7, mostly.  Just skip the test.
-    STOP_IF_WIN7();
-
     task_runner_ = task_environment_.GetMainThreadTaskRunner();
 
     display_ = gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
@@ -61,7 +51,6 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
   }
 
   void TearDown() override {
-    STOP_IF_WIN7();
     context_->ReleaseCurrent(surface_.get());
     context_ = nullptr;
     share_group_ = nullptr;
@@ -88,7 +77,6 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
 };
 
 TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {
-  STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
 
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
@@ -100,7 +88,6 @@ TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {
 }
 
 TEST_F(D3D11TextureWrapperUnittest, BGRA8InitSucceeds) {
-  STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
 
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
@@ -110,7 +97,6 @@ TEST_F(D3D11TextureWrapperUnittest, BGRA8InitSucceeds) {
 }
 
 TEST_F(D3D11TextureWrapperUnittest, FP16InitSucceeds) {
-  STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
@@ -120,7 +106,6 @@ TEST_F(D3D11TextureWrapperUnittest, FP16InitSucceeds) {
 }
 
 TEST_F(D3D11TextureWrapperUnittest, P010InitSucceeds) {
-  STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_P010;
 
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);
@@ -130,7 +115,6 @@ TEST_F(D3D11TextureWrapperUnittest, P010InitSucceeds) {
 }
 
 TEST_F(D3D11TextureWrapperUnittest, UnknownInitFails) {
-  STOP_IF_WIN7();
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_UNKNOWN;
 
   auto wrapper = std::make_unique<DefaultTexture2DWrapper>(size_, dxgi_format);

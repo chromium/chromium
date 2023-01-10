@@ -208,8 +208,7 @@ ChannelConfig GuessChannelConfig(WORD channels) {
 }
 
 bool IAudioClient3IsSupported() {
-  return base::FeatureList::IsEnabled(features::kAllowIAudioClient3) &&
-         CoreAudioUtil::GetIAudioClientVersion() >= 3;
+  return base::FeatureList::IsEnabled(features::kAllowIAudioClient3);
 }
 
 std::string GetDeviceID(IMMDevice* device) {
@@ -598,19 +597,6 @@ std::string CoreAudioUtil::WaveFormatToString(const WaveFormatWrapper format) {
 base::TimeDelta CoreAudioUtil::ReferenceTimeToTimeDelta(REFERENCE_TIME time) {
   // Each unit of reference time is 100 nanoseconds <=> 0.1 microsecond.
   return base::Microseconds(0.1 * time + 0.5);
-}
-
-uint32_t CoreAudioUtil::GetIAudioClientVersion() {
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    // Minimum supported client: Windows 10.
-    // Minimum supported server: Windows Server 2016
-    return 3;
-  } else if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    // Minimum supported client: Windows 8.
-    // Minimum supported server: Windows Server 2012.
-    return 2;
-  }
-  return 1;
 }
 
 AUDCLNT_SHAREMODE CoreAudioUtil::GetShareMode() {

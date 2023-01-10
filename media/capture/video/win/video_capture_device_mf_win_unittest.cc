@@ -11,6 +11,9 @@
 #include <wincodec.h>
 
 #include <cmath>
+#include <memory>
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -20,7 +23,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_version.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/capture/video/win/d3d_capture_test_utils.h"
 #include "media/capture/video/win/sink_filter_win.h"
@@ -1203,16 +1205,6 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
     return true;
   }
 
-  bool ShouldSkipD3D11Test() {
-    // D3D11 is only supported with Media Foundation on Windows 8 or later
-    if (base::win::GetVersion() >= base::win::Version::WIN8)
-      return false;
-    DVLOG(1) << "D3D11 with Media foundation is not supported by the current "
-                "platform. "
-                "Skipping test.";
-    return true;
-  }
-
   void PrepareMFDeviceWithOneVideoStream(GUID mf_video_subtype) {
     EXPECT_CALL(*capture_source_, DoGetDeviceStreamCount(_))
         .WillRepeatedly(Invoke([](DWORD* stream_count) {
@@ -2096,9 +2088,6 @@ TEST_P(DepthCameraDeviceMFWinTest, AllocateAndStartDepthCamera) {
 class VideoCaptureDeviceMFWinTestWithDXGI : public VideoCaptureDeviceMFWinTest {
  protected:
   void SetUp() override {
-    if (ShouldSkipD3D11Test())
-      GTEST_SKIP();
-
     Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager;
     UINT d3d_device_reset_token = 0;
     HRESULT hr = MFCreateDXGIDeviceManager(&d3d_device_reset_token,

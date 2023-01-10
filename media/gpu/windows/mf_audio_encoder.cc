@@ -13,6 +13,7 @@
 #include <wmcodecdsp.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -26,7 +27,6 @@
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -92,12 +92,8 @@ EncoderStatus::Codes ValidateInputOptions(const AudioEncoder::Options& options,
       *channel_layout = CHANNEL_LAYOUT_STEREO;
       break;
     case 6:
-      // 5.1 is only supported by the MF AAC encoder on Win10+.
-      if (base::win::GetVersion() >= base::win::Version::WIN10) {
-        *channel_layout = CHANNEL_LAYOUT_5_1;
-        break;
-      }
-      [[fallthrough]];
+      *channel_layout = CHANNEL_LAYOUT_5_1;
+      break;
     default:
       return EncoderStatus::Codes::kEncoderUnsupportedConfig;
   }
@@ -177,12 +173,9 @@ HRESULT CreateOutputMediaType(const int sample_rate,
   RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
                                          adjusted_bitrate / 8));
 
-  // On Win8+, the encoder can produce ADTS headers for us if we set the payload
-  // type to 1. On Win7, only raw AAC frames are produced.
-  if (base::win::GetVersion() >= base::win::Version::WIN8)
-    RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_AAC_PAYLOAD_TYPE, 1));
-  else
-    RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_AAC_PAYLOAD_TYPE, 0));
+  // The encoder can produce ADTS headers for us if we set the payload
+  // type to 1.
+  RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_AAC_PAYLOAD_TYPE, 1));
 
   *output_media_type = std::move(media_type);
   return S_OK;

@@ -231,10 +231,6 @@ bool InitializeUWPSupport() {
   static const bool initialization_result = []() {
     // Windows.Media.Effects and Windows.Media.Devices requires Windows 10 build
     // 10.0.10240.0.
-    if (base::win::GetVersion() < base::win::Version::WIN10) {
-      DLOG(WARNING) << "AudioCaptureEffectsManager requires Windows 10";
-      return false;
-    }
     DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
     // Provide access to Core WinRT/UWP functions and load all required HSTRING

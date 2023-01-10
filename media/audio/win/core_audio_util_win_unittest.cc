@@ -104,12 +104,6 @@ TEST_F(CoreAudioUtilWinTest, WaveFormatWrapperExtended) {
   EXPECT_TRUE(wave_format_ex.IsFloat());
 }
 
-TEST_F(CoreAudioUtilWinTest, GetIAudioClientVersion) {
-  uint32_t client_version = CoreAudioUtil::GetIAudioClientVersion();
-  EXPECT_GE(client_version, 1u);
-  EXPECT_LE(client_version, 3u);
-}
-
 TEST_F(CoreAudioUtilWinTest, NumberOfActiveDevices) {
   ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
 
@@ -286,8 +280,7 @@ TEST_F(CoreAudioUtilWinTest, CreateClient) {
 }
 
 TEST_F(CoreAudioUtilWinTest, CreateClient3) {
-  ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable() &&
-                          CoreAudioUtil::GetIAudioClientVersion() >= 3);
+  ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
 
   EDataFlow data[] = {eRender, eCapture};
 

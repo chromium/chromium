@@ -10,6 +10,8 @@
 #include <mfmediaengine.h>
 #include <wrl.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,9 +68,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   // Report `reason` to UMA.
   static void ReportErrorReason(ErrorReason reason);
-
-  // Whether MediaFoundationRenderer() is supported on the current device.
-  static bool IsSupported();
 
   MediaFoundationRenderer(scoped_refptr<base::SequencedTaskRunner> task_runner,
                           std::unique_ptr<MediaLog> media_log,

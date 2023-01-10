@@ -27,7 +27,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/windows_version.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 #define HAS_AAC_ENCODER 1
 #endif
@@ -159,11 +158,6 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     } else if (options_.codec == AudioCodec::kAAC) {
 #if BUILDFLAG(IS_WIN)
       EXPECT_TRUE(com_initializer_.Succeeded());
-      if (options_.channels == 6 &&
-          base::win::GetVersion() < base::win::Version::WIN10) {
-        GTEST_SKIP() << "5.1 channel audio is not supported by the MF AAC "
-                        "encoder on versions below Win10.";
-      }
       ASSERT_TRUE(base::SequencedTaskRunner::HasCurrentDefault());
       encoder_ = std::make_unique<MFAudioEncoder>(
           base::SequencedTaskRunner::GetCurrentDefault());

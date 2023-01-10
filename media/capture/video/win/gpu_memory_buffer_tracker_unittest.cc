@@ -12,7 +12,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
-#include "base/win/windows_version.h"
 #include "media/capture/video/win/d3d_capture_test_utils.h"
 #include "media/capture/video/win/gpu_memory_buffer_tracker.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
@@ -65,29 +64,12 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
 
 class GpuMemoryBufferTrackerTest : public ::testing::Test {
  protected:
-  GpuMemoryBufferTrackerTest()
-      : media_foundation_supported_(
-            VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation()) {}
-
-  bool ShouldSkipTest() {
-    if (!media_foundation_supported_) {
-      DVLOG(1) << "Media foundation is not supported by the current platform. "
-                  "Skipping test.";
-      return true;
-    }
-    // D3D11 is only supported with Media Foundation on Windows 8 or later
-    if (base::win::GetVersion() < base::win::Version::WIN8) {
-      DVLOG(1) << "D3D11 with Media foundation is not supported by the current "
-                  "platform. "
-                  "Skipping test.";
-      return true;
-    }
-    return false;
-  }
+  GpuMemoryBufferTrackerTest() = default;
 
   void SetUp() override {
-    if (ShouldSkipTest()) {
-      GTEST_SKIP();
+    if (!VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation()) {
+      GTEST_SKIP()
+          << "Media foundation is not supported by the current platform.";
     }
 
     dxgi_device_manager_ =
@@ -95,7 +77,6 @@ class GpuMemoryBufferTrackerTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  const bool media_foundation_supported_;
   scoped_refptr<MockDXGIDeviceManager> dxgi_device_manager_;
 };
 

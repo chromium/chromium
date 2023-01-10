@@ -120,9 +120,6 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
   for (const auto profile : kSupportedH264Profiles)
     supported_resolutions[profile] = h264_profile;
 
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return supported_resolutions;
-
   if (!device)
     return supported_resolutions;
 

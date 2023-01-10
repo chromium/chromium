@@ -9,9 +9,9 @@
 #include <initguid.h>
 #include <map>
 #include <utility>
+#include <vector>
 
 #include "base/test/scoped_feature_list.h"
-#include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/d3d11_mocks.h"
@@ -25,12 +25,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::WithArgs;
-
-#define DONT_RUN_ON_WIN_7()                                  \
-  do {                                                       \
-    if (base::win::GetVersion() <= base::win::Version::WIN7) \
-      return;                                                \
-  } while (0)
 
 namespace {
 
@@ -171,8 +165,6 @@ class SupportedResolutionResolverTest : public ::testing::Test {
 };
 
 TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableAv1) {
-  DONT_RUN_ON_WIN_7();
-
   // Enable the av1 decoder.
   EnableDecoders({DXVA_ModeAV1_VLD_Profile0});
   SetMaxResolution(DXVA_ModeAV1_VLD_Profile0, kSquare8k);
@@ -187,7 +179,6 @@ TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableAv1) {
 }
 
 TEST_F(SupportedResolutionResolverTest, HasH264SupportByDefault) {
-  DONT_RUN_ON_WIN_7();
   AssertDefaultSupport(
       GetSupportedD3D11VideoDecoderResolutions(nullptr, gpu_workarounds_));
 
@@ -201,8 +192,6 @@ TEST_F(SupportedResolutionResolverTest, HasH264SupportByDefault) {
 }
 
 TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVpx) {
-  DONT_RUN_ON_WIN_7();
-
   gpu_workarounds_.disable_accelerated_vp8_decode = true;
   gpu_workarounds_.disable_accelerated_vp9_decode = true;
   EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD,
@@ -214,8 +203,6 @@ TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVpx) {
 }
 
 TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVp92) {
-  DONT_RUN_ON_WIN_7();
-
   gpu_workarounds_.disable_accelerated_vp9_profile2_decode = true;
   EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD,
                   D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
@@ -233,8 +220,6 @@ TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVp92) {
 }
 
 TEST_F(SupportedResolutionResolverTest, H264Supports4k) {
-  DONT_RUN_ON_WIN_7();
-
   EnableDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT});
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
       mock_d3d11_device_, gpu_workarounds_);
@@ -250,8 +235,6 @@ TEST_F(SupportedResolutionResolverTest, H264Supports4k) {
 }
 
 TEST_F(SupportedResolutionResolverTest, VP8Supports4k) {
-  DONT_RUN_ON_WIN_7();
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kMediaFoundationVP8Decoding);
 
@@ -270,20 +253,16 @@ TEST_F(SupportedResolutionResolverTest, VP8Supports4k) {
 }
 
 TEST_F(SupportedResolutionResolverTest, VP9Profile0Supports8k) {
-  DONT_RUN_ON_WIN_7();
   TestDecoderSupport(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
                      VP9PROFILE_PROFILE0, kSquare8k, kSquare8k, kSquare8k);
 }
 
 TEST_F(SupportedResolutionResolverTest, VP9Profile2Supports8k) {
-  DONT_RUN_ON_WIN_7();
   TestDecoderSupport(D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2,
                      VP9PROFILE_PROFILE2, kSquare8k, kSquare8k, kSquare8k);
 }
 
 TEST_F(SupportedResolutionResolverTest, MultipleCodecs) {
-  DONT_RUN_ON_WIN_7();
-
   SetGpuProfile(kRecentAmdGpu);
 
   // H.264 and VP9.0 are the most common supported codecs.
@@ -312,26 +291,22 @@ TEST_F(SupportedResolutionResolverTest, MultipleCodecs) {
 }
 
 TEST_F(SupportedResolutionResolverTest, AV1ProfileMainSupports8k) {
-  DONT_RUN_ON_WIN_7();
   TestDecoderSupport(DXVA_ModeAV1_VLD_Profile0, AV1PROFILE_PROFILE_MAIN,
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
 TEST_F(SupportedResolutionResolverTest, AV1ProfileHighSupports8k) {
-  DONT_RUN_ON_WIN_7();
   TestDecoderSupport(DXVA_ModeAV1_VLD_Profile1, AV1PROFILE_PROFILE_HIGH,
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
 TEST_F(SupportedResolutionResolverTest, AV1ProfileProSupports8k) {
-  DONT_RUN_ON_WIN_7();
   TestDecoderSupport(DXVA_ModeAV1_VLD_Profile2, AV1PROFILE_PROFILE_PRO,
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
-  DONT_RUN_ON_WIN_7();
   EnableDecoders({D3D11_DECODER_PROFILE_HEVC_VLD_MAIN});
   SetMaxResolution(D3D11_DECODER_PROFILE_HEVC_VLD_MAIN, kSquare8k);
   const auto resolutions_for_feature = GetSupportedD3D11VideoDecoderResolutions(
