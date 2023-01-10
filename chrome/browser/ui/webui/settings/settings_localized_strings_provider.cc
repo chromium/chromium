@@ -25,6 +25,7 @@
 #include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1787,6 +1788,32 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC},
     {"networkPredictionEnabledDescCookiesPage",
      IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC_COOKIES_PAGE},
+    {"preloadingPageTitle", IDS_SETTINGS_PRELOAD_PAGES_TITLE},
+    {"preloadingPageSummary", IDS_SETTINGS_PRELOAD_PAGES_SUMMARY},
+    {"preloadingPageNoPreloadingTitle",
+     IDS_SETTINGS_PRELOAD_PAGES_NO_PRELOADING_TITLE},
+    {"preloadingPageNoPreloadingSummary",
+     IDS_SETTINGS_PRELOAD_PAGES_NO_PRELOADING_SUMMARY},
+    {"preloadingPageStandardPreloadingTitle",
+     IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_TITLE},
+    {"preloadingPageStandardPreloadingSummary",
+     IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_SUMMARY},
+    {"preloadingPageStandardPreloadingWhenOnBulletOne",
+     IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_ONE},
+    {"preloadingPageStandardPreloadingWhenOnBulletTwo",
+     IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_TWO},
+    {"preloadingPageExtendedPreloadingTitle",
+     IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_TITLE},
+    {"preloadingPageExtendedPreloadingSummary",
+     IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_SUMMARY},
+    {"preloadingPageExtendedPreloadingWhenOnBulletOne",
+     IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_WHEN_ON_BULLET_ONE},
+    {"preloadingPageExtendedPreloadingWhenOnBulletTwo",
+     IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_WHEN_ON_BULLET_TWO},
+    {"preloadingPageExtendedPreloadingThingsToConsiderBulletTwo",
+     IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_THINGS_TO_CONSIDER_BULLET_TWO},
+    {"preloadingPageThingsToConsiderBulletOne",
+     IDS_SETTINGS_PRELOAD_PAGES_THINGS_TO_CONSIDER_BULLET_ONE},
 #if BUILDFLAG(IS_CHROMEOS)
     {"openChromeOSSecureDnsSettingsLabel",
      IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL},
@@ -1864,6 +1891,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       advanced_protection_url, "utm_campaign", "ChromeSettings");
   html_source->AddString("advancedProtectionURL",
                          advanced_protection_url.spec());
+
+  html_source->AddBoolean("showPreloadingSubPage",
+                          base::FeatureList::IsEnabled(
+                              features::kPreloadingDesktopSettingsSubPage));
 
   AddPersonalizationOptionsStrings(html_source);
   AddSecureDnsStrings(html_source);

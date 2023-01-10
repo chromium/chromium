@@ -81668,6 +81668,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="parse proto failed"/>
 </enum>
 
+<enum name="PreloadPagesState">
+  <int value="0" label="No preloading"/>
+  <int value="1" label="Standard preloading"/>
+  <int value="2" label="Extended preloading"/>
+</enum>
+
 <enum name="PrerenderActivationHeaderMismatchType">
   <int value="-2073835455"
       label="experimentalnon-standard: missing in prerendering request's

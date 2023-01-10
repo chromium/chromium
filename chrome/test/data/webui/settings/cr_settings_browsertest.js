@@ -10,6 +10,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "chrome/browser/preloading/preloading_features.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/content_settings/core/common/features.h"');
@@ -660,6 +661,7 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'privacy_sandbox::kPrivacySandboxSettings4',
+        'features::kPreloadingDesktopSettingsSubPage',
       ],
     };
   }
@@ -683,6 +685,12 @@ TEST_F(
     'CrSettingsCookiesPageTest', 'PrivacySandboxSettings4Disabled', function() {
       runMochaSuite(
           'CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled');
+    });
+
+TEST_F(
+    'CrSettingsCookiesPageTest', 'PreloadingDesktopSettingsSubPageDisabled',
+    function() {
+      runMochaSuite('PreloadingDesktopSettingsSubPageDisabled');
     });
 
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
@@ -877,6 +885,7 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
  ['Prefs', 'prefs_tests.js'],
  ['PrefUtil', 'pref_util_tests.js'],
+ ['PreloadingPage', 'preloading_page_test.js'],
  ['ProtocolHandlers', 'protocol_handlers_tests.js'],
  ['RecentSitePermissions', 'recent_site_permissions_test.js'],
  // Flaky on all OSes. TODO(crbug.com/1127733): Enable the test.

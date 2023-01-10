@@ -246,7 +246,24 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PreloadStatus.OnStartup2" enum="BooleanEnabled"
     expires_after="2023-07-02">
+  <obsolete>
+    Replaced in M-110 with the histogram Settings.PreloadStatus.OnStartup3,
+    which records the full state of the setting (disabled, standard, and
+    extended).
+  </obsolete>
   <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The status of the preload setting, recorded on regular profile open (not
+    Incognito, Guest, etc.). Not recorded for iOS where the setting does not
+    exist.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PreloadStatus.OnStartup3" enum="PreloadPagesState"
+    expires_after="2023-04-30">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
     The status of the preload setting, recorded on regular profile open (not

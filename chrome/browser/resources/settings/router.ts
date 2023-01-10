@@ -41,6 +41,7 @@ export interface SettingsRoutes {
   PAYMENTS: Route;
   PEOPLE: Route;
   PERFORMANCE: Route;
+  PRELOADING: Route;
   PRIVACY: Route;
   PRIVACY_GUIDE: Route;
   PRIVACY_SANDBOX: Route;

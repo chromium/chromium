@@ -1,0 +1,92 @@
+<style include="cr-shared-style settings-shared privacy-guide-fragment-shared">
+  .settings-header {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  settings-collapse-radio-button[hidden] + settings-collapse-radio-button {
+    --settings-collapse-separator-line: 0;
+  }
+
+  .bullet-line {
+    margin: 12px 0;
+    padding-inline-end: 12px;
+  }
+</style>
+<div class="settings-header secondary">$i18n{preloadingPageSummary}</div>
+<settings-radio-group id="preloadingRadioGroup" no-set-pref
+    pref="{{prefs.net.network_prediction_options}}"
+    selectable-elements="settings-collapse-radio-button"
+    on-change="onPreloadingRadioChange_">
+  <settings-collapse-radio-button id="preloadingDisabled" no-collapse
+      name="[[networkPredictionOptionsEnum_.DISABLED]]"
+      pref="[[prefs.net.network_prediction_options]]"
+      label="$i18n{preloadingPageNoPreloadingTitle}"
+      sub-label="$i18n{preloadingPageNoPreloadingSummary}">
+  </settings-collapse-radio-button>
+  <settings-collapse-radio-button id="preloadingStandard"
+      name="[[networkPredictionOptionsEnum_.STANDARD]]"
+      pref="[[prefs.net.network_prediction_options]]"
+      label="$i18n{preloadingPageStandardPreloadingTitle}"
+      sub-label="$i18n{preloadingPageStandardPreloadingSummary}"
+      info-opened="{{infoOpened_}}"
+      no-automatic-collapse>
+    <div slot="collapse" class="description-wrapper two-column">
+      <div class="description-column description-column-first">
+        <div class="description-header">
+          $i18n{privacyGuideFeatureDescriptionHeader}
+        </div>
+        <div role="list">
+          <div class="bullet-line secondary">
+            $i18n{preloadingPageStandardPreloadingWhenOnBulletOne}
+          </div>
+          <div class="bullet-line secondary">
+            $i18n{preloadingPageStandardPreloadingWhenOnBulletTwo}
+          </div>
+        </div>
+      </div>
+      <div class="description-column">
+        <div class="description-header">
+          $i18n{privacyGuideThingsToConsider}
+        </div>
+        <div class="bullet-line secondary">
+          $i18n{preloadingPageThingsToConsiderBulletOne}
+        </div>
+      </div>
+    </div>
+  </settings-collapse-radio-button>
+  <settings-collapse-radio-button id="preloadingExtended"
+      name="[[networkPredictionOptionsEnum_.EXTENDED]]"
+      pref="[[prefs.net.network_prediction_options]]"
+      label="$i18n{preloadingPageExtendedPreloadingTitle}"
+      sub-label="$i18n{preloadingPageExtendedPreloadingSummary}"
+      no-automatic-collapse>
+    <div slot="collapse" class="description-wrapper two-column">
+      <div class="description-column description-column-first">
+        <div class="description-header">
+          $i18n{privacyGuideFeatureDescriptionHeader}
+        </div>
+        <div role="list">
+          <div class="bullet-line secondary">
+            $i18n{preloadingPageExtendedPreloadingWhenOnBulletOne}
+          </div>
+          <div class="bullet-line secondary">
+            $i18n{preloadingPageExtendedPreloadingWhenOnBulletTwo}
+          </div>
+        </div>
+      </div>
+      <div class="description-column">
+        <div class="description-header">
+          $i18n{privacyGuideThingsToConsider}
+        </div>
+        <div role="list">
+          <div class="bullet-line secondary">
+            $i18n{preloadingPageThingsToConsiderBulletOne}
+          </div>
+          <div class="bullet-line secondary">
+            $i18n{preloadingPageExtendedPreloadingThingsToConsiderBulletTwo}
+          </div>
+        </div>
+      </div>
+    </div>
+  </settings-collapse-radio-button>
+</settings-radio-group>

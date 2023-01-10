@@ -43,7 +43,7 @@ import {getTemplate} from './cookies_page.html.js';
  * Must be kept in sync with the C++ enum of the same name (see
  * chrome/browser/prefetch/prefetch_prefs.h).
  */
-enum NetworkPredictionOptions {
+export enum NetworkPredictionOptions {
   STANDARD = 0,
   WIFI_ONLY_DEPRECATED = 1,
   DISABLED = 2,
@@ -149,6 +149,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
       },
+
+      showPreloadingSubPage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showPreloadingSubPage'),
+      },
     };
   }
 
@@ -165,6 +170,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   focusConfig: FocusConfig;
   private enableFirstPartySetsUI_: boolean;
   private isPrivacySandboxSettings4_: boolean;
+  private showPreloadingSubPage_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -180,6 +186,18 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     this.focusConfig.set(
         `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
         selectSiteDataLinkRow);
+
+    if (this.showPreloadingSubPage_) {
+      const selectPreloadingLinkRow = () => {
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>('#preloadingLinkRow');
+        assert(toFocus);
+        focusWithoutInk(toFocus);
+      };
+      this.focusConfig.set(
+          `${routes.PRELOADING.path}_${routes.COOKIES.path}`,
+          selectPreloadingLinkRow);
+    }
   }
 
   override currentRouteChanged(route: Route) {
@@ -346,6 +364,28 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private onNetworkPredictionChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.NETWORK_PREDICTION);
+  }
+
+  private onPreloadingClick_() {
+    this.metricsBrowserProxy_.recordSettingsPageHistogram(
+        PrivacyElementInteractions.NETWORK_PREDICTION);
+    Router.getInstance().navigateTo(routes.PRELOADING);
+  }
+
+  private getNetworkPredictionsOptionsLabel_(
+      networkPredictionOption: NetworkPredictionOptions): string {
+    if (networkPredictionOption === NetworkPredictionOptions.DISABLED) {
+      return this.i18n('preloadingPageNoPreloadingTitle');
+    }
+
+    if (networkPredictionOption === NetworkPredictionOptions.EXTENDED) {
+      return this.i18n('preloadingPageExtendedPreloadingTitle');
+    }
+
+    // NetworkPredictionOptions.WIFI_ONLY_DEPRECATED is treated the same as
+    // NetworkPredictionOptions.STANDARD.
+    // See chrome/browser/prefetch/prefetch_prefs.h.
+    return this.i18n('preloadingPageStandardPreloadingTitle');
   }
 
   private onPrivacySandboxClick_() {

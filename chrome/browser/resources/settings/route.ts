@@ -51,6 +51,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     // </if>
   }
 
+  if (loadTimeData.getBoolean('showPreloadingSubPage')) {
+    r.PRELOADING = r.COOKIES.createChild('/preloading');
+  }
+
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');
   r.SITE_SETTINGS_SITE_DETAILS =
       r.SITE_SETTINGS_ALL.createChild('/content/siteDetails');

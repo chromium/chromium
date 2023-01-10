@@ -31,9 +31,9 @@ enum class NetworkPredictionOptions {
   kDefault = kWifiOnlyDeprecated,
 };
 
-// Enum representing possible values of the Preload Pages opt-in state.  Since
-// this enum is not persisted in prefs, old values can be removed and new values
-// can be added without worry. This is the the sanitized counterpart to
+// Enum representing possible values of the Preload Pages opt-in state. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused. This is the the sanitized counterpart to
 // NetworkPredictionOptions, which is persisted in prefs and cannot be modified
 // arbitrarily. Prefer using PreloadPagesState over NetworkPredictionOptions to
 // avoid having to deal with deprecated values.

@@ -5,7 +5,7 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookieControlsMode, ContentSetting, SettingsCollapseRadioButtonElement, ContentSettingsTypes,CookiePrimarySetting, SettingsCookiesPageElement, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CookieControlsMode, ContentSetting, NetworkPredictionOptions, SettingsCollapseRadioButtonElement, ContentSettingsTypes,CookiePrimarySetting, SettingsCookiesPageElement, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -75,7 +75,7 @@ suite('CrSettingsCookiesPageTest', function() {
     assertFalse(isChildVisible(page, '#clearOnExit'));
 
     assertTrue(isChildVisible(page, '#doNotTrack'));
-    assertTrue(isChildVisible(page, '#networkPrediction'));
+    assertTrue(isChildVisible(page, '#preloadingLinkRow'));
 
     assertTrue(isChildVisible(page, '#allowThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdParty'));
@@ -84,11 +84,60 @@ suite('CrSettingsCookiesPageTest', function() {
     assertFalse(isChildVisible(page, '#blockAll'));
   });
 
-  test('NetworkPredictionClickRecorded', async function() {
-    page.shadowRoot!.querySelector<HTMLElement>('#networkPrediction')!.click();
+  test('PreloadingClickRecorded', async function() {
+    const linkRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#preloadingLinkRow');
+    assertTrue(!!linkRow);
+    linkRow.click();
+    flush();
+
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.NETWORK_PREDICTION, result);
+    assertEquals(routes.PRELOADING, Router.getInstance().getCurrentRoute());
+  });
+
+  test('PreloadingSubLabel', async function() {
+    assertTrue(isChildVisible(page, '#preloadingLinkRow'));
+    // TODO(crbug.com/1385176): Remove after crbug.com/1385176 is launched.
+    assertFalse(isChildVisible(page, '#preloadingToggle'));
+
+    const preloadingPageLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#preloadingLinkRow');
+    assertTrue(!!preloadingPageLinkRow);
+
+    page.setPrefValue(
+        'net.network_prediction_options', NetworkPredictionOptions.DISABLED);
+    flush();
+    assertEquals(
+        preloadingPageLinkRow.subLabel,
+        page.i18n('preloadingPageNoPreloadingTitle'));
+
+    page.setPrefValue(
+        'net.network_prediction_options', NetworkPredictionOptions.EXTENDED);
+    flush();
+    assertEquals(
+        preloadingPageLinkRow.subLabel,
+        page.i18n('preloadingPageExtendedPreloadingTitle'));
+
+    page.setPrefValue(
+        'net.network_prediction_options', NetworkPredictionOptions.STANDARD);
+    flush();
+    assertEquals(
+        preloadingPageLinkRow.subLabel,
+        page.i18n('preloadingPageStandardPreloadingTitle'));
+
+    // This value is deprecated, and users cannot change their prefs to this
+    // value, but it is still the default value for the pref. It is treated the
+    // as STANDARD and the "Standard preloading" sub label is applied for this
+    // case. See chrome/browser/prefetch/prefetch_prefs.h for more info.
+    page.setPrefValue(
+        'net.network_prediction_options',
+        NetworkPredictionOptions.WIFI_ONLY_DEPRECATED);
+    flush();
+    assertEquals(
+        preloadingPageLinkRow.subLabel,
+        page.i18n('preloadingPageStandardPreloadingTitle'));
   });
 
   test('CookiesRadioClicksRecorded', function() {
@@ -388,7 +437,7 @@ suite('CrSettingsCookiesPageTest_PrivacySandboxSettings4Disabled', function() {
     assertTrue(isChildVisible(page, '#exceptionHeader'));
     assertTrue(isChildVisible(page, '#clearOnExit'));
     assertTrue(isChildVisible(page, '#doNotTrack'));
-    assertTrue(isChildVisible(page, '#networkPrediction'));
+    assertTrue(isChildVisible(page, '#preloadingLinkRow'));
     assertTrue(isChildVisible(page, '#blockThirdPartyIncognito'));
   });
 
@@ -668,3 +717,45 @@ suite('CrSettingsCookiesPageTest_lacrosSecondaryProfile', function() {
   });
 });
 // </if>
+
+// TODO(crbug.com/1385176): Remove after crbug.com/1385176 is launched.
+suite('PreloadingDesktopSettingsSubPageDisabled', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      showPreloadingSubPage: false,
+    });
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('NetworkPredictionClickRecorded', async function() {
+    const preloadingToggle =
+        page.shadowRoot!.querySelector<HTMLElement>('#preloadingToggle');
+    assertTrue(!!preloadingToggle);
+    preloadingToggle.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.NETWORK_PREDICTION, result);
+  });
+
+  test('PreloadingToggleShown', function() {
+    assertTrue(isChildVisible(page, '#preloadingToggle'));
+    assertFalse(isChildVisible(page, '#preloadingLinkRow'));
+  });
+});
