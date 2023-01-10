@@ -35,7 +35,6 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
   void InitializeGLTexture(
       const GLCommonImageBackingFactory::FormatInfo& format_info,
-      bool is_cleared,
       bool framebuffer_attachment_angle);
   void SetCompatibilitySwizzle(
       const gles2::Texture::CompatibilitySwizzle* swizzle);
@@ -47,7 +46,6 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
  private:
   // SharedImageBacking:
   SharedImageBackingType GetType() const override;
-  gfx::Rect ClearedRect() const final;
   void SetClearedRect(const gfx::Rect& cleared_rect) final;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,

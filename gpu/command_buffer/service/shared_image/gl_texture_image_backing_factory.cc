@@ -182,7 +182,6 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   const FormatInfo& format_info = GetFormatInfo(format);
   GLenum target = GL_TEXTURE_2D;
 
-  const bool is_cleared = !pixel_data.empty();
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
@@ -192,8 +191,7 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       use_passthrough_);
-  result->InitializeGLTexture(format_info, is_cleared,
-                              framebuffer_attachment_angle);
+  result->InitializeGLTexture(format_info, framebuffer_attachment_angle);
 
   gl::GLApi* api = gl::g_current_gl_context;
   ScopedRestoreTexture scoped_restore(api, target);
@@ -227,6 +225,10 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
                         size.width(), size.height(), 0,
                         format_info.adjusted_format, format_info.gl_type,
                         pixel_data.data());
+  }
+
+  if (!pixel_data.empty()) {
+    result->SetCleared();
   }
 
   if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
