@@ -60811,6 +60811,7 @@ from previous Chrome versions.
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
+  <int value="-37556470" label="FeedBottomSyncBanner:enabled"/>
   <int value="-36503306" label="HomepageLocationPolicy:enabled"/>
   <int value="-36234530" label="PluginVmShowMicrophonePermissions:enabled"/>
   <int value="-36077995" label="SplitCacheByNetworkIsolationKey:disabled"/>
@@ -64211,6 +64212,7 @@ from previous Chrome versions.
   <int value="1939884866" label="web-otp-backend"/>
   <int value="1940625534" label="NewOverviewUi:disabled"/>
   <int value="1941845443" label="ScrollableTabStrip:enabled"/>
+  <int value="1942271908" label="FeedBottomSyncBanner:disabled"/>
   <int value="1942542793" label="CrosPrivacyHubV0:disabled"/>
   <int value="1942911276" label="enable-grouped-history"/>
   <int value="1943083555" label="NotificationScheduleService:enabled"/>

@@ -3609,6 +3609,11 @@ const char kFeedBackToTopDescription[] =
     "Enables showing a callout to help users return to the top of the feeds "
     "quickly.";
 
+const char kFeedBottomSyncBannerName[] = "Show Sync Promotion";
+const char kFeedBottomSyncBannerDescription[] =
+    "Enables the Sync promo banner to be"
+    " shown at bottom of Chrome Feed.";
+
 const char kFeedHeaderStickToTopName[] = "Feed header stick to top";
 const char kFeedHeaderStickToTopDescription[] =
     "Stick feed header to top on scroll.";

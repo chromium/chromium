@@ -2055,6 +2055,9 @@ extern const char
 extern const char kFeedBackToTopName[];
 extern const char kFeedBackToTopDescription[];
 
+extern const char kFeedBottomSyncBannerName[];
+extern const char kFeedBottomSyncBannerDescription[];
+
 extern const char kFeedHeaderStickToTopName[];
 extern const char kFeedHeaderStickToTopDescription[];
 

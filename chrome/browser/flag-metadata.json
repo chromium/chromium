@@ -3678,6 +3678,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "feed-bottom-sync-banner",
+    "owners": ["//chrome/android/feed/OWNERS", "birnie"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "feed-close-refresh",
     "owners": ["//chrome/android/feed/OWNERS", "iwells@chromium.org"],
     "expiry_milestone": 112

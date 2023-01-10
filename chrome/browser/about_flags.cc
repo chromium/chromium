@@ -4639,6 +4639,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPostQuantumCECPQ2Description, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPostQuantumCECPQ2)},
 #if BUILDFLAG(IS_ANDROID)
+    {"feed-bottom-sync-banner", flag_descriptions::kFeedBottomSyncBannerName,
+     flag_descriptions::kFeedBottomSyncBannerDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kFeedBottomSyncBanner)},
     {"feed-back-to-top", flag_descriptions::kFeedBackToTopName,
      flag_descriptions::kFeedBackToTopDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedBackToTop)},

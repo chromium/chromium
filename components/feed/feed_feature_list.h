@@ -65,6 +65,10 @@ BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 // feeds quickly.
 BASE_DECLARE_FEATURE(kFeedBackToTop);
 
+// When enabled, causes the server to send a Sync Promo Banner for the bottom of
+// feed.
+BASE_DECLARE_FEATURE(kFeedBottomSyncBanner);
+
 // Feature that enables StAMP cards in the feed.
 BASE_DECLARE_FEATURE(kFeedStamp);
 
