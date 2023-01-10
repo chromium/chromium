@@ -5,13 +5,18 @@
 import("//build/config/android/rules.gni")
 
 generate_jni("accessibility_jni_headers") {
-  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
+  ]
 }
 
 source_set("android") {
   sources = [
     "font_size_prefs_android.cc",
     "font_size_prefs_android.h",
+    "page_zoom_metrics.cc",
+    "page_zoom_metrics.h",
   ]
   deps = [
     ":accessibility_jni_headers",
@@ -19,6 +24,7 @@ source_set("android") {
     "//components/prefs",
     "//components/user_prefs",
     "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 
@@ -34,6 +40,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinator.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java",
@@ -95,5 +102,15 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_zoom_metrics_unittest.cc" ]
+  deps = [
+    "//components/browser_ui/accessibility/android",
+    "//components/ukm:test_support",
+    "//testing/gtest",
   ]
 }
