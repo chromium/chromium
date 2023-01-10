@@ -123,21 +123,6 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconValue {
 using IconValuePtr = std::unique_ptr<IconValue>;
 using LoadIconCallback = base::OnceCallback<void(IconValuePtr)>;
 
-// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
-// AppService.
-COMPONENT_EXPORT(ICON_TYPES)
-apps::mojom::IconKeyPtr ConvertIconKeyToMojomIconKey(const IconKey& icon_key);
-
-COMPONENT_EXPORT(ICON_TYPES)
-std::unique_ptr<IconKey> ConvertMojomIconKeyToIconKey(
-    const apps::mojom::IconKeyPtr& mojom_icon_key);
-
-COMPONENT_EXPORT(ICON_TYPES)
-apps::mojom::IconType ConvertIconTypeToMojomIconType(IconType icon_type);
-
-COMPONENT_EXPORT(ICON_TYPES)
-IconType ConvertMojomIconTypeToIconType(apps::mojom::IconType mojom_icon_type);
-
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_TYPES_H_

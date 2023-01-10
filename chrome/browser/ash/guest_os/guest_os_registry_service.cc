@@ -618,7 +618,7 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
     }
   }
 
-  if (icon_key.resource_id != apps::mojom::IconKey::kInvalidResourceId) {
+  if (icon_key.resource_id != apps::IconKey::kInvalidResourceId) {
     // The icon is a resource built into the Chrome OS binary.
     constexpr bool is_placeholder_icon = false;
     apps::LoadIconFromResource(
@@ -728,7 +728,7 @@ void GuestOsRegistryService::OnLoadIconFromVM(
     apps::LoadIconCallback callback,
     std::string compressed_icon_data) {
   if (compressed_icon_data.empty()) {
-    if (fallback_icon_resource_id != apps::mojom::IconKey::kInvalidResourceId) {
+    if (fallback_icon_resource_id != apps::IconKey::kInvalidResourceId) {
       // We load the fallback icon, but we tell AppsService that this is not
       // a placeholder to avoid endless repeat calls since we don't expect to
       // find a better icon than this any time soon.

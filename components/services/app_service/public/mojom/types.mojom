@@ -83,52 +83,6 @@ enum OptionalBool {
   kTrue,
 };
 
-struct IconKey {
-  // A timeline value for icons that do not change.
-  const uint64 kDoesNotChangeOverTime = 0;
-
-  const int32 kInvalidResourceId = 0;
-
-  // A monotonically increasing number so that, after an icon update, a new
-  // IconKey, one that is different in terms of field-by-field equality, can be
-  // broadcast by a Publisher.
-  //
-  // The exact value of the number isn't important, only that newer IconKey's
-  // (those that were created more recently) have a larger timeline than older
-  // IconKey's.
-  //
-  // This is, in some sense, *a* version number, but the field is not called
-  // "version", to avoid any possible confusion that it encodes *the* app's
-  // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
-  //
-  // For example, if an app is disabled for some reason (so that its icon is
-  // grayed out), this would result in a different timeline even though the
-  // app's version is unchanged.
-  uint64 timeline;
-  // If non-zero (or equivalently, not equal to kInvalidResourceId), the
-  // compressed icon is compiled into the Chromium binary as a statically
-  // available, int-keyed resource.
-  int32 resource_id;
-  // A bitmask of icon post-processing effects, such as desaturation to gray
-  // and rounding the corners.
-  uint32 icon_effects;
-
-  // When adding new fields, also update the IconLoader::Key type in
-  // components/services/app_service/public/cpp/icon_loader.*
-};
-
-enum IconType {
-  // Sentinel value used in error cases.
-  kUnknown,
-  // Icon as an uncompressed gfx::ImageSkia with no standard Chrome OS mask.
-  kUncompressed,
-  // Icon as compressed bytes with no standard Chrome OS mask.
-  kCompressed,
-  // Icon as an uncompressed gfx::ImageSkia with the standard Chrome OS mask
-  // applied. This is the default suggested icon type.
-  kStandard,
-};
-
 enum TriState {
   kAllow,
   kBlock,
