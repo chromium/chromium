@@ -196,17 +196,6 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Returns the thumbnail placeholder color resource id based on the incognito mode.
-     *
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The thumbnail placeholder color resource id.
-     */
-    public static int getThumbnailPlaceHolderColorResource(boolean isIncognito) {
-        return isIncognito ? R.color.tab_grid_card_thumbnail_placeholder_color_incognito
-                           : R.color.tab_grid_card_thumbnail_placeholder_color;
-    }
-
-    /**
      * Returns the mini-thumbnail placeholder color for the multi-thumbnail tab grid card based on
      * the incognito mode.
      *
