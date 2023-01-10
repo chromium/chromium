@@ -139,12 +139,6 @@ const DictionaryValue& Value::AsDictionaryValue(const Value& val) {
   return static_cast<const DictionaryValue&>(val);
 }
 
-// static
-const ListValue& Value::AsListValue(const Value& val) {
-  CHECK(val.is_list());
-  return static_cast<const ListValue&>(val);
-}
-
 Value::Value() noexcept = default;
 
 Value::Value(Value&&) noexcept = default;
@@ -983,6 +977,10 @@ size_t Value::List::EraseValue(const Value& value) {
   return Erase(storage_, value);
 }
 
+size_t Value::List::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(storage_);
+}
+
 std::string Value::List::DebugString() const {
   return DebugStringImpl(*this);
 }
@@ -1400,7 +1398,7 @@ size_t Value::EstimateMemoryUsage() const {
     case Type::DICTIONARY:
       return base::trace_event::EstimateMemoryUsage(dict());
     case Type::LIST:
-      return base::trace_event::EstimateMemoryUsage(list());
+      return GetList().EstimateMemoryUsage();
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
     default:
       return 0;
@@ -1580,10 +1578,6 @@ std::unique_ptr<DictionaryValue> DictionaryValue::From(
 }
 
 DictionaryValue::DictionaryValue() : Value(Type::DICTIONARY) {}
-
-///////////////////// ListValue ////////////////////
-
-ListValue::ListValue() : Value(Type::LIST) {}
 
 ValueView::ValueView(const Value& value)
     : data_view_(

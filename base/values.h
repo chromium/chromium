@@ -35,7 +35,6 @@ namespace base {
 
 class DictAdapterForMigration;
 class DictionaryValue;
-class ListValue;
 
 // The `Value` class is a variant type can hold one of the following types:
 // - null
@@ -182,7 +181,6 @@ class ListValue;
 //
 // OLD WAY:
 //
-//   void AlwaysTakesList(std::unique_ptr<base::ListValue> list);
 //   void AlwaysTakesDict(std::unique_ptr<base::DictionaryValue> dict);
 //
 // DEPRECATED (PREVIOUS) WAY:
@@ -229,14 +227,13 @@ class BASE_EXPORT GSL_OWNER Value {
   };
 
   // Adaptors for converting from the old way to the new way and vice versa.
-  // Note: `DictionaryValue` and `ListValue` have been deprecated.
-  // `AsDictionaryValue()` and `AsListValue()` perform a `static_cast` to these
-  // types (as opposed to the preferred `GetDict()` and `GetList()` APIs - which
-  // use a variant lookup `absl::get<>()`).
+  // Note: `DictionaryValue` has been deprecated.
+  // `AsDictionaryValue()` performs a `static_cast` to these types (as opposed
+  // to the preferred `GetDict()` API - which uses a variant lookup
+  // `absl::get<>()`).
   static Value FromUniquePtrValue(std::unique_ptr<Value> val);
   static std::unique_ptr<Value> ToUniquePtrValue(Value val);
   static const DictionaryValue& AsDictionaryValue(const Value& val);
-  static const ListValue& AsListValue(const Value& val);
 
   Value() noexcept;
 
@@ -670,6 +667,11 @@ class BASE_EXPORT GSL_OWNER Value {
       return base::EraseIf(storage_, predicate);
     }
 
+    // Estimates dynamic memory usage. Requires tracing support
+    // (enable_base_tracing gn flag), otherwise always returns 0. See
+    // base/trace_event/memory_usage_estimator.h for more info.
+    size_t EstimateMemoryUsage() const;
+
     // Serializes to a string for logging and debug purposes.
     std::string DebugString() const;
 
@@ -679,6 +681,8 @@ class BASE_EXPORT GSL_OWNER Value {
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
    private:
+    using ListStorage = std::vector<Value>;
+
     BASE_EXPORT friend bool operator==(const List& lhs, const List& rhs);
     BASE_EXPORT friend bool operator!=(const List& lhs, const List& rhs);
     BASE_EXPORT friend bool operator<(const List& lhs, const List& rhs);
@@ -1083,15 +1087,9 @@ class BASE_EXPORT GSL_OWNER Value {
   }
 
  protected:
-  // TODO(https://crbug.com/1187062): Once ListValue has been removed, remove
-  // list() and make this a private member of List.
-  using ListStorage = std::vector<Value>;
-
   // Checked convenience accessors for dict and list.
   const LegacyDictStorage& dict() const { return GetDict().storage_; }
   LegacyDictStorage& dict() { return GetDict().storage_; }
-  const ListStorage& list() const { return GetList().storage_; }
-  ListStorage& list() { return GetList().storage_; }
 
  private:
   // For access to DoubleStorage.
@@ -1253,14 +1251,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   DictionaryValue();
 };
 
-// This type of Value represents a list of other Value values.
-//
-// DEPRECATED: prefer `base::Value::List`.
-class BASE_EXPORT ListValue : public Value {
- public:
-  ListValue();
-};
-
 // Adapter so `Value::Dict` or `Value::List` can be directly passed to JSON
 // serialization methods without having to clone the contents and transfer
 // ownership of the clone to a `Value` wrapper object.
@@ -1392,15 +1382,10 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& out,
 BASE_EXPORT std::ostream& operator<<(std::ostream& out,
                                      const Value::List& list);
 
-// Hints for DictionaryValue and ListValue; otherwise, gtest tends to prefer the
-// default template implementation over an upcast to Value.
+// Hints for DictionaryValue otherwise, gtest tends to prefer the default
+// template implementation over an upcast to Value.
 BASE_EXPORT inline std::ostream& operator<<(std::ostream& out,
                                             const DictionaryValue& value) {
-  return out << static_cast<const Value&>(value);
-}
-
-BASE_EXPORT inline std::ostream& operator<<(std::ostream& out,
-                                            const ListValue& value) {
   return out << static_cast<const Value&>(value);
 }
 

@@ -209,7 +209,7 @@ TEST(ValuesTest, ConstructDictFromValueDict) {
 }
 
 TEST(ValuesTest, ConstructList) {
-  ListValue value;
+  Value value(Value::List{});
   EXPECT_EQ(Value::Type::LIST, value.type());
 }
 
@@ -481,41 +481,41 @@ TEST(ValuesTest, MoveList) {
 }
 
 TEST(ValuesTest, Append) {
-  ListValue value;
-  value.Append(true);
-  EXPECT_TRUE(value.GetList().back().is_bool());
+  Value::List list;
+  list.Append(true);
+  EXPECT_TRUE(list.back().is_bool());
 
-  value.Append(123);
-  EXPECT_TRUE(value.GetList().back().is_int());
+  list.Append(123);
+  EXPECT_TRUE(list.back().is_int());
 
-  value.Append(3.14);
-  EXPECT_TRUE(value.GetList().back().is_double());
+  list.Append(3.14);
+  EXPECT_TRUE(list.back().is_double());
 
   std::string str = "foo";
-  value.Append(str.c_str());
-  EXPECT_TRUE(value.GetList().back().is_string());
+  list.Append(str.c_str());
+  EXPECT_TRUE(list.back().is_string());
 
-  value.Append(StringPiece(str));
-  EXPECT_TRUE(value.GetList().back().is_string());
+  list.Append(StringPiece(str));
+  EXPECT_TRUE(list.back().is_string());
 
-  value.Append(std::move(str));
-  EXPECT_TRUE(value.GetList().back().is_string());
+  list.Append(std::move(str));
+  EXPECT_TRUE(list.back().is_string());
 
   std::u16string str16 = u"bar";
-  value.GetList().Append(str16.c_str());
-  EXPECT_TRUE(value.GetList().back().is_string());
+  list.Append(str16.c_str());
+  EXPECT_TRUE(list.back().is_string());
 
-  value.Append(base::StringPiece16(str16));
-  EXPECT_TRUE(value.GetList().back().is_string());
+  list.Append(base::StringPiece16(str16));
+  EXPECT_TRUE(list.back().is_string());
 
-  value.Append(Value());
-  EXPECT_TRUE(value.GetList().back().is_none());
+  list.Append(Value());
+  EXPECT_TRUE(list.back().is_none());
 
-  value.Append(Value(Value::Type::DICTIONARY));
-  EXPECT_TRUE(value.GetList().back().is_dict());
+  list.Append(Value::Dict());
+  EXPECT_TRUE(list.back().is_dict());
 
-  value.Append(Value(Value::Type::LIST));
-  EXPECT_TRUE(value.GetList().back().is_list());
+  list.Append(Value::List());
+  EXPECT_TRUE(list.back().is_list());
 }
 
 TEST(ValuesTest, ListInsert) {
@@ -1497,7 +1497,7 @@ TEST(ValuesTest, Basic) {
   // Test storing a dictionary in a list.
   ASSERT_FALSE(settings.FindByDottedPath("global.toolbar.bookmarks"));
 
-  ListValue new_toolbar_bookmarks;
+  Value::List new_toolbar_bookmarks;
   settings.SetByDottedPath("global.toolbar.bookmarks",
                            std::move(new_toolbar_bookmarks));
   Value::List* toolbar_bookmarks =
@@ -1965,8 +1965,8 @@ TEST(ValuesTest, Comparisons) {
   EXPECT_FALSE(binary1 >= binary2);
 
   // Test Empty List Values.
-  ListValue null_list1;
-  ListValue null_list2;
+  Value::List null_list1;
+  Value::List null_list2;
   EXPECT_EQ(null_list1, null_list2);
   EXPECT_FALSE(null_list1 != null_list2);
   EXPECT_FALSE(null_list1 < null_list2);
@@ -1975,8 +1975,8 @@ TEST(ValuesTest, Comparisons) {
   EXPECT_GE(null_list1, null_list2);
 
   // Test Non Empty List Values.
-  ListValue int_list1;
-  ListValue int_list2;
+  Value::List int_list1;
+  Value::List int_list2;
   int_list1.Append(1);
   int_list2.Append(2);
   EXPECT_FALSE(int_list1 == int_list2);
