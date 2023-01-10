@@ -79,6 +79,11 @@ void JSBasedEventListener::Invoke(
     // https://html.spec.whatwg.org/C/#event-handler-value
     v8::Local<v8::Value> listener = GetListenerObject(*event->currentTarget());
 
+    // https://linear.app/replay/issue/RUN-1084
+    void** raw = *reinterpret_cast<void***>(&listener);
+    recordreplay::Diagnostic("[RUN-1084] JSBasedEventListener::Invoke %p %p",
+                             raw, raw ? *raw : nullptr);
+
     if (listener.IsEmpty() || !listener->IsObject())
       return;
   }
