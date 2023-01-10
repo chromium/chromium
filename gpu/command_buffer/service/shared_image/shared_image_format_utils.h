@@ -39,8 +39,10 @@ struct GLFormatDesc {
 // Returns the bits per pixel for given `format`.
 GPU_GLES2_EXPORT int BitsPerPixel(viz::SharedImageFormat format);
 
-// Only use this function with single planar formats.
-// Returns BufferFormat for given `format`.
+// BufferFormat is being transitioned out of SharedImage code (to use
+// SharedImageFormat instead). Refrain from using this function or preferably
+// use with single planar SharedImageFormats. Returns BufferFormat for given
+// `format`.
 GPU_GLES2_EXPORT gfx::BufferFormat ToBufferFormat(
     viz::SharedImageFormat format);
 

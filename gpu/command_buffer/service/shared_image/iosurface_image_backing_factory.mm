@@ -46,11 +46,12 @@ base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
     id<MTLDevice> mtl_device,
     IOSurfaceRef io_surface,
     const gfx::Size& size,
-    viz::SharedImageFormat format) {
+    viz::SharedImageFormat format,
+    int plane_index) {
   TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
   base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
   MTLPixelFormat mtl_pixel_format =
-      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format));
+      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
   if (mtl_pixel_format == MTLPixelFormatInvalid)
     return mtl_texture;
 
@@ -72,7 +73,7 @@ base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
   [mtl_tex_desc setStorageMode:MTLStorageModePrivate];
   mtl_texture.reset([mtl_device newTextureWithDescriptor:mtl_tex_desc
                                                iosurface:io_surface
-                                                   plane:0]);
+                                                   plane:plane_index]);
   DCHECK(mtl_texture);
   return mtl_texture;
 }
@@ -302,21 +303,20 @@ IOSurfaceImageBackingFactory::ProduceSkiaPromiseTextureMetal(
     SharedImageBacking* backing,
     scoped_refptr<SharedContextState> context_state,
     gfx::ScopedIOSurface io_surface,
-    uint32_t io_surface_plane) {
+    int plane_index) {
   DCHECK(context_state->GrContextIsMetal());
-  DCHECK(!io_surface_plane);
+  gfx::Size size = backing->format().GetPlaneSize(plane_index, backing->size());
 
   id<MTLDevice> mtl_device =
       context_state->metal_context_provider()->GetMTLDevice();
-  auto mtl_texture = CreateMetalTexture(mtl_device, io_surface.get(),
-                                        backing->size(), backing->format());
+  auto mtl_texture = CreateMetalTexture(mtl_device, io_surface.get(), size,
+                                        backing->format(), plane_index);
   DCHECK(mtl_texture);
 
   GrMtlTextureInfo info;
   info.fTexture.retain(mtl_texture.get());
   auto gr_backend_texture =
-      GrBackendTexture(backing->size().width(), backing->size().height(),
-                       GrMipMapped::kNo, info);
+      GrBackendTexture(size.width(), size.height(), GrMipMapped::kNo, info);
   return SkPromiseImageTexture::Make(gr_backend_texture);
 }
 
@@ -328,9 +328,7 @@ IOSurfaceImageBackingFactory::ProduceDawn(
     MemoryTypeTracker* tracker,
     WGPUDevice device,
     std::vector<WGPUTextureFormat> view_formats,
-    gfx::ScopedIOSurface io_surface,
-    uint32_t io_surface_plane) {
-  DCHECK(!io_surface_plane);
+    gfx::ScopedIOSurface io_surface) {
 #if BUILDFLAG(USE_DAWN)
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
   // regarding RGBA versus BGRA.
@@ -420,6 +418,22 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 IOSurfaceImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle handle) {
+  return CreateSharedImageGMBs(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(handle), /*io_surface_plane=*/0, gfx::BufferPlane::DEFAULT,
+      /*is_plane_format=*/false);
+}
+
+std::unique_ptr<SharedImageBacking>
+IOSurfaceImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
@@ -429,74 +443,18 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface) {
-    LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
-    return nullptr;
-  }
-
-  if (!gpu_memory_buffer_formats_.Has(buffer_format)) {
-    LOG(ERROR) << "CreateSharedImage: unsupported buffer format "
-               << gfx::BufferFormatToString(buffer_format);
-    return nullptr;
-  }
-
   if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
     LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
 
-  // Note that `size` refers to the size of the IOSurface, not the `plane`
-  // that is specified. This parameter should probably be ignored.
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    LOG(ERROR) << "Invalid size " << size.ToString() << " for "
-               << gfx::BufferFormatToString(buffer_format);
-    return nullptr;
-  }
-
-  const GLenum target = gpu::GetPlatformSpecificTextureTarget();
-  auto io_surface = handle.io_surface;
-  const auto io_surface_id = handle.id;
   const uint32_t io_surface_plane = GetPlaneIndex(plane, buffer_format);
-
-  // Ensure that the IOSurface has the same size and pixel format as those
-  // specified by `size` and `buffer_format`. A malicious client could lie about
-  // this, which, if subsequently used to determine parameters for bounds
-  // checking, could result in an out-of-bounds memory access.
-  {
-    uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
-    if (io_surface_format !=
-        BufferFormatToIOSurfacePixelFormat(buffer_format)) {
-      DLOG(ERROR)
-          << "IOSurface pixel format does not match specified buffer format.";
-      return nullptr;
-    }
-    gfx::Size io_surface_size(IOSurfaceGetWidth(io_surface),
-                              IOSurfaceGetHeight(io_surface));
-    if (io_surface_size != size) {
-      DLOG(ERROR) << "IOSurface size does not match specified size.";
-      return nullptr;
-    }
-  }
-
-  const gfx::BufferFormat plane_buffer_format =
-      GetPlaneBufferFormat(plane, buffer_format);
-  const viz::ResourceFormat plane_resource_format =
-      viz::GetResourceFormat(plane_buffer_format);
-  const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
-
-  const bool for_framebuffer_attachment =
-      (usage & (SHARED_IMAGE_USAGE_RASTER |
-                SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
-
-  const bool framebuffer_attachment_angle =
-      for_framebuffer_attachment && angle_texture_usage_;
-
-  auto si_format = viz::SharedImageFormat::SinglePlane(plane_resource_format);
-  return std::make_unique<IOSurfaceImageBacking>(
-      io_surface, io_surface_plane, plane_buffer_format, io_surface_id, mailbox,
-      si_format, plane_size, color_space, surface_origin, alpha_type, usage,
-      target, framebuffer_attachment_angle, /*is_cleared=*/true);
+  auto format = viz::SharedImageFormat::SinglePlane(
+      viz::GetResourceFormat(buffer_format));
+  return CreateSharedImageGMBs(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(handle), io_surface_plane, plane, /*is_plane_format=*/true);
 }
 
 bool IOSurfaceImageBackingFactory::IsSupported(
@@ -507,7 +465,7 @@ bool IOSurfaceImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane()) {
+  if (format.is_multi_plane() && !pixel_data.empty()) {
     return false;
   }
   if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
@@ -597,14 +555,93 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   GLenum texture_target = gpu::GetPlatformSpecificTextureTarget();
 
   auto backing = std::make_unique<IOSurfaceImageBacking>(
-      io_surface, io_surface_plane, buffer_format, io_surface_id, mailbox,
-      format, size, color_space, surface_origin, alpha_type, usage,
-      texture_target, framebuffer_attachment_angle, is_cleared);
+      io_surface, io_surface_plane, io_surface_id, mailbox, format, size,
+      color_space, surface_origin, alpha_type, usage, texture_target,
+      framebuffer_attachment_angle, is_cleared);
   if (!pixel_data.empty()) {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     backing->InitializePixels(pixel_data);
   }
   return std::move(backing);
+}
+
+std::unique_ptr<SharedImageBacking>
+IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle handle,
+    uint32_t io_surface_plane,
+    gfx::BufferPlane buffer_plane,
+    bool is_plane_format) {
+  if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface) {
+    LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
+    return nullptr;
+  }
+
+  auto buffer_format = ToBufferFormat(format);
+  if (!gpu_memory_buffer_formats_.Has(buffer_format)) {
+    LOG(ERROR) << "CreateSharedImage: unsupported buffer format "
+               << gfx::BufferFormatToString(buffer_format);
+    return nullptr;
+  }
+
+  // Note that `size` refers to the size of the IOSurface.
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+    LOG(ERROR) << "Invalid size " << size.ToString() << " for "
+               << gfx::BufferFormatToString(buffer_format);
+    return nullptr;
+  }
+
+  const GLenum target = gpu::GetPlatformSpecificTextureTarget();
+  auto io_surface = handle.io_surface;
+  const auto io_surface_id = handle.id;
+
+  // Ensure that the IOSurface has the same size and pixel format as those
+  // specified by `size` and `buffer_format`. A malicious client could lie about
+  // this, which, if subsequently used to determine parameters for bounds
+  // checking, could result in an out-of-bounds memory access.
+  {
+    uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
+    if (io_surface_format !=
+        BufferFormatToIOSurfacePixelFormat(buffer_format)) {
+      DLOG(ERROR)
+          << "IOSurface pixel format does not match specified buffer format.";
+      return nullptr;
+    }
+    gfx::Size io_surface_size(IOSurfaceGetWidth(io_surface),
+                              IOSurfaceGetHeight(io_surface));
+    if (io_surface_size != size) {
+      DLOG(ERROR) << "IOSurface size does not match specified size.";
+      return nullptr;
+    }
+  }
+
+  const bool for_framebuffer_attachment =
+      (usage & (SHARED_IMAGE_USAGE_RASTER |
+                SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+  const bool framebuffer_attachment_angle =
+      for_framebuffer_attachment && angle_texture_usage_;
+
+  if (is_plane_format) {
+    const gfx::Size plane_size = gpu::GetPlaneSize(buffer_plane, size);
+    auto plane_format =
+        viz::SharedImageFormat::SinglePlane(viz::GetResourceFormat(
+            GetPlaneBufferFormat(buffer_plane, buffer_format)));
+    return std::make_unique<IOSurfaceImageBacking>(
+        io_surface, io_surface_plane, io_surface_id, mailbox, plane_format,
+        plane_size, color_space, surface_origin, alpha_type, usage, target,
+        framebuffer_attachment_angle, /*is_cleared=*/true);
+  }
+
+  return std::make_unique<IOSurfaceImageBacking>(
+      io_surface, /*io_surface_plane=*/0, io_surface_id, mailbox, format, size,
+      color_space, surface_origin, alpha_type, usage, target,
+      framebuffer_attachment_angle, /*is_cleared=*/true);
 }
 
 }  // namespace gpu

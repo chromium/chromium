@@ -122,31 +122,31 @@ uint64_t StorageBytesPerElement(SharedImageFormat::ChannelFormat channel) {
 const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
   switch (plane) {
     case SharedImageFormat::PlaneConfig::kY_V_U:
-      return "Y+V+U";
+      return "Y_V_U";
     case SharedImageFormat::PlaneConfig::kY_UV:
-      return "Y+UV";
+      return "Y_UV";
     case SharedImageFormat::PlaneConfig::kY_UV_A:
-      return "Y+UV+A";
+      return "Y_UV_A";
   }
 }
 
 const char* SubsamplingToString(SharedImageFormat::Subsampling subsampling) {
   switch (subsampling) {
     case SharedImageFormat::Subsampling::k420:
-      return "4:2:0";
+      return "420";
   }
 }
 
 const char* ChannelFormatToString(SharedImageFormat::ChannelFormat channel) {
   switch (channel) {
     case SharedImageFormat::ChannelFormat::k8:
-      return "8 unorm";
+      return "8_unorm";
     case SharedImageFormat::ChannelFormat::k10:
-      return "10 unorm";
+      return "10_unorm";
     case SharedImageFormat::ChannelFormat::k16:
-      return "16 unorm";
+      return "16_unorm";
     case SharedImageFormat::ChannelFormat::k16F:
-      return "16 float";
+      return "16_float";
   }
 }
 
@@ -323,6 +323,19 @@ std::string SharedImageFormat::ToString() const {
     case PlaneType::kMultiPlane:
       return base::StringPrintf("(%s, %s, %s)",
                                 PlaneConfigToString(plane_config()),
+                                SubsamplingToString(subsampling()),
+                                ChannelFormatToString(channel_format()));
+  }
+}
+
+std::string SharedImageFormat::ToTestParamString() const {
+  switch (plane_type_) {
+    case PlaneType::kUnknown:
+      return "Unknown";
+    case PlaneType::kSinglePlane:
+      return ResourceFormatToString(resource_format());
+    case PlaneType::kMultiPlane:
+      return base::StringPrintf("%s_%s_%s", PlaneConfigToString(plane_config()),
                                 SubsamplingToString(subsampling()),
                                 ChannelFormatToString(channel_format()));
   }

@@ -21,7 +21,21 @@ int BitsPerPixel(viz::SharedImageFormat format) {
 }
 
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
-  return viz::BufferFormat(format.resource_format());
+  if (format.is_single_plane()) {
+    return viz::BufferFormat(format.resource_format());
+  }
+
+  if (format == viz::MultiPlaneFormat::kYVU_420) {
+    return gfx::BufferFormat::YVU_420;
+  } else if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+    return gfx::BufferFormat::YUV_420_BIPLANAR;
+  } else if (format == viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR) {
+    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
+  } else if (format == viz::MultiPlaneFormat::kP010) {
+    return gfx::BufferFormat::P010;
+  }
+  NOTREACHED();
+  return gfx::BufferFormat::RGBA_8888;
 }
 
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {

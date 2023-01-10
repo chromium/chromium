@@ -134,7 +134,11 @@ class SharedImageFormat {
   // Returns the bit depth for multiplanar format based on the channel format.
   int MultiplanarBitDepth() const;
 
+  // Returns a std::string for the format.
   std::string ToString() const;
+
+  // Returns a std::string for the format that is compatible with gtest.
+  std::string ToTestParamString() const;
 
   // Returns true if the format contains alpha.
   bool HasAlpha() const;

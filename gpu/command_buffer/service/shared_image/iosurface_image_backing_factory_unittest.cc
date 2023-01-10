@@ -48,7 +48,7 @@ namespace {
 
 bool IsGLSupported(viz::SharedImageFormat format) {
   return format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-         format != viz::SharedImageFormat::kBGR_565;
+         format != viz::SinglePlaneFormat::kBGR_565;
 }
 
 }  // namespace
@@ -156,7 +156,7 @@ class IOSurfaceImageBackingFactoryTest : public testing::Test {
 TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::SharedImageFormat::kRGBA_8888;
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(1, 1);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -237,7 +237,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::SharedImageFormat::kRGBA_8888;
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(1, 1);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -303,7 +303,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::SharedImageFormat::kRGBA_8888;
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -424,12 +424,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 // 1. Draw  a color to texture through Dawn
 // 2. Set the renderpass storeOp = Clear
 // 3. Texture in Dawn will stay as uninitialized
-// 3. Expect skia to fail to access the texture because texture is not
+// 4. Expect skia to fail to access the texture because texture is not
 // initialized
 TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::SharedImageFormat::kRGBA_8888;
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -524,7 +524,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   // Create a mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::SharedImageFormat::kRGBA_8888;
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -585,13 +585,13 @@ class MockProgressReporter : public gl::ProgressReporter {
   MOCK_METHOD0(ReportProgress, void());
 };
 
-class IOSurfaceImageBackingFactoryWithFormatTest
+class IOSurfaceImageBackingFactoryWithFormatTestBase
     : public testing::TestWithParam<viz::SharedImageFormat> {
  public:
-  explicit IOSurfaceImageBackingFactoryWithFormatTest()
+  explicit IOSurfaceImageBackingFactoryWithFormatTestBase()
       : shared_image_manager_(
             std::make_unique<SharedImageManager>(/*thread_safe=*/false)) {}
-  ~IOSurfaceImageBackingFactoryWithFormatTest() override {
+  ~IOSurfaceImageBackingFactoryWithFormatTestBase() override {
     // |context_state_| must be destroyed on its own context.
     context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
   }
@@ -606,6 +606,10 @@ class IOSurfaceImageBackingFactoryWithFormatTest
             GL_ETC1_RGB8_OES);
     supports_ar30_ = feature_info->feature_flags().chromium_image_ar30;
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
+    supports_ycbcr_420v_ =
+        feature_info->feature_flags().chromium_image_ycbcr_420v;
+    supports_ycbcr_p010_ =
+        feature_info->feature_flags().chromium_image_ycbcr_p010;
 
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = true;
@@ -617,17 +621,6 @@ class IOSurfaceImageBackingFactoryWithFormatTest
     shared_image_representation_factory_ =
         std::make_unique<SharedImageRepresentationFactory>(
             shared_image_manager_.get(), nullptr);
-  }
-
-  bool can_create_scanout_or_gmb_shared_image(
-      viz::SharedImageFormat format) const {
-    auto resource_format = format.resource_format();
-    if (resource_format == viz::ResourceFormat::BGRA_1010102) {
-      return supports_ar30_;
-    } else if (resource_format == viz::ResourceFormat::RGBA_1010102) {
-      return supports_ab30_;
-    }
-    return true;
   }
 
   viz::SharedImageFormat get_format() { return GetParam(); }
@@ -645,11 +638,28 @@ class IOSurfaceImageBackingFactoryWithFormatTest
   bool supports_etc1_ = false;
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
+  bool supports_ycbcr_p010_ = false;
+  bool supports_ycbcr_420v_ = false;
 };
 
-TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, Basic) {
-  const bool should_succeed =
-      can_create_scanout_or_gmb_shared_image(get_format());
+// SharedImageFormat parameterized tests.
+class IOSurfaceImageBackingFactoryScanoutTest
+    : public IOSurfaceImageBackingFactoryWithFormatTestBase {
+ public:
+  bool can_create_scanout_shared_image(viz::SharedImageFormat format) const {
+    if (format.is_multi_plane()) {
+      return false;
+    } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+      return supports_ar30_;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+      return supports_ab30_;
+    }
+    return true;
+  }
+};
+
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
+  const bool should_succeed = can_create_scanout_shared_image(get_format());
   if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   }
@@ -696,8 +706,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, Basic) {
     gl_representation.reset();
   }
 
-  if (format ==
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102)) {
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
     // Producing SkSurface for BGRA_1010102 fails for some reason.
     return;
   }
@@ -738,9 +747,9 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, Basic) {
   shared_image.reset();
 }
 
-TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialData) {
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
   auto format = GetParam();
-  const bool should_succeed = can_create_scanout_or_gmb_shared_image(format);
+  const bool should_succeed = can_create_scanout_shared_image(format);
   if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   }
@@ -788,9 +797,8 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialData) {
   }
 }
 
-TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialDataImage) {
-  const bool should_succeed =
-      can_create_scanout_or_gmb_shared_image(get_format());
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
+  const bool should_succeed = can_create_scanout_shared_image(get_format());
   if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   }
@@ -830,7 +838,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialDataImage) {
   }
 }
 
-TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialDataWrongSize) {
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(256, 256);
@@ -850,7 +858,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InitialDataWrongSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InvalidFormat) {
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = viz::SharedImageFormat::SinglePlane(
       viz::ResourceFormat::YUV_420_BIPLANAR);
@@ -866,7 +874,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InvalidFormat) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InvalidSize) {
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidSize) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = get_format();
   gfx::Size size(0, 0);
@@ -887,9 +895,8 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, InvalidSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, EstimatedSize) {
-  const bool should_succeed =
-      can_create_scanout_or_gmb_shared_image(get_format());
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
+  const bool should_succeed = can_create_scanout_shared_image(get_format());
   if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   }
@@ -925,7 +932,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithFormatTest, EstimatedSize) {
 // Ensures that the various conversion functions used w/ TexStorage2D match
 // their TexImage2D equivalents, allowing us to minimize the amount of parallel
 // data tracked in the SharedImageFactoryGLImage.
-TEST_F(IOSurfaceImageBackingFactoryTest, TexImageTexStorageEquivalence) {
+TEST_F(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(GpuDriverBugWorkarounds(), GpuFeatureInfo());
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
@@ -973,19 +980,154 @@ TEST_F(IOSurfaceImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   }
 }
 
-const auto kSharedImageFormats = ::testing::Values(
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102));
+// SharedImageFormat parameterized tests.
+class IOSurfaceImageBackingFactoryGMBTest
+    : public IOSurfaceImageBackingFactoryWithFormatTestBase {
+ public:
+  bool can_create_gmb_shared_image(viz::SharedImageFormat format) const {
+    if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+      return supports_ar30_;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+      return supports_ab30_;
+    } else if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+      return supports_ycbcr_420v_;
+    } else if (format == viz::MultiPlaneFormat::kP010) {
+      return supports_ycbcr_p010_;
+    }
+    return true;
+  }
+};
+
+TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
+  const bool should_succeed = can_create_gmb_shared_image(get_format());
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto format = get_format();
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
+
+  gfx::BufferFormat buffer_format = gpu::ToBufferFormat(format);
+  gfx::GpuMemoryBufferHandle handle;
+  gfx::GpuMemoryBufferId kBufferId(1);
+  handle.type = gfx::IO_SURFACE_BUFFER;
+  handle.id = kBufferId;
+  handle.io_surface.reset(gfx::CreateIOSurface(size, buffer_format));
+  DCHECK(handle.io_surface);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(handle));
+
+  if (!should_succeed) {
+    EXPECT_FALSE(backing);
+    return;
+  }
+  ASSERT_TRUE(backing);
+
+  // Check clearing.
+  if (!backing->IsCleared()) {
+    backing->SetCleared();
+    EXPECT_TRUE(backing->IsCleared());
+  }
+
+  // First, validate a GLTexturePassthroughImageRepresentation.
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_->Register(std::move(backing),
+                                      memory_type_tracker_.get());
+  EXPECT_TRUE(shared_image);
+  {
+    auto gl_representation =
+        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+            mailbox);
+    EXPECT_TRUE(gl_representation);
+    for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+      EXPECT_TRUE(
+          gl_representation->GetTexturePassthrough(plane)->service_id());
+    }
+    EXPECT_EQ(size, gl_representation->size());
+    EXPECT_EQ(format, gl_representation->format());
+    EXPECT_EQ(color_space, gl_representation->color_space());
+    EXPECT_EQ(usage, gl_representation->usage());
+    gl_representation.reset();
+  }
+
+  // Finally, validate a SkiaImageRepresentation.
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_.get());
+  EXPECT_TRUE(skia_representation);
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
+  scoped_read_access = skia_representation->BeginScopedReadAccess(
+      &begin_semaphores, &end_semaphores);
+  EXPECT_TRUE(begin_semaphores.empty());
+  EXPECT_TRUE(end_semaphores.empty());
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    auto* promise_texture = scoped_read_access->promise_image_texture(plane);
+    EXPECT_TRUE(promise_texture);
+    if (promise_texture) {
+      GrBackendTexture backend_texture = promise_texture->backendTexture();
+      EXPECT_TRUE(backend_texture.isValid());
+      auto plane_size = format.GetPlaneSize(plane, size);
+      EXPECT_EQ(plane_size.width(), backend_texture.width());
+      EXPECT_EQ(plane_size.height(), backend_texture.height());
+    }
+  }
+  scoped_read_access.reset();
+
+  // Producing SkSurface for BGRA_1010102 or P010 fails as Skia uses A16, RG16
+  // formats as read-only for now. See
+  // GrRecordingContext::colorTypeSupportedAsSurface() for all unsupported
+  // types.
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+      format == viz::MultiPlaneFormat::kP010) {
+    return;
+  }
+
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+      scoped_write_access;
+  scoped_write_access = skia_representation->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    auto* surface = scoped_write_access->surface(plane);
+    EXPECT_TRUE(surface);
+    auto plane_size = format.GetPlaneSize(plane, size);
+    EXPECT_EQ(plane_size.width(), surface->width());
+    EXPECT_EQ(plane_size.height(), surface->height());
+  }
+  scoped_write_access.reset();
+  skia_representation.reset();
+
+  shared_image.reset();
+}
+
+const auto kSinglePlaneFormats =
+    ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_1010102,
+                      viz::SinglePlaneFormat::kRGBA_1010102);
+
+const auto kGMBFormats =
+    ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_1010102,
+                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+                      viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR,
+                      viz::MultiPlaneFormat::kP010);
 
 std::string TestParamToString(
     const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
-  return param_info.param.ToString();
+  return param_info.param.ToTestParamString();
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         IOSurfaceImageBackingFactoryWithFormatTest,
-                         kSharedImageFormats,
+                         IOSurfaceImageBackingFactoryScanoutTest,
+                         kSinglePlaneFormats,
+                         TestParamToString);
+INSTANTIATE_TEST_SUITE_P(,
+                         IOSurfaceImageBackingFactoryGMBTest,
+                         kGMBFormats,
                          TestParamToString);
 
 }  // namespace gpu

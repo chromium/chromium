@@ -43,15 +43,14 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SharedImageBacking* backing,
       scoped_refptr<SharedContextState> context_state,
       gfx::ScopedIOSurface io_surface,
-      uint32_t io_surface_plane);
+      int plane_index);
   static std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       std::vector<WGPUTextureFormat> view_formats,
-      gfx::ScopedIOSurface io_surface,
-      uint32_t io_surface_plane);
+      gfx::ScopedIOSurface io_surface);
 
   IOSurfaceImageBackingFactory(const GpuPreferences& gpu_preferences,
                                const GpuDriverBugWorkarounds& workarounds,
@@ -79,6 +78,15 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data) override;
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gfx::GpuMemoryBufferHandle handle) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       int client_id,
@@ -109,6 +117,18 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data);
+  std::unique_ptr<SharedImageBacking> CreateSharedImageGMBs(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gfx::GpuMemoryBufferHandle handle,
+      uint32_t io_surface_plane,
+      gfx::BufferPlane buffer_plane,
+      bool is_plane_format);
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.
