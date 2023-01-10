@@ -636,6 +636,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
+    os = os.LINUX_FOCAL,
 )
 
 ci.builder(
