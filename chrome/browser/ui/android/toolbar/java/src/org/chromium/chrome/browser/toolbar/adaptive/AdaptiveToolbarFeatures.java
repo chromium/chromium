@@ -151,8 +151,7 @@ public class AdaptiveToolbarFeatures {
     public static boolean isPriceTrackingPageActionEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
                 && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST);
+                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
     }
 
     public static boolean isReaderModePageActionEnabled() {

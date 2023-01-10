@@ -28,6 +28,15 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
         final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
         bookmarkModel.finishLoadingBookmarkModel(() -> {
+            ShoppingService shoppingService = mShoppingServiceSupplier.get();
+
+            // If the user isn't allowed to have the shopping list feature, don't do any more work.
+            if (!shoppingService.isShoppingListEligible()) {
+                signalAccumulator.setHasPriceTracking(false);
+                signalAccumulator.notifySignalAvailable();
+                return;
+            }
+
             BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
             boolean isAlreadyPriceTracked = bookmarkId != null
                     && PriceTrackingUtils.isBookmarkPriceTracked(
@@ -36,7 +45,7 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                 signalAccumulator.setHasPriceTracking(false);
                 signalAccumulator.notifySignalAvailable();
             } else {
-                mShoppingServiceSupplier.get().getProductInfoForUrl(tab.getUrl(), (url, info) -> {
+                shoppingService.getProductInfoForUrl(tab.getUrl(), (url, info) -> {
                     boolean canTrackPrice = info != null;
                     signalAccumulator.setHasPriceTracking(canTrackPrice);
                     signalAccumulator.notifySignalAvailable();

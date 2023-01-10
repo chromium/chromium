@@ -83,6 +83,7 @@ public class PriceTrackingActionProviderTest {
     private void setPriceTrackingBackendResult(boolean hasProductInfo) {
         ProductInfo testProductInfo =
                 new ProductInfo(null, null, 0, 0, null, 0, null, Optional.empty());
+        Mockito.doReturn(true).when(mShoppingService).isShoppingListEligible();
         Mockito.doAnswer(invocation -> {
                    ProductInfoCallback callback = invocation.getArgument(1);
                    callback.onResult(
