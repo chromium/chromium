@@ -10350,48 +10350,48 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!--  Tangible Sync version of the Sync Confirmation page -->
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE" desc="Title of the tangible sync confirmation page">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE" desc="This string appears as a heading on a modal window that asks users if they want to turn on sync. 'Sync' is short for 'synchronization'. The tone should be informative and inviting.">
         Turn on sync
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE" desc="Title in the information about sync on the tangible sync confirmation page">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE" desc="This string appears as a subheading on a screen, and it asks users if they want to turn on sync. This string explains to users that they can back up their Chrome data and use it on all their computers, phones, and other devices; a user's Chrome data includes their bookmarks, passwords, history, settings, and more. If there is no natural translation for the word 'stuff' in your language, the word can be translated as 'data' or similar. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting.">
         Back up your stuff and use it on any device
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT" desc="Title in the information about sync on the tangible sync confirmation page during the Sign-in Intercept flow">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2" desc="This string appears as a subheading on a pop-up dialog, and it asks users if they want to turn on sync. This string explains to users that they can back up their Chrome data and use it on all their computers, phones, and other devices; a user's Chrome data includes their bookmarks, passwords, history, settings, and more. If there is no natural translation for the word 'stuff' in your language, the word can be translated as 'data' or similar. Maintain the level of formality that your language generally uses in the Chrome app. The tone should be informative and inviting.">
         Turn on sync to back up your stuff and use it on any device
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_BOOKMARKS" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb. Used in the tangible sync confirmation page.">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_BOOKMARKS" desc="This string appears as an item in a list of sync data types on a screen that asks users if they want to turn on sync. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb. Used in the tangible sync confirmation page.">
         Bookmarks
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_READING_LIST" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'reading list' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=4de6a318. Used in the tangible sync confirmation page.">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_READING_LIST" desc="This string appears as an item in a list of sync data types on a screen that asks users if they want to turn on sync. Translate 'reading list' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=4de6a318. Used in the tangible sync confirmation page.">
         Reading List
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_AUTOFILL" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'autofill' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=77d3626. Used in the tangible sync confirmation page.">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_AUTOFILL" desc="This string appears as an item in a list of sync data types on a screen that asks users if they want to turn on sync. Translate 'autofill' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=77d3626. Used in the tangible sync confirmation page.">
         Autofill
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_EXTENSIONS" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'extensions' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=62f9351. Used in the tangible sync confirmation page.">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_EXTENSIONS" desc="This string appears as an item in a list of sync data types on a screen that asks users if they want to turn on sync. Translate 'extensions' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=62f9351. Used in the tangible sync confirmation page.">
         Extensions
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY_AND_MORE" desc="This string appears as an item in a list of sync data types on a page that asks users if they want to turn on sync. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162. Translate 'and more' so that it conveys that there are additional similar items that are not listed. Used in the tangible sync confirmation page.">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_HISTORY_AND_MORE" desc="This string appears as an item in a list of sync data types on a screen that asks users if they want to turn on sync. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162. Translate 'and more' so that it conveys that there are additional similar items that are not listed. Used in the tangible sync confirmation page.">
         History and more
       </message>
-      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC" desc="Description in the information about sync and information about customizing Sync settings on the tangible sync confirmation page">
+      <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC" desc="This string appears in the footer on a screen that asks users if they want to turn on sync. This string informs the user that if they choose to sync, then their history may be used to personalize Search and other services. Translate 'history' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c3162">
         You can always choose what to sync in settings. Google may personalize Search and other services based on your history.
       </message>
 
       <!--  Sync Confirmation section of the Signin Intercept first run experience flow -->
-      <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="Title of the sync confirmation dialog in the Signin Intercept flow, after the user creates a new profile through this flow.">
+      <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="This string appears as a heading on a pop-up dialog that shows up after users create a new profile. It welcomes users. The tone should be friendly and inviting.">
         Welcome, <ph name="USERNAME">$1<ex>Bob</ex></ph>
       </message>
       <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT" desc="Information about sync on the sync confirmation dialog in the Signin Intercept flow. The second string is an exact copy of IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC with a period at the end.">
         Turn on sync to get your bookmarks, passwords, history, and more on this device and anywhere else you're syncing. Google may use your history to personalize Search and other Google services.
       </message>
       <if expr="not use_titlecase">
-        <message name="IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the Signin Intercept flow">
+        <message name="IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL" desc="This string appears as a button on a dialog that asks users if they want to turn on sync. When the user taps this button, they are opting in to the sync feature. 'Sync' is short for 'synchronization'.">
           Turn on sync
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL" desc="In Title Case: Label of the confirmation button in the sync confirmation dialog of the Signin Intercept flow">
+        <message name="IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL" desc="In Title Case: This string appears as a button on a dialog that asks users if they want to turn on sync. When the user taps this button, they are opting in to the sync feature. 'Sync' is short for 'synchronization'.">
           Turn On Sync
         </message>
       </if>

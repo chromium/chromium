@@ -249,7 +249,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     info_desc_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
     info_title_id =
         isSigninInterceptFre
-            ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT
+            ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
             : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
 
     illustration_path = "images/tangible_sync_dialog_illustration.svg";
