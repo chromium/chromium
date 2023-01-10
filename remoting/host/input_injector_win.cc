@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/win/windows_version.h"
 #include "remoting/base/util.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/host/touch_injector_win.h"
@@ -470,7 +469,7 @@ std::unique_ptr<InputInjector> InputInjector::Create(
 
 // static
 bool InputInjector::SupportsTouchEvents() {
-  return base::win::GetVersion() >= base::win::Version::WIN8;
+  return true;
 }
 
 }  // namespace remoting

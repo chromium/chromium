@@ -10,7 +10,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
-#include "base/win/windows_version.h"
 #endif
 
 namespace remoting {
@@ -33,12 +32,6 @@ bool IsRemoteOpenUrlSupported() {
 #if BUILDFLAG(IS_LINUX)
   return true;
 #elif BUILDFLAG(IS_WIN)
-  // The modern default apps settings dialog is only available to Windows 8+.
-  // Given older Windows versions are EOL, we only advertise the feature on
-  // Windows 8+.
-  if (base::win::GetVersion() < base::win::Version::WIN8) {
-    return false;
-  }
   // The MSI installs the ProgID and capabilities into registry, but not the
   // entry in RegisteredApplications, which must be applied out of band to
   // enable the feature.

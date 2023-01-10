@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #include "remoting/host/win/evaluate_3d_display_mode.h"
@@ -99,20 +98,8 @@ std::string GetHostAttributes() {
     }
   }
 #if BUILDFLAG(IS_WIN)
-  {
-    GetD3DCapabilities(&result);
-
-    auto version = base::win::GetVersion();
-    if (version >= base::win::Version::WIN8) {
-      result.push_back("Win8+");
-    }
-    if (version >= base::win::Version::WIN8_1) {
-      result.push_back("Win81+");
-    }
-    if (version >= base::win::Version::WIN10) {
-      result.push_back("Win10+");
-    }
-  }
+  GetD3DCapabilities(&result);
+  result.push_back("Win10+");
 
   // TODO(crbug.com/1184041): Remove this and/or the entire HostAttributes class
   // so we can remove //remoting/host:common from //media/gpu's visibility list.
