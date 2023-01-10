@@ -27,17 +27,17 @@ DIPSState::~DIPSState() {
 }
 
 void DIPSState::update_site_storage_time(base::Time time) {
-  dirty_ |= state_.site_storage_times.Update(time);
+  dirty_ |= UpdateTimestampRange(state_.site_storage_times, time);
 }
 
 void DIPSState::update_user_interaction_time(base::Time time) {
-  dirty_ |= state_.user_interaction_times.Update(time);
+  dirty_ |= UpdateTimestampRange(state_.user_interaction_times, time);
 }
 
 void DIPSState::update_stateful_bounce_time(base::Time time) {
-  dirty_ |= state_.stateful_bounce_times.Update(time);
+  dirty_ |= UpdateTimestampRange(state_.stateful_bounce_times, time);
 }
 
 void DIPSState::update_bounce_time(base::Time time) {
-  dirty_ |= state_.bounce_times.Update(time);
+  dirty_ |= UpdateTimestampRange(state_.bounce_times, time);
 }

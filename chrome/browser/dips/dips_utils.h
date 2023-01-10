@@ -99,21 +99,12 @@ base::StringPiece GetHistogramPiece(DIPSRedirectType type);
 const char* DIPSRedirectTypeToString(DIPSRedirectType type);
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 
-struct TimestampRange {
-  absl::optional<base::Time> first;
-  absl::optional<base::Time> last;
-
-  // Expand the range to include `time` if necessary. Returns true iff the range
-  // was modified.
-  bool Update(base::Time time);
-
-  // Checks that `this` range is either null or falls within `other`.
-  bool IsNullOrWithin(TimestampRange other) const;
-};
-
-inline bool operator==(const TimestampRange& lhs, const TimestampRange& rhs) {
-  return std::tie(lhs.first, lhs.last) == std::tie(rhs.first, rhs.last);
-}
+using TimestampRange = absl::optional<std::pair<base::Time, base::Time>>;
+// Expand the range to include `time` if necessary. Returns true iff the range
+// was modified.
+bool UpdateTimestampRange(TimestampRange& range, base::Time time);
+// Checks that `this` range is either null or falls within `other`.
+bool IsNullOrWithin(const TimestampRange& inner, const TimestampRange& outer);
 
 std::ostream& operator<<(std::ostream& os, TimestampRange type);
 

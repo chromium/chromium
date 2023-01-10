@@ -10,46 +10,42 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-bool TimestampRange::Update(base::Time time) {
-  bool modified = false;
-
-  if (!first.has_value() || time < first.value()) {
-    first = time;
-    modified = true;
+bool UpdateTimestampRange(TimestampRange& range, base::Time time) {
+  if (!range.has_value()) {
+    range = {time, time};
+    return true;
   }
 
-  if (!last.has_value() || time > last.value()) {
-    last = time;
-    modified = true;
+  if (time < range->first) {
+    range->first = time;
+    return true;
   }
 
-  return modified;
+  if (time > range->second) {
+    range->second = time;
+    return true;
+  }
+
+  return false;
 }
 
-bool TimestampRange::IsNullOrWithin(TimestampRange other) const {
-  if (first.has_value()) {
-    if (!other.first.has_value() || other.first.value() > first.value()) {
-      return false;
-    }
-  }
-  if (last.has_value()) {
-    if (!other.last.has_value() || other.last.value() < last.value()) {
-      return false;
-    }
+bool IsNullOrWithin(const TimestampRange& inner, const TimestampRange& outer) {
+  if (!inner.has_value()) {
+    return true;
   }
 
-  return true;
-}
-
-std::ostream& operator<<(std::ostream& os, absl::optional<base::Time> time) {
-  if (time.has_value()) {
-    return os << time.value();
+  if (!outer.has_value()) {
+    return false;
   }
-  return os << "NULL";
+
+  return outer->first <= inner->first && inner->second <= outer->second;
 }
 
 std::ostream& operator<<(std::ostream& os, TimestampRange range) {
-  return os << "[" << range.first << ", " << range.last << "]";
+  if (!range.has_value()) {
+    return os << "[NULL, NULL]";
+  }
+  return os << "[" << range->first << ", " << range->second << "]";
 }
 
 // CookieAccessType:

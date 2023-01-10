@@ -188,8 +188,7 @@ void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
 
   DIPSRedirectInfo* redirect = redirects[index].get();
   // If there's any user interaction recorded in the DIPS DB, that's engagement.
-  redirect->has_interaction =
-      url_state.user_interaction_times().last.has_value();
+  redirect->has_interaction = url_state.user_interaction_times().has_value();
   HandleRedirect(
       *redirect, *chain,
       base::BindRepeating(&DIPSService::RecordBounce, base::Unretained(this)));

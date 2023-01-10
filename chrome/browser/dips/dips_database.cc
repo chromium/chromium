@@ -37,15 +37,34 @@ absl::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
   return statement->ColumnTime(column_index);
 }
 
-// Binds either the value of `time` or NULL at `param_index` in `statement` if
-// time is provided.
-void BindTimeOrNull(sql::Statement& statement,
-                    absl::optional<base::Time> time,
-                    int param_index) {
+TimestampRange RangeFromColumns(sql::Statement* statement,
+                                int start_column_idx,
+                                int end_column_idx) {
+  absl::optional<base::Time> first_time =
+      ColumnOptionalTime(statement, start_column_idx);
+  absl::optional<base::Time> last_time =
+      ColumnOptionalTime(statement, end_column_idx);
+
+  // TODO(kaklilu): Record to UMA when this happens.
+  if (!first_time.has_value() || !last_time.has_value()) {
+    return absl::nullopt;
+  }
+
+  return std::make_pair(first_time.value(), last_time.value());
+}
+
+// Binds either the start/ends of `range` or NULL at
+// `start_param_idx`/`end_param_idx` in `statement` if time is provided.
+void BindTimesOrNull(sql::Statement& statement,
+                     TimestampRange time,
+                     int start_param_idx,
+                     int end_param_idx) {
   if (time.has_value()) {
-    statement.BindTime(param_index, time.value());
+    statement.BindTime(start_param_idx, time->first);
+    statement.BindTime(end_param_idx, time->second);
   } else {
-    statement.BindNull(param_index);
+    statement.BindNull(start_param_idx);
+    statement.BindNull(end_param_idx);
   }
 }
 
@@ -377,7 +396,8 @@ bool DIPSDatabase::Write(const std::string& site,
                          const TimestampRange& stateful_bounce_times,
                          const TimestampRange& bounce_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(stateful_bounce_times.IsNullOrWithin(bounce_times));
+  DCHECK(
+      IsNullOrWithin(/*inner=*/stateful_bounce_times, /*outer=*/bounce_times));
   if (!CheckDBInit())
     return false;
 
@@ -398,14 +418,10 @@ bool DIPSDatabase::Write(const std::string& site,
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kWriteSql));
   statement.BindString(0, site);
-  BindTimeOrNull(statement, storage_times.first, 1);
-  BindTimeOrNull(statement, storage_times.last, 2);
-  BindTimeOrNull(statement, interaction_times.first, 3);
-  BindTimeOrNull(statement, interaction_times.last, 4);
-  BindTimeOrNull(statement, stateful_bounce_times.first, 5);
-  BindTimeOrNull(statement, stateful_bounce_times.last, 6);
-  BindTimeOrNull(statement, bounce_times.first, 7);
-  BindTimeOrNull(statement, bounce_times.last, 8);
+  BindTimesOrNull(statement, storage_times, 1, 2);
+  BindTimesOrNull(statement, interaction_times, 3, 4);
+  BindTimesOrNull(statement, stateful_bounce_times, 5, 6);
+  BindTimesOrNull(statement, bounce_times, 7, 8);
   return statement.Run();
 }
 
@@ -444,14 +460,26 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
     return absl::nullopt;
   }
 
-  return StateValue{TimestampRange{ColumnOptionalTime(&statement, 1),
-                                   ColumnOptionalTime(&statement, 2)},
-                    TimestampRange{ColumnOptionalTime(&statement, 3),
-                                   ColumnOptionalTime(&statement, 4)},
-                    TimestampRange{ColumnOptionalTime(&statement, 5),
-                                   ColumnOptionalTime(&statement, 6)},
-                    TimestampRange{ColumnOptionalTime(&statement, 7),
-                                   ColumnOptionalTime(&statement, 8)}};
+  TimestampRange site_storage_times = RangeFromColumns(&statement, 1, 2);
+  TimestampRange user_interaction_times = RangeFromColumns(&statement, 3, 4);
+  TimestampRange stateful_bounce_times = RangeFromColumns(&statement, 5, 6);
+  TimestampRange bounce_times = RangeFromColumns(&statement, 7, 8);
+
+  if (!IsNullOrWithin(stateful_bounce_times, bounce_times)) {
+    DCHECK(stateful_bounce_times.has_value());
+    // TODO(kaklilu): Record to UMA when this happens.
+    if (!bounce_times.has_value()) {
+      bounce_times = stateful_bounce_times;
+    } else {
+      base::Time start =
+          std::min(stateful_bounce_times->first, bounce_times->first);
+      base::Time end =
+          std::max(stateful_bounce_times->second, bounce_times->second);
+      bounce_times = {start, end};
+    }
+  }
+  return StateValue{site_storage_times, user_interaction_times,
+                    stateful_bounce_times, bounce_times};
 }
 
 std::vector<std::string> DIPSDatabase::GetAllSitesForTesting() {

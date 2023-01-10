@@ -3002,9 +3002,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
     absl::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
 
     ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.first.has_value());
+    EXPECT_TRUE(state_val1->site_storage_times.has_value());
     ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.first.has_value());
+    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
   }
 
   uint64_t remove_mask = constants::DATA_TYPE_HISTORY |
@@ -3019,7 +3019,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
 
     EXPECT_FALSE(state_val1.has_value());
     ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.first.has_value());
+    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
   }
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(), remove_mask,
@@ -3054,14 +3054,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
     absl::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
 
     ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.first.has_value());
+    EXPECT_TRUE(state_val1->site_storage_times.has_value());
 
     ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.first.has_value());
+    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
 
     ASSERT_TRUE(state_val3.has_value());
-    EXPECT_TRUE(state_val3->site_storage_times.first.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.first.has_value());
+    EXPECT_TRUE(state_val3->site_storage_times.has_value());
+    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
   }
 
   // Remove interaction events from DIPS Storage.
@@ -3075,13 +3075,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
     absl::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
 
     ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.first.has_value());
+    EXPECT_TRUE(state_val1->site_storage_times.has_value());
 
     EXPECT_FALSE(state_val2.has_value());
 
     ASSERT_TRUE(state_val3.has_value());
-    EXPECT_TRUE(state_val3->site_storage_times.first.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.first.has_value());
+    EXPECT_TRUE(state_val3->site_storage_times.has_value());
+    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
   }
 
   // Remove storage events from DIPS Storage.
@@ -3100,8 +3100,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
     EXPECT_FALSE(state_val2.has_value());
 
     ASSERT_TRUE(state_val3.has_value());
-    EXPECT_FALSE(state_val3->site_storage_times.first.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.first.has_value());
+    EXPECT_FALSE(state_val3->site_storage_times.has_value());
+    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
   }
 }
 

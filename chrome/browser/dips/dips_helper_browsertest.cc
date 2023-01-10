@@ -247,8 +247,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // User interaction is recorded for a.test (the top-level frame).
   absl::optional<StateValue> state_a = GetDIPSState(url_a);
   ASSERT_TRUE(state_a.has_value());
-  EXPECT_FALSE(state_a->site_storage_times.first.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_a->user_interaction_times.first);
+  EXPECT_FALSE(state_a->site_storage_times.has_value());
+  EXPECT_EQ(absl::make_optional(time), state_a->user_interaction_times->first);
 
   // Update the top-level page to have an iframe pointing to b.test.
   ASSERT_TRUE(content::NavigateIframeToURL(web_contents, kIframeId, url_b));
@@ -277,9 +277,9 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // (the iframe).
   state_a = GetDIPSState(url_a);
   ASSERT_TRUE(state_a.has_value());
-  EXPECT_FALSE(state_a->site_storage_times.first.has_value());
+  EXPECT_FALSE(state_a->site_storage_times.has_value());
   EXPECT_EQ(absl::make_optional(frame_interaction_time),
-            state_a->user_interaction_times.last);
+            state_a->user_interaction_times->second);
 
   // The iframe site doesn't have any state.
   EXPECT_FALSE(GetDIPSState(url_b).has_value());
@@ -307,10 +307,10 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // One instance of user interaction is recorded.
   absl::optional<StateValue> state_1 = GetDIPSState(url);
   ASSERT_TRUE(state_1.has_value());
-  EXPECT_FALSE(state_1->site_storage_times.first.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_1->user_interaction_times.first);
-  EXPECT_EQ(state_1->user_interaction_times.last,
-            state_1->user_interaction_times.first);
+  EXPECT_FALSE(state_1->site_storage_times.has_value());
+  EXPECT_EQ(absl::make_optional(time), state_1->user_interaction_times->first);
+  EXPECT_EQ(state_1->user_interaction_times->first,
+            state_1->user_interaction_times->second);
 
   SetDIPSTime(time + DIPSBounceDetector::kInteractionUpdateInterval +
               base::Seconds(10));
@@ -322,14 +322,14 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // site.
   absl::optional<StateValue> state_2 = GetDIPSState(url);
   ASSERT_TRUE(state_2.has_value());
-  EXPECT_FALSE(state_2->site_storage_times.first.has_value());
-  EXPECT_NE(state_2->user_interaction_times.last,
-            state_2->user_interaction_times.first);
-  EXPECT_EQ(absl::make_optional(time), state_2->user_interaction_times.first);
+  EXPECT_FALSE(state_2->site_storage_times.has_value());
+  EXPECT_NE(state_2->user_interaction_times->second,
+            state_2->user_interaction_times->first);
+  EXPECT_EQ(absl::make_optional(time), state_2->user_interaction_times->first);
   EXPECT_EQ(absl::make_optional(time +
                                 DIPSBounceDetector::kInteractionUpdateInterval +
                                 base::Seconds(10)),
-            state_2->user_interaction_times.last);
+            state_2->user_interaction_times->second);
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
@@ -387,10 +387,10 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   // One instance of site storage is recorded.
   absl::optional<StateValue> state_1 = GetDIPSState(url);
   ASSERT_TRUE(state_1.has_value());
-  EXPECT_FALSE(state_1->user_interaction_times.first.has_value());
-  EXPECT_EQ(absl::make_optional(time), state_1->site_storage_times.first);
-  EXPECT_EQ(state_1->site_storage_times.last,
-            state_1->site_storage_times.first);
+  EXPECT_FALSE(state_1->user_interaction_times.has_value());
+  EXPECT_EQ(absl::make_optional(time), state_1->site_storage_times->first);
+  EXPECT_EQ(state_1->site_storage_times->second,
+            state_1->site_storage_times->first);
 
   SetDIPSTime(time + base::Seconds(10));
   // Navigate to the URL again to rewrite the cookie.
@@ -400,12 +400,12 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   // site.
   absl::optional<StateValue> state_2 = GetDIPSState(url);
   ASSERT_TRUE(state_2.has_value());
-  EXPECT_FALSE(state_2->user_interaction_times.first.has_value());
-  EXPECT_NE(state_2->site_storage_times.last,
-            state_2->site_storage_times.first);
-  EXPECT_EQ(absl::make_optional(time), state_2->site_storage_times.first);
+  EXPECT_FALSE(state_2->user_interaction_times.has_value());
+  EXPECT_NE(state_2->site_storage_times->second,
+            state_2->site_storage_times->first);
+  EXPECT_EQ(absl::make_optional(time), state_2->site_storage_times->first);
   EXPECT_EQ(absl::make_optional(time + base::Seconds(10)),
-            state_2->site_storage_times.last);
+            state_2->site_storage_times->second);
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
@@ -532,11 +532,12 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // Verify both cookie writes were recorded.
   absl::optional<StateValue> state = GetDIPSState(url);
   ASSERT_TRUE(state.has_value());
-  EXPECT_NE(state->site_storage_times.first, state->site_storage_times.last);
-  EXPECT_EQ(absl::make_optional(time), state->site_storage_times.first);
+  EXPECT_NE(state->site_storage_times->first,
+            state->site_storage_times->second);
+  EXPECT_EQ(absl::make_optional(time), state->site_storage_times->first);
   EXPECT_EQ(absl::make_optional(time + base::Seconds(3)),
-            state->site_storage_times.last);
-  EXPECT_FALSE(state->user_interaction_times.first.has_value());
+            state->site_storage_times->second);
+  EXPECT_FALSE(state->user_interaction_times.has_value());
 
   histograms.ExpectTotalCount(kTimeToInteraction, 0);
   histograms.ExpectTotalCount(kTimeToStorage, 0);
@@ -584,14 +585,14 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // Verify both clicks were recorded.
   absl::optional<StateValue> state = GetDIPSState(url);
   ASSERT_TRUE(state.has_value());
-  EXPECT_NE(state->user_interaction_times.first,
-            state->user_interaction_times.last);
-  EXPECT_EQ(absl::make_optional(time), state->user_interaction_times.first);
+  EXPECT_NE(state->user_interaction_times->first,
+            state->user_interaction_times->second);
+  EXPECT_EQ(absl::make_optional(time), state->user_interaction_times->first);
   EXPECT_EQ(absl::make_optional(time +
                                 DIPSBounceDetector::kInteractionUpdateInterval +
                                 base::Seconds(3)),
-            state->user_interaction_times.last);
-  EXPECT_FALSE(state->site_storage_times.first.has_value());
+            state->user_interaction_times->second);
+  EXPECT_FALSE(state->site_storage_times.has_value());
 
   histograms.ExpectTotalCount(kTimeToInteraction, 0);
   histograms.ExpectTotalCount(kTimeToStorage, 0);
@@ -627,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, PrepopulateTest) {
   // prepopulated with a user interaction timestamp.
   auto state = GetDIPSState(GURL("http://a.test"));
   ASSERT_TRUE(state.has_value());
-  EXPECT_TRUE(state->user_interaction_times.first.has_value());
+  EXPECT_TRUE(state->user_interaction_times.has_value());
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
@@ -654,10 +655,9 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   absl::optional<StateValue> state_initial =
       GetDIPSState(GURL("http://a.test"));
   ASSERT_TRUE(state_initial.has_value());
-  ASSERT_TRUE(state_initial->user_interaction_times.first.has_value());
-  EXPECT_LE(state_initial->user_interaction_times.first.value(), time);
-  EXPECT_GT(state_initial->user_interaction_times.first.value(),
-            time - base::Days(1));
+  ASSERT_TRUE(state_initial->user_interaction_times.has_value());
+  EXPECT_LE(state_initial->user_interaction_times->first, time);
+  EXPECT_GT(state_initial->user_interaction_times->first, time - base::Days(1));
 
   base::RunLoop run_loop;
   base::OnceCallback<void(uint64_t)> callback =
