@@ -26,6 +26,7 @@ FINDER_ENABLE_COMMENT_BASE = 'finder:enable'
 FINDER_COMMENT_SUFFIX_GENERAL = '-general'
 FINDER_COMMENT_SUFFIX_STALE = '-stale'
 FINDER_COMMENT_SUFFIX_UNUSED = '-unused'
+FINDER_COMMENT_SUFFIX_NARROWING = '-narrowing'
 
 FINDER_GROUP_COMMENT_START = 'finder:group-start'
 FINDER_GROUP_COMMENT_END = 'finder:group-end'
@@ -34,6 +35,7 @@ ALL_FINDER_DISABLE_SUFFIXES = frozenset([
     FINDER_COMMENT_SUFFIX_GENERAL,
     FINDER_COMMENT_SUFFIX_STALE,
     FINDER_COMMENT_SUFFIX_UNUSED,
+    FINDER_COMMENT_SUFFIX_NARROWING,
 ])
 
 FINDER_DISABLE_COMMENT_GENERAL = (FINDER_DISABLE_COMMENT_BASE +
@@ -42,22 +44,29 @@ FINDER_DISABLE_COMMENT_STALE = (FINDER_DISABLE_COMMENT_BASE +
                                 FINDER_COMMENT_SUFFIX_STALE)
 FINDER_DISABLE_COMMENT_UNUSED = (FINDER_DISABLE_COMMENT_BASE +
                                  FINDER_COMMENT_SUFFIX_UNUSED)
+FINDER_DISABLE_COMMENT_NARROWING = (FINDER_DISABLE_COMMENT_BASE +
+                                    FINDER_COMMENT_SUFFIX_NARROWING)
 FINDER_ENABLE_COMMENT_GENERAL = (FINDER_ENABLE_COMMENT_BASE +
                                  FINDER_COMMENT_SUFFIX_GENERAL)
 FINDER_ENABLE_COMMENT_STALE = (FINDER_ENABLE_COMMENT_BASE +
                                FINDER_COMMENT_SUFFIX_STALE)
 FINDER_ENABLE_COMMENT_UNUSED = (FINDER_ENABLE_COMMENT_BASE +
                                 FINDER_COMMENT_SUFFIX_UNUSED)
+FINDER_ENABLE_COMMENT_NARROWING = (FINDER_ENABLE_COMMENT_BASE +
+                                   FINDER_COMMENT_SUFFIX_NARROWING)
 
 FINDER_DISABLE_COMMENTS = frozenset([
-    FINDER_DISABLE_COMMENT_GENERAL, FINDER_DISABLE_COMMENT_STALE,
-    FINDER_DISABLE_COMMENT_UNUSED
+    FINDER_DISABLE_COMMENT_GENERAL,
+    FINDER_DISABLE_COMMENT_STALE,
+    FINDER_DISABLE_COMMENT_UNUSED,
+    FINDER_DISABLE_COMMENT_NARROWING,
 ])
 
 FINDER_ENABLE_COMMENTS = frozenset([
     FINDER_ENABLE_COMMENT_GENERAL,
     FINDER_ENABLE_COMMENT_STALE,
     FINDER_ENABLE_COMMENT_UNUSED,
+    FINDER_ENABLE_COMMENT_NARROWING,
 ])
 
 FINDER_GROUP_COMMENTS = frozenset([
@@ -104,6 +113,7 @@ def ClearInstance() -> None:
 class RemovalType(object):
   STALE = FINDER_COMMENT_SUFFIX_STALE
   UNUSED = FINDER_COMMENT_SUFFIX_UNUSED
+  NARROWING = FINDER_COMMENT_SUFFIX_NARROWING
 
 
 class Expectations(object):
@@ -252,36 +262,17 @@ class Expectations(object):
     group_to_expectations, expectation_to_group = (
         self._GetExpectationGroupsFromFileContent(expectation_file,
                                                   input_contents))
+    disable_annotated_expectations = (
+        self._GetDisableAnnotatedExpectationsFromFile(expectation_file,
+                                                      input_contents))
 
     output_contents = ''
-    in_disable_block = False
-    disable_block_reason = ''
-    disable_block_suffix = ''
     removed_urls = set()
     for line in input_contents.splitlines(True):
       # Auto-add any comments or empty lines
       stripped_line = line.strip()
       if _IsCommentOrBlankLine(stripped_line):
         output_contents += line
-        # Only allow one enable/disable per line.
-        assert len([c for c in ALL_FINDER_COMMENTS if c in line]) <= 1
-        # Handle disable/enable block comments.
-        if _LineContainsDisableComment(line):
-          if in_disable_block:
-            raise RuntimeError(
-                'Invalid expectation file %s - contains a disable comment "%s" '
-                'that is in another disable block.' %
-                (expectation_file, stripped_line))
-          in_disable_block = True
-          disable_block_reason = _GetDisableReasonFromComment(line)
-          disable_block_suffix = _GetFinderCommentSuffix(line)
-        if _LineContainsEnableComment(line):
-          if not in_disable_block:
-            raise RuntimeError(
-                'Invalid expectation file %s - contains an enable comment "%s" '
-                'that is outside of a disable block.' %
-                (expectation_file, stripped_line))
-          in_disable_block = False
         continue
 
       current_expectation = self._CreateExpectationFromExpectationFileLine(
@@ -292,18 +283,16 @@ class Expectations(object):
       if any(e for e in expectations if e == current_expectation):
         # Skip any expectations that match if we're in a disable block or there
         # is an inline disable comment.
-        if in_disable_block and _DisableSuffixIsRelevant(
+        disable_block_suffix, disable_block_reason = (
+            disable_annotated_expectations.get(current_expectation,
+                                               (None, None)))
+        if disable_block_suffix and _DisableSuffixIsRelevant(
             disable_block_suffix, removal_type):
           output_contents += line
           logging.info(
-              'Would have removed expectation %s, but inside a disable block '
-              'with reason %s', stripped_line, disable_block_reason)
-        elif _LineContainsRelevantDisableComment(line, removal_type):
-          output_contents += line
-          logging.info(
-              'Would have removed expectation %s, but it has an inline disable '
-              'comment with reason %s',
-              stripped_line.split('#')[0], _GetDisableReasonFromComment(line))
+              'Would have removed expectation %s, but it is inside a disable '
+              'block or has an inline disable with reason %s', stripped_line,
+              disable_block_reason)
         elif _ExpectationPartOfNonRemovableGroup(current_expectation,
                                                  group_to_expectations,
                                                  expectation_to_group,
@@ -328,6 +317,63 @@ class Expectations(object):
       f.write(output_contents)
 
     return removed_urls
+
+  def _GetDisableAnnotatedExpectationsFromFile(
+      self, expectation_file: str,
+      content: str) -> Dict[data_types.Expectation, Tuple[str, str]]:
+    """Extracts expectations which are affected by disable annotations.
+
+    Args:
+      expectation_file: A filepath pointing to an expectation file.
+      content: A string containing the contents of |expectation_file|.
+
+    Returns:
+      A dict mapping data_types.Expectation to (disable_suffix, disable_reason).
+      If an expectation is present in this dict, it is affected by a disable
+      annotation of some sort. |disable_suffix| is a string specifying which
+      type of annotation is applicable, while |disable_reason| is a string
+      containing the comment/reason why the disable annotation is present.
+    """
+    in_disable_block = False
+    disable_block_reason = ''
+    disable_block_suffix = ''
+    disable_annotated_expectations = {}
+    for line in content.splitlines(True):
+      stripped_line = line.strip()
+      # Look for cases of disable/enable blocks.
+      if _IsCommentOrBlankLine(stripped_line):
+        # Only allow one enable/disable per line.
+        assert len([c for c in ALL_FINDER_COMMENTS if c in line]) <= 1
+        if _LineContainsDisableComment(line):
+          if in_disable_block:
+            raise RuntimeError(
+                'Invalid expectation file %s - contains a disable comment "%s" '
+                'that is in another disable block.' %
+                (expectation_file, stripped_line))
+          in_disable_block = True
+          disable_block_reason = _GetDisableReasonFromComment(line)
+          disable_block_suffix = _GetFinderCommentSuffix(line)
+        elif _LineContainsEnableComment(line):
+          if not in_disable_block:
+            raise RuntimeError(
+                'Invalid expectation file %s - contains an enable comment "%s" '
+                'that is outside of a disable block.' %
+                (expectation_file, stripped_line))
+          in_disable_block = False
+        continue
+
+      current_expectation = self._CreateExpectationFromExpectationFileLine(
+          line, expectation_file)
+
+      if in_disable_block:
+        disable_annotated_expectations[current_expectation] = (
+            disable_block_suffix, disable_block_reason)
+      elif _LineContainsDisableComment(line):
+        disable_block_reason = _GetDisableReasonFromComment(line)
+        disable_block_suffix = _GetFinderCommentSuffix(line)
+        disable_annotated_expectations[current_expectation] = (
+            disable_block_suffix, disable_block_reason)
+    return disable_annotated_expectations
 
   def _GetExpectationGroupsFromFileContent(
       self, expectation_file: str, content: str
@@ -596,8 +642,27 @@ class Expectations(object):
       expectations.
     """
     modified_urls = set()
+    cached_disable_annotated_expectations = {}
     for expectation_file, e, builder_map in (
         stale_expectation_map.IterBuilderStepMaps()):
+      # Check if the current annotation has scope narrowing disabled.
+      if expectation_file not in cached_disable_annotated_expectations:
+        with open(expectation_file) as infile:
+          disable_annotated_expectations = (
+              self._GetDisableAnnotatedExpectationsFromFile(
+                  expectation_file, infile.read()))
+          cached_disable_annotated_expectations[
+              expectation_file] = disable_annotated_expectations
+      disable_block_suffix, disable_block_reason = (
+          cached_disable_annotated_expectations[expectation_file].get(
+              e, ('', '')))
+      if _DisableSuffixIsRelevant(disable_block_suffix, RemovalType.NARROWING):
+        logging.info(
+            'Skipping semi-stale narrowing check for expectation %s since it '
+            'has a narrowing disable annotation with reason %s',
+            e.AsExpectationFileString(), disable_block_reason)
+        continue
+
       skip_to_next_expectation = False
 
       pass_tag_sets = set()

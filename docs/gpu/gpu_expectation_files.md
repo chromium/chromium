@@ -202,6 +202,11 @@ found to not be used on any bots, i.e. the specified configuration does not
 appear to actually be tested. This is most likely to be used for expectations
 for failures reported by third parties with their own testing configurations.
 
+`finder:disable-narrowing` prevents the expectation from having its scope
+automatically narrowed to only apply to configurations that are found to need
+it. This is most likely to be used for expectations that are intentionally
+broad to prevent failures that aren't planned on being fixed.
+
 All of these annotations can either be used inline for a single expectation:
 
 ```
