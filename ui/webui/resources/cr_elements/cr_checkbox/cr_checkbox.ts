@@ -90,7 +90,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     this.addEventListener('blur', this.hideRipple_.bind(this));
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('focus', this.showRipple_.bind(this));
-    this.addEventListener('up', this.hideRipple_.bind(this));
+    this.addEventListener('pointerup', this.hideRipple_.bind(this));
   }
 
   override focus() {
