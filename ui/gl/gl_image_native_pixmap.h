@@ -23,12 +23,16 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
       gfx::BufferFormat format,
       scoped_refptr<gfx::NativePixmap> pixmap);
 
-  // Create an EGLImage from a given NativePixmap and plane.
+  // Create an EGLImage from a given NativePixmap and plane. The color space is
+  // for the external sampler: When we sample the YUV buffer as RGB, we need to
+  // tell it the encoding (BT.601, BT.709, or BT.2020) and range (limited or
+  // null), and |color_space| conveys this.
   static scoped_refptr<GLImageNativePixmap> CreateForPlane(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
-      scoped_refptr<gfx::NativePixmap> pixmap);
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      const gfx::ColorSpace& color_space);
   // Create an EGLImage from a given GL texture.
   static scoped_refptr<GLImageNativePixmap> CreateFromTexture(
       const gfx::Size& size,
@@ -59,7 +63,8 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
                       gfx::BufferFormat format,
                       gfx::BufferPlane plane);
   // Create an EGLImage from a given NativePixmap.
-  bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
+  bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap,
+                  const gfx::ColorSpace& color_space);
   // Create an EGLImage from a given GL texture.
   bool InitializeFromTexture(uint32_t texture_id);
 
