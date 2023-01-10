@@ -530,7 +530,7 @@ int64_t CalculateSideDataPadding(
       base::Time::FromInternalValue(response->response_time());
 
   return storage::ComputeStableResponsePadding(
-      bucket_locator.storage_key.origin(), url, response_time,
+      bucket_locator.storage_key, url, response_time,
       response->request_method(), side_data_size);
 }
 

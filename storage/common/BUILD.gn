@@ -19,9 +19,7 @@ component("common") {
     "quota/padding_key.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_STORAGE_COMMON_IMPL" ]
 
@@ -29,6 +27,7 @@ component("common") {
     "//components/services/filesystem/public/mojom",
     "//services/network/public/mojom",
     "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common",
   ]
 
   deps = [

@@ -10,15 +10,11 @@
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
-#include "url/gurl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
 class Time;
 }  // namespace base
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace storage {
 
@@ -34,16 +30,13 @@ int64_t ComputeRandomResponsePadding();
 
 // Compute a stable padding value for a resource.  This should be used for
 // cases where a site could trigger a large number of padding values to be
-// generated for the same resource; e.g. http cache.  The |origin| is the
-// origin of the context that loaded the resource.  Note, its important that the
-// |response_time| be the time stored in the cache and not just the current
-// time.  The |side_data_size| should only be passed if padding is being
+// generated for the same resource; e.g. http cache.  The |storage_key| is
+// the Storage Key of the context that loaded the resource.  Note, its important
+// that the |response_time| be the time stored in the cache and not just the
+// current time.  The |side_data_size| should only be passed if padding is being
 // computed for a side data blob.
-//
-// TODO(https://crbug.com/1199077): Replace `url::Origin` with
-// `blink::StorageKey` in the argument list.
 COMPONENT_EXPORT(STORAGE_COMMON)
-int64_t ComputeStableResponsePadding(const url::Origin& origin,
+int64_t ComputeStableResponsePadding(const blink::StorageKey& storage_key,
                                      const std::string& response_url,
                                      const base::Time& response_time,
                                      const std::string& request_method,

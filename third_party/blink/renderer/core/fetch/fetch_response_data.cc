@@ -6,6 +6,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "storage/common/quota/padding_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -364,12 +365,18 @@ void FetchResponseData::InitFromResourceResponse(
     SetPadding(response.GetPadding());
   } else {
     if (storage::ShouldPadResponseType(response_type)) {
-      int64_t padding = response.WasCached()
-                            ? storage::ComputeStableResponsePadding(
-                                  context->GetSecurityOrigin()->ToUrlOrigin(),
-                                  Url()->GetString().Utf8(), ResponseTime(),
-                                  request_method.Utf8())
-                            : storage::ComputeRandomResponsePadding();
+      int64_t padding =
+          response.WasCached()
+              ? storage::ComputeStableResponsePadding(
+                    // TODO(https://crbug.com/1199077): Investigate the need to
+                    // have a specified storage key within the ExecutionContext
+                    // and if warranted change this to use the actual storage
+                    // key instead.
+                    blink::StorageKey(
+                        context->GetSecurityOrigin()->ToUrlOrigin()),
+                    Url()->GetString().Utf8(), ResponseTime(),
+                    request_method.Utf8())
+              : storage::ComputeRandomResponsePadding();
       SetPadding(padding);
     }
   }

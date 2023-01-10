@@ -16,6 +16,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using crypto::SymmetricKey;
 
@@ -49,20 +50,20 @@ int64_t ComputeRandomResponsePadding() {
   return raw_random % kPaddingRange;
 }
 
-int64_t ComputeStableResponsePadding(const url::Origin& origin,
+int64_t ComputeStableResponsePadding(const blink::StorageKey& storage_key,
                                      const std::string& response_url,
                                      const base::Time& response_time,
                                      const std::string& request_method,
                                      int64_t side_data_size) {
   DCHECK(!response_url.empty());
 
-  net::SchemefulSite site(origin);
+  net::SchemefulSite site(storage_key.origin());
 
   DCHECK_GT(response_time, base::Time::UnixEpoch());
   int64_t microseconds =
       (response_time - base::Time::UnixEpoch()).InMicroseconds();
 
-  // It should only be possible to have a CORS safelisted method here since
+  // It should only be possible to have a CORS safe-listed method here since
   // the spec does not permit other methods for no-cors requests.
   DCHECK(request_method == net::HttpRequestHeaders::kGetMethod ||
          request_method == net::HttpRequestHeaders::kHeadMethod ||
