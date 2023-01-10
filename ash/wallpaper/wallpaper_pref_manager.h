@@ -57,7 +57,6 @@ class WallpaperProfileHelper {
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
 class ASH_EXPORT WallpaperPrefManager
     : public base::SupportsWeakPtr<WallpaperPrefManager>,
-      public ColorModeObserver,
       public SessionObserver {
  public:
   // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
