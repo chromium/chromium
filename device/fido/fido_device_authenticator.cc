@@ -416,7 +416,12 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
 
   if (uv_requirement == UserVerificationRequirement::kDiscouraged ||
       (uv_requirement == UserVerificationRequirement::kPreferred &&
-       ((!pin_configured || !can_collect_pin) && !uv_configured))) {
+       ((!pin_configured || !can_collect_pin) && !uv_configured &&
+        // The hmac-secret extension makes uv=preferred "more" preferred so that
+        // the HMAC output is stable. Otherwise later configuring UV on the
+        // authenticator could cause the hmac-secret outputs to change as a
+        // different seed is used for UV and non-UV assertions.
+        (!request.hmac_secret || !SupportsHMACSecretExtension())))) {
     return PINUVDisposition::kNoUV;
   }
 
@@ -433,6 +438,10 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
 
   if (can_get_token) {
     return PINUVDisposition::kGetToken;
+  }
+
+  if (uv_requirement == UserVerificationRequirement::kPreferred) {
+    return PINUVDisposition::kNoUV;
   }
 
   return PINUVDisposition::kUnsatisfiable;
