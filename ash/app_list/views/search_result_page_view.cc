@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "ash/app_list/app_list_util.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -121,10 +121,10 @@ void SearchResultPageView::InitializeContainers(
   // to keep the position of dialogs consistent.
   dialog_controller_ =
       std::make_unique<SearchResultPageDialogController>(search_box_view);
-  std::unique_ptr<ProductivityLauncherSearchView> search_view_ptr =
-      std::make_unique<ProductivityLauncherSearchView>(
+  std::unique_ptr<AppListSearchView> search_view_ptr =
+      std::make_unique<AppListSearchView>(
           view_delegate, dialog_controller_.get(), search_box_view);
-  productivity_launcher_search_view_ = search_view_ptr.get();
+  search_view_ = search_view_ptr.get();
   root_view_->AddChildView(
       std::make_unique<SearchCardView>(std::move(search_view_ptr)));
 }
@@ -134,11 +134,11 @@ const char* SearchResultPageView::GetClassName() const {
 }
 
 gfx::Size SearchResultPageView::CalculatePreferredSize() const {
-  int adjusted_height = std::min(
-      std::max(kMinHeight,
-               productivity_launcher_search_view_->TabletModePreferredHeight() +
-                   kActiveSearchBoxHeight + kExpandedSearchBoxCornerRadius),
-      contents_view()->height());
+  int adjusted_height =
+      std::min(std::max(kMinHeight, search_view_->TabletModePreferredHeight() +
+                                        kActiveSearchBoxHeight +
+                                        kExpandedSearchBoxCornerRadius),
+               contents_view()->height());
   return gfx::Size(kWidth, adjusted_height);
 }
 
@@ -171,8 +171,7 @@ void SearchResultPageView::OnThemeChanged() {
 }
 
 void SearchResultPageView::UpdateForNewSearch() {
-  productivity_launcher_search_view_->UpdateForNewSearch(
-      ShouldShowSearchResultView());
+  search_view_->UpdateForNewSearch(ShouldShowSearchResultView());
 }
 
 void SearchResultPageView::UpdateResultContainersVisibility() {
@@ -365,7 +364,7 @@ bool SearchResultPageView::CanSelectSearchResults() const {
   if (!GetVisible())
     return false;
 
-  return productivity_launcher_search_view_->CanSelectSearchResults();
+  return search_view_->CanSelectSearchResults();
 }
 
 bool SearchResultPageView::ShouldShowSearchResultView() const {

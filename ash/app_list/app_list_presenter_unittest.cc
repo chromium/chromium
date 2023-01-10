@@ -19,6 +19,7 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -26,7 +27,6 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
-#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/remove_query_confirmation_dialog.h"
 #include "ash/app_list/views/result_selection_controller.h"
@@ -275,7 +275,7 @@ class AppListPresenterTest : public AshTestBase,
 
   SearchResultContainerView* GetDefaultSearchResultListView() {
     return search_result_page()
-        ->productivity_launcher_search_view_for_test()
+        ->search_view_for_test()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
@@ -395,23 +395,23 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   SearchResultContainerView* GetDefaultSearchResultListView() {
     if (should_show_bubble_launcher()) {
       return GetAppListTestHelper()
-          ->GetProductivityLauncherSearchView()
+          ->GetBubbleAppListSearchView()
           ->result_container_views_for_test()[kBestMatchContainerIndex];
     }
     return GetFullscreenSearchPage()
-        ->productivity_launcher_search_view_for_test()
+        ->search_view_for_test()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
   ResultSelectionController* GetResultSelectionController() {
     if (should_show_bubble_launcher()) {
       return GetAppListTestHelper()
-          ->GetProductivityLauncherSearchView()
+          ->GetBubbleAppListSearchView()
           ->result_selection_controller_for_test();
     }
 
     return GetFullscreenSearchPage()
-        ->productivity_launcher_search_view_for_test()
+        ->search_view_for_test()
         ->result_selection_controller_for_test();
   }
 

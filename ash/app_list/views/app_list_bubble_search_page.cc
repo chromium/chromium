@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/bubble/bubble_constants.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
@@ -36,7 +36,7 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
     SearchResultPageDialogController* dialog_controller,
     SearchBoxView* search_box_view) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  search_view_ = AddChildView(std::make_unique<ProductivityLauncherSearchView>(
+  search_view_ = AddChildView(std::make_unique<AppListSearchView>(
       view_delegate, dialog_controller, search_box_view));
   search_view_->SetBorder(views::CreateEmptyBorder(kSearchViewBorder));
 }
