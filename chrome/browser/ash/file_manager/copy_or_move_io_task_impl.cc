@@ -280,7 +280,8 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
   DCHECK(idx < progress_.sources.size());
   if (error != base::File::FILE_OK) {
     progress_.sources[idx].error = error;
-    LOG(ERROR) << "Could not get size of source file: " << error;
+    LOG(ERROR) << "Could not get size of source file: error " << error << " "
+               << base::File::ErrorToString(error);
     Complete(State::kError);
     return;
   }
@@ -518,7 +519,8 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
   } else {
     for (const auto& source : progress_.sources) {
       if (source.error != base::File::FILE_OK) {
-        LOG(ERROR) << "Error on complete: " << error;
+        LOG(ERROR) << "Error on complete: error " << error << " "
+                   << base::File::ErrorToString(error);
         Complete(State::kError);
         return;
       }
