@@ -533,4 +533,56 @@ TEST_F(EcheTrayTest, EcheTrayKeyboardShowHideUpdateBubbleBounds) {
       eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
 }
 
+TEST_F(EcheTrayTest, OnThemeChanged) {
+  ResetUnloadWebContent();
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1", u"your phone");
+  eche_tray()->ShowBubble();
+
+  EXPECT_TRUE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->GetArrowBackButtonForTesting());
+  EXPECT_TRUE(eche_tray()->GetMinimizeButtonForTesting());
+  EXPECT_TRUE(eche_tray()->GetCloseButtonForTesting());
+
+  eche_tray()->OnThemeChanged();
+
+  // Buttons still exist
+  eche_tray()->ShowBubble();
+  EXPECT_TRUE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->GetArrowBackButtonForTesting());
+  EXPECT_TRUE(eche_tray()->GetMinimizeButtonForTesting());
+  EXPECT_TRUE(eche_tray()->GetCloseButtonForTesting());
+  EXPECT_FALSE(is_web_content_unloaded_);
+
+  eche_tray()->PurgeAndClose();
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->GetArrowBackButtonForTesting());
+  EXPECT_FALSE(eche_tray()->GetMinimizeButtonForTesting());
+  EXPECT_FALSE(eche_tray()->GetCloseButtonForTesting());
+}
+
+TEST_F(EcheTrayTest, OnThemeChangedNoBubble) {
+  ResetUnloadWebContent();
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1", u"your phone");
+
+  eche_tray()->ShowBubble();
+  EXPECT_TRUE(eche_tray()->is_active());
+  EXPECT_TRUE(eche_tray()->GetArrowBackButtonForTesting());
+  EXPECT_TRUE(eche_tray()->GetMinimizeButtonForTesting());
+  EXPECT_TRUE(eche_tray()->GetCloseButtonForTesting());
+
+  eche_tray()->PurgeAndClose();
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->GetArrowBackButtonForTesting());
+  EXPECT_FALSE(eche_tray()->GetMinimizeButtonForTesting());
+  EXPECT_FALSE(eche_tray()->GetCloseButtonForTesting());
+
+  eche_tray()->OnThemeChanged();
+  EXPECT_FALSE(eche_tray()->is_active());
+  EXPECT_FALSE(eche_tray()->GetArrowBackButtonForTesting());
+  EXPECT_FALSE(eche_tray()->GetMinimizeButtonForTesting());
+  EXPECT_FALSE(eche_tray()->GetCloseButtonForTesting());
+}
+
 }  // namespace ash

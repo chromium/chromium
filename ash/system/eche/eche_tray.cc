@@ -349,6 +349,11 @@ bool EcheTray::CacheBubbleViewForHide() const {
   return true;
 }
 
+void EcheTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  RefreshHeaderView();
+}
+
 std::u16string EcheTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
@@ -527,25 +532,25 @@ void EcheTray::InitBubble(const std::u16string& phone_name) {
   init_params.translucent = true;
   init_params.reroute_event_handler = false;
   init_params.corner_radius = kTrayItemCornerRadius;
+  phone_name_ = phone_name;
 
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
   bubble_view->SetCanActivate(true);
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
-  auto* header_view =
-      bubble_view->AddChildView(CreateBubbleHeaderView(phone_name));
+  header_view_ = bubble_view->AddChildView(CreateBubbleHeaderView(phone_name));
 
   // We need the header be always visible with the same size.
   static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
-      ->SetFlexForView(header_view, 0, true);
+      ->SetFlexForView(header_view_, 0, true);
   static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
       ->set_inside_border_insets(kBubblePadding);
 
   // In dark light mode, we switch TrayBubbleView to use a textured layer
   // instead of solid color layer, so no need to create an extra layer here.
   if (!features::IsDarkLightModeEnabled()) {
-    header_view->SetPaintToLayer();
-    header_view->layer()->SetFillsBoundsOpaquely(false);
+    header_view_->SetPaintToLayer();
+    header_view_->layer()->SetFillsBoundsOpaquely(false);
   }
 
   AshWebView::InitParams params;
@@ -716,6 +721,22 @@ EcheIconLoadingIndicatorView* EcheTray::GetLoadingIndicator() {
   if (!phone_hub_tray)
     return nullptr;
   return phone_hub_tray->eche_loading_indicator();
+}
+
+void EcheTray::RefreshHeaderView() {
+  if (!header_view_ || !bubble_) {
+    return;
+  }
+
+  auto* bubble_view = bubble_->GetBubbleView();
+  bubble_view->RemoveChildView(header_view_);
+  header_view_ = bubble_view->AddChildViewAt(
+      CreateBubbleHeaderView(phone_name_), /* index= */ 0);
+
+  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
+      ->SetFlexForView(header_view_, 0, true);
+  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
+      ->set_inside_border_insets(kBubblePadding);
 }
 
 void EcheTray::UpdateEcheSizeAndBubbleBounds() {

@@ -134,6 +134,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
                                     bool visible) override;
   bool CacheBubbleViewForHide() const override;
+  void OnThemeChanged() override;
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
@@ -262,6 +263,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   PhoneHubTray* GetPhoneHubTray();
   EcheIconLoadingIndicatorView* GetLoadingIndicator();
 
+  // Refreshes the header buttons, particularly when the theme changes.
+  void RefreshHeaderView();
+
   // Resize Eche size and update the bubble's position.
   void UpdateEcheSizeAndBubbleBounds();
 
@@ -311,6 +315,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // The unload timer to force close EcheTray in case unload error.
   std::unique_ptr<base::DelayTimer> unload_timer_;
 
+  views::View* header_view_ = nullptr;
   views::Button* close_button_ = nullptr;
   views::Button* minimize_button_ = nullptr;
   views::Button* arrow_back_button_ = nullptr;
@@ -321,6 +326,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   absl::optional<base::TimeTicks> init_stream_timestamp_;
 
   bool is_stream_started_ = false;
+  std::u16string phone_name_;
 
   // Observers
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
