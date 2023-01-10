@@ -50,7 +50,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   void ShowErrorMessage() override;
   void ShowProcessingSpinner() override;
   bool IsBrowserWindowActive() const override;
-  std::string GetTwaPackageName() const override;
+  void GetTwaPackageName(GetTwaPackageNameCallback callback) const override;
   PaymentRequestDialog* GetDialogForTesting() override;
   SecurePaymentConfirmationNoCreds* GetNoMatchingCredentialsDialogForTesting()
       override;

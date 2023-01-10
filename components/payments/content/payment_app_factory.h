@@ -6,8 +6,10 @@
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_APP_FACTORY_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
@@ -50,6 +52,9 @@ class PaymentAppFactory {
  public:
   class Delegate {
    public:
+    using GetTwaPackageNameCallback =
+        base::OnceCallback<void(const std::string& twa_package_name)>;
+
     virtual ~Delegate() = default;
 
     // Returns the WebContents that initiated the PaymentRequest API, or null if
@@ -81,9 +86,9 @@ class PaymentAppFactory {
     // being aborted.
     virtual base::WeakPtr<PaymentRequestSpec> GetSpec() const = 0;
 
-    // Returns the Android package name of the Trusted Web Activity that invoked
-    // this browser, if any. Otherwise, an empty string.
-    virtual std::string GetTwaPackageName() const = 0;
+    // Obtains the Android package name of the Trusted Web Activity that invoked
+    // this browser, if any. Otherwise, calls `callback` with an empty string.
+    virtual void GetTwaPackageName(GetTwaPackageNameCallback callback) = 0;
 
     // Tells the UI to show the processing spinner. Only desktop UI needs this
     // notification.

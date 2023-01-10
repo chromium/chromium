@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/content/mock_payment_app_factory_delegate.h"
@@ -30,6 +31,8 @@ class BrowserContext;
 
 namespace payments {
 namespace {
+
+using base::test::RunOnceCallback;
 
 // The scaffolding for testing the Android payment app factory.
 class AndroidPaymentAppFactoryTest : public testing::Test {
@@ -65,8 +68,8 @@ class AndroidPaymentAppFactoryTest : public testing::Test {
 // Aneroid payment apps on a platform that supports such apps, e.g, when ARC is
 // disabled on Chrome OS.
 TEST_F(AndroidPaymentAppFactoryTest, FactoryReturnsErrorWithoutArc) {
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.example.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
 
   EXPECT_CALL(*delegate_,
@@ -86,8 +89,8 @@ TEST_F(AndroidPaymentAppFactoryTest, NoErrorsWhenNoApps) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.example.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
 
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
@@ -111,8 +114,8 @@ TEST_F(AndroidPaymentAppFactoryTest, FindAppsThatDoNotHaveReadyToPayService) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.example.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
   EXPECT_CALL(*delegate_, GetInitiatorRenderFrameHost())
       .WillRepeatedly(
           testing::Return(delegate_->GetWebContents()->GetPrimaryMainFrame()));
@@ -154,8 +157,8 @@ TEST_F(AndroidPaymentAppFactoryTest,
   // Simulate being off the record.
   delegate_->set_is_off_the_record();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.example.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
   EXPECT_CALL(*delegate_, GetInitiatorRenderFrameHost())
       .WillRepeatedly(
           testing::Return(delegate_->GetWebContents()->GetPrimaryMainFrame()));
@@ -194,8 +197,8 @@ TEST_F(AndroidPaymentAppFactoryTest,
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.twa.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
   EXPECT_CALL(*delegate_, GetInitiatorRenderFrameHost())
       .WillRepeatedly(
           testing::Return(delegate_->GetWebContents()->GetPrimaryMainFrame()));
@@ -231,8 +234,8 @@ TEST_F(AndroidPaymentAppFactoryTest, IgnoreAppsThatAreNotReadyToPay) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.example.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
   EXPECT_CALL(*delegate_, GetInitiatorRenderFrameHost())
       .WillRepeatedly(
           testing::Return(delegate_->GetWebContents()->GetPrimaryMainFrame()));
@@ -262,8 +265,8 @@ TEST_F(AndroidPaymentAppFactoryTest, FindTheCorrectTwaAppInTwaMode) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.correct-twa.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.correct-twa.app"));
   EXPECT_CALL(*delegate_, GetInitiatorRenderFrameHost())
       .WillRepeatedly(
           testing::Return(delegate_->GetWebContents()->GetPrimaryMainFrame()));
@@ -314,8 +317,8 @@ TEST_F(AndroidPaymentAppFactoryTest, IgnoreNonTwaAppsInTwaMode) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.twa.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -342,8 +345,8 @@ TEST_F(AndroidPaymentAppFactoryTest, DoNotLookForAppsWhenOutsideOfTwaMode) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return(""));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>(""));
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -364,8 +367,8 @@ TEST_F(AndroidPaymentAppFactoryTest, DoNotLookForAppsForNonTwaMethod) {
   method_data->stringified_data = "{}";
   delegate_->SetRequestedPaymentMethod(std::move(method_data));
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.example.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -382,8 +385,8 @@ TEST_F(AndroidPaymentAppFactoryTest, IgnoreNonTwaMethodInTheTwa) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.twa.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
@@ -412,8 +415,8 @@ TEST_F(AndroidPaymentAppFactoryTest,
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.twa.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
   EXPECT_CALL(*delegate_, GetInitiatorRenderFrameHost())
       .WillRepeatedly(
           testing::Return(delegate_->GetWebContents()->GetPrimaryMainFrame()));
@@ -458,8 +461,8 @@ TEST_F(AndroidPaymentAppFactoryTest, ReturnErrorWhenMoreThanOneServiceInApp) {
   // Enable invoking Android payment apps on those platforms that support it.
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
-  EXPECT_CALL(*delegate_, GetTwaPackageName())
-      .WillRepeatedly(testing::Return("com.example.app"));
+  EXPECT_CALL(*delegate_, GetTwaPackageName)
+      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps());
 
   EXPECT_CALL(*delegate_,

@@ -5,6 +5,7 @@
 #include "components/payments/content/android/payment_app_service_bridge.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/android/jni_array.h"
@@ -12,8 +13,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "components/payments/content/android/csp_checker_android.h"
 #include "components/payments/content/android/jni_headers/PaymentAppServiceBridge_jni.h"
@@ -294,8 +298,10 @@ base::WeakPtr<PaymentRequestSpec> PaymentAppServiceBridge::GetSpec() const {
   return spec_;
 }
 
-std::string PaymentAppServiceBridge::GetTwaPackageName() const {
-  return twa_package_name_;
+void PaymentAppServiceBridge::GetTwaPackageName(
+    GetTwaPackageNameCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), twa_package_name_));
 }
 
 void PaymentAppServiceBridge::OnPaymentAppCreated(

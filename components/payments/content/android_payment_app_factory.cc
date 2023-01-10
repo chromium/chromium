@@ -65,15 +65,23 @@ class AppFinder : public base::SupportsUserData::Data {
     delegate_ = delegate;
     communication_ = communication;
 
-    std::string twa_package_name = delegate_->GetTwaPackageName();
     std::set<std::string> twa_payment_method_names = {
         methods::kGooglePlayBilling,
     };
-    if (twa_package_name.empty() ||
-        base::STLSetIntersection<std::set<std::string>>(
+    if (base::STLSetIntersection<std::set<std::string>>(
             delegate_->GetSpec()->payment_method_identifiers_set(),
             twa_payment_method_names)
             .empty()) {
+      OnDoneCreatingPaymentApps();
+      return;
+    }
+
+    delegate_->GetTwaPackageName(base::BindOnce(
+        &AppFinder::OnGetTwaPackageName, weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnGetTwaPackageName(const std::string& twa_package_name) {
+    if (twa_package_name.empty()) {
       OnDoneCreatingPaymentApps();
       return;
     }

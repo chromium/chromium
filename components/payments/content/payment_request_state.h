@@ -124,7 +124,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const override;
   void ShowProcessingSpinner() override;
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
-  std::string GetTwaPackageName() const override;
+  void GetTwaPackageName(GetTwaPackageNameCallback callback) override;
   const GURL& GetTopOrigin() override;
   const GURL& GetFrameOrigin() override;
   const url::Origin& GetFrameSecurityOrigin() override;
@@ -327,6 +327,9 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   void OnAddressNormalized(bool success,
                            const autofill::AutofillProfile& normalized_profile);
 
+  void OnGetTwaPackageName(GetTwaPackageNameCallback callback,
+                           const std::string& twa_package_name);
+
   // Returns whether the browser is currently in a TWA.
   bool IsInTwa() const;
 
@@ -348,6 +351,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   // Whether getting all available apps is finished.
   bool get_all_apps_finished_ = false;
+
+  // The Android package name of the Trusted Web Activity that invoked this
+  // browser, if any.
+  std::string twa_package_name_;
 
   // The value returned by hasEnrolledInstrument(). Can be used only after
   // |get_all_apps_finished_| is true.

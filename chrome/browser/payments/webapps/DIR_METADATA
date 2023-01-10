@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>WebAppInstalls>ChromeOS"
+}
+team_email: "pwa-dev@chromium.org"

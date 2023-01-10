@@ -11,6 +11,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -112,8 +114,11 @@ base::WeakPtr<PaymentRequestSpec> PaymentRequestState::GetSpec() const {
   return spec_;
 }
 
-std::string PaymentRequestState::GetTwaPackageName() const {
-  return GetPaymentRequestDelegate()->GetTwaPackageName();
+void PaymentRequestState::GetTwaPackageName(
+    GetTwaPackageNameCallback callback) {
+  GetPaymentRequestDelegate()->GetTwaPackageName(
+      base::BindOnce(&PaymentRequestState::OnGetTwaPackageName,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 const GURL& PaymentRequestState::GetTopOrigin() {
@@ -702,10 +707,16 @@ void PaymentRequestState::OnAddressNormalized(
                                                       app_locale_));
 }
 
+void PaymentRequestState::OnGetTwaPackageName(
+    GetTwaPackageNameCallback callback,
+    const std::string& twa_package_name) {
+  DCHECK(!get_all_apps_finished_);
+  twa_package_name_ = twa_package_name;
+  std::move(callback).Run(twa_package_name);
+}
+
 bool PaymentRequestState::IsInTwa() const {
-  return payment_request_delegate_
-             ? !payment_request_delegate_->GetTwaPackageName().empty()
-             : false;
+  return !twa_package_name_.empty();
 }
 
 bool PaymentRequestState::GetCanMakePaymentValue() const {

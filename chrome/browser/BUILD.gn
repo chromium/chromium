@@ -6400,6 +6400,8 @@ static_library("browser") {
       "payments/payment_request_display_manager_factory.h",
       "payments/payment_request_factory.cc",
       "payments/payment_request_factory.h",
+      "payments/webapps/twa_package_helper.cc",
+      "payments/webapps/twa_package_helper.h",
     ]
     deps += [
       "//chrome/browser/ui/webui/discards:mojo_bindings",

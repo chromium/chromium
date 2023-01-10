@@ -78,7 +78,7 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   std::string GetInvalidSslCertificateErrorMessage() override;
-  std::string GetTwaPackageName() const override;
+  void GetTwaPackageName(GetTwaPackageNameCallback callback) const override;
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
 
   // Not owned so must outlive the PaymentRequest object;
