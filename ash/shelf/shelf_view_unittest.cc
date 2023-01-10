@@ -3612,4 +3612,54 @@ TEST_P(ShelfPartyTest, PartyingItemsHiddenFromShelf) {
   EXPECT_EQ(initial_bounds2, test_api_->GetBoundsByIndex(2));
 }
 
+// Verifies that the feature that enables dragging unpinned apps to pin works
+// with shelf party.
+TEST_P(ShelfPartyTest, DragUnpinnedAppToPin) {
+  AddAppShortcut();
+  AddAppShortcut();
+  const ShelfID running_unpinned_app = AddApp();
+
+  ShelfItem item = model_->items()[1u];
+  item.status = STATUS_RUNNING;
+  model_->Set(1, item);
+  const ShelfID running_pinned_app = item.id;
+
+  // Start shelf party.
+  model_->ToggleShelfParty();
+  {
+    const std::vector<size_t> not_partying = {1, 3};
+    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
+  }
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // At this point, there should be only 1 pinned app and 1 unpinned app on the
+  // shelf.
+  const gfx::Point unpinned_app_center = GetButtonCenter(running_unpinned_app);
+  const gfx::Point pinned_app_center = GetButtonCenter(running_pinned_app);
+  auto* generator = GetEventGenerator();
+
+  // Drag the unpinned app to the front.
+  generator->MoveMouseTo(unpinned_app_center);
+  generator->PressLeftButton();
+  generator->MoveMouseTo(pinned_app_center);
+
+  // The first visible item, which is the dragged item, should not be pinned.
+  const size_t first_visible_index =
+      shelf_view_->visible_views_indices().front();
+  EXPECT_TRUE(!IsAppPinned(model_->items()[first_visible_index].id));
+
+  // Drag the unpinned app back to its original position and release it.
+  generator->MoveMouseTo(unpinned_app_center);
+  generator->ReleaseLeftButton();
+
+  // The last visible item, which is the dragged item, should still be an
+  // unpinned one.
+  const size_t last_visible_index = shelf_view_->visible_views_indices().back();
+  EXPECT_TRUE(!IsAppPinned(model_->items()[last_visible_index].id));
+
+  // End shelf party.
+  model_->ToggleShelfParty();
+  test_api_->RunMessageLoopUntilAnimationsDone();
+}
+
 }  // namespace ash

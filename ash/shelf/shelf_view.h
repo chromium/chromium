@@ -576,6 +576,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Resets the data members related to the app item context menu model request.
   void ResetActiveMenuModelRequest();
 
+  // Return true if all pinned apps are hidden. This can be true only if the
+  // ShelfParty feature is enabled.
+  bool AreAllPinnedAppsHidden() const;
+
   // The model; owned by Launcher.
   ShelfModel* const model_;
 

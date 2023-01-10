@@ -1037,16 +1037,17 @@ void ShelfView::UpdateSeparatorIndex() {
 
   const bool can_drag_view_across_separator =
       drag_view_ && CanDragAcrossSeparator(drag_view_);
-  for (int index = model()->item_count(); index > 0; --index) {
-    const int i = index - 1;
-    DCHECK_GE(i, 0);
+
+  for (size_t i : base::Reversed(visible_views_indices_)) {
     const auto& item = model()->items()[i];
     if (IsItemPinned(item)) {
       // The dragged item is temporarily moved to the end of the shelf if it is
       // ripped off by dragging. Ignore this case and continue to find the
       // correct separator index.
-      if (dragged_off_shelf_ && i == model()->item_count() - 1)
+      if (dragged_off_shelf_ &&
+          i == static_cast<size_t>(model()->item_count() - 1)) {
         continue;
+      }
 
       last_pinned_index = i;
       break;
@@ -1575,8 +1576,10 @@ void ShelfView::ContinueDrag(const ui::LocatedEvent& event) {
 }
 
 void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
-  if (visible_views_indices_.empty() ||
-      !IsItemPinned(model_->items()[visible_views_indices_.front()])) {
+  // In shelf party mode, it is possible that there is no pinned app visible on
+  // the shelf. In this case, directly set the primary axis value for the
+  // dragged view to be the first item.
+  if (AreAllPinnedAppsHidden()) {
     DCHECK(model_->in_shelf_party());
     if (shelf_->IsHorizontalAlignment()) {
       if (drag_view_->x() != app_icons_layout_offset_)
@@ -2743,9 +2746,7 @@ void ShelfView::UpdateAllPinnedItemsArePartyingLabel() {
 bool ShelfView::ShouldShowAllPinnedItemsArePartyingLabel() const {
   const bool should_show =
       base::FeatureList::IsEnabled(features::kShelfParty) &&
-      !model_->items().empty() && IsItemPinned(model_->items().front()) &&
-      (visible_views_indices_.empty() ||
-       !IsItemPinned(model_->items()[visible_views_indices_.front()]));
+      !model_->items().empty() && AreAllPinnedAppsHidden();
   DCHECK(!should_show || model_->in_shelf_party());
   return should_show;
 }
@@ -2771,6 +2772,16 @@ void ShelfView::RemoveGhostView() {
 void ShelfView::ResetActiveMenuModelRequest() {
   context_menu_callback_.Cancel();
   item_awaiting_response_ = ShelfID();
+}
+
+bool ShelfView::AreAllPinnedAppsHidden() const {
+  // Check the first two visible apps to see if there is any pinned app visible
+  // on the shelf. The second app is considered because the first app may be a
+  // dragged unpinned app.
+  const auto head = visible_views_indices_.cbegin();
+  return std::none_of(
+      head, head + std::min<size_t>(2u, visible_views_indices_.size()),
+      [this](size_t idx) { return IsItemPinned(model_->items()[idx]); });
 }
 
 BEGIN_METADATA(ShelfView, views::AccessiblePaneView)
