@@ -26,8 +26,11 @@ declare_args() {
 }
 
 declare_args() {
-  # Set to false to disable EXPENSIVE_DCHECK()s.
-  enable_expensive_dchecks = is_debug || dcheck_always_on
+  # Set to false to disable EXPENSIVE_DCHECK()s or to true to enable them in
+  # official builds. These are generally used for really useful DCHECKs that are
+  # too expensive to be enabled in user-facing official+DCHECK builds.
+  enable_expensive_dchecks =
+      is_debug || (dcheck_always_on && !is_official_build)
 }
 
 assert(!dcheck_is_configurable || (dcheck_always_on || is_debug),
