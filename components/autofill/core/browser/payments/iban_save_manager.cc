@@ -10,10 +10,7 @@
 
 namespace autofill {
 
-IBANSaveManager::IBANSaveManager(AutofillClient* client)
-    : client_(client),
-      iban_save_strike_database_(std::make_unique<IBANSaveStrikeDatabase>(
-          client->GetStrikeDatabase())) {}
+IBANSaveManager::IBANSaveManager(AutofillClient* client) : client_(client) {}
 
 IBANSaveManager::~IBANSaveManager() = default;
 
@@ -25,21 +22,29 @@ bool IBANSaveManager::AttemptToOfferIBANLocalSave(
 
   // If the max strikes limit has been reached, do not show the IBAN save
   // prompt.
-  show_save_prompt_ = !iban_save_strike_database_->ShouldBlockFeature(
+  bool show_save_prompt = !GetIBANSaveStrikeDatabase()->ShouldBlockFeature(
       base::UTF16ToUTF8(iban_import_candidate.value()));
 
   iban_save_candidate_ = iban_import_candidate;
-  // If `show_save_prompt_`'s value is false, desktop builds will still offer
+  // If `show_save_prompt`'s value is false, desktop builds will still offer
   // save in the omnibox without popping-up the bubble.
   client_->ConfirmSaveIBANLocally(
-      iban_save_candidate_, show_save_prompt_,
+      iban_save_candidate_, show_save_prompt,
       base::BindOnce(&IBANSaveManager::OnUserDidDecideOnLocalSave,
                      weak_ptr_factory_.GetWeakPtr()));
-  return show_save_prompt_;
+  return show_save_prompt;
 #else
   // IBAN save prompts do not currently exist on mobile.
   return false;
 #endif
+}
+
+IBANSaveStrikeDatabase* IBANSaveManager::GetIBANSaveStrikeDatabase() {
+  if (iban_save_strike_database_.get() == nullptr) {
+    iban_save_strike_database_ = std::make_unique<IBANSaveStrikeDatabase>(
+        IBANSaveStrikeDatabase(client_->GetStrikeDatabase()));
+  }
+  return iban_save_strike_database_.get();
 }
 
 void IBANSaveManager::OnUserDidDecideOnLocalSave(
@@ -56,14 +61,14 @@ void IBANSaveManager::OnUserDidDecideOnLocalSave(
     case AutofillClient::SaveIBANOfferUserDecision::kAccepted:
       // Clear all IBANSave strikes for this IBAN, so that if it's later removed
       // the strike count starts over with respect to re-saving it.
-      iban_save_strike_database_->ClearStrikes(
+      GetIBANSaveStrikeDatabase()->ClearStrikes(
           base::UTF16ToUTF8(iban_save_candidate_.value()));
       client_->GetPersonalDataManager()->OnAcceptedLocalIBANSave(
           iban_save_candidate_);
       break;
     case AutofillClient::SaveIBANOfferUserDecision::kIgnored:
     case AutofillClient::SaveIBANOfferUserDecision::kDeclined:
-      iban_save_strike_database_->AddStrike(
+      GetIBANSaveStrikeDatabase()->AddStrike(
           base::UTF16ToUTF8(iban_save_candidate_.value()));
       break;
   }

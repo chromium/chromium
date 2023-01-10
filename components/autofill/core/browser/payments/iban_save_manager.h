@@ -39,6 +39,9 @@ class IBANSaveManager {
   }
 
  private:
+  // Returns the IBANSaveStrikeDatabase for `client_`;
+  IBANSaveStrikeDatabase* GetIBANSaveStrikeDatabase();
+
   // Called once the user makes a decision with respect to the local IBAN
   // offer-to-save-prompt. `nickname` is the nickname for the IBAN, which should
   // only be provided in the kAccepted case if the user entered a nickname.
@@ -46,15 +49,9 @@ class IBANSaveManager {
       AutofillClient::SaveIBANOfferUserDecision user_decision,
       const absl::optional<std::u16string>& nickname = absl::nullopt);
 
-  // Returns the IBANSaveStrikeDatabase for `client_`.
-  IBANSaveStrikeDatabase* GetIBANSaveStrikeDatabase();
-
   // The IBAN to be saved if local IBAN save is accepted. It will be set if
   // imported IBAN is not empty.
   IBAN iban_save_candidate_;
-
-  // True if the offer-to-save bubble should pop-up, false if not.
-  bool show_save_prompt_ = false;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;
