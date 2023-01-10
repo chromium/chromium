@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CacheTransparency.MarkedUnusable" units="list index"
-    expires_after="2023-05-07">
+    expires_after="2023-07-09">
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CacheTransparency.MismatchedChecksums"
-    units="list index" expires_after="2023-05-07">
+    units="list index" expires_after="2023-07-09">
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CacheTransparency.URLMatched" units="list index"
-    expires_after="2023-05-07">
+    expires_after="2023-07-09">
   <owner>nidhijaju@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
