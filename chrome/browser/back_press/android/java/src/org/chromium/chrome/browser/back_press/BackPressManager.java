@@ -45,7 +45,7 @@ public class BackPressManager implements Destroyable {
             put(Type.TAB_MODAL_HANDLER, 9);
             put(Type.TAB_SWITCHER_TO_BROWSING, 10);
             put(Type.CLOSE_WATCHER, 11);
-            put(Type.TOOLBAR_TAB_CONTROLLER, 12);
+            put(Type.TAB_HISTORY, 12);
             put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13);
             put(Type.SHOW_READING_LIST, 14);
             put(Type.MINIMIZE_APP_AND_CLOSE_TAB, 15);

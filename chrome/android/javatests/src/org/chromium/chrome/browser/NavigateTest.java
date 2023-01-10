@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import android.content.pm.ActivityInfo;
@@ -40,6 +45,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -439,6 +445,40 @@ public class NavigateTest {
     }
 
     /**
+     * Test navigating back.
+     */
+    @Test
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @MediumTest
+    @Feature({"Navigation"})
+    public void testNavigateBack() throws Exception {
+        final String[] urls = {mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
+                mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
+                mTestServer.getURL("/chrome/test/data/android/navigate/three.html")};
+
+        for (String url : urls) {
+            navigateAndObserve(url);
+        }
+
+        final int repeats = 3;
+        final ToolbarManager toolbarManager = mActivityTestRule.getActivity().getToolbarManager();
+
+        for (int i = 0; i < repeats; i++) {
+            Assert.assertNull("Back button is invisible in phone toolbar",
+                    mActivityTestRule.getActivity().findViewById(R.id.back_button));
+            Assert.assertEquals("Tab should be able to be navigated back", Boolean.TRUE,
+                    toolbarManager.getHandleBackPressChangedSupplier().get());
+            Assert.assertTrue("Tab has been navigated back",
+                    TestThreadUtils.runOnUiThreadBlocking(toolbarManager::back));
+            UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        }
+        Assert.assertEquals("Tab should be unable to be navigated back", Boolean.FALSE,
+                toolbarManager.getHandleBackPressChangedSupplier().get());
+        Assert.assertNull("Back button is invisible in phone toolbar",
+                mActivityTestRule.getActivity().findViewById(R.id.back_button));
+    }
+
+    /**
      * Test back and forward buttons.
      */
     @Test
@@ -457,7 +497,11 @@ public class NavigateTest {
         }
 
         final int repeats = 3;
+        final ToolbarManager toolbarManager = mActivityTestRule.getActivity().getToolbarManager();
         for (int i = 0; i < repeats; i++) {
+            onView(withId(R.id.back_button)).check(matches(isEnabled()));
+            Assert.assertEquals("Tab should be able to be navigated back", Boolean.TRUE,
+                    toolbarManager.getHandleBackPressChangedSupplier().get());
             TouchCommon.singleClickView(
                     mActivityTestRule.getActivity().findViewById(R.id.back_button));
             UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
@@ -506,6 +550,18 @@ public class NavigateTest {
                     ChromeTabUtils.getUrlStringOnUiThread(
                             mActivityTestRule.getActivity().getActivityTab()));
         }
+
+        for (int i = 0; i < repeats; i++) {
+            onView(withId(R.id.back_button)).check(matches(isEnabled()));
+            Assert.assertEquals("Tab should be able to be navigated back", Boolean.TRUE,
+                    toolbarManager.getHandleBackPressChangedSupplier().get());
+            TouchCommon.singleClickView(
+                    mActivityTestRule.getActivity().findViewById(R.id.back_button));
+            UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        }
+        Assert.assertEquals("Tab should be unable to be navigated back", Boolean.FALSE,
+                toolbarManager.getHandleBackPressChangedSupplier().get());
+        onView(withId(R.id.back_button)).check(matches(Matchers.not(isEnabled())));
     }
 
     @Test

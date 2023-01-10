@@ -128,7 +128,9 @@ public final class ReturnToChromeUtil {
         @Override
         public void handleBackPress() {
             Tab tab = mActivityTabProvider.get();
-            assert tab != null && !tab.canGoBack();
+            assert tab != null
+                    && !tab.canGoBack()
+                : String.format("tab %s; back press state %s", tab, tab != null && tab.canGoBack());
             mOnBackPressedCallback.run();
         }
 
