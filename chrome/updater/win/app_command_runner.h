@@ -47,18 +47,6 @@ class AppCommandRunner {
   HRESULT Run(const std::vector<std::wstring>& substitutions,
               base::Process& process) const;
 
-  // Formats a single `parameter` using
-  // `base::internal::DoReplaceStringPlaceholders`. Any placeholder `%N` in
-  // `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
-  // be escaped with a `%`.
-  //
-  // Returns `absl::nullopt` if:
-  // * a placeholder %N is encountered where N > substitutions.size().
-  // * a literal `%` is not escaped with a `%`.
-  static absl::optional<std::wstring> FormatParameter(
-      const std::wstring& parameter,
-      const std::vector<std::wstring>& substitutions);
-
  private:
   // Starts a process with separate `executable` and `parameters` components.
   // `executable` needs to be an absolute path.
@@ -75,6 +63,18 @@ class AppCommandRunner {
       std::wstring command_format,
       base::FilePath& executable,
       std::vector<std::wstring>& parameters);
+
+  // Formats a single `parameter` using
+  // `base::internal::DoReplaceStringPlaceholders`. Any placeholder `%N` in
+  // `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
+  // be escaped with a `%`.
+  //
+  // Returns `absl::nullopt` if:
+  // * a placeholder %N is encountered where N > substitutions.size().
+  // * a literal `%` is not escaped with a `%`.
+  static absl::optional<std::wstring> FormatParameter(
+      const std::wstring& parameter,
+      const std::vector<std::wstring>& substitutions);
 
   // Formats a vector of `parameters` using the provided `substitutions` and
   // returns a resultant command line. Any placeholder `%N` in `parameters` is
@@ -106,6 +106,7 @@ class AppCommandRunner {
                            GetAppCommandFormatComponents_InvalidPaths);
   FRIEND_TEST_ALL_PREFIXES(AppCommandRunnerTest,
                            GetAppCommandFormatComponents_ProgramFilesPaths);
+  FRIEND_TEST_ALL_PREFIXES(AppCommandRunnerTest, FormatParameter);
   FRIEND_TEST_ALL_PREFIXES(
       AppCommandRunnerTest,
       GetAppCommandFormatComponents_And_FormatAppCommandLine);

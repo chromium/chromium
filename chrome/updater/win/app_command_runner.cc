@@ -196,17 +196,6 @@ HRESULT AppCommandRunner::Run(const std::vector<std::wstring>& substitutions,
 }
 
 // static
-absl::optional<std::wstring> AppCommandRunner::FormatParameter(
-    const std::wstring& parameter,
-    const std::vector<std::wstring>& substitutions) {
-  return base::internal::DoReplaceStringPlaceholders(
-      /*format_string*/ parameter, /*subst*/ substitutions,
-      /*placeholder_prefix*/ L'%',
-      /*should_escape_multiple_placeholder_prefixes*/ false,
-      /*is_strict_mode*/ true, /*offsets*/ nullptr);
-}
-
-// static
 HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
                                        const std::wstring& parameters,
                                        base::Process& process) {
@@ -272,6 +261,17 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
     parameters.push_back(argv.get()[i]);
 
   return S_OK;
+}
+
+// static
+absl::optional<std::wstring> AppCommandRunner::FormatParameter(
+    const std::wstring& parameter,
+    const std::vector<std::wstring>& substitutions) {
+  return base::internal::DoReplaceStringPlaceholders(
+      /*format_string*/ parameter, /*subst*/ substitutions,
+      /*placeholder_prefix*/ L'%',
+      /*should_escape_multiple_placeholder_prefixes*/ false,
+      /*is_strict_mode*/ true, /*offsets*/ nullptr);
 }
 
 // static
