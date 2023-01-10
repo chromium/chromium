@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -24,6 +25,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/stop_source.h"
@@ -1204,6 +1206,43 @@ TEST_F(SyncServiceImplTest,
   InitializeForFirstSync();
   EXPECT_CALL(*sync_invalidations_service(), StopListeningPermanently());
   service()->StopAndClear();
+}
+
+TEST_F(SyncServiceImplTest, ShouldCallStopUponResetEngineIfAlreadyShutDown) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
+
+  // The intention here is to stop sync without clearing metadata by getting to
+  // a sync paused state by simulating a credential rejection error.
+
+  // Sign in and enable sync.
+  SignIn();
+  CreateService(SyncServiceImpl::MANUAL_START);
+  InitializeForNthSync();
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+
+  // At this point, the real SyncEngine would try to connect to the server, fail
+  // (because it has no access token), and eventually call
+  // OnConnectionStatusChange(CONNECTION_AUTH_ERROR). Since our fake SyncEngine
+  // doesn't do any of this, call that explicitly here.
+  service()->OnConnectionStatusChange(CONNECTION_AUTH_ERROR);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate the credentials getting locally rejected by the client by setting
+  // the refresh token to a special invalid value.
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+
+  // The Sync engine should have been shut down.
+  ASSERT_FALSE(service()->IsEngineInitialized());
+  ASSERT_EQ(SyncService::TransportState::PAUSED,
+            service()->GetTransportState());
+
+  EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  // Clearing metadata should work even if the engine is not running.
+  service()->StopAndClear();
+  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 }  // namespace

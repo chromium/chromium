@@ -49,7 +49,8 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   // before or after the model has started/loaded.
   void SimulateModelError(const ModelError& error);
 
-  // The number of times OnSyncStopping() was called with CLEAR_METADATA.
+  // The number of times OnSyncStopping() was called with CLEAR_METADATA, and
+  // ClearMetadataWhileStopped() was called.
   int clear_metadata_call_count() const;
 
   // ModelTypeControllerDelegate overrides
@@ -61,6 +62,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override;
+  void ClearMetadataWhileStopped() override;
 
   base::WeakPtr<ModelTypeControllerDelegate> GetWeakPtr();
 

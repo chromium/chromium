@@ -8,7 +8,9 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/test/fake_data_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -494,6 +496,67 @@ TEST_F(SyncModelLoadManagerTest,
   EXPECT_EQ(1, GetController(APPS)
                    ->model(SyncMode::kTransportOnly)
                    ->clear_metadata_call_count());
+}
+
+TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet types;
+  types.Put(BOOKMARKS);
+
+  // Bring the type to a stopped state.
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
+  model_load_manager.Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
+
+  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  // Clearing metadata should work even though the type is already stopped.
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+}
+
+TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
+
+  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+
+  // Clearing metadata should work even though the type is not running.
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+}
+
+TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfFailed) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _)).Times(2);
+
+  // Bring the type to a failed state.
+  GetController(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Test error"));
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet types;
+  types.Put(BOOKMARKS);
+
+  model_load_manager.Initialize(/*preferred_types_without_errors=*/types,
+                                /*preferred_types=*/types,
+                                BuildConfigureContext());
+  ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
+
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  model_load_manager.Stop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  // Clearing metadata should work even though the type has already failed.
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 }  // namespace syncer

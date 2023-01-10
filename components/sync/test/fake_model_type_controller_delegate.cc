@@ -114,4 +114,8 @@ FakeModelTypeControllerDelegate::MakeActivationResponse() const {
   return response;
 }
 
+void FakeModelTypeControllerDelegate::ClearMetadataWhileStopped() {
+  ++clear_metadata_call_count_;
+}
+
 }  // namespace syncer
