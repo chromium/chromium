@@ -245,6 +245,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
       scaledFontForFont:[UIFont
                             preferredFontForTextStyle:UIFontTextStyleHeadline]
        maximumPointSize:kButtonMaxFontSize];
+  self.infobarButton.titleLabel.adjustsFontForContentSizeCategory = YES;
   self.infobarButton.titleLabel.numberOfLines = 0;
   self.infobarButton.titleLabel.textAlignment = NSTextAlignmentCenter;
   [self.infobarButton addTarget:self
