@@ -1,0 +1,8 @@
+include_rules = [
+  # Guarded by IS_CHROMEOS_ASH.
+  "+chrome/browser/ash/crosapi/keystore_service_ash.h",
+  "+chrome/browser/ash/crosapi/keystore_service_factory_ash.h",
+  "+chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h",
+  "+chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h",
+  "+chrome/browser/ash/profiles/profile_helper.h",
+]

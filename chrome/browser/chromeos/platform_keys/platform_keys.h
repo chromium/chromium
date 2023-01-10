@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PLATFORM_KEYS_PLATFORM_KEYS_H_
-#define CHROME_BROWSER_PLATFORM_KEYS_PLATFORM_KEYS_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PLATFORM_KEYS_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PLATFORM_KEYS_H_
 
 #include <stdint.h>
 
@@ -200,4 +200,4 @@ struct ClientCertificateRequest {
 
 }  // namespace chromeos::platform_keys
 
-#endif  // CHROME_BROWSER_PLATFORM_KEYS_PLATFORM_KEYS_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PLATFORM_KEYS_H_

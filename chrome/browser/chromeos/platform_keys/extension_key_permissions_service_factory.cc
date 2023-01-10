@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/platform_keys/extension_key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 
 #include <memory>
 
 #include "base/logging.h"
-#include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
+#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system.h"

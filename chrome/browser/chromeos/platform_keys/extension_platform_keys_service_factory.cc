@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/platform_keys/extension_platform_keys_service_factory.h"
+#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 
 #include <memory>
 #include <utility>
@@ -14,7 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"

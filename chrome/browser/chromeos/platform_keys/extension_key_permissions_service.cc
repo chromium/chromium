@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/platform_keys/extension_key_permissions_service.h"
+#include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 
 #include <stdint.h>
 
@@ -18,7 +18,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"

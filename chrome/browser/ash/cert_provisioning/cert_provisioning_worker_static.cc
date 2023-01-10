@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "content/public/browser/browser_context.h"

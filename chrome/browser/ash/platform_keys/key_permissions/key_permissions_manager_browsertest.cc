@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_test_util.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"

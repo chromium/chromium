@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

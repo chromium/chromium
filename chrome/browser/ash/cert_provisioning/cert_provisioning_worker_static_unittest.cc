@@ -34,7 +34,7 @@
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

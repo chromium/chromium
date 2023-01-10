@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"

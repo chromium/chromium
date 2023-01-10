@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
-#define CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 
@@ -219,4 +219,4 @@ class ExtensionKeyPermissionsService {
 
 }  // namespace chromeos::platform_keys
 
-#endif  // CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_

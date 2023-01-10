@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_worker.h"
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
