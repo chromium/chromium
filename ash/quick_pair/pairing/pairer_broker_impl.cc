@@ -159,16 +159,15 @@ void PairerBrokerImpl::OnHandshakeComplete(
 
   if (!did_handshake_previously_complete_successfully_map_
           [device->ble_address()]) {
-    // Currently the only observer is |QuickPairMetricsLogger|. To keep metrics
-    // consistent we should only call the observer the first time a handshake
-    // completes. If another observer is added, this logic should be
-    // reevaluated.
-    int num_observers = 0;
+    // Even if an observer does not implement this function in particular, it
+    // will use the default implementation in the PairerBroker. The number
+    // of observers is based on the number that call `AddObserver`, not by
+    // the number that implement and override this function in their
+    // derived class.
     for (auto& observer : observers_) {
-      num_observers++;
       observer.OnHandshakeComplete(device);
     }
-    DCHECK(num_observers == 1);
+
     did_handshake_previously_complete_successfully_map_.insert_or_assign(
         device->ble_address(), true);
   }
