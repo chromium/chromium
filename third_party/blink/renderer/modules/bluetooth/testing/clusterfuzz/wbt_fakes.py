@@ -33,7 +33,6 @@ ADVERTISED_SERVICES = [
     'heart_rate',
     'human_interface_device',
     'device_information',
-    'a_device_name_that_is_longer_than_29_bytes_but_shorter_than_248_bytes',
     BLOCKLISTED_UUID,
     CONNECTION_ERROR_UUIDS[0],
     DISCONNECTION_UUID,
@@ -48,7 +47,6 @@ SERVICES = [
     'generic_access',
     'heart_rate',
     'human_interface_device',
-    'a_device_name_that_is_longer_than_29_bytes_but_shorter_than_248_bytes',
     BLOCKLISTED_UUID,
     DISCONNECTION_UUID,
     GATT_ERROR_UUID,
@@ -74,12 +72,9 @@ HEART_RATE_SERVICE = ('heart_rate',
 
 # List of available fake adapters.
 ALL_ADAPTERS = [
-    'NotPresentAdapter',
-    'NotPoweredAdapter',
     'EmptyAdapter',
     'FailStartDiscoveryAdapter',
     'GlucoseHeartRateAdapter',
-    'UnicodeDeviceAdapter',
     'MissingServiceHeartRateAdapter',
     'MissingCharacteristicHeartRateAdapter',
     'HeartRateAdapter',
@@ -89,7 +84,6 @@ ALL_ADAPTERS = [
     'FailingConnectionsAdapter',
     'FailingGATTOperationsAdapter',
     'DelayedServicesDiscoveryAdapter',
-    'DeviceNameLongerThan29BytesAdapter',
 ]
 
 # List of fake adapters that include devices.
@@ -136,12 +130,6 @@ ADAPTERS_WITH_DEVICES = [
     (
         'DelayedServicesDiscoveryAdapter',
         ['generic_access', 'heart_rate'],
-    ),
-    (
-        'DeviceNameLongerThan29BytesAdapter',
-        [
-            'a_device_name_that_is_longer_than_29_bytes_but_shorter_than_248_bytes'
-        ],
     ),
 ]
 

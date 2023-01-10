@@ -200,6 +200,10 @@ namespace content {
 scoped_refptr<BluetoothAdapter>
 WebTestBluetoothAdapterProvider::GetBluetoothAdapter(
     const std::string& fake_adapter_name) {
+  // When modifying the set of supported test adapters this information must be
+  // kept in sync with
+  // third_party/blink/renderer/modules/bluetooth/testing/clusterfuzz/wbt_fakes.py
+  // so that invalid test cases are not generated.
   if (fake_adapter_name == "BaseAdapter")
     return GetBaseAdapter();
   if (fake_adapter_name == "ScanFilterCheckingAdapter")
@@ -277,10 +281,6 @@ WebTestBluetoothAdapterProvider::GetBluetoothAdapter(
     return GetDelayedServicesDiscoveryAdapter();
   if (fake_adapter_name.empty())
     return nullptr;
-  // New adapters that can be used when fuzzing the Web Bluetooth API
-  // should also be added to
-  // src/third_party/WebKit/Source/modules/
-  //   bluetooth/testing/clusterfuzz/constraints.py.
 
   NOTREACHED() << fake_adapter_name;
   return nullptr;
