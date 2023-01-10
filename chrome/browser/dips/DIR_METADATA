@@ -1,4 +1,4 @@
 monorail: {
-  component: "Internals>Network>Cookies"
+  component: "Privacy>NavTracking"
 }
 team_email: "dc-komics@google.com"
