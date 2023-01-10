@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
-import {GifSubcategoryData, TenorGifResults} from './types.js';
+import {EmojiVariants, GifSubcategoryData, TenorGifResults, VisualContent} from './types.js';
 
 /** @interface */
 export interface EmojiPickerApiProxy {
@@ -19,6 +19,8 @@ export interface EmojiPickerApiProxy {
   getFeaturedGifs(pos?: string): Promise<{featured: TenorGifResults}>;
 
   searchGifs(query: string, pos?: string): Promise<{gifs: TenorGifResults}>;
+
+  convertTenorGifsToEmoji(gifs: TenorGifResults): EmojiVariants[];
 }
 
 // https://developers.google.com/tenor/guides/response-objects-and-errors#category-object
@@ -115,6 +117,16 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     return {
       gifs: this.formatGifResults(gifs),
     };
+  }
+
+  convertTenorGifsToEmoji(gifs: TenorGifResults): EmojiVariants[] {
+    return gifs.results.map((visualContent: VisualContent) => ({
+                              base: {
+                                visualContent,
+                                name: visualContent.contentDescription,
+                              },
+                              alternates: [],
+                            }));
   }
 
   static getInstance(): EmojiPickerApiProxy {

@@ -23,7 +23,7 @@ import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData, VisualContent} from './types.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData} from './types.js';
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
@@ -293,33 +293,36 @@ export class EmojiPicker extends PolymerElement {
     );
 
     if (this.gifSupport) {
-      // Fetch GIF data
-      prevFetchPromise = prevFetchPromise.then(async () => {
-        const {categories} = await this.apiProxy.getCategories();
-        const categoryTabs = {
-          ...CATEGORY_TABS,
-          gif: [{name: '#TRENDING'}, ...categories],
-        };
-        this.allCategoryTabs = gifCategoryTabs(categoryTabs);
+      const categoriesFetchPromise =
+          prevFetchPromise.then(() => this.apiProxy.getCategories());
 
-        const {featured} = await this.apiProxy.getFeaturedGifs();
-        const trendingGifs = [{
-          group: '#TRENDING',
-          category: CategoryEnum.GIF,
-          emoji:
-              featured.results.map((visualContent: VisualContent) => ({
-                                     base: {
-                                       visualContent,
-                                       name: visualContent.contentDescription,
-                                     },
-                                     alternates: [],
-                                   })),
-        }];
+      const categoriesRenderPromise =
+          Promise.all([prevRenderPromise, categoriesFetchPromise])
+              .then((values) => {
+                const {categories} = values[1];
+                const categoryTabs = {
+                  ...CATEGORY_TABS,
+                  gif: [{name: constants.TRENDING}, ...categories],
+                };
+                this.allCategoryTabs = gifCategoryTabs(categoryTabs);
+              });
 
-        this.gifDataInitialised = true;
+      const featuredGifFetchPromise =
+          categoriesFetchPromise.then(() => this.apiProxy.getFeaturedGifs());
 
-        this.updateCategoryData(trendingGifs, CategoryEnum.GIF);
-      });
+      Promise.all([categoriesRenderPromise, featuredGifFetchPromise])
+          .then((values) => {
+            const {featured} = values[1];
+            const trendingGifs = [{
+              group: constants.TRENDING,
+              category: CategoryEnum.GIF,
+              emoji: this.apiProxy.convertTenorGifsToEmoji(featured),
+            }];
+
+            this.gifDataInitialised = true;
+
+            this.updateCategoryData(trendingGifs, CategoryEnum.GIF);
+          });
     }
   }
 

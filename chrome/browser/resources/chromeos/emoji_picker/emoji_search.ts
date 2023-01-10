@@ -10,6 +10,7 @@ import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_fie
 import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
 import Fuse from './fuse.js';
 import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
@@ -38,6 +39,7 @@ export class EmojiSearch extends PolymerElement {
       lazyIndexing: {type: Boolean, value: true},
       searchResults: {type: Array},
       needIndexing: {type: Boolean, value: false},
+      gifSupport: {type: Boolean, value: false},
     };
   }
   categoriesData: EmojiGroupData;
@@ -45,6 +47,7 @@ export class EmojiSearch extends PolymerElement {
   lazyIndexing: boolean;
   private searchResults: EmojiGroupData;
   private needIndexing: boolean;
+  private gifSupport: boolean;
   // TODO(b/235419647): Update the config to use extended search.
   private fuseConfig: Fuse.IFuseOptions<EmojiVariants> = {
     threshold: 0.0,        // Exact match only.
@@ -74,7 +77,12 @@ export class EmojiSearch extends PolymerElement {
   }
 
   private onSearch(newSearch: string): void {
-    this.searchResults = this.computeSearchResults(newSearch);
+    this.set('searchResults', this.computeLocalSearchResults(newSearch));
+    if (this.gifSupport) {
+      this.computeGifSearchResults(newSearch).then((searchResults) => {
+        this.push('searchResults', ...searchResults);
+      });
+    }
   }
 
   /**
@@ -200,7 +208,7 @@ export class EmojiSearch extends PolymerElement {
    * Computes search results for a keyword.
    *
    */
-  computeSearchResults(search: string|null): EmojiGroupData {
+  private computeLocalSearchResults(search: string): EmojiGroupData {
     if (!search) {
       return [];
     }
@@ -232,6 +240,24 @@ export class EmojiSearch extends PolymerElement {
       }
     }
 
+    return searchResults;
+  }
+
+  private async computeGifSearchResults(search: string):
+      Promise<EmojiGroupData> {
+    if (!search) {
+      return [];
+    }
+
+    const searchResults: EmojiGroupData = [];
+    const apiProxy = EmojiPickerApiProxyImpl.getInstance();
+    const {gifs} = await apiProxy.searchGifs(search);
+    searchResults.push({
+      'category': CategoryEnum.GIF,
+      'group': '',
+      'emoji': apiProxy.convertTenorGifsToEmoji(gifs),
+      'searchOnly': false,
+    });
     return searchResults;
   }
 
