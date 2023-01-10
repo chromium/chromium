@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,14 +29,12 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -69,8 +66,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherV
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.util.FirstDrawDetector;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -189,24 +184,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private boolean mShowTabsInMruOrder;
 
-    private static class FirstMeaningfulPaintRecorder {
-        private final long mActivityCreationTimeMs;
-
-        private FirstMeaningfulPaintRecorder(long activityCreationTimeMs) {
-            mActivityCreationTimeMs = activityCreationTimeMs;
-        }
-
-        private void record(int numOfThumbnails) {
-            assert numOfThumbnails >= 0;
-            long elapsed = SystemClock.elapsedRealtime() - mActivityCreationTimeMs;
-            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
-                    ()
-                            -> ReturnToChromeUtil.recordTimeToGTSFirstMeaningfulPaint(
-                                    elapsed, numOfThumbnails));
-        }
-    }
-    private FirstMeaningfulPaintRecorder mFirstMeaningfulPaintRecorder;
-    private boolean mRegisteredFirstMeaningfulPaintRecorder;
     private @TabListCoordinator.TabListMode int mMode;
     private Context mContext;
     private SnackbarManager mSnackbarManager;
@@ -763,34 +740,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
     }
 
-    void registerFirstMeaningfulPaintRecorder() {
-        ThreadUtils.assertOnUiThread();
-
-        if (mFirstMeaningfulPaintRecorder == null) return;
-        if (mRegisteredFirstMeaningfulPaintRecorder) return;
-        mRegisteredFirstMeaningfulPaintRecorder = true;
-
-        boolean hasTabs = getTabCount() > 0;
-
-        if (!hasTabs) {
-            FirstDrawDetector.waitForFirstDraw(
-                    mContainerView, this::notifyOnFirstMeaningfulPaintNoTab);
-        } else {
-            mTabContentManager.addOnLastThumbnailListener(this::notifyOnFirstMeaningfulPaint);
-        }
-    }
-
-    private void notifyOnFirstMeaningfulPaintNoTab() {
-        notifyOnFirstMeaningfulPaint(0);
-    }
-
-    private void notifyOnFirstMeaningfulPaint(int numOfThumbnails) {
-        ThreadUtils.assertOnUiThread();
-
-        mFirstMeaningfulPaintRecorder.record(numOfThumbnails);
-        mFirstMeaningfulPaintRecorder = null;
-    }
-
     boolean prepareTabSwitcherView() {
         mHandler.removeCallbacks(mSoftClearTabListRunnable);
         mHandler.removeCallbacks(mClearTabListRunnable);
@@ -941,11 +890,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     @Override
     public ObservableSupplier<Boolean> isDialogVisibleSupplier() {
         return mIsDialogVisibleSupplier;
-    }
-
-    @Override
-    public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
-        mFirstMeaningfulPaintRecorder = new FirstMeaningfulPaintRecorder(activityCreateTimeMs);
     }
 
     @Override

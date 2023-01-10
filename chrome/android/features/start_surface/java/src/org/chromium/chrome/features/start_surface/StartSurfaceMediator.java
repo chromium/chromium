@@ -898,10 +898,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return mBackPressChangedSupplier;
     }
 
-    void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
-        mController.enableRecordingFirstMeaningfulPaint(activityCreateTimeMs);
-    }
-
     void onOverviewShownAtLaunch(long activityCreationTimeMs) {
         mController.onOverviewShownAtLaunch(activityCreationTimeMs);
         if (mPropertyModel != null) {

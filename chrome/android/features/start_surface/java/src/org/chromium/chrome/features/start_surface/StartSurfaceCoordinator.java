@@ -513,11 +513,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
-        mStartSurfaceMediator.enableRecordingFirstMeaningfulPaint(activityCreateTimeMs);
-    }
-
-    @Override
     public int getStartSurfaceState() {
         return mStartSurfaceMediator.getStartSurfaceState();
     }

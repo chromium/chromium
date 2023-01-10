@@ -291,9 +291,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {}
-
-    @Override
     public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
         if (mTabTitleAvailableTime == null) return;
 

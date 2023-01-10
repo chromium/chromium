@@ -126,12 +126,6 @@ public interface TabSwitcher {
         boolean onBackPressed(boolean isOnHomepage);
 
         /**
-         * Enable recording the first meaningful paint event of the Grid Tab Switcher.
-         * @param activityCreateTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
-         */
-        void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs);
-
-        /**
          * Called after the Chrome activity is launched.
          * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
          */

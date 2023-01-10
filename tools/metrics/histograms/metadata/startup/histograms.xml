@@ -374,57 +374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.ThumbnailFetchedForGTSFirstMeaningfulPaint"
-    units="thumbnails" expires_after="2020-08-02">
-  <owner>yusufo@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Android: The number of thumbnails fetched for the first meaningful paint of
-    the Grid Tab Switcher. First meaningful paint is defined as having all the
-    thumbnails shown. This is recorded at most once per activity lifecycle. This
-    is gated by feature &quot;TabSwitcherOnReturn&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint" units="ms"
-    expires_after="2021-12-26">
-  <owner>yusufo@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Android: The elapsed time from the activity creation point to the first
-    meaningful paint of the Grid Tab Switcher. First meaningful paint is defined
-    as having all the thumbnails shown. This is recorded at most once per
-    activity lifecycle. This is gated by feature
-    &quot;TabSwitcherOnReturn&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Cold" units="ms"
-    expires_after="2023-06-25">
-  <owner>yusufo@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Android: The elapsed time from the activity creation point to the first
-    meaningful paint of the Grid Tab Switcher. First meaningful paint is defined
-    as having all the thumbnails shown. This is recorded at most once per
-    activity lifecycle. This is gated by feature
-    &quot;TabSwitcherOnReturn&quot;. It's only recorded on cold startup.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Warm" units="ms"
-    expires_after="2021-12-26">
-  <owner>yusufo@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Android: The elapsed time from the activity creation point to the first
-    meaningful paint of the Grid Tab Switcher. First meaningful paint is defined
-    as having all the thumbnails shown. This is recorded at most once per
-    activity lifecycle. This is gated by feature
-    &quot;TabSwitcherOnReturn&quot;. It's only recorded on warm startup.
-  </summary>
-</histogram>
-
 <histogram name="Startup.BlockForCrashpadHandlerStartupTime" units="ms"
     expires_after="M85">
   <owner>mark@chromium.org</owner>

@@ -2185,19 +2185,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GridTabSwitcher.MaxFrameInterval"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GTSCardCount" separator=".">
-  <suffix name="0thumbnails" label="0 thumbnails"/>
-  <suffix name="1~2thumbnails" label="1 ~ 2 thumbnails"/>
-  <suffix name="3~5thumbnails" label="3 ~ 5 thumbnails"/>
-  <suffix name="6~10thumbnails" label="6 ~ 10 thumbnails"/>
-  <suffix name="11~20thumbnails" label="11 ~ 20 thumbnails"/>
-  <suffix name="20+thumbnails" label="20+ thumbnails"/>
-  <affected-histogram
-      name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Cold"/>
-  <affected-histogram
-      name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Warm"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GwpAsanBackingAllocator" separator=".">
   <suffix name="Malloc" label="From malloc"/>
   <suffix name="PartitionAlloc" label="From PartitionAlloc"/>

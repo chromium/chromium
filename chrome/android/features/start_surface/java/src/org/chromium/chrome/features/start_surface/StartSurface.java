@@ -196,12 +196,6 @@ public interface StartSurface {
     boolean onBackPressed();
 
     /**
-     * Enable recording the first meaningful paint event of StartSurface.
-     * @param activityCreateTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
-     */
-    void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs);
-
-    /**
      * @return The current {@link StartSurfaceState}.
      */
     @StartSurfaceState

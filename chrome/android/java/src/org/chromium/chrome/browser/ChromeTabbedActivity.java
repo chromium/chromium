@@ -898,13 +898,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // create start surface.
         createTabSwitcherOrStartSurface(compositorViewHolder, containerView);
-        if (isStartSurfaceRefactorEnabled() && mTabSwitcherSupplier.hasValue()) {
-            mTabSwitcherSupplier.get().getController().enableRecordingFirstMeaningfulPaint(
-                    getOnCreateTimestampMs());
-        } else if (mStartSurfaceSupplier.hasValue()) {
-            mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(
-                    getOnCreateTimestampMs());
-        }
         RecordHistogram.recordTimesHistogram(
                 TAB_SWITCHER_CREATION_TIME, SystemClock.uptimeMillis() - startTimeMs);
         return containerView;
@@ -1231,13 +1224,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
             }
 
-            if (isStartSurfaceRefactorEnabled() && mTabSwitcherSupplier.hasValue()) {
-                mTabSwitcherSupplier.get().getController().enableRecordingFirstMeaningfulPaint(
-                        getOnCreateTimestampMs());
-            } else if (mStartSurfaceSupplier.hasValue()) {
-                mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(
-                        getOnCreateTimestampMs());
-            }
             mOverviewShownOnStart = true;
             // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
             // be the first thing shown after startup.

@@ -676,7 +676,6 @@ public class TabSwitcherCoordinator
     @Override
     public boolean resetWithTabs(
             @Nullable List<PseudoTab> tabs, boolean quickMode, boolean mruMode) {
-        mMediator.registerFirstMeaningfulPaintRecorder();
         // Invalidate price welcome message for every reset so that the stale message won't be
         // restored by mistake (e.g. from tabClosureUndone in TabSwitcherMediator).
         if (mPriceMessageService != null) {
