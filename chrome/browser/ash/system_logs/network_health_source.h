@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

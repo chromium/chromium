@@ -26,6 +26,7 @@ source_set("telemetry_extension") {
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
   ]
 }
 
@@ -47,7 +48,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
-    "//chromeos/services/network_health/public/mojom:mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//testing/gmock",
     "//testing/gtest",
   ]

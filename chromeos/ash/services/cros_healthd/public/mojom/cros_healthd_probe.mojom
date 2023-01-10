@@ -11,7 +11,7 @@
 module ash.cros_healthd.mojom;
 
 import "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom";
-import "chromeos/services/network_health/public/mojom/network_health.mojom";
+import "chromeos/services/network_health/public/mojom/network_health_types.mojom";
 
 // An enumeration of CPU architectures.
 //

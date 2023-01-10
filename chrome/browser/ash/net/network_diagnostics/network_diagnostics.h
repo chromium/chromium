@@ -37,7 +37,7 @@ class NetworkDiagnostics
           chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
           receiver);
 
-  // mojom::NetworkDiagnostics
+  // chromeos::network_diagnostics::mojom::NetworkDiagnostics
   void GetResult(const chromeos::network_diagnostics::mojom::RoutineType type,
                  GetResultCallback callback) override;
   void GetAllResults(GetAllResultsCallback callback) override;

@@ -1,4 +1,4 @@
 include_rules = [
-  "+chromeos/services/network_health",
+  "+chromeos/services/network_health/public",
   "+chromeos/strings/grit/chromeos_strings.h",
 ]

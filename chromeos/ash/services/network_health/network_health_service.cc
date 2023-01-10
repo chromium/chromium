@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_health/network_health_service.h"
+#include "chromeos/ash/services/network_health/network_health_service.h"
 
 #include <cstdint>
 #include <cstdlib>
@@ -13,22 +13,21 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/services/network_health/network_health_constants.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "chromeos/services/network_health/network_health_constants.h"
-#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
-namespace chromeos::network_health {
+namespace ash::network_health {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojo_service_manager {
-using ::ash::mojo_service_manager::GetServiceManagerProxy;
-using ::ash::mojo_service_manager::IsServiceManagerBound;
-}  // namespace mojo_service_manager
+namespace mojom = ::chromeos::network_health::mojom;
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace network_config = ::chromeos::network_config;
 
 constexpr mojom::NetworkState DeviceStateToNetworkState(
     network_config::mojom::DeviceStateType device_state) {
@@ -89,7 +88,7 @@ mojom::NetworkPtr CreateNetwork(
     net->portal_probe_url = net_prop->portal_probe_url;
     if (network_config::NetworkTypeMatchesType(
             net_prop->type, network_config::mojom::NetworkType::kWireless)) {
-      net->signal_strength = network_health::mojom::UInt32Value::New(
+      net->signal_strength = mojom::UInt32Value::New(
           network_config::GetWirelessSignalStrength(net_prop.get()));
     }
   } else {
@@ -134,7 +133,7 @@ NetworkHealthService::NetworkHealthService() {
                              &NetworkHealthService::UpdateTrackedGuids);
   if (mojo_service_manager::IsServiceManagerBound()) {
     mojo_service_manager::GetServiceManagerProxy()->Register(
-        mojo_services::kChromiumNetworkHealth,
+        chromeos::mojo_services::kChromiumNetworkHealth,
         provider_receiver_.BindNewPipeAndPassRemote());
   }
 }
@@ -463,4 +462,4 @@ void NetworkHealthService::UpdateTrackedGuids() {
   }
 }
 
-}  // namespace chromeos::network_health
+}  // namespace ash::network_health

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_health/public/cpp/network_health_helper.h"
+#include "chromeos/ash/services/network_health/public/cpp/network_health_helper.h"
 
 #include <memory>
 
@@ -11,12 +11,15 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/network_health/network_health_service.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "chromeos/services/network_health/network_health_service.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos::network_health {
+namespace ash::network_health {
+
+namespace mojom = ::chromeos::network_health::mojom;
 
 class NetworkHealthHelperTest : public ::testing::Test {
  public:
@@ -89,4 +92,4 @@ TEST_F(NetworkHealthHelperTest, RequestIsPortalState) {
   EXPECT_TRUE(helper()->IsPortalState());
 }
 
-}  // namespace chromeos::network_health
+}  // namespace ash::network_health

@@ -29,6 +29,7 @@ js_library("network_health_summary") {
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:onc_mojo",
     "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_health/public/mojom:types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {

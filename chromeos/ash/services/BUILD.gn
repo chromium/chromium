@@ -31,6 +31,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/ime:unit_tests",
     "//chromeos/ash/services/multidevice_setup:unit_tests",
     "//chromeos/ash/services/nearby/public/cpp:unit_tests",
+    "//chromeos/ash/services/network_health:unit_tests",
     "//chromeos/ash/services/quick_pair:unit_tests",
     "//chromeos/ash/services/secure_channel:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",

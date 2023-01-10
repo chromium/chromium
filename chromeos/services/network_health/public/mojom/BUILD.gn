@@ -4,15 +4,33 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom") {
-  sources = [
-    "network_diagnostics.mojom",
-    "network_health.mojom",
-  ]
+assert(is_chromeos)
+
+# Network interfaces are currently used only by Ash and CrOS services.
+# There's on-going work in Lacros which will probably depend on these
+# in the future.
+if (is_chromeos_ash) {
+  mojom("mojom") {
+    sources = [
+      "network_diagnostics.mojom",
+      "network_health.mojom",
+    ]
+
+    public_deps = [
+      ":types",
+      "//mojo/public/mojom/base",
+    ]
+
+    webui_module_path =
+        "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
+  }
+}
+
+mojom("types") {
+  sources = [ "network_health_types.mojom" ]
 
   public_deps = [
     "//chromeos/services/network_config/public/mojom:network_types",
-    "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
 

@@ -12,7 +12,7 @@
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

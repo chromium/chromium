@@ -8,7 +8,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash)
 
 mojom("mojom") {
-  deps = [ "//chromeos/services/network_health/public/mojom" ]
   sources = [
     "cros_healthd.mojom",
     "cros_healthd_diagnostics.mojom",
@@ -17,13 +16,12 @@ mojom("mojom") {
     "nullable_primitives.mojom",
     "wilco_ec.mojom",
   ]
-
   public_deps = [
     "//chromeos/ash/services/cros_healthd/private/mojom",
     "//chromeos/services/network_health/public/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//mojo/public/mojom/base",
   ]
-
   cpp_typemaps = [
     {
       types = [

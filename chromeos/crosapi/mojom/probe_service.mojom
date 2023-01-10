@@ -43,7 +43,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/nullable_primitives.mojom";
-import "chromeos/services/network_health/public/mojom/network_health.mojom";
+import "chromeos/services/network_health/public/mojom/network_health_types.mojom";
 
 // Interface for getting device telemetry information. Implemented in
 // ash-chrome.

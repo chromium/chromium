@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

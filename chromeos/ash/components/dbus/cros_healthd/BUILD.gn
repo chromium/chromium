@@ -12,7 +12,6 @@ component("cros_healthd") {
   deps = [
     "//base",
     "//chromeos/ash/services/cros_healthd/public/mojom",
-    "//chromeos/services/network_health/public/mojom",
     "//dbus",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",

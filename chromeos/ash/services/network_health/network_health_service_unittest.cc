@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_health/network_health_service.h"
+#include "chromeos/ash/services/network_health/network_health_service.h"
 
 #include <utility>
 
@@ -14,13 +14,19 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos::network_health {
+namespace ash::network_health {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace network_config = ::chromeos::network_config;
+
+namespace network_health = ::chromeos::network_health;
 
 // Constant values for fake devices and services.
 constexpr char kEthServicePath[] = "/service/eth/0";
@@ -37,19 +43,22 @@ constexpr char kOtherWifiGuid[] = "wifi_guid_other";
 constexpr char kWifiDevicePath[] = "/device/wifi1";
 constexpr char kWifiName[] = "wifi_device1";
 
-class FakeNetworkEventsObserver : public mojom::NetworkEventsObserver {
+class FakeNetworkEventsObserver
+    : public network_health::mojom::NetworkEventsObserver {
  public:
   // network_health::mojom::NetworkEventsObserver:
-  void OnConnectionStateChanged(const std::string& guid,
-                                mojom::NetworkState state) override {
+  void OnConnectionStateChanged(
+      const std::string& guid,
+      network_health::mojom::NetworkState state) override {
     connection_state_changed_event_received_ = true;
   }
-  void OnSignalStrengthChanged(const std::string& guid,
-                               mojom::UInt32ValuePtr signal_strength) override {
+  void OnSignalStrengthChanged(
+      const std::string& guid,
+      network_health::mojom::UInt32ValuePtr signal_strength) override {
     signal_strength_changed_event_received_ = true;
   }
   void OnNetworkListChanged(
-      const std::vector<mojom::NetworkPtr> networks) override {
+      const std::vector<network_health::mojom::NetworkPtr> networks) override {
     network_list_changed_event_received_ = true;
   }
 
@@ -637,4 +646,4 @@ TEST_F(NetworkHealthServiceTest, NetworkListChangeEvent) {
       fake_network_events_observer.network_list_changed_event_received());
 }
 
-}  // namespace chromeos::network_health
+}  // namespace ash::network_health

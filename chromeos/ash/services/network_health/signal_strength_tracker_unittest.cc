@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_health/signal_strength_tracker.h"
+#include "chromeos/ash/services/network_health/signal_strength_tracker.h"
 
 #include <array>
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::network_health {
+namespace ash::network_health {
 
 namespace {
 
 constexpr std::array<uint8_t, 3> kSamples = {71, 74, 80};
+
 }
 
 class SignalStrengthTrackerTest : public ::testing::Test {
@@ -73,4 +74,4 @@ TEST_F(SignalStrengthTrackerTest, SamplesSize) {
   ASSERT_EQ(tracker()->Samples()[0], num_samples - 1);
 }
 
-}  // namespace chromeos::network_health
+}  // namespace ash::network_health

@@ -42,7 +42,7 @@ source_set("api") {
     "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
-    "//chromeos/services/network_health/public/mojom:mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//components/security_state/content",
     "//components/security_state/core",
     "//components/user_manager",
@@ -109,6 +109,7 @@ source_set("browser_tests") {
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//chromeos/startup",
     "//components/user_manager",
     "//content/test:test_support",
@@ -158,6 +159,7 @@ source_set("unit_tests") {
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//testing/gtest",
   ]
 

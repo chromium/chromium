@@ -15,7 +15,7 @@
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 
 namespace chromeos {
 namespace converters {

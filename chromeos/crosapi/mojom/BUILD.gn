@@ -114,7 +114,7 @@ mojom("mojom") {
     "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors/mojom",
     "//chromeos/services/machine_learning/public/mojom",
-    "//chromeos/services/network_health/public/mojom:mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//components/digital_goods/mojom:mojom",
     "//components/metrics/structured/mojom",
     "//components/services/app_service/public/mojom:mojom",

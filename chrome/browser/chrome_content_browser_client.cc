@@ -400,6 +400,7 @@
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chromeos/ash/services/network_health/public/cpp/network_health_helper.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/user_manager/user.h"
@@ -456,7 +457,6 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
-#include "chromeos/services/network_health/public/cpp/network_health_helper.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #endif

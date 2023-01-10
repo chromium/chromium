@@ -19,15 +19,17 @@ namespace network_diagnostics {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace mojom = ::chromeos::network_diagnostics::mojom;
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace network_config = ::chromeos::network_config;
 
-using chromeos::network_config::mojom::CrosNetworkConfig;
-using chromeos::network_config::mojom::FilterType;
-using chromeos::network_config::mojom::NetworkFilter;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-using chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::CrosNetworkConfig;
+using ::chromeos::network_config::mojom::FilterType;
+using ::chromeos::network_config::mojom::ManagedPropertiesPtr;
+using ::chromeos::network_config::mojom::NetworkFilter;
+using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using ::chromeos::network_config::mojom::NetworkType;
 
 void GetNetworkConfigService(
     mojo::PendingReceiver<CrosNetworkConfig> receiver) {

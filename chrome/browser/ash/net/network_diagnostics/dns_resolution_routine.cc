@@ -22,9 +22,9 @@
 
 namespace ash {
 namespace network_diagnostics {
+
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 constexpr char kHostname[] = "ccd-testing-v4.gstatic.com";

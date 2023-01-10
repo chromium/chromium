@@ -17,10 +17,12 @@
 
 namespace ash {
 namespace network_diagnostics {
+
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace mojom = ::chromeos::network_diagnostics::mojom;
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace network_config = ::chromeos::network_config;
 
 using chromeos::network_config::mojom::CrosNetworkConfig;

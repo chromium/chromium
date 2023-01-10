@@ -70,16 +70,6 @@ namespace network_config {
 namespace mojom = ::chromeos::network_config::mojom;
 }
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace network_health {
-namespace mojom = ::chromeos::network_health::mojom;
-}
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace network_diagnostics {
-namespace mojom = ::chromeos::network_diagnostics::mojom;
-}
-
 namespace {
 
 constexpr char kAddNetwork[] = "addNetwork";
@@ -1005,7 +995,7 @@ void NetworkUI::BindInterface(
 }
 
 void NetworkUI::BindInterface(
-    mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
+    mojo::PendingReceiver<chromeos::network_health::mojom::NetworkHealthService>
         receiver) {
   network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
       std::move(receiver));
@@ -1013,7 +1003,8 @@ void NetworkUI::BindInterface(
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<
-        network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
+        chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+        receiver) {
   network_health::NetworkHealthManager::GetInstance()->BindDiagnosticsReceiver(
       std::move(receiver));
 }

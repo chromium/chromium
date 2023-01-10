@@ -1,3 +1,11 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
 static_library("network_health") {
   sources = [
     "network_health_constants.h",
@@ -6,7 +14,10 @@ static_library("network_health") {
     "signal_strength_tracker.cc",
     "signal_strength_tracker.h",
   ]
-
+  public_deps = [
+    "//chromeos/services/network_health/public/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
+  ]
   deps = [
     "//base",
     "//chromeos/ash/components/mojo_service_manager",
@@ -14,7 +25,6 @@ static_library("network_health") {
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
-    "//chromeos/services/network_health/public/mojom",
     "//components/device_event_log",
     "//mojo/public/cpp/bindings",
   ]
@@ -30,16 +40,9 @@ component("in_process_instance") {
 
   defines = [ "IS_IN_PROCESS_NETWORK_HEALTH_IMPL" ]
 
-  public_deps = [
-    "//chromeos/services/network_health/public/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
+  public_deps = [ "//base" ]
 
-  deps = [
-    ":network_health",
-    "//chromeos/services/network_health/public/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
+  deps = [ ":network_health" ]
 }
 
 source_set("unit_tests") {
@@ -57,9 +60,12 @@ source_set("unit_tests") {
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/mojom",
-    "//chromeos/services/network_health/public/cpp:unit_tests",
     "//chromeos/services/network_health/public/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//dbus",
     "//mojo/public/cpp/bindings",
+
+    # Unit tests from subdirs
+    "//chromeos/ash/services/network_health/public/cpp:unit_tests",
   ]
 }

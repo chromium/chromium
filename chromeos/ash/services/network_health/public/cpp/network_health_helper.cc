@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/network_health/public/cpp/network_health_helper.h"
+#include "chromeos/ash/services/network_health/public/cpp/network_health_helper.h"
 
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
-#include "chromeos/services/network_health/in_process_instance.h"
-#include "chromeos/services/network_health/network_health_service.h"
+#include "chromeos/ash/services/network_health/in_process_instance.h"
+#include "chromeos/ash/services/network_health/network_health_service.h"
 #include "url/gurl.h"
 
-namespace chromeos::network_health {
+namespace ash::network_health {
+
+namespace mojom = ::chromeos::network_health::mojom;
 
 // static
 std::unique_ptr<NetworkHealthHelper> NetworkHealthHelper::CreateForTesting(
@@ -102,4 +104,4 @@ void NetworkHealthHelper::OnMojoError() {
   observer_receiver_.reset();
 }
 
-}  // namespace chromeos::network_health
+}  // namespace ash::network_health

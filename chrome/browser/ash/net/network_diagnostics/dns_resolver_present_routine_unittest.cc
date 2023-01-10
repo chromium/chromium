@@ -18,7 +18,6 @@ namespace network_diagnostics {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 // The IP config path specified here must match the IP config path specified in

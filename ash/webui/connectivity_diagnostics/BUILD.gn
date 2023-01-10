@@ -13,18 +13,22 @@ static_library("connectivity_diagnostics") {
     "url_constants.cc",
     "url_constants.h",
   ]
-
+  public_deps = [
+    "//base",
+    "//chromeos/services/network_health/public/mojom:mojom_headers",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
   deps = [
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/resources:connectivity_diagnostics_resources",
     "//ash/webui/web_applications",
-    "//chromeos/services/network_health/public/mojom:mojom",
+    "//chromeos/services/network_health/public/mojom",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
     "//ui/resources",
-    "//ui/webui",
   ]
 }
 

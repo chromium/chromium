@@ -20,6 +20,10 @@ source_set("cpp") {
     "service_connection.cc",
     "service_connection.h",
   ]
+  public_deps = [
+    "//chromeos/services/network_health/public/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
+  ]
   deps = [
     "//ash/constants",
     "//base",
@@ -45,6 +49,8 @@ source_set("unit_tests") {
     ":cpp",
     "//base/test:test_support",
     "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/services/network_health/public/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

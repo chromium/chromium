@@ -15,6 +15,8 @@
 #include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"

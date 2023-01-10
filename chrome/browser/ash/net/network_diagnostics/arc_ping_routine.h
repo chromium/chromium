@@ -18,12 +18,6 @@
 namespace ash {
 namespace network_diagnostics {
 
-namespace {
-
-using chromeos::network_config::mojom::ManagedPropertiesPtr;
-
-}  // namespace
-
 // Performs ICMP echo requests from within ARC to a random set of addresses
 // and returns the result.
 class ArcPingRoutine : public NetworkDiagnosticsRoutine {

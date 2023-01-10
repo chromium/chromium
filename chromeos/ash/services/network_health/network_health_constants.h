@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_NETWORK_HEALTH_NETWORK_HEALTH_CONSTANTS_H_
-#define CHROMEOS_SERVICES_NETWORK_HEALTH_NETWORK_HEALTH_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_SERVICES_NETWORK_HEALTH_NETWORK_HEALTH_CONSTANTS_H_
+#define CHROMEOS_ASH_SERVICES_NETWORK_HEALTH_NETWORK_HEALTH_CONSTANTS_H_
 
 #include "base/time/time.h"
 
-namespace chromeos::network_health {
+namespace ash::network_health {
 
 // The rate in seconds at which to sample all network's signal strengths.
 constexpr base::TimeDelta kSignalStrengthSampleRate = base::Seconds(5);
@@ -20,6 +20,6 @@ constexpr base::TimeDelta kSignalStrengthSampleWindow = base::Minutes(15);
 // network_health.h for more information about tracked guids.
 constexpr base::TimeDelta kUpdateTrackedGuidsInterval = base::Hours(1);
 
-}  // namespace chromeos::network_health
+}  // namespace ash::network_health
 
-#endif  // CHROMEOS_SERVICES_NETWORK_HEALTH_NETWORK_HEALTH_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_SERVICES_NETWORK_HEALTH_NETWORK_HEALTH_CONSTANTS_H_

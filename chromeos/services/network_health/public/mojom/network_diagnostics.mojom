@@ -4,8 +4,9 @@
 //
 // Next MinVersion: 2
 //
-// NOTE: This mojom should be kept in sync with the copy in the Chromium OS
-// repo: src/platform2/diagnostics/mojo/network_diagnostics.mojom.
+// NOTE: This mojom exists in two places and must be kept in sync:
+//       Chromium: chromeos/services/network_health/public/mojom/
+//       ChromeOS: src/platform2/diagnostics/mojom/external/
 
 module chromeos.network_diagnostics.mojom;
 
