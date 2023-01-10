@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/input_injector.h"
+#include "remoting/host/linux/input_injector_wayland.h"
 
 #include <gtk/gtk.h>
 #include <stddef.h>
@@ -43,7 +43,6 @@
 #endif
 
 namespace remoting {
-
 namespace {
 
 using protocol::ClipboardEvent;
@@ -105,115 +104,7 @@ constexpr float kWheelTicksPerPixel = 3.0f / 160.0f;
 // When the user is scrolling, generate at least one tick per time period.
 constexpr base::TimeDelta kContinuousScrollTimeout = base::Milliseconds(500);
 
-// A class to generate events on wayland.
-class InputInjectorWayland : public InputInjector {
- public:
-  explicit InputInjectorWayland(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  InputInjectorWayland(const InputInjectorWayland&) = delete;
-  InputInjectorWayland& operator=(const InputInjectorWayland&) = delete;
-
-  ~InputInjectorWayland() override;
-
-  // Clipboard stub interface.
-  void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
-
-  // InputStub interface.
-  void InjectKeyEvent(const protocol::KeyEvent& event) override;
-  void InjectTextEvent(const protocol::TextEvent& event) override;
-  void InjectMouseEvent(const protocol::MouseEvent& event) override;
-  void InjectTouchEvent(const protocol::TouchEvent& event) override;
-
-  void SetMetadata(InputInjectorMetadata metadata) override;
-
-  // InputInjector interface.
-  void Start(
-      std::unique_ptr<protocol::ClipboardStub> client_clipboard) override;
-
- private:
-  // The actual implementation resides in InputInjectorWayland::Core class.
-  class Core : public base::RefCountedThreadSafe<Core> {
-   public:
-    explicit Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-    Core(const Core&) = delete;
-    Core& operator=(const Core&) = delete;
-
-    // Mirrors the ClipboardStub interface.
-    void InjectClipboardEvent(const protocol::ClipboardEvent& event);
-
-    // Mirrors the InputStub interface.
-    void InjectKeyEvent(const protocol::KeyEvent& event);
-    void InjectTextEvent(const protocol::TextEvent& event);
-    void InjectMouseEvent(const protocol::MouseEvent& event);
-
-    void SetRemoteDesktopSessionDetails(const SessionDetails& session_details);
-
-    void SetClipboardSessionDetails(const SessionDetails& session_details);
-
-    // Mirrors the InputInjector interface.
-    void Start(std::unique_ptr<protocol::ClipboardStub> client_clipboard);
-
-    // Sets a keyboard capability ready callback on the global
-    // WaylandManager class.
-    void SetKeyboardCapabilityCallback();
-
-   private:
-    friend class base::RefCountedThreadSafe<Core>;
-    virtual ~Core();
-
-    void SeatAcquiredKeyboardCapability();
-    void InjectFakeKeyEvent();
-    bool IsReady();
-    void MaybeFlushPendingEvents();
-
-    void InjectScrollWheelClicks(int button, int count);
-
-    void InjectMouseButton(unsigned int code, bool pressed);
-    void InjectMouseScroll(unsigned int axis, int steps);
-    void MovePointerTo(int x, int y);
-    void MovePointerBy(int delta_x, int delta_y);
-    void InjectKeyPress(unsigned int code, bool pressed, bool is_code = true);
-
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
-
-    std::set<int> pressed_keys_;
-    absl::optional<webrtc::DesktopVector> latest_mouse_position_;
-    float wheel_ticks_x_ = 0;
-    float wheel_ticks_y_ = 0;
-    base::TimeTicks latest_tick_y_event_;
-
-    // The direction of the last scroll event that resulted in at least one
-    // "tick" being injected.
-    ScrollDirection latest_tick_y_direction_ = ScrollDirection::NONE;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    PointTransformer point_transformer_;
-#endif
-    ClipboardWayland clipboard_;
-    xdg_portal::RemoteDesktopPortalInjector remotedesktop_portal_;
-
-    // If input is injected before complete initialization then some portal
-    // APIs can crash. This flag is marked to track initialization,
-    // and all inputs before the initialization is complete are added to
-    // |pending_tasks| queue and injected upon initialization.
-    bool remote_desktop_initialized_ = false;
-    base::queue<base::OnceClosure> pending_remote_desktop_tasks_;
-
-    // Similar to remote_desktop_initialized_, we keep the last clipboard event
-    // but separated so that the remote desktop isn't blocked waiting for the
-    // clipboard.
-    bool clipboard_initialized_ = false;
-    absl::optional<ClipboardEvent> pending_clipboard_event_;
-
-    // Keeps track of whether or not the associated seat has keyboard
-    // capability.
-    bool seat_has_keyboard_capability_ = false;
-  };
-
-  scoped_refptr<Core> core_;
-};
+}  // namespace
 
 InputInjectorWayland::InputInjectorWayland(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -275,6 +166,7 @@ void InputInjectorWayland::Core::SetKeyboardCapabilityCallback() {
         FROM_HERE, base::BindOnce(&Core::SetKeyboardCapabilityCallback, this));
     return;
   }
+
   auto on_seat_acquired_keyboard_capability =
       base::BindOnce(&Core::SeatAcquiredKeyboardCapability, this);
   auto on_seat_present =
@@ -301,6 +193,7 @@ void InputInjectorWayland::Core::SeatAcquiredKeyboardCapability() {
         FROM_HERE, base::BindOnce(&Core::SeatAcquiredKeyboardCapability, this));
     return;
   }
+
   seat_has_keyboard_capability_ = true;
   MaybeFlushPendingEvents();
 }
@@ -322,7 +215,6 @@ void InputInjectorWayland::Core::InjectClipboardEvent(
     pending_clipboard_event_ = absl::make_optional(event);
     return;
   }
-
   clipboard_.InjectClipboardEvent(event);
 }
 
@@ -449,7 +341,6 @@ void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
       LOG(WARNING) << "Ignoring unknown button type: " << event.button();
       return;
     }
-
     VLOG(3) << "Pressing mouse button: " << event.button()
             << ", number: " << button_number;
     InjectMouseButton(button_number, event.button_down());
@@ -611,8 +502,6 @@ void InputInjectorWayland::Core::Start(
   DCHECK(input_task_runner_->BelongsToCurrentThread());
   clipboard_.Start(std::move(client_clipboard));
 }
-
-}  // namespace
 
 // static
 std::unique_ptr<InputInjector> InputInjector::Create(

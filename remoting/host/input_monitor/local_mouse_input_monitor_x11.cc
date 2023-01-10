@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "remoting/host/input_monitor/local_pointer_input_monitor.h"
+#include "remoting/host/input_monitor/local_mouse_input_monitor_x11.h"
 
 #include <sys/select.h>
 #include <unistd.h>
@@ -15,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_input_monitor_x11_common.h"
@@ -27,67 +27,6 @@
 #include "ui/gfx/x/xproto.h"
 
 namespace remoting {
-
-namespace {
-
-// Note that this class does not detect touch input and so is named accordingly.
-class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
- public:
-  LocalMouseInputMonitorX11(
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-      LocalInputMonitor::PointerMoveCallback on_mouse_move);
-
-  LocalMouseInputMonitorX11(const LocalMouseInputMonitorX11&) = delete;
-  LocalMouseInputMonitorX11& operator=(const LocalMouseInputMonitorX11&) =
-      delete;
-
-  ~LocalMouseInputMonitorX11() override;
-
- private:
-  // The actual implementation resides in LocalMouseInputMonitorX11::Core class.
-  class Core : public base::RefCountedThreadSafe<Core>,
-               public x11::EventObserver {
-   public:
-    Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-         scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-         LocalInputMonitor::PointerMoveCallback on_mouse_move);
-
-    Core(const Core&) = delete;
-    Core& operator=(const Core&) = delete;
-
-    void Start();
-    void Stop();
-
-   private:
-    friend class base::RefCountedThreadSafe<Core>;
-    ~Core() override;
-
-    void StartOnInputThread();
-    void StopOnInputThread();
-
-    // Called when there are pending X events.
-    void OnConnectionData();
-
-    // x11::EventObserver:
-    void OnEvent(const x11::Event& event) override;
-
-    // Task runner on which public methods of this class must be called.
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
-
-    // Task runner on which X Window events are received.
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
-
-    // Used to send mouse event notifications.
-    LocalInputMonitor::PointerMoveCallback on_mouse_move_;
-
-    raw_ptr<x11::Connection> connection_ = nullptr;
-  };
-
-  scoped_refptr<Core> core_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
 
 LocalMouseInputMonitorX11::LocalMouseInputMonitorX11(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
@@ -183,8 +122,6 @@ void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
           caller_task_runner_, on_mouse_move_));
   connection_->Flush();
 }
-
-}  // namespace
 
 std::unique_ptr<LocalPointerInputMonitor> LocalPointerInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,

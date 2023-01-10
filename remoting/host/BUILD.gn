@@ -497,9 +497,11 @@ static_library("common") {
     defines += [ "REMOTING_USE_X11" ]
     sources += [
       "desktop_display_info_loader_x11.cc",
+      "desktop_display_info_loader_x11.h",
       "desktop_resizer_x11.cc",
       "desktop_resizer_x11.h",
       "input_injector_x11.cc",
+      "input_injector_x11.h",
       "x11_crtc_resizer.cc",
       "x11_crtc_resizer.h",
       "x11_display_util.cc",
@@ -525,8 +527,11 @@ static_library("common") {
       "linux/clipboard_wayland.cc",
       "linux/clipboard_wayland.h",
       "linux/desktop_display_info_loader_wayland.cc",
+      "linux/desktop_display_info_loader_wayland.h",
       "linux/desktop_resizer_wayland.cc",
+      "linux/desktop_resizer_wayland.h",
       "linux/input_injector_wayland.cc",
+      "linux/input_injector_wayland.h",
       "linux/remote_desktop_portal.cc",
       "linux/remote_desktop_portal.h",
       "linux/remote_desktop_portal_injector.cc",
@@ -585,6 +590,7 @@ static_library("common") {
         "linux/keyboard_layout_monitor_utils.cc",
         "linux/keyboard_layout_monitor_utils.h",
         "linux/keyboard_layout_monitor_wayland.cc",
+        "linux/keyboard_layout_monitor_wayland.h",
       ]
     }
   }

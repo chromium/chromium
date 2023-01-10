@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/input_monitor/local_hotkey_input_monitor.h"
+#include "remoting/host/input_monitor/local_hotkey_input_monitor_x11.h"
 
 #include <sys/select.h>
 #include <unistd.h>
@@ -14,80 +14,11 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_input_monitor_x11_common.h"
-#include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/event.h"
-#include "ui/gfx/x/future.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xinput.h"
 
 namespace remoting {
-
-namespace {
-
-class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
- public:
-  LocalHotkeyInputMonitorX11(
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-      base::OnceClosure disconnect_callback);
-
-  LocalHotkeyInputMonitorX11(const LocalHotkeyInputMonitorX11&) = delete;
-  LocalHotkeyInputMonitorX11& operator=(const LocalHotkeyInputMonitorX11&) =
-      delete;
-
-  ~LocalHotkeyInputMonitorX11() override;
-
- private:
-  // The implementation resides in LocalHotkeyInputMonitorX11::Core class.
-  class Core : public base::RefCountedThreadSafe<Core>,
-               public x11::EventObserver {
-   public:
-    Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-         scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-         base::OnceClosure disconnect_callback);
-
-    Core(const Core&) = delete;
-    Core& operator=(const Core&) = delete;
-
-    void Start();
-    void Stop();
-
-   private:
-    friend class base::RefCountedThreadSafe<Core>;
-    ~Core() override;
-
-    void StartOnInputThread();
-    void StopOnInputThread();
-
-    // x11::EventObserver:
-    void OnEvent(const x11::Event& event) override;
-
-    // Task runner on which public methods of this class must be called.
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
-
-    // Task runner on which X Window events are received.
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
-
-    // Used to send session disconnect requests.
-    base::OnceClosure disconnect_callback_;
-
-    // True when Alt is pressed.
-    bool alt_pressed_ = false;
-
-    // True when Ctrl is pressed.
-    bool ctrl_pressed_ = false;
-
-    raw_ptr<x11::Connection> connection_ = nullptr;
-  };
-
-  scoped_refptr<Core> core_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
 
 LocalHotkeyInputMonitorX11::LocalHotkeyInputMonitorX11(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
@@ -124,7 +55,6 @@ void LocalHotkeyInputMonitorX11::Core::Start() {
 
 void LocalHotkeyInputMonitorX11::Core::Stop() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
   input_task_runner_->PostTask(FROM_HERE,
                                base::BindOnce(&Core::StopOnInputThread, this));
 }
@@ -142,6 +72,7 @@ void LocalHotkeyInputMonitorX11::Core::StartOnInputThread() {
     LOG(ERROR) << "X Input extension not available.";
     return;
   }
+
   // Let the server know the client XInput version.
   connection_->xinput().XIQueryVersion(
       {x11::Input::major_version, x11::Input::minor_version});
@@ -186,8 +117,6 @@ void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   else if (key_sym == XK_Escape && down && alt_pressed_ && ctrl_pressed_)
     caller_task_runner_->PostTask(FROM_HERE, std::move(disconnect_callback_));
 }
-
-}  // namespace
 
 std::unique_ptr<LocalHotkeyInputMonitor> LocalHotkeyInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,

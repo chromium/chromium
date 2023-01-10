@@ -1,9 +1,7 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "remoting/host/input_injector.h"
-
+#include "remoting/host/input_injector_x11.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <memory>
@@ -38,12 +36,7 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "remoting/host/chromeos/point_transformer.h"
-#endif
-
 namespace remoting {
-
 namespace {
 
 using protocol::ClipboardEvent;
@@ -76,120 +69,7 @@ const float kWheelTicksPerPixel = 3.0f / 160.0f;
 // When the user is scrolling, generate at least one tick per time period.
 const base::TimeDelta kContinuousScrollTimeout = base::Milliseconds(500);
 
-// A class to generate events on X11.
-class InputInjectorX11 : public InputInjector {
- public:
-  explicit InputInjectorX11(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  InputInjectorX11(const InputInjectorX11&) = delete;
-  InputInjectorX11& operator=(const InputInjectorX11&) = delete;
-
-  ~InputInjectorX11() override;
-
-  void Init();
-
-  // Clipboard stub interface.
-  void InjectClipboardEvent(const ClipboardEvent& event) override;
-
-  // InputStub interface.
-  void InjectKeyEvent(const KeyEvent& event) override;
-  void InjectTextEvent(const TextEvent& event) override;
-  void InjectMouseEvent(const MouseEvent& event) override;
-  void InjectTouchEvent(const TouchEvent& event) override;
-
-  // InputInjector interface.
-  void Start(
-      std::unique_ptr<protocol::ClipboardStub> client_clipboard) override;
-
- private:
-  // The actual implementation resides in InputInjectorX11::Core class.
-  class Core : public base::RefCountedThreadSafe<Core> {
-   public:
-    explicit Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-    Core(const Core&) = delete;
-    Core& operator=(const Core&) = delete;
-
-    void Init();
-
-    // Mirrors the ClipboardStub interface.
-    void InjectClipboardEvent(const ClipboardEvent& event);
-
-    // Mirrors the InputStub interface.
-    void InjectKeyEvent(const KeyEvent& event);
-    void InjectTextEvent(const TextEvent& event);
-    void InjectMouseEvent(const MouseEvent& event);
-
-    // Mirrors the InputInjector interface.
-    void Start(std::unique_ptr<protocol::ClipboardStub> client_clipboard);
-
-    void Stop();
-
-   private:
-    friend class base::RefCountedThreadSafe<Core>;
-    virtual ~Core();
-
-    void InitClipboard();
-
-    // Queries whether keyboard auto-repeat is globally enabled. This is used
-    // to decide whether to temporarily disable then restore this setting. If
-    // auto-repeat has already been disabled, this class should leave it
-    // untouched.
-    bool IsAutoRepeatEnabled();
-
-    // Enables or disables keyboard auto-repeat globally.
-    void SetAutoRepeatEnabled(bool enabled);
-
-    // Check if the given scan code is caps lock or num lock.
-    bool IsLockKey(x11::KeyCode keycode);
-
-    // Sets the keyboard lock states to those provided.
-    void SetLockStates(absl::optional<bool> caps_lock,
-                       absl::optional<bool> num_lock);
-
-    void InjectScrollWheelClicks(int button, int count);
-    // Compensates for global button mappings and resets the XTest device
-    // mapping.
-    void InitMouseButtonMap();
-    int MouseButtonToX11ButtonNumber(MouseEvent::MouseButton button);
-    int HorizontalScrollWheelToX11ButtonNumber(int dx);
-    int VerticalScrollWheelToX11ButtonNumber(int dy);
-
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-    std::set<int> pressed_keys_;
-    webrtc::DesktopVector latest_mouse_position_ =
-        webrtc::DesktopVector(-1, -1);
-    float wheel_ticks_x_ = 0;
-    float wheel_ticks_y_ = 0;
-    base::Time latest_tick_y_event_;
-    // The direction of the last scroll event that resulted in at least one
-    // "tick" being injected.
-    ScrollDirection latest_tick_y_direction_ = ScrollDirection::NONE;
-
-    // X11 graphics context. Must only be accessed on the input thread.
-    raw_ptr<x11::Connection> connection_;
-
-    // Number of buttons we support.
-    // Left, Right, Middle, VScroll Up/Down, HScroll Left/Right, back, forward.
-    static const int kNumPointerButtons = 9;
-
-    int pointer_button_map_[kNumPointerButtons];
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    PointTransformer point_transformer_;
-#endif
-
-    std::unique_ptr<Clipboard> clipboard_;
-
-    std::unique_ptr<X11CharacterInjector> character_injector_;
-
-    bool saved_auto_repeat_enabled_ = false;
-  };
-
-  scoped_refptr<Core> core_;
-};
+}  // namespace
 
 InputInjectorX11::InputInjectorX11(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -238,7 +118,6 @@ void InputInjectorX11::Core::Init() {
     task_runner_->PostTask(FROM_HERE, base::BindOnce(&Core::Init, this));
     return;
   }
-
   connection_ = x11::Connection::Get();
   if (!IgnoreXServerGrabs(connection_, true)) {
     LOG(ERROR) << "XTEST not supported, cannot inject key/mouse events.";
@@ -252,7 +131,6 @@ void InputInjectorX11::Core::InjectClipboardEvent(const ClipboardEvent& event) {
         FROM_HERE, base::BindOnce(&Core::InjectClipboardEvent, this, event));
     return;
   }
-
   // |clipboard_| will ignore unknown MIME-types, and verify the data's format.
   clipboard_->InjectClipboardEvent(event);
 }
@@ -312,7 +190,6 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
       if (event.has_num_lock_state()) {
         num_lock = event.num_lock_state();
       }
-
       SetLockStates(caps_lock, num_lock);
     }
 
@@ -326,7 +203,6 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
   } else {
     pressed_keys_.erase(keycode);
   }
-
   uint8_t opcode =
       event.pressed() ? x11::KeyEvent::Press : x11::KeyEvent::Release;
   connection_->xtest().FakeInput({opcode, static_cast<uint8_t>(keycode)});
@@ -432,7 +308,6 @@ void InputInjectorX11::Core::SetLockStates(absl::optional<bool> caps_lock,
 
 void InputInjectorX11::Core::InjectScrollWheelClicks(int button, int count) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-
   if (!connection_->xtest().present()) {
     return;
   }
@@ -441,6 +316,7 @@ void InputInjectorX11::Core::InjectScrollWheelClicks(int button, int count) {
     LOG(WARNING) << "Ignoring unmapped scroll wheel button";
     return;
   }
+
   for (int i = 0; i < count; i++) {
     // Generate a button-down and a button-up to simulate a wheel click.
     connection_->xtest().FakeInput(
@@ -583,11 +459,11 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
     ticks_x = static_cast<int>(wheel_ticks_x_);
     wheel_ticks_x_ -= ticks_x;
   }
+
   if (ticks_x != 0) {
     InjectScrollWheelClicks(HorizontalScrollWheelToX11ButtonNumber(ticks_x),
                             abs(ticks_x));
   }
-
   connection_->Flush();
 }
 
@@ -736,8 +612,6 @@ void InputInjectorX11::Core::Stop() {
   if (saved_auto_repeat_enabled_)
     SetAutoRepeatEnabled(true);
 }
-
-}  // namespace
 
 // static
 std::unique_ptr<InputInjector> InputInjector::Create(
