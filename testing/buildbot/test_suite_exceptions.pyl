@@ -3892,6 +3892,8 @@
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 Release (AMD)',
+      'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Release (Intel)',
     ],
   },
   'webgpu_cts_tests': {
@@ -3914,6 +3916,10 @@
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 Release (AMD)',
+      'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Release (Intel)',
+      'Dawn Win10 x86 DEPS Release (Intel)',
+      'Dawn Win10 x86 Release (Intel)',
     ],
     'modifications': {
       # ci_only for bots where capacity is constrained.
@@ -3930,6 +3936,10 @@
     'remove_from': [
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 Release (AMD)',
+      'Dawn Win10 x64 DEPS Release (Intel)',
+      'Dawn Win10 x64 Release (Intel)',
+      'Dawn Win10 x86 DEPS Release (Intel)',
+      'Dawn Win10 x86 Release (Intel)',
     ],
     'modifications': {
       # ci_only for bots where capacity is constrained.
