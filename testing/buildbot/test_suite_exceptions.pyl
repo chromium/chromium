@@ -1731,6 +1731,9 @@
         ],
       },
       'android-pie-arm64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
+        ],
         'swarming': {
           'quickrun_shards': 40
         },
@@ -3980,6 +3983,9 @@
   'webview_64_cts_tests': {
     'modifications': {
       'android-pie-arm64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter',
+        ],
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
         'swarming': {
@@ -3997,7 +4003,7 @@
       'android-nougat-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests_coverage.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter',
         ],
       },
       'android-pie-arm64-rel': {

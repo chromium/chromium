@@ -364,7 +364,7 @@ source_set("webview_cts_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator.webview_cts_tests.filter",
-    "//testing/buildbot/filters/android.emulator.webview_cts_tests_coverage.filter",
+    "//testing/buildbot/filters/android.webview_cts_tests_coverage.filter",
   ]
 }
 

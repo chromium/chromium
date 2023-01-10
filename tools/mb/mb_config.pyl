@@ -973,8 +973,8 @@
       'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
-      'android-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
-      'android-arm64-rel-inverse-fyi': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
+      'android-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
+      'android-arm64-rel-inverse-fyi': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage',
       'android-asan': 'android_clang_asan_release_trybot_reclient',
       'android-bfcache-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-binary-size': 'android_binary_size_reclient',
@@ -1682,10 +1682,16 @@
       'webview_monochrome',
     ],
 
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild': [
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi',
+      'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient': [
+      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
+      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
+      'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient': [

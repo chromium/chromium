@@ -25611,7 +25611,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter;../../testing/buildbot/filters/android.emulator.webview_cts_tests_coverage.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter;../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -30282,7 +30282,8 @@
         "args": [
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter"
         ],
         "merge": {
           "args": [
@@ -30559,7 +30560,8 @@
         "args": [
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter"
         ],
         "merge": {
           "args": [

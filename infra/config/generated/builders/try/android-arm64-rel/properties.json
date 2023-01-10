@@ -88,6 +88,9 @@
       }
     }
   },
+  "$build/code_coverage": {
+    "use_clang_coverage": true
+  },
   "$build/flakiness": {
     "check_for_flakiness": true
   },
