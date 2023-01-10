@@ -7,7 +7,6 @@
 #include <numeric>
 
 #include "ash/constants/ash_features.h"
-#include "ash/style/pill_button.h"
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
 #include "ash/system/tray/tray_constants.h"
@@ -134,8 +133,6 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       scroll_view->SetContents(std::make_unique<views::FlexLayoutView>());
   system_tray_container_->SetOrientation(views::LayoutOrientation::kVertical);
 
-  AddTemporaryDetailedViewButtons();
-
   header_ = system_tray_container_->AddChildView(
       std::make_unique<QuickSettingsHeader>(controller_));
   feature_tiles_container_ = system_tray_container_->AddChildView(
@@ -247,9 +244,7 @@ int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
       media_controls_container_ ? media_controls_container_->GetExpandedHeight()
                                 : 0;
 
-  return max_height_ -
-         temporary_buttons_container_->GetPreferredSize().height() -
-         header_->GetPreferredSize().height() -
+  return max_height_ - header_->GetPreferredSize().height() -
          footer_->GetPreferredSize().height() -
          page_indicator_view_->GetPreferredSize().height() -
          sliders_container_->GetPreferredSize().height() -
@@ -267,53 +262,6 @@ bool QuickSettingsView::IsDetailedViewShown() const {
 void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_SCROLL_FLING_START)
     controller_->Fling(event->details().velocity_y());
-}
-
-void QuickSettingsView::AddTemporaryDetailedViewButtons() {
-  // While feature tiles are under development, provide some temporary buttons
-  // that allow access to tray detail pages.
-  DCHECK(system_tray_container_);
-  temporary_buttons_container_ =
-      system_tray_container_->AddChildView(std::make_unique<views::View>());
-  auto* layout = temporary_buttons_container_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>());
-  layout->set_between_child_spacing(4);
-
-  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(
-          [](UnifiedSystemTrayController* controller) {
-            controller->ShowNetworkDetailedView(/*force=*/true);
-          },
-          controller_),
-      u"Net"));
-  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(
-          [](UnifiedSystemTrayController* controller) {
-            controller->ShowBluetoothDetailedView();
-          },
-          controller_),
-      u"Bluetooth"));
-  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(
-          [](UnifiedSystemTrayController* controller) {
-            controller->ShowIMEDetailedView();
-          },
-          controller_),
-      u"IME"));
-  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(
-          [](UnifiedSystemTrayController* controller) {
-            controller->ShowAccessibilityDetailedView();
-          },
-          controller_),
-      u"A11y"));
-  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(
-          [](UnifiedSystemTrayController* controller) {
-            controller->ShowCastDetailedView();
-          },
-          controller_),
-      u"Cast"));
 }
 
 BEGIN_METADATA(QuickSettingsView, views::View)
