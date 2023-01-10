@@ -4216,7 +4216,7 @@
         ],
         'test': 'browser_tests',
         'swarming': {
-          'shards': 4,
+          'shards': 8,
         },
       },
     },
