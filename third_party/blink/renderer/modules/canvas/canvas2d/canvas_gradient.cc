@@ -89,7 +89,7 @@ void CanvasGradient::addColorStop(double value,
   }
 
   Color color = Color::kTransparent;
-  if (!ParseColorOrCurrentColor(color, color_string, nullptr /*canvas*/)) {
+  if (!ParseCanvasColorString(color_string, color)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The value provided ('" + color_string +
                                           "') could not be parsed as a color.");

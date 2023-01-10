@@ -28,13 +28,11 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
@@ -44,60 +42,37 @@
 
 namespace blink {
 
-enum ColorParseResult {
-  kParsedRGBA,
-  kParsedCurrentColor,
-  kParsedSystemColor,
-  kParseFailed
-};
-
 static ColorParseResult ParseColor(Color& parsed_color,
                                    const String& color_string,
                                    mojom::blink::ColorScheme color_scheme) {
   if (EqualIgnoringASCIICase(color_string, "currentcolor"))
-    return kParsedCurrentColor;
+    return ColorParseResult::kCurrentColor;
   const bool kUseStrictParsing = true;
   if (CSSParser::ParseColor(parsed_color, color_string, kUseStrictParsing))
-    return kParsedRGBA;
+    return ColorParseResult::kColor;
   if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme))
-    return kParsedSystemColor;
-  return kParseFailed;
+    return ColorParseResult::kColor;
+  return ColorParseResult::kParseFailed;
 }
 
-static Color CurrentColor(HTMLCanvasElement* canvas) {
-  if (!canvas || !canvas->isConnected() || !canvas->InlineStyle())
-    return Color::kBlack;
-  Color color = Color::kBlack;
-  CSSParser::ParseColor(
-      color, canvas->InlineStyle()->GetPropertyValue(CSSPropertyID::kColor));
-  return color;
+ColorParseResult ParseCanvasColorString(const String& color_string,
+                                        mojom::blink::ColorScheme color_scheme,
+                                        Color& parsed_color) {
+  return ParseColor(parsed_color,
+                    color_string.StripWhiteSpace(IsHTMLSpace<UChar>),
+                    color_scheme);
 }
 
-static mojom::blink::ColorScheme ColorScheme(HTMLCanvasElement* canvas) {
-  if (canvas && canvas->isConnected()) {
-    if (auto* style = canvas->GetComputedStyle())
-      return style->UsedColorScheme();
-  }
-  return mojom::blink::ColorScheme::kLight;
-}
-
-bool ParseColorOrCurrentColor(Color& parsed_color,
-                              const String& color_string,
-                              HTMLCanvasElement* canvas) {
-  ColorParseResult parse_result =
-      ParseColor(parsed_color, color_string.StripWhiteSpace(IsHTMLSpace<UChar>),
-                 ColorScheme(canvas));
+bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
+  const ColorParseResult parse_result = ParseCanvasColorString(
+      color_string, mojom::blink::ColorScheme::kLight, parsed_color);
   switch (parse_result) {
-    case kParsedRGBA:
-    case kParsedSystemColor:
+    case ColorParseResult::kColor:
       return true;
-    case kParsedCurrentColor:
-      parsed_color = CurrentColor(canvas);
+    case ColorParseResult::kCurrentColor:
+      parsed_color = Color::kBlack;
       return true;
-    case kParseFailed:
-      return false;
-    default:
-      NOTREACHED();
+    case ColorParseResult::kParseFailed:
       return false;
   }
 }

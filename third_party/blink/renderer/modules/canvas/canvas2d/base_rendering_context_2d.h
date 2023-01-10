@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/record_paint_canvas.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -255,8 +256,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   virtual RespectImageOrientationEnum RespectImageOrientation() const = 0;
 
-  virtual bool ParseColorOrCurrentColor(Color&,
-                                        const String& color_string) const = 0;
+  // Returns the color to use as the current color for operations that identify
+  // the current color.
+  virtual Color GetCurrentColor() const = 0;
 
   virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
   virtual cc::PaintCanvas* GetPaintCanvas() const = 0;
@@ -498,6 +500,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void WillOverwriteCanvas(OverdrawOp);
   virtual void WillOverwriteCanvas() = 0;
 
+  void SetColorScheme(mojom::blink::ColorScheme color_scheme) {
+    color_scheme_ = color_scheme;
+  }
+
   bool context_restorable_{true};
   CanvasRenderingContext::LostContextMode context_lost_mode_{
       CanvasRenderingContext::kNotLostContext};
@@ -649,10 +655,15 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       const V8CanvasStyle& v8_style,
       CanvasOps op);
 
+  // Parses the string as a color. If successful, sets `color` appropriately
+  // and returns true.
+  bool ParseColorOrCurrentColor(const String& color_string, Color& color) const;
+
   bool origin_tainted_by_content_;
   UsePaintCache path2d_use_paint_cache_;
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
+  mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
 };
 
 ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(

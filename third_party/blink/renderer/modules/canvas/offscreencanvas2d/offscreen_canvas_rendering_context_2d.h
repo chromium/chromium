@@ -121,7 +121,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return kRespectImageOrientation;
   }
 
-  bool ParseColorOrCurrentColor(Color&, const String& color_string) const final;
+  Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() const final;

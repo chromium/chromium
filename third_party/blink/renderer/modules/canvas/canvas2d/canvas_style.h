@@ -30,6 +30,7 @@
 #include "base/check_op.h"
 #include "base/types/pass_key.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -118,9 +119,27 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   Member<CanvasPattern> pattern_;
 };
 
-bool ParseColorOrCurrentColor(Color& parsed_color,
-                              const String& color_string,
-                              HTMLCanvasElement*);
+enum class ColorParseResult {
+  // The string identified a valid color.
+  kColor,
+
+  // The string identified the current color.
+  kCurrentColor,
+
+  // Parsing failed.
+  kParseFailed
+};
+
+// Parses the canvas color string and returns the result. If the result is
+// `kParsedColor`, `parsed_color` is set appropriately.
+ColorParseResult ParseCanvasColorString(const String& color_string,
+                                        mojom::blink::ColorScheme color_scheme,
+                                        Color& parsed_color);
+
+// Parses the canvas color string, returning true on success. If `color_string`
+// indicates the current color should be used, `parsed_color` is set to black.
+// Use this function in places not associated with an HTMLCanvasElement.
+bool ParseCanvasColorString(const String& color_string, Color& parsed_color);
 
 }  // namespace blink
 

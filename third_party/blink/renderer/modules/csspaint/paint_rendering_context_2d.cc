@@ -52,14 +52,12 @@ int PaintRenderingContext2D::Height() const {
   return container_size_.height();
 }
 
-bool PaintRenderingContext2D::ParseColorOrCurrentColor(
-    Color& color,
-    const String& color_string) const {
+Color PaintRenderingContext2D::GetCurrentColor() const {
   // We ignore "currentColor" for PaintRenderingContext2D and just make it
   // "black". "currentColor" can be emulated by having "color" as an input
   // property for the css-paint-api.
   // https://github.com/w3c/css-houdini-drafts/issues/133
-  return ::blink::ParseColorOrCurrentColor(color, color_string, nullptr);
+  return Color::kBlack;
 }
 
 // We need to account for the |effective_zoom_| for shadow effects only, and not

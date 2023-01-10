@@ -175,7 +175,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   RespectImageOrientationEnum RespectImageOrientation() const final;
 
-  bool ParseColorOrCurrentColor(Color&, const String& color_string) const final;
+  Color GetCurrentColor() const final;
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() const final;
@@ -281,6 +281,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   cc::Layer* CcLayer() const override;
   bool IsCanvas2DBufferValid() const override;
+
+  void ColorSchemeMayHaveChanged() override;
 
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;

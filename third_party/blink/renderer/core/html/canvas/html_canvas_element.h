@@ -314,9 +314,13 @@ class CORE_EXPORT HTMLCanvasElement final
 
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
+  void DidRecalcStyle(const StyleRecalcChange change) override;
+  void RemovedFrom(ContainerNode& insertion_point) override;
 
  private:
   void Dispose();
+
+  void ColorSchemeMayHaveChanged();
 
   void RecordIdentifiabilityMetric(IdentifiableSurface surface,
                                    IdentifiableToken value) const;

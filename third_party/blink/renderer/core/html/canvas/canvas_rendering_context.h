@@ -286,6 +286,8 @@ class CORE_EXPORT CanvasRenderingContext
   virtual bool PushFrame() { return false; }
   virtual ImageBitmap* TransferToImageBitmap(ScriptState*) { return nullptr; }
 
+  // Notification the color scheme of the HTMLCanvasElement may have changed.
+  virtual void ColorSchemeMayHaveChanged() {}
 
   bool WouldTaintOrigin(CanvasImageSource*);
   void DidMoveToNewDocument(Document*);

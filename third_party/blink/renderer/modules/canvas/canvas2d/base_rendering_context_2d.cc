@@ -455,8 +455,9 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
       if (v8_style.string == GetState().UnparsedStrokeColor())
         return;
       Color parsed_color = Color::kTransparent;
-      if (!ParseColorOrCurrentColor(parsed_color, v8_style.string))
+      if (!ParseColorOrCurrentColor(v8_style.string, parsed_color)) {
         return;
+      }
       if (GetState().StrokeStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
         GetState().SetUnparsedStrokeColor(v8_style.string);
         return;
@@ -468,6 +469,22 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
 
   GetState().SetUnparsedStrokeColor(v8_style.string);
   GetState().ClearResolvedFilter();
+}
+
+bool BaseRenderingContext2D::ParseColorOrCurrentColor(
+    const String& color_string,
+    Color& color) const {
+  const ColorParseResult parse_result =
+      ParseCanvasColorString(color_string, color_scheme_, color);
+  switch (parse_result) {
+    case ColorParseResult::kColor:
+      return true;
+    case ColorParseResult::kCurrentColor:
+      color = GetCurrentColor();
+      return true;
+    case ColorParseResult::kParseFailed:
+      return false;
+  }
 }
 
 v8::Local<v8::Value> BaseRenderingContext2D::fillStyle(
@@ -503,8 +520,9 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
       if (v8_style.string == GetState().UnparsedFillColor())
         return;
       Color parsed_color = Color::kTransparent;
-      if (!ParseColorOrCurrentColor(parsed_color, v8_style.string))
+      if (!ParseColorOrCurrentColor(v8_style.string, parsed_color)) {
         return;
+      }
       if (GetState().FillStyle()->IsEquivalentRGBA(parsed_color.Rgb())) {
         GetState().SetUnparsedFillColor(v8_style.string);
         return;
@@ -638,8 +656,9 @@ String BaseRenderingContext2D::shadowColor() const {
 
 void BaseRenderingContext2D::setShadowColor(const String& color_string) {
   Color color;
-  if (!ParseColorOrCurrentColor(color, color_string))
+  if (!ParseColorOrCurrentColor(color_string, color)) {
     return;
+  }
   if (Color::FromSkColor(GetState().ShadowColor()) == color)
     return;
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {

@@ -168,6 +168,7 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
     CanvasResourceTracker::For(execution_context->GetIsolate())
         ->Add(this, execution_context);
   }
+  SetHasCustomStyleCallbacks();
 }
 
 HTMLCanvasElement::~HTMLCanvasElement() {
@@ -210,6 +211,12 @@ void HTMLCanvasElement::Dispose() {
   }
 }
 
+void HTMLCanvasElement::ColorSchemeMayHaveChanged() {
+  if (context_) {
+    context_->ColorSchemeMayHaveChanged();
+  }
+}
+
 void HTMLCanvasElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kWidthAttr ||
@@ -235,6 +242,7 @@ LayoutObject* HTMLCanvasElement::CreateLayoutObject(const ComputedStyle& style,
 Node::InsertionNotificationRequest HTMLCanvasElement::InsertedInto(
     ContainerNode& node) {
   SetIsInCanvasSubtree(true);
+  ColorSchemeMayHaveChanged();
   return HTMLElement::InsertedInto(node);
 }
 
@@ -1452,6 +1460,16 @@ void HTMLCanvasElement::DidMoveToNewDocument(Document& old_document) {
   SetExecutionContext(GetExecutionContext());
   SetPage(GetDocument().GetPage());
   HTMLElement::DidMoveToNewDocument(old_document);
+}
+
+void HTMLCanvasElement::DidRecalcStyle(const StyleRecalcChange change) {
+  HTMLElement::DidRecalcStyle(change);
+  ColorSchemeMayHaveChanged();
+}
+
+void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
+  ColorSchemeMayHaveChanged();
 }
 
 void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
