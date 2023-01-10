@@ -192,6 +192,7 @@ struct SerializeObject {
 // 29: Add navigation API key.
 // 30: Add navigation API state.
 // 31: Add protect url in navigation API bit.
+// 32: Fix assign() for initiator origin.
 // NOTE: If the version is -1, then the pickle contains only a URL string.
 // See ReadPageState.
 //
@@ -199,7 +200,7 @@ const int kMinVersion = 11;
 // NOTE: When changing the version, please add a backwards compatibility test.
 // See PageStateSerializationTest.DumpExpectedPageStateForBackwardsCompat for
 // instructions on how to generate the new test case.
-const int kCurrentVersion = 31;
+const int kCurrentVersion = 32;
 
 // A bunch of convenience functions to write to/read from SerializeObjects.  The
 // de-serializers assume the input data will be in the correct format and fall
@@ -948,9 +949,11 @@ void ExplodedFrameState::operator=(const ExplodedFrameState& other) {
     assign(other);
 }
 
+// All members of ExplodedFrameState should be copied.
 void ExplodedFrameState::assign(const ExplodedFrameState& other) {
   url_string = other.url_string;
   referrer = other.referrer;
+  initiator_origin = other.initiator_origin;
   target = other.target;
   state_object = other.state_object;
   document_state = other.document_state;
