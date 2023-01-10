@@ -25,9 +25,6 @@
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"  // nogncheck
 
 namespace {
-// During playback of protected content, we need to request the keys at an
-// interval no greater than this. This allows updating of key usage data.
-constexpr base::TimeDelta kKeyRetrievalMaxPeriod = base::Minutes(1);
 // This increments the lower 64 bit counter of an 128 bit IV.
 void ctr128_inc64(uint8_t* counter) {
   uint32_t n = 16;
@@ -195,27 +192,9 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
         BindToCurrentLoop(base::BindOnce(
             &VaapiVideoDecoderDelegate::OnGetHwKeyData,
             weak_factory_.GetWeakPtr(), decrypt_config_->key_id())));
-    last_key_retrieval_time_ =
-        base::DefaultTickClock::GetInstance()->NowTicks();
     // Don't change our state here because we are created, but we just return
     // kInProcess for now to trigger a wait/retry state.
     return ProtectedSessionState::kInProcess;
-  }
-
-  // We may also need to request the key in order to update key usage times in
-  // OEMCrypto. We do care about the return value, because it will indicate key
-  // validity for us.
-  if (base::DefaultTickClock::GetInstance()->NowTicks() -
-          last_key_retrieval_time_ >
-      kKeyRetrievalMaxPeriod) {
-    chromeos_cdm_context_->GetHwKeyData(
-        decrypt_config_.get(), hw_identifier_,
-        BindToCurrentLoop(base::BindOnce(
-            &VaapiVideoDecoderDelegate::OnGetHwKeyData,
-            weak_factory_.GetWeakPtr(), decrypt_config_->key_id())));
-
-    last_key_retrieval_time_ =
-        base::DefaultTickClock::GetInstance()->NowTicks();
   }
 
   crypto_params->num_segments += subsamples.size();

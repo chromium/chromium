@@ -156,7 +156,6 @@ class VaapiVideoDecoderDelegate {
   std::unique_ptr<DecryptConfig> decrypt_config_;
   std::vector<uint8_t> hw_identifier_;
   std::map<std::string, std::vector<uint8_t>> hw_key_data_map_;
-  base::TimeTicks last_key_retrieval_time_;
 
   // This will only be true on AMD platforms where we support encrypted content
   // and the content is encrypted.
