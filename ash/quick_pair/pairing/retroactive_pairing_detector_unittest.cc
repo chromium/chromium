@@ -1895,5 +1895,40 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
+TEST_F(RetroactivePairingDetectorTest, NotifyAfterDeviceRepairs) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices},
+      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  // Pair a device with classic Bluetooth pairing and set the MessageStream
+  // with model id and BLE address bytes to successfully detect the scenario.
+  // At this point, the device is in the `device_pairing_information_` map with
+  // an expiry timestamp.
+  SetMessageStream(kModelIdBleAddressBytes);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+
+  // Simulate the device being unpaired, and paired again.
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/false, kTestDeviceAddress);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+
+  // When the model id and BLE address fire, we expect the retroactive pairing
+  // event to still be detected, even if the device was unpaired and repeated.
+  fake_socket_->TriggerReceiveCallback();
+  NotifyMessageStreamConnected(kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(retroactive_pair_found_);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

@@ -234,10 +234,12 @@ void RetroactivePairingDetectorImpl::OnMessageStreamConnected(
 void RetroactivePairingDetectorImpl::AddDevicePairingInformation(
     const std::string& device_address) {
   QP_LOG(VERBOSE) << __func__;
-  DCHECK(device_pairing_information_.find(device_address) ==
-         device_pairing_information_.end());
-  RetroactivePairingInformation info;
-  device_pairing_information_[device_address] = info;
+
+  // There is potential for the device at |device_address| to already be in
+  // the map (in the case of repairing for example). If it is already in the
+  // map, update the timeout with the new timestamp. If it isn't already in
+  // the map, create a value with default empty values, and add the expiry
+  // timeout.
   device_pairing_information_[device_address].expiry_timestamp =
       base::Time::Now() + kRetroactiveDevicePairingTimeout;
 
@@ -499,8 +501,7 @@ void RetroactivePairingDetectorImpl::
   for (auto it = device_pairing_information_.begin();
        it != device_pairing_information_.end(); ++it) {
     if (base::Time::Now() >= it->second.expiry_timestamp) {
-      const std::string device_address = it->first;
-      QP_LOG(VERBOSE) << __func__ << "Removing device at " << device_address
+      QP_LOG(VERBOSE) << __func__ << ": Removing device at " << it->first
                       << "that has exceeded the time allotted for detecting "
                          "retroactive scenario.";
       RemoveDeviceInformationHelper(it->first);
