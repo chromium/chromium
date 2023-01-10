@@ -883,10 +883,16 @@ void AppInstallControllerImpl::DoCancel() {
 scoped_refptr<App> MakeAppInstall(bool is_silent_install) {
   return base::MakeRefCounted<AppInstall>(
       base::BindRepeating(
-          [](const std::string& app_name) -> std::unique_ptr<SplashScreen> {
-            return std::make_unique<ui::SplashScreen>(
-                base::UTF8ToUTF16(app_name));
-          }),
+          [](bool is_silent_install,
+             const std::string& app_name) -> std::unique_ptr<SplashScreen> {
+            if (is_silent_install) {
+              return std::make_unique<ui::SilentSplashScreen>();
+            } else {
+              return std::make_unique<ui::SplashScreen>(
+                  base::UTF8ToUTF16(app_name));
+            }
+          },
+          is_silent_install),
       base::BindRepeating(
           [](bool is_silent_install,
              scoped_refptr<UpdateService> update_service)

@@ -20,6 +20,13 @@
 namespace updater {
 namespace ui {
 
+class SilentSplashScreen : public updater::SplashScreen {
+ public:
+  // Overrides for SplashScreen.
+  void Show() override;
+  void Dismiss(base::OnceClosure callback) override;
+};
+
 class SplashScreen : public CAxDialogImpl<SplashScreen>,
                      public CustomDlgColors,
                      public OwnerDrawTitleBar,

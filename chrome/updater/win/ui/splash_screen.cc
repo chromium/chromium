@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui.h"
@@ -35,6 +36,13 @@ uint8_t AlphaScaleToAlphaValue(int alpha_scale) {
 }
 
 }  // namespace
+
+void SilentSplashScreen::Show() {}
+
+void SilentSplashScreen::Dismiss(base::OnceClosure callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
+}
 
 SplashScreen::SplashScreen(const std::u16string& bundle_name)
     : timer_created_(false), alpha_index_(0) {
