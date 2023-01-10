@@ -197,8 +197,10 @@ PageAnimator* ScriptedAnimationController::GetPageAnimator() {
 void ScriptedAnimationController::ServiceScriptedAnimations(
     base::TimeTicks monotonic_time_now,
     bool can_throttle) {
-  if (!GetExecutionContext() || GetExecutionContext()->IsContextPaused())
+  if (!GetExecutionContext() ||
+      GetExecutionContext()->IsContextFrozenOrPaused()) {
     return;
+  }
   auto* loader = GetWindow()->document()->Loader();
   if (!loader)
     return;
