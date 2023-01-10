@@ -8,17 +8,41 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/prefs/pref_service.h"
 
 using CacheEntry = ZeroSuggestCacheService::CacheEntry;
 
-ZeroSuggestCacheService::ZeroSuggestCacheService(size_t cache_size)
-    : cache_(cache_size) {}
+ZeroSuggestCacheService::ZeroSuggestCacheService(PrefService* prefs,
+                                                 size_t cache_size)
+    : prefs_(prefs), cache_(cache_size) {
+  DCHECK_GT(cache_size, 0u);
 
-ZeroSuggestCacheService::~ZeroSuggestCacheService() = default;
+  if (prefs_) {
+    // Load cached ZPS response for NTP from prior session via prefs.
+    ntp_entry_.response_json =
+        omnibox::GetUserPreferenceForZeroSuggestCachedResponse(prefs_,
+                                                               /*page_url=*/"");
+  }
+}
+
+ZeroSuggestCacheService::~ZeroSuggestCacheService() {
+  if (prefs_) {
+    // Dump cached ZPS response for NTP to prefs.
+    omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+        prefs_, /*page_url=*/"", /*response=*/ntp_entry_.response_json);
+  }
+}
 
 CacheEntry ZeroSuggestCacheService::ReadZeroSuggestResponse(
     const std::string& page_url) const {
+  // Read cached ZPS response for NTP.
+  if (page_url.empty()) {
+    return ntp_entry_;
+  }
+
+  // Read cached ZPS response for SRP/Web.
   const auto it = cache_.Get(page_url);
   return it != cache_.end() ? it->second : CacheEntry();
 }
@@ -26,9 +50,18 @@ CacheEntry ZeroSuggestCacheService::ReadZeroSuggestResponse(
 void ZeroSuggestCacheService::StoreZeroSuggestResponse(
     const std::string& page_url,
     const CacheEntry& response) {
-  cache_.Put(page_url, response);
-  base::UmaHistogramCounts1M("Omnibox.ZeroSuggestProvider.CacheMemoryUsage",
-                             base::trace_event::EstimateMemoryUsage(cache_));
+  if (page_url.empty()) {
+    // Write ZPS response for NTP to cache.
+    ntp_entry_ = response;
+  } else {
+    // Write ZPS response for SRP/Web to cache.
+    cache_.Put(page_url, response);
+  }
+
+  base::UmaHistogramCounts1M(
+      "Omnibox.ZeroSuggestProvider.CacheMemoryUsage",
+      base::trace_event::EstimateMemoryUsage(cache_) +
+          base::trace_event::EstimateMemoryUsage(ntp_entry_));
 
   for (auto& observer : observers_) {
     observer.OnZeroSuggestResponseUpdated(page_url, response);

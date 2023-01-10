@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//components/history/core/test",
     "//components/omnibox/browser:test_support",
     "//components/optimization_guide/core:test_support",
+    "//components/prefs:test_support",
     "//components/search_engines",
     "//components/ukm:test_support",
     "//content/test:test_support",
