@@ -257,7 +257,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
-    "chrome://crashes",
     "chrome://credits",
     "chrome://customize-chrome-side-panel.top-chrome",
     "chrome://device-log",
@@ -389,6 +388,7 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
     "chrome://connectors-internals",
+    "chrome://crashes",
 #endif
 #if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",

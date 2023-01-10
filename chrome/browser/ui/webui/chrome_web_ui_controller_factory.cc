@@ -760,10 +760,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIAutofillInternalsHost)
     return &NewWebUI<AutofillInternalsUI>;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() == chrome::kChromeUIAppDisabledHost)
     return &NewWebUI<chromeos::ChromeURLDisabledUI>;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (url.host_piece() == chrome::kChromeUIBluetoothInternalsHost)
@@ -776,8 +776,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ComponentsUI>;
   if (url.spec() == chrome::kChromeUIConstrainedHTMLTestURL)
     return &NewWebUI<ConstrainedWebDialogUI>;
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (url.host_piece() == chrome::kChromeUICrashesHost)
     return &NewWebUI<CrashesUI>;
+#endif
   if (url.host_piece() == chrome::kChromeUIDeviceLogHost)
     return &NewWebUI<chromeos::DeviceLogUI>;
   if (url.host_piece() == chrome::kChromeUIDownloadInternalsHost)
@@ -1375,8 +1377,10 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return ConflictsUI::GetFaviconResourceBytes(scale_factor);
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (page_url.host_piece() == chrome::kChromeUICrashesHost)
     return CrashesUI::GetFaviconResourceBytes(scale_factor);
+#endif
 
   if (page_url.host_piece() == chrome::kChromeUIFlagsHost)
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
@@ -1483,8 +1487,8 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kOsUIFlagsURL), GURL(chrome::kOsUIGpuURL),
         GURL(chrome::kOsUIHistogramsURL),
         GURL(chrome::kChromeUIHumanPresenceInternalsURL),
-        GURL(chrome::kChromeUIIntenetConfigDialogURL),
-        GURL(chrome::kChromeUIIntenetDetailDialogURL),
+        GURL(chrome::kChromeUIInternetConfigDialogURL),
+        GURL(chrome::kChromeUIInternetDetailDialogURL),
         GURL(chrome::kOsUIInvalidationsURL),
         GURL(chrome::kChromeUILockScreenNetworkURL),
         GURL(chrome::kChromeUILockScreenStartReauthURL),

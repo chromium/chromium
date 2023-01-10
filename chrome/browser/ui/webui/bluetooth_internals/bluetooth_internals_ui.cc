@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util.h"  // nogncheck
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/bluetooth_internals_resources.h"
 #include "chrome/grit/bluetooth_internals_resources_map.h"

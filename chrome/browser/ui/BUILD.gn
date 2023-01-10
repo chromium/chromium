@@ -236,8 +236,6 @@ static_library("ui") {
     "webui/constrained_web_dialog_ui.h",
     "webui/cookies_tree_model_util.cc",
     "webui/cookies_tree_model_util.h",
-    "webui/crashes_ui.cc",
-    "webui/crashes_ui.h",
     "webui/device_log_ui.cc",
     "webui/device_log_ui.h",
     "webui/download_internals/download_internals_ui.cc",
@@ -422,7 +420,6 @@ static_library("ui") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/share",
     "//chrome/browser/ui/webui:configs",
-    "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings",
@@ -673,7 +670,6 @@ static_library("ui") {
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/safe_browsing",
-    "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/profiling_host",
     "//chrome/browser/ui/webui:configs",
   ]
@@ -2921,6 +2917,8 @@ static_library("ui") {
       "webui/ash/user_image_source.h",
       "webui/ash/vm/vm_ui.cc",
       "webui/ash/vm/vm_ui.h",
+      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
+      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
       "webui/extensions/ash/kiosk_apps_handler.cc",
       "webui/extensions/ash/kiosk_apps_handler.h",
       "webui/help/help_utils_chromeos.cc",
@@ -3402,8 +3400,6 @@ static_library("ui") {
       "views/tabs/tab_scrubber_chromeos.h",
       "webui/certificate_provisioning_ui_handler.cc",
       "webui/certificate_provisioning_ui_handler.h",
-      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
-      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
       "webui/version/version_handler_chromeos.cc",
       "webui/version/version_handler_chromeos.h",
       "window_sizer/window_sizer_chromeos.cc",
@@ -3446,6 +3442,14 @@ static_library("ui") {
       "//chromeos/ui/frame",
       "//chromeos/ui/wm",
       "//ui/chromeos",
+    ]
+  } else {
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/webui/bluetooth_internals" ]
+    deps += [ "//chrome/browser/ui/webui/bluetooth_internals" ]
+    sources += [
+      "webui/crashes_ui.cc",
+      "webui/crashes_ui.h",
     ]
   }
 

@@ -59,7 +59,7 @@ void AddInternetStrings(content::WebUIDataSource* html_source) {
 
 std::string GetId(const std::string& network_type,
                   const std::string& network_id) {
-  std::string result = chrome::kChromeUIIntenetConfigDialogURL + network_type;
+  std::string result = chrome::kChromeUIInternetConfigDialogURL + network_type;
   if (!network_id.empty()) {
     result += ".";
     result += network_id;
@@ -111,7 +111,7 @@ void InternetConfigDialog::ShowDialogForNetworkType(
 InternetConfigDialog::InternetConfigDialog(const std::string& dialog_id,
                                            const std::string& network_type,
                                            const std::string& network_id)
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIIntenetConfigDialogURL),
+    : SystemWebDialogDelegate(GURL(chrome::kChromeUIInternetConfigDialogURL),
                               std::u16string() /* title */),
       dialog_id_(dialog_id),
       network_type_(network_type),
