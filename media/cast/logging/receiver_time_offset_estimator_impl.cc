@@ -120,9 +120,9 @@ bool ReceiverTimeOffsetEstimatorImpl::GetReceiverOffsetBounds(
 
   // Sanitize the output, we don't want the upper bound to be
   // lower than the lower bound, make them the same.
-  if (upper_bound < lower_bound) {
-    lower_bound += (lower_bound - upper_bound) / 2;
-    upper_bound = lower_bound;
+  if (*upper_bound < *lower_bound) {
+    *lower_bound += (*lower_bound - *upper_bound) / 2;
+    *upper_bound = *lower_bound;
   }
   return true;
 }
