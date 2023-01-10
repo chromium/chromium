@@ -1888,7 +1888,7 @@
             ]
         }
     ],
-    "BiometricAuthenticationInSettingsStudy": [
+    "BiometricAuthenticationChromeDesktop": [
         {
             "platforms": [
                 "mac"
@@ -1897,7 +1897,21 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "BiometricAuthenticationForFilling",
                         "BiometricAuthenticationInSettings"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BiometricAuthenticationForFilling"
                     ]
                 }
             ]
