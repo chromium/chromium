@@ -19,9 +19,9 @@
     aria-labelledby="marketingName deviceInfo">
   <div class="diagnostics-chip" id="overviewChip">
     <span id="marketingName" aria-describedby="deviceInfo"
-        hidden="[[shouldHideMarketingName_(systemInfo_.marketingName)]]">
-      [[systemInfo_.marketingName]]
+        hidden="[[shouldHideMarketingName(systemInfo.marketingName)]]">
+      [[systemInfo.marketingName]]
     </span>
-    <span id="deviceInfo" aria-hidden="true">[[deviceInfo_]]</span>
+    <span id="deviceInfo" aria-hidden="true">[[deviceInfo]]</span>
   </div>
 </div>

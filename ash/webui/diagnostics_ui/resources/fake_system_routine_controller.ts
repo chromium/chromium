@@ -15,22 +15,22 @@ import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunnerInter
 
 export class FakeSystemRoutineController implements
     SystemRoutineControllerInterface {
-  private methods_: FakeMethodResolver = new FakeMethodResolver();
-  private routineResults_: Map<RoutineType, RoutineResult> = new Map();
+  private methods: FakeMethodResolver = new FakeMethodResolver();
+  private routineResults: Map<RoutineType, RoutineResult> = new Map();
   /**
    * Controls the delay resolving routines. By default this is 0 and routines
    * resolve immediately, but still asynchronously.
    */
-  private delayTimeMilliseconds_: number = 0;
+  private delayTimeMilliseconds: number = 0;
   /**
    * Holds the resolver for the next routine waiting to be resolved. This
    * will be null if no routines are in progress.
    */
-  private resolver_: PromiseResolver<any>|null = null;
+  private resolver: PromiseResolver<any>|null = null;
   // Holds the remote that is called on completion.
-  private remote_: RoutineRunnerInterface|null = null;
+  private remote: RoutineRunnerInterface|null = null;
   // Holds the type of the routine currently running.
-  private routineType_: RoutineType|null = null;
+  private routineType: RoutineType|null = null;
 
   constructor() {
     this.registerMethods();
@@ -64,44 +64,44 @@ export class FakeSystemRoutineController implements
 
   // Implements SystemRoutineController.GetSupportedRoutines
   getSupportedRoutines(): Promise<{routines: RoutineType[]}> {
-    return this.methods_.resolveMethod('getSupportedRoutines');
+    return this.methods.resolveMethod('getSupportedRoutines');
   }
 
   // Sets the value that will be returned when calling getSupportedRoutines().
   setFakeSupportedRoutines(routines: RoutineType[]): void {
-    this.methods_.setResult('getSupportedRoutines', {routines: routines});
+    this.methods.setResult('getSupportedRoutines', {routines: routines});
   }
 
   // Implements SystemRoutineController.RunRoutine.
   runRoutine(routineType: RoutineType, remoteRunner: RoutineRunnerInterface):
       void {
-    this.resolver_ = new PromiseResolver();
-    this.remote_ = remoteRunner;
-    this.routineType_ = routineType;
+    this.resolver = new PromiseResolver();
+    this.remote = remoteRunner;
+    this.routineType = routineType;
 
     // If there is a positive or zero delay then setup a timer, otherwise
     // the routine will wait until resolveRoutineForTesting() is called.
-    if (this.delayTimeMilliseconds_ >= 0) {
+    if (this.delayTimeMilliseconds >= 0) {
       setTimeout(() => {
-        this.fireRemoteWithResult_();
-      }, this.delayTimeMilliseconds_);
+        this.fireRemoteWithResult();
+      }, this.delayTimeMilliseconds);
     }
   }
 
   // Setup method resolvers.
   registerMethods(): void {
-    this.methods_.register('getSupportedRoutines');
+    this.methods.register('getSupportedRoutines');
   }
 
   setFakeStandardRoutineResult(
       routineType: RoutineType, routineResult: StandardRoutineResult): void {
-    this.routineResults_.set(
+    this.routineResults.set(
         routineType, ({simpleResult: routineResult} as RoutineResult));
   }
 
   setFakePowerRoutineResult(
       routineType: RoutineType, routineResult: PowerRoutineResult): void {
-    this.routineResults_.set(
+    this.routineResults.set(
         routineType, ({powerResult: routineResult} as RoutineResult));
   }
 
@@ -115,13 +115,13 @@ export class FakeSystemRoutineController implements
    */
   setDelayTimeInMillisecondsForTesting(delayMilliseconds: number): void {
     assert(delayMilliseconds >= -1);
-    this.delayTimeMilliseconds_ = delayMilliseconds;
+    this.delayTimeMilliseconds = delayMilliseconds;
   }
 
   // Returns the pending run routine promise.
   getRunRoutinePromiseForTesting(): Promise<void> {
-    assert(this.resolver_ != null);
-    return this.resolver_.promise;
+    assert(this.resolver != null);
+    return this.resolver.promise;
   }
 
   /**
@@ -131,11 +131,11 @@ export class FakeSystemRoutineController implements
    * a routing is currently in progress.
    */
   resolveRoutineForTesting(): Promise<void> {
-    assert(this.delayTimeMilliseconds_ == -1);
-    assert(this.resolver_ != null);
-    const promise = this.resolver_.promise;
+    assert(this.delayTimeMilliseconds == -1);
+    assert(this.resolver != null);
+    const promise = this.resolver.promise;
 
-    this.fireRemoteWithResult_();
+    this.fireRemoteWithResult();
     return promise;
   }
 
@@ -144,21 +144,21 @@ export class FakeSystemRoutineController implements
    * otherwise this function will assert.
    */
   isRoutineInProgressForTesting(): boolean {
-    assert(this.delayTimeMilliseconds_ == -1);
-    return this.resolver_ != null;
+    assert(this.delayTimeMilliseconds == -1);
+    return this.resolver != null;
   }
 
   // Returns the expected result for a running routine.
-  private getResultInfo_(): RoutineResultInfo {
-    assert(this.routineType_ != null);
-    let result = this.routineResults_.get(this.routineType_);
+  private getResultInfo(): RoutineResultInfo {
+    assert(this.routineType != null);
+    let result = this.routineResults.get(this.routineType);
     if (result == undefined) {
       result = {simpleResult: StandardRoutineResult.kExecutionError} as
           RoutineResult;
     }
 
     const resultInfo: RoutineResultInfo = {
-      type: this.routineType_,
+      type: this.routineType,
       result: result,
     };
 
@@ -166,11 +166,11 @@ export class FakeSystemRoutineController implements
   }
 
   // Fires the remote callback with the expected result.
-  private fireRemoteWithResult_(): void {
-    this.remote_!.onRoutineResult(this.getResultInfo_());
-    this.resolver_!.resolve(null);
-    this.resolver_ = null;
-    this.remote_ = null;
-    this.routineType_ = null;
+  private fireRemoteWithResult(): void {
+    this.remote!.onRoutineResult(this.getResultInfo());
+    this.resolver!.resolve(null);
+    this.resolver = null;
+    this.remote = null;
+    this.routineType = null;
   }
 }

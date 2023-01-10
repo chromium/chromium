@@ -10,25 +10,25 @@
 <div id="inputListContainer" tabindex="0">
   <div class="diagnostics-cards-container-nav">
     <div class="card-width">
-      <template is="dom-if" if="[[keyboards_.length]]">
-        <input-card device-type="keyboard" devices="[[keyboards_]]" id="keyboardInputCard"
-          on-test-button-click="handleKeyboardTestButtonClick_"
+      <template is="dom-if" if="[[keyboards.length]]">
+        <input-card device-type="keyboard" devices="[[keyboards]]" id="keyboardInputCard"
+          on-test-button-click="handleKeyboardTestButtonClick"
           host-device-status="[[hostDeviceStatus]]">
           <div slot="title" id="keyboardTitle" tabindex="0" role="heading">
             [[i18n('inputCategoryKeyboard')]]
           </div>
         </input-card>
       </template>
-      <template is="dom-if" if="[[showTouchpads_]]">
-        <input-card device-type="touchpad" devices="[[touchpads_]]"
-          on-test-button-click="handleTouchpadTestButtonClick_"
+      <template is="dom-if" if="[[showTouchpads]]">
+        <input-card device-type="touchpad" devices="[[touchpads]]"
+          on-test-button-click="handleTouchpadTestButtonClick"
           host-device-status="[[hostDeviceStatus]]">
           <div slot="title" role="heading">[[i18n('inputCategoryTouchpad')]]</div>
         </input-card>
       </template>
-      <template is="dom-if" if="[[showTouchscreens_]]">
-        <input-card device-type="touchscreen" devices="[[touchscreens_]]"
-          on-test-button-click="handleTouchscreenTestButtonClick_"
+      <template is="dom-if" if="[[showTouchscreens]]">
+        <input-card device-type="touchscreen" devices="[[touchscreens]]"
+          on-test-button-click="handleTouchscreenTestButtonClick"
           host-device-status="[[hostDeviceStatus]]">
           <div slot="title" role="heading">[[i18n('inputCategoryTouchscreen')]]</div>
         </input-card>

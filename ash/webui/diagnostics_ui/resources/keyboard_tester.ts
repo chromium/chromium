@@ -141,34 +141,34 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
        */
       keyboard: KeyboardInfo,
 
-      layoutIsKnown_: {
+      layoutIsKnown: {
         type: Boolean,
-        computed: 'computeLayoutIsKnown_(keyboard)',
+        computed: 'computeLayoutIsKnown(keyboard)',
       },
 
-      diagramMechanicalLayout_: {
+      diagramMechanicalLayout: {
         type: String,
-        computed: 'computeDiagramMechanicalLayout_(keyboard)',
+        computed: 'computeDiagramMechanicalLayout(keyboard)',
       },
 
-      diagramPhysicalLayout_: {
+      diagramPhysicalLayout: {
         type: String,
-        computed: 'computeDiagramPhysicalLayout_(keyboard)',
+        computed: 'computeDiagramPhysicalLayout(keyboard)',
       },
 
-      diagramTopRightKey_: {
+      diagramTopRightKey: {
         type: String,
-        computed: 'computeDiagramTopRightKey_(keyboard)',
+        computed: 'computeDiagramTopRightKey(keyboard)',
       },
 
-      showNumberPad_: {
+      showNumberPad: {
         type: Boolean,
-        computed: 'computeShowNumberPad_(keyboard)',
+        computed: 'computeShowNumberPad(keyboard)',
       },
 
-      topRowKeys_: {
+      topRowKeys: {
         type: Array,
-        computed: 'computeTopRowKeys_(keyboard)',
+        computed: 'computeTopRowKeys(keyboard)',
       },
 
       isLoggedIn: {
@@ -188,20 +188,20 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   // TODO(crbug.com/1257138): use the proper type annotation instead of
   // string.
   protected isLoggedIn: boolean;
-  protected diagramTopRightKey_: string;
+  protected diagramTopRightKey: string;
   private lostFocusToastLingerMs: number;
-  private layoutIsKnown_: boolean;
+  private layoutIsKnown: boolean;
   // TODO(crbug.com/1257138): use the proper type annotation instead of
   // string.
-  private diagramMechanicalLayout_: string;
+  private diagramMechanicalLayout: string;
   // TODO(crbug.com/1257138): use the proper type annotation instead of
   // string.
-  private diagramPhysicalLayout_: string;
-  private showNumberPad_: boolean;
+  private diagramPhysicalLayout: string;
+  private showNumberPad: boolean;
   // TODO(crbug.com/1257138): use the proper type annotation instead of
   // Object.
-  private topRowKeys_: Object[];
-  private receiver_: KeyboardObserverReceiver|null = null;
+  private topRowKeys: Object[];
+  private receiver: KeyboardObserverReceiver|null = null;
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
   private eventTracker: EventTracker = new EventTracker();
@@ -221,7 +221,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     getInstance(this.$.dialog.getNative()).announce(e.detail.text);
   };
 
-  private computeLayoutIsKnown_(keyboard?: KeyboardInfo): boolean {
+  private computeLayoutIsKnown(keyboard?: KeyboardInfo): boolean {
     if (!keyboard) {
       return false;
     }
@@ -234,7 +234,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   /**
    * TODO(crbug.com/1257138): use the proper type annotation instead of string.
    */
-  private computeDiagramMechanicalLayout_(keyboardInfo?: KeyboardInfo): string
+  private computeDiagramMechanicalLayout(keyboardInfo?: KeyboardInfo): string
       |null {
     if (!keyboardInfo) {
       return null;
@@ -247,7 +247,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     }[keyboardInfo.mechanicalLayout];
   }
 
-  private computeDiagramPhysicalLayout_(keyboardInfo?: KeyboardInfo): string
+  private computeDiagramPhysicalLayout(keyboardInfo?: KeyboardInfo): string
       |null {
     if (!keyboardInfo) {
       return null;
@@ -265,7 +265,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   /**
    * TODO(crbug.com/1257138): use the proper type annotation instead of string.
    */
-  private computeDiagramTopRightKey_(keyboardInfo?: KeyboardInfo): string|null {
+  private computeDiagramTopRightKey(keyboardInfo?: KeyboardInfo): string|null {
     if (!keyboardInfo) {
       return null;
     }
@@ -277,24 +277,24 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     }[keyboardInfo.topRightKey];
   }
 
-  private computeShowNumberPad_(keyboard?: KeyboardInfo): boolean {
+  private computeShowNumberPad(keyboard?: KeyboardInfo): boolean {
     return !!keyboard &&
         keyboard.numberPadPresent === NumberPadPresence.kPresent;
   }
 
 
-  private computeTopRowKeys_(keyboard?: KeyboardInfo): Object[] {
+  private computeTopRowKeys(keyboard?: KeyboardInfo): Object[] {
     if (!keyboard) {
       return [];
     }
     return keyboard.topRowKeys.map((keyId: TopRowKey) => topRowKeyMap[keyId]);
   }
 
-  protected getDescriptionLabel_(): string {
+  protected getDescriptionLabel(): string {
     return this.i18n('keyboardTesterInstruction');
   }
 
-  protected getShortcutInstructionLabel_(): TrustedHTML {
+  protected getShortcutInstructionLabel(): TrustedHTML {
     return this.i18nAdvanced(
         'keyboardTesterShortcutInstruction', {attrs: ['id']});
   }
@@ -312,9 +312,9 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   /** Shows the tester's dialog. */
   show(): void {
     assert(this.inputDataProvider);
-    this.receiver_ = new KeyboardObserverReceiver(this);
+    this.receiver = new KeyboardObserverReceiver(this);
     this.inputDataProvider.observeKeyEvents(
-        this.keyboard.id, this.receiver_.$.bindNewPipeAndPassRemote());
+        this.keyboard.id, this.receiver.$.bindNewPipeAndPassRemote());
     this.addEventListeners();
     const title: HTMLElement|null =
         this.shadowRoot!.querySelector('div[slot="title"]');
@@ -355,15 +355,15 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
 
   handleClose(): void {
     this.eventTracker.removeAll();
-    if (this.receiver_) {
-      this.receiver_.$.close();
+    if (this.receiver) {
+      this.receiver.$.close();
     }
   }
 
   /**
    * Returns whether a key is part of the number pad on this keyboard layout.
    */
-  private isNumberPadKey_(evdevCode: number): boolean {
+  private isNumberPadKey(evdevCode: number): boolean {
     // Some keys that are on the number pad on standard ChromeOS keyboards are
     // elsewhere on Dell Enterprise keyboards, so we should only check them if
     // we know this is a standard layout.
@@ -407,7 +407,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
 
       // There may be Chromebooks where hasNumberPad is incorrect, so if we see
       // any number pad key codes we need to adapt on-the-fly.
-      if (!diagram.showNumberPad && this.isNumberPadKey_(keyEvent.keyCode)) {
+      if (!diagram.showNumberPad && this.isNumberPadKey(keyEvent.keyCode)) {
         diagram.showNumberPad = true;
       }
 

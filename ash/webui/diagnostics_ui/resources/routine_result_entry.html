@@ -114,24 +114,24 @@
 </style>
 <div class="entry-row">
   <div class="badge-container">
-    <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
+    <text-badge id="status" badge-type="[[badgeType]]" value="[[badgeText]]"
         aria-labelledby="routine">
     </text-badge>
-  <template is="dom-if" if="[[!shouldHideLines_(testCompleted_)]]">
+  <template is="dom-if" if="[[!shouldHideLines(testCompleted)]]">
     <div class="line-container" id="lineContainer"
         hidden$="[[hideVerticalLines]]">
-      <div class$="[[getLineClassName_(1, badgeType_)]]"></div>
-      <div class$="[[getLineClassName_(2, badgeType_)]]"></div>
-      <div class$="[[getLineClassName_(3, badgeType_)]]"></div>
+      <div class$="[[getLineClassName(1, badgeType)]]"></div>
+      <div class$="[[getLineClassName(2, badgeType)]]"></div>
+      <div class$="[[getLineClassName(3, badgeType)]]"></div>
     </div>
   </template>
  </div>
   <div id="routine" aria-hidden="true">
-    <span tabindex="0">[[routineType_]]</span>
+    <span tabindex="0">[[routineType]]</span>
     <span id="failed-test-text" class="failed-test-text-container"
         hidden$="[[!item.failedTest]]"
         tabindex="0">
-      [[computeFailedTestText_(item.failedTest)]]
+      [[computeFailedTestText(item.failedTest)]]
     </span>
   </div>
 </div>

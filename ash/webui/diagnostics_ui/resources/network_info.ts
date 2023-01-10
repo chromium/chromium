@@ -40,15 +40,15 @@ export class NetworkInfoElement extends PolymerElement {
 
   network: Network;
 
-  protected isWifiNetwork_(): boolean {
+  protected isWifiNetwork(): boolean {
     return this.network.type === NetworkType.kWiFi;
   }
 
-  protected isCellularNetwork_(): boolean {
+  protected isCellularNetwork(): boolean {
     return this.network.type === NetworkType.kCellular;
   }
 
-  protected isEthernetNetwork_(): boolean {
+  protected isEthernetNetwork(): boolean {
     return this.network.type === NetworkType.kEthernet;
   }
 }

@@ -57,10 +57,10 @@
     <dom-repeat items="[[devices]]" as="device">
       <template>
         <div class="device" data-evdev-id$="[[device.id]]">
-          <iron-icon icon="[[deviceIcon_]]" id="deviceIcon"></iron-icon>
+          <iron-icon icon="[[deviceIcon]]" id="deviceIcon"></iron-icon>
           <div class="device-body">
             <div class="device-description" id="deviceDescription">
-              [[getDeviceDescription_(device)]]
+              [[getDeviceDescription(device)]]
             </div>
             <div class="device-name" id="deviceName">[[device.name]]</div>
           </div>
@@ -74,7 +74,7 @@
             </span>
           </paper-tooltip>
           <cr-button id="inputDeviceTestButton"
-              on-click="handleTestButtonClick_"
+              on-click="handleTestButtonClick"
               aria-labelledby="inputDeviceTestButton deviceDescription"
               disabled="[[!getDeviceTestability(device, hostDeviceStatus)]]">
             [[i18n('inputDeviceTest')]]

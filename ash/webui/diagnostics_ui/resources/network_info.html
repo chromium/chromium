@@ -2,17 +2,17 @@
 </style>
 <div id="infoElementContainer">
   <template is="dom-if"
-      if="[[isWifiNetwork_(network.type)]]">
+      if="[[isWifiNetwork(network.type)]]">
     <wifi-info id="wifiInfo" network="[[network]]">
     </wifi-info>
   </template>
   <template is="dom-if"
-      if="[[isEthernetNetwork_(network.type)]]">
+      if="[[isEthernetNetwork(network.type)]]">
     <ethernet-info id="ethernetInfo" network="[[network]]">
     </ethernet-info>
   </template>
   <template is="dom-if"
-      if="[[isCellularNetwork_(network.type)]]">
+      if="[[isCellularNetwork(network.type)]]">
     <cellular-info id="cellularInfo" network="[[network]]">
     </cellular-info>
   </template>

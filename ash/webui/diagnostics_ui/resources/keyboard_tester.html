@@ -109,19 +109,19 @@
 <cr-dialog id="dialog" on-close="handleClose">
   <div slot="title" aria-labelledby="description shortcutInstruction">[[i18n('keyboardTesterTitle')]]</div>
   <div slot="body">
-    <p id="description">[[getDescriptionLabel_()]]</p>
-    <p id="shortcutInstruction" inner-h-t-m-l="[[getShortcutInstructionLabel_()]]"></p>
-    <template is="dom-if" if="[[layoutIsKnown_]]">
+    <p id="description">[[getDescriptionLabel()]]</p>
+    <p id="shortcutInstruction" inner-h-t-m-l="[[getShortcutInstructionLabel()]]"></p>
+    <template is="dom-if" if="[[layoutIsKnown]]">
       <div id="diagram-border">
         <keyboard-diagram
             id="diagram"
-            mechanical-layout="[[diagramMechanicalLayout_]]"
-            physical-layout="[[diagramPhysicalLayout_]]"
+            mechanical-layout="[[diagramMechanicalLayout]]"
+            physical-layout="[[diagramPhysicalLayout]]"
             region-code="[[keyboard.regionCode]]"
             show-assistant-key="[[keyboard.hasAssistantKey]]"
-            show-number-pad="[[showNumberPad_]]"
-            top-row-keys="[[topRowKeys_]]"
-            top-right-key="[[diagramTopRightKey_]]">
+            show-number-pad="[[showNumberPad]]"
+            top-row-keys="[[topRowKeys]]"
+            top-right-key="[[diagramTopRightKey]]">
         </keyboard-diagram>
       </div>
     </template>

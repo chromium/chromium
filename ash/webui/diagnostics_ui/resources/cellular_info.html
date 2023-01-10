@@ -11,18 +11,18 @@
         orientation="horizontal">
       </data-point>
       <data-point id="technology" header="[[i18n('networkTechnologyLabel')]]"
-          value="[[computeNetworkTechnologyText_(
+          value="[[computeNetworkTechnologyText(
             network.typeProperties.cellular.networkTechnology)]]"
           orientation="horizontal">
       </data-point>
       <data-point id="roaming" header="[[i18n('networkRoamingStateLabel')]]"
-          value="[[computeRoamingText_(
+          value="[[computeRoamingText(
               network.typeProperties.cellular.roaming,
               network.typeProperties.cellular.roamingState)]]"
           orientation="horizontal">
       </data-point>
       <data-point id="signalStrength" header="[[i18n('networkSignalStrengthLabel')]]"
-          value="[[computeSignalStrength_(
+          value="[[computeSignalStrength(
             network.typeProperties.cellular.signalStrength)]]"
           orientation="horizontal">
       </data-point>
@@ -30,7 +30,7 @@
     <div class="divider-horizontal"></div>
     <div class="data-point-container">
       <data-point id="simLocked" header="[[i18n('networkSimLockStatusLabel')]]"
-        value="[[computeSimLockedText_(
+        value="[[computeSimLockedText(
             network.typeProperties.cellular.simLocked)]]"
         orientation="horizontal">
       </data-point>

@@ -74,17 +74,17 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
        * Used in navigation-view-panel to set show-banner when banner is
        * expected to be shown.
        */
-      bannerMessage_: {
+      bannerMessage: {
         type: Boolean,
         value: '',
       },
 
-      saveSessionLogEnabled_: {
+      saveSessionLogEnabled: {
         type: Boolean,
         value: true,
       },
 
-      isInputEnabled_: {
+      isInputEnabled: {
         type: Boolean,
         value: loadTimeData.getBoolean('isInputEnabled'),
       },
@@ -93,34 +93,34 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
        * Whether a user is logged in or not.
        * Note: A guest session is considered a logged-in state.
        */
-      isLoggedIn_: {
+      isLoggedIn: {
         type: Boolean,
         value: loadTimeData.getBoolean('isLoggedIn'),
       },
 
-      toastText_: {
+      toastText: {
         type: String,
         value: '',
       },
     };
   }
 
-  protected bannerMessage_: string;
-  protected isLoggedIn_: boolean;
-  private saveSessionLogEnabled_: boolean;
-  private isInputEnabled_: boolean;
-  private toastText_: string;
-  private browserProxy_: DiagnosticsBrowserProxyImpl =
+  protected bannerMessage: string;
+  protected isLoggedIn: boolean;
+  private saveSessionLogEnabled: boolean;
+  private isInputEnabled: boolean;
+  private toastText: string;
+  private browserProxy: DiagnosticsBrowserProxyImpl =
       DiagnosticsBrowserProxyImpl.getInstance();
-  private inputDataProvider_: InputDataProviderInterface =
+  private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
-  private numKeyboards_: number = 0;
+  private numKeyboards: number = 0;
 
   constructor() {
     super();
-    this.browserProxy_.initialize();
-    if (this.isInputEnabled_) {
-      this.inputDataProvider_.observeConnectedDevices(
+    this.browserProxy.initialize();
+    if (this.isInputEnabled) {
+      this.inputDataProvider.observeConnectedDevices(
           new ConnectedDevicesObserverReceiver(this)
               .$.bindNewPipeAndPassRemote());
     }
@@ -133,7 +133,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
    */
   private showToastHandler = (e: ShowToastEvent): void => {
     assert(e.detail.message);
-    this.toastText_ = e.detail.message;
+    this.toastText = e.detail.message;
     this.$.toast.show();
   };
 
@@ -141,7 +141,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
    * Implements ConnectedDevicesObserver.OnKeyboardConnected.
    */
   onKeyboardConnected(): void {
-    this.numKeyboards_++;
+    this.numKeyboards++;
     // Note: This will need to be revisited if additional navigation pages are
     // created as the navigation panel may have to be updated to ensure pages
     // appear in the correct order.
@@ -154,8 +154,8 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
    * Implements ConnectedDevicesObserver.OnKeyboardDisconnected.
    */
   onKeyboardDisconnected(): void {
-    this.numKeyboards_--;
-    if (this.numKeyboards_ === 0) {
+    this.numKeyboards--;
+    if (this.numKeyboards === 0) {
       this.$.navigationPanel.removeSelectorById('input');
     }
   }
@@ -182,17 +182,17 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
           getNavigationIcon('ethernet'), 'connectivity'),
     ];
 
-    if (this.isInputEnabled_) {
+    if (this.isInputEnabled) {
       const devices: ConnectedDevices =
-          await this.inputDataProvider_.getConnectedDevices();
-      // Check the existing value of |numKeyboards_| if |GetConnectedDevices|
+          await this.inputDataProvider.getConnectedDevices();
+      // Check the existing value of |numKeyboards| if |GetConnectedDevices|
       // returns no keyboards as it's possible |onKeyboardConnected| was called
       // prior.
-      this.numKeyboards_ = devices.keyboards.length || this.numKeyboards_;
+      this.numKeyboards = devices.keyboards.length || this.numKeyboards;
       const isTouchPadOrTouchScreenEnabled =
           loadTimeData.getBoolean('isTouchpadEnabled') ||
           loadTimeData.getBoolean('isTouchscreenEnabled');
-      if (this.numKeyboards_ > 0 || isTouchPadOrTouchScreenEnabled) {
+      if (this.numKeyboards > 0 || isTouchPadOrTouchScreenEnabled) {
         pages.push(this.createInputSelector());
       }
     }
@@ -217,23 +217,23 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
         'show-toast', (e) => this.showToastHandler((e as ShowToastEvent)));
   }
 
-  protected onSessionLogClick_(): void {
+  protected onSessionLogClick(): void {
     // Click already handled then leave early.
-    if (!this.saveSessionLogEnabled_) {
+    if (!this.saveSessionLogEnabled) {
       return;
     }
 
-    this.saveSessionLogEnabled_ = false;
-    this.browserProxy_.saveSessionLog()
+    this.saveSessionLogEnabled = false;
+    this.browserProxy.saveSessionLog()
         .then((success: boolean) => {
           const result = success ? 'Success' : 'Failure';
-          this.toastText_ =
+          this.toastText =
               loadTimeData.getString(`sessionLogToastText${result}`);
           this.$.toast.show();
         })
         .catch(() => {/* File selection cancelled */})
         .finally(() => {
-          this.saveSessionLogEnabled_ = true;
+          this.saveSessionLogEnabled = true;
         });
   }
 

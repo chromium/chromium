@@ -45,20 +45,20 @@
 <div id="diagnosticsAppContainer">
   <navigation-view-panel id="navigationPanel" show-tool-bar
       title="[[i18n('diagnosticsTitle')]]"
-      show-banner=[[bannerMessage_.length]]>
+      show-banner=[[bannerMessage.length]]>
     <diagnostics-sticky-banner slot="banner"
-        banner-message="{{bannerMessage_}}">
+        banner-message="{{bannerMessage}}">
     </diagnostics-sticky-banner>
     <div slot="bottom-nav-content-panel" class="session-log-container">
-      <cr-button on-click="onSessionLogClick_" class="session-log-button"
-          disabled="[[!saveSessionLogEnabled_]]" hidden="[[!isLoggedIn_]]">
+      <cr-button on-click="onSessionLogClick" class="session-log-button"
+          disabled="[[!saveSessionLogEnabled]]" hidden="[[!isLoggedIn]]">
         <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
         <span>[[i18n('sessionLog')]]</span>
       </cr-button>
     </div>
     <div slot="bottom-nav-content-drawer" class="session-log-container">
-      <cr-button on-click="onSessionLogClick_" class="session-log-button"
-          disabled="[[!saveSessionLogEnabled_]]" hidden="[[!isLoggedIn_]]">
+      <cr-button on-click="onSessionLogClick" class="session-log-button"
+          disabled="[[!saveSessionLogEnabled]]" hidden="[[!isLoggedIn]]">
         <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
         <span>[[i18n('sessionLog')]]</span>
       </cr-button>
@@ -66,6 +66,6 @@
   </navigation-view-panel>
   <cr-toast id="toast" duration="2500">
     <iron-icon icon="diagnostics:info"></iron-icon>
-    <span>[[toastText_]]</span>
+    <span>[[toastText]]</span>
   </cr-toast>
 </div>

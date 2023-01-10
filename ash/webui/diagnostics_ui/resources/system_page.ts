@@ -52,12 +52,12 @@ export class SystemPageElement extends SystemPageElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      saveSessionLogEnabled_: {
+      saveSessionLogEnabled: {
         type: Boolean,
         value: true,
       },
 
-      showBatteryStatusCard_: {
+      showBatteryStatusCard: {
         type: Boolean,
         value: false,
       },
@@ -67,17 +67,17 @@ export class SystemPageElement extends SystemPageElementBase {
         value: TestSuiteStatus.NOT_RUNNING,
       },
 
-      systemInfoReceived_: {
+      systemInfoReceived: {
         type: Boolean,
         value: false,
       },
 
-      toastText_: {
+      toastText: {
         type: String,
         value: '',
       },
 
-      isLoggedIn_: {
+      isLoggedIn: {
         type: Boolean,
         value: loadTimeData.getBoolean('isLoggedIn'),
       },
@@ -92,58 +92,58 @@ export class SystemPageElement extends SystemPageElementBase {
 
   testSuiteStatus: TestSuiteStatus;
   isActive: boolean;
-  protected systemInfoReceived_: boolean;
-  protected saveSessionLogEnabled_: boolean;
-  private showBatteryStatusCard_: boolean;
-  private toastText_: string;
-  private isLoggedIn_: boolean;
-  private systemDataProvider_: SystemDataProviderInterface =
+  protected systemInfoReceived: boolean;
+  protected saveSessionLogEnabled: boolean;
+  private showBatteryStatusCard: boolean;
+  private toastText: string;
+  private isLoggedIn: boolean;
+  private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
-  private browserProxy_: DiagnosticsBrowserProxyImpl =
+  private browserProxy: DiagnosticsBrowserProxyImpl =
       DiagnosticsBrowserProxyImpl.getInstance();
 
   constructor() {
     super();
-    this.fetchSystemInfo_();
-    this.browserProxy_.initialize();
+    this.fetchSystemInfo();
+    this.browserProxy.initialize();
   }
 
-  private fetchSystemInfo_(): void {
-    this.systemDataProvider_.getSystemInfo().then((result) => {
-      this.onSystemInfoReceived_(result.systemInfo);
+  private fetchSystemInfo(): void {
+    this.systemDataProvider.getSystemInfo().then((result) => {
+      this.onSystemInfoReceived(result.systemInfo);
     });
-    setTimeout(() => this.recordLateSystemInfo_(), 3000);
+    setTimeout(() => this.recordLateSystemInfo(), 3000);
   }
 
-  private onSystemInfoReceived_(systemInfo: SystemInfo): void {
-    this.systemInfoReceived_ = true;
-    this.showBatteryStatusCard_ = systemInfo.deviceCapabilities.hasBattery;
+  private onSystemInfoReceived(systemInfo: SystemInfo): void {
+    this.systemInfoReceived = true;
+    this.showBatteryStatusCard = systemInfo.deviceCapabilities.hasBattery;
   }
 
-  private recordLateSystemInfo_(): void {
-    if (!this.systemInfoReceived_) {
+  private recordLateSystemInfo(): void {
+    if (!this.systemInfoReceived) {
       console.warn('system info not received within three seconds.');
     }
   }
 
-  protected onSessionLogClick_(): void {
+  protected onSessionLogClick(): void {
     // Click already handled then leave early.
-    if (!this.saveSessionLogEnabled_) {
+    if (!this.saveSessionLogEnabled) {
       return;
     }
 
-    this.saveSessionLogEnabled_ = false;
-    this.browserProxy_.saveSessionLog()
+    this.saveSessionLogEnabled = false;
+    this.browserProxy.saveSessionLog()
         .then(
             /* @type {boolean} */ (success) => {
               const result = success ? 'Success' : 'Failure';
-              this.toastText_ =
+              this.toastText =
                   loadTimeData.getString(`sessionLogToastText${result}`);
               this.$.toast.show();
             })
         .catch(() => {/* File selection cancelled */})
         .finally(() => {
-          this.saveSessionLogEnabled_ = true;
+          this.saveSessionLogEnabled = true;
         });
   }
 
@@ -162,7 +162,7 @@ export class SystemPageElement extends SystemPageElementBase {
       overviewCardContainer.focus();
       // TODO(ashleydp): Remove when a call can be made at a higher component
       // to avoid duplicate code in all navigatable pages.
-      this.browserProxy_.recordNavigation('system');
+      this.browserProxy.recordNavigation('system');
     }
   }
 }

@@ -38,12 +38,12 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
         notify: true,
       },
 
-      scrollingClass_: {
+      scrollingClass: {
         type: String,
         value: '',
       },
 
-      scrollTimerId_: {
+      scrollTimerId: {
         type: Number,
         value: -1,
       },
@@ -51,27 +51,27 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
   }
 
   bannerMessage: string;
-  protected scrollingClass_: string;
-  private scrollTimerId_: number;
+  protected scrollingClass: string;
+  private scrollTimerId: number;
 
   override connectedCallback(): void {
     super.connectedCallback();
     window.addEventListener(
         'show-caution-banner',
-        (e) => this.showCautionBannerHandler_((e as CustomEvent)));
+        (e) => this.showCautionBannerHandler((e as CustomEvent)));
     window.addEventListener(
-        'dismiss-caution-banner', this.dismissCautionBannerHandler_);
-    window.addEventListener('scroll', this.scrollClassHandler_);
+        'dismiss-caution-banner', this.dismissCautionBannerHandler);
+    window.addEventListener('scroll', this.scrollClassHandler);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener(
         'show-caution-banner',
-        (e) => this.showCautionBannerHandler_((e as CustomEvent)));
+        (e) => this.showCautionBannerHandler((e as CustomEvent)));
     window.removeEventListener(
-        'dismiss-caution-banner', this.dismissCautionBannerHandler_);
-    window.removeEventListener('scroll', this.scrollClassHandler_);
+        'dismiss-caution-banner', this.dismissCautionBannerHandler);
+    window.removeEventListener('scroll', this.scrollClassHandler);
   }
 
   /**
@@ -79,7 +79,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
    * section. Event will contain message to display on message property of
    * event found on path `event.detail.message`.
    */
-  private showCautionBannerHandler_ = (e: ShowCautionBannerEvent): void => {
+  private showCautionBannerHandler = (e: ShowCautionBannerEvent): void => {
     assert(e.detail.message);
     this.bannerMessage = e.detail.message;
   };
@@ -88,36 +88,35 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
    * Event callback for 'dismiss-caution-banner' which is triggered from
    * routine-section.
    */
-  private dismissCautionBannerHandler_ = (): void => {
+  private dismissCautionBannerHandler = (): void => {
     this.bannerMessage = '';
   };
 
   /**
    * Event callback for 'scroll'.
    */
-  private scrollClassHandler_ = (): void => {
-    this.onScroll_();
+  private scrollClassHandler = (): void => {
+    this.onScroll();
   };
 
   /**
    * Event handler for 'scroll' to ensure shadow and elevation of banner is
    * correct while scrolling. Timer is used to clear class after 300ms.
    */
-  private onScroll_(): void {
+  private onScroll(): void {
     if (!this.bannerMessage) {
       return;
     }
 
     // Reset timer since we've received another 'scroll' event.
-    if (this.scrollTimerId_ !== -1) {
-      this.scrollingClass_ = 'elevation-2';
-      clearTimeout(this.scrollTimerId_);
+    if (this.scrollTimerId !== -1) {
+      this.scrollingClass = 'elevation-2';
+      clearTimeout(this.scrollTimerId);
     }
 
     // Remove box shadow from banner since the user has stopped scrolling
     // for at least 300ms.
-    this.scrollTimerId_ =
-        window.setTimeout(() => this.scrollingClass_ = '', 300);
+    this.scrollTimerId = window.setTimeout(() => this.scrollingClass = '', 300);
   }
 }
 

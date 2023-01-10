@@ -56,7 +56,7 @@ export class PercentBarChartElement extends PolymerElement {
    * when value is set higher than max in certain cases (e.g. due to fetching of
    * max being resolved later).
    */
-  protected getAdjustedValue_(): number {
+  protected getAdjustedValue(): number {
     return this.value <= this.max ? this.value : this.max;
   }
 }

@@ -59,19 +59,19 @@ type RunRoutineStatus = Exclude<InitialRunRoutineStatus, void>;
  */
 class ExecutionContext {
   routineRunner: RoutineRunnerReceiver = new RoutineRunnerReceiver(this);
-  private resolver_: PromiseResolver<RoutineResultInfo|null> =
+  private resolver: PromiseResolver<RoutineResultInfo|null> =
       new PromiseResolver();
 
   /**
    * Implements RoutineRunnerInterface.onRoutineResult.
    */
   onRoutineResult(result: RoutineResultInfo): void {
-    this.resolver_.resolve(result);
+    this.resolver.resolve(result);
     this.close();
   }
 
   whenComplete(): Promise<RoutineResultInfo|null> {
-    return this.resolver_.promise;
+    return this.resolver.promise;
   }
 
   close(): void {
@@ -79,7 +79,7 @@ class ExecutionContext {
   }
 
   cancel(): void {
-    this.resolver_.resolve(null);
+    this.resolver.resolve(null);
   }
 }
 
@@ -89,11 +89,11 @@ class ExecutionContext {
  * maps directly to an entry in a routine-result-list.
  */
 export class RoutineListExecutor {
-  private routineController_: SystemRoutineControllerInterface;
-  private currentExecutionContext_: ExecutionContext|null = null;
-  private routinesCancelled_: boolean = false;
+  private routineController: SystemRoutineControllerInterface;
+  private currentExecutionContext: ExecutionContext|null = null;
+  private routinesCancelled: boolean = false;
   constructor(routineController: SystemRoutineControllerInterface) {
-    this.routineController_ = routineController;
+    this.routineController = routineController;
   }
 
   /**
@@ -111,23 +111,23 @@ export class RoutineListExecutor {
     routines.forEach((name) => {
       promise = promise.then(() => {
         // Notify the status callback of the test status.
-        if (this.routinesCancelled_) {
+        if (this.routinesCancelled) {
           statusCallback(
               new ResultStatusItem(name, ExecutionProgress.CANCELLED));
           return ExecutionProgress.CANCELLED;
         }
         statusCallback(new ResultStatusItem(name, ExecutionProgress.RUNNING));
 
-        this.currentExecutionContext_ = new ExecutionContext();
+        this.currentExecutionContext = new ExecutionContext();
         // Create a new remote and execute the next test.
-        this.routineController_.runRoutine(
+        this.routineController.runRoutine(
             name,
-            this.currentExecutionContext_.routineRunner.$
+            this.currentExecutionContext.routineRunner.$
                 .bindNewPipeAndPassRemote());
 
         // When the test completes, notify the status callback of the
         // result.
-        return this.currentExecutionContext_.whenComplete().then(
+        return this.currentExecutionContext.whenComplete().then(
             (info: RoutineResultInfo|null) => {
               let progress = ExecutionProgress.CANCELLED;
               let result = null;
@@ -150,15 +150,15 @@ export class RoutineListExecutor {
   }
 
   close(): void {
-    if (this.currentExecutionContext_) {
-      this.currentExecutionContext_.close();
+    if (this.currentExecutionContext) {
+      this.currentExecutionContext.close();
     }
   }
 
   cancel(): void {
-    if (this.currentExecutionContext_) {
-      this.routinesCancelled_ = true;
-      this.currentExecutionContext_.cancel();
+    if (this.currentExecutionContext) {
+      this.routinesCancelled = true;
+      this.currentExecutionContext.cancel();
     }
   }
 }

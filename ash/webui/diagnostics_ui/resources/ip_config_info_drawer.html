@@ -17,30 +17,30 @@
     padding-top: 12px;
   }
 </style>
-<cr-expand-button id="drawerToggle" expanded="{{expanded_}}"
+<cr-expand-button id="drawerToggle" expanded="{{expanded}}"
     aria-labelledby="drawerTitle">
   <span id="drawerTitle" aria-hidden="true">
     [[i18n('ipConfigInfoDrawerTitle')]]
   </span>
 </cr-expand-button>
-<template is="dom-if" if="[[expanded_]]">
+<template is="dom-if" if="[[expanded]]">
   <div id="ipConfigInfoElement"
       class="horizontal-data-point-container spacing">
     <div class="data-point-container">
       <data-point id="gateway"
           header="[[i18n('ipConfigInfoDrawerGateway')]]"
-          value="[[gateway_]]" orientation="horizontal">
+          value="[[gateway]]" orientation="horizontal">
       </data-point>
       <data-point id="subnetMask"
           header="[[i18n('ipConfigInfoDrawerSubnetMask')]]"
-          value="[[subnetMask_]]" orientation="horizontal">
+          value="[[subnetMask]]" orientation="horizontal">
       </data-point>
     </div>
     <div class="divider-horizontal"></div>
     <div class="data-point-container">
       <data-point id="nameServers"
-          header="[[nameServersHeader_]]"
-          value="[[nameServers_]]" orientation="horizontal">
+          header="[[nameServersHeader]]"
+          value="[[nameServers]]" orientation="horizontal">
       </data-point>
     </div>
   </div>

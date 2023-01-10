@@ -234,7 +234,7 @@ export class DiagnosticsNetworkIconElement extends DiagnosticsNetworkIconBase {
 
   network: Network;
 
-  protected computeNetworkState_(): NetworkIconNetworkState|null {
+  protected computeNetworkState(): NetworkIconNetworkState|null {
     // Block should only be entered when element is being initialized.
     if (!this.network) {
       return null;
@@ -243,7 +243,7 @@ export class DiagnosticsNetworkIconElement extends DiagnosticsNetworkIconBase {
     return networkToNetworkStateAdapter(this.network);
   }
 
-  protected computeShouldDisplaySpinner_(): boolean {
+  protected computeShouldDisplaySpinner(): boolean {
     if (!this.network) {
       return false;
     }
@@ -251,7 +251,7 @@ export class DiagnosticsNetworkIconElement extends DiagnosticsNetworkIconBase {
     return this.network.state === NetworkState.kConnecting;
   }
 
-  protected computeSpinnerAriaLabel_(): string {
+  protected computeSpinnerAriaLabel(): string {
     if (!this.network) {
       return '';
     }

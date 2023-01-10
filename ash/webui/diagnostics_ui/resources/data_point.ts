@@ -67,7 +67,7 @@ export class DataPointElement extends PolymerElement {
   warningState: boolean;
   orientation: string;
 
-  protected getValueClass_(): string {
+  protected getValueClass(): string {
     return this.warningState ? 'value text-red' : 'value';
   }
 }

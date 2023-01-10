@@ -61,7 +61,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       /**
        * Added to support testing of announce behavior.
        */
-      announcedText_: {
+      announcedText: {
         type: String,
         value: '',
       },
@@ -82,7 +82,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       /**
        * Timestamp of when routine test started execution in milliseconds.
        */
-      routineStartTimeMs_: {
+      routineStartTimeMs: {
         type: Number,
         value: -1,
       },
@@ -90,7 +90,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       /**
        * Overall ExecutionProgress of the routine.
        */
-      executionStatus_: {
+      executionStatus: {
         type: Number,
         value: ExecutionProgress.NOT_STARTED,
       },
@@ -98,7 +98,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       /**
        * Name of currently running test
        */
-      currentTestName_: {
+      currentTestName: {
         type: String,
         value: '',
       },
@@ -114,7 +114,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
         value: false,
       },
 
-      powerRoutineResult_: {
+      powerRoutineResult: {
         type: Object,
         value: null,
       },
@@ -134,22 +134,22 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
         value: '',
       },
 
-      badgeType_: {
+      badgeType: {
         type: String,
         value: BadgeType.RUNNING,
       },
 
-      badgeText_: {
+      badgeText: {
         type: String,
         value: '',
       },
 
-      statusText_: {
+      statusText: {
         type: String,
         value: '',
       },
 
-      isLoggedIn_: {
+      isLoggedIn: {
         type: Boolean,
         value: loadTimeData.getBoolean('isLoggedIn'),
       },
@@ -167,10 +167,10 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
        * Used to reset run button text to its initial state
        * when a navigation page change event occurs.
        */
-      initialButtonText_: {
+      initialButtonText: {
         type: String,
         value: '',
-        computed: 'getInitialButtonText_(runTestsButtonText)',
+        computed: 'getInitialButtonText(runTestsButtonText)',
       },
 
       hideRoutineStatus: {
@@ -192,7 +192,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       usingRoutineGroups: {
         type: Boolean,
         value: false,
-        computed: 'getUsingRoutineGroupsVal_(routines.*)',
+        computed: 'getUsingRoutineGroupsVal(routines.*)',
       },
 
     };
@@ -211,28 +211,27 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   hideVerticalLines: boolean;
   usingRoutineGroups: boolean;
   ignoreRoutineStatusUpdates: boolean;
-  private announcedText_: string;
-  private routineStartTimeMs_: number;
-  private executionStatus_: ExecutionProgress;
-  private currentTestName_: string;
-  private powerRoutineResult_: PowerRoutineResult;
-  private badgeType_: BadgeType;
-  private badgeText_: string;
-  private statusText_: string;
-  private isLoggedIn_: boolean;
+  private announcedText: string;
+  private routineStartTimeMs: number;
+  private executionStatus: ExecutionProgress;
+  private currentTestName: string;
+  private powerRoutineResult: PowerRoutineResult;
+  private badgeType: BadgeType;
+  private badgeText: string;
+  private statusText: string;
+  private isLoggedIn: boolean;
   private bannerMessage: string;
-  private initialButtonText_: string;
-  private executor_: RoutineListExecutor|null = null;
-  private failedTest_: RoutineType|null = null;
-  private hasTestFailure_: boolean = false;
-  private systemRoutineController_: SystemRoutineControllerInterface|null =
-      null;
+  private initialButtonText: string;
+  private executor: RoutineListExecutor|null = null;
+  private failedTest: RoutineType|null = null;
+  private hasTestFailure: boolean = false;
+  private systemRoutineController: SystemRoutineControllerInterface|null = null;
 
   static get observers(): string[] {
     return [
-      'routineStatusChanged_(executionStatus_, currentTestName_,' +
+      'routineStatusChanged(executionStatus, currentTestName,' +
           'additionalMessage)',
-      'onActivePageChanged_(isActive)',
+      'onActivePageChanged(isActive)',
 
     ];
   }
@@ -243,25 +242,25 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     IronA11yAnnouncer.requestAvailability();
   }
 
-  private getInitialButtonText_(buttonText: string): string {
-    return this.initialButtonText_ || buttonText;
+  private getInitialButtonText(buttonText: string): string {
+    return this.initialButtonText || buttonText;
   }
 
-  private getUsingRoutineGroupsVal_(): boolean {
+  private getUsingRoutineGroupsVal(): boolean {
     if (this.routines.length === 0) {
       return false;
     }
     return this.routines[0] instanceof RoutineGroup;
   }
 
-  private getResultListElem_(): RoutineResultListElement {
+  private getResultListElem(): RoutineResultListElement {
     return this.strictQuery(
         RoutineResultListElement.is, RoutineResultListElement);
   }
 
-  private async getSupportedRoutines_(): Promise<RoutineType[]> {
+  private async getSupportedRoutines(): Promise<RoutineType[]> {
     const supported =
-        await this.systemRoutineController_?.getSupportedRoutines();
+        await this.systemRoutineController?.getSupportedRoutines();
     assert(supported);
     assert(isRoutineTypeArray(this.routines));
     const filteredRoutineTypes = this.routines.filter(
@@ -269,9 +268,9 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     return filteredRoutineTypes;
   }
 
-  private async getSupportedRoutineGroups_(): Promise<RoutineGroup[]> {
+  private async getSupportedRoutineGroups(): Promise<RoutineGroup[]> {
     const supported =
-        await this.systemRoutineController_?.getSupportedRoutines();
+        await this.systemRoutineController?.getSupportedRoutines();
     assert(supported);
     const filteredRoutineGroups: RoutineGroup[] = [];
     assert(isRoutineGroupArray(this.routines));
@@ -291,41 +290,41 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       return;
     }
     this.testSuiteStatus = TestSuiteStatus.RUNNING;
-    this.failedTest_ = null;
+    this.failedTest = null;
 
-    this.systemRoutineController_ = getSystemRoutineController();
-    const resultListElem = this.getResultListElem_();
+    this.systemRoutineController = getSystemRoutineController();
+    const resultListElem = this.getResultListElem();
     const routines = this.usingRoutineGroups ?
-        await this.getSupportedRoutineGroups_() :
-        await this.getSupportedRoutines_();
+        await this.getSupportedRoutineGroups() :
+        await this.getSupportedRoutines();
     resultListElem.initializeTestRun(routines);
 
     // Expand result list by default.
-    if (!this.shouldHideReportList_()) {
+    if (!this.shouldHideReportList()) {
       this.$.collapse.show();
     }
 
     if (this.bannerMessage) {
-      this.showCautionBanner_();
+      this.showCautionBanner();
     }
 
-    this.routineStartTimeMs_ = performance.now();
+    this.routineStartTimeMs = performance.now();
 
     // Set initial status badge text.
-    this.setRunningStatusBadgeText_();
+    this.setRunningStatusBadgeText();
 
     const remainingTimeUpdaterId =
-        setInterval(() => this.setRunningStatusBadgeText_(), 1000);
-    assert(this.systemRoutineController_);
-    const executor = new RoutineListExecutor(this.systemRoutineController_);
-    this.executor_ = executor;
+        setInterval(() => this.setRunningStatusBadgeText(), 1000);
+    assert(this.systemRoutineController);
+    const executor = new RoutineListExecutor(this.systemRoutineController);
+    this.executor = executor;
     if (!this.usingRoutineGroups) {
       assert(isRoutineTypeArray(routines));
       const status = await executor.runRoutines(
           routines,
           (routineStatus) =>
-              this.handleRunningRoutineStatus_(routineStatus, resultListElem));
-      this.handleRoutinesCompletedStatus_(status);
+              this.handleRunningRoutineStatus(routineStatus, resultListElem));
+      this.handleRoutinesCompletedStatus(status);
       clearInterval(remainingTimeUpdaterId);
       return;
     }
@@ -335,46 +334,46 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       const status = await executor.runRoutines(
           routineGroup.routines,
           (routineStatus) =>
-              this.handleRunningRoutineStatus_(routineStatus, resultListElem));
+              this.handleRunningRoutineStatus(routineStatus, resultListElem));
       const isLastRoutineGroup = i === routines.length - 1;
       if (isLastRoutineGroup) {
-        this.handleRoutinesCompletedStatus_(status);
+        this.handleRoutinesCompletedStatus(status);
         clearInterval(remainingTimeUpdaterId);
       }
     }
   }
 
-  private announceRoutinesComplete_(): void {
-    this.announcedText_ = loadTimeData.getString('testOnRoutinesCompletedText');
+  private announceRoutinesComplete(): void {
+    this.announcedText = loadTimeData.getString('testOnRoutinesCompletedText');
     this.dispatchEvent(new CustomEvent('iron-announce', {
       bubbles: true,
       composed: true,
       detail: {
-        text: this.announcedText_,
+        text: this.announcedText,
       },
     }));
   }
 
-  private handleRoutinesCompletedStatus_(status: ExecutionProgress): void {
-    this.executionStatus_ = status;
+  private handleRoutinesCompletedStatus(status: ExecutionProgress): void {
+    this.executionStatus = status;
     this.testSuiteStatus = status === ExecutionProgress.CANCELLED ?
         TestSuiteStatus.NOT_RUNNING :
         TestSuiteStatus.COMPLETED;
-    this.routineStartTimeMs_ = -1;
+    this.routineStartTimeMs = -1;
     this.runTestsButtonText = loadTimeData.getString('runAgainButtonText');
-    this.getResultListElem_().resetIgnoreStatusUpdatesFlag();
-    this.cleanUp_();
+    this.getResultListElem().resetIgnoreStatusUpdatesFlag();
+    this.cleanUp();
     if (status === ExecutionProgress.CANCELLED) {
-      this.badgeText_ = loadTimeData.getString('testStoppedBadgeText');
+      this.badgeText = loadTimeData.getString('testStoppedBadgeText');
     } else {
-      this.badgeText_ = this.failedTest_ ?
+      this.badgeText = this.failedTest ?
           loadTimeData.getString('testFailedBadgeText') :
           loadTimeData.getString('testSucceededBadgeText');
-      this.announceRoutinesComplete_();
+      this.announceRoutinesComplete();
     }
   }
 
-  private handleRunningRoutineStatus_(
+  private handleRunningRoutineStatus(
       status: ResultStatusItem,
       resultListElem: RoutineResultListElement): void {
     if (this.ignoreRoutineStatusUpdates) {
@@ -382,51 +381,51 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     }
 
     if (status.result && status.result.powerResult) {
-      this.powerRoutineResult_ = status.result.powerResult;
+      this.powerRoutineResult = status.result.powerResult;
     }
 
     if (status.result &&
         getSimpleResult(status.result) === StandardRoutineResult.kTestFailed &&
-        !this.failedTest_) {
-      this.failedTest_ = status.routine;
+        !this.failedTest) {
+      this.failedTest = status.routine;
     }
 
     // Execution progress is checked here to avoid overwriting
     // the test name shown in the status text.
     if (status.progress !== ExecutionProgress.CANCELLED) {
-      this.currentTestName_ = getRoutineType(status.routine);
+      this.currentTestName = getRoutineType(status.routine);
     }
 
-    this.executionStatus_ = status.progress;
+    this.executionStatus = status.progress;
 
     resultListElem.onStatusUpdate.call(resultListElem, status);
   }
 
-  private cleanUp_(): void {
-    if (this.executor_) {
-      this.executor_.close();
-      this.executor_ = null;
+  private cleanUp(): void {
+    if (this.executor) {
+      this.executor.close();
+      this.executor = null;
     }
 
     if (this.bannerMessage) {
-      this.dismissCautionBanner_();
+      this.dismissCautionBanner();
     }
 
-    this.systemRoutineController_ = null;
+    this.systemRoutineController = null;
   }
 
   stopTests(): void {
-    if (this.executor_) {
-      this.executor_.cancel();
+    if (this.executor) {
+      this.executor.cancel();
     }
   }
 
-  private onToggleReportClicked_(): void {
+  private onToggleReportClicked(): void {
     // Toggle report list visibility
     this.$.collapse.toggle();
   }
 
-  protected onLearnMoreClicked_(): void {
+  protected onLearnMoreClicked(): void {
     const baseSupportUrl =
         'https://support.google.com/chromebook?p=diagnostics_';
     assert(this.learnMoreLinkSection);
@@ -434,42 +433,41 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     window.open(baseSupportUrl + this.learnMoreLinkSection);
   }
 
-  protected isResultButtonHidden_(): boolean {
-    return this.shouldHideReportList_() ||
-        this.executionStatus_ === ExecutionProgress.NOT_STARTED;
+  protected isResultButtonHidden(): boolean {
+    return this.shouldHideReportList() ||
+        this.executionStatus === ExecutionProgress.NOT_STARTED;
   }
 
-  protected isLearnMoreHidden_(): boolean {
-    return !this.shouldHideReportList_() || !this.isLoggedIn_ ||
-        this.executionStatus_ !== ExecutionProgress.COMPLETED;
+  protected isLearnMoreHidden(): boolean {
+    return !this.shouldHideReportList() || !this.isLoggedIn ||
+        this.executionStatus !== ExecutionProgress.COMPLETED;
   }
 
-  protected isStatusHidden_(): boolean {
-    return this.executionStatus_ === ExecutionProgress.NOT_STARTED;
+  protected isStatusHidden(): boolean {
+    return this.executionStatus === ExecutionProgress.NOT_STARTED;
   }
 
   /**
    * @param opened Whether the section is expanded or not.
    */
-  protected getReportToggleButtonText_(opened: boolean): string {
+  protected getReportToggleButtonText(opened: boolean): string {
     return loadTimeData.getString(opened ? 'hideReportText' : 'seeReportText');
   }
 
   /**
    * Sets status texts for remaining runtime while the routine runs.
    */
-  private setRunningStatusBadgeText_(): void {
+  private setRunningStatusBadgeText(): void {
     // Routines that are longer than 5 minutes are considered large
     const largeRoutine = this.routineRuntime >= 5;
 
     // Calculate time elapsed since the start of routine in minutes.
     const minsElapsed =
-        (performance.now() - this.routineStartTimeMs_) / 1000 / 60;
+        (performance.now() - this.routineStartTimeMs) / 1000 / 60;
     let timeRemainingInMin = Math.ceil(this.routineRuntime - minsElapsed);
 
     if (largeRoutine && timeRemainingInMin <= 0) {
-      this.statusText_ =
-          loadTimeData.getString('routineRemainingMinFinalLarge');
+      this.statusText = loadTimeData.getString('routineRemainingMinFinalLarge');
       return;
     }
 
@@ -478,37 +476,36 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       timeRemainingInMin += (5 - timeRemainingInMin % 5);
     }
 
-    this.badgeText_ = timeRemainingInMin <= 1 ?
+    this.badgeText = timeRemainingInMin <= 1 ?
         loadTimeData.getString('routineRemainingMinFinal') :
         loadTimeData.getStringF('routineRemainingMin', timeRemainingInMin);
   }
 
-  protected routineStatusChanged_(): void {
-    switch (this.executionStatus_) {
+  protected routineStatusChanged(): void {
+    switch (this.executionStatus) {
       case ExecutionProgress.NOT_STARTED:
         // Do nothing since status is hidden when tests have not been started.
         return;
       case ExecutionProgress.RUNNING:
-        this.setBadgeAndStatusText_(
+        this.setBadgeAndStatusText(
             BadgeType.RUNNING,
             loadTimeData.getStringF(
-                'routineNameText', this.currentTestName_.toLowerCase()));
+                'routineNameText', this.currentTestName.toLowerCase()));
         return;
       case ExecutionProgress.CANCELLED:
-        this.setBadgeAndStatusText_(
+        this.setBadgeAndStatusText(
             BadgeType.STOPPED,
-            loadTimeData.getStringF(
-                'testCancelledText', this.currentTestName_));
+            loadTimeData.getStringF('testCancelledText', this.currentTestName));
         return;
       case ExecutionProgress.COMPLETED:
-        const isPowerRoutine = this.isPowerRoutine || this.powerRoutineResult_;
-        if (this.failedTest_) {
-          this.setBadgeAndStatusText_(
+        const isPowerRoutine = this.isPowerRoutine || this.powerRoutineResult;
+        if (this.failedTest) {
+          this.setBadgeAndStatusText(
               BadgeType.ERROR, loadTimeData.getString('testFailure'));
         } else {
-          this.setBadgeAndStatusText_(
+          this.setBadgeAndStatusText(
               BadgeType.SUCCESS,
-              isPowerRoutine ? this.getPowerRoutineString_() :
+              isPowerRoutine ? this.getPowerRoutineString() :
                                loadTimeData.getString('testSuccess'));
         }
         return;
@@ -516,52 +513,52 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     assertNotReached();
   }
 
-  private getPowerRoutineString_(): string {
+  private getPowerRoutineString(): string {
     assert(!this.usingRoutineGroups);
     const stringId =
         (this.routines as RoutineType[]).includes(RoutineType.kBatteryCharge) ?
         'chargeTestResultText' :
         'dischargeTestResultText';
     const percentText = loadTimeData.getStringF(
-        'percentageLabel', this.powerRoutineResult_.percentChange.toFixed(2));
+        'percentageLabel', this.powerRoutineResult.percentChange.toFixed(2));
     return loadTimeData.getStringF(
-        stringId, percentText, this.powerRoutineResult_.timeElapsedSeconds);
+        stringId, percentText, this.powerRoutineResult.timeElapsedSeconds);
   }
 
-  private setBadgeAndStatusText_(badgeType: BadgeType, statusText: string):
+  private setBadgeAndStatusText(badgeType: BadgeType, statusText: string):
       void {
     this.setProperties({
-      badgeType_: badgeType,
-      statusText_: statusText,
+      badgeType: badgeType,
+      statusText: statusText,
     });
   }
 
-  protected isTestRunning_(): boolean {
+  protected isTestRunning(): boolean {
     return this.testSuiteStatus === TestSuiteStatus.RUNNING;
   }
 
-  protected isRunTestsButtonHidden_(): boolean {
-    return this.isTestRunning_() &&
-        this.executionStatus_ === ExecutionProgress.RUNNING;
+  protected isRunTestsButtonHidden(): boolean {
+    return this.isTestRunning() &&
+        this.executionStatus === ExecutionProgress.RUNNING;
   }
 
-  protected isStopTestsButtonHidden_(): boolean {
-    return this.executionStatus_ !== ExecutionProgress.RUNNING;
+  protected isStopTestsButtonHidden(): boolean {
+    return this.executionStatus !== ExecutionProgress.RUNNING;
   }
 
-  protected isRunTestsButtonDisabled_(): boolean {
-    return this.isTestRunning_() || this.additionalMessage != '';
+  protected isRunTestsButtonDisabled(): boolean {
+    return this.isTestRunning() || this.additionalMessage != '';
   }
 
-  protected shouldHideReportList_(): boolean {
+  protected shouldHideReportList(): boolean {
     return this.routines.length < 2;
   }
 
-  protected isAdditionalMessageHidden_(): boolean {
+  protected isAdditionalMessageHidden(): boolean {
     return this.additionalMessage == '';
   }
 
-  private showCautionBanner_(): void {
+  private showCautionBanner(): void {
     this.dispatchEvent(new CustomEvent('show-caution-banner', {
       bubbles: true,
       composed: true,
@@ -569,18 +566,18 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     }));
   }
 
-  private dismissCautionBanner_(): void {
+  private dismissCautionBanner(): void {
     this.dispatchEvent(new CustomEvent(
         'dismiss-caution-banner', {bubbles: true, composed: true}));
   }
 
-  private resetRoutineState_(): void {
-    this.setBadgeAndStatusText_(BadgeType.QUEUED, '');
-    this.badgeText_ = '';
-    this.runTestsButtonText = this.initialButtonText_;
-    this.hasTestFailure_ = false;
-    this.currentTestName_ = '';
-    this.executionStatus_ = ExecutionProgress.NOT_STARTED;
+  private resetRoutineState(): void {
+    this.setBadgeAndStatusText(BadgeType.QUEUED, '');
+    this.badgeText = '';
+    this.runTestsButtonText = this.initialButtonText;
+    this.hasTestFailure = false;
+    this.currentTestName = '';
+    this.executionStatus = ExecutionProgress.NOT_STARTED;
     this.$.collapse.hide();
     this.ignoreRoutineStatusUpdates = false;
   }
@@ -590,22 +587,22 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
    * automatically, otherwise stop any running tests and reset to
    * the initial routine state.
    */
-  private onActivePageChanged_(): void {
+  private onActivePageChanged(): void {
     if (!this.isActive) {
       this.stopTests();
-      this.resetRoutineState_();
+      this.resetRoutineState();
       return;
     }
   }
 
-  protected isLearnMoreButtonHidden_(): boolean {
-    return !this.isLoggedIn_ || this.hideRoutineStatus;
+  protected isLearnMoreButtonHidden(): boolean {
+    return !this.isLoggedIn || this.hideRoutineStatus;
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
 
-    this.cleanUp_();
+    this.cleanUp();
   }
 
   protected hideRoutineSection(): boolean {

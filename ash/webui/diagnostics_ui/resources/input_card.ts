@@ -65,9 +65,9 @@ export class InputCardElement extends InputCardElementBase {
         value: () => [],
       },
 
-      deviceIcon_: {
+      deviceIcon: {
         type: String,
-        computed: 'computeDeviceIcon_(deviceType)',
+        computed: 'computeDeviceIcon(deviceType)',
       },
 
       hostDeviceStatus: {
@@ -80,11 +80,11 @@ export class InputCardElement extends InputCardElementBase {
   devices: KeyboardInfo[]|TouchDeviceInfo[];
   hostDeviceStatus: HostDeviceStatus;
 
-  private deviceIcon_: string;
+  private deviceIcon: string;
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
 
-  private computeDeviceIcon_(deviceType: InputCardType): string {
+  private computeDeviceIcon(deviceType: InputCardType): string {
     return {
       [InputCardType.KEYBOARD]: 'diagnostics:keyboard',
       [InputCardType.TOUCHPAD]: 'diagnostics:touchpad',
@@ -96,7 +96,7 @@ export class InputCardElement extends InputCardElementBase {
    * Fetches the description string for a device based on its connection type
    * (e.g. "Bluetooth keyboard", "Internal touchpad").
    */
-  private getDeviceDescription_(device: KeyboardInfo|TouchDeviceInfo): string {
+  private getDeviceDescription(device: KeyboardInfo|TouchDeviceInfo): string {
     if (device.connectionType === ConnectionType.kUnknown) {
       return '';
     }
@@ -161,7 +161,7 @@ export class InputCardElement extends InputCardElementBase {
     return '';
   }
 
-  private handleTestButtonClick_(e: PointerEvent): void {
+  private handleTestButtonClick(e: PointerEvent): void {
     const inputDeviceButton = e.target as CrButtonElement;
     assert(inputDeviceButton);
     const closestDevice: HTMLDivElement|null =

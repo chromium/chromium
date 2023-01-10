@@ -4,31 +4,31 @@
     [[i18n('cpuTitle')]]
   </div>
   <div id="cpuChipInfo" slot="chip" class="diagnostics-chip" aria-hidden="true">
-    [[cpuChipInfo_]]
+    [[cpuChipInfo]]
   </div>
   <iron-icon slot="icon" icon="diagnostics:cpu"></iron-icon>
   <realtime-cpu-chart slot="left-panel" id="realtimeCpuChart"
-      user="[[cpuUsage_.percentUsageUser]]"
-      system="[[cpuUsage_.percentUsageSystem]]">
+      user="[[cpuUsage.percentUsageUser]]"
+      system="[[cpuUsage.percentUsageSystem]]">
   </realtime-cpu-chart>
   <data-point slot="body" id="cpuUsageUser"
       header="[[i18n('cpuUsageLabel')]]"
-      value="[[getCurrentlyUsing_(cpuUsage_.percentUsageSystem,
-        cpuUsage_.percentUsageUser)]]"
-      tooltip-text="[[getCpuUsageTooltipText_()]]"
+      value="[[getCurrentlyUsing(cpuUsage.percentUsageSystem,
+        cpuUsage.percentUsageUser)]]"
+      tooltip-text="[[getCpuUsageTooltipText()]]"
       class="data-point-margin-start">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cpuTemp" header="[[i18n('cpuTempLabel')]]"
-      value="[[getCpuTemp_(cpuUsage_.averageCpuTempCelsius)]]">
+      value="[[getCpuTemp(cpuUsage.averageCpuTempCelsius)]]">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cpuSpeed" class="data-point-margin-end"
       header="[[i18n('cpuSpeedLabel')]]"
-      value="[[getCurrentCpuSpeed_(cpuUsage_.scalingCurrentFrequencyKhz)]]">
+      value="[[getCurrentCpuSpeed(cpuUsage.scalingCurrentFrequencyKhz)]]">
   </data-point>
-  <routine-section slot="routines" routines="[[routines_]]"
-      routine-runtime="{{getEstimateRuntimeInMinutes_(routines_)}}"
+  <routine-section slot="routines" routines="[[routines]]"
+      routine-runtime="{{getEstimateRuntimeInMinutes(routines)}}"
       test-suite-status="{{testSuiteStatus}}"
       run-tests-button-text="[[i18n('runCpuTestText')]]"
       banner-message="[[i18n('cpuBannerMessage')]]"

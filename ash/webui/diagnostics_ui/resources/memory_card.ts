@@ -42,12 +42,12 @@ export class MemoryCardElement extends MemoryCardElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      routines_: {
+      routines: {
         type: Array,
         value: () => [RoutineType.kMemory],
       },
 
-      memoryUsage_: {
+      memoryUsage: {
         type: Object,
       },
 
@@ -65,71 +65,71 @@ export class MemoryCardElement extends MemoryCardElementBase {
 
   testSuiteStatus: TestSuiteStatus;
   isActive: boolean;
-  private routines_: RoutineType[];
-  private memoryUsage_: MemoryUsage;
-  private systemDataProvider_: SystemDataProviderInterface =
+  private routines: RoutineType[];
+  private memoryUsage: MemoryUsage;
+  private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
-  private memoryUsageObserverReceiver_: MemoryUsageObserverReceiver|null = null;
+  private memoryUsageObserverReceiver: MemoryUsageObserverReceiver|null = null;
 
   constructor() {
     super();
-    this.observeMemoryUsage_();
+    this.observeMemoryUsage();
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (this.memoryUsageObserverReceiver_) {
-      this.memoryUsageObserverReceiver_.$.close();
+    if (this.memoryUsageObserverReceiver) {
+      this.memoryUsageObserverReceiver.$.close();
     }
   }
 
-  private observeMemoryUsage_(): void {
-    this.memoryUsageObserverReceiver_ = new MemoryUsageObserverReceiver(this);
+  private observeMemoryUsage(): void {
+    this.memoryUsageObserverReceiver = new MemoryUsageObserverReceiver(this);
 
-    this.systemDataProvider_.observeMemoryUsage(
-        this.memoryUsageObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.systemDataProvider.observeMemoryUsage(
+        this.memoryUsageObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /**
    * Implements MemoryUsageObserver.onMemoryUsageUpdated()
    */
   onMemoryUsageUpdated(memoryUsage: MemoryUsage): void {
-    this.memoryUsage_ = memoryUsage;
+    this.memoryUsage = memoryUsage;
   }
 
   /**
    * Calculates total used memory from MemoryUsage object.
    */
-  private getTotalUsedMemory_(memoryUsage: MemoryUsage): number {
+  private getTotalUsedMemory(memoryUsage: MemoryUsage): number {
     return memoryUsage.totalMemoryKib - memoryUsage.availableMemoryKib;
   }
 
   /**
    * Calculates total available memory from MemoryUsage object.
    */
-  protected getAvailableMemory_(): string {
+  protected getAvailableMemory(): string {
     // Note: The storage value is converted to GiB but we still display "GB" to
     // the user since this is the convention memory manufacturers use.
     return loadTimeData.getStringF(
         'memoryAvailable',
-        convertKibToGibDecimalString(this.memoryUsage_.availableMemoryKib, 2),
-        convertKibToGibDecimalString(this.memoryUsage_.totalMemoryKib, 2));
+        convertKibToGibDecimalString(this.memoryUsage.availableMemoryKib, 2),
+        convertKibToGibDecimalString(this.memoryUsage.totalMemoryKib, 2));
   }
 
   /**
    * Estimate the total runtime in minutes with kMicrosecondsPerByte = 0.2
    * @return Estimate runtime in minutes
    */
-  protected getEstimateRuntimeInMinutes_(): number {
+  protected getEstimateRuntimeInMinutes(): number {
     // Since this is an estimate, there's no need to be precise with Kib <-> Kb.
     // 300000Kb per minute, based on kMicrosecondsPerByte above.
-    return this.memoryUsage_ ?
-        Math.ceil(this.memoryUsage_.totalMemoryKib / 300000) :
+    return this.memoryUsage ?
+        Math.ceil(this.memoryUsage.totalMemoryKib / 300000) :
         0;
   }
 
-  protected getRunTestsAdditionalMessage_(): string {
-    return convertKibToMib(this.memoryUsage_.availableMemoryKib) >= 500 ?
+  protected getRunTestsAdditionalMessage(): string {
+    return convertKibToMib(this.memoryUsage.availableMemoryKib) >= 500 ?
         '' :
         loadTimeData.getString('notEnoughAvailableMemoryMessage');
   }

@@ -106,7 +106,7 @@ export class RoutineResultEntryElement extends PolymerElement {
       /**
        * Added to support testing of announce behavior.
        */
-      announcedText_: {
+      announcedText: {
         type: String,
         value: '',
       },
@@ -115,22 +115,22 @@ export class RoutineResultEntryElement extends PolymerElement {
         type: Object,
       },
 
-      routineType_: {
+      routineType: {
         type: String,
-        computed: 'getRunningRoutineString_(item.*)',
+        computed: 'getRunningRoutineString(item.*)',
       },
 
-      badgeType_: {
+      badgeType: {
         type: String,
         value: BadgeType.QUEUED,
       },
 
-      badgeText_: {
+      badgeText: {
         type: String,
         value: '',
       },
 
-      testCompleted_: {
+      testCompleted: {
         type: Boolean,
         value: false,
       },
@@ -151,15 +151,15 @@ export class RoutineResultEntryElement extends PolymerElement {
   item: RoutineGroup|ResultStatusItem;
   hideVerticalLines: boolean;
   usingRoutineGroups: boolean;
-  protected badgeType_: BadgeType;
-  protected badgeText_: string;
-  protected testCompleted_: boolean;
-  private announcedText_: string;
-  private routineType_: string;
+  protected badgeType: BadgeType;
+  protected badgeText: string;
+  protected testCompleted: boolean;
+  private announcedText: string;
+  private routineType: string;
 
 
   static get observers(): string[] {
-    return ['entryStatusChanged_(item.*)'];
+    return ['entryStatusChanged(item.*)'];
   }
 
   override connectedCallback(): void {
@@ -171,7 +171,7 @@ export class RoutineResultEntryElement extends PolymerElement {
   /**
    * Get the localized string name for the routine.
    */
-  private getRunningRoutineString_(): string {
+  private getRunningRoutineString(): string {
     if (this.usingRoutineGroups) {
       assert(this.item instanceof RoutineGroup);
       return loadTimeData.getString(this.item.groupName);
@@ -182,26 +182,26 @@ export class RoutineResultEntryElement extends PolymerElement {
         'routineEntryText', getRoutineType(this.item.routine));
   }
 
-  private entryStatusChanged_(): void {
+  private entryStatusChanged(): void {
     switch (this.item.progress) {
       case ExecutionProgress.NOT_STARTED:
-        this.setBadgeTypeAndText_(
+        this.setBadgeTypeAndText(
             BadgeType.QUEUED, loadTimeData.getString('testQueuedBadgeText'));
         break;
       case ExecutionProgress.RUNNING:
-        this.setBadgeTypeAndText_(
+        this.setBadgeTypeAndText(
             BadgeType.RUNNING, loadTimeData.getString('testRunningBadgeText'));
-        this.announceRoutineStatus_();
+        this.announceRoutineStatus();
         break;
       case ExecutionProgress.CANCELLED:
-        this.setBadgeTypeAndText_(
+        this.setBadgeTypeAndText(
             BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'));
         break;
       case ExecutionProgress.COMPLETED:
-        this.testCompleted_ = true;
+        this.testCompleted = true;
         // Prevent warning state from being overridden.
         if (this.item instanceof RoutineGroup && this.item.inWarningState) {
-          this.setBadgeTypeAndText_(
+          this.setBadgeTypeAndText(
               BadgeType.WARNING,
               loadTimeData.getString('testWarningBadgeText'));
           return;
@@ -220,17 +220,17 @@ export class RoutineResultEntryElement extends PolymerElement {
         const badgeType = testPassed ? BadgeType.SUCCESS : BadgeType.ERROR;
         const badgeText = loadTimeData.getString(
             testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
-        this.setBadgeTypeAndText_(badgeType, badgeText);
+        this.setBadgeTypeAndText(badgeType, badgeText);
         if (!testPassed) {
-          this.announceRoutineStatus_();
+          this.announceRoutineStatus();
         }
         break;
       case ExecutionProgress.SKIPPED:
-        this.setBadgeTypeAndText_(
+        this.setBadgeTypeAndText(
             BadgeType.SKIPPED, loadTimeData.getString('testSkippedBadgeText'));
         break;
       case ExecutionProgress.WARNING:
-        this.setBadgeTypeAndText_(
+        this.setBadgeTypeAndText(
             BadgeType.WARNING, loadTimeData.getString('testWarningBadgeText'));
         break;
       default:
@@ -238,28 +238,28 @@ export class RoutineResultEntryElement extends PolymerElement {
     }
   }
 
-  private setBadgeTypeAndText_(badgeType: BadgeType, badgeText: string): void {
-    this.setProperties({badgeType_: badgeType, badgeText_: badgeText});
+  private setBadgeTypeAndText(badgeType: BadgeType, badgeText: string): void {
+    this.setProperties({badgeType: badgeType, badgeText: badgeText});
   }
 
-  private announceRoutineStatus_(): void {
-    this.announcedText_ = this.routineType_ + ' - ' + this.badgeText_;
+  private announceRoutineStatus(): void {
+    this.announcedText = this.routineType + ' - ' + this.badgeText;
     this.dispatchEvent(new CustomEvent('iron-announce', {
       bubbles: true,
       composed: true,
       detail: {
-        text: this.announcedText_,
+        text: this.announcedText,
       },
     }));
   }
 
-  protected getLineClassName_(num: number): string {
-    if (!this.badgeType_) {
+  protected getLineClassName(num: number): string {
+    if (!this.badgeType) {
       return '';
     }
 
     let lineColor = '';
-    switch (this.badgeType_) {
+    switch (this.badgeType) {
       case BadgeType.RUNNING:
       case BadgeType.SUCCESS:
         lineColor = 'green';
@@ -277,11 +277,11 @@ export class RoutineResultEntryElement extends PolymerElement {
     return `line animation-${num} ${lineColor}`;
   }
 
-  protected shouldHideLines_(): boolean {
-    return this.hideVerticalLines || !this.testCompleted_;
+  protected shouldHideLines(): boolean {
+    return this.hideVerticalLines || !this.testCompleted;
   }
 
-  protected computeFailedTestText_(): string {
+  protected computeFailedTestText(): string {
     if (!this.usingRoutineGroups) {
       return '';
     }

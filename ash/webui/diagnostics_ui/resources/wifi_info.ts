@@ -42,12 +42,12 @@ export class WifiInfoElement extends WifiInfoElementBase {
         type: Object,
       },
 
-      security_: {
+      security: {
         type: String,
-        computed: 'computeSecurity_(network.typeProperties.wifi.security)',
+        computed: 'computeSecurity(network.typeProperties.wifi.security)',
       },
 
-      signalStrength_: {
+      signalStrength: {
         type: String,
         computed:
             'computeSignalStrength(network.typeProperties.wifi.signalStrength)',
@@ -57,8 +57,8 @@ export class WifiInfoElement extends WifiInfoElementBase {
   }
 
   network: Network;
-  protected security_: string;
-  protected signalStrength_: string;
+  protected security: string;
+  protected signalStrength: string;
 
   /**
    * Builds channel text based frequency conversion. If value of frequency is
@@ -68,7 +68,7 @@ export class WifiInfoElement extends WifiInfoElementBase {
    * for display.
    * @param frequency Given in MHz.
    */
-  protected getChannelDescription_(frequency: number): string {
+  protected getChannelDescription(frequency: number): string {
     if (!frequency || frequency === 0) {
       return '';
     }
@@ -77,7 +77,7 @@ export class WifiInfoElement extends WifiInfoElementBase {
     return `${channel || '?'} (${ghz} GHz)`;
   }
 
-  protected computeSecurity_(): string {
+  protected computeSecurity(): string {
     if (!this.network.typeProperties) {
       return '';
     }

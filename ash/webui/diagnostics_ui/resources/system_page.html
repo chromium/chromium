@@ -40,12 +40,12 @@
    left: 0;
  }
 </style>
-<div id="diagnosticsContainer" hidden="[[!systemInfoReceived_]]">
+<div id="diagnosticsContainer" hidden="[[!systemInfoReceived]]">
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>
   </div>
   <div class$="diagnostics-cards-container-nav">
-    <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
+    <template is="dom-if" if="[[showBatteryStatusCard]]" restamp>
       <div class="card-width">
         <battery-status-card id="batteryStatusCard"
             test-suite-status="{{testSuiteStatus}}"
@@ -67,6 +67,6 @@
     </div>
   </div>
   <cr-toast id="toast" duration="2500">
-    <span>[[toastText_]]</span>
+    <span>[[toastText]]</span>
   </cr-toast>
 </div>

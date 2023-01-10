@@ -32,45 +32,45 @@ export class OverviewCardElement extends OverviewCardElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      systemInfo_: {
+      systemInfo: {
         type: Object,
       },
 
-      deviceInfo_: {
+      deviceInfo: {
         type: String,
         value: '',
-        computed: 'getDeviceInfo_(systemInfo_.versionInfo.fullVersionString,' +
-            'systemInfo_.boardName)',
+        computed: 'getDeviceInfo(systemInfo.versionInfo.fullVersionString,' +
+            'systemInfo.boardName)',
       },
 
     };
   }
 
-  private systemInfo_: SystemInfo;
-  private deviceInfo_: string;
-  private systemDataProvider_: SystemDataProviderInterface =
+  private systemInfo: SystemInfo;
+  private deviceInfo: string;
+  private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
 
   constructor() {
     super();
-    this.fetchSystemInfo_();
+    this.fetchSystemInfo();
   }
 
-  private fetchSystemInfo_(): void {
-    this.systemDataProvider_.getSystemInfo().then(
+  private fetchSystemInfo(): void {
+    this.systemDataProvider.getSystemInfo().then(
         (result: {systemInfo: SystemInfo}) => {
-          this.onSystemInfoReceived_(result.systemInfo);
+          this.onSystemInfoReceived(result.systemInfo);
         });
   }
 
-  private onSystemInfoReceived_(systemInfo: SystemInfo): void {
-    this.systemInfo_ = systemInfo;
+  private onSystemInfoReceived(systemInfo: SystemInfo): void {
+    this.systemInfo = systemInfo;
   }
 
-  private getDeviceInfo_(): string {
-    const marketingNameValid = !this.shouldHideMarketingName_();
-    const boardName = this.systemInfo_.boardName;
-    const version = this.systemInfo_.versionInfo.fullVersionString;
+  private getDeviceInfo(): string {
+    const marketingNameValid = !this.shouldHideMarketingName();
+    const boardName = this.systemInfo.boardName;
+    const version = this.systemInfo.versionInfo.fullVersionString;
 
     if (!boardName && !marketingNameValid) {
       const versionInfo = loadTimeData.getStringF('versionInfo', version);
@@ -78,16 +78,16 @@ export class OverviewCardElement extends OverviewCardElementBase {
       return versionInfo[0].toUpperCase() + versionInfo.slice(1);
     }
 
-    const deviceInfo = this.systemInfo_.boardName ?
+    const deviceInfo = this.systemInfo.boardName ?
         loadTimeData.getStringF(
-            'boardAndVersionInfo', this.systemInfo_.boardName, version) :
+            'boardAndVersionInfo', this.systemInfo.boardName, version) :
         loadTimeData.getStringF('versionInfo', version);
     return marketingNameValid ? `(${deviceInfo})` : deviceInfo;
   }
 
-  protected shouldHideMarketingName_(): boolean {
-    return this.systemInfo_.marketingName === 'TBD' ||
-        this.systemInfo_.marketingName === '';
+  protected shouldHideMarketingName(): boolean {
+    return this.systemInfo.marketingName === 'TBD' ||
+        this.systemInfo.marketingName === '';
   }
 }
 

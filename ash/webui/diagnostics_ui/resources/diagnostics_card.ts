@@ -45,11 +45,11 @@ export class DiagnosticsCardElement extends PolymerElement {
   hideDataPoints: boolean;
   isNetworkingCard: boolean;
 
-  protected getTopSectionClassName_(): string {
+  protected getTopSectionClassName(): string {
     return `top-section${this.isNetworkingCard ? '-networking' : ''}`;
   }
 
-  protected getBodyClassName_(): string {
+  protected getBodyClassName(): string {
     return `data-points${this.isNetworkingCard ? '-column' : ''}`;
   }
 }

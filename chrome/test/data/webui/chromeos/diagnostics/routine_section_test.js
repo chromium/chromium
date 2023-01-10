@@ -190,7 +190,7 @@ suite('routineSectionTestSuite', function() {
   function getAnnouncedText() {
     assertTrue(!!routineSectionElement);
 
-    return routineSectionElement.announcedText_;
+    return routineSectionElement.announcedText;
   }
 
   /**
@@ -210,13 +210,13 @@ suite('routineSectionTestSuite', function() {
   }
 
   /**
-   * Get currentTestName_ private member for testing.
+   * Get currentTestName private member for testing.
    * @suppress {visibility} // access private member
    * @return {string}
    */
   function getCurrentTestName() {
     assertTrue(!!routineSectionElement);
-    return routineSectionElement.currentTestName_;
+    return routineSectionElement.currentTestName;
   }
 
   /**
@@ -239,7 +239,7 @@ suite('routineSectionTestSuite', function() {
    * @return {!Promise}
    */
   function triggerStatusUpdate() {
-    routineSectionElement.setRunningStatusBadgeText_();
+    routineSectionElement.setRunningStatusBadgeText();
     return flushTasks();
   }
 

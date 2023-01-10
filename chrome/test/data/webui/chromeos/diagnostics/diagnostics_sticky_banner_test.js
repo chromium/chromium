@@ -60,7 +60,7 @@ suite('diagnosticsStickyBannerTestSuite', function() {
    * @return {string}
    */
   function getScrollClass_() {
-    return diagnosticsStickyBannerElement.scrollingClass_;
+    return diagnosticsStickyBannerElement.scrollingClass;
   }
 
   /**
@@ -68,7 +68,7 @@ suite('diagnosticsStickyBannerTestSuite', function() {
    * @return {number}
    */
   function getScrollTimerId_() {
-    return diagnosticsStickyBannerElement.scrollTimerId_;
+    return diagnosticsStickyBannerElement.scrollTimerId;
   }
 
   /**

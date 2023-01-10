@@ -130,13 +130,13 @@ suite('batteryStatusCardTestSuite', function() {
   }
 
   /**
-   * Get batteryChargeStatus_.powerAdapterStatus private member for testing.
+   * Get batteryChargeStatus.powerAdapterStatus private member for testing.
    * @suppress {visibility} // access private member
    * @return {!ExternalPowerSource}
    */
   function getPowerAdapterStatus() {
     assertTrue(!!batteryStatusElement);
-    return batteryStatusElement.batteryChargeStatus_.powerAdapterStatus;
+    return batteryStatusElement.batteryChargeStatus.powerAdapterStatus;
   }
 
   test('BatteryStatusCardPopulated', () => {

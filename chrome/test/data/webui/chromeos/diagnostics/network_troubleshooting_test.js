@@ -42,7 +42,7 @@ suite('networkTroubleshootingTestSuite', function() {
    */
   function setIsLoggedIn(state) {
     assertTrue(!!networkTroubleshootingElement);
-    networkTroubleshootingElement.isLoggedIn_ = state;
+    networkTroubleshootingElement.isLoggedIn = state;
 
     return flushTasks();
   }

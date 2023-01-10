@@ -25,7 +25,7 @@ function getRoutine(routineProp: RoutineProperties): RoutineType {
  */
 export class RoutineGroup {
   routineProperties: RoutineProperties[];
-  private nonBlockingRoutines_: Set<RoutineType>;
+  private nonBlockingRoutines: Set<RoutineType>;
   routines: RoutineType[];
   groupName: string;
   progress: ExecutionProgress;
@@ -36,7 +36,7 @@ export class RoutineGroup {
      * Store routine properties array for calls to |clone|.
      */
     this.routineProperties = this.routineProperties || routines;
-    this.nonBlockingRoutines_ = new Set(getNonBlockingRoutines(routines));
+    this.nonBlockingRoutines = new Set(getNonBlockingRoutines(routines));
     this.routines = routines.map(getRoutine);
     this.groupName = groupName;
     this.progress = ExecutionProgress.NOT_STARTED;
@@ -58,12 +58,12 @@ export class RoutineGroup {
       return;
     }
 
-    const isLastRoutine = this.isLastRoutine_(status.routine);
-    if (status.result && this.testFailed_(status.result)) {
+    const isLastRoutine = this.isLastRoutine(status.routine);
+    if (status.result && this.testFailed(status.result)) {
       // Prevent 1st failed test from being overwritten.
       this.failedTest = this.failedTest || status.routine;
 
-      const isBlocking = !this.nonBlockingRoutines_.has(status.routine);
+      const isBlocking = !this.nonBlockingRoutines.has(status.routine);
       this.inWarningState = this.inWarningState || !isBlocking;
 
       // We've encountered a blocking failure.
@@ -83,11 +83,11 @@ export class RoutineGroup {
     return;
   }
 
-  private testFailed_(result: RoutineResult): boolean {
+  private testFailed(result: RoutineResult): boolean {
     return getSimpleResult(result) === StandardRoutineResult.kTestFailed;
   }
 
-  private isLastRoutine_(routine: RoutineType): boolean {
+  private isLastRoutine(routine: RoutineType): boolean {
     return routine === this.routines[this.routines.length - 1];
   }
 
@@ -98,7 +98,7 @@ export class RoutineGroup {
   addRoutine(routineProps: RoutineProperties): void {
     this.routines.push(routineProps.routine);
     if (!isBlockingRoutine(routineProps)) {
-      this.nonBlockingRoutines_.add(routineProps.routine);
+      this.nonBlockingRoutines.add(routineProps.routine);
     }
     this.routineProperties = [...this.routineProperties, routineProps];
   }
@@ -114,7 +114,7 @@ export class RoutineGroup {
 
     // Skip remaining tests if this is a blocking test failure and we're not
     // in a warning state.
-    return !this.nonBlockingRoutines_.has(this.failedTest) &&
+    return !this.nonBlockingRoutines.has(this.failedTest) &&
         !this.inWarningState;
   }
 

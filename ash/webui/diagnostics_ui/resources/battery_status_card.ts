@@ -62,27 +62,27 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      batteryChargeStatus_: {
+      batteryChargeStatus: {
         type: Object,
       },
 
-      batteryHealth_: {
+      batteryHealth: {
         type: Object,
       },
 
-      batteryInfo_: {
+      batteryInfo: {
         type: Object,
       },
 
-      routines_: {
+      routines: {
         type: Array,
         computed:
-            'getCurrentPowerRoutines_(batteryChargeStatus_.powerAdapterStatus)',
+            'getCurrentPowerRoutines(batteryChargeStatus.powerAdapterStatus)',
       },
 
-      powerTimeString_: {
+      powerTimeString: {
         type: String,
-        computed: 'getPowerTimeString_(batteryChargeStatus_.powerTime)',
+        computed: 'getPowerTimeString(batteryChargeStatus.powerTime)',
       },
 
       testSuiteStatus: {
@@ -93,15 +93,14 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
 
       batteryIcon: {
         type: String,
-        computed: 'getBatteryIcon_(batteryChargeStatus_.powerAdapterStatus,' +
-            'batteryChargeStatus_.chargeNowMilliampHours,' +
-            'batteryHealth_.chargeFullNowMilliampHours)',
+        computed: 'getBatteryIcon(batteryChargeStatus.powerAdapterStatus,' +
+            'batteryChargeStatus.chargeNowMilliampHours,' +
+            'batteryHealth.chargeFullNowMilliampHours)',
       },
 
       iconClass: {
         type: String,
-        computed:
-            'updateIconClassList_(batteryChargeStatus_.powerAdapterStatus)',
+        computed: 'updateIconClassList(batteryChargeStatus.powerAdapterStatus)',
       },
 
       isActive: {
@@ -116,73 +115,73 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
   batteryIcon: string;
   iconClass: string;
   isActive: boolean;
-  private batteryChargeStatus_: BatteryChargeStatus;
-  private batteryHealth_: BatteryHealth;
-  private batteryInfo_: BatteryInfo;
-  private routines_: RoutineType[];
-  private powerTimeString_: string;
-  private systemDataProvider_: SystemDataProviderInterface =
+  private batteryChargeStatus: BatteryChargeStatus;
+  private batteryHealth: BatteryHealth;
+  private batteryInfo: BatteryInfo;
+  private routines: RoutineType[];
+  private powerTimeString: string;
+  private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
-  private batteryChargeStatusObserverReceiver_:
+  private batteryChargeStatusObserverReceiver:
       BatteryChargeStatusObserverReceiver|null;
-  private batteryHealthObserverReceiver_: BatteryHealthObserverReceiver|null;
+  private batteryHealthObserverReceiver: BatteryHealthObserverReceiver|null;
 
   constructor() {
     super();
-    this.fetchBatteryInfo_();
-    this.observeBatteryChargeStatus_();
-    this.observeBatteryHealth_();
+    this.fetchBatteryInfo();
+    this.observeBatteryChargeStatus();
+    this.observeBatteryHealth();
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
 
-    if (this.batteryChargeStatusObserverReceiver_) {
-      this.batteryChargeStatusObserverReceiver_.$.close();
+    if (this.batteryChargeStatusObserverReceiver) {
+      this.batteryChargeStatusObserverReceiver.$.close();
     }
-    if (this.batteryHealthObserverReceiver_) {
-      this.batteryHealthObserverReceiver_.$.close();
+    if (this.batteryHealthObserverReceiver) {
+      this.batteryHealthObserverReceiver.$.close();
     }
   }
 
-  private fetchBatteryInfo_(): void {
-    this.systemDataProvider_.getBatteryInfo().then(
+  private fetchBatteryInfo(): void {
+    this.systemDataProvider.getBatteryInfo().then(
         (result: {batteryInfo: BatteryInfo}) => {
-          this.onBatteryInfoReceived_(result.batteryInfo);
+          this.onBatteryInfoReceived(result.batteryInfo);
         });
   }
 
-  private onBatteryInfoReceived_(batteryInfo: BatteryInfo): void {
-    this.batteryInfo_ = batteryInfo;
+  private onBatteryInfoReceived(batteryInfo: BatteryInfo): void {
+    this.batteryInfo = batteryInfo;
   }
 
-  private observeBatteryChargeStatus_(): void {
-    this.batteryChargeStatusObserverReceiver_ =
+  private observeBatteryChargeStatus(): void {
+    this.batteryChargeStatusObserverReceiver =
         new BatteryChargeStatusObserverReceiver(this);
 
-    this.systemDataProvider_.observeBatteryChargeStatus(
-        this.batteryChargeStatusObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.systemDataProvider.observeBatteryChargeStatus(
+        this.batteryChargeStatusObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /**
    * Implements BatteryChargeStatusObserver.onBatteryChargeStatusUpdated()
    */
   onBatteryChargeStatusUpdated(batteryChargeStatus: BatteryChargeStatus): void {
-    this.batteryChargeStatus_ = batteryChargeStatus;
+    this.batteryChargeStatus = batteryChargeStatus;
   }
 
-  private observeBatteryHealth_(): void {
-    this.batteryHealthObserverReceiver_ =
+  private observeBatteryHealth(): void {
+    this.batteryHealthObserverReceiver =
         new BatteryHealthObserverReceiver(this);
 
-    this.systemDataProvider_.observeBatteryHealth(
-        this.batteryHealthObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.systemDataProvider.observeBatteryHealth(
+        this.batteryHealthObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /**
    * Get an array of currently relevant routines based on power adaptor status
    */
-  private getCurrentPowerRoutines_(powerAdapterStatus: ExternalPowerSource):
+  private getCurrentPowerRoutines(powerAdapterStatus: ExternalPowerSource):
       RoutineType[] {
     return powerAdapterStatus === ExternalPowerSource.kDisconnected ?
         [RoutineType.kBatteryDischarge] :
@@ -192,21 +191,21 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
   /**
    * Get power time string from battery status.
    */
-  protected getPowerTimeString_(): string {
+  protected getPowerTimeString(): string {
     const fullyCharged =
-        this.batteryChargeStatus_.batteryState === BatteryState.kFull;
+        this.batteryChargeStatus.batteryState === BatteryState.kFull;
     if (fullyCharged) {
       return loadTimeData.getString('batteryFullText');
     }
 
-    const powerTimeStr = this.batteryChargeStatus_.powerTime;
+    const powerTimeStr = this.batteryChargeStatus.powerTime;
     if (!powerTimeStr || powerTimeStr.data.length === 0) {
       return loadTimeData.getString('batteryCalculatingText');
     }
 
     const timeValue = mojoString16ToString(powerTimeStr);
-    const charging = this.batteryChargeStatus_.powerAdapterStatus ===
-        ExternalPowerSource.kAc;
+    const charging =
+        this.batteryChargeStatus.powerAdapterStatus === ExternalPowerSource.kAc;
 
     return charging ?
         loadTimeData.getStringF('batteryChargingStatusText', timeValue) :
@@ -217,38 +216,37 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
    * Implements BatteryHealthObserver.onBatteryHealthUpdated()
    */
   onBatteryHealthUpdated(batteryHealth: BatteryHealth): void {
-    this.batteryHealth_ = batteryHealth;
+    this.batteryHealth = batteryHealth;
   }
 
-  protected getDesignedFullCharge_(): string {
+  protected getDesignedFullCharge(): string {
     return loadTimeData.getStringF(
-        'batteryChipText', this.batteryHealth_.chargeFullDesignMilliampHours);
+        'batteryChipText', this.batteryHealth.chargeFullDesignMilliampHours);
   }
 
-  protected getBatteryHealth_(): string {
+  protected getBatteryHealth(): string {
     const MAX_PERCENTAGE = 100;
     const batteryWearPercentage =
-        Math.min(this.batteryHealth_.batteryWearPercentage, MAX_PERCENTAGE);
+        Math.min(this.batteryHealth.batteryWearPercentage, MAX_PERCENTAGE);
     return loadTimeData.getStringF('batteryHealthText', batteryWearPercentage);
   }
 
-  protected getCurrentNow_(): string {
+  protected getCurrentNow(): string {
     return loadTimeData.getStringF(
-        'currentNowText', this.batteryChargeStatus_.currentNowMilliamps);
+        'currentNowText', this.batteryChargeStatus.currentNowMilliamps);
   }
 
-  protected getRunTestsButtonText_(): string {
+  protected getRunTestsButtonText(): string {
     return loadTimeData.getString(
-        this.batteryChargeStatus_.powerAdapterStatus ===
+        this.batteryChargeStatus.powerAdapterStatus ===
                 ExternalPowerSource.kDisconnected ?
             'runBatteryDischargeTestText' :
             'runBatteryChargeTestText');
   }
 
   protected getRunTestsAdditionalMessage(): string {
-    const batteryInfoMissing =
-        !this.batteryChargeStatus_ || !this.batteryHealth_;
-    const notCharging = this.batteryChargeStatus_.powerAdapterStatus ===
+    const batteryInfoMissing = !this.batteryChargeStatus || !this.batteryHealth;
+    const notCharging = this.batteryChargeStatus.powerAdapterStatus ===
         ExternalPowerSource.kDisconnected;
     if (notCharging || batteryInfoMissing) {
       return '';
@@ -256,15 +254,15 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
 
     const disableRunButtonThreshold = 95;
     const percentage = calculatePowerPercentage(
-        this.batteryChargeStatus_.chargeNowMilliampHours,
-        this.batteryHealth_.chargeFullNowMilliampHours);
+        this.batteryChargeStatus.chargeNowMilliampHours,
+        this.batteryHealth.chargeFullNowMilliampHours);
 
     return percentage >= disableRunButtonThreshold ?
         loadTimeData.getString('batteryChargeTestFullMessage') :
         '';
   }
 
-  protected getEstimateRuntimeInMinutes_(): number {
+  protected getEstimateRuntimeInMinutes(): number {
     // Power routines will always last <= 1 minute.
     return 1;
   }
@@ -273,14 +271,14 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
    * Use the current battery percentage to determine which icon to show the
    * user. Each icon covers a range of 6 or 7 percentage values.
    */
-  private getBatteryIconForChargePercentage_(): string {
-    if (!this.batteryChargeStatus_ || !this.batteryHealth_) {
+  private getBatteryIconForChargePercentage(): string {
+    if (!this.batteryChargeStatus || !this.batteryHealth) {
       return this.batteryIcon;
     }
 
     const percentage = calculatePowerPercentage(
-        this.batteryChargeStatus_.chargeNowMilliampHours,
-        this.batteryHealth_.chargeFullNowMilliampHours);
+        this.batteryChargeStatus.chargeNowMilliampHours,
+        this.batteryHealth.chargeFullNowMilliampHours);
 
     // Handle values in battery_info which could cause a SIGFPE. See
     // b/227485637.
@@ -316,16 +314,15 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
     assertNotReached();
   }
 
-  protected getBatteryIcon_(): string {
-    const charging = this.batteryChargeStatus_ &&
-        this.batteryChargeStatus_.powerAdapterStatus ===
-            ExternalPowerSource.kAc;
+  protected getBatteryIcon(): string {
+    const charging = this.batteryChargeStatus &&
+        this.batteryChargeStatus.powerAdapterStatus === ExternalPowerSource.kAc;
 
     if (charging) {
       return getDiagnosticsIcon(`${BATTERY_ICON_PREFIX}charging`);
     }
 
-    return this.getBatteryIconForChargePercentage_();
+    return this.getBatteryIconForChargePercentage();
   }
 
   /**
@@ -333,9 +330,9 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
    * for --iron-icon-stroke-color since the charging icon needs to remove it in
    * order to display properly.
    */
-  protected updateIconClassList_(): string {
-    return (this.batteryChargeStatus_ &&
-            this.batteryChargeStatus_.powerAdapterStatus ===
+  protected updateIconClassList(): string {
+    return (this.batteryChargeStatus &&
+            this.batteryChargeStatus.powerAdapterStatus ===
                 ExternalPowerSource.kAc) ?
         'remove-stroke' :
         '';

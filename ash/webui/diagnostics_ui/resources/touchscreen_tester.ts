@@ -81,7 +81,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   // Manages all event listeners.
   private eventTracker: EventTracker = new EventTracker();
 
-  private receiver_: TabletModeObserverReceiver|null = null;
+  private receiver: TabletModeObserverReceiver|null = null;
 
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
@@ -126,9 +126,9 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   async showTester(evdevId: number): Promise<void> {
     this.inputDataProvider.moveAppToTestingScreen(evdevId);
 
-    this.receiver_ = new TabletModeObserverReceiver(this);
+    this.receiver = new TabletModeObserverReceiver(this);
     const {isTabletMode} = await this.inputDataProvider.observeTabletMode(
-        this.receiver_.$.bindNewPipeAndPassRemote());
+        this.receiver.$.bindNewPipeAndPassRemote());
     this.isTabletMode = isTabletMode;
 
     const introDialog = this.getDialog(DialogType.INTRO);
@@ -181,8 +181,8 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
-    if (this.receiver_) {
-      this.receiver_.$.close();
+    if (this.receiver) {
+      this.receiver.$.close();
     }
   }
 

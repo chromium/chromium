@@ -56,12 +56,12 @@ export class NetworkCardElement extends NetworkCardElementBase {
         value: '',
       },
 
-      networkType_: {
+      networkType: {
         type: String,
         value: '',
       },
 
-      networkState_: {
+      networkState: {
         type: String,
         value: '',
       },
@@ -70,44 +70,44 @@ export class NetworkCardElement extends NetworkCardElementBase {
         type: Object,
       },
 
-      showNetworkDataPoints_: {
+      showNetworkDataPoints: {
         type: Boolean,
-        computed: 'computeShouldShowNetworkDataPoints_(network.state,' +
-            ' unableToObtainIpAddress_, isMissingNameServers_)',
+        computed: 'computeShouldShowNetworkDataPoints(network.state,' +
+            ' unableToObtainIpAddress, isMissingNameServers)',
       },
 
-      showTroubleshootingCard_: {
+      showTroubleshootingCard: {
         type: Boolean,
         value: false,
       },
 
-      macAddress_: {
+      macAddress: {
         type: String,
         value: '',
       },
 
-      unableToObtainIpAddress_: {
+      unableToObtainIpAddress: {
         type: Boolean,
         value: false,
       },
 
-      troubleshootingInfo_: {
+      troubleshootingInfo: {
         type: Object,
-        computed: 'computeTroubleshootingInfo_(network.*,' +
-            ' unableToObtainIpAddress_, isMissingNameServers_)',
+        computed: 'computeTroubleshootingInfo(network.*,' +
+            ' unableToObtainIpAddress, isMissingNameServers)',
       },
 
-      timerId_: {
+      timerId: {
         type: Number,
         value: -1,
       },
 
-      timeoutInMs_: {
+      timeoutInMs: {
         type: Number,
         value: 30000,
       },
 
-      isMissingNameServers_: {
+      isMissingNameServers: {
         type: Boolean,
         value: false,
       },
@@ -117,52 +117,52 @@ export class NetworkCardElement extends NetworkCardElementBase {
 
   guid: string;
   network: Network;
-  protected showNetworkDataPoints_: boolean;
-  protected showTroubleshootingCard_: boolean;
-  protected macAddress_: string;
-  protected unableToObtainIpAddress_: boolean;
-  protected troubleshootingInfo_: TroubleshootingInfo;
-  protected isMissingNameServers_: boolean;
-  private networkType_: string;
-  private networkState_: string;
-  private timerId_: number;
-  private timeoutInMs_: number;
-  private networkHealthProvider_: NetworkHealthProviderInterface =
+  protected showNetworkDataPoints: boolean;
+  protected showTroubleshootingCard: boolean;
+  protected macAddress: string;
+  protected unableToObtainIpAddress: boolean;
+  protected troubleshootingInfo: TroubleshootingInfo;
+  protected isMissingNameServers: boolean;
+  private networkType: string;
+  private networkState: string;
+  private timerId: number;
+  private timeoutInMs: number;
+  private networkHealthProvider: NetworkHealthProviderInterface =
       getNetworkHealthProvider();
-  private networkStateObserverReceiver_: NetworkStateObserverReceiver|null =
+  private networkStateObserverReceiver: NetworkStateObserverReceiver|null =
       null;
 
   static get observers(): string[] {
-    return ['observeNetwork_(guid)'];
+    return ['observeNetwork(guid)'];
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
 
-    this.resetTimer_();
+    this.resetTimer();
   }
 
-  private observeNetwork_(): void {
+  private observeNetwork(): void {
     // If necessary, clear setTimeout and reset the timerId.
-    this.resetTimer_();
+    this.resetTimer();
 
     // Reset this flag in case we were unable to obtain an IP Address for the
     // previous network.
-    this.unableToObtainIpAddress_ = false;
+    this.unableToObtainIpAddress = false;
 
     if (!this.guid) {
       return;
     }
 
-    if (this.networkStateObserverReceiver_) {
-      this.networkStateObserverReceiver_.$.close();
-      this.networkStateObserverReceiver_ = null;
+    if (this.networkStateObserverReceiver) {
+      this.networkStateObserverReceiver.$.close();
+      this.networkStateObserverReceiver = null;
     }
 
-    this.networkStateObserverReceiver_ = new NetworkStateObserverReceiver(this);
+    this.networkStateObserverReceiver = new NetworkStateObserverReceiver(this);
 
-    this.networkHealthProvider_.observeNetwork(
-        this.networkStateObserverReceiver_.$.bindNewPipeAndPassRemote(),
+    this.networkHealthProvider.observeNetwork(
+        this.networkStateObserverReceiver.$.bindNewPipeAndPassRemote(),
         this.guid);
   }
 
@@ -170,43 +170,43 @@ export class NetworkCardElement extends NetworkCardElementBase {
    * Implements NetworkStateObserver.onNetworkStateChanged
    */
   onNetworkStateChanged(network: Network): void {
-    this.networkType_ = getNetworkType(network.type);
-    this.networkState_ = getNetworkState(network.state);
-    this.macAddress_ = network.macAddress || '';
+    this.networkType = getNetworkType(network.type);
+    this.networkState = getNetworkState(network.state);
+    this.macAddress = network.macAddress || '';
 
     // Remove '0.0.0.0' (if present) from list of name servers.
     filterNameServers(network);
     this.set('network', network);
     const isIpAddressMissing = !network.ipConfig || !network.ipConfig.ipAddress;
-    const isTimerInProgress = this.timerId_ !== -1;
+    const isTimerInProgress = this.timerId !== -1;
     const isConnecting = network.state === NetworkState.kConnecting;
 
     if (!isIpAddressMissing) {
-      this.isMissingNameServers_ = isNetworkMissingNameServers(network);
+      this.isMissingNameServers = isNetworkMissingNameServers(network);
       // Reset this flag if the current network now has a valid IP Address.
-      this.unableToObtainIpAddress_ = false;
+      this.unableToObtainIpAddress = false;
     }
 
     if ((isIpAddressMissing && isConnecting) && !isTimerInProgress) {
       // Wait 30 seconds before displaying the troubleshooting banner.
-      this.timerId_ = setTimeout(() => {
-        this.resetTimer_();
-        this.unableToObtainIpAddress_ = true;
-      }, this.timeoutInMs_);
+      this.timerId = setTimeout(() => {
+        this.resetTimer();
+        this.unableToObtainIpAddress = true;
+      }, this.timeoutInMs);
     }
   }
 
-  protected getNetworkCardTitle_(): string {
-    return getNetworkCardTitle(this.networkType_, this.networkState_);
+  protected getNetworkCardTitle(): string {
+    return getNetworkCardTitle(this.networkType, this.networkState);
   }
 
-  protected computeShouldShowNetworkDataPoints_(): boolean {
+  protected computeShouldShowNetworkDataPoints(): boolean {
     // Wait until the network is present before deciding.
     if (!this.network) {
       return false;
     }
 
-    if (this.unableToObtainIpAddress_ || this.isMissingNameServers_) {
+    if (this.unableToObtainIpAddress || this.isMissingNameServers) {
       return false;
     }
 
@@ -222,54 +222,54 @@ export class NetworkCardElement extends NetworkCardElementBase {
     }
   }
 
-  protected isNetworkDisabled_(): boolean {
+  protected isNetworkDisabled(): boolean {
     return this.network.state === NetworkState.kDisabled;
   }
 
-  protected getMacAddress_(): string {
-    if (!this.macAddress_) {
+  protected getMacAddress(): string {
+    if (!this.macAddress) {
       return '';
     }
-    return formatMacAddress(this.macAddress_);
+    return formatMacAddress(this.macAddress);
   }
 
-  private getDisabledTroubleshootingInfo_(): TroubleshootingInfo {
+  private getDisabledTroubleshootingInfo(): TroubleshootingInfo {
     const linkText =
         this.network && this.network.type === NetworkType.kCellular ?
         this.i18n('reconnectLinkText') :
-        this.i18n('joinNetworkLinkText', this.networkType_);
+        this.i18n('joinNetworkLinkText', this.networkType);
     return {
-      header: this.i18n('disabledText', this.networkType_),
+      header: this.i18n('disabledText', this.networkType),
       linkText,
       url: SETTINGS_URL,
     };
   }
 
-  private getNotConnectedTroubleshootingInfo_(): TroubleshootingInfo {
+  private getNotConnectedTroubleshootingInfo(): TroubleshootingInfo {
     return {
-      header: this.i18n('troubleshootingText', this.networkType_),
+      header: this.i18n('troubleshootingText', this.networkType),
       linkText: this.i18n('troubleConnecting'),
       url: BASE_SUPPORT_URL,
     };
   }
 
-  private computeTroubleshootingInfo_(): TroubleshootingInfo {
+  private computeTroubleshootingInfo(): TroubleshootingInfo {
     let troubleshootingState: TroubleshootingState|null = null;
     if (!this.network || isConnectedOrOnline(this.network.state)) {
       // Hide the troubleshooting banner if we're in an active state
       // unlesss the network's IP Address has been missing for >= 30
       // seconds or we're missing name servers in which case we'd like
       // to display the bannner to the user.
-      if (this.unableToObtainIpAddress_) {
+      if (this.unableToObtainIpAddress) {
         troubleshootingState = TroubleshootingState.MISSING_IP_ADDRESS;
       }
 
-      if (this.isMissingNameServers_) {
+      if (this.isMissingNameServers) {
         troubleshootingState = TroubleshootingState.MISSING_NAME_SERVERS;
       }
 
       if (troubleshootingState == null) {
-        this.showTroubleshootingCard_ = false;
+        this.showTroubleshootingCard = false;
         return {
           header: '',
           linkText: '',
@@ -296,12 +296,12 @@ export class NetworkCardElement extends NetworkCardElementBase {
 
     // At this point, |isConnectedOrOnline| is false, which means
     // out network state is either disabled or not connected.
-    this.showTroubleshootingCard_ = true;
+    this.showTroubleshootingCard = true;
 
-    return this.getInfoProperties_(troubleshootingState);
+    return this.getInfoProperties(troubleshootingState);
   }
 
-  private getMissingIpAddressInfo_(): TroubleshootingInfo {
+  private getMissingIpAddressInfo(): TroubleshootingInfo {
     return {
       header: this.i18n('noIpAddressText'),
       linkText: this.i18n('visitSettingsToConfigureLinkText'),
@@ -309,7 +309,7 @@ export class NetworkCardElement extends NetworkCardElementBase {
     };
   }
 
-  private getMissingNameServersInfo_(): TroubleshootingInfo {
+  private getMissingNameServersInfo(): TroubleshootingInfo {
     return {
       header: this.i18n('missingNameServersText'),
       linkText: this.i18n('visitSettingsToConfigureLinkText'),
@@ -317,17 +317,17 @@ export class NetworkCardElement extends NetworkCardElementBase {
     };
   }
 
-  private getInfoProperties_(state: TroubleshootingState|
-                             null): TroubleshootingInfo {
+  private getInfoProperties(state: TroubleshootingState|
+                            null): TroubleshootingInfo {
     switch (state) {
       case TroubleshootingState.DISABLED:
-        return this.getDisabledTroubleshootingInfo_();
+        return this.getDisabledTroubleshootingInfo();
       case TroubleshootingState.NOT_CONNECTED:
-        return this.getNotConnectedTroubleshootingInfo_();
+        return this.getNotConnectedTroubleshootingInfo();
       case TroubleshootingState.MISSING_IP_ADDRESS:
-        return this.getMissingIpAddressInfo_();
+        return this.getMissingIpAddressInfo();
       case TroubleshootingState.MISSING_NAME_SERVERS:
-        return this.getMissingNameServersInfo_();
+        return this.getMissingNameServersInfo();
       default:
         return {
           header: '',
@@ -337,10 +337,10 @@ export class NetworkCardElement extends NetworkCardElementBase {
     }
   }
 
-  private resetTimer_(): void {
-    if (this.timerId_ !== -1) {
-      clearTimeout(this.timerId_);
-      this.timerId_ = -1;
+  private resetTimer(): void {
+    if (this.timerId !== -1) {
+      clearTimeout(this.timerId);
+      this.timerId = -1;
     }
   }
 }

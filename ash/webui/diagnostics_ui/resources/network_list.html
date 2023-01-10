@@ -37,21 +37,21 @@
 </style>
 <div id="networkListContainer" class="diagnostics-network-list-container" tabindex="0">
   <div class="diagnostics-cards-container-nav">
-    <template is="dom-if" if="[[activeGuid_]]" restamp>
-      <connectivity-card class="card-width" active-guid="[[activeGuid_]]"
+    <template is="dom-if" if="[[activeGuid]]" restamp>
+      <connectivity-card class="card-width" active-guid="[[activeGuid]]"
           test-suite-status="{{testSuiteStatus}}"
           is-active="[[isActive]]">
       </connectivity-card>
     </template>
-    <dom-repeat id="networkCardList" items="[[otherNetworkGuids_]]" as="guid">
+    <dom-repeat id="networkCardList" items="[[otherNetworkGuids]]" as="guid">
       <template>
         <network-card class="card-width" guid="[[guid]]">
         </network-card>
       </template>
     </dom-repeat>
   </div>
-  <div class="settings-link-container" hidden$="[[!isLoggedIn_]]">
+  <div class="settings-link-container" hidden$="[[!isLoggedIn]]">
     <iron-icon icon="diagnostics:settings" id="settingsIcon"></iron-icon>
-    <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]"></div>
+    <div id="settingsLink" inner-h-t-m-l="[[getSettingsString()]]"></div>
   </div>
 </div>

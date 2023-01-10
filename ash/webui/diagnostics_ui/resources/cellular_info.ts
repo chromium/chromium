@@ -44,7 +44,7 @@ export class CellularInfoElement extends CellularInfoElementBase {
   /**
    * Get correct display text for known cellular network technology.
    */
-  protected computeNetworkTechnologyText_(): string {
+  protected computeNetworkTechnologyText(): string {
     if (!this.network.typeProperties?.cellular) {
       return '';
     }
@@ -76,7 +76,7 @@ export class CellularInfoElement extends CellularInfoElementBase {
     assertNotReached();
   }
 
-  protected computeRoamingText_(): string {
+  protected computeRoamingText(): string {
     if (!this.network?.typeProperties?.cellular) {
       return '';
     }
@@ -97,7 +97,7 @@ export class CellularInfoElement extends CellularInfoElementBase {
     assertNotReached();
   }
 
-  protected computeSimLockedText_(): string {
+  protected computeSimLockedText(): string {
     if (!this.network?.typeProperties?.cellular) {
       return '';
     }
@@ -110,7 +110,7 @@ export class CellularInfoElement extends CellularInfoElementBase {
         this.i18n('networkSimUnlockedText');
   }
 
-  protected computeSignalStrength_(): string {
+  protected computeSignalStrength(): string {
     if (this.network?.typeProperties?.cellular) {
       return getSignalStrength(
           this.network.typeProperties.cellular.signalStrength);

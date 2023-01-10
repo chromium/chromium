@@ -108,7 +108,7 @@ suite('networkListTestSuite', function() {
    * @return {!Promise}
    */
   function changeActiveGuid(guid) {
-    networkListElement.activeGuid_ = guid;
+    networkListElement.activeGuid = guid;
     return flushTasks();
   }
 
@@ -126,7 +126,7 @@ suite('networkListTestSuite', function() {
    * @return {Array<?string>}
    */
   function getOtherNetworkGuids() {
-    return networkListElement.otherNetworkGuids_;
+    return networkListElement.otherNetworkGuids;
   }
 
   /**
@@ -136,7 +136,7 @@ suite('networkListTestSuite', function() {
    */
   function setIsLoggedIn_(state) {
     assertTrue(!!networkListElement);
-    networkListElement.isLoggedIn_ = state;
+    networkListElement.isLoggedIn = state;
 
     return flushTasks();
   }

@@ -80,41 +80,41 @@
     hidden$="[[hideRoutineSection(routines.*)]]">
   <div id="routineSection" class="routine-container">
     <div class="routine-status-container" hidden$="[[hideRoutineStatus]]">
-      <text-badge id="testStatusBadge" badge-type="[[badgeType_]]"
-          hidden="[[isStatusHidden_(executionStatus_)]]"
-          value="[[badgeText_]]">
+      <text-badge id="testStatusBadge" badge-type="[[badgeType]]"
+          hidden="[[isStatusHidden(executionStatus)]]"
+          value="[[badgeText]]">
       </text-badge>
       <span id="testStatusText"
-          hidden$="[[isStatusHidden_(executionStatus_)]]">
-        [[statusText_]]
+          hidden$="[[isStatusHidden(executionStatus)]]">
+        [[statusText]]
         <span id="learnMoreText" class="link-text"
-            hidden$="[[isLearnMoreHidden_(executionStatus_)]]"
-            on-click="onLearnMoreClicked_">
+            hidden$="[[isLearnMoreHidden(executionStatus)]]"
+            on-click="onLearnMoreClicked">
           [[i18n('learnMoreShort')]]
         </span>
       </span>
     </div>
     <div class="button-container" hidden$="[[hideRoutineStatus]]">
         <iron-icon id="messageIcon" icon="diagnostics:info"
-            hidden$="[[isAdditionalMessageHidden_(additionalMessage)]]">
+            hidden$="[[isAdditionalMessageHidden(additionalMessage)]]">
         </iron-icon>
         <paper-tooltip for="messageIcon" aria-hidden="true" id="additionalMessage">
           [[additionalMessage]]
         </paper-tooltip>
-      <cr-button id="toggleReportButton" on-click="onToggleReportClicked_"
-          hidden="[[isResultButtonHidden_(executionStatus_, routines.*)]]">
-        [[getReportToggleButtonText_(opened)]]
+      <cr-button id="toggleReportButton" on-click="onToggleReportClicked"
+          hidden="[[isResultButtonHidden(executionStatus, routines.*)]]">
+        [[getReportToggleButtonText(opened)]]
       </cr-button>
       <cr-button id="runTestsButton"
-          hidden$="[[isRunTestsButtonHidden_(testSuiteStatus,
-              executionStatus_)]]"
+          hidden$="[[isRunTestsButtonHidden(testSuiteStatus,
+              executionStatus)]]"
           on-click="runTests"
-          disabled="[[isRunTestsButtonDisabled_(testSuiteStatus,
+          disabled="[[isRunTestsButtonDisabled(testSuiteStatus,
                                                 additionalMessage)]]">
         [[runTestsButtonText]]
       </cr-button>
       <cr-button id="stopTestsButton"
-          hidden$="[[isStopTestsButtonHidden_(executionStatus_)]]"
+          hidden$="[[isStopTestsButtonHidden(executionStatus)]]"
           on-click="stopTests">
         [[i18n('stopTestButtonText')]]
       </cr-button>
@@ -128,8 +128,8 @@
       </routine-result-list>
     </div>
     <cr-button id="learnMoreButton" class="learn-more-button"
-        on-click="onLearnMoreClicked_"
-        hidden$="[[isLearnMoreButtonHidden_(isLoggedIn_, hideRoutineStatus)]]">
+        on-click="onLearnMoreClicked"
+        hidden$="[[isLearnMoreButtonHidden(isLoggedIn, hideRoutineStatus)]]">
       [[i18n('learnMore')]]
     </cr-button>
   </iron-collapse>

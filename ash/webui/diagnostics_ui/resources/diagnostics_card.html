@@ -78,11 +78,11 @@
   <slot name="title" slot="title"></slot>
   <slot name="chip" slot="chip"></slot>
   <div slot="contents">
-    <div class$="[[getTopSectionClassName_(isNetworkingCard)]]">
+    <div class$="[[getTopSectionClassName(isNetworkingCard)]]">
       <slot name="icon"></slot>
       <slot name="left-panel"></slot>
     </div>
-    <div id="body" class$="[[getBodyClassName_(isNetworkingCard)]]"
+    <div id="body" class$="[[getBodyClassName(isNetworkingCard)]]"
         hidden$="[[hideDataPoints]]">
       <slot name="body"></slot>
     </div>

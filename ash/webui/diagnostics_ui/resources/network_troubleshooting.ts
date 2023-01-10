@@ -26,7 +26,7 @@ export class NetworkTroubleshootingElement extends
 
   static get properties(): PolymerElementProperties {
     return {
-      isLoggedIn_: {
+      isLoggedIn: {
         type: Boolean,
         value: loadTimeData.getBoolean('isLoggedIn'),
       },
@@ -38,9 +38,9 @@ export class NetworkTroubleshootingElement extends
   }
 
   troubleshootingInfo: TroubleshootingInfo;
-  protected isLoggedIn_: boolean;
+  protected isLoggedIn: boolean;
 
-  protected onLinkTextClicked_(): void {
+  protected onLinkTextClicked(): void {
     window.open(this.troubleshootingInfo.url);
   }
 }

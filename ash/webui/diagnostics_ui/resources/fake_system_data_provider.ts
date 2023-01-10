@@ -20,12 +20,12 @@ export interface FakeSystemDataProviderInterface {
 
 export class FakeSystemDataProvider implements SystemDataProviderInterface,
                                                FakeSystemDataProviderInterface {
-  private methods_: FakeMethodResolver = new FakeMethodResolver();
-  private observables_: FakeObservables = new FakeObservables();
-  private observeBatteryChargeStatusPromise_: Promise<void>|null = null;
-  private observeBatteryHealthPromise_: Promise<void>|null = null;
-  private observeCpuUsagePromise_: Promise<void>|null = null;
-  private observeMemoryUsagePromise_: Promise<void>|null = null;
+  private methods: FakeMethodResolver = new FakeMethodResolver();
+  private observables: FakeObservables = new FakeObservables();
+  private observeBatteryChargeStatusPromise: Promise<void>|null = null;
+  private observeBatteryHealthPromise: Promise<void>|null = null;
+  private observeCpuUsagePromise: Promise<void>|null = null;
+  private observeMemoryUsagePromise: Promise<void>|null = null;
 
   constructor() {
     this.registerMethods();
@@ -33,27 +33,27 @@ export class FakeSystemDataProvider implements SystemDataProviderInterface,
   }
 
   getSystemInfo(): Promise<{systemInfo: SystemInfo}> {
-    return this.methods_.resolveMethod('getSystemInfo');
+    return this.methods.resolveMethod('getSystemInfo');
   }
 
   // Sets the value that will be returned when calling getSystemInfo().
   setFakeSystemInfo(systemInfo: SystemInfo): void {
-    this.methods_.setResult('getSystemInfo', {systemInfo});
+    this.methods.setResult('getSystemInfo', {systemInfo});
   }
 
   // Implements SystemDataProviderInterface.GetBatteryInfo.
   getBatteryInfo(): Promise<{batteryInfo: BatteryInfo}> {
-    return this.methods_.resolveMethod('getBatteryInfo');
+    return this.methods.resolveMethod('getBatteryInfo');
   }
 
   // Sets the value that will be returned when calling getBatteryInfo().
   setFakeBatteryInfo(batteryInfo: BatteryInfo): void {
-    this.methods_.setResult('getBatteryInfo', {batteryInfo});
+    this.methods.setResult('getBatteryInfo', {batteryInfo});
   }
 
   // Implements SystemDataProviderInterface.ObserveBatteryChargeStatus.
   observeBatteryChargeStatus(remote: BatteryChargeStatusObserverRemote): void {
-    this.observeBatteryChargeStatusPromise_ = this.observe_(
+    this.observeBatteryChargeStatusPromise = this.observe(
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated',
         (batteryChargeStatus) => {
           remote.onBatteryChargeStatusUpdated(
@@ -63,8 +63,8 @@ export class FakeSystemDataProvider implements SystemDataProviderInterface,
 
   // Returns the promise for the most recent battery charge status observation.
   getObserveBatteryChargeStatusPromiseForTesting(): Promise<void> {
-    assert(this.observeBatteryChargeStatusPromise_);
-    return this.observeBatteryChargeStatusPromise_;
+    assert(this.observeBatteryChargeStatusPromise);
+    return this.observeBatteryChargeStatusPromise;
   }
 
   /**
@@ -72,20 +72,20 @@ export class FakeSystemDataProvider implements SystemDataProviderInterface,
    */
   setFakeBatteryChargeStatus(batteryChargeStatusList: BatteryChargeStatus[]):
       void {
-    this.observables_.setObservableData(
+    this.observables.setObservableData(
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated',
         batteryChargeStatusList);
   }
 
   // Causes the battery charge status observer to fire.
   triggerBatteryChargeStatusObserver(): void {
-    this.observables_.trigger(
+    this.observables.trigger(
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
   }
 
   // Implements SystemDataProviderInterface.ObserveBatteryHealth.
   observeBatteryHealth(remote: BatteryHealthObserverRemote): void {
-    this.observeBatteryHealthPromise_ = this.observe_(
+    this.observeBatteryHealthPromise = this.observe(
         'BatteryHealthObserver_onBatteryHealthUpdated', (batteryHealth) => {
           remote.onBatteryHealthUpdated(
               /** @type {!BatteryHealth} */ (batteryHealth));
@@ -94,25 +94,25 @@ export class FakeSystemDataProvider implements SystemDataProviderInterface,
 
   // Returns the promise for the most recent battery health observation.
   getObserveBatteryHealthPromiseForTesting(): Promise<void> {
-    assert(this.observeBatteryHealthPromise_);
-    return this.observeBatteryHealthPromise_;
+    assert(this.observeBatteryHealthPromise);
+    return this.observeBatteryHealthPromise;
   }
 
   // Sets the values that will observed from observeBatteryHealth.
   setFakeBatteryHealth(batteryHealthList: BatteryHealth[]): void {
-    this.observables_.setObservableData(
+    this.observables.setObservableData(
         'BatteryHealthObserver_onBatteryHealthUpdated', batteryHealthList);
   }
 
   // Causes the battery health observer to fire.
   triggerBatteryHealthObserver(): void {
-    this.observables_.trigger('BatteryHealthObserver_onBatteryHealthUpdated');
+    this.observables.trigger('BatteryHealthObserver_onBatteryHealthUpdated');
   }
 
   // Implements SystemDataProviderInterface.ObserveCpuUsage.
   observeCpuUsage(remote: CpuUsageObserverRemote): void {
-    this.observeCpuUsagePromise_ =
-        this.observe_('CpuUsageObserver_onCpuUsageUpdated', (cpuUsage) => {
+    this.observeCpuUsagePromise =
+        this.observe('CpuUsageObserver_onCpuUsageUpdated', (cpuUsage) => {
           remote.onCpuUsageUpdated(
               /** @type {!CpuUsage} */ (cpuUsage));
         });
@@ -120,24 +120,24 @@ export class FakeSystemDataProvider implements SystemDataProviderInterface,
 
   // Returns the promise for the most recent cpu usage observation.
   getObserveCpuUsagePromiseForTesting(): Promise<void> {
-    assert(this.observeCpuUsagePromise_);
-    return this.observeCpuUsagePromise_;
+    assert(this.observeCpuUsagePromise);
+    return this.observeCpuUsagePromise;
   }
 
   // Sets the values that will observed from observeCpuUsage.
   setFakeCpuUsage(cpuUsageList: CpuUsage[]): void {
-    this.observables_.setObservableData(
+    this.observables.setObservableData(
         'CpuUsageObserver_onCpuUsageUpdated', cpuUsageList);
   }
 
   // Causes the CPU usage observer to fire.
   triggerCpuUsageObserver(): void {
-    this.observables_.trigger('CpuUsageObserver_onCpuUsageUpdated');
+    this.observables.trigger('CpuUsageObserver_onCpuUsageUpdated');
   }
 
   // Implements SystemDataProviderInterface.ObserveMemoryUsage.
   observeMemoryUsage(remote: MemoryUsageObserverRemote): void {
-    this.observeCpuUsagePromise_ = this.observe_(
+    this.observeCpuUsagePromise = this.observe(
         'MemoryUsageObserver_onMemoryUsageUpdated', (memoryUsage) => {
           remote.onMemoryUsageUpdated(
               /** @type {!MemoryUsage} */ (memoryUsage));
@@ -146,70 +146,70 @@ export class FakeSystemDataProvider implements SystemDataProviderInterface,
 
   // Returns the promise for the most recent memory usage observation.
   getObserveMemoryUsagePromiseForTesting(): Promise<void> {
-    assert(this.observeCpuUsagePromise_);
-    return this.observeCpuUsagePromise_;
+    assert(this.observeCpuUsagePromise);
+    return this.observeCpuUsagePromise;
   }
 
   // Sets the values that will observed from ObserveCpuUsage.
   setFakeMemoryUsage(memoryUsageList: MemoryUsage[]): void {
-    this.observables_.setObservableData(
+    this.observables.setObservableData(
         'MemoryUsageObserver_onMemoryUsageUpdated', memoryUsageList);
   }
 
   // Causes the memory usage observer to fire.
   triggerMemoryUsageObserver(): void {
-    this.observables_.trigger('MemoryUsageObserver_onMemoryUsageUpdated');
+    this.observables.trigger('MemoryUsageObserver_onMemoryUsageUpdated');
   }
 
   // Make the observables fire automatically on various intervals.
   startTriggerIntervals(): void {
-    this.observables_.startTriggerOnInterval(
+    this.observables.startTriggerOnInterval(
         'CpuUsageObserver_onCpuUsageUpdated', 1000);
-    this.observables_.startTriggerOnInterval(
+    this.observables.startTriggerOnInterval(
         'MemoryUsageObserver_onMemoryUsageUpdated', 5000);
-    this.observables_.startTriggerOnInterval(
+    this.observables.startTriggerOnInterval(
         'BatteryHealthObserver_onBatteryHealthUpdated', 30000);
-    this.observables_.startTriggerOnInterval(
+    this.observables.startTriggerOnInterval(
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated', 30000);
   }
 
   // Stop automatically triggering observables.
   stopTriggerIntervals(): void {
-    this.observables_.stopAllTriggerIntervals();
+    this.observables.stopAllTriggerIntervals();
   }
 
   // Setup method resolvers.
   registerMethods(): void {
-    this.methods_.register('getSystemInfo');
-    this.methods_.register('getBatteryInfo');
+    this.methods.register('getSystemInfo');
+    this.methods.register('getBatteryInfo');
   }
 
   // Setup observables.
   registerObservables(): void {
-    this.observables_.register(
+    this.observables.register(
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
-    this.observables_.register('BatteryHealthObserver_onBatteryHealthUpdated');
-    this.observables_.register('CpuUsageObserver_onCpuUsageUpdated');
-    this.observables_.register('MemoryUsageObserver_onMemoryUsageUpdated');
+    this.observables.register('BatteryHealthObserver_onBatteryHealthUpdated');
+    this.observables.register('CpuUsageObserver_onCpuUsageUpdated');
+    this.observables.register('MemoryUsageObserver_onMemoryUsageUpdated');
   }
 
   // Disables all observers and resets provider to its initial state.
   reset(): void {
-    this.observables_.stopAllTriggerIntervals();
+    this.observables.stopAllTriggerIntervals();
 
-    this.methods_ = new FakeMethodResolver();
-    this.observables_ = new FakeObservables();
+    this.methods = new FakeMethodResolver();
+    this.observables = new FakeObservables();
 
     this.registerMethods();
     this.registerObservables();
   }
 
   // Sets up an observer for methodName.
-  private observe_(methodName: string, callback: (T: any) => void):
+  private observe(methodName: string, callback: (T: any) => void):
       Promise<void> {
     return new Promise((resolve) => {
-      this.observables_.observe(methodName, callback);
-      this.observables_.trigger(methodName);
+      this.observables.observe(methodName, callback);
+      this.observables.trigger(methodName);
       resolve();
     });
   }

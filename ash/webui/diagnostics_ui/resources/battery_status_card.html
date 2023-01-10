@@ -9,41 +9,41 @@
   </div>
   <div id="batteryStatusChipInfo" slot="chip" class="diagnostics-chip"
       aria-hidden="true">
-    [[getDesignedFullCharge_(batteryHealth_.chargeFullDesignMilliampHours)]]
+    [[getDesignedFullCharge(batteryHealth.chargeFullDesignMilliampHours)]]
   </div>
   <iron-icon slot="icon" icon="[[batteryIcon]]" class$="[[iconClass]]">
   </iron-icon>
-  <percent-bar-chart slot="left-panel" header="[[powerTimeString_]]"
-      value="[[batteryChargeStatus_.chargeNowMilliampHours]]"
-      max="[[batteryHealth_.chargeFullNowMilliampHours]]">
+  <percent-bar-chart slot="left-panel" header="[[powerTimeString]]"
+      value="[[batteryChargeStatus.chargeNowMilliampHours]]"
+      max="[[batteryHealth.chargeFullNowMilliampHours]]">
   </percent-bar-chart>
   <data-point slot="body" id="batteryHealth"
       header="[[i18n('batteryHealthLabel')]]"
-      value="[[getBatteryHealth_(batteryHealth_.batteryWearPercentage)]]"
+      value="[[getBatteryHealth(batteryHealth.batteryWearPercentage)]]"
       tooltip-text="[[i18n('batteryHealthTooltipText')]]"
       class="data-point-margin-start">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="cycleCount" header="[[i18n('cycleCount')]]"
-      value="[[batteryHealth_.cycleCount]]"
+      value="[[batteryHealth.cycleCount]]"
       tooltip-text="[[i18n('cycleCountTooltipText')]]">
   </data-point>
   <div slot="body" class="divider"></div>
   <data-point slot="body" id="currentNow" header="[[i18n('currentNowLabel')]]"
-      value="[[getCurrentNow_(batteryChargeStatus_.currentNowMilliamps)]]"
+      value="[[getCurrentNow(batteryChargeStatus.currentNowMilliamps)]]"
       tooltip-text="[[i18n('currentNowTooltipText')]]"
       class="data-point-margin-end">
   </data-point>
-  <routine-section slot="routines" routines="[[routines_]]"
-      routine-runtime="{{getEstimateRuntimeInMinutes_(routines_)}}"
+  <routine-section slot="routines" routines="[[routines]]"
+      routine-runtime="{{getEstimateRuntimeInMinutes(routines)}}"
       test-suite-status="{{testSuiteStatus}}"
       is-power-routine
-      run-tests-button-text="[[getRunTestsButtonText_(
-        batteryChargeStatus_.powerAdapterStatus
+      run-tests-button-text="[[getRunTestsButtonText(
+        batteryChargeStatus.powerAdapterStatus
       )]]"
       additional-message="[[getRunTestsAdditionalMessage(
-        batteryChargeStatus_.chargeNowMilliampHours,
-        batteryHealth_.chargeFullNowMilliampHours)]]"
+        batteryChargeStatus.chargeNowMilliampHours,
+        batteryHealth.chargeFullNowMilliampHours)]]"
       learn-more-link-section="battery"
       is-active="[[isActive]]">
   </routine-section>

@@ -42,13 +42,13 @@ function getRoutinedFailedStatusItem(routineType) {
 }
 
 /**
- * Get nonBlockingRoutines_ private member for testing.
+ * Get nonBlockingRoutines private member for testing.
  * @suppress {visibility} // access private member
  * @param {!RoutineGroup} routineGroup
  * @return {!Set<!RoutineType>}
  */
 function getNonBlockingRoutines(routineGroup) {
-  return routineGroup.nonBlockingRoutines_;
+  return routineGroup.nonBlockingRoutines;
 }
 
 suite('routineGroupTestSuite', function() {

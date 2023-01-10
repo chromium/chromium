@@ -10,11 +10,11 @@
 </style>
 <div id="iconContainer" hidden$="[[!network]]">
   <network-icon id="networkIcon"
-      hidden$="[[computeShouldDisplaySpinner_(network.state)]]"
-      network-state="[[computeNetworkState_(network.*)]]">
+      hidden$="[[computeShouldDisplaySpinner(network.state)]]"
+      network-state="[[computeNetworkState(network.*)]]">
   </network-icon>
   <paper-spinner-lite id="connectingIcon" active tabindex="0"
-      alt$="[[computeSpinnerAriaLabel_(locale, network.state)]]"
-      hidden$="[[!computeShouldDisplaySpinner_(network.state)]]">
+      alt$="[[computeSpinnerAriaLabel(locale, network.state)]]"
+      hidden$="[[!computeShouldDisplaySpinner(network.state)]]">
   </paper-spinner-lite>
 </div>

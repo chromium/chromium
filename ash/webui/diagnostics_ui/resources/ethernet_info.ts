@@ -31,15 +31,15 @@ export class EthernetInfoElement extends EthernetInfoElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      authentication_: {
+      authentication: {
         type: String,
-        computed: 'computeAuthentication_(network.typeProperties.ethernet.' +
+        computed: 'computeAuthentication(network.typeProperties.ethernet.' +
             'authentication)',
       },
 
-      ipAddress_: {
+      ipAddress: {
         type: String,
-        computed: 'computeIpAddress_(network.ipConfig.ipAddress)',
+        computed: 'computeIpAddress(network.ipConfig.ipAddress)',
       },
 
       network: {
@@ -49,10 +49,10 @@ export class EthernetInfoElement extends EthernetInfoElementBase {
   }
 
   network: Network;
-  protected authentication_: string;
-  protected ipAddress_: string;
+  protected authentication: string;
+  protected ipAddress: string;
 
-  protected computeAuthentication_(): string {
+  protected computeAuthentication(): string {
     if (this.network?.typeProperties?.ethernet) {
       const authentication: AuthenticationType =
           this.network.typeProperties.ethernet.authentication;
@@ -68,7 +68,7 @@ export class EthernetInfoElement extends EthernetInfoElementBase {
     return '';
   }
 
-  protected computeIpAddress_(): string {
+  protected computeIpAddress(): string {
     return this.network?.ipConfig?.ipAddress || '';
   }
 }

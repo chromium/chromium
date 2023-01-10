@@ -37,7 +37,7 @@ export interface DiagnosticsBrowserProxy {
 
 export class DiagnosticsBrowserProxyImpl implements DiagnosticsBrowserProxy {
   // View which 'recordNavigation' is leaving.
-  private previousView_: NavigationView|null = null;
+  private previousView: NavigationView|null = null;
 
   initialize(): void {
     chrome.send('initialize');
@@ -46,14 +46,14 @@ export class DiagnosticsBrowserProxyImpl implements DiagnosticsBrowserProxy {
   recordNavigation(currentView: string): void {
     // First time the function is called will be when the UI is initializing
     // which does not trigger a message as navigation has not occurred.
-    if (this.previousView_ === null) {
-      this.previousView_ = getNavigationViewForPageId(currentView);
+    if (this.previousView === null) {
+      this.previousView = getNavigationViewForPageId(currentView);
       return;
     }
 
     const currentViewId = getNavigationViewForPageId(currentView);
-    chrome.send('recordNavigation', [this.previousView_, currentViewId]);
-    this.previousView_ = currentViewId;
+    chrome.send('recordNavigation', [this.previousView, currentViewId]);
+    this.previousView = currentViewId;
   }
 
   saveSessionLog(): Promise<boolean> {

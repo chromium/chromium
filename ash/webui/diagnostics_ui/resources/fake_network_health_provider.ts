@@ -22,9 +22,9 @@ const ON_NETWORK_STATE_CHANGED_METHOD_NAME =
 
 export class FakeNetworkHealthProvider implements
     NetworkHealthProviderInterface {
-  private observables_: FakeObservables = new FakeObservables();
-  private observeNetworkListPromise_: Promise<void>|null = null;
-  private observeNetworkStatePromise_: Promise<void>|null = null;
+  private observables: FakeObservables = new FakeObservables();
+  private observeNetworkListPromise: Promise<void>|null = null;
+  private observeNetworkStatePromise: Promise<void>|null = null;
 
   constructor() {
     this.registerObservables();
@@ -34,8 +34,8 @@ export class FakeNetworkHealthProvider implements
    * Implements NetworkHealthProviderInterface.ObserveNetworkList.
    */
   observeNetworkList(remote: NetworkListObserverRemote): void {
-    this.observeNetworkListPromise_ = this.observe_(
-        ON_NETWORK_LIST_CHANGED_METHOD_NAME, (networkGuidInfo) => {
+    this.observeNetworkListPromise =
+        this.observe(ON_NETWORK_LIST_CHANGED_METHOD_NAME, (networkGuidInfo) => {
           remote.onNetworkListChanged(
               networkGuidInfo.networkGuids, networkGuidInfo.activeGuid);
         });
@@ -47,7 +47,7 @@ export class FakeNetworkHealthProvider implements
    * by |guid| within a group of observers.
    */
   observeNetwork(remote: NetworkStateObserverRemote, guid: string): void {
-    this.observeNetworkStatePromise_ = this.observeWithArg_(
+    this.observeNetworkStatePromise = this.observeWithArg(
         ON_NETWORK_STATE_CHANGED_METHOD_NAME, guid, (network) => {
           remote.onNetworkStateChanged(
               /** @type {!Network} */ (network));
@@ -56,72 +56,72 @@ export class FakeNetworkHealthProvider implements
 
   // Sets the values that will be observed from observeNetworkList.
   setFakeNetworkGuidInfo(networkGuidInfoList: NetworkGuidInfo[]): void {
-    this.observables_.setObservableData(
+    this.observables.setObservableData(
         ON_NETWORK_LIST_CHANGED_METHOD_NAME, networkGuidInfoList);
   }
 
   setFakeNetworkState(guid: string, networkStateList: Network[]): void {
-    this.observables_.setObservableDataForArg(
+    this.observables.setObservableDataForArg(
         ON_NETWORK_STATE_CHANGED_METHOD_NAME, guid, networkStateList);
   }
 
   // Returns the promise for the most recent network list observation.
   getObserveNetworkListPromiseForTesting(): Promise<void> {
-    assert(this.observeNetworkListPromise_);
-    return this.observeNetworkListPromise_;
+    assert(this.observeNetworkListPromise);
+    return this.observeNetworkListPromise;
   }
 
   // Returns the promise for the most recent network state observation.
   getObserveNetworkStatePromiseForTesting(): Promise<void> {
-    assert(this.observeNetworkStatePromise_);
-    return this.observeNetworkStatePromise_;
+    assert(this.observeNetworkStatePromise);
+    return this.observeNetworkStatePromise;
   }
 
   // Causes the network list observer to fire.
   triggerNetworkListObserver(): void {
-    this.observables_.trigger(ON_NETWORK_LIST_CHANGED_METHOD_NAME);
+    this.observables.trigger(ON_NETWORK_LIST_CHANGED_METHOD_NAME);
   }
 
   // Make the observable fire automatically on provided interval.
   startTriggerInterval(methodName: string, intervalMs: number): void {
-    this.observables_.startTriggerOnInterval(methodName, intervalMs);
+    this.observables.startTriggerOnInterval(methodName, intervalMs);
   }
 
   // Stop automatically triggering observables.
   stopTriggerIntervals(): void {
-    this.observables_.stopAllTriggerIntervals();
+    this.observables.stopAllTriggerIntervals();
   }
 
   registerObservables(): void {
-    this.observables_.register(ON_NETWORK_LIST_CHANGED_METHOD_NAME);
-    this.observables_.registerObservableWithArg(
+    this.observables.register(ON_NETWORK_LIST_CHANGED_METHOD_NAME);
+    this.observables.registerObservableWithArg(
         ON_NETWORK_STATE_CHANGED_METHOD_NAME);
   }
 
   // Disables all observers and resets provider to its initial state.
   reset(): void {
-    this.observables_.stopAllTriggerIntervals();
-    this.observables_ = new FakeObservables();
+    this.observables.stopAllTriggerIntervals();
+    this.observables = new FakeObservables();
     this.registerObservables();
   }
 
   // Sets up an observer for methodName.
-  private observe_(methodName: string, callback: (T: any) => void):
+  private observe(methodName: string, callback: (T: any) => void):
       Promise<void> {
     return new Promise((resolve) => {
-      this.observables_.observe(methodName, callback);
-      this.observables_.trigger(methodName);
+      this.observables.observe(methodName, callback);
+      this.observables.trigger(methodName);
       resolve();
     });
   }
 
   // Sets up an observer for a methodName that takes an additional arg.
-  private observeWithArg_(
+  private observeWithArg(
       methodName: string, arg: string,
       callback: (T: any) => void): Promise<void> {
     return new Promise((resolve) => {
-      this.observables_.observeWithArg(methodName, arg, callback);
-      this.observables_.triggerWithArg(methodName, arg);
+      this.observables.observeWithArg(methodName, arg, callback);
+      this.observables.triggerWithArg(methodName, arg);
       resolve();
     });
   }

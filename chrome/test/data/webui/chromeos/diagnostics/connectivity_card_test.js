@@ -91,7 +91,7 @@ suite('connectivityCardTestSuite', function() {
   function getRoutines() {
     assertTrue(!!connectivityCardElement);
     let routines = [];
-    for (const routineGroup of connectivityCardElement.routineGroups_) {
+    for (const routineGroup of connectivityCardElement.routineGroups) {
       routines = [...routines, ...routineGroup.routines];
     }
 
@@ -142,7 +142,7 @@ suite('connectivityCardTestSuite', function() {
    * @return {!Promise}
    */
   function stopTests() {
-    connectivityCardElement.getRoutineSectionElem_().stopTests();
+    connectivityCardElement.getRoutineSectionElem().stopTests();
     return flushTasks();
   }
 

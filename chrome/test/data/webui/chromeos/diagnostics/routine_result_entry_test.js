@@ -87,7 +87,7 @@ suite('routineResultEntryTestSuite', function() {
   function getAnnoucedText() {
     assertTrue(!!routineResultEntryElement);
 
-    return routineResultEntryElement.announcedText_;
+    return routineResultEntryElement.announcedText;
   }
 
   /**
