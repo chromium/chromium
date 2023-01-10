@@ -385,6 +385,7 @@ if (is_win) {
       ":with_no_strings",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/chrome_for_testing:buildflags",
       "//testing/gtest",
     ]
   }

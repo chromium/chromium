@@ -20,6 +20,7 @@
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -163,8 +164,13 @@ TEST(ShellUtilInteractiveTest, MakeChromeDefaultDirectly) {
   ASSERT_NE(prog_id, GetCurrentDefault(registration.Get(), L".html",
                                        AT_FILEEXTENSION, AL_EFFECTIVE));
 
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  ASSERT_FALSE(ShellUtil::MakeChromeDefaultDirectly(ShellUtil::CURRENT_USER,
+                                                    chrome_exe, false));
+#else
   ASSERT_TRUE(ShellUtil::MakeChromeDefaultDirectly(ShellUtil::CURRENT_USER,
                                                    chrome_exe, false));
+#endif
 
   // The following may query HKEY_CLASSES_ROOT for the progid, which merges
   // HKEY_CURERNT_USER and HKEY_LOCAL_MACHINE on the backend and bypasses the
