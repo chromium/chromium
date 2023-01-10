@@ -39,7 +39,7 @@
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2168039046890040389">Tipka Page Up</translation>
 <translation id="2190355936436201913">(prazno)</translation>
-<translation id="2192232475740621500">Koristi nisku gustoću</translation>
+<translation id="2192232475740621500">Koristite nisku gustinu</translation>
 <translation id="2267918077332197517">Blokiraj sva obavještenja s ove web lokacije</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Dodirnite da dodirnete ciljeve na ekranu.</translation>
@@ -107,7 +107,7 @@
 <translation id="4491109536499578614">Slika</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4588090240171750605">Kliznite udesno</translation>
-<translation id="4724120544754982507">Centar za obavijesti, nepročitanih obavijesti: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
+<translation id="4724120544754982507">Centar za obavještenja, broj nepročitanih obavještenja: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4746179598275229723">Ekstenzija je otkačena</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Preostao je 1 mjesec}one{Preostao je # mjesec}few{Preostala su # mjeseca}other{Preostalo je # mjeseci}}</translation>
 <translation id="4888938634149558681">Uputi poziv</translation>
@@ -153,7 +153,7 @@
 <translation id="6483402905448010557">{SECONDS,plural, =1{Prije 1 sekundu}one{Prije # sekundu}few{Prije # sekunde}other{Prije # sekundi}}</translation>
 <translation id="6503257047630241175">RTF sadržaj</translation>
 <translation id="6539092367496845964">Nešto nije uredu. Pokušajte ponovo kasnije.</translation>
-<translation id="654149438358937226">Blokiraj sve obavijesti</translation>
+<translation id="654149438358937226">Blokiraj sva obavještenja</translation>
 <translation id="6612467943526193239">Da izađete iz kalibracije, pritisnite tipku Esc.</translation>
 <translation id="6620110761915583480">Sačuvajte fajl</translation>
 <translation id="6699343763173986273">Sljedeća numera medijskog fajla</translation>
@@ -163,7 +163,7 @@
 <translation id="688711909580084195">Web lokacija bez naziva</translation>
 <translation id="6902419395050653510">HTML sadržaj.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
-<translation id="6917971086528278418">{YEARS,plural, =1{Još godinu dana}one{Još # godinu}few{Još # godine}other{Još # godina}}</translation>
+<translation id="6917971086528278418">{YEARS,plural, =1{Preostala je još 1 godina}one{Preostala je još # godina}few{Preostale su još # godine}other{Preostalo je još # godina}}</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6974053822202609517">Sdesna nalijevo</translation>

@@ -59,7 +59,7 @@
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fajl s deklaracijom nedostaje ili je nečitljiv</translation>
 <translation id="8636666366616799973">Paket je nevažeći. Detalji: "<ph name="ERROR_MESSAGE" />".</translation>
-<translation id="8761756413268424715">"<ph name="APP_NAME" />" zahtijeva pristup jednom od vaših uređaja:</translation>
+<translation id="8761756413268424715">Aplikacija "<ph name="APP_NAME" />" zahtijeva pristup jednom vašem uređaju:</translation>
 <translation id="8885905466771744233">Privatni ključ za navedenu ekstenziju već postoji. Ponovo iskoristite ključ ili ga prvo izbrišite.</translation>
 <translation id="907841381057066561">Kreiranje privremenog zip fajla tokom pakiranja nije uspjelo.</translation>
 <translation id="941543339607623937">Nevažeći privatni ključ.</translation>

@@ -110,7 +110,7 @@
 <translation id="6165053282446038410">prošireno, broj dostupnih opcija automatskog popunjavanja: <ph name="COUNT" />.</translation>
 <translation id="6212595056017402527">trenutna stranica</translation>
 <translation id="6281588256137006900">Svjetlost</translation>
-<translation id="6310801910862476708">Izlaz iz načina slika u slici</translation>
+<translation id="6310801910862476708">Izlazak iz načina rada slike u slici</translation>
 <translation id="6398862346408813489">Prikaži ploču za odabir mjeseca</translation>
 <translation id="6404546809543547843">regulator vremena audiozapisa</translation>
 <translation id="6443871981718447451">prikaži meni za titlove</translation>
@@ -152,7 +152,7 @@
 <translation id="8117451130807776954">Ova sedmica</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">gggg</translation>
-<translation id="8261464734335370856">Netočan pravopis</translation>
+<translation id="8261464734335370856">Nevažeći pravopis</translation>
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="835897206747267392">Nevažeća vrijednost.</translation>
 <translation id="839593075537728968">Vrijednost mora biti između <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>

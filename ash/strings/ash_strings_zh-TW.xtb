@@ -402,7 +402,7 @@
 <translation id="3217205077783620295">音量已開啟；使用切換鈕可設為靜音。</translation>
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 則</translation>
 <translation id="3227137524299004712">麥克風</translation>
-<translation id="324366796737464147">噪音消除</translation>
+<translation id="324366796737464147">降噪</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移動到桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">設定</translation>
 <translation id="3255483164551725916">你會做些什麼？</translation>
