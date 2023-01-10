@@ -260,8 +260,11 @@ void AXPlatformNodeWin::AddAttributeToList(const char* name,
 // There is no easy way to decouple |kScreenReader| and |kHTML| accessibility
 // modes when Windows screen readers are used. For example, certain roles use
 // the HTML tag name. Input fields require their type attribute to be exposed.
+// This also sets kNativeAPIs and kWebContents to ensure we don't have an
+// incorrect combination of AXModes.
 const uint32_t kScreenReaderAndHTMLAccessibilityModes =
-    AXMode::kScreenReader | AXMode::kHTML;
+    AXMode::kNativeAPIs | AXMode::kWebContents | AXMode::kScreenReader |
+    AXMode::kHTML;
 
 //
 // WinAccessibilityAPIUsageObserver
