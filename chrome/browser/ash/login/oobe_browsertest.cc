@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -12,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -55,7 +53,7 @@
 
 namespace ash {
 
-class OobeTest : public OobeBaseTest, public FeatureAsParameterInterface<1> {
+class OobeTest : public OobeBaseTest {
  public:
   OobeTest() = default;
 
@@ -94,7 +92,7 @@ class OobeTest : public OobeBaseTest, public FeatureAsParameterInterface<1> {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
+IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
   WaitForGaiaPageLoad();
 
   LoginDisplayHost::default_host()
@@ -111,26 +109,16 @@ IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   EXPECT_FALSE(known_user.GetIsUsingSAMLPrincipalsAPI(account_id));
 
-  if (IsFeatureEnabledInThisTestCase(features::kUseAuthFactors)) {
-    // Verify the parameters that were passed to the latest AddCredentials call.
-    const user_data_auth::AddAuthFactorRequest& request =
-        FakeUserDataAuthClient::Get()->get_last_add_authfactor_request();
-    EXPECT_EQ(request.auth_factor().label(), kCryptohomeGaiaKeyLabel);
-    EXPECT_FALSE(request.auth_input().password_input().secret().empty());
-    EXPECT_EQ(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD,
-              request.auth_factor().type());
-  } else {
-    // Verify the parameters that were passed to the latest AddCredentials call.
-    const cryptohome::AuthorizationRequest& cryptohome_auth =
-        FakeUserDataAuthClient::Get()->get_last_add_credentials_request();
-    EXPECT_EQ(cryptohome_auth.key().data().label(), kCryptohomeGaiaKeyLabel);
-    EXPECT_FALSE(cryptohome_auth.key().secret().empty());
-    EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
-              cryptohome_auth.key().data().type());
-  }
+  // Verify the parameters that were passed to the latest AddAuthFactor call.
+  const user_data_auth::AddAuthFactorRequest& request =
+      FakeUserDataAuthClient::Get()->get_last_add_authfactor_request();
+  EXPECT_EQ(request.auth_factor().label(), kCryptohomeGaiaKeyLabel);
+  EXPECT_FALSE(request.auth_input().password_input().secret().empty());
+  EXPECT_EQ(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD,
+            request.auth_factor().type());
 }
 
-IN_PROC_BROWSER_TEST_P(OobeTest, Accelerator) {
+IN_PROC_BROWSER_TEST_F(OobeTest, Accelerator) {
   WaitForGaiaPageLoad();
 
   gfx::NativeWindow login_window = GetLoginWindowWidget()->GetNativeWindow();
@@ -142,14 +130,6 @@ IN_PROC_BROWSER_TEST_P(OobeTest, Accelerator) {
                             false);  // command
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 }
-
-const auto kAllFeatureVariations =
-    FeatureAsParameterInterface<1>::Generator({&features::kUseAuthFactors});
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         OobeTest,
-                         testing::ValuesIn(kAllFeatureVariations),
-                         FeatureAsParameterInterface<1>::ParamInfoToString);
 
 // Checks that update screen is shown with both legacy and actual name stored
 // in the local state.

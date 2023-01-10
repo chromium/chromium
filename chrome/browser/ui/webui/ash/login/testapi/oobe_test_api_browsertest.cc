@@ -6,7 +6,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -150,26 +149,16 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiRemoraRequisitionTest, SkipsEula) {
   test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
 }
 
-class OobeTestApiLoginPinTest : public OobeTestApiTest,
-                                public testing::WithParamInterface<bool> {
+class OobeTestApiLoginPinTest : public OobeTestApiTest {
  public:
-  OobeTestApiLoginPinTest() {
-    login_mixin_.AppendRegularUsers(1);
-
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
-    }
-  }
+  OobeTestApiLoginPinTest() { login_mixin_.AppendRegularUsers(1); }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoginManagerMixin login_mixin_{&mixin_host_, {}, nullptr, &cryptohome_mixin_};
 };
 
-IN_PROC_BROWSER_TEST_P(OobeTestApiLoginPinTest, Success) {
+IN_PROC_BROWSER_TEST_F(OobeTestApiLoginPinTest, Success) {
   test::OobeJS().CreateWaiter("window.OobeAPI")->Wait();
   const std::string username =
       login_mixin_.users()[0].account_id.GetUserEmail();
@@ -177,8 +166,6 @@ IN_PROC_BROWSER_TEST_P(OobeTestApiLoginPinTest, Success) {
       "OobeAPI.loginWithPin('%s', '123456')", username.c_str()));
   login_mixin_.WaitForActiveSession();
 }
-
-INSTANTIATE_TEST_SUITE_P(All, OobeTestApiLoginPinTest, testing::Bool());
 
 class OobeTestApiWizardControllerTest : public OobeTestApiTest {
  public:

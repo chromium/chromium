@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -219,22 +218,12 @@ struct Params {
 
 class EnterprisePlatformKeysTest
     : public PlatformKeysTestBase,
-      public ::testing::WithParamInterface<std::tuple<Params, bool>> {
+      public ::testing::WithParamInterface<Params> {
  public:
   EnterprisePlatformKeysTest()
-      : PlatformKeysTestBase(std::get<0>(GetParam()).system_token_status_,
-                             std::get<0>(GetParam()).enrollment_status_,
-                             std::get<0>(GetParam()).user_status_) {
-    // TODO(b/239422391): This test is run with the feature
-    // kUseAuthFactors enabled and disabled because of a
-    // transitive dependency of AffiliationTestHelper on that feature. Remove
-    // the parameter when kUseAuthFactors is removed.
-    if (std::get<1>(GetParam())) {
-      feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
-    } else {
-      feature_list_.InitAndDisableFeature(ash::features::kUseAuthFactors);
-    }
-  }
+      : PlatformKeysTestBase(GetParam().system_token_status_,
+                             GetParam().enrollment_status_,
+                             GetParam().user_status_) {}
 
   EnterprisePlatformKeysTest(const EnterprisePlatformKeysTest&) = delete;
   EnterprisePlatformKeysTest& operator=(const EnterprisePlatformKeysTest&) =
@@ -294,7 +283,6 @@ class EnterprisePlatformKeysTest
   // destructor).
   ash::platform_keys::test_util::ScopedChapsUtilOverride
       scoped_chaps_util_override_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -322,9 +310,8 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
 
   extensions::ExtensionId extension_id;
   ASSERT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
-      GetExtensionDirName(std::get<0>(GetParam()).context_type_),
-      GetExtensionPemFileName(), ExtensionForceInstallMixin::WaitMode::kLoad,
-      &extension_id));
+      GetExtensionDirName(GetParam().context_type_), GetExtensionPemFileName(),
+      ExtensionForceInstallMixin::WaitMode::kLoad, &extension_id));
   ASSERT_EQ(kExtensionId, extension_id);
 
   ASSERT_TRUE(catcher.GetNextResult());
@@ -333,48 +320,44 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
 INSTANTIATE_TEST_SUITE_P(
     PersistentBackground_CheckSystemTokenAvailability,
     EnterprisePlatformKeysTest,
-    ::testing::Combine(
-        ::testing::Values(
-            Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-                   PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-                   ContextType::kPersistentBackground),
-            Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-                   PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-                   ContextType::kPersistentBackground),
-            Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-                   PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-                   ContextType::kPersistentBackground),
-            Params(PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
-                   PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-                   ContextType::kPersistentBackground)),
-        ::testing::Bool()));
+    ::testing::Values(
+        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+               ContextType::kPersistentBackground),
+        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+               ContextType::kPersistentBackground),
+        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+               ContextType::kPersistentBackground),
+        Params(PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
+               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+               ContextType::kPersistentBackground)));
 
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker_CheckSystemTokenAvailability,
     EnterprisePlatformKeysTest,
-    ::testing::Combine(
-        ::testing::Values(
-            Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-                   PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-                   ContextType::kServiceWorker),
-            Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-                   PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-                   ContextType::kServiceWorker),
-            Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-                   PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-                   ContextType::kServiceWorker),
-            Params(PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
-                   PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-                   PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-                   ContextType::kServiceWorker)),
-        ::testing::Bool()));
+    ::testing::Values(
+        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+               ContextType::kServiceWorker),
+        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+               ContextType::kServiceWorker),
+        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+               ContextType::kServiceWorker),
+        Params(PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
+               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+               ContextType::kServiceWorker)));
 
 class EnterprisePlatformKeysIsRestrictedTest
     : public ExtensionApiTest,

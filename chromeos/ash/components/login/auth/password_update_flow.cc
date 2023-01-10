@@ -74,18 +74,10 @@ void PasswordUpdateFlow::ContinueWithAuthSession(
   DCHECK(user_exists);
   DCHECK(!user_context->GetAuthSessionId().empty());
 
-  std::string key_label;
-  if (features::IsUseAuthFactorsEnabled()) {
-    auto* password_factor =
-        user_context->GetAuthFactorsData().FindOnlinePasswordFactor();
-    DCHECK(password_factor);
-    key_label = password_factor->ref().label().value();
-  } else {
-    const cryptohome::KeyDefinition* password_key_def =
-        user_context->GetAuthFactorsData().FindOnlinePasswordKey();
-    DCHECK(password_key_def);
-    key_label = password_key_def->label.value();
-  }
+  auto* password_factor =
+      user_context->GetAuthFactorsData().FindOnlinePasswordFactor();
+  DCHECK(password_factor);
+  std::string key_label = password_factor->ref().label().value();
 
   if (!user_context->HasReplacementKey()) {
     // Make sure that the key has correct label.

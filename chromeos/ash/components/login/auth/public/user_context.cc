@@ -325,7 +325,6 @@ void UserContext::ClearAuthFactorsConfiguration() {
 }
 
 const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
-  DCHECK(features::IsUseAuthFactorsEnabled());
   if (!auth_factors_configuration_.has_value()) {
     // Crash with debug assertions, try to stay alive otherwise. This method
     // could be const if we didn't set auth_factors_configuration_ if

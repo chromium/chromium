@@ -99,21 +99,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                StartAuthSessionCallback callback),
               (override));
   MOCK_METHOD(void,
-              AuthenticateAuthSession,
-              (const ::user_data_auth::AuthenticateAuthSessionRequest& request,
-               AuthenticateAuthSessionCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              AddCredentials,
-              (const ::user_data_auth::AddCredentialsRequest& request,
-               AddCredentialsCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              UpdateCredential,
-              (const ::user_data_auth::UpdateCredentialRequest& request,
-               UpdateCredentialCallback callback),
-              (override));
-  MOCK_METHOD(void,
               PrepareGuestVault,
               (const ::user_data_auth::PrepareGuestVaultRequest& request,
                PrepareGuestVaultCallback callback),

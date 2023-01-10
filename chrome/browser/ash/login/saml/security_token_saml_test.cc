@@ -8,7 +8,6 @@
 #include <iterator>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -78,11 +77,6 @@ SecurityTokenSamlTest::SecurityTokenSamlTest()
     : saml_idp_mixin_(&mixin_host_,
                       &gaia_mixin_,
                       /*client_cert_authorities=*/{GetClientCertCaName()}) {
-  if (GetParam()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
-  }
   // Allow the forced installation of extensions in the background.
   needs_background_networking_ = true;
 

@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash {
-class ExtendedAuthenticator;
 class AuthenticationError;
 }  // namespace ash
 
@@ -52,15 +51,6 @@ class AuthenticationAsh : public mojom::Authentication {
       IsOsReauthAllowedForActiveUserProfileCallback callback) override;
 
  private:
-  // Continuation of CreateQuickUnlockPrivateTokenInfo(). Last 3 params match
-  // extensions::LegacyQuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
-  void OnLegacyCreateQuickUnlockPrivateTokenInfoResults(
-      CreateQuickUnlockPrivateTokenInfoCallback callback,
-      scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator,
-      bool success,
-      std::unique_ptr<TokenInfo> token_info,
-      const std::string& error_message);
-
   // Continuation of CreateQuickUnlockPrivateTokenInfo(). The last 2 params
   // match extensions::QuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
   // The first argument is ignored; it is only there so that we can keep the

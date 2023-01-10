@@ -23096,8 +23096,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="105" label="ProxyGetRsuDeviceId"/>
   <int value="106" label="ProxyCheckHealth"/>
   <int value="107" label="ProxyStartAuthSession"/>
-  <int value="108" label="ProxyAuthenticateAuthSession"/>
-  <int value="109" label="ProxyAddCredentials"/>
+  <int value="108" label="(Obsolete) ProxyAuthenticateAuthSession"/>
+  <int value="109" label="(Obsolete) ProxyAddCredentials"/>
 </enum>
 
 <enum name="CryptohomeDiskCleanupProgress">

@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
@@ -214,17 +213,7 @@ QuickUnlockPrivateGetAuthTokenFunction::QuickUnlockPrivateGetAuthTokenFunction()
     : chrome_details_(this) {}
 
 QuickUnlockPrivateGetAuthTokenFunction::
-    ~QuickUnlockPrivateGetAuthTokenFunction() {
-  if (extended_authenticator_)
-    extended_authenticator_->SetConsumer(nullptr);
-}
-
-void QuickUnlockPrivateGetAuthTokenFunction::
-    SetAuthenticatorAllocatorForTesting(
-        const QuickUnlockPrivateGetAuthTokenFunction::AuthenticatorAllocator&
-            allocator) {
-  authenticator_allocator_ = allocator;
-}
+    ~QuickUnlockPrivateGetAuthTokenFunction() = default;
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAuthTokenFunction::Run() {
@@ -234,34 +223,6 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
 
-  if (!ash::features::IsUseAuthFactorsEnabled()) {
-    // Legacy flow, uses old cryptohome API methods.
-    scoped_refptr<LegacyQuickUnlockPrivateGetAuthTokenHelper> helper =
-        base::MakeRefCounted<LegacyQuickUnlockPrivateGetAuthTokenHelper>(
-            profile);
-
-    // Lazily allocate the authenticator. We do this here, instead of in the
-    // ctor, so that tests can install a fake.
-    DCHECK(!extended_authenticator_);
-    if (authenticator_allocator_) {
-      extended_authenticator_ = authenticator_allocator_.Run(helper.get());
-    } else {
-      extended_authenticator_ =
-          ash::ExtendedAuthenticator::Create(helper.get());
-    }
-
-    // The extension function needs to stay alive while the authenticator runs
-    // the password check via |helper|, so add ref before the authenticator
-    // starts, and remove the ref at the end of OnResult() call
-    AddRef();
-
-    helper->Run(
-        extended_authenticator_.get(), params->account_password,
-        base::BindOnce(&QuickUnlockPrivateGetAuthTokenFunction::OnLegacyResult,
-                       WrapRefCounted(this)));
-    return RespondLater();
-  }
-
   DCHECK(!helper_);
   helper_ = std::make_unique<QuickUnlockPrivateGetAuthTokenHelper>(
       profile, params->account_password);
@@ -269,22 +230,6 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
       &QuickUnlockPrivateGetAuthTokenFunction::OnResult, WrapRefCounted(this));
   helper_->Run(std::move(callback));
   return RespondLater();
-}
-
-void QuickUnlockPrivateGetAuthTokenFunction::OnLegacyResult(
-    bool success,
-    std::unique_ptr<api::quick_unlock_private::TokenInfo> token_info,
-    const std::string& error_message) {
-  if (success) {
-    DCHECK(token_info);
-    Respond(ArgumentList(
-        quick_unlock_private::GetAuthToken::Results::Create(*token_info)));
-  } else {
-    DCHECK(!error_message.empty());
-    Respond(Error(error_message));
-  }
-
-  Release();  // Balanced in Run().
 }
 
 void QuickUnlockPrivateGetAuthTokenFunction::OnResult(

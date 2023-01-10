@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
@@ -18,7 +16,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
-#include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -26,14 +23,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager_base.h"
 #include "content/public/browser/storage_partition.h"
@@ -222,30 +217,22 @@ void InSessionPasswordSyncManager::CheckCredentials(
 }
 
 void InSessionPasswordSyncManager::OnCookiesTransfered() {
-  if (features::IsUseAuthFactorsEnabled()) {
-    if (!auth_session_authenticator_) {
-      auth_session_authenticator_ =
-          base::MakeRefCounted<AuthSessionAuthenticator>(
-              this, std::make_unique<ChromeSafeModeDelegate>(),
-              /*user_recorder=*/base::DoNothing(),
-              user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
-                  primary_user_->GetAccountId()),
-              g_browser_process->local_state());
-    }
-    // Perform a fast ("verify-only") check of the current password. This is an
-    // optimization: if the password wasn't actually changed the check will
-    // finish faster. However, it also implies that if the password was actually
-    // changed, we'll need to start a new cryptohome AuthSession for updating
-    // the password auth factor (in `password_update_flow_`).
-    auth_session_authenticator_->AuthenticateToUnlock(
-        std::make_unique<UserContext>(user_context_));
-  } else {
-    if (!extended_authenticator_) {
-      extended_authenticator_ = ExtendedAuthenticator::Create(this);
-    }
-    extended_authenticator_.get()->AuthenticateToCheck(user_context_,
-                                                       base::OnceClosure());
+  if (!auth_session_authenticator_) {
+    auth_session_authenticator_ =
+        base::MakeRefCounted<AuthSessionAuthenticator>(
+            this, std::make_unique<ChromeSafeModeDelegate>(),
+            /*user_recorder=*/base::DoNothing(),
+            user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
+                primary_user_->GetAccountId()),
+            g_browser_process->local_state());
   }
+  // Perform a fast ("verify-only") check of the current password. This is an
+  // optimization: if the password wasn't actually changed the check will
+  // finish faster. However, it also implies that if the password was actually
+  // changed, we'll need to start a new cryptohome AuthSession for updating
+  // the password auth factor (in `password_update_flow_`).
+  auth_session_authenticator_->AuthenticateToUnlock(
+      std::make_unique<UserContext>(user_context_));
 }
 
 void InSessionPasswordSyncManager::UpdateUserPassword(

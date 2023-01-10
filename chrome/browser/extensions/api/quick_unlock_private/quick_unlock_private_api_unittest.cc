@@ -41,6 +41,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
@@ -120,18 +121,6 @@ std::unique_ptr<KeyedService> CreateEasyUnlockServiceForTest(
       fake_secure_channel_client.get(), fake_multidevice_setup_client.get());
 }
 
-ash::ExtendedAuthenticator* CreateFakeAuthenticator(
-    ash::AuthStatusConsumer* auth_status_consumer) {
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-  ash::UserContext expected_context(user_manager::USER_TYPE_REGULAR,
-                                    account_id);
-  expected_context.SetKey(ash::Key(kValidPassword));
-
-  return new ash::FakeExtendedAuthenticator(auth_status_consumer,
-                                            expected_context);
-}
-
 void FailIfCalled(const QuickUnlockModeList& modes) {
   FAIL();
 }
@@ -173,10 +162,6 @@ class QuickUnlockPrivateUnitTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    // TODO(b/239681292): Add (integration) tests with UseAuthFactors
-    // enabled.
-    disabled_features.push_back(ash::features::kUseAuthFactors);
-
     // Enable/disable PIN auto submit
     if (std::get<1>(param)) {
       enabled_features.push_back(ash::features::kQuickUnlockPinAutosubmit);
@@ -188,13 +173,31 @@ class QuickUnlockPrivateUnitTest
 
     ash::CryptohomeMiscClient::InitializeFake();
     ash::UserDataAuthClient::InitializeFake();
+    auto* fake_userdataauth_client_testapi =
+        ash::FakeUserDataAuthClient::TestApi::Get();
+    fake_userdataauth_client_testapi->set_enable_auth_check(true);
+
     if (std::get<0>(param) == TestType::kCryptohome) {
-      auto* fake_userdataauth_client_testapi =
-          ash::FakeUserDataAuthClient::TestApi::Get();
       fake_userdataauth_client_testapi->set_supports_low_entropy_credentials(
           true);
-      fake_userdataauth_client_testapi->set_enable_auth_check(true);
     }
+
+    const cryptohome::AccountIdentifier account_id =
+        cryptohome::CreateAccountIdentifierFromAccountId(
+            AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId));
+
+    ash::Key key{kValidPassword};
+    key.Transform(ash::Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
+                  ash::SystemSaltGetter::ConvertRawSaltToHexString(
+                      ash::FakeCryptohomeMiscClient::GetStubSystemSalt()));
+
+    cryptohome::Key cryptohome_key;
+    cryptohome_key.mutable_data()->set_label(ash::kCryptohomeGaiaKeyLabel);
+    cryptohome_key.set_secret(key.GetSecret());
+
+    fake_userdataauth_client_testapi->AddExistingUser(account_id);
+    fake_userdataauth_client_testapi->AddKey(account_id, cryptohome_key);
+
     ash::SystemSaltGetter::Initialize();
 
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -244,6 +247,23 @@ class QuickUnlockPrivateUnitTest
     // Generate an auth token.
     auth_token_user_context_.SetAccountId(test_account);
     auth_token_user_context_.SetUserIDHash(kTestUserEmailHash);
+    if (std::get<0>(GetParam()) == TestType::kCryptohome) {
+      auto* fake_userdataauth_client_testapi =
+          ash::FakeUserDataAuthClient::TestApi::Get();
+
+      const cryptohome::AccountIdentifier account_id =
+          cryptohome::CreateAccountIdentifierFromAccountId(
+              AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId));
+
+      auth_token_user_context_.SetAuthSessionId(
+          fake_userdataauth_client_testapi->AddSession(account_id,
+                                                       /*authenticated=*/true));
+      // Technically configuration should contain password as factor, but
+      // it is not checked anywhere.
+      auth_token_user_context_.SetAuthFactorsConfiguration(
+          ash::AuthFactorsConfiguration());
+    }
+
     token_ = ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile)
                  ->CreateAuthToken(auth_token_user_context_);
     base::RunLoop().RunUntilIdle();
@@ -287,10 +307,7 @@ class QuickUnlockPrivateUnitTest
   // to succeed and returns the result.
   std::unique_ptr<quick_unlock_private::TokenInfo> GetAuthToken(
       const std::string& password) {
-    // Setup a fake authenticator to avoid calling cryptohome methods.
     auto func = base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenFunction>();
-    func->SetAuthenticatorAllocatorForTesting(
-        base::BindRepeating(&CreateFakeAuthenticator));
 
     base::Value::List params;
     params.Append(base::Value(password));
@@ -305,10 +322,7 @@ class QuickUnlockPrivateUnitTest
   // Wrapper for chrome.quickUnlockPrivate.getAuthToken with an invalid
   // password. Expects the function to fail and returns the error.
   std::string RunAuthTokenWithInvalidPassword() {
-    // Setup a fake authenticator to avoid calling cryptohome methods.
     auto func = base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenFunction>();
-    func->SetAuthenticatorAllocatorForTesting(
-        base::BindRepeating(&CreateFakeAuthenticator));
 
     base::Value::List params;
     params.Append(base::Value(kInvalidPassword));

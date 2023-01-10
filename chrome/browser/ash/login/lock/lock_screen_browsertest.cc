@@ -66,7 +66,9 @@ class LockScreenInputsTest : public LockScreenBaseTest {
 
 IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   const auto& users = login_manager_.users();
-  LoginUser(users[0].account_id);
+  SetExpectedCredentialsWithDbusClient(users[0].account_id, "password");
+  SetExpectedCredentialsWithDbusClient(users[1].account_id, "password");
+  LoginUserWithDbusClient(users[0].account_id, "password");
   scoped_refptr<input_method::InputMethodManager::State> ime_states[2] = {
       nullptr, nullptr};
   input_method::InputMethodManager* input_manager =
@@ -78,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
             user_input_methods_[0]);
 
   UserAddingScreen::Get()->Start();
-  AddUser(users[1].account_id);
+  AddUserWithDbusClient(users[1].account_id, "password");
   EXPECT_EQ(users[1].account_id,
             user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
   ime_states[1] = input_manager->GetActiveIMEState();

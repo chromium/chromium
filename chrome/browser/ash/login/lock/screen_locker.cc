@@ -520,24 +520,7 @@ void ScreenLocker::ContinueAuthenticate(
 }
 
 void ScreenLocker::AttemptUnlock(std::unique_ptr<UserContext> user_context) {
-  if (features::IsUseAuthFactorsEnabled()) {
-    authenticator_->AuthenticateToUnlock(std::move(user_context));
-  } else {
-    // Take a copy of the user context and bind a callback to pass to
-    // `AuthenticateToCheck`.
-    // The copy of the user context might seem unnecessary because
-    // AuthenticateToCheck takes it by const reference, but it isn't: At least
-    // the fake implementation of AuthenticateToCheck accesses this reference
-    // *after* running the callback. Since the callback owns the unique_ptr
-    // that holds onto the context, that user context is destroyed after the
-    // callback is done executing, and any references to it would be dangling.
-    UserContext user_context_copy = *user_context;
-    auto callback =
-        base::BindOnce(&ScreenLocker::OnPasswordAuthSuccess,
-                       weak_factory_.GetWeakPtr(), std::move(user_context));
-    extended_authenticator_->AuthenticateToCheck(user_context_copy,
-                                                 std::move(callback));
-  }
+  authenticator_->AuthenticateToUnlock(std::move(user_context));
 }
 
 const user_manager::User* ScreenLocker::FindUnlockUser(

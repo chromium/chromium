@@ -70,11 +70,10 @@ namespace extensions {
 
 class EnterpriseNetworkingAttributesTest
     : public ForceInstalledAffiliatedExtensionApiTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   EnterpriseNetworkingAttributesTest()
-      : ForceInstalledAffiliatedExtensionApiTest(std::get<0>(GetParam()),
-                                                 std::get<1>(GetParam())) {}
+      : ForceInstalledAffiliatedExtensionApiTest(GetParam()) {}
 
   void SetupDisconnectedNetwork() {
     ash::ShillDeviceClient::TestInterface* shill_device_client =
@@ -146,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest,
 }
 
 IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest, GetNetworkDetails) {
-  const bool is_affiliated = std::get<0>(GetParam());
+  const bool is_affiliated = GetParam();
   EXPECT_EQ(is_affiliated, user_manager::UserManager::Get()
                                ->FindUser(affiliation_mixin_.account_id())
                                ->IsAffiliated());
@@ -176,8 +175,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseNetworkingAttributesTest, GetNetworkDetails) {
 // Both cases of affiliated and non-affiliated users are tested.
 INSTANTIATE_TEST_SUITE_P(AffiliationCheck,
                          EnterpriseNetworkingAttributesTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 // Ensure that extensions that are not pre-installed by policy throw an install
 // warning if they request the enterprise.networkingAttributes permission in the

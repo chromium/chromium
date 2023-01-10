@@ -271,13 +271,11 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
                                      auth_factor_editor_->AsWeakPtr()));
     }
-    if (features::IsUseAuthFactorsEnabled()) {
-      // In addition to factors suitable for authentication, fetch a set of
-      // supported factor types for new users.
-      steps.push_back(
-          base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
-                         auth_factor_editor_->AsWeakPtr()));
-    }
+    // In addition to factors suitable for authentication, fetch a set of
+    // supported factor types for new users.
+    steps.push_back(
+        base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
+                       auth_factor_editor_->AsWeakPtr()));
     steps.push_back(
         base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
                        weak_factory_.GetWeakPtr()));
@@ -707,18 +705,10 @@ void AuthSessionAuthenticator::RecoverEncryptedData(
   DCHECK(!is_ephemeral_mount_enforced_);
   LOGIN_LOG(USER) << "Attempting to update user password";
 
-  std::string key_label;
-  if (features::IsUseAuthFactorsEnabled()) {
-    auto* password_factor =
-        context->GetAuthFactorsData().FindOnlinePasswordFactor();
-    DCHECK(password_factor);
-    key_label = password_factor->ref().label().value();
-  } else {
-    const cryptohome::KeyDefinition* password_key_def =
-        context->GetAuthFactorsData().FindOnlinePasswordKey();
-    DCHECK(password_key_def);
-    key_label = password_key_def->label.value();
-  }
+  auto* password_factor =
+      context->GetAuthFactorsData().FindOnlinePasswordFactor();
+  DCHECK(password_factor);
+  std::string key_label = password_factor->ref().label().value();
 
   if (!context->HasReplacementKey()) {
     // Assume that there was an attempt to use the key, so it is was already

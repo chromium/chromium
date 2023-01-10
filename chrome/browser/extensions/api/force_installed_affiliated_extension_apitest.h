@@ -34,9 +34,7 @@ class Extension;
 class ForceInstalledAffiliatedExtensionApiTest
     : public MixinBasedExtensionApiTest {
  public:
-  explicit ForceInstalledAffiliatedExtensionApiTest(
-      bool is_affiliated,
-      bool is_auth_session_enabled);
+  explicit ForceInstalledAffiliatedExtensionApiTest(bool is_affiliated);
   ~ForceInstalledAffiliatedExtensionApiTest() override;
 
  protected:
@@ -61,9 +59,6 @@ class ForceInstalledAffiliatedExtensionApiTest
   policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};
   ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  //  namespace extensions

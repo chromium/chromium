@@ -21,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
@@ -1021,32 +1020,15 @@ class ExistingUserControllerActiveDirectoryTest
 };
 
 class ExistingUserControllerActiveDirectoryTestCreateProfileDir
-    : public ExistingUserControllerActiveDirectoryTest,
-      public ::testing::WithParamInterface<bool> {
+    : public ExistingUserControllerActiveDirectoryTest {
  public:
   ExistingUserControllerActiveDirectoryTestCreateProfileDir() {
     cryptohome_mixin_.MarkUserAsExisting(ad_account_id_);
-
-    // TODO(b/239422391): This test is run with the feature
-    // kUseAuthFactors enabled and disabled because of a
-    // transitive dependency of AffiliationTestHelper on that feature. Remove
-    // the parameter when kUseAuthFactors is removed.
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
-    }
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    ActiveDirectory,
-    ExistingUserControllerActiveDirectoryTestCreateProfileDir,
-    ::testing::Bool());
 
 class ExistingUserControllerActiveDirectoryUserAllowlistTest
     : public ExistingUserControllerActiveDirectoryTest {
@@ -1112,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
 
 // Tests that Active Directory offline login succeeds on the Active Directory
 // managed device.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ExistingUserControllerActiveDirectoryTestCreateProfileDir,
     ActiveDirectoryOfflineLogin_Success) {
   ExpectLoginSuccess();
@@ -1177,30 +1159,20 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserAllowlistTest,
 }
 
 class ExistingUserControllerSavePasswordHashTest
-    : public ExistingUserControllerTest,
-      public ::testing::WithParamInterface<bool> {
+    : public ExistingUserControllerTest {
  public:
-  ExistingUserControllerSavePasswordHashTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
-    }
-  }
+  ExistingUserControllerSavePasswordHashTest() = default;
   ~ExistingUserControllerSavePasswordHashTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExistingUserControllerTest::SetUpInProcessBrowserTestFixture();
     RefreshDevicePolicy();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that successful GAIA online login saves SyncPasswordData to user
 // profile prefs.
-IN_PROC_BROWSER_TEST_P(ExistingUserControllerSavePasswordHashTest,
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
                        GaiaOnlineLoginSavesPasswordHashToPrefs) {
   UserContext user_context(
       LoginManagerMixin::CreateDefaultUserContext(new_user_));
@@ -1217,7 +1189,7 @@ IN_PROC_BROWSER_TEST_P(ExistingUserControllerSavePasswordHashTest,
 
 // Tests that successful offline login saves SyncPasswordData to user profile
 // prefs.
-IN_PROC_BROWSER_TEST_P(ExistingUserControllerSavePasswordHashTest,
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
                        OfflineLoginSavesPasswordHashToPrefs) {
   UserContext user_context(
       LoginManagerMixin::CreateDefaultUserContext(existing_user_));
@@ -1481,9 +1453,5 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   ASSERT_TRUE(owner.has_value());
   EXPECT_EQ(owner.value(), not_managed_user_.account_id.GetUserEmail());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExistingUserControllerSavePasswordHashTest,
-                         testing::Bool());
 
 }  // namespace ash

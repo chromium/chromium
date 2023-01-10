@@ -187,7 +187,7 @@ constexpr char kDeviceTrustAttestationFunnelStep[] =
     "Enterprise.DeviceTrust.Attestation.Funnel";
 
 // A FakeUserDataAuthClient that stores the salted and hashed secret passed
-// to MountEx().
+// to AddAuthFactor().
 class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
  public:
   SecretInterceptingFakeUserDataAuthClient();
@@ -197,16 +197,8 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
   SecretInterceptingFakeUserDataAuthClient& operator=(
       const SecretInterceptingFakeUserDataAuthClient&) = delete;
 
-  // Key-based API for AuthSessions.
-  // TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
-  void AuthenticateAuthSession(
-      const ::user_data_auth::AuthenticateAuthSessionRequest& request,
-      AuthenticateAuthSessionCallback callback) override;
-
   void AddAuthFactor(const ::user_data_auth::AddAuthFactorRequest& request,
                      AddAuthFactorCallback callback) override;
-  void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
-                      AddCredentialsCallback callback) override;
 
   const std::string& salted_hashed_secret() { return salted_hashed_secret_; }
 
@@ -216,24 +208,6 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
 
 SecretInterceptingFakeUserDataAuthClient::
     SecretInterceptingFakeUserDataAuthClient() = default;
-
-// Key-based API for AuthSessions.
-// TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
-void SecretInterceptingFakeUserDataAuthClient::AuthenticateAuthSession(
-    const ::user_data_auth::AuthenticateAuthSessionRequest& request,
-    AuthenticateAuthSessionCallback callback) {
-  salted_hashed_secret_ = request.authorization().key().secret();
-  FakeUserDataAuthClient::AuthenticateAuthSession(request, std::move(callback));
-}
-
-// Key-based API for AuthSessions.
-// TODO(b/260718534): Remove as part of UserAuthFactors cleanup.
-void SecretInterceptingFakeUserDataAuthClient::AddCredentials(
-    const ::user_data_auth::AddCredentialsRequest& request,
-    AddCredentialsCallback callback) {
-  salted_hashed_secret_ = request.authorization().key().secret();
-  FakeUserDataAuthClient::AddCredentials(request, std::move(callback));
-}
 
 void SecretInterceptingFakeUserDataAuthClient::AddAuthFactor(
     const ::user_data_auth::AddAuthFactorRequest& request,
@@ -388,22 +362,15 @@ class SamlTestBase : public OobeBaseTest {
   FakeSamlIdpMixin fake_saml_idp_mixin_{&mixin_host_, &fake_gaia_};
 };
 
-// The first value of the parameter runs the tests with
-// kUseAuthFactors feature and the second value with
-// kCheckPasswordsAgainstCryptohomeHelper
-class SamlTestWithFeatures
-    : public SamlTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+// This test is run with both variants of CheckPasswordsAgainstCryptohomeHelper
+// feature.
+class SamlTestWithFeatures : public SamlTestBase,
+                             public testing::WithParamInterface<bool> {
  public:
   SamlTestWithFeatures() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (std::get<0>(GetParam())) {
-      enabled_features.push_back(features::kUseAuthFactors);
-    } else {
-      disabled_features.push_back(features::kUseAuthFactors);
-    }
-    if (std::get<1>(GetParam())) {
+    if (GetParam()) {
       enabled_features.push_back(
           features::kCheckPasswordsAgainstCryptohomeHelper);
     } else {
@@ -417,11 +384,7 @@ class SamlTestWithFeatures
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// The first value of the parameter runs the tests with
-// UseAuthFactors feature.
-class ImprovedScrapingTestBase
-    : public SamlTestBase,
-      public testing::WithParamInterface<std::tuple<bool>> {
+class ImprovedScrapingTestBase : public SamlTestBase {
  public:
   ImprovedScrapingTestBase();
 
@@ -437,11 +400,6 @@ ImprovedScrapingTestBase::ImprovedScrapingTestBase() = default;
 void ImprovedScrapingTestBase::SetFeatures(bool enable_improved_scraping) {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
-  if (std::get<0>(GetParam())) {
-    enabled_features.push_back(features::kUseAuthFactors);
-  } else {
-    disabled_features.push_back(features::kUseAuthFactors);
-  }
   if (enable_improved_scraping) {
     enabled_features.push_back(
         features::kCheckPasswordsAgainstCryptohomeHelper);
@@ -738,7 +696,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedDynamic) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
+IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
@@ -782,7 +740,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_P(SamlTestWithImprovedScraping, ScrapedMultiple) {
+IN_PROC_BROWSER_TEST_F(SamlTestWithImprovedScraping, ScrapedMultiple) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
@@ -907,7 +865,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
   WaitForSigninScreen();
 }
 
-IN_PROC_BROWSER_TEST_P(SamlTestWithoutImprovedScraping, PasswordConfirmFlow) {
+IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, PasswordConfirmFlow) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(
@@ -2370,17 +2328,7 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, PolicyTwoEntriesSuccess) {
   ExpectDeviceTrustSuccessful(login_screen_device_trust_enabled());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SamlTestWithFeatures,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
-INSTANTIATE_TEST_SUITE_P(All,
-                         SamlTestWithImprovedScraping,
-                         ::testing::Combine(::testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SamlTestWithoutImprovedScraping,
-                         ::testing::Combine(::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, SamlTestWithFeatures, ::testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SAMLDeviceTrustTest,

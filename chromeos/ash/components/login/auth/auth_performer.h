@@ -159,11 +159,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
                                    AuthOperationCallback callback,
                                    const std::string& system_salt);
 
-  void OnAuthenticateAuthSession(
-      std::unique_ptr<UserContext> context,
-      AuthOperationCallback callback,
-      absl::optional<user_data_auth::AuthenticateAuthSessionReply> reply);
-
   void OnAuthenticateAuthFactor(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,

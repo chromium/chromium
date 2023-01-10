@@ -15,8 +15,6 @@
 #include "extensions/browser/extension_function.h"
 
 namespace ash {
-class AuthStatusConsumer;
-class ExtendedAuthenticator;
 class AuthenticationError;
 }  // namespace ash
 
@@ -26,20 +24,11 @@ class QuickUnlockPrivateGetAuthTokenHelper;
 
 class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
  public:
-  using AuthenticatorAllocator =
-      base::RepeatingCallback<ash::ExtendedAuthenticator*(
-          ash::AuthStatusConsumer* auth_status_consumer)>;
-
   QuickUnlockPrivateGetAuthTokenFunction();
   QuickUnlockPrivateGetAuthTokenFunction(
       const QuickUnlockPrivateGetAuthTokenFunction&) = delete;
   QuickUnlockPrivateGetAuthTokenFunction& operator=(
       const QuickUnlockPrivateGetAuthTokenFunction&) = delete;
-
-  // Use the given |allocator| to create an ExtendedAuthenticator instance. This
-  // lets tests intercept authentication calls.
-  void SetAuthenticatorAllocatorForTesting(
-      const AuthenticatorAllocator& allocator);
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getAuthToken",
                              QUICKUNLOCKPRIVATE_GETAUTHTOKEN)
@@ -53,16 +42,8 @@ class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
   void OnResult(absl::optional<api::quick_unlock_private::TokenInfo> token_info,
                 absl::optional<ash::AuthenticationError> error);
 
-  // Continuation of Run() when using the legacy cryptohome API.
-  void OnLegacyResult(
-      bool success,
-      std::unique_ptr<api::quick_unlock_private::TokenInfo> token_info,
-      const std::string& error_message);
-
  private:
   ChromeExtensionFunctionDetails chrome_details_;
-  scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
-  AuthenticatorAllocator authenticator_allocator_;
   std::unique_ptr<QuickUnlockPrivateGetAuthTokenHelper> helper_;
 };
 

@@ -51,29 +51,6 @@ void OnCryptohomeCallComplete(std::unique_ptr<UserContext> context,
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
-// Checks to see if there is a KeyDefinition instance with the pin label. If
-// `require_unlocked` is true, the key must not be locked.
-void CheckCryptohomePinKey(
-    PinStorageCryptohome::BoolCallback callback,
-    bool require_unlocked,
-    absl::optional<user_data_auth::GetKeyDataReply> reply) {
-  const cryptohome::MountError return_code =
-      user_data_auth::ReplyToMountError(reply);
-  if (return_code == cryptohome::MOUNT_ERROR_NONE) {
-    const std::vector<cryptohome::KeyDefinition>& key_definitions =
-        user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);
-    for (const cryptohome::KeyDefinition& definition : key_definitions) {
-      if (definition.label.value() == kCryptohomePinLabel) {
-        DCHECK(definition.policy.low_entropy_credential);
-        std::move(callback).Run(!require_unlocked ||
-                                !definition.policy.auth_locked);
-        return;
-      }
-    }
-  }
-  std::move(callback).Run(false);
-}
-
 void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
                               bool require_unlocked,
                               std::unique_ptr<UserContext> user_context,
@@ -203,21 +180,6 @@ PinStorageCryptohome::~PinStorageCryptohome() = default;
 void PinStorageCryptohome::IsPinSetInCryptohome(
     std::unique_ptr<UserContext> user_context,
     BoolCallback result) {
-  if (!features::IsUseAuthFactorsEnabled()) {
-    // Legacy implementation. Uses the deprecated GetKeyData cryptohome call.
-    user_data_auth::GetKeyDataRequest request;
-    *request.mutable_account_id() =
-        cryptohome::CreateAccountIdentifierFromAccountId(
-            user_context->GetAccountId());
-    request.mutable_authorization_request();
-    request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-
-    UserDataAuthClient::Get()->GetKeyData(
-        request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
-                                false /*require_unlocked*/));
-    return;
-  }
-
   auth_factor_editor_.GetAuthFactorsConfiguration(
       std::move(user_context),
       base::BindOnce(&CheckCryptohomePinFactor, std::move(result),
@@ -234,53 +196,6 @@ void PinStorageCryptohome::SetPin(std::unique_ptr<UserContext> user_context,
         &PinStorageCryptohome::SetPin, weak_factory_.GetWeakPtr(),
         std::move(user_context), std::move(pin), std::move(pin_salt),
         std::move(callback)));
-    return;
-  }
-
-  if (!features::IsUseAuthFactorsEnabled()) {
-    // Legacy implementation. Uses the deprecated AddKey cryptohome call.
-
-    DCHECK(!user_context->GetAccountId().empty());
-
-    // Passwords are hashed with SHA256.
-    Key key = *user_context->GetKey();
-    if (key.GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN)
-      key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt_);
-
-    // If the caller provided a salt then this is a migration from prefs-based
-    // PIN, in which case `pin` is already hashed.
-    std::string secret;
-    std::string salt;
-    if (pin_salt) {
-      salt = *pin_salt;
-      secret = pin;
-    } else {
-      salt = PinBackend::ComputeSalt();
-      secret =
-          PinBackend::ComputeSecret(pin, salt, Key::KEY_TYPE_PASSWORD_PLAIN);
-    }
-
-    pin_salt_storage_->WriteSalt(user_context->GetAccountId(), salt);
-
-    ::user_data_auth::AddKeyRequest request;
-    const cryptohome::KeyDefinition key_def =
-        cryptohome::KeyDefinition::CreateForPassword(
-            secret, KeyLabel(kCryptohomePinLabel), cryptohome::PRIV_MIGRATE);
-    cryptohome::KeyDefinitionToKey(key_def, request.mutable_key());
-    request.mutable_key()
-        ->mutable_data()
-        ->mutable_policy()
-        ->set_low_entropy_credential(true);
-    request.set_clobber_if_exists(true);
-    *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
-        cryptohome::Identification(user_context->GetAccountId()));
-    *request.mutable_authorization_request() =
-        cryptohome::CreateAuthorizationRequest(KeyLabel(key.GetLabel()),
-                                               key.GetSecret());
-    UserDataAuthClient::Get()->AddKey(
-        request,
-        base::BindOnce(&OnCryptohomeCallComplete<::user_data_auth::AddKeyReply>,
-                       std::move(user_context), std::move(callback)));
     return;
   }
 
@@ -321,26 +236,6 @@ void PinStorageCryptohome::RemovePin(std::unique_ptr<UserContext> user_context,
     return;
   }
 
-  if (!features::IsUseAuthFactorsEnabled()) {
-    // Legacy implementation. Uses the deprecated RemoveKey cryptohome call.
-
-    // Remove any PIN data from cryptohome.
-    ::user_data_auth::RemoveKeyRequest request;
-    request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-    *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
-        cryptohome::Identification(user_context->GetAccountId()));
-    *request.mutable_authorization_request() =
-        cryptohome::CreateAuthorizationRequest(
-            KeyLabel(user_context->GetKey()->GetLabel()),
-            user_context->GetKey()->GetSecret());
-    UserDataAuthClient::Get()->RemoveKey(
-        request,
-        base::BindOnce(
-            &OnCryptohomeCallComplete<::user_data_auth::RemoveKeyReply>,
-            std::move(user_context), std::move(callback)));
-    return;
-  }
-
   auto on_pin_edited =
       base::BindOnce(&PinStorageCryptohome::OnAuthFactorsEdit,
                      weak_factory_.GetWeakPtr(), std::move(callback));
@@ -370,19 +265,6 @@ void PinStorageCryptohome::CanAuthenticate(
     return;
   }
 
-  if (!features::IsUseAuthFactorsEnabled()) {
-    user_data_auth::GetKeyDataRequest request;
-    request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-    *request.mutable_account_id() =
-        cryptohome::CreateAccountIdentifierFromAccountId(
-            user_context->GetAccountId());
-    request.mutable_authorization_request();
-    UserDataAuthClient::Get()->GetKeyData(
-        request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
-                                true /*require_unlocked*/));
-    return;
-  }
-
   auth_factor_editor_.GetAuthFactorsConfiguration(
       std::move(user_context),
       base::BindOnce(&CheckCryptohomePinFactor, std::move(result),
@@ -400,7 +282,7 @@ void PinStorageCryptohome::TryAuthenticate(
     return;
   }
 
-  if (purpose == Purpose::kWebAuthn || !features::IsUseAuthFactorsEnabled()) {
+  if (purpose == Purpose::kWebAuthn) {
     // Legacy implementation using CheckKey.
 
     const std::string secret = PinBackend::ComputeSecret(
@@ -472,7 +354,6 @@ void PinStorageCryptohome::TryAuthenticateWithAuthSession(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
     absl::optional<AuthenticationError> error) {
-  DCHECK(features::IsUseAuthFactorsEnabled());
   DCHECK_EQ(key.GetKeyType(), Key::KEY_TYPE_PASSWORD_PLAIN);
   DCHECK(user_exists);
 

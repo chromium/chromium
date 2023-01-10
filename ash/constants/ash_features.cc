@@ -3118,10 +3118,6 @@ bool IsUploadOfficeToCloudEnabled() {
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
 }
 
-bool IsUseAuthFactorsEnabled() {
-  return base::FeatureList::IsEnabled(kUseAuthFactors);
-}
-
 bool IsUseAuthsessionForWebAuthNEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthsessionForWebAuthN);
 }

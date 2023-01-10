@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,23 +35,6 @@ void AuthenticationAsh::CreateQuickUnlockPrivateTokenInfo(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!ash::features::IsUseAuthFactorsEnabled()) {
-    // Legacy flow.
-    auto helper = base::MakeRefCounted<
-        extensions::LegacyQuickUnlockPrivateGetAuthTokenHelper>(
-        ProfileManager::GetActiveUserProfile());
-    // |extended_authenticator| is kept alive by |on_result_callback| binding.
-    scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator =
-        ash::ExtendedAuthenticator::Create(helper.get());
-    auto on_result_callback = base::BindOnce(
-        &AuthenticationAsh::OnLegacyCreateQuickUnlockPrivateTokenInfoResults,
-        weak_factory_.GetWeakPtr(), std::move(callback),
-        extended_authenticator);
-    // |helper| manages its own lifetime in Run(); can fire and forget.
-    helper->Run(extended_authenticator.get(), password,
-                std::move(on_result_callback));
-    return;
-  }
 
   // `helper` is kept alive by binding it to the result callback.
   auto helper =
@@ -72,31 +54,6 @@ void AuthenticationAsh::IsOsReauthAllowedForActiveUserProfile(
   bool allowed = extensions::IsOsReauthAllowedAsh(
       ProfileManager::GetActiveUserProfile(), auth_token_lifetime);
   std::move(callback).Run(allowed);
-}
-
-void AuthenticationAsh::OnLegacyCreateQuickUnlockPrivateTokenInfoResults(
-    CreateQuickUnlockPrivateTokenInfoCallback callback,
-    scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator,
-    bool success,
-    std::unique_ptr<TokenInfo> token_info,
-    const std::string& error_message) {
-  mojom::CreateQuickUnlockPrivateTokenInfoResultPtr result;
-  if (success) {
-    DCHECK(token_info);
-    crosapi::mojom::QuickUnlockPrivateTokenInfoPtr out_token_info =
-        crosapi::mojom::QuickUnlockPrivateTokenInfo::New();
-    out_token_info->token = token_info->token;
-    out_token_info->lifetime_seconds = token_info->lifetime_seconds;
-    result = mojom::CreateQuickUnlockPrivateTokenInfoResult::NewTokenInfo(
-        std::move(out_token_info));
-  } else {
-    DCHECK(!error_message.empty());
-    result = mojom::CreateQuickUnlockPrivateTokenInfoResult::NewErrorMessage(
-        error_message);
-  }
-  std::move(callback).Run(std::move(result));
-
-  extended_authenticator->SetConsumer(nullptr);
 }
 
 void AuthenticationAsh::OnCreateQuickUnlockPrivateTokenInfoResults(

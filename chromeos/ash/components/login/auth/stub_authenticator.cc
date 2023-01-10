@@ -215,20 +215,16 @@ UserContext StubAuthenticator::ExpectedUserContextWithTransformedKey() const {
       expected_user_context_.GetAccountId().GetUserEmail() + kUserIdHashSuffix);
   user_context.GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                                    "some-salt");
-  if (features::IsUseAuthFactorsEnabled()) {
-    cryptohome::AuthFactorsSet factors;
-    factors.Put(cryptohome::AuthFactorType::kPassword);
-    factors.Put(cryptohome::AuthFactorType::kPin);
-    factors.Put(cryptohome::AuthFactorType::kRecovery);
-    cryptohome::AuthFactorRef ref(
-        cryptohome::AuthFactorType::kPassword,
-        cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel});
-    cryptohome::AuthFactor password(ref,
-                                    cryptohome::AuthFactorCommonMetadata());
-    user_context.SetAuthFactorsConfiguration(
-        AuthFactorsConfiguration{{password}, factors});
-    user_context.SetAuthSessionId("someauthsessionid");
-  }
+  cryptohome::AuthFactorsSet factors;
+  factors.Put(cryptohome::AuthFactorType::kPassword);
+  factors.Put(cryptohome::AuthFactorType::kPin);
+  factors.Put(cryptohome::AuthFactorType::kRecovery);
+  cryptohome::AuthFactorRef ref(cryptohome::AuthFactorType::kPassword,
+                                cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel});
+  cryptohome::AuthFactor password(ref, cryptohome::AuthFactorCommonMetadata());
+  user_context.SetAuthFactorsConfiguration(
+      AuthFactorsConfiguration{{password}, factors});
+  user_context.SetAuthSessionId("someauthsessionid");
   return user_context;
 }
 

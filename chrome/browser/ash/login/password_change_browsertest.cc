@@ -6,7 +6,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
@@ -15,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -154,17 +152,9 @@ class PasswordChangeStubAuthTest : public PasswordChangeTestBase {
 
 // Test fixture that uses a fake UserDataAuth in order to simulate password
 // change flows.
-// The parameter specifies whether AuthSession-based cryptohome API is used.
-class PasswordChangeTest : public PasswordChangeTestBase,
-                           public testing::WithParamInterface<bool> {
+class PasswordChangeTest : public PasswordChangeTestBase {
  protected:
-  PasswordChangeTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
-    }
-  }
+  PasswordChangeTest() = default;
 
   void SetUpOnMainThread() override {
     PasswordChangeTestBase::SetUpOnMainThread();
@@ -213,12 +203,11 @@ class PasswordChangeTest : public PasswordChangeTestBase,
     EXPECT_TRUE(base::WriteFile(GetTestingFilePath(), /*data=*/""));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   CryptohomeMixin cryptohome_{&mixin_host_};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_P(PasswordChangeTest, MigrateOldCryptohome) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest, MigrateOldCryptohome) {
   AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
 
@@ -266,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SubmitOnEnterKeyPressed) {
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordChangeTest, RetryOnWrongPassword) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest, RetryOnWrongPassword) {
   AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
@@ -294,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeTest, RetryOnWrongPassword) {
   EXPECT_TRUE(TestingFileExists());
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordChangeTest, SkipDataRecovery) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
   AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
   SetGaiaScreenCredentials(test_account_id_, "new password");
@@ -370,10 +359,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, ClosePasswordChangedDialog) {
   OobeWindowVisibilityWaiter(true).Wait();
   OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
 }
-
-INSTANTIATE_TEST_SUITE_P(AuthSessionAvailability,
-                         PasswordChangeTest,
-                         testing::Bool());
 
 class PasswordChangeTokenCheck : public PasswordChangeStubAuthTest {
  public:

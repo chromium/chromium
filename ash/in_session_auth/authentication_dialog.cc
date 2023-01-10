@@ -164,15 +164,10 @@ void AuthenticationDialog::ValidateAuthFactor() {
 
   cryptohome::KeyLabel key_label;
 
-  if (features::IsUseAuthFactorsEnabled()) {
-    key_label = user_context_->GetAuthFactorsData()
-                    .FindOnlinePasswordFactor()
-                    ->ref()
-                    .label();
-  } else {
-    key_label =
-        user_context_->GetAuthFactorsData().FindOnlinePasswordKey()->label;
-  }
+  key_label = user_context_->GetAuthFactorsData()
+                  .FindOnlinePasswordFactor()
+                  ->ref()
+                  .label();
 
   // Create a copy of `user_context_` so that we don't lose it to std::move
   // for future auth attempts

@@ -12,7 +12,6 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -298,9 +297,9 @@ void RegisterCorporateKeyWithService(
 
 }  // namespace
 
-class CertStoreServiceTest : public MixinBasedInProcessBrowserTest,
-                             public ::testing::WithParamInterface<
-                                 std::tuple<std::vector<TestCertData>, bool>> {
+class CertStoreServiceTest
+    : public MixinBasedInProcessBrowserTest,
+      public ::testing::WithParamInterface<std::vector<TestCertData>> {
  public:
   CertStoreServiceTest();
   CertStoreServiceTest(const CertStoreServiceTest& other) = delete;
@@ -378,24 +377,12 @@ class CertStoreServiceTest : public MixinBasedInProcessBrowserTest,
   // Owned by the CertStoreService instance.
   FakeArcKeymasterBridge* keymaster_bridge_;
 
-  base::test::ScopedFeatureList feature_list_;
-
   ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
 };
 
 CertStoreServiceTest::CertStoreServiceTest()
-    : test_cert_data_vector_(std::get<0>(GetParam())) {
+    : test_cert_data_vector_(GetParam()) {
   cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
-
-  // TODO(b/260718534): This test is run with the feature
-  // kUseAuthFactors enabled and disabled because of a
-  // transitive dependency of AffiliationTestHelper on that feature. Remove
-  // the parameter when kUseAuthFactors is removed.
-  if (std::get<1>(GetParam())) {
-    feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
-  } else {
-    feature_list_.InitAndDisableFeature(ash::features::kUseAuthFactors);
-  }
 }
 
 void CertStoreServiceTest::SetUpCommandLine(base::CommandLine* command_line) {
@@ -681,46 +668,44 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
 INSTANTIATE_TEST_SUITE_P(
     CertStoreTests,
     CertStoreServiceTest,
-    ::testing::Combine(
-        ::testing::Values(
-            // No corporate usage keys.
-            std::vector<TestCertData>{
-                TestCertData(kFileName1,
-                             false /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kUser),
-                TestCertData(kFileName2,
-                             false /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kUser)},
-            // Corporate usage keys in user slot.
-            std::vector<TestCertData>{
-                TestCertData(kFileName1,
-                             true /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kUser),
-                TestCertData(kFileName2,
-                             true /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kUser)},
-            // Corporate usage keys in system slot.
-            std::vector<TestCertData>{
-                TestCertData(kFileName1,
-                             true /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kSystem),
-                TestCertData(kFileName2,
-                             true /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kSystem)},
-            // Corporate usage keys in both slots.
-            std::vector<TestCertData>{
-                TestCertData(kFileName1,
-                             true /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kUser),
-                TestCertData(kFileName2,
-                             true /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kSystem),
-                TestCertData(kFileName3,
-                             false /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kUser),
-                TestCertData(kFileName4,
-                             true /* is_corporate_usage */,
-                             keymaster::mojom::ChapsSlot::kSystem)}),
-        ::testing::Bool()));
+    ::testing::Values(
+        // No corporate usage keys.
+        std::vector<TestCertData>{
+            TestCertData(kFileName1,
+                         false /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kUser),
+            TestCertData(kFileName2,
+                         false /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kUser)},
+        // Corporate usage keys in user slot.
+        std::vector<TestCertData>{
+            TestCertData(kFileName1,
+                         true /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kUser),
+            TestCertData(kFileName2,
+                         true /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kUser)},
+        // Corporate usage keys in system slot.
+        std::vector<TestCertData>{
+            TestCertData(kFileName1,
+                         true /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kSystem),
+            TestCertData(kFileName2,
+                         true /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kSystem)},
+        // Corporate usage keys in both slots.
+        std::vector<TestCertData>{
+            TestCertData(kFileName1,
+                         true /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kUser),
+            TestCertData(kFileName2,
+                         true /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kSystem),
+            TestCertData(kFileName3,
+                         false /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kUser),
+            TestCertData(kFileName4,
+                         true /* is_corporate_usage */,
+                         keymaster::mojom::ChapsSlot::kSystem)}));
 
 }  // namespace arc

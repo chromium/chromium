@@ -77,15 +77,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using GetAccountDiskUsageCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetAccountDiskUsageReply>;
 
-  // Key-based API for AuthSessions.
-  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
-  using AuthenticateAuthSessionCallback = chromeos::DBusMethodCallback<
-      ::user_data_auth::AuthenticateAuthSessionReply>;
-  using AddCredentialsCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
-  using UpdateCredentialCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::UpdateCredentialReply>;
-
   // AuthSession interaction API.
   using StartAuthSessionCallback =
       chromeos::DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
@@ -244,23 +235,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void StartAuthSession(
       const ::user_data_auth::StartAuthSessionRequest& request,
       StartAuthSessionCallback callback) = 0;
-
-  // Key-based API for AuthSessions.
-  // TODO(b/260718534): Remove next group as part of UserAuthFactors cleanup.
-  // Attempts to authenticate with the given auth session.
-  virtual void AuthenticateAuthSession(
-      const ::user_data_auth::AuthenticateAuthSessionRequest& request,
-      AuthenticateAuthSessionCallback callback) = 0;
-  // Attempts to add credentials to the vault identified/authorized by auth
-  // session.
-  virtual void AddCredentials(
-      const ::user_data_auth::AddCredentialsRequest& request,
-      AddCredentialsCallback callback) = 0;
-  // Attempts to update credentials in the vault identified/authorized by auth
-  // session.
-  virtual void UpdateCredential(
-      const ::user_data_auth::UpdateCredentialRequest& request,
-      UpdateCredentialCallback callback) = 0;
 
   // This request is intended to happen when a user wants
   // to login to ChromeOS as a guest.

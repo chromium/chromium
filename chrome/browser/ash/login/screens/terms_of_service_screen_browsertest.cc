@@ -401,27 +401,17 @@ class ManagedUserTosScreenTestBase : public OobeBaseTest {
                                          &cryptohome_mixin_};
 };
 
-class ManagedUserTosScreenTest : public ManagedUserTosScreenTestBase,
-                                 public ::testing::WithParamInterface<bool> {
+class ManagedUserTosScreenTest : public ManagedUserTosScreenTestBase {
  public:
   ManagedUserTosScreenTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kManagedTermsOfService};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (GetParam()) {
-      enabled_features.push_back(features::kUseAuthFactors);
-    } else {
-      disabled_features.push_back(features::kUseAuthFactors);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatures({features::kManagedTermsOfService}, {});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ManagedUserTosScreenTest, Skipped) {
+IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Skipped) {
   EXPECT_FALSE(TosFileExists());
   StartManagedUserSession();
 
@@ -434,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(ManagedUserTosScreenTest, Skipped) {
   test::WaitForPrimaryUserSessionStart();
 }
 
-IN_PROC_BROWSER_TEST_P(ManagedUserTosScreenTest, Accepted) {
+IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Accepted) {
   SetUpTermsOfServiceUrlPolicy();
   StartManagedUserSession();
 
@@ -457,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(ManagedUserTosScreenTest, Accepted) {
   test::WaitForPrimaryUserSessionStart();
 }
 
-IN_PROC_BROWSER_TEST_P(ManagedUserTosScreenTest, Declined) {
+IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Declined) {
   SetUpTermsOfServiceUrlPolicy();
   StartManagedUserSession();
 
@@ -477,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(ManagedUserTosScreenTest, Declined) {
   EXPECT_TRUE(session_manager_client()->session_stopped());
 }
 
-IN_PROC_BROWSER_TEST_P(ManagedUserTosScreenTest, TosSaved) {
+IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, TosSaved) {
   SetUpTermsOfServiceUrlPolicy();
   EXPECT_FALSE(TosFileExists());
   base::RunLoop run_loop;
@@ -507,20 +497,12 @@ OobeScreenId PendingScreenToId(PendingScreen pending_screen) {
 class ManagedUserTosOnboardingResumeTest
     : public ManagedUserTosScreenTestBase,
       public LocalStateMixin::Delegate,
-      public ::testing::WithParamInterface<std::tuple<PendingScreen, bool>> {
+      public ::testing::WithParamInterface<PendingScreen> {
  public:
-  ManagedUserTosOnboardingResumeTest() {
-    pending_screen_param_ = std::get<0>(GetParam());
-
-    if (std::get<1>(GetParam())) {
-      feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
-    }
-  }
+  ManagedUserTosOnboardingResumeTest() { pending_screen_param_ = GetParam(); }
 
   void SetUpLocalState() override {
-    auto pending_screen_param = std::get<0>(GetParam());
+    auto pending_screen_param = GetParam();
     if (pending_screen_param_ == PendingScreen::kEmpty) {
       return;
     }
@@ -583,14 +565,11 @@ IN_PROC_BROWSER_TEST_P(ManagedUserTosOnboardingResumeTest, ResumeOnboarding) {
 }
 
 // Sets different pending screens to test resumable flow.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ManagedUserTosOnboardingResumeTest,
-    testing::Combine(testing::Values(PendingScreen::kEmpty,
-                                     PendingScreen::kTermsOfService,
-                                     PendingScreen::kSyncConsent),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ManagedUserTosOnboardingResumeTest,
+                         testing::Values(PendingScreen::kEmpty,
+                                         PendingScreen::kTermsOfService,
+                                         PendingScreen::kSyncConsent));
 
-INSTANTIATE_TEST_SUITE_P(All, ManagedUserTosScreenTest, testing::Bool());
 }  // namespace
 }  // namespace ash

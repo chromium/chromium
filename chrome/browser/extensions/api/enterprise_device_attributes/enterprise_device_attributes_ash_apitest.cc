@@ -55,11 +55,10 @@ namespace extensions {
 
 class EnterpriseDeviceAttributesTest
     : public ForceInstalledAffiliatedExtensionApiTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   EnterpriseDeviceAttributesTest()
-      : ForceInstalledAffiliatedExtensionApiTest(std::get<0>(GetParam()),
-                                                 std::get<1>(GetParam())) {
+      : ForceInstalledAffiliatedExtensionApiTest(GetParam()) {
     fake_statistics_provider_.SetMachineStatistic(
         ash::system::kSerialNumberKeyForTest, kSerialNumber);
   }
@@ -98,7 +97,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-be4e8241-2469-4b3f-969e-026494fb4ced");
 
-  const bool is_affiliated = std::get<0>(GetParam());
+  const bool is_affiliated = GetParam();
   EXPECT_EQ(is_affiliated, user_manager::UserManager::Get()
                                ->FindUser(affiliation_mixin_.account_id())
                                ->IsAffiliated());
@@ -123,8 +122,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
 // Both cases of affiliated and non-affiliated users are tested.
 INSTANTIATE_TEST_SUITE_P(AffiliationCheck,
                          EnterpriseDeviceAttributesTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 // Ensure that extensions that are not pre-installed by policy throw an install
 // warning if they request the enterprise.deviceAttributes permission in the

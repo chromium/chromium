@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shelf/shelf.h"
@@ -16,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -92,16 +90,9 @@ class LoginCursorTest : public OobeBaseTest {
 
 using LoginSigninTest = LoginManagerTest;
 
-class LoginOfflineTest : public LoginManagerTest,
-                         public testing::WithParamInterface<bool> {
+class LoginOfflineTest : public LoginManagerTest {
  public:
   LoginOfflineTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
-    }
-
     login_manager_.AppendRegularUsers(1);
     test_account_id_ = login_manager_.users()[0].account_id;
   }
@@ -119,9 +110,6 @@ class LoginOfflineTest : public LoginManagerTest,
   // attempts to load real GAIA.
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class LoginOnlineCryptohomeError : public LoginManagerTest {
@@ -162,11 +150,10 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_P(LoginOfflineTest, FatalScreenShown) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenShown) {
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   FakeUserDataAuthClient::Get()->SetNextOperationError(
-      GetParam() ? FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor
-                 : FakeUserDataAuthClient::Operation::kAuthenticateAuthSession,
+      FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor,
       user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED);
   LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
                                      /*check_if_submittable=*/false);
@@ -174,11 +161,10 @@ IN_PROC_BROWSER_TEST_P(LoginOfflineTest, FatalScreenShown) {
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(LoginOfflineTest, FatalScreenNotShown) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenNotShown) {
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   FakeUserDataAuthClient::Get()->SetNextOperationError(
-      GetParam() ? FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor
-                 : FakeUserDataAuthClient::Operation::kAuthenticateAuthSession,
+      FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor,
       user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
   LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
                                      /*check_if_submittable=*/false);
@@ -321,11 +307,11 @@ IN_PROC_BROWSER_TEST_F(LoginSigninTest, WebUIVisible) {
   LoginOrLockScreenVisibleWaiter().Wait();
 }
 
-IN_PROC_BROWSER_TEST_P(LoginOfflineTest, PRE_AuthOffline) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_AuthOffline) {
   offline_login_test_mixin_.PrepareOfflineLogin();
 }
 
-IN_PROC_BROWSER_TEST_P(LoginOfflineTest, AuthOffline) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, AuthOffline) {
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   offline_login_test_mixin_.GoOffline();
@@ -453,7 +439,5 @@ IN_PROC_BROWSER_TEST_F(LoginManagerTest, SafeBrowsingDisabledForSigninProfile) {
   ASSERT_FALSE(ProfileHelper::GetSigninProfile()->GetPrefs()->GetBoolean(
       prefs::kSafeBrowsingEnabled));
 }
-
-INSTANTIATE_TEST_SUITE_P(All, LoginOfflineTest, testing::Bool());
 
 }  // namespace ash

@@ -189,74 +189,40 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
   // end of this operation, gaia would be returned. This case applies to only
   // "gaia" labels only because they are created at oobe.
   if (key->GetLabel() == kCryptohomeGaiaKeyLabel || key->GetLabel().empty()) {
-    if (features::IsUseAuthFactorsEnabled()) {
-      auto* factor = auth_factors.FindOnlinePasswordFactor();
-      if (factor == nullptr) {
-        LOGIN_LOG(ERROR) << "Could not find Password key";
-        std::move(callback).Run(
-            std::move(context),
-            AuthenticationError{
-                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-        return;
-      }
-      key->SetLabel(factor->ref().label().value());
-    } else {
-      const cryptohome::KeyDefinition* key_def =
-          auth_factors.FindOnlinePasswordKey();
-      if (!key_def) {
-        LOGIN_LOG(ERROR) << "Could not find Password key";
-        std::move(callback).Run(
-            std::move(context),
-            AuthenticationError{
-                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-        return;
-      }
-      key->SetLabel(key_def->label.value());
+    auto* factor = auth_factors.FindOnlinePasswordFactor();
+    if (factor == nullptr) {
+      LOGIN_LOG(ERROR) << "Could not find Password key";
+      std::move(callback).Run(
+          std::move(context),
+          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+      return;
     }
+    key->SetLabel(factor->ref().label().value());
   }
 
-  if (features::IsUseAuthFactorsEnabled()) {
-    LOGIN_LOG(EVENT) << "Authenticating using factor "
-                     << context->GetKey()->GetKeyType();
-    user_data_auth::AuthenticateAuthFactorRequest request;
-    request.set_auth_session_id(context->GetAuthSessionId());
-
-    if (context->IsUsingPin()) {
-      cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPin,
-                                    cryptohome::KeyLabel{key->GetLabel()}};
-      cryptohome::AuthFactorInput input(
-          cryptohome::AuthFactorInput::Pin{key->GetSecret()});
-      cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-      request.set_auth_factor_label(ref.label().value());
-    } else {
-      cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword,
-                                    cryptohome::KeyLabel{key->GetLabel()}};
-      cryptohome::AuthFactorInput input(
-          cryptohome::AuthFactorInput::Password{key->GetSecret()});
-
-      cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-      request.set_auth_factor_label(ref.label().value());
-    }
-    client_->AuthenticateAuthFactor(
-        request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                                weak_factory_.GetWeakPtr(), std::move(context),
-                                std::move(callback)));
-    return;
-  }  // features::IsUseAuthFactorsEnabled()
-  LOGIN_LOG(EVENT) << "Authenticating using key "
+  LOGIN_LOG(EVENT) << "Authenticating using factor "
                    << context->GetKey()->GetKeyType();
-
-  user_data_auth::AuthenticateAuthSessionRequest request;
+  user_data_auth::AuthenticateAuthFactorRequest request;
   request.set_auth_session_id(context->GetAuthSessionId());
 
-  cryptohome::Key* cryptohome_key =
-      request.mutable_authorization()->mutable_key();
-  cryptohome::KeyDefinitionToKey(
-      cryptohome_parameter_utils::CreateKeyDefFromUserContext(*context),
-      cryptohome_key);
+  if (context->IsUsingPin()) {
+    cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPin,
+                                  cryptohome::KeyLabel{key->GetLabel()}};
+    cryptohome::AuthFactorInput input(
+        cryptohome::AuthFactorInput::Pin{key->GetSecret()});
+    cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+    request.set_auth_factor_label(ref.label().value());
+  } else {
+    cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword,
+                                  cryptohome::KeyLabel{key->GetLabel()}};
+    cryptohome::AuthFactorInput input(
+        cryptohome::AuthFactorInput::Password{key->GetSecret()});
 
-  client_->AuthenticateAuthSession(
-      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
+    cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+    request.set_auth_factor_label(ref.label().value());
+  }
+  client_->AuthenticateAuthFactor(
+      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
 }
@@ -277,39 +243,25 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
     NOTREACHED() << "Auth session should exist";
   LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
 
-  if (features::IsUseAuthFactorsEnabled()) {
-    user_data_auth::AuthenticateAuthFactorRequest request;
-    request.set_auth_session_id(context->GetAuthSessionId());
+  user_data_auth::AuthenticateAuthFactorRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
 
-    DCHECK_EQ(context->GetChallengeResponseKeys().size(), 1ull);
+  DCHECK_EQ(context->GetChallengeResponseKeys().size(), 1ull);
 
-    auto label =
-        GenerateChallengeResponseKeyLabel(context->GetChallengeResponseKeys());
-    cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kSmartCard,
-                                  cryptohome::KeyLabel{label}};
-    cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::SmartCard{
-        context->GetChallengeResponseKeys()[0].signature_algorithms(),
-        cryptohome::kCryptohomeKeyDelegateServiceName,
-    });
-    cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-    request.set_auth_factor_label(ref.label().value());
-    client_->AuthenticateAuthFactor(
-        request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                                weak_factory_.GetWeakPtr(), std::move(context),
-                                std::move(callback)));
-  } else {
-    user_data_auth::AuthenticateAuthSessionRequest request;
-    request.set_auth_session_id(context->GetAuthSessionId());
-
-    *request.mutable_authorization() = CreateAuthorizationRequestFromKeyDef(
-        cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
-            *context));
-
-    client_->AuthenticateAuthSession(
-        request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
-                                weak_factory_.GetWeakPtr(), std::move(context),
-                                std::move(callback)));
-  }
+  auto label =
+      GenerateChallengeResponseKeyLabel(context->GetChallengeResponseKeys());
+  cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kSmartCard,
+                                cryptohome::KeyLabel{label}};
+  cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::SmartCard{
+      context->GetChallengeResponseKeys()[0].signature_algorithms(),
+      cryptohome::kCryptohomeKeyDelegateServiceName,
+  });
+  cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+  request.set_auth_factor_label(ref.label().value());
+  client_->AuthenticateAuthFactor(
+      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
 }
 
 void AuthPerformer::AuthenticateWithPassword(
@@ -323,25 +275,14 @@ void AuthPerformer::AuthenticateWithPassword(
     NOTREACHED() << "Auth session should exist";
 
   const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
-  if (features::IsUseAuthFactorsEnabled()) {
-    if (auth_factors.FindPasswordFactor(cryptohome::KeyLabel{key_label}) ==
-        nullptr) {
-      LOGIN_LOG(ERROR) << "User does not have password factor labeled "
-                       << key_label;
-      std::move(callback).Run(
-          std::move(context),
-          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-      return;
-    }
-  } else {
-    if (!auth_factors.HasPasswordKey(key_label)) {
-      LOGIN_LOG(ERROR) << "User does not have password factor labeled "
-                       << key_label;
-      std::move(callback).Run(
-          std::move(context),
-          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-      return;
-    }
+  if (auth_factors.FindPasswordFactor(cryptohome::KeyLabel{key_label}) ==
+      nullptr) {
+    LOGIN_LOG(ERROR) << "User does not have password factor labeled "
+                     << key_label;
+    std::move(callback).Run(
+        std::move(context),
+        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+    return;
   }
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &AuthPerformer::HashPasswordAndAuthenticate, weak_factory_.GetWeakPtr(),
@@ -375,29 +316,16 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
   Key key(pin);
 
   const auto& auth_factors = context->GetAuthFactorsData();
-  if (features::IsUseAuthFactorsEnabled()) {
-    auto* factor = auth_factors.FindPinFactor();
-    if (factor == nullptr) {
-      LOGIN_LOG(ERROR) << "User does not have PIN as factor";
-      std::move(callback).Run(
-          std::move(context),
-          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-      return;
-    }
-    DCHECK_EQ(factor->ref().label().value(), kCryptohomePinLabel);
-    key.SetLabel(factor->ref().label().value());
-  } else {
-    const cryptohome::KeyDefinition* key_def = auth_factors.FindPinKey();
-    if (!key_def) {
-      LOGIN_LOG(ERROR) << "User does not have PIN as factor";
-      std::move(callback).Run(
-          std::move(context),
-          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-      return;
-    }
-    DCHECK_EQ(key_def->label.value(), kCryptohomePinLabel);
-    key.SetLabel(key_def->label.value());
+  auto* factor = auth_factors.FindPinFactor();
+  if (factor == nullptr) {
+    LOGIN_LOG(ERROR) << "User does not have PIN as factor";
+    std::move(callback).Run(
+        std::move(context),
+        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+    return;
   }
+  DCHECK_EQ(factor->ref().label().value(), kCryptohomePinLabel);
+  key.SetLabel(factor->ref().label().value());
 
   key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, pin_salt);
   context->SetKey(std::move(key));
@@ -414,46 +342,22 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
 
   const auto& auth_factors = context->GetAuthFactorsData();
 
-  if (features::IsUseAuthFactorsEnabled()) {
-    user_data_auth::AuthenticateAuthFactorRequest request;
-    request.set_auth_session_id(context->GetAuthSessionId());
-    auto* existing_factor = auth_factors.FindKioskFactor();
-    if (existing_factor == nullptr) {
-      LOGIN_LOG(ERROR) << "Could not find Kiosk key";
-      std::move(callback).Run(
-          std::move(context),
-          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-      return;
-    }
-    cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::Kiosk{});
-    cryptohome::SerializeAuthInput(existing_factor->ref(), input,
-                                   request.mutable_auth_input());
-    request.set_auth_factor_label(existing_factor->ref().label().value());
-    client_->AuthenticateAuthFactor(
-        request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                                weak_factory_.GetWeakPtr(), std::move(context),
-                                std::move(callback)));
-    return;
-  }  // features::IsUseAuthFactorsEnabled()
-  user_data_auth::AuthenticateAuthSessionRequest request;
+  user_data_auth::AuthenticateAuthFactorRequest request;
   request.set_auth_session_id(context->GetAuthSessionId());
-
-  cryptohome::Key* key = request.mutable_authorization()->mutable_key();
-  cryptohome::KeyData* key_data = key->mutable_data();
-  key_data->set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-
-  const cryptohome::KeyDefinition* key_def = auth_factors.FindKioskKey();
-  if (!key_def) {
+  auto* existing_factor = auth_factors.FindKioskFactor();
+  if (existing_factor == nullptr) {
     LOGIN_LOG(ERROR) << "Could not find Kiosk key";
     std::move(callback).Run(
         std::move(context),
         AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
     return;
   }
-  key_data->set_label(key_def->label.value());
-
-  client_->AuthenticateAuthSession(
-      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthSession,
+  cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::Kiosk{});
+  cryptohome::SerializeAuthInput(existing_factor->ref(), input,
+                                 request.mutable_auth_input());
+  request.set_auth_factor_label(existing_factor->ref().label().value());
+  client_->AuthenticateAuthFactor(
+      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
 }
@@ -492,45 +396,19 @@ void AuthPerformer::OnStartAuthSession(
                    << (reply->user_exists() ? "exists" : "does not exist");
 
   context->SetAuthSessionId(reply->auth_session_id());
-  if (features::IsUseAuthFactorsEnabled()) {
-    std::vector<cryptohome::AuthFactor> next_factors;
-    cryptohome::AuthFactorType fallback_type =
-        cryptohome::AuthFactorType::kPassword;
-    if (IsKioskUserType(context->GetUserType()))
-      fallback_type = cryptohome::AuthFactorType::kKiosk;
-    for (const auto& factor_proto : reply->auth_factors()) {
-      next_factors.emplace_back(
-          cryptohome::DeserializeAuthFactor(factor_proto, fallback_type));
-    }
-
-    SessionAuthFactors auth_factors_data(std::move(next_factors));
-    context->SetSessionAuthFactors(std::move(auth_factors_data));
-  } else {
-    // Remember key metadata
-    std::vector<cryptohome::KeyDefinition> key_definitions;
-    for (const auto& [label, key_data] : reply->key_label_data()) {
-      // Backfill key type
-      // TODO(crbug.com/1310312): Find if there is any better way.
-      cryptohome::KeyData data(key_data);
-      if (!data.has_type()) {
-        if (IsKioskUserType(context->GetUserType())) {
-          LOGIN_LOG(DEBUG) << "Backfilling Kiosk key type for key " << label;
-          data.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-        } else {
-          LOGIN_LOG(DEBUG) << "Backfilling Password key type for key " << label;
-          data.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-        }
-      }
-      // "legacy-0" keys exist as label in map, but might not exist as labels
-      // in KeyData.
-      if (!data.has_label() || data.label().empty()) {
-        data.set_label(label);
-      }
-      key_definitions.push_back(KeyDataToKeyDefinition(data));
-    }
-    SessionAuthFactors auth_factors_data(std::move(key_definitions));
-    context->SetSessionAuthFactors(std::move(auth_factors_data));
+  std::vector<cryptohome::AuthFactor> next_factors;
+  cryptohome::AuthFactorType fallback_type =
+      cryptohome::AuthFactorType::kPassword;
+  if (IsKioskUserType(context->GetUserType())) {
+    fallback_type = cryptohome::AuthFactorType::kKiosk;
   }
+  for (const auto& factor_proto : reply->auth_factors()) {
+    next_factors.emplace_back(
+        cryptohome::DeserializeAuthFactor(factor_proto, fallback_type));
+  }
+
+  SessionAuthFactors auth_factors_data(std::move(next_factors));
+  context->SetSessionAuthFactors(std::move(auth_factors_data));
 
   std::move(callback).Run(reply->user_exists(), std::move(context),
                           absl::nullopt);
@@ -582,28 +460,10 @@ void AuthPerformer::OnTerminateAuthFactor(
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
-void AuthPerformer::OnAuthenticateAuthSession(
-    std::unique_ptr<UserContext> context,
-    AuthOperationCallback callback,
-    absl::optional<user_data_auth::AuthenticateAuthSessionReply> reply) {
-  DCHECK(!features::IsUseAuthFactorsEnabled());
-  auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
-    LOGIN_LOG(EVENT) << "Failed to authenticate session, error code " << error;
-    std::move(callback).Run(std::move(context), AuthenticationError{error});
-    return;
-  }
-  CHECK(reply.has_value());
-  DCHECK(reply->authenticated());
-  LOGIN_LOG(EVENT) << "Authenticated successfully";
-  std::move(callback).Run(std::move(context), absl::nullopt);
-}
-
 void AuthPerformer::OnAuthenticateAuthFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
     absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
-  DCHECK(features::IsUseAuthFactorsEnabled());
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(EVENT)
