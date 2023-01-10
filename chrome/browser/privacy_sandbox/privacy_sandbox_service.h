@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/interest_group_manager.h"
@@ -266,6 +267,18 @@ class PrivacySandboxService : public KeyedService {
   virtual bool IsPartOfManagedFirstPartySet(
       const net::SchemefulSite& site) const;
 
+  // Informs the service that a user made a decision during the confirmation
+  // moment, so that the current topics consent information can be updated.
+  // TODO (crbug.com/1378703): Determine if this should just rely on the already
+  // reported prompt actions, and be made protected, or be called separately.
+  void TopicsConfirmationDecisionMade(bool confirmed) const;
+
+  // Inform the service that the user changed the Topics toggle in settings,
+  // so that the current topics consent information can be updated.
+  // TODO (crbug.com/1378703): Determine whether changes to the preference,
+  // such as by policy or extensions, should also call here.
+  void TopicsToggleChanged(bool new_value) const;
+
  protected:
   friend class PrivacySandboxServiceTest;
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
@@ -426,6 +439,11 @@ class PrivacySandboxService : public KeyedService {
   // Checks to see if initialization of the user's FPS pref is required, and if
   // so, sets the default value based on the user's current cookie settings.
   void MaybeInitializeFirstPartySetsPref();
+
+  // Updates the preferences which store the current Topics consent information.
+  void RecordUpdatedTopicsConsent(
+      privacy_sandbox::TopicsConsentUpdateSource source,
+      bool did_consent) const;
 
  private:
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;

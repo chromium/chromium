@@ -110,9 +110,35 @@ extern const char kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized[];
 // user via Chrome UI, and to enterprises via enterprise policy.
 extern const char kPrivacySandboxFirstPartySetsEnabled[];
 
+// Boolean that stores the users Topics consent status, true when the user has
+// an active Topics consent, false otherwise. This is specifically separate
+// from the kPrivacySandboxM1TopicsEnabled preference, which may be overridden
+// by policy or extensions.
+extern const char kPrivacySandboxTopicsConsentGiven[];
+
+// Timestamp that stores the last time the user made a consent decision for
+// Topics, in either settings or as part of a confirmation moment.
+extern const char kPrivacySandboxTopicsConsentLastUpdateTime[];
+
+// Enum that stores the reason that the Topics consent is in the current state,
+// stores one of the values of `TopicsConsentUpdateSource`.
+extern const char kPrivacySandboxTopicsConsentLastUpdateReason[];
+
+// String that stores the complete, localized, text of the consent moment which
+// resulted in the current Topics consent state.
+extern const char kPrivacySandboxTopicsConsentTextAtLastUpdate[];
+
 }  // namespace prefs
 
 namespace privacy_sandbox {
+
+// Represents the different ways in which the Topics consent state could be
+// updated.
+enum class TopicsConsentUpdateSource {
+  kDefaultValue = 0,
+  kConfirmation = 1,
+  kSettings = 2,
+};
 
 // Registers user preferences related to privacy sandbox.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

@@ -687,6 +687,87 @@ void ClearFpsUserPrefs(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
 }
 
+std::vector<int> GetTopicsConsentStringIdentifiers(
+    privacy_sandbox::TopicsConsentUpdateSource source) {
+  switch (source) {
+    case (privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue): {
+      return {};
+    }
+    case (privacy_sandbox::TopicsConsentUpdateSource::kConfirmation): {
+      return {IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_3,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_EXPAND_LABEL,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3,
+              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK};
+    }
+    case (privacy_sandbox::TopicsConsentUpdateSource::kSettings): {
+      NOTIMPLEMENTED();
+      return {};
+    }
+  }
+
+  NOTREACHED();
+  return {};
+}
+
+void ValidateTopicsConsentPrefState(
+    sync_preferences::TestingPrefServiceSyncable* pref_service,
+    bool consent_given,
+    privacy_sandbox::TopicsConsentUpdateSource last_update_source,
+    base::Time last_update_time) {
+  EXPECT_EQ(consent_given,
+            pref_service->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
+  EXPECT_EQ(last_update_source,
+            static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
+                pref_service->GetInteger(
+                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)));
+  EXPECT_EQ(
+      last_update_time,
+      pref_service->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime));
+
+  auto string_ids = GetTopicsConsentStringIdentifiers(last_update_source);
+
+  std::string stored_text = pref_service->GetString(
+      prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
+
+  // The stored text should contain all of the strings specified by `string_ids`
+  // in order, each separated by a single space. We can verify this by finding
+  // each string in `stored_text`, starting from the end of where the previous
+  // string was found.
+  auto stored_text_iterator = stored_text.begin();
+
+  for (auto string_id : string_ids) {
+    auto string = l10n_util::GetStringUTF8(string_id);
+    base::ReplaceSubstringsAfterOffset(&string, 0, "<b>", "");
+    base::ReplaceSubstringsAfterOffset(&string, 0, "</b>", "");
+
+    auto mismatch_pair = base::ranges::mismatch(
+        string.begin(), string.end(), stored_text_iterator, stored_text.end());
+
+    // The first mismatch should be at the end of the string, indicating that
+    // the entire string was matched.
+    EXPECT_EQ(string.end(), mismatch_pair.first);
+
+    // Update text iterator to where the matches for this string stopped.
+    stored_text_iterator = mismatch_pair.second;
+
+    // The iterator should now point to the whitespace character joining the
+    // strings, unless we're at the end of the string.
+    if (stored_text_iterator != stored_text.end()) {
+      EXPECT_EQ(' ', *stored_text_iterator);
+      stored_text_iterator++;
+    }
+  }
+
+  // We should have iterated over all of the stored text successfully.
+  EXPECT_EQ(stored_text.end(), stored_text_iterator);
+}
+
 }  // namespace
 
 class PrivacySandboxServiceTest : public testing::Test {
@@ -779,6 +860,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   first_party_sets::FirstPartySetsPolicyService*
   first_party_sets_policy_service() {
     return &first_party_sets_policy_service_;
+  }
+  content::BrowserTaskEnvironment* browser_task_environment() {
+    return &browser_task_environment_;
   }
 #if !BUILDFLAG(IS_ANDROID)
   MockTrustSafetySentimentService* mock_sentiment_service() {
@@ -2602,6 +2686,26 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       net::SchemefulSite(GURL("https://googlesource.com"))));
   EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
       net::SchemefulSite(GURL("https://google.de"))));
+}
+
+TEST_F(PrivacySandboxServiceTest, TopicsConfirmationDecisionMade) {
+  // Pref state should start with no consent decision having been made.
+  ValidateTopicsConsentPrefState(
+      prefs(), false, privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue,
+      base::Time());
+
+  // Record an affirmative consent decision.
+  privacy_sandbox_service()->TopicsConfirmationDecisionMade(true);
+  ValidateTopicsConsentPrefState(
+      prefs(), true, privacy_sandbox::TopicsConsentUpdateSource::kConfirmation,
+      base::Time::Now());
+
+  // Later, revoke consent.
+  browser_task_environment()->AdvanceClock(base::Hours(1));
+  privacy_sandbox_service()->TopicsConfirmationDecisionMade(false);
+  ValidateTopicsConsentPrefState(
+      prefs(), false, privacy_sandbox::TopicsConsentUpdateSource::kConfirmation,
+      base::Time::Now());
 }
 
 class PrivacySandboxServiceTestNonRegularProfile

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <numeric>
 
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
@@ -87,6 +88,34 @@ bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
 #else
   return true;
 #endif
+}
+
+// Returns the text contents of the Topics Consent dialog.
+std::string GetTopicsConfirmationText() {
+  std::vector<int> string_ids = {
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_3,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_EXPAND_LABEL,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3,
+      IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK};
+
+  return std::accumulate(
+      string_ids.begin(), string_ids.end(), std::string(),
+      [](const std::string& previous_result, int next_id) {
+        auto next_string = l10n_util::GetStringUTF8(next_id);
+        // Remove bold tags present in some strings.
+        base::ReplaceSubstringsAfterOffset(&next_string, 0, "<b>", "");
+        base::ReplaceSubstringsAfterOffset(&next_string, 0, "</b>", "");
+        return previous_result + (!previous_result.empty() ? " " : "") +
+               next_string;
+      }
+
+  );
 }
 
 }  // namespace
@@ -724,6 +753,17 @@ bool PrivacySandboxService::IsPartOfManagedFirstPartySet(
   return first_party_sets_policy_service_->IsSiteInManagedSet(site);
 }
 
+void PrivacySandboxService::TopicsConfirmationDecisionMade(
+    bool confirmed) const {
+  RecordUpdatedTopicsConsent(
+      privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, confirmed);
+}
+
+void PrivacySandboxService::TopicsToggleChanged(bool new_value) const {
+  RecordUpdatedTopicsConsent(
+      privacy_sandbox::TopicsConsentUpdateSource::kSettings, new_value);
+}
+
 /*static*/ PrivacySandboxService::PromptType
 PrivacySandboxService::GetRequiredPromptTypeInternal(
     PrefService* pref_service,
@@ -939,6 +979,38 @@ void PrivacySandboxService::MaybeInitializeFirstPartySetsPref() {
 
   pref_service_->SetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized, true);
+}
+
+void PrivacySandboxService::RecordUpdatedTopicsConsent(
+    privacy_sandbox::TopicsConsentUpdateSource source,
+    bool did_consent) const {
+  std::string consent_text;
+  switch (source) {
+    case (privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue): {
+      NOTREACHED();
+      break;
+    }
+    case (privacy_sandbox::TopicsConsentUpdateSource::kConfirmation): {
+      consent_text = GetTopicsConfirmationText();
+      break;
+    }
+    case (privacy_sandbox::TopicsConsentUpdateSource::kSettings): {
+      // TODO(crbug.com/1378703): Implement consent recording from settings.
+      NOTIMPLEMENTED();
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+
+  pref_service_->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven,
+                            did_consent);
+  pref_service_->SetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime,
+                         base::Time::Now());
+  pref_service_->SetInteger(prefs::kPrivacySandboxTopicsConsentLastUpdateReason,
+                            static_cast<int>(source));
+  pref_service_->SetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate,
+                           consent_text);
 }
 
 void PrivacySandboxService::InformSentimentService(
