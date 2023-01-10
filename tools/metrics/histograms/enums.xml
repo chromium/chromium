@@ -3737,15 +3737,6 @@ Unknown properties are collapsed to zero. -->
   <int value="50" label="Personalization"/>
 </enum>
 
-<enum name="AppListSearchResultDisplayType">
-  <int value="0" label="NONE"/>
-  <int value="1" label="LIST"/>
-  <int value="2" label="TILE"/>
-  <int value="3" label="RECOMMENDATION (Deprecated)"/>
-  <int value="4" label="CARD"/>
-  <int value="5" label="CHIP"/>
-</enum>
-
 <enum name="AppListShowSource">
   <int value="0" label="Search Key"/>
   <int value="1" label="Shelf Button"/>

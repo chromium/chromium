@@ -1681,16 +1681,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListSearchResultOpenDisplayType"
-    enum="AppListSearchResultDisplayType" expires_after="2021-12-19">
-  <owner>calamity@chromium.org</owner>
-  <owner>src/ash/app_list/OWNERS</owner>
-  <summary>
-    The display type of the app list search result that was opened by the user.
-    This is gathered per click of a search result.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListSearchResultOpenTypeV2" enum="AppListSearchResult"
     expires_after="2023-06-04">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->

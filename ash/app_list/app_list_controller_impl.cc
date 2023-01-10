@@ -1195,10 +1195,6 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
       break;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchResultOpenDisplayType",
-                            result->display_type(),
-                            SearchResultDisplayType::kLast);
-
   // Suggestion chips are not represented to the user as search results, so do
   // not record search result metrics for them.
   if (launched_from != AppListLaunchedFrom::kLaunchedFromSuggestionChip) {
