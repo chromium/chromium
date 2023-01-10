@@ -5529,8 +5529,17 @@ class DrawPropertiesAnchorScrollTest : public DrawPropertiesTest {
         GetPropertyTrees(anchored)
             ->transform_tree_mutable()
             .EnsureAnchorScrollContainersData(anchored->transform_tree_index());
-    data.inner_most_scroll_container_id = inner_most_scroll_container_id;
-    data.outer_most_scroll_container_id = outer_most_scroll_container_id;
+    for (int scroller_id = inner_most_scroll_container_id;
+         scroller_id != kInvalidPropertyNodeId;) {
+      const ScrollNode* scroll_node =
+          GetPropertyTrees(anchored)->scroll_tree().Node(scroller_id);
+      data.scroll_container_ids.push_back(scroll_node->element_id);
+
+      if (scroller_id == outer_most_scroll_container_id) {
+        break;
+      }
+      scroller_id = scroll_node->parent_id;
+    }
   }
 
   scoped_refptr<Layer> root_;

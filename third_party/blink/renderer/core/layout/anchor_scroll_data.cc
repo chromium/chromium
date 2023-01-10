@@ -106,7 +106,7 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
     bool update) {
   DCHECK(IsActive());
 
-  HeapVector<Member<const PaintLayer>> new_scroll_container_layers;
+  Vector<CompositorElementId> new_scroll_container_ids;
   gfx::Vector2dF new_accumulated_scroll_offset;
   gfx::Vector2d new_accumulated_scroll_origin;
 
@@ -122,18 +122,17 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
       // |bounding_layer| must be either null (for fixed-positioned |owner_|) or
       // an ancestor of |starting_layer|, so we'll never have a null layer here.
       DCHECK(layer);
-      if (!layer->GetScrollableArea()->HasOverflow())
-        continue;
-      new_scroll_container_layers.push_back(layer);
-      new_accumulated_scroll_offset +=
-          layer->GetScrollableArea()->GetScrollOffset();
+      const PaintLayerScrollableArea* scrollable_area =
+          layer->GetScrollableArea();
+      new_scroll_container_ids.push_back(scrollable_area->GetScrollElementId());
+      new_accumulated_scroll_offset += scrollable_area->GetScrollOffset();
       new_accumulated_scroll_origin +=
-          layer->GetScrollableArea()->ScrollOrigin().OffsetFromOrigin();
+          scrollable_area->ScrollOrigin().OffsetFromOrigin();
     }
   }
 
   SnapshotDiff diff;
-  if (scroll_container_layers_ != new_scroll_container_layers) {
+  if (scroll_container_ids_ != new_scroll_container_ids) {
     diff = SnapshotDiff::kScrollersOrFallbackPosition;
   } else if (accumulated_scroll_offset_ != new_accumulated_scroll_offset ||
              accumulated_scroll_origin_ != new_accumulated_scroll_origin) {
@@ -145,7 +144,7 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
   }
 
   if (update && diff != SnapshotDiff::kNone) {
-    scroll_container_layers_.swap(new_scroll_container_layers);
+    scroll_container_ids_.swap(new_scroll_container_ids);
     accumulated_scroll_offset_ = new_accumulated_scroll_offset;
     accumulated_scroll_origin_ = new_accumulated_scroll_origin;
   }
@@ -231,7 +230,6 @@ void AnchorScrollData::InvalidatePaint() {
 
 void AnchorScrollData::Trace(Visitor* visitor) const {
   visitor->Trace(owner_);
-  visitor->Trace(scroll_container_layers_);
   ScrollSnapshotClient::Trace(visitor);
   ElementRareDataField::Trace(visitor);
 }

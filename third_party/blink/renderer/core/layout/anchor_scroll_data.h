@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -16,7 +17,6 @@
 namespace blink {
 
 class Element;
-class PaintLayer;
 
 // Created for each anchor-positioned element that uses anchor-scroll.
 // Stores a snapshot of all the scroll containers of the anchor up to the
@@ -48,15 +48,15 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
 
   Element* OwnerElement() const { return owner_; }
 
-  bool HasTranslation() const { return scroll_container_layers_.size(); }
+  bool HasTranslation() const { return scroll_container_ids_.size(); }
   gfx::Vector2dF AccumulatedScrollOffset() const {
     return accumulated_scroll_offset_;
   }
   gfx::Vector2d AccumulatedScrollOrigin() const {
     return accumulated_scroll_origin_;
   }
-  const HeapVector<Member<const PaintLayer>>& ScrollContainerLayers() const {
-    return scroll_container_layers_;
+  const Vector<CompositorElementId>& ScrollContainerIds() const {
+    return scroll_container_ids_;
   }
 
   // Utility function that returns accumulated_scroll_offset_ rounded as a
@@ -95,9 +95,9 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   // The anchor-positioned element.
   Member<Element> owner_;
 
-  // Paint layers of the ancestor scroll containers of the anchor element, up to
-  // the containing block of |owner_| (exclusively).
-  HeapVector<Member<const PaintLayer>> scroll_container_layers_;
+  // Compositor element ids of the ancestor scroll containers of the anchor
+  // element, up to the containing block of |owner_| (exclusively).
+  Vector<CompositorElementId> scroll_container_ids_;
 
   // Sum of the scroll offsets of the above scroll containers. This is the
   // offset that the element should be translated in position-fallback choosing

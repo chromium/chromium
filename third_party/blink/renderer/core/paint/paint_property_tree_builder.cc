@@ -802,29 +802,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
-      scoped_refptr<const TransformPaintPropertyNode>
-          inner_most_scroll_container =
-              anchor_scroll_data.ScrollContainerLayers()
-                  .front()
-                  ->GetLayoutObject()
-                  .FirstFragment()
-                  .PaintProperties()
-                  ->ScrollTranslation();
-      DCHECK(inner_most_scroll_container);
-      scoped_refptr<const TransformPaintPropertyNode>
-          outer_most_scroll_container =
-              anchor_scroll_data.ScrollContainerLayers()
-                  .back()
-                  ->GetLayoutObject()
-                  .FirstFragment()
-                  .PaintProperties()
-                  ->ScrollTranslation();
-      DCHECK(outer_most_scroll_container);
-      state.anchor_scroll_containers_data = std::make_unique<
-          TransformPaintPropertyNode::AnchorScrollContainersData>(
-          std::move(inner_most_scroll_container),
-          std::move(outer_most_scroll_container),
-          anchor_scroll_data.AccumulatedScrollOrigin());
+      state.anchor_scroll_containers_data =
+          std::make_unique<cc::AnchorScrollContainersData>();
+      state.anchor_scroll_containers_data->scroll_container_ids =
+          std::vector<CompositorElementId>(
+              anchor_scroll_data.ScrollContainerIds().begin(),
+              anchor_scroll_data.ScrollContainerIds().end());
+      state.anchor_scroll_containers_data->accumulated_scroll_origin =
+          anchor_scroll_data.AccumulatedScrollOrigin();
 
       OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
           *context_.current.transform, std::move(state)));

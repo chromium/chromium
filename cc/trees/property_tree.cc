@@ -38,6 +38,22 @@ void AnimationUpdateOnMissingPropertyNodeUMALog(bool missing_property_node) {
       missing_property_node);
 }
 
+AnchorScrollContainersData::AnchorScrollContainersData() = default;
+AnchorScrollContainersData::~AnchorScrollContainersData() = default;
+AnchorScrollContainersData::AnchorScrollContainersData(
+    const AnchorScrollContainersData&) = default;
+
+bool AnchorScrollContainersData::operator==(
+    const AnchorScrollContainersData& other) const {
+  return accumulated_scroll_origin == other.accumulated_scroll_origin &&
+         scroll_container_ids == other.scroll_container_ids;
+}
+
+bool AnchorScrollContainersData::operator!=(
+    const AnchorScrollContainersData& other) const {
+  return !operator==(other);
+}
+
 template <typename T>
 PropertyTree<T>::PropertyTree(PropertyTrees* property_trees)
     : needs_update_(false), property_trees_(property_trees) {
@@ -490,17 +506,15 @@ gfx::Vector2dF TransformTree::AnchorScrollOffset(TransformNode* node) {
   if (!data)
     return gfx::Vector2dF();
   gfx::Vector2dF accumulated_scroll_offset(0, 0);
-  for (int scroller_id = data->inner_most_scroll_container_id;
-       scroller_id != kInvalidPropertyNodeId;) {
+  for (ElementId scroller_id : data->scroll_container_ids) {
     const ScrollNode* scroll_node =
-        property_trees()->scroll_tree().Node(scroller_id);
+        property_trees()->scroll_tree().FindNodeFromElementId(scroller_id);
+    if (!scroll_node) {
+      continue;
+    }
     const TransformNode* transform_node = Node(scroll_node->transform_id);
     accumulated_scroll_offset +=
         transform_node->scroll_offset.OffsetFromOrigin();
-
-    if (scroller_id == data->outer_most_scroll_container_id)
-      break;
-    scroller_id = scroll_node->parent_id;
   }
   return data->accumulated_scroll_origin - accumulated_scroll_offset;
 }
