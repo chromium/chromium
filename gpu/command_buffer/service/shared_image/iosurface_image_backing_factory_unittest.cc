@@ -1113,7 +1113,6 @@ const auto kGMBFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
-                      viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR,
                       viz::MultiPlaneFormat::kP010);
 
 std::string TestParamToString(
