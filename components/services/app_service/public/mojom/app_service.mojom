@@ -34,11 +34,6 @@ interface Publisher {
 // Subscriber works as a proxy, to receive a stream of apps from publishers,
 // and save to AppRegistryCache.
 interface Subscriber {
-  // Receives a stream of apps from publishers, and save to AppRegistryCache.
-  // If |should_notify_initialized| is true, notifies observers that |app_type|
-  // has finished initiating apps.
-  OnApps(array<App> deltas, AppType app_type, bool should_notify_initialized);
-
   // Binds this to the given receiver (message pipe endpoint), being to Mojo
   // interfaces what POSIX's dup is to file descriptors.
   //

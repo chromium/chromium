@@ -377,9 +377,6 @@ class AppServiceProxyBase : public KeyedService,
       const apps::AppUpdate& update) = 0;
 
   // apps::mojom::Subscriber overrides.
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
-              apps::mojom::AppType app_type,
-              bool should_notify_initialized) override;
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
 
   IntentFilterPtr FindBestMatchingFilter(const IntentPtr& intent);

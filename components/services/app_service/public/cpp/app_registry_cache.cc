@@ -56,29 +56,6 @@ void AppRegistryCache::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AppRegistryCache::OnApps(std::vector<apps::mojom::AppPtr> deltas,
-                              apps::mojom::AppType app_type,
-                              bool should_notify_initialized) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-
-  if (should_notify_initialized) {
-    DCHECK_NE(apps::mojom::AppType::kUnknown, app_type);
-  }
-
-  if (!mojom_deltas_in_progress_.empty()) {
-    std::move(deltas.begin(), deltas.end(),
-              std::back_inserter(mojom_deltas_pending_));
-    return;
-  }
-
-  DoOnApps(std::move(deltas));
-  while (!mojom_deltas_pending_.empty()) {
-    std::vector<apps::mojom::AppPtr> pending;
-    pending.swap(mojom_deltas_pending_);
-    DoOnApps(std::move(pending));
-  }
-}
-
 void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
                               apps::AppType app_type,
                               bool should_notify_initialized) {
@@ -105,58 +82,6 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
   }
 
   OnAppTypeInitialized();
-}
-
-void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
-  // Merge any deltas elements that have the same app_id. If an observer's
-  // OnAppUpdate calls back into this AppRegistryCache then we can therefore
-  // present a single delta for any given app_id.
-  bool is_pending = false;
-  for (auto& delta : deltas) {
-    if (is_pending) {
-      mojom_deltas_pending_.push_back(std::move(delta));
-      continue;
-    }
-    // As soon as we see a removed update, we need to defer future merges to
-    // avoid cases where a removed update is merged with a future non-removed
-    // update.
-    if (delta->readiness == mojom::Readiness::kRemoved) {
-      is_pending = true;
-    }
-
-    auto d_iter = mojom_deltas_in_progress_.find(delta->app_id);
-    if (d_iter != mojom_deltas_in_progress_.end()) {
-      if (delta->readiness == mojom::Readiness::kRemoved) {
-        // Ensure that removed deltas are *not* merged, so that the last update
-        // before the merge is sent separately.
-        mojom_deltas_pending_.push_back(std::move(delta));
-      } else {
-        AppUpdate::Merge(d_iter->second, delta.get());
-      }
-    } else {
-      mojom_deltas_in_progress_[delta->app_id] = delta.get();
-    }
-  }
-
-  // Update the states for every de-duplicated delta.
-  for (const auto& d_iter : mojom_deltas_in_progress_) {
-    auto s_iter = mojom_states_.find(d_iter.first);
-    apps::mojom::App* state =
-        (s_iter != mojom_states_.end()) ? s_iter->second.get() : nullptr;
-    apps::mojom::App* delta = d_iter.second;
-
-    if (delta->readiness != mojom::Readiness::kRemoved) {
-      if (state) {
-        AppUpdate::Merge(state, delta);
-      } else {
-        mojom_states_.insert(std::make_pair(delta->app_id, delta->Clone()));
-      }
-    } else {
-      DCHECK(!state || state->readiness != mojom::Readiness::kReady);
-      mojom_states_.erase(d_iter.first);
-    }
-  }
-  mojom_deltas_in_progress_.clear();
 }
 
 void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
@@ -288,10 +213,7 @@ bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
 }
 
 void AppRegistryCache::ReinitializeForTesting() {
-  mojom_states_.clear();
   states_.clear();
-  mojom_deltas_in_progress_.clear();
-  mojom_deltas_pending_.clear();
   deltas_in_progress_.clear();
   deltas_pending_.clear();
   in_progress_initialized_app_types_.clear();

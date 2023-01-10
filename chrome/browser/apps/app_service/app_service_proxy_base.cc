@@ -683,26 +683,6 @@ void AppServiceProxyBase::OnApps(std::vector<AppPtr> deltas,
                              should_notify_initialized);
 }
 
-void AppServiceProxyBase::OnApps(std::vector<apps::mojom::AppPtr> deltas,
-                                 apps::mojom::AppType app_type,
-                                 bool should_notify_initialized) {
-  if (base::FeatureList::IsEnabled(kStopMojomAppService)) {
-    return;
-  }
-
-  if (app_service_.is_connected()) {
-    for (const auto& delta : deltas) {
-      if (delta->readiness != apps::mojom::Readiness::kUnknown &&
-          !apps_util::IsInstalled(delta->readiness)) {
-        preferred_apps_impl_->RemovePreferredApp(delta->app_id);
-      }
-    }
-  }
-
-  app_registry_cache_.OnApps(std::move(deltas), app_type,
-                             should_notify_initialized);
-}
-
 void AppServiceProxyBase::OnCapabilityAccesses(
     std::vector<CapabilityAccessPtr> deltas) {
   app_capability_access_cache_.OnCapabilityAccesses(std::move(deltas));

@@ -224,13 +224,6 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                               should_notify_initialized);
 }
 
-void AppServiceProxyAsh::OnApps(std::vector<apps::mojom::AppPtr> deltas,
-                                apps::mojom::AppType app_type,
-                                bool should_notify_initialized) {
-  AppServiceProxyBase::OnApps(std::move(deltas), app_type,
-                              should_notify_initialized);
-}
-
 void AppServiceProxyAsh::PauseApps(
     const std::map<std::string, PauseData>& pause_data) {
   for (auto& data : pause_data) {
