@@ -28,6 +28,8 @@ async function registerCredential(options = {}) {
         id: credential.id,
         rawId: Array.from(new Uint8Array(credential.rawId)),
         transports: credential.response.getTransports(),
+        authenticatorData: btoa(String.fromCharCode.apply(
+            null, new Uint8Array(credential.response.getAuthenticatorData()))),
       },
       extensions: credential.getClientExtensionResults(),
     };

@@ -208,6 +208,7 @@ base::Value::Dict CreateCapabilities(Session* session,
   // See https://w3c.github.io/webauthn/#sctn-automation-webdriver-capability
   caps.Set("webauthn:virtualAuthenticators", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:largeBlob", !capabilities.IsAndroid());
+  caps.Set("webauthn:extension:minPinLength", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
 
   // Chrome-specific extensions.

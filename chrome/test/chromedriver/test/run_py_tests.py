@@ -12,6 +12,7 @@
 # is updated in Devil.
 
 import base64
+import codecs
 import imghdr
 import json
 import math
@@ -3272,6 +3273,12 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(
         is_desktop,
         self._driver.capabilities['webauthn:extension:largeBlob'])
+    self.assertEqual(
+        is_desktop,
+        self._driver.capabilities['webauthn:extension:minPinLength'])
+    self.assertEqual(
+        is_desktop,
+        self._driver.capabilities['webauthn:extension:credBlob'])
 
   def testCanClickInIframesInShadow(self):
     """Test that you can interact with a iframe within a shadow element.
@@ -3364,34 +3371,60 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
             'enable-experimental-web-platform-features'])
 
   def testAddVirtualAuthenticator(self):
-    script = """
-      let done = arguments[0];
-      registerCredential({
-        authenticatorSelection: {
-          requireResidentKey: true,
-        },
-        extensions: {
-          largeBlob: {
-            support: 'preferred',
+    def addAuthenticatorAndRegister(javascriptFragment, addArgs):
+      script = """
+        let done = arguments[0];
+        registerCredential({
+          authenticatorSelection: {
+            requireResidentKey: true,
           },
-        },
-      }).then(done);
-    """
-    self._driver.Load(self.GetHttpsUrlForFile(
-        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
-    self._driver.AddVirtualAuthenticator(
-        protocol = 'ctap2_1',
-        transport = 'usb',
-        hasResidentKey = True,
-        hasUserVerification = True,
-        isUserConsenting = True,
-        isUserVerified = True,
-        extensions = ['largeBlob']
-    )
-    result = self._driver.ExecuteAsyncScript(script)
-    self.assertEqual('OK', result['status'])
-    self.assertEqual(['usb'], result['credential']['transports'])
-    self.assertEqual(True, result['extensions']['largeBlob']['supported'])
+          extensions: {""" + javascriptFragment + """
+          },
+        }).then(done);
+      """
+      self._driver.Load(self.GetHttpsUrlForFile(
+          '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+      authenticatorId = self._driver.AddVirtualAuthenticator(
+          protocol = 'ctap2_1',
+          transport = 'usb',
+          hasResidentKey = True,
+          hasUserVerification = True,
+          isUserConsenting = True,
+          isUserVerified = True,
+          **addArgs)
+      result = self._driver.ExecuteAsyncScript(script)
+      self._driver.RemoveVirtualAuthenticator(authenticatorId)
+      return result
+
+    with self.subTest(extension = 'largeBlob'):
+      result = addAuthenticatorAndRegister(
+          "largeBlob: { support: 'preferred' }",
+          {'extensions': ['largeBlob']},
+          )
+      self.assertEqual('OK', result['status'])
+      self.assertEqual(['usb'], result['credential']['transports'])
+      self.assertEqual(True, result['extensions']['largeBlob']['supported'])
+
+    with self.subTest(extension = 'minPinLength'):
+      result = addAuthenticatorAndRegister(
+          "minPinLength: true",
+          {'extensions': ['minPinLength']},
+          )
+      self.assertEqual('OK', result['status'])
+      authData = codecs.decode(
+          bytes(result['credential']['authenticatorData'], 'ascii'), 'base64')
+      self.assertTrue(b'minPinLength' in authData)
+
+    with self.subTest(extension = 'credBlob'):
+      result = addAuthenticatorAndRegister(
+          "credBlob: new Uint8Array([1,2,3,4])",
+          {'extensions': ['credBlob']},
+          )
+      self.assertEqual('OK', result['status'])
+      authData = codecs.decode(
+          bytes(result['credential']['authenticatorData'], 'ascii'), 'base64')
+      # 0xf5 is 'true' in CBOR.
+      self.assertTrue(b'credBlob\xf5' in authData)
 
   def testAddVirtualAuthenticatorProtocolVersion(self):
     self._driver.Load(self.GetHttpsUrlForFile(
