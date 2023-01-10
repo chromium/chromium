@@ -49,13 +49,6 @@
 using views::LabelButtonBorder;
 
 ////////////////////////////////////////////////////////////////////////////////
-// ToolbarActionView::Delegate
-
-bool ToolbarActionView::Delegate::CanShowIconInToolbar() const {
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // ToolbarActionView
 
 ToolbarActionView::ToolbarActionView(
@@ -277,10 +270,6 @@ views::Button* ToolbarActionView::GetReferenceButtonForPopup() {
 void ToolbarActionView::ShowContextMenuAsFallback() {
   context_menu_controller()->ShowContextMenuForView(
       this, GetKeyboardContextMenuLocation(), ui::MENU_SOURCE_NONE);
-}
-
-bool ToolbarActionView::CanShowIconInToolbar() const {
-  return delegate_->CanShowIconInToolbar();
 }
 
 void ToolbarActionView::OnPopupShown(bool by_user) {

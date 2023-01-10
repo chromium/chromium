@@ -35,9 +35,6 @@ class ToolbarActionView : public views::MenuButton,
     // Returns the current web contents.
     virtual content::WebContents* GetCurrentWebContents() = 0;
 
-    // Whether the container supports showing extensions outside of the menu.
-    virtual bool CanShowIconInToolbar() const;
-
     // Returns the view of the toolbar actions overflow menu to use as a
     // reference point for a popup when this view isn't visible.
     virtual views::LabelButton* GetOverflowReferenceView() const = 0;
@@ -97,7 +94,6 @@ class ToolbarActionView : public views::MenuButton,
   views::FocusManager* GetFocusManagerForAccelerator() override;
   views::Button* GetReferenceButtonForPopup() override;
   void ShowContextMenuAsFallback() override;
-  bool CanShowIconInToolbar() const override;
   void OnPopupShown(bool by_user) override;
   void OnPopupClosed() override;
 

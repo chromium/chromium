@@ -322,7 +322,7 @@ ui::MenuModel* ExtensionActionViewController::GetContextMenu(
   // Reconstruct the menu every time because the menu's contents are dynamic.
   context_menu_model_ = std::make_unique<extensions::ExtensionContextMenuModel>(
       extension(), browser_, visibility, this,
-      view_delegate_->CanShowIconInToolbar(), context_menu_source);
+      extensions_container_->CanShowActionsInToolbar(), context_menu_source);
   return context_menu_model_.get();
 }
 

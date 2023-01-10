@@ -133,7 +133,7 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   } else {
     menu = ExtensionsMenuView::ShowBubble(
         this, browser_, extensions_container_,
-        extensions_container_->CanShowIconInToolbar());
+        extensions_container_->CanShowActionsInToolbar());
   }
   menu->AddObserver(this);
 }

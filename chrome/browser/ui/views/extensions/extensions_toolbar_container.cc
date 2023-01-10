@@ -317,10 +317,11 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
   }
 
   if (must_show ||
-      (CanShowIconInToolbar() && model_->IsActionPinned(extension_id)))
+      (CanShowActionsInToolbar() && model_->IsActionPinned(extension_id))) {
     GetAnimatingLayoutManager()->FadeIn(action_view);
-  else
+  } else {
     GetAnimatingLayoutManager()->FadeOut(action_view);
+  }
 }
 
 void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
@@ -387,6 +388,11 @@ void ExtensionsToolbarContainer::OnContextMenuClosed(
     extension_with_open_context_menu_id_.reset();
     UpdateIconVisibility(extension_with_open_context_menu.value());
   }
+}
+
+bool ExtensionsToolbarContainer::CanShowActionsInToolbar() const {
+  // Pinning extensions is not available in PWAs.
+  return !browser_->app_controller();
 }
 
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
@@ -624,18 +630,14 @@ void ExtensionsToolbarContainer::CreateActionForId(
       ExtensionActionViewController::Create(action_id, browser_, this));
   auto icon = std::make_unique<ToolbarActionView>(actions_.back().get(), this);
   // Set visibility before adding to prevent extraneous animation.
-  icon->SetVisible(CanShowIconInToolbar() && model_->IsActionPinned(action_id));
+  icon->SetVisible(CanShowActionsInToolbar() &&
+                   model_->IsActionPinned(action_id));
   ObserveButton(icon.get());
   icons_.insert({action_id, AddChildView(std::move(icon))});
 }
 
 content::WebContents* ExtensionsToolbarContainer::GetCurrentWebContents() {
   return browser_->tab_strip_model()->GetActiveWebContents();
-}
-
-bool ExtensionsToolbarContainer::CanShowIconInToolbar() const {
-  // Pinning extensions is not available in PWAs.
-  return !browser_->app_controller();
 }
 
 views::LabelButton* ExtensionsToolbarContainer::GetOverflowReferenceView()
@@ -686,8 +688,9 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
   // We don't allow dragging if the container isn't in the toolbar, or if
   // the profile is incognito (to avoid changing state from an incognito
   // window).
-  if (!CanShowIconInToolbar() || browser_->profile()->IsOffTheRecord())
+  if (!CanShowActionsInToolbar() || browser_->profile()->IsOffTheRecord()) {
     return false;
+  }
 
   // Only pinned extensions should be draggable.
   auto it = base::ranges::find(

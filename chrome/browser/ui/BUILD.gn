@@ -1407,7 +1407,6 @@ static_library("ui") {
       "toolbar/recent_tabs_sub_menu_model.h",
       "toolbar/toolbar_action_hover_card_types.h",
       "toolbar/toolbar_action_view_controller.h",
-      "toolbar/toolbar_action_view_delegate.cc",
       "toolbar/toolbar_action_view_delegate.h",
       "toolbar/toolbar_actions_bar_bubble_delegate.h",
       "toolbar/toolbar_actions_model.cc",

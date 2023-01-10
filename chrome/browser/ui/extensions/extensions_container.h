@@ -36,6 +36,9 @@ class ExtensionsContainer {
   // necessary cleanup.
   virtual void OnContextMenuClosed(ToolbarActionViewController* extension) {}
 
+  // Whether the container supports showing extensions on the toolbar.
+  virtual bool CanShowActionsInToolbar() const = 0;
+
   // Returns true if the given |action| is visible on the toolbar.
   virtual bool IsActionVisibleOnToolbar(
       const ToolbarActionViewController* action) const = 0;
