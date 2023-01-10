@@ -125,37 +125,6 @@ bool ExtensionMatched(const std::string& file_name,
 // }
 base::Value ConvertIntentToValue(const apps::IntentPtr& intent);
 
-// Gets the string value from base::Value::Dict, e.g. { "key": "value" }
-// returns "value".
-absl::optional<std::string> GetStringValueFromDict(
-    const base::Value::Dict& dict,
-    const std::string& key_name);
-
-// Gets absl::optional<bool> value from base::DictionaryValue, e.g. {
-// "key": "value" } returns "value".
-absl::optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
-                                          const std::string& key_name);
-
-// Gets GURL from base::DictionaryValue, e.g. { "url": "abc.com" } returns
-// "abc.com".
-absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
-                                          const std::string& key_name);
-
-// Gets std::vector<IntentFilePtr> from base::DictionaryValue, e.g. {
-// "file_urls": "/abc, /a" } returns
-// std::vector<apps::IntentFilePtr>{"/abc", "/a"}.
-std::vector<apps::IntentFilePtr> GetFilesFromDict(
-    const base::DictionaryValue& dict,
-    const std::string& key_name);
-
-std::vector<std::string> GetCategoriesFromDict(
-    const base::DictionaryValue& dict,
-    const std::string& key_name);
-
-base::flat_map<std::string, std::string> GetExtrasFromDict(
-    const base::DictionaryValue& dict,
-    const std::string& key_name);
-
 // Converts base::Value to Intent. Returns nullptr for invalid base::Values.
 apps::IntentPtr ConvertValueToIntent(base::Value&& value);
 apps::IntentPtr ConvertDictToIntent(const base::Value::Dict& dict);
