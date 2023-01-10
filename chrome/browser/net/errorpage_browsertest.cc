@@ -697,7 +697,7 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
     web_contents->GetController().LoadURL(url, content::Referrer(),
                                           ui::PAGE_TRANSITION_TYPED,
                                           /*extra_headers=*/std::string());
-    first_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(first_navigation.WaitForNavigationFinished());
     EXPECT_TRUE(first_navigation.was_committed());
     EXPECT_FALSE(first_navigation.was_successful());
 
@@ -705,7 +705,7 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
     // This should not be committed.
     content::TestNavigationManager failed_auto_reload_navigation(web_contents,
                                                                  url);
-    failed_auto_reload_navigation.WaitForNavigationFinished();
+    ASSERT_TRUE(failed_auto_reload_navigation.WaitForNavigationFinished());
     EXPECT_FALSE(failed_auto_reload_navigation.was_committed());
   }
 
