@@ -101,7 +101,7 @@ QRCodeGeneratorBubble::QRCodeGeneratorBubble(
 QRCodeGeneratorBubble::~QRCodeGeneratorBubble() = default;
 
 void QRCodeGeneratorBubble::Show() {
-  textfield_url_->SetText(base::ASCIIToUTF16(url_.possibly_invalid_spec()));
+  textfield_url_->SetText(base::UTF8ToUTF16(url_.possibly_invalid_spec()));
   textfield_url_->SelectAll(false);
   UpdateQRContent();
   ShowForReason(USER_GESTURE);
@@ -134,7 +134,7 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
   }
 
   mojom::GenerateQRCodeRequestPtr request = mojom::GenerateQRCodeRequest::New();
-  request->data = base::UTF16ToASCII(textfield_url_->GetText());
+  request->data = base::UTF16ToUTF8(textfield_url_->GetText());
   request->should_render = true;
   request->center_image = mojom::CenterImage::CHROME_DINO;
   request->render_module_style = mojom::ModuleStyle::CIRCLES;
@@ -253,8 +253,7 @@ void QRCodeGeneratorBubble::Init() {
   auto textfield_url = std::make_unique<views::Textfield>();
   textfield_url->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_BROWSER_SHARING_QR_CODE_DIALOG_URL_TEXTFIELD_ACCESSIBLE_NAME));
-  textfield_url->SetText(
-      base::ASCIIToUTF16(url_.spec()));  // TODO(skare): check
+  textfield_url->SetText(base::UTF8ToUTF16(url_.spec()));
   textfield_url->set_controller(this);
   textfield_url->SetProperty(
       views::kMarginsKey,
@@ -373,7 +372,7 @@ const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
   if (!url.has_host() || url.HostIsIPAddress())
     return u"qrcode_chrome.png";
 
-  return base::ASCIIToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
+  return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
 }
 
 // Given a square |image| and a size in QR code tiles (*not* in pixels or
