@@ -424,28 +424,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
-    enum="Boolean" expires_after="M122">
-  <owner>hidehiko@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <summary>
-    Making sure nobody in the production calls the
-    ProfileManager::GetPrimaryUserProfile() in unexpected timing. This entry
-    will not have &quot;false&quot; status.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BrowserContext.UnexpectedGetUserByProfile" enum="Boolean"
-    expires_after="M122">
-  <owner>hidehiko@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <summary>
-    Making sure nobody in the production calls ProfileHelper::GetUserByProfile()
-    for the Profile instance, which does not have corresponding User. This entry
-    will not have &quot;false&quot; status.
-  </summary>
-</histogram>
-
 <histogram name="Ash.BrowserDataMigrator.AshDataSizeMB" units="MB"
     expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
