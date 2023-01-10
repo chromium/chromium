@@ -25,8 +25,6 @@ HEADLESS_EXPORT extern const char kProxyServer[];
 HEADLESS_EXPORT extern const char kNoSystemProxyConfigService[];
 HEADLESS_EXPORT extern const char kRemoteDebuggingAddress[];
 HEADLESS_EXPORT extern const char kRepl[];
-HEADLESS_EXPORT extern const char kUseANGLE[];
-HEADLESS_EXPORT extern const char kUseGL[];
 HEADLESS_EXPORT extern const char kUserAgent[];
 HEADLESS_EXPORT extern const char kUserDataDir[];
 HEADLESS_EXPORT extern const char kIncognito[];

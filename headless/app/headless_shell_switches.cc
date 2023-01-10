@@ -69,14 +69,6 @@ const char kRemoteDebuggingAddress[] = "remote-debugging-address";
 // expressions.
 const char kRepl[] = "repl";
 
-// Sets the GL implementation to use. Use a blank string to disable GL
-// rendering.
-const char kUseGL[] = "use-gl";
-
-// Sets the ANGLE implementation to use. Only relevant if "use-gl" is set to
-// "angle"
-const char kUseANGLE[] = "use-angle";
-
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 

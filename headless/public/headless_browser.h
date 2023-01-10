@@ -135,15 +135,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // A single way to test whether the devtools server has been requested.
   bool DevtoolsServerEnabled();
 
-  // Choose the GL implementation to use for rendering. A suitable
-  // implementantion is selected by default. Setting this to an empty
-  // string can be used to disable GL rendering (e.g., WebGL support).
-  std::string gl_implementation;
-
-  // Choose the ANGLE implementation to use for rendering.
-  // Only relevant if the gl_implementation above is set to "angle".
-  std::string angle_implementation;
-
   // Default per-context options, can be specialized on per-context basis.
   std::string accept_language;
   std::string user_agent;

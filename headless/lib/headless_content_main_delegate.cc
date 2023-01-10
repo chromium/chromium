@@ -175,21 +175,20 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   if (!command_line->HasSwitch(::switches::kHeadless))
     command_line->AppendSwitch(::switches::kHeadless);
 
+  // Use software rendering by default, but don't mess with gl and angle
+  // switches if user is overriding them.
+  if (!command_line->HasSwitch(switches::kUseGL) &&
+      !command_line->HasSwitch(switches::kUseANGLE)) {
+    command_line->AppendSwitchASCII(::switches::kUseGL,
+                                    gl::kGLImplementationANGLEName);
+    command_line->AppendSwitchASCII(
+        ::switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
+  }
 #if BUILDFLAG(IS_OZONE)
   // The headless backend is automatically chosen for a headless build, but also
   // adding it here allows us to run in a non-headless build too.
   command_line->AppendSwitchASCII(::switches::kOzonePlatform, "headless");
 #endif
-
-  if (!command_line->HasSwitch(::switches::kUseGL) &&
-      !options()->gl_implementation.empty()) {
-    command_line->AppendSwitchASCII(::switches::kUseGL,
-                                    options()->gl_implementation);
-    if (!options()->angle_implementation.empty()) {
-      command_line->AppendSwitchASCII(::switches::kUseANGLE,
-                                      options()->angle_implementation);
-    }
-  }
 
   // When running headless there is no need to suppress input until content
   // is ready for display (because it isn't displayed to users). Nor is it

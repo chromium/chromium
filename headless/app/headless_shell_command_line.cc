@@ -200,16 +200,6 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
   if (command_line.HasSwitch(switches::kProxyServer))
     HandleProxyServer(command_line, builder);
 
-  if (command_line.HasSwitch(switches::kUseGL)) {
-    builder.SetGLImplementation(
-        command_line.GetSwitchValueASCII(switches::kUseGL));
-  }
-
-  if (command_line.HasSwitch(switches::kUseANGLE)) {
-    builder.SetANGLEImplementation(
-        command_line.GetSwitchValueASCII(switches::kUseANGLE));
-  }
-
   if (command_line.HasSwitch(switches::kUserDataDir)) {
     builder.SetUserDataDir(
         command_line.GetSwitchValuePath(switches::kUserDataDir));

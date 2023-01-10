@@ -33,8 +33,6 @@ constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
 Options::Options(int argc, const char** argv)
     : argc(argc),
       argv(argv),
-      gl_implementation(gl::kGLImplementationANGLEName),
-      angle_implementation(gl::kANGLEImplementationSwiftShaderForWebGLName),
       user_agent(content::BuildUserAgentFromProduct(
           HeadlessBrowser::GetProductNameAndVersion())),
       window_size(kDefaultWindowSize),
@@ -83,16 +81,6 @@ Builder& Builder::EnableDevToolsPipe() {
 
 Builder& Builder::SetProxyConfig(std::unique_ptr<net::ProxyConfig> config) {
   options_.proxy_config = std::move(config);
-  return *this;
-}
-
-Builder& Builder::SetGLImplementation(const std::string& implementation) {
-  options_.gl_implementation = implementation;
-  return *this;
-}
-
-Builder& Builder::SetANGLEImplementation(const std::string& implementation) {
-  options_.angle_implementation = implementation;
   return *this;
 }
 
