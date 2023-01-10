@@ -156,7 +156,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // which will ensure any new files created and switched to pinned state
   // automatically. The complete callback will be called once the initial
   // pinning has completed.
-  void Start(base::OnceCallback<void(SetupStage)> complete_callback);
+  using CompletionCallback = base::OnceCallback<void(SetupStage)>;
+  void Start(CompletionCallback complete_callback, bool should_pin = true);
+
+  void GetFeatureAvailability(base::OnceCallback<void(SetupStage)> callback) {
+    Start(std::move(callback), false);
+  }
 
   // Stop the syncing setup.
   void Stop();
@@ -229,7 +234,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   // Once the verification that the files to pin will not exceed available disk
   // space, the files to pin can be batch pinned.
-  void StartBatchPinning();
+  void StartPinning();
 
   void OnSearchResultsForPinning(
       drive::FileError error,
@@ -266,7 +271,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // nor monitoring occurs.
   bool enabled_ = false;
 
-  base::OnceCallback<void(SetupStage)> complete_callback_;
+  // Should the feature actually pin files, or should it stop after checking the
+  // space requirements?
+  bool should_pin_ = false;
+
+  CompletionCallback complete_callback_;
   const std::unique_ptr<FreeDiskSpaceDelegate> free_space_;
 
   SetupProgress progress_ GUARDED_BY_CONTEXT(sequence_checker_);

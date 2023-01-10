@@ -427,9 +427,10 @@ DriveFsPinManager::~DriveFsPinManager() = default;
 
 // TODO(b/259454320): Pass through a `base::RepeatingCallback` here to enable
 // the callsite to receive progress updates.
-void DriveFsPinManager::Start(
-    base::OnceCallback<void(SetupStage)> complete_callback) {
+void DriveFsPinManager::Start(CompletionCallback complete_callback,
+                              const bool should_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(complete_callback);
 
   if (!enabled_) {
     LOG(ERROR) << "The pin manager is not enabled";
@@ -438,17 +439,17 @@ void DriveFsPinManager::Start(
   }
 
   VLOG(1) << "Calculating free space...";
+  should_pin_ = should_pin;
   timer_ = base::ElapsedTimer();
   complete_callback_ = std::move(complete_callback);
   files_.clear();
   progress_ = {.stage = SetupStage::kCalculatingFreeSpace};
   NotifyProgress();
 
-  base::FilePath gcache_path(profile_path_.AppendASCII(kGCacheFolderName));
-
   free_space_->AmountOfFreeDiskSpace(
-      gcache_path, base::BindOnce(&DriveFsPinManager::OnFreeDiskSpaceRetrieved,
-                                  weak_ptr_factory_.GetWeakPtr()));
+      profile_path_.AppendASCII(kGCacheFolderName),
+      base::BindOnce(&DriveFsPinManager::OnFreeDiskSpaceRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DriveFsPinManager::Stop() {
@@ -492,7 +493,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     VLOG(1) << "Required space: "
             << HumanReadableSize(progress_.required_space);
     VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
-    return StartBatchPinning();
+    return StartPinning();
   }
 
   VLOG(2) << "Iterating over " << items->size()
@@ -554,8 +555,12 @@ void DriveFsPinManager::Complete(const SetupStage stage) {
   }
 }
 
-void DriveFsPinManager::StartBatchPinning() {
+void DriveFsPinManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!should_pin_) {
+    return Complete(SetupStage::kSuccess);
+  }
 
   // Restart the search query.
   search_query_.reset();
