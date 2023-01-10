@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.metrics.HistogramTestRule;
@@ -83,13 +82,13 @@ public class PriceDropMetricsLoggerTest {
         mPriceDropMetricsLogger.logPriceDropMetrics(
                 "NavigationComplete", TimeUnit.DAYS.toMillis(45));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.StaleTabNavigationComplete.IsProductDetailPage"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.StaleTabNavigationComplete.ContainsPrice"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.StaleTabNavigationComplete.ContainsPriceDrop"));
     }
 
@@ -99,13 +98,13 @@ public class PriceDropMetricsLoggerTest {
     public void testMetrics2StaleTabEnterTabSwitcher() {
         mPriceDropMetricsLogger.logPriceDropMetrics("EnterTabSwitcher", TimeUnit.DAYS.toMillis(45));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.StaleTabEnterTabSwitcher.IsProductDetailPage"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.StaleTabEnterTabSwitcher.ContainsPrice"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.StaleTabEnterTabSwitcher.ContainsPriceDrop"));
     }
 
@@ -116,13 +115,13 @@ public class PriceDropMetricsLoggerTest {
         mPriceDropMetricsLogger.logPriceDropMetrics(
                 "NavigationComplete", TimeUnit.HOURS.toMillis(12));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.ActiveTabNavigationComplete.IsProductDetailPage"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.ActiveTabNavigationComplete.ContainsPrice"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.ActiveTabNavigationComplete.ContainsPriceDrop"));
     }
 
@@ -133,13 +132,13 @@ public class PriceDropMetricsLoggerTest {
         mPriceDropMetricsLogger.logPriceDropMetrics(
                 "EnterTabSwitcher", TimeUnit.HOURS.toMillis(12));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.IsProductDetailPage"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPrice"));
         Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTestRule.getHistogramTotalCount(
                         "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPriceDrop"));
     }
 
