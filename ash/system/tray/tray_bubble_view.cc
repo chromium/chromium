@@ -255,7 +255,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // We set the dialog role because views::BubbleDialogDelegate defaults this to
   // an alert dialog. This would make screen readers announce the whole of the
   // system tray which is undesirable.
-  SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   // We force to create contents background since the bubble border background
   // is not shown in this view.
   if (features::IsDarkLightModeEnabled())

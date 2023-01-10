@@ -129,7 +129,7 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   DropdownBarHostDelegate* find_bar_delegate = find_bar_view.get();
   Init(browser_view->find_bar_host_view(), std::move(find_bar_view),
        find_bar_delegate);
-  SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
 }
 
 FindBarHost::~FindBarHost() {

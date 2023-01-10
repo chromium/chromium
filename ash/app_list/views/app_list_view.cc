@@ -324,7 +324,7 @@ AppListView::AppListView(AppListViewDelegate* delegate)
   // to allow the focus to move from elements in app list view to search box.
   // TODO(pbos): Should this be necessary with the OverrideNextFocus() used
   // below?
-  SetAccessibleRole(ax::mojom::Role::kGroup);
+  SetAccessibleWindowRole(ax::mojom::Role::kGroup);
 }
 
 AppListView::~AppListView() {

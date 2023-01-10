@@ -48,7 +48,7 @@ ShelfBubble::ShelfBubble(views::View* anchor, ShelfAlignment alignment)
   // We override the role because the base class sets it to alert dialog,
   // which results in each tooltip title being announced twice on screen
   // readers each time it is shown.
-  SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
 }
 
 ShelfBubble::~ShelfBubble() {

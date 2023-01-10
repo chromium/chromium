@@ -59,7 +59,7 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
       color_provider->GetColor(kColorFlyingIndicatorBackground);
 
   // Set the bubble properties.
-  bubble_view->SetAccessibleRole(ax::mojom::Role::kNone);
+  bubble_view->SetAccessibleWindowRole(ax::mojom::Role::kNone);
   bubble_view->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_view->set_margins(gfx::Insets());
   bubble_view->SetCanActivate(false);

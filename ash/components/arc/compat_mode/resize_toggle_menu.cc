@@ -253,7 +253,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
   delegate_view->SetTitle(
       l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE));
   delegate_view->SetShowTitle(false);
-  delegate_view->SetAccessibleRole(ax::mojom::Role::kMenu);
+  delegate_view->SetAccessibleWindowRole(ax::mojom::Role::kMenu);
 
   // Setup view.
   auto* const provider = views::LayoutProvider::Get();

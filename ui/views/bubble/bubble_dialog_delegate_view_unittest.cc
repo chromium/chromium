@@ -113,7 +113,7 @@ class TestAlertBubbleDialogDelegateView : public TestBubbleDialogDelegateView {
  public:
   explicit TestAlertBubbleDialogDelegateView(View* anchor_view)
       : TestBubbleDialogDelegateView(anchor_view) {
-    SetAccessibleRole(ax::mojom::Role::kAlertDialog);
+    SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
   }
   ~TestAlertBubbleDialogDelegateView() override = default;
 };

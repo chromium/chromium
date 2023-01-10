@@ -151,7 +151,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   SetAnchorView(anchor_);
   SetTitle(l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
   SetShowTitle(false);
-  SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   // For handling the case when Esc key is pressed.
   SetCancelCallback(
       base::BindOnce(&ArcSplashScreenDialogView::OnCloseButtonClicked,

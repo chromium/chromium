@@ -97,7 +97,7 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
   // really wrong. If we need the accessible role before ShowForReason() we
   // can't rely on DisplayReason in there. It also really seems like this dialog
   // role should not depend on if it's showing in the foreground or not.
-  SetAccessibleRole(GetAccessibleRoleForReason(display_reason_));
+  SetAccessibleWindowRole(GetAccessibleRoleForReason(display_reason_));
 }
 
 LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() {
@@ -107,7 +107,7 @@ LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() {
 void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
                                                   bool allow_refocus_alert) {
   display_reason_ = reason;
-  SetAccessibleRole(GetAccessibleRoleForReason(reason));
+  SetAccessibleWindowRole(GetAccessibleRoleForReason(reason));
 
   // These bubbles all anchor to the location bar or toolbar. We selectively
   // anchor location bar bubbles to one end or the other of the toolbar based on

@@ -401,7 +401,7 @@ template View* DialogDelegate::SetExtraView<View>(std::unique_ptr<View>);
 template View* DialogDelegate::SetFootnoteView<View>(std::unique_ptr<View>);
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, DialogDelegateView, View)
-VIEW_BUILDER_PROPERTY(ax::mojom::Role, AccessibleRole)
+VIEW_BUILDER_PROPERTY(ax::mojom::Role, AccessibleWindowRole)
 VIEW_BUILDER_PROPERTY(std::u16string, AccessibleTitle)
 VIEW_BUILDER_PROPERTY(bool, CanMaximize)
 VIEW_BUILDER_PROPERTY(bool, CanMinimize)

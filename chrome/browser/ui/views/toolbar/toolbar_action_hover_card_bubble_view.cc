@@ -249,7 +249,7 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 
   // Remove the accessible role so that hover cards are not read when they
   // appear because tabs handle accessibility text.
-  SetAccessibleRole(ax::mojom::Role::kNone);
+  SetAccessibleWindowRole(ax::mojom::Role::kNone);
 
   // We'll do all of our own layout inside the bubble, so no need to inset this
   // view inside the client view.

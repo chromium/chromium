@@ -104,7 +104,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
   // `kAlertDialog` which would tell screen readers to announce all contents of
   // the bubble when it opens and previous accessibility feedback said that
   // behavior was confusing.
-  SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
 
   // TODO(crbug.com/1259763): Currently basing this off what extension menu uses
   // for sizing as suggested as an initial fix by UI. Discuss a more formal

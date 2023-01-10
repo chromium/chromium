@@ -23,7 +23,7 @@ BaseDialogDelegateView::BaseDialogDelegateView(views::View* anchor_view)
   set_adjust_if_offscreen(true);
   set_close_on_deactivate(false);
   SetModalType(ui::MODAL_TYPE_CHILD);
-  SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(

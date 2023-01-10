@@ -325,7 +325,7 @@ class VIEWS_EXPORT WidgetDelegate
 
   // Setters for data parameters of the WidgetDelegate. If you use these
   // setters, there is no need to override the corresponding virtual getters.
-  void SetAccessibleRole(ax::mojom::Role role);
+  void SetAccessibleWindowRole(ax::mojom::Role role);
   void SetAccessibleTitle(std::u16string title);
   void SetCanMaximize(bool can_maximize);
   void SetCanMinimize(bool can_minimize);

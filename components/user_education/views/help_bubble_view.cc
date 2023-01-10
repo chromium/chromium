@@ -322,7 +322,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
 
   // Since we don't have any controls for the user to interact with (we're just
   // an information bubble), override our role to kAlert.
-  SetAccessibleRole(ax::mojom::Role::kAlert);
+  SetAccessibleWindowRole(ax::mojom::Role::kAlert);
 
   // Layout structure:
   //

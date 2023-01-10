@@ -310,7 +310,7 @@ bool WidgetDelegate::ShouldDescendIntoChildForEventHandling(
   return true;
 }
 
-void WidgetDelegate::SetAccessibleRole(ax::mojom::Role role) {
+void WidgetDelegate::SetAccessibleWindowRole(ax::mojom::Role role) {
   params_.accessible_role = role;
 }
 
