@@ -6,15 +6,18 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 #include "chrome/browser/lacros/sync/sync_user_settings_client_lacros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/sync/base/features.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 
@@ -42,11 +45,12 @@ MaybeCreateSyncExplicitPassphraseClient(chromeos::LacrosService* lacros_service,
     return nullptr;
   }
 
-  // TODO(crbug.com/1327602): move high-level Crosapi initialization logic to
-  // SyncCrosapiManagerLacros and make SyncExplicitPassphraseClientLacros
-  // working with crosapi::mojom::SyncExplicitPassphraseClient directly.
+  mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient> client_remote;
+  lacros_service->GetRemote<crosapi::mojom::SyncService>()
+      ->BindExplicitPassphraseClient(
+          client_remote.BindNewPipeAndPassReceiver());
   return std::make_unique<SyncExplicitPassphraseClientLacros>(
-      sync_service, &lacros_service->GetRemote<crosapi::mojom::SyncService>());
+      std::move(client_remote), sync_service);
 }
 
 // Creates SyncUserSettingsClientLacros if preconditions are met, returns
@@ -75,8 +79,11 @@ std::unique_ptr<SyncUserSettingsClientLacros> MaybeCreateSyncUserSettingsClient(
     return nullptr;
   }
 
+  mojo::Remote<crosapi::mojom::SyncUserSettingsClient> client_remote;
+  lacros_service->GetRemote<crosapi::mojom::SyncService>()
+      ->BindUserSettingsClient(client_remote.BindNewPipeAndPassReceiver());
   return std::make_unique<SyncUserSettingsClientLacros>(
-      sync_service, &lacros_service->GetRemote<crosapi::mojom::SyncService>());
+      std::move(client_remote), sync_service);
 }
 
 }  // namespace

@@ -12,20 +12,15 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 SyncUserSettingsClientLacros::SyncUserSettingsClientLacros(
-    syncer::SyncService* sync_service,
-    mojo::Remote<crosapi::mojom::SyncService>* sync_service_remote)
-    : sync_service_(sync_service) {
-  DCHECK(sync_service_);
-  DCHECK(sync_service_remote);
-  DCHECK(sync_service_remote->is_bound());
+    mojo::Remote<crosapi::mojom::SyncUserSettingsClient> remote,
+    syncer::SyncService* sync_service)
+    : sync_service_(sync_service), remote_(std::move(remote)) {
+  DCHECK(remote_.is_bound());
 
-  (*sync_service_remote)
-      ->BindUserSettingsClient(client_remote_.BindNewPipeAndPassReceiver());
-  client_remote_.get()->AddObserver(
-      observer_receiver_.BindNewPipeAndPassRemote());
+  remote_.get()->AddObserver(observer_receiver_.BindNewPipeAndPassRemote());
   sync_service_->AddObserver(this);
 
-  client_remote_.get()->IsAppsSyncEnabled(
+  remote_.get()->IsAppsSyncEnabled(
       base::BindOnce(&SyncUserSettingsClientLacros::OnIsAppsSyncEnabledFetched,
                      base::Unretained(this)));
 }
@@ -46,7 +41,7 @@ void SyncUserSettingsClientLacros::OnAppsSyncEnabledChanged(
 void SyncUserSettingsClientLacros::OnSyncShutdown(
     syncer::SyncService* sync_service) {
   sync_service_->RemoveObserver(this);
-  client_remote_.reset();
+  remote_.reset();
   observer_receiver_.reset();
   sync_service_ = nullptr;
 }

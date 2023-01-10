@@ -23,11 +23,10 @@ class SyncService;
 // Stops working upon Lacros SyncService Shutdown().
 class SyncExplicitPassphraseClientLacros {
  public:
-  // |sync_service| must not be null. |sync_service_remote| must not be null and
-  // bound.
+  // |remote| must be bound. |sync_service| must not be null.
   SyncExplicitPassphraseClientLacros(
-      syncer::SyncService* sync_service,
-      mojo::Remote<crosapi::mojom::SyncService>* sync_service_remote);
+      mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient> remote,
+      syncer::SyncService* sync_service);
   SyncExplicitPassphraseClientLacros(
       const SyncExplicitPassphraseClientLacros& other) = delete;
   SyncExplicitPassphraseClientLacros& operator=(

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 
+#include <utility>
+
 #include "base/observer_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -60,15 +63,15 @@ class SyncExplicitPassphraseClientLacrosTest : public testing::Test {
           sync_service_observers_.RemoveObserver(observer);
         });
 
-    sync_mojo_service_.BindReceiver(
-        sync_mojo_service_remote_.BindNewPipeAndPassReceiver());
-    sync_mojo_service_.GetFakeSyncExplicitPassphraseClientAsh()
-        .SetExpectedAccountKey(MakeMojoAccountKey(sync_account_info_));
+    mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient> client_remote;
+    client_ash_.BindReceiver(client_remote.BindNewPipeAndPassReceiver());
+
+    client_ash_.SetExpectedAccountKey(MakeMojoAccountKey(sync_account_info_));
 
     client_lacros_ = std::make_unique<SyncExplicitPassphraseClientLacros>(
-        &sync_service_, &sync_mojo_service_remote_);
+        std::move(client_remote), &sync_service_);
     // Needed to trigger AddObserver() call.
-    sync_mojo_service_remote_.FlushForTesting();
+    client_lacros_->FlushMojoForTesting();
   }
 
   void MimicLacrosPassphraseRequired() {
@@ -100,7 +103,7 @@ class SyncExplicitPassphraseClientLacrosTest : public testing::Test {
   }
 
   syncer::FakeSyncExplicitPassphraseClientAsh& client_ash() {
-    return sync_mojo_service_.GetFakeSyncExplicitPassphraseClientAsh();
+    return client_ash_;
   }
 
   syncer::SyncUserSettingsMock& user_settings() {
@@ -115,8 +118,7 @@ class SyncExplicitPassphraseClientLacrosTest : public testing::Test {
                      /*check_empty=*/true>::Unchecked sync_service_observers_;
 
   CoreAccountInfo sync_account_info_;
-  mojo::Remote<crosapi::mojom::SyncService> sync_mojo_service_remote_;
-  syncer::FakeSyncMojoService sync_mojo_service_;
+  syncer::FakeSyncExplicitPassphraseClientAsh client_ash_;
 
   std::unique_ptr<SyncExplicitPassphraseClientLacros> client_lacros_;
 };
