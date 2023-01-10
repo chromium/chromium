@@ -91,6 +91,8 @@ class TaskScheduler {
 
     // User ID under which the task runs.
     std::wstring user_id;
+
+    TriggerType trigger_type = TRIGGER_TYPE_MAX;
   };
 
   static std::unique_ptr<TaskScheduler> CreateInstance(UpdaterScope scope);

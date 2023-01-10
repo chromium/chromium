@@ -329,6 +329,14 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
+    hr = GetTaskTriggerType(registered_task.Get(), &info_storage.trigger_type);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get trigger type for task '" << task_name
+                 << "'. " << std::hex << hr << ": "
+                 << logging::SystemErrorCodeToString(hr);
+      return false;
+    }
+
     info_storage.name = task_name;
     std::swap(*info, info_storage);
     return true;
@@ -577,9 +585,11 @@ class TaskSchedulerV2 final : public TaskScheduler {
         return false;
       }
 
-      // Start now.
-      base::Time now(base::Time::NowFromSystemTime());
-      base::win::ScopedBstr start_boundary(GetTimestampString(now));
+      // Start 5 minutes from the current time.
+      base::Time five_minutes_from_now(base::Time::NowFromSystemTime() +
+                                       base::Minutes(5));
+      base::win::ScopedBstr start_boundary(
+          GetTimestampString(five_minutes_from_now));
       hr = trigger->put_StartBoundary(start_boundary.Get());
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't put 'StartBoundary' to " << start_boundary.Get()
@@ -1087,6 +1097,85 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
     *user_id = std::wstring(raw_user_id.Get() ? raw_user_id.Get() : L"");
     return ERROR_SUCCESS;
+  }
+
+  HRESULT GetTaskTriggerType(IRegisteredTask* task, TriggerType* trigger_type) {
+    DCHECK(task);
+    DCHECK(trigger_type);
+
+    Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
+    HRESULT hr = task->get_Definition(&task_info);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get definition: "
+                 << logging::SystemErrorCodeToString(hr);
+      return hr;
+    }
+
+    Microsoft::WRL::ComPtr<ITriggerCollection> trigger_collection;
+    hr = task_info->get_Triggers(&trigger_collection);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get trigger collection: "
+                 << logging::SystemErrorCodeToString(hr);
+      return false;
+    }
+
+    Microsoft::WRL::ComPtr<ITrigger> trigger;
+    hr = trigger_collection->get_Item(1, &trigger);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get trigger: "
+                 << logging::SystemErrorCodeToString(hr);
+      return false;
+    }
+
+    TASK_TRIGGER_TYPE2 task_trigger_type = {};
+    hr = trigger->get_Type(&task_trigger_type);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to get trigger type: "
+                 << logging::SystemErrorCodeToString(hr);
+      return false;
+    }
+
+    switch (task_trigger_type) {
+      case TASK_TRIGGER_LOGON:
+        *trigger_type = TRIGGER_TYPE_POST_REBOOT;
+        break;
+      case TASK_TRIGGER_REGISTRATION:
+        *trigger_type = TRIGGER_TYPE_NOW;
+        break;
+      case TASK_TRIGGER_DAILY: {
+        Microsoft::WRL::ComPtr<IRepetitionPattern> repetition_pattern;
+        hr = trigger->get_Repetition(&repetition_pattern);
+        if (FAILED(hr)) {
+          LOG(ERROR) << "Failed to get 'Repetition'. "
+                     << logging::SystemErrorCodeToString(hr);
+          return false;
+        }
+
+        base::win::ScopedBstr repetition_interval;
+        hr = repetition_pattern->get_Interval(repetition_interval.Receive());
+        if (FAILED(hr)) {
+          LOG(ERROR) << "Failed to get 'Interval': "
+                     << logging::SystemErrorCodeToString(hr);
+          return false;
+        }
+
+        if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
+                                             kFiveHoursText)) {
+          *trigger_type = TRIGGER_TYPE_EVERY_FIVE_HOURS;
+        } else if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
+                                                    kOneHourText)) {
+          *trigger_type = TRIGGER_TYPE_HOURLY;
+        } else {
+          NOTREACHED() << "Unknown TriggerType for interval: "
+                       << repetition_interval.Get();
+        }
+        break;
+      }
+      default:
+        NOTREACHED() << "Unknown task trigger type: " << task_trigger_type;
+    }
+
+    return S_OK;
   }
 
   // If the task folder specified by |folder_name| is empty, try to delete it.

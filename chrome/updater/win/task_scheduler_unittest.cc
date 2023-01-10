@@ -137,6 +137,20 @@ class TaskSchedulerTests : public ::testing::Test {
     test::PrintLog(GetTestScope());
   }
 
+  void RunGetTaskInfoTriggerTypeTest(
+      TaskScheduler::TriggerType expected_trigger_type) {
+    base::CommandLine command_line =
+        GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+
+    EXPECT_TRUE(task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1,
+                                              command_line,
+                                              expected_trigger_type, false));
+    TaskScheduler::TaskInfo info;
+    EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+    EXPECT_EQ(info.trigger_type, expected_trigger_type);
+    EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
+  }
+
  protected:
   std::unique_ptr<TaskScheduler> task_scheduler_;
 };
@@ -185,13 +199,17 @@ TEST_F(TaskSchedulerTests, Hourly) {
                                     TaskScheduler::TRIGGER_TYPE_HOURLY, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  base::TimeDelta one_hour(base::Hours(1));
-  base::TimeDelta one_minute(base::Minutes(1));
-
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
-  EXPECT_LT(next_run_time, UTCTimeToLocalTime(now + one_hour + one_minute));
-  EXPECT_GT(next_run_time, UTCTimeToLocalTime(now + one_hour - one_minute));
+
+  // Check that the task starts approximately 5 minutes from the current time.
+  EXPECT_GT(next_run_time, UTCTimeToLocalTime(now + base::Minutes(3)));
+  EXPECT_LT(next_run_time, UTCTimeToLocalTime(now + base::Minutes(7)));
+
+  // Check that the task has a hourly trigger.
+  TaskScheduler::TaskInfo info;
+  EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+  EXPECT_EQ(info.trigger_type, TaskScheduler::TRIGGER_TYPE_HOURLY);
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName1));
@@ -208,13 +226,17 @@ TEST_F(TaskSchedulerTests, EveryFiveHours) {
       TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  base::TimeDelta five_hours(base::Hours(5));
-  base::TimeDelta one_minute(base::Minutes(1));
-
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
-  EXPECT_LT(next_run_time, UTCTimeToLocalTime(now + five_hours + one_minute));
-  EXPECT_GT(next_run_time, UTCTimeToLocalTime(now + five_hours - one_minute));
+
+  // Check that the task starts approximately 5 minutes from the current time.
+  EXPECT_GT(next_run_time, UTCTimeToLocalTime(now + base::Minutes(3)));
+  EXPECT_LT(next_run_time, UTCTimeToLocalTime(now + base::Minutes(7)));
+
+  // Check that the task has a five hour trigger.
+  TaskScheduler::TaskInfo info;
+  EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
+  EXPECT_EQ(info.trigger_type, TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS);
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName1));
@@ -431,6 +453,21 @@ TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
                              base::CompareCase::INSENSITIVE_ASCII) ||
               base::EndsWith(expected_user_id, info.user_id,
                              base::CompareCase::INSENSITIVE_ASCII));
+}
+
+TEST_F(TaskSchedulerTests, GetTaskInfoTriggerType) {
+  for (const TaskScheduler::TriggerType expected_trigger_type : {
+           TaskScheduler::TRIGGER_TYPE_POST_REBOOT,
+           TaskScheduler::TRIGGER_TYPE_HOURLY,
+           TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS,
+       }) {
+    if (expected_trigger_type == TaskScheduler::TRIGGER_TYPE_POST_REBOOT &&
+        !::IsUserAnAdmin()) {
+      continue;
+    }
+
+    RunGetTaskInfoTriggerTypeTest(expected_trigger_type);
+  }
 }
 
 }  // namespace updater
