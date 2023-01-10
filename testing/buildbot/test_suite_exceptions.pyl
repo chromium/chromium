@@ -989,6 +989,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
       },
+      'ToTLinuxMSan': {
+        'swarming': {
+          'shards': 24,
+        },
+      },
       'ToTWin(dbg)': {
         'swarming': {
           'shards': 20,
