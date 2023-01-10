@@ -573,6 +573,16 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // it can't get on its own.
   bool AncestorOrSelfHasCSPEE() const;
 
+  // Reset every navigation in this frame, and its descendants. This is called
+  // after the <iframe> element has been removed, or after the document owning
+  // this frame has been navigated away.
+  //
+  // This takes into account:
+  // - Non-pending commit NavigationRequest owned by the FrameTreeNode
+  // - Pending commit NavigationRequest owned by the current RenderFrameHost
+  // - Speculative RenderFrameHost and its pending commit NavigationRequests.
+  void ResetAllNavigationsForFrameDetach();
+
   // RenderFrameHostOwner implementation:
   void DidStartLoading(bool should_show_loading_ui,
                        bool was_previously_loading) override;

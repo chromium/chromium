@@ -8740,7 +8740,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
     // Reset navigations only when entering "pending deletion" state due to
     // frame detach if the kStopCancellingNavigationsOnCommitAndNewNavigation
     // flag is enabled, or for all pending deletion cases otherwise.
-    ResetAllNavigationsInSubtreeForFrameDetach();
+    frame_tree_node_->ResetAllNavigationsForFrameDetach();
   } else {
     CHECK(
         pending_deletion_reason == PendingDeletionReason::kSwappedOut ||
@@ -8838,10 +8838,11 @@ void RenderFrameHostImpl::
   // intend to use the current RFH.
   ResetOwnedNavigationRequests(
       NavigationDiscardReason::kRenderFrameHostDestruction);
-  if (frame_tree_node_->navigation_request() &&
-      frame_tree_node_->navigation_request()->state() >=
-          NavigationRequest::WILL_PROCESS_RESPONSE &&
-      frame_tree_node_->navigation_request()->GetRenderFrameHost() == this) {
+  const NavigationRequest* navigation_request =
+      frame_tree_node_->navigation_request();
+  if (navigation_request &&
+      navigation_request->state() >= NavigationRequest::WILL_PROCESS_RESPONSE &&
+      navigation_request->GetRenderFrameHost() == this) {
     // It's possible for a RenderFrameHost to already have been picked for a
     // navigation but the NavigationRequest's ownership hasn't been moved to the
     // RenderFrameHost yet, if the navigation is deferred by a
@@ -8852,23 +8853,12 @@ void RenderFrameHostImpl::
         NavigationDiscardReason::kRenderFrameHostDestruction);
   }
 
-  // For the child frames, we should delete all ongoing navigations instead of
-  // just the one using the current RFH, because the child frames will be
-  // deleted when this RFH gets unloaded.
-  for (auto& child : children_) {
-    child->current_frame_host()->ResetAllNavigationsInSubtreeForFrameDetach();
+  // For the child frames, we should delete all ongoing navigations,
+  // unconditionally, because the child frames will be deleted when this RFH
+  // gets unloaded.
+  for (auto& subframe : children_) {
+    subframe->ResetAllNavigationsForFrameDetach();
   }
-}
-
-void RenderFrameHostImpl::ResetAllNavigationsInSubtreeForFrameDetach() {
-  for (auto& child : children_) {
-    child->current_frame_host()->ResetAllNavigationsInSubtreeForFrameDetach();
-  }
-  ResetOwnedNavigationRequests(NavigationDiscardReason::kWillRemoveFrame);
-  frame_tree_node_->ResetNavigationRequest(
-      NavigationDiscardReason::kWillRemoveFrame);
-  frame_tree_node_->render_manager()->DiscardSpeculativeRFH(
-      NavigationDiscardReason::kWillRemoveFrame);
 }
 
 void RenderFrameHostImpl::OnUnloadTimeout() {

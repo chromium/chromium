@@ -995,6 +995,15 @@ bool FrameTreeNode::AncestorOrSelfHasCSPEE() const {
   return csp_attribute() || (parent() && parent()->required_csp());
 }
 
+void FrameTreeNode::ResetAllNavigationsForFrameDetach() {
+  NavigationDiscardReason reason = NavigationDiscardReason::kWillRemoveFrame;
+  for (FrameTreeNode* frame : frame_tree().SubtreeNodes(this)) {
+    frame->ResetNavigationRequest(reason);
+    frame->current_frame_host()->ResetOwnedNavigationRequests(reason);
+    frame->GetRenderFrameHostManager().DiscardSpeculativeRFH(reason);
+  }
+}
+
 void FrameTreeNode::RestartNavigationAsCrossDocument(
     std::unique_ptr<NavigationRequest> navigation_request) {
   navigator().RestartNavigationAsCrossDocument(std::move(navigation_request));
