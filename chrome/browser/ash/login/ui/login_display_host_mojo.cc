@@ -209,9 +209,9 @@ void LoginDisplayHostMojo::ShowPasswordChangedDialog(
 }
 
 void LoginDisplayHostMojo::StartCryptohomeRecovery(
-    const AccountId& account_id) {
+    std::unique_ptr<UserContext> user_context) {
   DCHECK(GetOobeUI());
-  wizard_controller_->ShowCryptohomeRecoveryScreen(account_id);
+  wizard_controller_->ShowCryptohomeRecoveryScreen(std::move(user_context));
   ShowDialog();
 }
 

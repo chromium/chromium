@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -1068,8 +1069,12 @@ void ExistingUserController::OnPasswordChangeDetected(
   for (auto& auth_status_consumer : auth_status_consumers_)
     auth_status_consumer.OnPasswordChangeDetected(user_context);
 
-  // TODO(b/239420386): Start Cryptohome recovery when feature is enabled.
-  ShowPasswordChangedDialog(user_context);
+  if (features::IsCryptohomeRecoveryFlowUIEnabled()) {
+    GetLoginDisplayHost()->GetSigninUI()->StartCryptohomeRecovery(
+        std::make_unique<UserContext>(user_context));
+  } else {
+    ShowPasswordChangedDialog(user_context);
+  }
 }
 
 void ExistingUserController::OnOldEncryptionDetected(
@@ -1190,6 +1195,11 @@ user_manager::UserList ExistingUserController::ExtractLoginUsers(
       filtered_users.push_back(user);
   }
   return filtered_users;
+}
+
+void ExistingUserController::LoginAuthenticated(
+    std::unique_ptr<UserContext> user_context) {
+  login_performer_->LoginAuthenticated(std::move(user_context));
 }
 
 void ExistingUserController::LoginAsGuest() {

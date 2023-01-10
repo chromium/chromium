@@ -991,7 +991,7 @@ void LoginDisplayHostWebUI::ShowPasswordChangedDialog(
 }
 
 void LoginDisplayHostWebUI::StartCryptohomeRecovery(
-    const AccountId& account_id) {
+    std::unique_ptr<UserContext> user_context) {
   NOTREACHED();
 }
 

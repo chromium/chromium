@@ -330,6 +330,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
       static_cast<int>(ReauthReason::kSyncFailed),
       static_cast<int>(ReauthReason::kPasswordUpdateSkipped),
       static_cast<int>(ReauthReason::kForgotPassword),
+      static_cast<int>(ReauthReason::kCryptohomeRecovery),
   };
   user_manager::KnownUser known_user(g_browser_process->local_state());
   absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);

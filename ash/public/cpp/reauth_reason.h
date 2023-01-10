@@ -67,6 +67,9 @@ enum class ReauthReason {
   // entered wrongly.
   kForgotPassword = 14,
 
+  // Invalid, expired or empty reauth proof token during Cryptohome recovery.
+  kCryptohomeRecovery = 15,
+
   // Must be the last value in this list.
   kNumReauthFlowReasons,
 };

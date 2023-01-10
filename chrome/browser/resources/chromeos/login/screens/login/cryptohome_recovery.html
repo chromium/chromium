@@ -3,7 +3,41 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
 <style include="oobe-dialog-host-styles"></style>
-<oobe-loading-dialog id="loading" role="dialog" for-step="loading"
+<oobe-loading-dialog id="loadingDialog" role="dialog" for-step="loading"
     title-key="gaiaLoading">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
 </oobe-loading-dialog>
+<oobe-adaptive-dialog id="successDialog" role="dialog" for-step="done"
+    aria-label$="[[i18nDynamic(locale, 'cryptohomeRecoverySuccessTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'cryptohomeRecoverySuccessTitle')]]
+  </h1>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/pin_illustration.svg" class="oobe-illustration">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="doneButton" inverse on-click="onDone_"
+        class="focus-on-show" text-key="cryptohomeRecoveryDoneButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+<oobe-adaptive-dialog id="errorDialog" role="dialog" for-step="error"
+    aria-label$="[[i18nDynamic(locale, 'cryptohomeRecoveryErrorTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'cryptohomeRecoveryErrorTitle')]]
+  </h1>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/error.svg" class="oobe-illustration">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="manualRecoveryButton"
+        on-click="onOldPasswordEntered_"
+        text-key="cryptohomeRecoveryManualRecoveryButton">
+    </oobe-text-button>
+    <oobe-text-button id="retryButton" on-click="onRetry_"
+        text-key="cryptohomeRecoveryRetryButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

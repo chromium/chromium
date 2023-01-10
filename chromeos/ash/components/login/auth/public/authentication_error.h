@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/recovery_types.h"
 
 namespace ash {
 
@@ -33,6 +34,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
 
   AuthFailure::FailureReason get_resolved_failure() const {
     return auth_failure_.reason();
+  }
+
+  CryptohomeRecoveryServerStatusCode get_cryptohome_recovery_server_error()
+      const {
+    return auth_failure_.cryptohome_recovery_server_error();
   }
 
   void ResolveToFailure(AuthFailure::FailureReason auth_failure_reason);

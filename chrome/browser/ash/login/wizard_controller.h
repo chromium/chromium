@@ -240,7 +240,7 @@ class WizardController : public OobeUI::Observer {
   void ShowFamilyLinkNoticeScreen();
 
   // Show Cryptohome recovery screen.
-  void ShowCryptohomeRecoveryScreen(const AccountId& account_id);
+  void ShowCryptohomeRecoveryScreen(std::unique_ptr<UserContext> user_context);
 
   // Set pref value for first run.
   void PrepareFirstRunPrefs();
@@ -403,7 +403,7 @@ class WizardController : public OobeUI::Observer {
   void OnSmartPrivacyProtectionScreenExit(
       SmartPrivacyProtectionScreen::Result result);
   void OnThemeSelectionScreenExit(ThemeSelectionScreen::Result result);
-  void OnCryptohomeRecoveryScreenExit();
+  void OnCryptohomeRecoveryScreenExit(CryptohomeRecoveryScreen::Result result);
   void OnChoobeScreenExit(ChoobeScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled

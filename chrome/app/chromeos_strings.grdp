@@ -1380,6 +1380,21 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_WITHOUT_LOCAL_DATA_BUTTON" desc="Button to confirm continue without local data on the recover local data dialog.">
     Continue without local data
   </message>
+  <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_SUCCESS_TITLE" desc="The title message when Cryptohome recovery succeeded.">
+    Your password has been updated
+  </message>
+  <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_ERROR_TITLE" desc="The title message when Cryptohome recovery failed.">
+    Failed to recover local data
+  </message>
+  <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_MANUAL_RECOVERY_BUTTON" desc="Label for the button to enter old password when Cryptohome recovery failed.">
+    Enter the old password
+  </message>
+  <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_RETRY_BUTTON" desc="Label for the button to retry when Cryptohome recovery failed.">
+    Retry
+  </message>
+  <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_DONE_BUTTON" desc="Label for the done button to finish the Cryptohome recovery flow.">
+    Done
+  </message>
   <message name="IDS_LOGIN_SAML_NOTICE_SHORT" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider. This is the version of the string used in the GAIA flow.">
     Sign-in hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
   </message>

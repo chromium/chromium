@@ -22,6 +22,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
  */
 const CryptohomeRecoveryUIState = {
   LOADING: 'loading',
+  DONE: 'done',
+  ERROR: 'error',
 };
 
 /**
@@ -58,6 +60,10 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
     return CryptohomeRecoveryUIState;
   }
 
+  get EXTERNAL_API() {
+    return ['onRecoverySucceeded', 'onRecoveryFailed'];
+  }
+
   /** @override */
   ready() {
     super.ready();
@@ -69,6 +75,44 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
 
   reset() {
     this.setUIStep(CryptohomeRecoveryUIState.LOADING);
+  }
+
+  /**
+   * Called when Cryptohome recovery succeeded.
+   */
+  onRecoverySucceeded() {
+    this.setUIStep(CryptohomeRecoveryUIState.DONE);
+  }
+
+  /**
+   * Called when Cryptohome recovery failed.
+   */
+  onRecoveryFailed() {
+    this.setUIStep(CryptohomeRecoveryUIState.ERROR);
+  }
+
+  /**
+   * Enter old password button click handler.
+   * @private
+   */
+  onOldPasswordEntered_() {
+    this.userActed('enter-old-password');
+  }
+
+  /**
+   * Retry button click handler.
+   * @private
+   */
+  onRetry_() {
+    this.userActed('retry');
+  }
+
+  /**
+   * Done button click handler.
+   * @private
+   */
+  onDone_() {
+    this.userActed('done');
   }
 }
 

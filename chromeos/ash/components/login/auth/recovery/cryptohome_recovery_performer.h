@@ -15,7 +15,8 @@ namespace ash {
 
 // Helper class to authenticate using recovery. Coordinates calls to cryptohome
 // and the requests over network to the recovery service.
-class CryptohomeRecoveryPerformer : public OAuth2AccessTokenConsumer {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
+    CryptohomeRecoveryPerformer : public OAuth2AccessTokenConsumer {
  public:
   explicit CryptohomeRecoveryPerformer(
       UserDataAuthClient*,

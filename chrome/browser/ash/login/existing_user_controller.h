@@ -146,6 +146,9 @@ class ExistingUserController : public LoginDisplay::Delegate,
   static user_manager::UserList ExtractLoginUsers(
       const user_manager::UserList& users);
 
+  // Calls login() on previously-used `login_performer_`.
+  void LoginAuthenticated(std::unique_ptr<UserContext> user_context);
+
  private:
   friend class ExistingUserControllerTest;
   friend class ExistingUserControllerAutoLoginTest;

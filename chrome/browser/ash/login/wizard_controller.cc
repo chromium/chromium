@@ -1117,10 +1117,9 @@ void WizardController::ShowGuestTosScreen() {
 }
 
 void WizardController::ShowCryptohomeRecoveryScreen(
-    const AccountId& account_id) {
+    std::unique_ptr<UserContext> user_context) {
   DCHECK(features::IsCryptohomeRecoveryFlowUIEnabled());
-  CryptohomeRecoveryScreen* screen = GetScreen<CryptohomeRecoveryScreen>();
-  screen->Configure(account_id);
+  wizard_context_->user_context = std::move(user_context);
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
 }
 
@@ -1391,8 +1390,30 @@ void WizardController::OnThemeSelectionScreenExit(
   ShowMarketingOptInScreen();
 }
 
-void WizardController::OnCryptohomeRecoveryScreenExit() {
-  NOTREACHED();
+void WizardController::OnCryptohomeRecoveryScreenExit(
+    CryptohomeRecoveryScreen::Result result) {
+  OnScreenExit(CryptohomeRecoveryScreenView::kScreenId,
+               CryptohomeRecoveryScreen::GetResultString(result));
+  switch (result) {
+    case CryptohomeRecoveryScreen::Result::kSucceeded:
+      ash::LoginDisplayHost::default_host()
+          ->GetExistingUserController()
+          ->LoginAuthenticated(std::move(wizard_context_->user_context));
+      break;
+    case CryptohomeRecoveryScreen::Result::kGaiaLogin:
+    case CryptohomeRecoveryScreen::Result::kRetry:
+      // TODO(b/257073746): We probably want to differentiate between retry with
+      // or without login.
+      GetScreen<GaiaScreen>()->LoadOnline(
+          wizard_context_->user_context->GetAccountId());
+      AdvanceToScreen(GaiaView::kScreenId);
+      break;
+    case CryptohomeRecoveryScreen::Result::kManualRecovery:
+    case CryptohomeRecoveryScreen::Result::kNoRecoveryFactor:
+      ShowGaiaPasswordChangedScreen(
+          wizard_context_->user_context->GetAccountId(), false /*has_error*/);
+      break;
+  }
 }
 
 void WizardController::OnChoobeScreenExit(ChoobeScreen::Result result) {
