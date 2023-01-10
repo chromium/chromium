@@ -130,7 +130,7 @@ consoles.console_view(
     ("fuchsia-fyi-arm64-size", "gardener|p/chrome|arm64", "size"),
     ("fuchsia-fyi-astro", "gardener|hardware", "ast"),
     ("fuchsia-fyi-atlas", "fyi|hardware", "atl"),
-    ("fuchsia-fyi-sherlock", "fyi|hardware", "sher"),
+    ("fuchsia-fyi-sherlock", "gardener|hardware", "sher"),
     ("fuchsia-perf-ast", "gardener|hardware|perf", "ast"),
     ("fuchsia-perf-atlas-fyi", "fyi|hardware|perf", "atl"),
     ("fuchsia-perf-fyi", "fyi|hardware|perf", "ast"),
