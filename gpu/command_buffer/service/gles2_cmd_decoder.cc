@@ -121,6 +121,7 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "gpu/command_buffer/service/image_factory_native_pixmap.h"
+#include "ui/gl/gl_image_native_pixmap.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -485,7 +486,7 @@ class BackTexture {
 #if BUILDFLAG(IS_OZONE)
   // The image that backs the texture, if its backed by a native
   // GpuMemoryBuffer.
-  scoped_refptr<gl::GLImage> image_;
+  scoped_refptr<gl::GLImageNativePixmap> image_;
 #endif
 };
 
@@ -2498,9 +2499,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // Note: Creation of anonymous images is possible only on Ozone.
 #if BUILDFLAG(IS_OZONE)
   bool SupportsCreateAnonymousImage();
-  scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
-                                                  gfx::BufferFormat format,
-                                                  bool* is_cleared);
+  scoped_refptr<gl::GLImageNativePixmap> CreateAnonymousImage(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      bool* is_cleared);
 #endif
   unsigned int RequiredTextureTypeForAnonymousImage();
 
@@ -3240,7 +3242,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
     // duplicate BGRX_8888.
     buffer_format = gfx::BufferFormat::BGRX_8888;
   }
-  scoped_refptr<gl::GLImage> image =
+  scoped_refptr<gl::GLImageNativePixmap> image =
       decoder_->CreateAnonymousImage(size, buffer_format, &is_cleared);
   if (!image)
     return false;
@@ -19575,7 +19577,7 @@ bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
   return false;
 }
 
-scoped_refptr<gl::GLImage> GLES2DecoderImpl::CreateAnonymousImage(
+scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool* is_cleared) {

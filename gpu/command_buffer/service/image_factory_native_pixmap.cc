@@ -25,12 +25,12 @@ bool ImageFactoryNativePixmap::SupportsCreateAnonymousImage() const {
       .supports_native_pixmaps;
 }
 
-scoped_refptr<gl::GLImage> ImageFactoryNativePixmap::CreateAnonymousImage(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    SurfaceHandle surface_handle,
-    bool* is_cleared) {
+scoped_refptr<gl::GLImageNativePixmap>
+ImageFactoryNativePixmap::CreateAnonymousImage(const gfx::Size& size,
+                                               gfx::BufferFormat format,
+                                               gfx::BufferUsage usage,
+                                               SurfaceHandle surface_handle,
+                                               bool* is_cleared) {
   scoped_refptr<gfx::NativePixmap> pixmap;
   pixmap =
       ui::OzonePlatform::GetInstance()

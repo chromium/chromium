@@ -9,7 +9,7 @@
 #include "gpu/gpu_gles2_export.h"
 
 namespace gl {
-class GLImage;
+class GLImageNativePixmap;
 }
 
 namespace gpu {
@@ -27,11 +27,12 @@ class GPU_GLES2_EXPORT ImageFactoryNativePixmap : public ImageFactory {
   // client_id. It can't be passed to other processes. Used only by validating
   // command decoder to support NaCL swap chain.
   bool SupportsCreateAnonymousImage() const;
-  scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
-                                                  gfx::BufferFormat format,
-                                                  gfx::BufferUsage usage,
-                                                  SurfaceHandle surface_handle,
-                                                  bool* is_cleared);
+  scoped_refptr<gl::GLImageNativePixmap> CreateAnonymousImage(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      SurfaceHandle surface_handle,
+      bool* is_cleared);
 
   // Overridden from ImageFactory:
   unsigned RequiredTextureType() override;
