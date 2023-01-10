@@ -130,6 +130,8 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/constants/ash_switches.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
@@ -565,6 +567,18 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
                   "It probably means that something is wrong with a calling "
                   "code. Please report in http://crbug.com/361528 if you see "
                   "this message.";
+
+    // Taking metrics to make sure this code path is not used in production.
+    // TODO(crbug.com/1325210): Remove the following code, once we made sure
+    // they are not used in the production.
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      base::UmaHistogramBoolean(
+          "Ash.BrowserContext.UnexpectedGetPrimaryUserProfile", true);
+      // Also taking the stack trace, so we can identify who's the caller on
+      // unexpected cases.
+      base::debug::DumpWithoutCrashing();
+    }
+
     Profile* profile = ProfileManager::GetActiveUserProfile();
     if (profile && manager->IsLoggedInAsGuest())
       profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
