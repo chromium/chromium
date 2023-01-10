@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
@@ -306,9 +307,11 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+#if BUILDFLAG(IS_CT_SUPPORTED)
   void OnCanSendSCTAuditingReport(
       OnCanSendSCTAuditingReportCallback callback) override;
   void OnNewSCTAuditingReportSent() override;
+#endif
 
   // network::mojom::URLLoaderNetworkServiceObserver interface.
   void OnSSLCertificateError(const GURL& url,

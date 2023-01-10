@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
@@ -45,9 +46,11 @@ class CONTENT_EXPORT NetworkContextClientBase
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+#if BUILDFLAG(IS_CT_SUPPORTED)
   void OnCanSendSCTAuditingReport(
       OnCanSendSCTAuditingReportCallback callback) override;
   void OnNewSCTAuditingReportSent() override;
+#endif
 };
 
 }  // namespace content

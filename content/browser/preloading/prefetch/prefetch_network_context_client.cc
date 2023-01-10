@@ -52,11 +52,13 @@ void PrefetchNetworkContextClient::OnGenerateHttpNegotiateAuthToken(
 void PrefetchNetworkContextClient::OnTrustAnchorUsed() {}
 #endif
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
 void PrefetchNetworkContextClient::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {
   std::move(callback).Run(false);
 }
 
 void PrefetchNetworkContextClient::OnNewSCTAuditingReportSent() {}
+#endif
 
 }  // namespace content

@@ -139,11 +139,13 @@ void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
 void NetworkContextClientBase::OnTrustAnchorUsed() {}
 #endif
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
 void NetworkContextClientBase::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {
   std::move(callback).Run(false);
 }
 
 void NetworkContextClientBase::OnNewSCTAuditingReportSent() {}
+#endif
 
 }  // namespace content

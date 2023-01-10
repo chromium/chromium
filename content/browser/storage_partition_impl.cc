@@ -2147,6 +2147,7 @@ void StoragePartitionImpl::OnTrustAnchorUsed() {
 }
 #endif
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
 void StoragePartitionImpl::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {
   bool allowed =
@@ -2157,6 +2158,7 @@ void StoragePartitionImpl::OnCanSendSCTAuditingReport(
 void StoragePartitionImpl::OnNewSCTAuditingReportSent() {
   GetContentClient()->browser()->OnNewSCTAuditingReportSent(browser_context_);
 }
+#endif
 
 void StoragePartitionImpl::ClearDataImpl(
     uint32_t remove_mask,
