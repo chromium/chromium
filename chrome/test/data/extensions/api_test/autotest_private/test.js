@@ -109,6 +109,8 @@ var defaultTests = [
           chrome.test.assertTrue(status.hasOwnProperty("isLoggedIn"));
           chrome.test.assertTrue(status.hasOwnProperty("isOwner"));
           chrome.test.assertTrue(status.hasOwnProperty("isScreenLocked"));
+          chrome.test.assertTrue(
+              status.hasOwnProperty('isLockscreenWallpaperAnimating'));
           chrome.test.assertTrue(status.hasOwnProperty("isRegularUser"));
           chrome.test.assertTrue(status.hasOwnProperty("isGuest"));
           chrome.test.assertTrue(status.hasOwnProperty("isKiosk"));

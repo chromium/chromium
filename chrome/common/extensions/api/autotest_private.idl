@@ -142,6 +142,8 @@ namespace autotestPrivate {
     boolean isOwner;
     // Is the screen locked?
     boolean isScreenLocked;
+    // Is the wallpaper blur layer still animating in?
+    boolean isLockscreenWallpaperAnimating;
     // Is the screen ready for password?
     boolean isReadyForPassword;
 

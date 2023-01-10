@@ -43,8 +43,10 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shell.h"
+#include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/wm_event.h"
 #include "base/base64.h"
@@ -1380,6 +1382,11 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
     result.Set("isLoggedIn", user_manager->IsUserLoggedIn());
     result.Set("isOwner", user_manager->IsCurrentUserOwner());
     result.Set("isScreenLocked", is_screen_locked);
+    result.Set("isLockscreenWallpaperAnimating",
+               is_screen_locked && ash::Shell::Get()
+                                       ->GetPrimaryRootWindowController()
+                                       ->wallpaper_widget_controller()
+                                       ->IsAnimating());
     result.Set("isReadyForPassword",
                ash::LoginScreen::Get()->IsReadyForPassword());
     if (user_manager->IsUserLoggedIn()) {
