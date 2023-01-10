@@ -72,7 +72,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void RebuildBoxStates(const NGLineInfo&,
                         const NGInlineBreakToken*,
                         NGInlineLayoutStateStack*) const;
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   void CheckBoxStates(const NGLineInfo&, const NGInlineBreakToken*) const;
 #endif
 
@@ -153,7 +153,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   // https://quirks.spec.whatwg.org/#the-line-height-calculation-quirk
   unsigned quirks_mode_ : 1;
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   // True if |box_states_| is taken from |context_|, to check the |box_states_|
   // is the same as when it is rebuilt.
   bool is_box_states_from_context_ = false;

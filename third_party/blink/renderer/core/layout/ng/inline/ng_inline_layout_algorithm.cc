@@ -118,7 +118,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::HandleCloseTag(
 void NGInlineLayoutAlgorithm::PrepareBoxStates(
     const NGLineInfo& line_info,
     const NGInlineBreakToken* break_token) {
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   is_box_states_from_context_ = false;
 #endif
 
@@ -136,7 +136,7 @@ void NGInlineLayoutAlgorithm::PrepareBoxStates(
     box_states_ =
         context_->BoxStatesIfValidForItemIndex(items, break_token->ItemIndex());
     if (box_states_) {
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
       is_box_states_from_context_ = true;
 #endif
       return;
@@ -191,7 +191,7 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
   context_->ReleaseTempLogicalLineItems(line_box);
 }
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
 void NGInlineLayoutAlgorithm::CheckBoxStates(
     const NGLineInfo& line_info,
     const NGInlineBreakToken* break_token) const {
@@ -226,7 +226,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   box_states_->SetIsEmptyLine(line_info->IsEmptyLine());
   NGInlineBoxState* box = box_states_->OnBeginPlaceItems(
       Node(), line_style, baseline_type_, quirks_mode_, line_box);
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   if (is_box_states_from_context_)
     CheckBoxStates(*line_info, BreakToken());
 #endif
