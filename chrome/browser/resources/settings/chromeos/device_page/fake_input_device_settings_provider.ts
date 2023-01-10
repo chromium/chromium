@@ -4,13 +4,18 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardsObserverInterface} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, Touchpad, TouchpadObserverInterface} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
  * Implements a fake version of the FakePerDeviceKeyboardProvider mojo
  * interface.
  */
+
+interface InputDeviceType {
+  fakeKeyboards: Keyboard[];
+  fakeTouchpads: Touchpad[];
+}
 
 class FakeMethodState {
   private result = undefined;
@@ -38,11 +43,14 @@ export class FakeMethodResolver {
     this.methodMap.set(methodName, new FakeMethodState());
   }
 
-  setResult(methodName: string, result: Keyboard[]): void {
+  setResult<K extends keyof InputDeviceType, T>(
+      methodName: K,
+      result: InputDeviceType[K] extends T ? InputDeviceType[K]: never): void {
     this.getState(methodName).setResult(result);
   }
 
-  resolveMethod(methodName: string): Promise<Keyboard[]> {
+  resolveMethod<T extends keyof InputDeviceType>(methodName: T):
+      Promise<InputDeviceType[T]> {
     return this.getState(methodName).resolveMethod();
   }
 
@@ -60,6 +68,7 @@ export class FakeInputDeviceSettingsProvider implements
   constructor() {
     // Setup method resolvers.
     this.methods.register('fakeKeyboards');
+    this.methods.register('fakeTouchpads');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -70,7 +79,27 @@ export class FakeInputDeviceSettingsProvider implements
     return this.methods.resolveMethod('fakeKeyboards');
   }
 
-  observeKeyboardSettings(_observer: KeyboardsObserverInterface): void {
+  setFakeTouchpads(touchpads: Touchpad[]): void {
+    this.methods.setResult('fakeTouchpads', touchpads);
+  }
+
+  getFakeTouchpads(): Promise<Touchpad[]> {
+    return this.methods.resolveMethod('fakeTouchpads');
+  }
+
+  observeKeyboardSettings(_observer: KeyboardObserverInterface): void {
     // TODO(yyhyyh): Implement observeKeyboardSettings().
+  }
+
+  stopObserveKeyboardSettings(_observer: KeyboardObserverInterface): void {
+    // TODO(yyhyyh): Implement stopObserveKeyboardSettings().
+  }
+
+  observeTouchpadSettings(_observer: TouchpadObserverInterface): void {
+    // TODO(yyhyyh): Implement observeTouchpadSettings().
+  }
+
+  stopObserveTouchpadSettings(_observer: TouchpadObserverInterface): void {
+    // TODO(yyhyyh): Implement stopObserveTouchpadSettings().
   }
 }

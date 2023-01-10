@@ -33,4 +33,17 @@ suite('FakeInputDeviceSettings', function() {
     return provider.getFakeKeyboards().then(
         result => assertDeepEquals(fakeKeyboards, result));
   });
+
+  test('setFakeTouchpads', () => {
+    const fakeTouchpads = [{
+      id: 1,
+      name: 'fake-touchpad',
+      isExternal: false,
+      isHaptic: false,
+    }];
+
+    provider.setFakeTouchpads(fakeTouchpads);
+    return provider.getFakeTouchpads().then(
+        result => assertDeepEquals(fakeTouchpads, result));
+  });
 });
