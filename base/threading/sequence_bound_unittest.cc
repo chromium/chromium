@@ -709,18 +709,22 @@ namespace {
 class NoArgsVoidReturn {
  public:
   void Method() {
-    if (loop_)
+    if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
+    }
   }
   void ConstMethod() const {
-    if (loop_)
+    if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
+    }
   }
 
   void set_loop(RunLoop* loop) { loop_ = loop; }
 
  private:
-  raw_ptr<RunLoop> loop_ = nullptr;
+  mutable raw_ptr<RunLoop> loop_ = nullptr;
 };
 
 class NoArgsIntReturn {
@@ -737,22 +741,27 @@ class IntArgVoidReturn {
 
   void Method(int x) {
     *method_called_with_ = x;
-    if (loop_)
+    method_called_with_ = nullptr;
+    if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
+    }
   }
   void ConstMethod(int x) const {
     *const_method_called_with_ = x;
-    if (loop_)
+    const_method_called_with_ = nullptr;
+    if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
+    }
   }
 
   void set_loop(RunLoop* loop) { loop_ = loop; }
 
  private:
-  const raw_ptr<int> method_called_with_;
-  const raw_ptr<int> const_method_called_with_;
-
-  raw_ptr<RunLoop> loop_ = nullptr;
+  raw_ptr<int> method_called_with_;
+  mutable raw_ptr<int> const_method_called_with_;
+  mutable raw_ptr<RunLoop> loop_ = nullptr;
 };
 
 class IntArgIntReturn {
@@ -916,9 +925,11 @@ class IgnoreResultTestHelperWithNoArgs {
   int ConstMethod() const {
     if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
     }
     if (called_) {
       *called_ = true;
+      called_ = nullptr;
     }
     return 0;
   }
@@ -926,16 +937,18 @@ class IgnoreResultTestHelperWithNoArgs {
   int Method() {
     if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
     }
     if (called_) {
       *called_ = true;
+      called_ = nullptr;
     }
     return 0;
   }
 
  private:
-  const raw_ptr<RunLoop> loop_ = nullptr;
-  const raw_ptr<bool> called_ = nullptr;
+  mutable raw_ptr<RunLoop> loop_ = nullptr;
+  mutable raw_ptr<bool> called_ = nullptr;
 };
 
 TYPED_TEST(SequenceBoundTest, AsyncCallIgnoreResultNoArgs) {
@@ -983,27 +996,35 @@ TYPED_TEST(SequenceBoundTest, AsyncCallIgnoreResultThen) {
 class IgnoreResultTestHelperWithArgs {
  public:
   IgnoreResultTestHelperWithArgs(RunLoop* loop, int& value)
-      : loop_(loop), value_(value) {}
+      : loop_(loop), value_(&value) {}
 
   int ConstMethod(int arg) const {
-    *value_ = arg;
+    if (value_) {
+      *value_ = arg;
+      value_ = nullptr;
+    }
     if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
     }
     return arg;
   }
 
   int Method(int arg) {
-    *value_ = arg;
+    if (value_) {
+      *value_ = arg;
+      value_ = nullptr;
+    }
     if (loop_) {
       loop_->Quit();
+      loop_ = nullptr;
     }
     return arg;
   }
 
  private:
-  const raw_ptr<RunLoop> loop_ = nullptr;
-  const raw_ref<int> value_;
+  mutable raw_ptr<RunLoop> loop_ = nullptr;
+  mutable raw_ptr<int> value_;
 };
 
 TYPED_TEST(SequenceBoundTest, AsyncCallIgnoreResultWithArgs) {
