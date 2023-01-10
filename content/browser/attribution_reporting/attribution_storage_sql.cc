@@ -748,24 +748,40 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // and uses the greatest trigger_time to break ties. This favors sending
   // reports for report closer to the source time.
   static constexpr char kMinPrioritySql[] =
-      "SELECT priority,report_id "
+      "SELECT priority,trigger_time,report_id "
       "FROM event_level_reports "
-      "WHERE source_id=? AND report_time=? "
-      "ORDER BY priority ASC,trigger_time DESC "
-      "LIMIT 1";
+      "WHERE source_id=? AND report_time=?";
   sql::Statement min_priority_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kMinPrioritySql));
   min_priority_statement.BindInt64(0, *source.source_id());
   min_priority_statement.BindTime(1, report.report_time());
 
-  const bool has_matching_report = min_priority_statement.Step();
+  absl::optional<AttributionReport::EventLevelData::Id>
+      conversion_id_with_min_priority;
+  int64_t min_priority;
+  base::Time max_trigger_time;
+
+  while (min_priority_statement.Step()) {
+    int64_t priority = min_priority_statement.ColumnInt64(0);
+    base::Time trigger_time = min_priority_statement.ColumnTime(1);
+
+    if (!conversion_id_with_min_priority.has_value() ||
+        priority < min_priority ||
+        (priority == min_priority && trigger_time > max_trigger_time)) {
+      conversion_id_with_min_priority.emplace(
+          min_priority_statement.ColumnInt64(2));
+      min_priority = priority;
+      max_trigger_time = trigger_time;
+    }
+  }
+
   if (!min_priority_statement.Succeeded()) {
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
 
   // Deactivate the source at event-level as a new report will never be
   // generated in the future.
-  if (!has_matching_report) {
+  if (!conversion_id_with_min_priority.has_value()) {
     static constexpr char kDeactivateSql[] =
         "UPDATE sources SET event_level_active=0 WHERE source_id=?";
     sql::Statement deactivate_statement(
@@ -777,10 +793,6 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
                : MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
 
-  int64_t min_priority = min_priority_statement.ColumnInt64(0);
-  AttributionReport::EventLevelData::Id conversion_id_with_min_priority(
-      min_priority_statement.ColumnInt64(1));
-
   // If the new report's priority is less than all existing ones, or if its
   // priority is equal to the minimum existing one and it is more recent, drop
   // it. We could explicitly check the trigger time here, but it would only
@@ -791,13 +803,13 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   }
 
   absl::optional<AttributionReport> replaced =
-      GetReport(conversion_id_with_min_priority);
+      GetReport(*conversion_id_with_min_priority);
   if (!replaced.has_value()) {
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
 
   // Otherwise, delete the existing report with the lowest priority.
-  if (!DeleteReportInternal(conversion_id_with_min_priority)) {
+  if (!DeleteReportInternal(*conversion_id_with_min_priority)) {
     return MaybeReplaceLowerPriorityEventLevelReportResult::kError;
   }
 
