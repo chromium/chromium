@@ -26,9 +26,6 @@ BASE_FEATURE(kEnableWindowsGamingInputDataFetcher,
              "EnableWindowsGamingInputDataFetcher",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(https://crbug.com/1011006): When we enable this feature and enable the
-// permission policy of the Gamepad API, remove the fenced frame specific code
-// introduced by crrev.com/c/3403761.
 BASE_FEATURE(kRestrictGamepadAccess,
              "RestrictGamepadAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);

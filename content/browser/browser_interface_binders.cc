@@ -642,35 +642,6 @@ void BindSocketManager(
           std::move(receiver), frame->GetGlobalId());
 }
 
-void BindGamepadMonitor(
-    RenderFrameHostImpl* frame,
-    mojo::PendingReceiver<device::mojom::GamepadMonitor> receiver) {
-  // TODO(https://crbug.com/1011006): Remove fenced frame specific code when
-  // permission policy implements the Gamepad API support.
-  if (frame->IsNestedWithinFencedFrame()) {
-    bad_message::ReceivedBadMessage(
-        frame->GetProcess(), bad_message::BadMessageReason::
-                                 BIBI_BIND_GAMEPAD_MONITOR_FOR_FENCED_FRAME);
-    return;
-  }
-  device::GamepadMonitor::Create(std::move(receiver));
-}
-
-void BindGamepadHapticsManager(
-    RenderFrameHostImpl* frame,
-    mojo::PendingReceiver<device::mojom::GamepadHapticsManager> receiver) {
-  // TODO(https://crbug.com/1011006): Remove fenced frame specific code when
-  // permission policy implements the Gamepad API support.
-  if (frame->IsNestedWithinFencedFrame()) {
-    bad_message::ReceivedBadMessage(
-        frame->GetProcess(),
-        bad_message::BadMessageReason::
-            BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME);
-    return;
-  }
-  device::GamepadHapticsManager::Create(std::move(receiver));
-}
-
 }  // namespace
 
 // Documents/frames
@@ -731,7 +702,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   }
 
   map->Add<device::mojom::GamepadHapticsManager>(
-      base::BindRepeating(&BindGamepadHapticsManager, base::Unretained(host)));
+      base::BindRepeating(&device::GamepadHapticsManager::Create));
 
   map->Add<blink::mojom::GeolocationService>(base::BindRepeating(
       &RenderFrameHostImpl::GetGeolocationService, base::Unretained(host)));
@@ -832,7 +803,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
   map->Add<device::mojom::GamepadMonitor>(
-      base::BindRepeating(&BindGamepadMonitor, base::Unretained(host)));
+      base::BindRepeating(&device::GamepadMonitor::Create));
 
   map->Add<device::mojom::SensorProvider>(base::BindRepeating(
       &RenderFrameHostImpl::GetSensorProvider, base::Unretained(host)));

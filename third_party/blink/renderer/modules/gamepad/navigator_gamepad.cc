@@ -249,18 +249,11 @@ void NavigatorGamepad::Trace(Visitor* visitor) const {
 
 bool NavigatorGamepad::StartUpdatingIfAttached() {
   // The frame must be attached to start updating.
-  if (!DomWindow()) {
-    return false;
+  if (DomWindow()) {
+    StartUpdating();
+    return true;
   }
-
-  // TODO(https://crbug.com/1011006): Remove fenced frame specific code when
-  // permission policy implements the Gamepad API support.
-  if (DomWindow()->GetFrame()->IsInFencedFrameTree()) {
-    return false;
-  }
-
-  StartUpdating();
-  return true;
+  return false;
 }
 
 void NavigatorGamepad::DidUpdateData() {
