@@ -12,7 +12,7 @@ import {EarconId} from '../common/earcon_id.js';
 import {LogType} from '../common/log_types.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
-import {ChromeVoxState} from './chromevox_state.js';
+import {ChromeVoxRange} from './chromevox_range.js';
 import {EarconEngine} from './earcon_engine.js';
 import {LogStore} from './logging/log_store.js';
 
@@ -62,9 +62,8 @@ export class Earcons extends AbstractEarcons {
       LogStore.instance.writeTextLog(earcon, LogType.EARCON);
       console.log('Earcon ' + earcon);
     }
-    if (ChromeVoxState.instance.currentRange &&
-        ChromeVoxState.instance.currentRange.isValid()) {
-      const node = ChromeVoxState.instance.currentRange.start.node;
+    if (ChromeVoxRange.current && ChromeVoxRange.current.isValid()) {
+      const node = ChromeVoxRange.current.start.node;
       const rect = opt_location || node.location;
       const container = node.root.location;
       if (this.shouldPan_) {

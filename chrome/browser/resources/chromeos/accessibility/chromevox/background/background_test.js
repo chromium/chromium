@@ -595,8 +595,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldNotFocusIframe', async function() {
   iframe.addEventListener('focus', function() {
     didFocus = true;
   });
-  const b = ChromeVoxState.instance;
-  b.currentRange_ = CursorRange.fromNode(button);
+  ChromeVoxState.instance.currentRange_ = CursorRange.fromNode(button);
   doCmd('previousElement');
   assertFalse(didFocus);
 });
@@ -617,8 +616,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldFocusLink', async function() {
   link.addEventListener('focus', this.newCallback(function() {
     // Success
   }));
-  const b = ChromeVoxState.instance;
-  b.currentRange_ = CursorRange.fromNode(button);
+  ChromeVoxState.instance.currentRange_ = CursorRange.fromNode(button);
   doCmd('previousElement');
 });
 
@@ -1264,7 +1262,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NavigationMovesFocus', async function() {
   const root = await this.runWithLoadedTree(site);
   doCmd('nextEditText')();
   await this.waitForEvent(root.find({role: RoleType.TEXT_FIELD}), 'focus');
-  const textField = ChromeVoxState.instance.currentRange.start.node;
+  const textField = ChromeVoxRange.current.start.node;
   assertEquals(RoleType.TEXT_FIELD, textField.role);
   assertTrue(textField.state.focused);
 });
@@ -1440,7 +1438,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EditableKeyCommand', async function() {
   const root = await this.runWithLoadedTree(site);
   const assertCurNode = function(node) {
     return function() {
-      assertEquals(node, ChromeVoxState.instance.currentRange.start.node);
+      assertEquals(node, ChromeVoxRange.current.start.node);
     };
   };
 
@@ -1668,19 +1666,13 @@ AX_TEST_F(
       mockFeedback.expectSpeech('Button', 'has pop up', 'Collapsed')
           .call(doDefault(select))
           .expectSpeech('Expanded')
-          .call(
-              () => assertEquals(
-                  select, ChromeVoxState.instance.currentRange.start.node))
+          .call(() => assertEquals(select, ChromeVoxRange.current.start.node))
           .call(press(KeyCode.DOWN))
           .expectSpeech('grape', 'List item', ' 2 of 2 ')
-          .call(
-              () => assertEquals(
-                  select, ChromeVoxState.instance.currentRange.start.node))
+          .call(() => assertEquals(select, ChromeVoxRange.current.start.node))
           .call(press(KeyCode.UP))
           .expectSpeech('apple', 'List item', ' 1 of 2 ')
-          .call(
-              () => assertEquals(
-                  select, ChromeVoxState.instance.currentRange.start.node));
+          .call(() => assertEquals(select, ChromeVoxRange.current.start.node));
       await mockFeedback.replay();
     });
 
@@ -1909,8 +1901,7 @@ AX_TEST_F(
 
           // ChromeVox stays on the same node due to tree path recovery.
           .call(() => {
-            assertEquals(
-                'tab2', ChromeVoxState.instance.currentRange.start.node.name);
+            assertEquals('tab2', ChromeVoxRange.current.start.node.name);
           });
       await mockFeedback.replay();
     });
@@ -2150,9 +2141,8 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SimilarItemNavigation', async function() {
     <h3>outer2</h3>
   `;
   const root = await this.runWithLoadedTree(site);
-  assertEquals(
-      RoleType.LINK, ChromeVoxState.instance.currentRange.start.node.role);
-  assertEquals('inner', ChromeVoxState.instance.currentRange.start.node.name);
+  assertEquals(RoleType.LINK, ChromeVoxRange.current.start.node.role);
+  assertEquals('inner', ChromeVoxRange.current.start.node.name);
   mockFeedback.call(doCmd('nextSimilarItem'))
       .expectSpeech('outer1', 'Link')
       .call(doCmd('nextSimilarItem'))
@@ -2184,9 +2174,8 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigation', async function() {
   `;
 
   const root = await this.runWithLoadedTree(site);
-  assertEquals(
-      RoleType.LINK, ChromeVoxState.instance.currentRange.start.node.role);
-  assertEquals('inner', ChromeVoxState.instance.currentRange.start.node.name);
+  assertEquals(RoleType.LINK, ChromeVoxRange.current.start.node.role);
+  assertEquals('inner', ChromeVoxRange.current.start.node.name);
   mockFeedback.call(doCmd('nextInvalidItem'))
       .expectSpeech('txet', 'misspelled')
       .call(doCmd('nextInvalidItem'))
@@ -2218,10 +2207,8 @@ AX_TEST_F(
     <h3>outer2</h3>
   `;
       const root = await this.runWithLoadedTree(site);
-      assertEquals(
-          RoleType.LINK, ChromeVoxState.instance.currentRange.start.node.role);
-      assertEquals(
-          'inner', ChromeVoxState.instance.currentRange.start.node.name);
+      assertEquals(RoleType.LINK, ChromeVoxRange.current.start.node.role);
+      assertEquals('inner', ChromeVoxRange.current.start.node.name);
       mockFeedback.call(doCmd('nextInvalidItem'))
           .expectSpeech('No invalid item')
           .call(doCmd('previousInvalidItem'))
@@ -2834,9 +2821,9 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusOnUnknown', async function() {
   });
 
   const evt2 = new CustomAutomationEvent(EventType.FOCUS, group2);
-  const currentRange = ChromeVoxState.instance.currentRange;
+  const currentRange = ChromeVoxRange.current;
   DesktopAutomationInterface.instance.onFocus(evt2);
-  assertEquals(currentRange, ChromeVoxState.instance.currentRange);
+  assertEquals(currentRange, ChromeVoxRange.current);
 
   const evt1 = new CustomAutomationEvent(EventType.FOCUS, group1);
   mockFeedback
@@ -3244,8 +3231,7 @@ AX_TEST_F(
       const site = `<a tabindex=0></a><p>start</p><a tabindex=0></a><p>end</p>`;
       const root = await this.runWithLoadedTree(site);
       assertEquals(
-          RoleType.STATIC_TEXT,
-          ChromeVoxState.instance.currentRange.start.node.role);
+          RoleType.STATIC_TEXT, ChromeVoxRange.current.start.node.role);
 
       // "start" is uttered twice, once for the initial focus as the page loads,
       // and once during the 'read from here' command.
@@ -3315,8 +3301,7 @@ AX_TEST_F(
       p.doDefault();
       await TestUtils.waitForSpeech('grape');
       assertEquals(
-          RoleType.COMBO_BOX_SELECT,
-          ChromeVoxState.instance.currentRange.start.node.role);
+          RoleType.COMBO_BOX_SELECT, ChromeVoxRange.current.start.node.role);
 
       // Now, move focus to the application which is a parent of the select.
       application.focus();
@@ -3355,22 +3340,19 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'AriaLeaves', async function() {
       .expectSpeech('PM')
       .call(
           () => assertEquals(
-              RoleType.STATIC_TEXT,
-              ChromeVoxState.instance.currentRange.start.node.role))
+              RoleType.STATIC_TEXT, ChromeVoxRange.current.start.node.role))
 
       .call(doCmd('nextObject'))
       .expectSpeech('Agree, switch off')
       .call(
           () => assertEquals(
-              RoleType.SWITCH,
-              ChromeVoxState.instance.currentRange.start.node.role))
+              RoleType.SWITCH, ChromeVoxRange.current.start.node.role))
 
       .call(doCmd('nextObject'))
       .expectSpeech('Agree', 'Check box')
       .call(
           () => assertEquals(
-              RoleType.CHECK_BOX,
-              ChromeVoxState.instance.currentRange.start.node.role));
+              RoleType.CHECK_BOX, ChromeVoxRange.current.start.node.role));
 
   await mockFeedback.replay();
 });
@@ -3646,21 +3628,17 @@ AX_TEST_F(
           .call(clearCurrentRange)
           .call(toggleTalkBack)
           .call(nextObjectKeyboard)
-          .call(
-              () => assertFalse(Boolean(ChromeVoxState.instance.currentRange)))
+          .call(() => assertFalse(Boolean(ChromeVoxRange.current)))
 
           .call(nextObjectBraille)
-          .call(
-              () => assertFalse(Boolean(ChromeVoxState.instance.currentRange)))
+          .call(() => assertFalse(Boolean(ChromeVoxRange.current)))
 
           .call(nextObjectGesture)
-          .call(
-              () => assertFalse(Boolean(ChromeVoxState.instance.currentRange)))
+          .call(() => assertFalse(Boolean(ChromeVoxRange.current)))
 
           .call(toggleTalkBack)
           .call(nextObjectKeyboard)
-          .call(
-              () => assertTrue(Boolean(ChromeVoxState.instance.currentRange)));
+          .call(() => assertTrue(Boolean(ChromeVoxRange.current)));
 
       await mockFeedback.replay();
     });

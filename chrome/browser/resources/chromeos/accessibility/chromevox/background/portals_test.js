@@ -26,6 +26,8 @@ ChromeVoxPortalsTest = class extends ChromeVoxE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
+        'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
+    await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
 
     globalThis.EventType = chrome.automation.EventType;
@@ -86,12 +88,11 @@ AX_TEST_F('ChromeVoxPortalsTest', 'ShouldFocusPortal', async function() {
   assertEquals(RoleType.BUTTON, button.role);
 
   const afterPortalIsReady = this.newCallback(() => {
-    const chromeVoxState = ChromeVoxState.instance;
     portal.addEventListener(EventType.FOCUS, this.newCallback(function() {
-      assertEquals(portal, chromeVoxState.currentRange.start.node);
+      assertEquals(portal, ChromeVoxRange.current.start.node);
       // test is done.
     }));
-    assertEquals(button, chromeVoxState.currentRange.start.node);
+    assertEquals(button, ChromeVoxRange.current.start.node);
     doCmd('nextObject')();
   });
 

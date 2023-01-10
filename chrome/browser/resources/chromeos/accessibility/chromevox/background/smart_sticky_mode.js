@@ -162,8 +162,8 @@ export class SmartStickyMode {
     ChromeVoxPrefs.instance.setAndAnnounceStickyPref(
         !ChromeVoxPrefs.isStickyPrefOn);
 
-    if (ChromeVoxState.instance.currentRange) {
-      this.onStickyModeCommand_(ChromeVoxState.instance.currentRange);
+    if (ChromeVoxRange.current) {
+      this.onStickyModeCommand_(ChromeVoxRange.current);
     }
   }
 

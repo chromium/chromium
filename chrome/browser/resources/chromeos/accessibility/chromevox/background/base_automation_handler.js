@@ -10,6 +10,7 @@ import {CursorRange} from '../../common/cursors/range.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
+import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {EventSource} from './event_source.js';
 import {Output} from './output/output.js';
@@ -106,21 +107,21 @@ export class BaseAutomationHandler {
     ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(node));
 
     // Because Closure doesn't know this is non-null.
-    if (!ChromeVoxState.instance.currentRange) {
+    if (!ChromeVoxRange.current) {
       return;
     }
 
     // Don't output if focused node hasn't changed. Allow focus announcements
     // when interacting via touch. Touch never sets focus without a double tap.
     if (prevRange && evt.type === 'focus' &&
-        ChromeVoxState.instance.currentRange.equalsWithoutRecovery(prevRange) &&
+        ChromeVoxRange.current.equalsWithoutRecovery(prevRange) &&
         EventSource.get() !== EventSourceType.TOUCH_GESTURE) {
       return;
     }
 
     const output = new Output();
     output.withRichSpeechAndBraille(
-        ChromeVoxState.instance.currentRange, prevRange, evt.type);
+        ChromeVoxRange.current, prevRange, evt.type);
     output.go();
   }
 

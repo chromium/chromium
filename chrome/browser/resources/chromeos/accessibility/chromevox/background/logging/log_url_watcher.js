@@ -7,7 +7,6 @@
  * occur.
  */
 import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
-import {ChromeVoxState} from '../chromevox_state.js';
 
 import {LogStore} from './log_store.js';
 
@@ -20,10 +19,7 @@ export class LogUrlWatcher {
     LogUrlWatcher.instance = new LogUrlWatcher();
     ChromeVoxRange.addObserver(LogUrlWatcher.instance);
     // Initialize using the current range.
-    if (ChromeVoxState.instance) {
-      LogUrlWatcher.instance.onCurrentRangeChanged(
-          ChromeVoxState.instance.currentRange);
-    }
+    LogUrlWatcher.instance.onCurrentRangeChanged(ChromeVoxRange.current);
   }
 
   static destroy() {

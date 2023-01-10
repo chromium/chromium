@@ -14,7 +14,6 @@ import {Msgs} from '../common/msgs.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVoxRange, ChromeVoxRangeObserver} from './chromevox_range.js';
-import {ChromeVoxState} from './chromevox_state.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 import {FocusBounds} from './focus_bounds.js';
 import {Output} from './output/output.js';
@@ -121,7 +120,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       return;
     }
 
-    const prev = ChromeVoxState.instance.currentRange;
+    const prev = ChromeVoxRange.current;
     if (!prev) {
       return;
     }
@@ -226,7 +225,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onLocationChanged(evt) {
-    const cur = ChromeVoxState.instance.currentRange;
+    const cur = ChromeVoxRange.current;
     if (!cur || !cur.isValid()) {
       if (FocusBounds.get().length) {
         FocusBounds.set([]);

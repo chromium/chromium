@@ -21,6 +21,7 @@ import {QueueMode, TtsCategory} from '../common/tts_types.js';
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {AutomationObjectConstructorInstaller} from './automation_object_constructor_installer.js';
 import {ChromeVox} from './chromevox.js';
+import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
@@ -173,11 +174,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // It is possible that the user moved since we requested a hit test.  Bail
     // if the current range is valid and on the same page as the hit result
     // (but not the root).
-    if (ChromeVoxState.instance.currentRange &&
-        ChromeVoxState.instance.currentRange.start &&
-        ChromeVoxState.instance.currentRange.start.node &&
-        ChromeVoxState.instance.currentRange.start.node.root) {
-      const cur = ChromeVoxState.instance.currentRange.start.node;
+    if (ChromeVoxRange.current && ChromeVoxRange.current.start &&
+        ChromeVoxRange.current.start.node &&
+        ChromeVoxRange.current.start.node.root) {
+      const cur = ChromeVoxRange.current.start.node;
       if (cur.role !== RoleType.ROOT_WEB_AREA &&
           AutomationUtil.getTopLevelRoot(node) ===
               AutomationUtil.getTopLevelRoot(cur)) {
@@ -531,7 +531,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       return;
     }
 
-    if (!ChromeVoxState.instance.currentRange) {
+    if (!ChromeVoxRange.current) {
       this.onEventDefault(evt);
       ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(evt.target));
     }
@@ -581,8 +581,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     const target = evt.target;
     const fromDesktop = target.root.role === RoleType.DESKTOP;
     const onDesktop =
-        ChromeVoxState.instance.currentRange.start.node.root.role ===
-        RoleType.DESKTOP;
+        ChromeVoxRange.current.start.node.root.role === RoleType.DESKTOP;
     const isSlider = target.role === RoleType.SLIDER;
 
     // TODO(accessibility): get rid of callers who use value changes on list
@@ -597,7 +596,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     if (!target.state.focused && (!fromDesktop || (!isSlider && !isListBox)) &&
         !AutomationUtil.isDescendantOf(
-            ChromeVoxState.instance.currentRange.start.node, target)) {
+            ChromeVoxRange.current.start.node, target)) {
       return;
     }
 
@@ -630,7 +629,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
    * @param {!ChromeVoxEvent} evt
    */
   onScrollPositionChanged(evt) {
-    const currentRange = ChromeVoxState.instance.currentRange;
+    const currentRange = ChromeVoxRange.current;
     if (currentRange && currentRange.isValid()) {
       new Output().withLocation(currentRange, null, evt.type).go();
 
@@ -684,7 +683,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         // omnibox. We have to resort to this check to get tab switching read
         // out because on switching to a new tab, focus actually remains on the
         // *same* omnibox.
-        const currentRange = ChromeVoxState.instance.currentRange;
+        const currentRange = ChromeVoxRange.current;
         if (currentRange && currentRange.start && currentRange.start.node &&
             currentRange.start.node.className === 'OmniboxViewViews') {
           const range = CursorRange.fromNode(target);
@@ -784,9 +783,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       return;
     }
 
-    if (ChromeVoxState.instance.currentRange) {
+    if (ChromeVoxRange.current) {
       const target = evt.target;
-      const current = ChromeVoxState.instance.currentRange.start.node;
+      const current = ChromeVoxRange.current.start.node;
       if (AutomationUtil.getTopLevelRoot(current) !==
           AutomationUtil.getTopLevelRoot(target)) {
         // Ignore this event if the root of the target differs from that of the
@@ -810,9 +809,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       return false;
     }
 
-    if (!ChromeVoxState.instance.currentRange ||
-        !ChromeVoxState.instance.currentRange.start ||
-        !ChromeVoxState.instance.currentRange.start.node) {
+    if (!ChromeVoxRange.current || !ChromeVoxRange.current.start ||
+        !ChromeVoxRange.current.start.node) {
       return false;
     }
 
@@ -825,7 +823,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // Re-target the node to the root of the editable.
     let target = node;
     target = AutomationUtil.getEditableRoot(target);
-    let voxTarget = ChromeVoxState.instance.currentRange.start.node;
+    let voxTarget = ChromeVoxRange.current.start.node;
     voxTarget = AutomationUtil.getEditableRoot(voxTarget) || voxTarget;
 
     // It is possible that ChromeVox has range over some other node when a
@@ -859,9 +857,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     let curRoot;
-    if (ChromeVoxState.instance.currentRange) {
-      curRoot = AutomationUtil.getTopLevelRoot(
-          ChromeVoxState.instance.currentRange.start.node);
+    if (ChromeVoxRange.current) {
+      curRoot =
+          AutomationUtil.getTopLevelRoot(ChromeVoxRange.current.start.node);
     }
 
     // If initial focus was already placed inside this page (e.g. if a user
@@ -887,7 +885,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     // If range is already on |focus|, exit early to prevent duplicating output.
-    const currentRange = ChromeVoxState.instance.currentRange;
+    const currentRange = ChromeVoxRange.current;
     if (currentRange && currentRange.start && currentRange.start.node &&
         currentRange.start.node === focus) {
       return;
@@ -899,13 +897,11 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(focus));
-    if (!ChromeVoxState.instance.currentRange) {
+    if (!ChromeVoxRange.current) {
       return;
     }
 
-    o.withRichSpeechAndBraille(
-         ChromeVoxState.instance.currentRange, null, evt.type)
-        .go();
+    o.withRichSpeechAndBraille(ChromeVoxRange.current, null, evt.type).go();
   }
 
   /** Initializes global state for DesktopAutomationHandler. */

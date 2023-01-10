@@ -15,6 +15,8 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
 
     // Alphabetical based on file path.
     await importModule(
+        'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
+    await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         'CommandHandlerInterface',
@@ -243,7 +245,7 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenu', async function() {
 AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenuLongClick', async function() {
   await this.runWithLoadedTree(this.linksDoc);
   // Get the node that will be checked for actions.
-  const activeNode = ChromeVoxState.instance.currentRange.start.node;
+  const activeNode = ChromeVoxRange.current.start.node;
   // Override the standard actions to have long click.
   Object.defineProperty(activeNode, 'standardActions', {
     value: ['longClick'],

@@ -133,11 +133,10 @@ export class PanelBackground {
     }
     // TODO(accessibility): not sure if this actually works anymore since all
     // the refactoring.
-    if (!ChromeVoxState.instance.currentRange ||
-        !ChromeVoxState.instance.currentRange.start) {
+    if (!ChromeVoxRange.current || !ChromeVoxRange.current.start) {
       return;
     }
-    this.iSearch_ = new ISearch(ChromeVoxState.instance.currentRange.start);
+    this.iSearch_ = new ISearch(ChromeVoxRange.current.start);
     this.iSearch_.handler = this;
   }
 
@@ -298,8 +297,8 @@ export class PanelBackground {
 
   /** @private */
   saveCurrentNode_() {
-    if (ChromeVoxState.instance.currentRange) {
-      this.savedNode_ = ChromeVoxState.instance.currentRange.start.node;
+    if (ChromeVoxRange.current) {
+      this.savedNode_ = ChromeVoxRange.current.start.node;
     }
   }
 

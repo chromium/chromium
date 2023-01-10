@@ -7,6 +7,8 @@
  */
 import {CursorRange} from '../../common/cursors/range.js';
 
+import {ChromeVoxState} from './chromevox_state.js';
+
 /**
  * An interface implemented by objects to observe ChromeVox range changes.
  * @interface
@@ -40,6 +42,12 @@ export class ChromeVoxRange {
     if (index > -1) {
       ChromeVoxRange.observers_.splice(index, 1);
     }
+  }
+
+  /** @public {CursorRange} */
+  static get current() {
+    // TODO(anastasi): Move ownership of currentRange to ChromeVoxRange.
+    return ChromeVoxState.instance.currentRange;
   }
 
   /**

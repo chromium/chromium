@@ -12,6 +12,7 @@ import {CursorUnit} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
 
+import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 
@@ -74,11 +75,11 @@ export class AutoScrollHandler {
     }
 
     if (!target.start || !target.start.node ||
-        !ChromeVoxState.instance.currentRange.start.node) {
+        !ChromeVoxRange.current.start.node) {
       return true;
     }
 
-    const rangeBeforeScroll = ChromeVoxState.instance.currentRange;
+    const rangeBeforeScroll = ChromeVoxRange.current;
     let scrollable = this.findScrollableAncestor_(target);
 
     // At the beginning or the end of the document, there is a case where the
@@ -112,7 +113,7 @@ export class AutoScrollHandler {
   findScrollableAncestor_(target) {
     let scrollable = null;
     const ancestors = AutomationUtil.getUniqueAncestors(
-        target.start.node, ChromeVoxState.instance.currentRange.start.node);
+        target.start.node, ChromeVoxRange.current.start.node);
     for (let i = 0; i < ancestors.length; i++) {
       if (AutomationPredicate.autoScrollable(ancestors[i])) {
         scrollable = ancestors[i];
@@ -203,8 +204,8 @@ export class AutoScrollHandler {
 
     // If the focus has been changed for some reason, do nothing to
     // prevent disturbing the latest navigation.
-    if (!ChromeVoxState.instance.currentRange ||
-        !this.rangeBeforeScroll_.equals(ChromeVoxState.instance.currentRange)) {
+    if (!ChromeVoxRange.current ||
+        !this.rangeBeforeScroll_.equals(ChromeVoxRange.current)) {
       return;
     }
 

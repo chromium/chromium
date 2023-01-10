@@ -15,6 +15,7 @@ import {QueueMode} from '../common/tts_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVox} from './chromevox.js';
+import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {Output} from './output/output.js';
@@ -194,8 +195,8 @@ export class PointerHandler extends BaseAutomationHandler {
       return;
     }
 
-    if (ChromeVoxState.instance.currentRange &&
-        target === ChromeVoxState.instance.currentRange.start.node) {
+    if (ChromeVoxRange.current &&
+        target === ChromeVoxRange.current.start.node) {
       return;
     }
 
