@@ -571,16 +571,15 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurGetEffectState) {
 TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
   SimulateUserLogin("testuser@gmail.com");
 
-  // Activate `kOff`, verify that pref value is -1
-  // (`kBackgroundBlurLevelForDisabling`).
+  // Activate the possible values of
+  // `CameraEffectsController::BackgroundBlurEffectState`, verify that the pref
+  // value is the expected value of
+  // `CameraEffectsController::BackgroundBlurEffectState`.
   camera_effects_controller_->OnEffectControlActivated(
       static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur),
       CameraEffectsController::BackgroundBlurEffectState::kOff);
-  EXPECT_EQ(GetBackgroundBlurPref(), -1);
-
-  // Activate the rest of the possible values of
-  // `CameraEffectsController::BackgroundBlurEffectState`, verify that the pref
-  // value is the expected value of `cros::mojom::BlurLevel`.
+  EXPECT_EQ(GetBackgroundBlurPref(),
+            CameraEffectsController::BackgroundBlurEffectState::kOff);
   camera_effects_controller_->OnEffectControlActivated(
       static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur),
       CameraEffectsController::BackgroundBlurEffectState::kLowest);
@@ -610,7 +609,8 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
   // Passing an invalid background blur state is the same as activating
   // `kOff`.
   camera_effects_controller_->OnEffectControlActivated(
-      static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur), -999);
+      static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur),
+      absl::nullopt);
   EXPECT_EQ(GetBackgroundBlurPref(), -1);
 }
 
@@ -648,17 +648,20 @@ TEST_F(CameraEffectsControllerTest,
   // Activating the effect should toggle it to "true." The `value` argument
   // doesn't matter for toggle effects.
   camera_effects_controller_->OnEffectControlActivated(
-      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight), -999);
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
+      absl::nullopt);
   EXPECT_TRUE(GetPortraitRelightingPref());
 
   // Another toggle should set it to "false."
   camera_effects_controller_->OnEffectControlActivated(
-      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight), -999);
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
+      absl::nullopt);
   EXPECT_FALSE(GetPortraitRelightingPref());
 
   // And one more toggle should set it back to "true."
   camera_effects_controller_->OnEffectControlActivated(
-      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight), -999);
+      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
+      absl::nullopt);
   EXPECT_TRUE(GetPortraitRelightingPref());
 }
 

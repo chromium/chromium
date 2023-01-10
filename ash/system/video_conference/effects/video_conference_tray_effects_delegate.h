@@ -51,11 +51,14 @@ class ASH_EXPORT VcEffectsDelegate {
   // determined for `effect_id`, this function should return `absl::nullopt`.
   virtual absl::optional<int> GetEffectState(int effect_id) = 0;
 
-  // Invoked anytime the user makes an adjustment. `effect_id` is the unique ID
-  // of the hosted effect, and delegates that host only a single effect can
-  // safely ignore it. `value` is the integer value the user just set, which can
-  // be ignored if the effect is of type `kToggle`.
-  virtual void OnEffectControlActivated(int effect_id, int value) = 0;
+  // Invoked anytime the user makes an adjustment to an effect state. For
+  // delegates that host more than a single effect, `effect_id` is the unique ID
+  // of the activated effect. If only one effect is hosted, `effect_id` is
+  // ignored and `absl::nullopt` should be passed. Similarly, `state` should be
+  // `absl::nullopt` in cases (like toggle effects) where no specific state is
+  // being set, an integer value otherwise.
+  virtual void OnEffectControlActivated(absl::optional<int> effect_id,
+                                        absl::optional<int> state) = 0;
 
  private:
   // Effects are created by `VcEffectsDelegate` subclasses.

@@ -81,7 +81,8 @@ class ASH_EXPORT CameraEffectsController : public SessionObserver,
 
   // VcEffectsDelegate:
   absl::optional<int> GetEffectState(int effect_id) override;
-  void OnEffectControlActivated(int effect_id, int value) override;
+  void OnEffectControlActivated(absl::optional<int> effect_id,
+                                absl::optional<int> state) override;
 
   void set_effect_result_for_testing(
       cros::mojom::SetEffectResult effect_result_for_testing) {

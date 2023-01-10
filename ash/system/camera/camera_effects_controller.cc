@@ -297,14 +297,14 @@ absl::optional<int> CameraEffectsController::GetEffectState(int effect_id) {
   return absl::nullopt;
 }
 
-void CameraEffectsController::OnEffectControlActivated(int effect_id,
-                                                       int value) {
-  switch (effect_id) {
+void CameraEffectsController::OnEffectControlActivated(
+    absl::optional<int> effect_id,
+    absl::optional<int> state) {
+  DCHECK(effect_id.has_value());
+  switch (effect_id.value()) {
     case static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur): {
       DCHECK(pref_change_registrar_ && pref_change_registrar_->prefs());
-      if (!IsValidBackgroundBlurState(value)) {
-        LOG(ERROR) << __FUNCTION__ << " value " << value
-                   << " is not a valid background blur effect state";
+      if (!state.has_value() || !IsValidBackgroundBlurState(state.value())) {
         pref_change_registrar_->prefs()->SetInteger(
             prefs::kBackgroundBlur,
             static_cast<int>(BackgroundBlurEffectState::kOff));
@@ -312,7 +312,7 @@ void CameraEffectsController::OnEffectControlActivated(int effect_id,
       }
 
       pref_change_registrar_->prefs()->SetInteger(prefs::kBackgroundBlur,
-                                                  value);
+                                                  state.value());
       return;
     }
     case static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight):
@@ -562,7 +562,7 @@ void CameraEffectsController::InitializeEffectControls() {
             base::Unretained(this),
             /*effect_id=*/
             static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
-            /*value=*/0)));
+            /*value=*/absl::nullopt)));
     AddEffect(std::move(effect));
   }
 
