@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/hidden_network_handler.h"
+#include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
@@ -68,6 +69,7 @@ NetworkHandler::NetworkHandler()
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   connection_info_metrics_logger_.reset(new ConnectionInfoMetricsLogger());
   hidden_network_metrics_helper_.reset(new HiddenNetworkMetricsHelper());
+  hotspot_allowed_flag_handler_.reset(new HotspotAllowedFlagHandler());
   vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
   if (base::FeatureList::IsEnabled(features::kHiddenNetworkMigration)) {
     hidden_network_handler_.reset(new HiddenNetworkHandler());
@@ -135,6 +137,7 @@ void NetworkHandler::Init() {
     hidden_network_handler_->Init(managed_network_configuration_handler_.get(),
                                   network_state_handler_.get());
   }
+  hotspot_allowed_flag_handler_->Init();
   if (ash::features::IsHotspotEnabled()) {
     hotspot_state_handler_->Init(network_state_handler_.get());
     hotspot_controller_->Init(hotspot_state_handler_.get());
