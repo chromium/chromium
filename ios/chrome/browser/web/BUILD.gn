@@ -236,6 +236,7 @@ source_set("web_internal") {
     "//components/google/core/common",
     "//components/heap_profiling/in_process",
     "//components/language/core/browser",
+    "//components/language/ios/browser",
     "//components/metrics",
     "//components/metrics:call_stack_profile_params",
     "//components/metrics:child_call_stack_profile_builder",

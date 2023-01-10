@@ -8,8 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
+#import <vector>
+
 namespace web {
 
+class BrowserState;
 class JavaScriptFeature;
 class WebState;
 
@@ -53,6 +56,15 @@ NSString* GetPageScript(NSString* script_file_name);
 // Returns the JavaScript which defines __gCrWeb, __gCrWeb.common, and
 // __gCrWeb.message.
 NSString* GetSharedScripts();
+
+// Manually overrides the built in JavaScriptFeatures and those from
+// `GetWebClient()::GetJavaScriptFeatures()`. This is intended to be used to
+// replace an instance of a built in feature with one created by the test.
+// NOTE: Do not call this when using a WebClient with features you rely on or
+// `FakeWebClient::SetJavaScriptFeatures` as this will override those
+// features.
+void OverrideJavaScriptFeatures(web::BrowserState* browser_state,
+                                std::vector<JavaScriptFeature*> features);
 
 }  // namespace test
 }  // namespace web

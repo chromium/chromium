@@ -9,6 +9,8 @@ source_set("browser") {
     "ios_language_detection_tab_helper.mm",
     "ios_language_detection_tab_helper_observer_bridge.h",
     "ios_language_detection_tab_helper_observer_bridge.mm",
+    "language_detection_java_script_feature.h",
+    "language_detection_java_script_feature.mm",
     "string_clipping_util.cc",
     "string_clipping_util.h",
   ]

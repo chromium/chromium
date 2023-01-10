@@ -6,11 +6,10 @@
 
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
-#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
+#import "ios/web/public/test/js_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,17 +52,7 @@ std::unique_ptr<BrowserState> WebTest::CreateBrowserState() {
 
 void WebTest::OverrideJavaScriptFeatures(
     std::vector<JavaScriptFeature*> features) {
-  WKWebViewConfigurationProvider& configuration_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
-  WKWebViewConfiguration* configuration =
-      configuration_provider.GetWebViewConfiguration();
-  // User scripts must be removed because
-  // `JavaScriptFeatureManager::ConfigureFeatures` will remove script message
-  // handlers.
-  [configuration.userContentController removeAllUserScripts];
-
-  JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
-      ->ConfigureFeatures(features);
+  web::test::OverrideJavaScriptFeatures(GetBrowserState(), features);
 }
 
 web::WebClient* WebTest::GetWebClient() {

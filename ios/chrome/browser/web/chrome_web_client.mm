@@ -19,6 +19,7 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/dom_distiller/core/url_constants.h"
 #import "components/google/core/common/google_util.h"
+#import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/strings/grit/components_strings.h"
@@ -92,24 +93,6 @@ namespace {
 // The tag describing the product name with a placeholder for the version.
 const char kProductTagWithPlaceholder[] = "CriOS/%s";
 
-// Returns an autoreleased string containing the JavaScript loaded from a
-// bundled resource file with the given name (excluding extension).
-NSString* GetPageScript(NSString* script_file_name) {
-  DCHECK(script_file_name);
-  NSString* path =
-      [base::mac::FrameworkBundle() pathForResource:script_file_name
-                                             ofType:@"js"];
-  DCHECK(path) << "Script file not found: "
-               << base::SysNSStringToUTF8(script_file_name) << ".js";
-  NSError* error = nil;
-  NSString* content = [NSString stringWithContentsOfFile:path
-                                                encoding:NSUTF8StringEncoding
-                                                   error:&error];
-  DCHECK(!error) << "Error fetching script: "
-                 << base::SysNSStringToUTF8(error.description);
-  DCHECK(content);
-  return content;
-}
 // Returns the safe browsing error page HTML.
 NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
                                        int64_t navigation_id) {
@@ -320,18 +303,12 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(
       SearchEngineTabHelperFactory::GetInstance());
   features.push_back(SearchEngineJavaScriptFeature::GetInstance());
+  features.push_back(
+      language::LanguageDetectionJavaScriptFeature::GetInstance());
   features.push_back(translate::TranslateJavaScriptFeature::GetInstance());
   features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
   features.push_back(FollowJavaScriptFeature::GetInstance());
   return features;
-}
-
-NSString* ChromeWebClient::GetDocumentStartScriptForMainFrame(
-    web::BrowserState* browser_state) const {
-  NSMutableArray* scripts = [NSMutableArray array];
-  [scripts addObject:GetPageScript(@"language_detection")];
-
-  return [scripts componentsJoinedByString:@";"];
 }
 
 void ChromeWebClient::PrepareErrorPage(

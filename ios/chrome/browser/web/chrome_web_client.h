@@ -40,8 +40,6 @@ class ChromeWebClient : public web::WebClient {
       web::BrowserURLRewriter* rewriter) override;
   std::vector<web::JavaScriptFeature*> GetJavaScriptFeatures(
       web::BrowserState* browser_state) const override;
-  NSString* GetDocumentStartScriptForMainFrame(
-      web::BrowserState* browser_state) const override;
   void PrepareErrorPage(web::WebState* web_state,
                         const GURL& url,
                         NSError* error,

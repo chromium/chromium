@@ -121,7 +121,8 @@ __gCrWeb.languageDetection['getTextContent'] = function(node, maxLen) {
  * Detects if a page has content that needs translation and informs the native
  * side. The text content of a page is cached in
  * |__gCrWeb.languageDetection.bufferedTextContent| and retrieved at a later
- * time directly from the Obj-C side. This is to avoid using |invokeOnHost|.
+ * time directly from the Obj-C side. This is to avoid sending it back via
+ * async messaging.
  */
 __gCrWeb.languageDetection['detectLanguage'] = function() {
   // Constant for the maximum length of the extracted text returned by
@@ -139,17 +140,18 @@ __gCrWeb.languageDetection['detectLanguage'] = function() {
   const httpContentLanguage =
       __gCrWeb.languageDetection.getMetaContentByHttpEquiv('content-language');
   const textCapturedCommand = {
-    'command': 'languageDetection.textCaptured',
     'hasNoTranslate': false,
     'captureTextTime': captureTextTime,
     'htmlLang': document.documentElement.lang,
     'httpContentLanguage': httpContentLanguage,
+    'frameId': __gCrWeb.message.getFrameId(),
   };
 
   if (__gCrWeb.languageDetection.hasNoTranslate()) {
     textCapturedCommand['hasNoTranslate'] = true;
   }
-  __gCrWeb.message.invokeOnHost(textCapturedCommand);
+  __gCrWeb.common.sendWebKitMessage(
+      'LanguageDetectionTextCaptured', textCapturedCommand);
 };
 
 /**

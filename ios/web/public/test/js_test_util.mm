@@ -14,6 +14,7 @@
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/test/js_test_util_internal.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
+#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
@@ -100,6 +101,21 @@ NSString* GetSharedScripts() {
   return [NSString stringWithFormat:@"%@; %@; %@", GetPageScript(@"gcrweb"),
                                     GetPageScript(@"common"),
                                     GetPageScript(@"message")];
+}
+
+void OverrideJavaScriptFeatures(web::BrowserState* browser_state,
+                                std::vector<JavaScriptFeature*> features) {
+  WKWebViewConfigurationProvider& configuration_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(browser_state);
+  WKWebViewConfiguration* configuration =
+      configuration_provider.GetWebViewConfiguration();
+  // User scripts must be removed because
+  // `JavaScriptFeatureManager::ConfigureFeatures` will remove script message
+  // handlers.
+  [configuration.userContentController removeAllUserScripts];
+
+  JavaScriptFeatureManager::FromBrowserState(browser_state)
+      ->ConfigureFeatures(features);
 }
 
 }  // namespace test

@@ -11,6 +11,12 @@
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/translate/core/browser/translate_pref_names.h"
+#import "components/translate/core/common/language_detection_details.h"
+#import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/common/string_util.h"
@@ -27,6 +33,8 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForJSCompletionTimeout;
+
 namespace {
 
 const char kExpectedLanguage[] = "Foo";
@@ -39,6 +47,40 @@ NSString* GetLongString(NSUInteger length) {
                                                 encoding:NSASCIIStringEncoding];
   return long_string;
 }
+
+// A fake observer to track LanguageDetectionDetails received in
+// LanguageDetectionTabHelper::Observer.
+class FakeLanguageDetectionTabHelperObserver
+    : public language::IOSLanguageDetectionTabHelper::Observer {
+ public:
+  FakeLanguageDetectionTabHelperObserver() {}
+  ~FakeLanguageDetectionTabHelperObserver() override {}
+
+  FakeLanguageDetectionTabHelperObserver(
+      const FakeLanguageDetectionTabHelperObserver&) = delete;
+  FakeLanguageDetectionTabHelperObserver& operator=(
+      const FakeLanguageDetectionTabHelperObserver&) = delete;
+
+  // Returns the received LanguageDetectionDetails objects received from
+  // language::IOSLanguageDetectionTabHelper::Observer::OnLanguageDetermined
+  const std::vector<translate::LanguageDetectionDetails> received_details() {
+    return received_details_;
+  }
+
+  // Removes all items, if any, from `received_details`.
+  void ClearReceivedDetails() { received_details_.clear(); }
+
+ private:
+  // language::IOSLanguageDetectionTabHelper::Observer::OnLanguageDetermined:
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override {
+    received_details_.push_back(details);
+  }
+  void IOSLanguageDetectionTabHelperWasDestroyed(
+      language::IOSLanguageDetectionTabHelper* tab_helper) override {}
+
+  std::vector<translate::LanguageDetectionDetails> received_details_;
+};
 
 }  // namespace
 
@@ -106,6 +148,7 @@ class JsLanguageDetectionManagerTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<web::WebState> web_state_;
 };
 
@@ -268,26 +311,28 @@ class JsLanguageDetectionManagerDetectLanguageTest
  public:
   void SetUp() override {
     JsLanguageDetectionManagerTest::SetUp();
-    auto callback = base::BindRepeating(
-        &JsLanguageDetectionManagerDetectLanguageTest::CommandReceived,
-        base::Unretained(this));
-    subscription_ =
-        web_state()->AddScriptCommandCallback(callback, "languageDetection");
+
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    pref_service_->registry()->RegisterBooleanPref(
+        translate::prefs::kOfferTranslateEnabled, true);
+    language::IOSLanguageDetectionTabHelper::CreateForWebState(
+        web_state(), /*url_language_histogram=*/nullptr, &model_,
+        pref_service_.get());
+
+    language::IOSLanguageDetectionTabHelper::FromWebState(web_state())
+        ->AddObserver(&observer_);
   }
-  // Called when "languageDetection" command is received.
-  void CommandReceived(const base::Value& command,
-                       const GURL& url,
-                       bool user_is_interacting,
-                       web::WebFrame* sender_frame) {
-    commands_received_.push_back(command.Clone());
+
+  void TearDown() override {
+    language::IOSLanguageDetectionTabHelper::FromWebState(web_state())
+        ->RemoveObserver(&observer_);
+    JsLanguageDetectionManagerTest::TearDown();
   }
 
  protected:
-  // Received "languageDetection" commands.
-  std::vector<base::Value> commands_received_;
-
-  // Subscription for JS message.
-  base::CallbackListSubscription subscription_;
+  translate::LanguageDetectionModel model_;
+  FakeLanguageDetectionTabHelperObserver observer_;
 };
 
 // Tests if `__gCrWeb.languageDetection.hasNoTranslate` correctly informs the
@@ -302,27 +347,26 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
   web::test::LoadHtml(html, web_state());
   web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
                                web_state());
-  // Wait until the original injection has received a command.
-  base::test::ios::WaitUntilCondition(^bool() {
-    return !commands_received_.empty();
-  });
-  ASSERT_EQ(1U, commands_received_.size());
 
-  commands_received_.clear();
+  // Wait until the original injection has received a command.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForJSCompletionTimeout, ^bool() {
+        return !observer_.received_details().empty();
+      }));
+
+  ASSERT_EQ(1U, observer_.received_details().size());
+
+  observer_.ClearReceivedDetails();
 
   web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
                                web_state());
-  base::test::ios::WaitUntilCondition(^bool() {
-    return !commands_received_.empty();
-  });
-  ASSERT_EQ(1U, commands_received_.size());
-  const base::Value& value = commands_received_[0];
-  absl::optional<bool> has_notranslate = value.FindBoolKey("hasNoTranslate");
-  ASSERT_TRUE(has_notranslate);
-  EXPECT_TRUE(value.FindKey("captureTextTime"));
-  EXPECT_TRUE(value.FindKey("htmlLang"));
-  EXPECT_TRUE(value.FindKey("httpContentLanguage"));
-  EXPECT_TRUE(*has_notranslate);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForJSCompletionTimeout, ^bool() {
+        return !observer_.received_details().empty();
+      }));
+  ASSERT_EQ(1U, observer_.received_details().size());
+  translate::LanguageDetectionDetails details = observer_.received_details()[0];
+  ASSERT_TRUE(details.has_notranslate);
 }
 
 // Tests if `__gCrWeb.languageDetection.detectLanguage` correctly informs the
@@ -337,26 +381,20 @@ TEST_F(JsLanguageDetectionManagerDetectLanguageTest,
   web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
                                web_state());
   // Wait until the original injection has received a command.
-  base::test::ios::WaitUntilCondition(^bool() {
-    return !commands_received_.empty();
-  });
-  ASSERT_EQ(1U, commands_received_.size());
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForJSCompletionTimeout, ^bool() {
+        return !observer_.received_details().empty();
+      }));
 
-  commands_received_.clear();
+  observer_.ClearReceivedDetails();
 
   web::test::ExecuteJavaScript(@"__gCrWeb.languageDetection.detectLanguage()",
                                web_state());
-  base::test::ios::WaitUntilCondition(^bool() {
-    return !commands_received_.empty();
-  });
-  ASSERT_EQ(1U, commands_received_.size());
-  const base::Value& value = commands_received_[0];
-
-  absl::optional<bool> has_notranslate = value.FindBoolKey("hasNoTranslate");
-
-  ASSERT_TRUE(has_notranslate);
-  EXPECT_TRUE(value.FindKey("captureTextTime"));
-  EXPECT_TRUE(value.FindKey("htmlLang"));
-  EXPECT_TRUE(value.FindKey("httpContentLanguage"));
-  EXPECT_FALSE(*has_notranslate);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      kWaitForJSCompletionTimeout, ^bool() {
+        return !observer_.received_details().empty();
+      }));
+  ASSERT_EQ(1U, observer_.received_details().size());
+  translate::LanguageDetectionDetails details = observer_.received_details()[0];
+  ASSERT_FALSE(details.has_notranslate);
 }

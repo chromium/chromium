@@ -51,26 +51,6 @@
 #endif
 
 namespace ios_web_view {
-namespace {
-// Returns an autoreleased string containing the JavaScript loaded from a
-// bundled resource file with the given name (excluding extension).
-NSString* GetPageScript(NSString* script_file_name) {
-  DCHECK(script_file_name);
-  NSString* path =
-      [base::mac::FrameworkBundle() pathForResource:script_file_name
-                                             ofType:@"js"];
-  DCHECK(path) << "Script file not found: "
-               << base::SysNSStringToUTF8(script_file_name) << ".js";
-  NSError* error = nil;
-  NSString* content = [NSString stringWithContentsOfFile:path
-                                                encoding:NSUTF8StringEncoding
-                                                   error:&error];
-  DCHECK(!error) << "Error fetching script: "
-                 << base::SysNSStringToUTF8(error.description);
-  DCHECK(content);
-  return content;
-}
-}  // namespace
 
 WebViewWebClient::WebViewWebClient() = default;
 
@@ -123,15 +103,9 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
 
 NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
     web::BrowserState* browser_state) const {
-  NSMutableArray* scripts = [NSMutableArray array];
-
   WebViewEarlyPageScriptProvider& provider =
       WebViewEarlyPageScriptProvider::FromBrowserState(browser_state);
-  [scripts addObject:provider.GetScript()];
-
-  [scripts addObject:GetPageScript(@"language_detection")];
-
-  return [scripts componentsJoinedByString:@";"];
+  return provider.GetScript();
 }
 
 std::u16string WebViewWebClient::GetPluginNotSupportedText() const {
