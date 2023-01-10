@@ -99,8 +99,6 @@ absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
                         right_offset, bottom_offset, left_offset);
 }
 
-// TODO(vmpstr): This could be optimized by caching values for individual layout
-// boxes. However, it's unclear when the cache should be cleared.
 }  // namespace
 
 class ViewTransitionStyleTracker::ImageWrapperPseudoElement
@@ -920,25 +918,23 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {
-  bool has_animations = false;
-  auto accumulate_pseudo = [&has_animations](PseudoElement* pseudo_element) {
-    if (has_animations)
-      return;
-
+  auto pseudo_has_animation = [](PseudoElement* pseudo_element) {
     auto* animations = pseudo_element->GetElementAnimations();
-    if (!animations)
-      return;
+    if (!animations) {
+      return false;
+    }
 
     for (auto& animation_pair : animations->Animations()) {
       auto animation_play_state =
           animation_pair.key->CalculateAnimationPlayState();
-      has_animations = has_animations ||
-                       animation_play_state == Animation::kRunning ||
-                       animation_play_state == Animation::kPaused;
+      if (animation_play_state == Animation::kRunning ||
+          animation_play_state == Animation::kPaused) {
+        return true;
+      }
     }
+    return false;
   };
-  ViewTransitionUtils::ForEachTransitionPseudo(*document_, accumulate_pseudo);
-  return has_animations;
+  return !!ViewTransitionUtils::FindPseudoIf(*document_, pseudo_has_animation);
 }
 
 PaintPropertyChangeType ViewTransitionStyleTracker::UpdateEffect(
@@ -1443,6 +1439,8 @@ void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {
       visual_overflow_rect_in_layout_space;
 }
 
+// TODO(vmpstr): This could be optimized by caching values for individual layout
+// boxes. However, it's unclear when the cache should be cleared.
 PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     LayoutBoxModelObject& box,
     LayoutBoxModelObject* ancestor) {

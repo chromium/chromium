@@ -54,6 +54,54 @@ class CORE_EXPORT ViewTransitionUtils {
     }
   }
 
+  template <typename Functor>
+  static PseudoElement* FindPseudoIf(const Document& document,
+                                     const Functor& condition) {
+    auto* transition_pseudo =
+        document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
+    if (!transition_pseudo) {
+      return nullptr;
+    }
+    if (condition(transition_pseudo)) {
+      return transition_pseudo;
+    }
+
+    for (const auto& view_transition_name :
+         document.GetStyleEngine().ViewTransitionTags()) {
+      auto* container_pseudo = transition_pseudo->GetPseudoElement(
+          kPseudoIdViewTransitionGroup, view_transition_name);
+      if (!container_pseudo) {
+        continue;
+      }
+      if (condition(container_pseudo)) {
+        return container_pseudo;
+      }
+
+      auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
+          kPseudoIdViewTransitionImagePair, view_transition_name);
+      if (!wrapper_pseudo) {
+        continue;
+      }
+      if (condition(wrapper_pseudo)) {
+        return wrapper_pseudo;
+      }
+
+      if (auto* content = wrapper_pseudo->GetPseudoElement(
+              kPseudoIdViewTransitionOld, view_transition_name);
+          content && condition(content)) {
+        return content;
+      }
+
+      if (auto* content = wrapper_pseudo->GetPseudoElement(
+              kPseudoIdViewTransitionNew, view_transition_name);
+          content && condition(content)) {
+        return content;
+      }
+    }
+
+    return nullptr;
+  }
+
   static ViewTransition* GetActiveTransition(const Document& document) {
     auto* supplement = ViewTransitionSupplement::FromIfExists(document);
     if (!supplement)
