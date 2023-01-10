@@ -17,6 +17,7 @@
       <if expr="chromeos_ash">
         <include name="IDR_BRAILLE_IME_JS" file="chromeos/accessibility/braille_ime/braille_ime.js" type="BINDATA" />
         <include name="IDR_BRAILLE_IME_MAIN_JS" file="chromeos/accessibility/braille_ime/main.js" type="BINDATA" />
+        <include name="IDR_BRAILLE_IME_BACKGROUND_HTML" file="chromeos/accessibility/braille_ime/background.html" type="BINDATA" />
       </if>
 
       <!-- Hangout Services extension, included in Google Chrome builds only. -->

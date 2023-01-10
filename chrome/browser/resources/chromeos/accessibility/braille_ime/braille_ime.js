@@ -51,7 +51,7 @@
  *   through the normal event handling pipeline.
  */
 
-class BrailleIme {
+export class BrailleIme {
   constructor() {
     /**
      * Whether to enable extra debug logging for the IME.

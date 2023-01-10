@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrailleIme} from './braille_ime.js';
+
 /**
  * The Braille IME object.  Attached to the globalThis object for ease of
  * debugging.

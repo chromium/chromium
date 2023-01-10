@@ -113,6 +113,11 @@ BrailleImeUnitTest = class extends AccessibilityTestBase {
     }.bind(this);
     this.menuItems = null;
     this.port = null;
+  }
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('BrailleIme', '/braille_ime/braille_ime.js');
     this.ime = new BrailleIme();
     this.ime.init();
   }
@@ -142,10 +147,6 @@ BrailleImeUnitTest = class extends AccessibilityTestBase {
     return this.sendKeyEvent_('keyup', code, extra);
   }
 };
-
-/** @Override */
-BrailleImeUnitTest.prototype.extraLibraries = ['braille_ime.js'];
-
 
 TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
   this.activateIme();
