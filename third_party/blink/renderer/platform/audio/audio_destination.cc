@@ -90,16 +90,21 @@ AudioDestination::~AudioDestination() {
   Stop();
 }
 
-void AudioDestination::Render(const WebVector<float*>& destination_data,
-                              uint32_t number_of_frames,
-                              double delay,
-                              double delay_timestamp) {
+int AudioDestination::Render(base::TimeDelta delay,
+                             base::TimeTicks delay_timestamp,
+                             const media::AudioGlitchInfo& glitch_info,
+                             media::AudioBus* dest) {
+  const uint32_t number_of_frames = dest->frames();
+  const double delay_seconds = delay.InSecondsF();
+  const double delay_timestamp_seconds =
+      (delay_timestamp - base::TimeTicks()).InSecondsF();
+
   TRACE_EVENT_BEGIN1("webaudio", "AudioDestination::Render",
                      "callback_buffer_size", number_of_frames);
-  CHECK_EQ(destination_data.size(), number_of_output_channels_);
+  CHECK_EQ(static_cast<size_t>(dest->channels()), number_of_output_channels_);
   CHECK_EQ(number_of_frames, callback_buffer_size_);
 
-  if (!is_latency_metric_collected_ && delay != 0.0) {
+  if (!is_latency_metric_collected_ && delay_seconds != 0.0) {
     // With the advanced distribution profile for a Bluetooth device
     // (potentially devices with the largest latency), the known latency is
     // around 100 ~ 150ms. Using a "linear" histogram where all buckets are
@@ -107,7 +112,7 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
     base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
         "WebAudio.AudioDestination.HardwareOutputLatency", 0, 200, 100,
         base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(static_cast<int32_t>(delay * 1000));
+    histogram->Add(static_cast<int32_t>(delay_seconds * 1000));
     is_latency_metric_collected_ = true;
   }
 
@@ -120,14 +125,14 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
         "AudioDestination::Render - FIFO not ready or the size is too small",
         TRACE_EVENT_SCOPE_THREAD, "fifo length", fifo_ ? fifo_->length() : 0);
     TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
-                     delay_timestamp, "delay (s)", delay);
-    return;
+                     delay_timestamp_seconds, "delay (s)", delay_seconds);
+    return 0;
   }
 
   // Associate the destination data array with the output bus then fill the
   // FIFO.
   for (unsigned i = 0; i < number_of_output_channels_; ++i) {
-    output_bus_->SetChannelMemory(i, destination_data[i], number_of_frames);
+    output_bus_->SetChannelMemory(i, dest->channel(i), number_of_frames);
   }
 
   if (worklet_task_runner_) {
@@ -138,15 +143,23 @@ void AudioDestination::Render(const WebVector<float*>& destination_data,
         *worklet_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&AudioDestination::RequestRender,
                             WrapRefCounted(this), number_of_frames,
-                            frames_to_render, delay, delay_timestamp));
+                            frames_to_render, delay_seconds,
+                            delay_timestamp_seconds));
   } else {
     // Otherwise use the single-thread rendering.
     const size_t frames_to_render =
         fifo_->Pull(output_bus_.get(), number_of_frames);
-    RequestRender(number_of_frames, frames_to_render, delay, delay_timestamp);
+    RequestRender(number_of_frames, frames_to_render, delay_seconds,
+                  delay_timestamp_seconds);
   }
   TRACE_EVENT_END2("webaudio", "AudioDestination::Render", "timestamp (s)",
-                   delay_timestamp, "delay (s)", delay);
+                   delay_timestamp_seconds, "delay (s)", delay_seconds);
+
+  return number_of_frames;
+}
+
+void AudioDestination::OnRenderError() {
+  // TODO(crbug.com/1406088)
 }
 
 void AudioDestination::Start() {

@@ -32,7 +32,7 @@ class MockAudioRendererSink : public media::AudioRendererSink {
  public:
   explicit MockAudioRendererSink() = default;
   void Initialize(const media::AudioParameters& params,
-                  RenderCallback* callback) override {
+                  media::AudioRendererSink::RenderCallback* callback) override {
     callback_ = callback;
   }
   MOCK_METHOD(void, Start, (), (override));
@@ -75,7 +75,7 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
       media::ChannelLayout layout,
       int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
-      blink::WebAudioDevice::RenderCallback* callback,
+      media::AudioRendererSink::RenderCallback* callback,
       const base::UnguessableToken& session_id,
       CreateSilentSinkCallback silent_sink_callback)
       : RendererWebAudioDeviceImpl(
@@ -92,17 +92,19 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
 }  // namespace
 
 class RendererWebAudioDeviceImplTest
-    : public blink::WebAudioDevice::RenderCallback,
+    : public media::AudioRendererSink::RenderCallback,
       public blink::AudioDeviceFactory,
       public testing::Test {
  public:
-  MOCK_METHOD(void,
+  MOCK_METHOD(int,
               Render,
-              (const blink::WebVector<float*>& destination_data,
-               uint32_t number_of_frames,
-               double delay,
-               double delay_timestamp),
+              (base::TimeDelta delay,
+               base::TimeTicks delay_timestamp,
+               const media::AudioGlitchInfo& glitch_info,
+               media::AudioBus* dest),
               (override));
+
+  void OnRenderError() override {}
 
  protected:
   RendererWebAudioDeviceImplTest() {

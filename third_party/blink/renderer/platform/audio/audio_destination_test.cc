@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/audio/audio_destination.h"
 
 #include <memory>
+
+#include "media/base/audio_glitch_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
@@ -43,7 +45,7 @@ class TestPlatform : public TestingPlatformSupport {
       const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
-      WebAudioDevice::RenderCallback*) override {
+      media::AudioRendererSink::RenderCallback*) override {
     return std::make_unique<MockWebAudioDevice>(AudioHardwareSampleRate(),
                                                 AudioHardwareBufferSize());
   }
@@ -82,13 +84,9 @@ void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {
       callback, sink_descriptor, channel_count, latency_hint, sample_rate, 128);
   destination->Start();
 
-  Vector<float> channels[channel_count];
-  WebVector<float*> dest_data(static_cast<size_t>(channel_count));
-  for (int i = 0; i < channel_count; ++i) {
-    channels[i].resize(request_frames);
-    dest_data[i] = channels[i].data();
-  }
-  destination->Render(dest_data, request_frames, 0, 0);
+  destination->Render(
+      base::TimeDelta::Min(), base::TimeTicks::Now(), {},
+      media::AudioBus::Create(channel_count, request_frames).get());
 
   int exact_frames_required =
       std::ceil(request_frames * destination->SampleRate() /

@@ -35,7 +35,6 @@ using blink::WebAudioDevice;
 using blink::WebAudioLatencyHint;
 using blink::WebAudioSinkDescriptor;
 using blink::WebLocalFrame;
-using blink::WebVector;
 using blink::WebView;
 
 namespace content {
@@ -112,7 +111,7 @@ std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
     media::ChannelLayout layout,
     int number_of_output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
-    WebAudioDevice::RenderCallback* callback,
+    media::AudioRendererSink::RenderCallback* callback,
     const base::UnguessableToken& session_id) {
   return std::unique_ptr<RendererWebAudioDeviceImpl>(
       new RendererWebAudioDeviceImpl(
@@ -126,7 +125,7 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     media::ChannelLayout layout,
     int number_of_output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
-    WebAudioDevice::RenderCallback* callback,
+    media::AudioRendererSink::RenderCallback* callback,
     const base::UnguessableToken& session_id,
     OutputDeviceParamsCallback device_params_cb,
     CreateSilentSinkCallback create_silent_sink_cb)
@@ -180,9 +179,6 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
   SendLogMessage(
       base::StringPrintf("%s => (sink_params=[%s])", __func__,
                          sink_params_.AsHumanReadableString().c_str()));
-
-  web_audio_dest_data_ =
-      blink::WebVector<float*>(static_cast<size_t>(sink_params_.channels()));
 }
 
 RendererWebAudioDeviceImpl::~RendererWebAudioDeviceImpl() {
@@ -271,22 +267,13 @@ int RendererWebAudioDeviceImpl::Render(
     base::TimeTicks delay_timestamp,
     const media::AudioGlitchInfo& glitch_info,
     media::AudioBus* dest) {
-  // Wrap the output pointers using WebVector.
-  CHECK_EQ(dest->channels(), sink_params_.channels());
-  for (int i = 0; i < dest->channels(); ++i)
-    web_audio_dest_data_[i] = dest->channel(i);
-
-  client_callback_->Render(web_audio_dest_data_, dest->frames(),
-                           delay.InSecondsF(),
-                           (delay_timestamp - base::TimeTicks()).InSecondsF());
-
   if (!is_rendering_) {
     SendLogMessage(base::StringPrintf("%s => (rendering is alive [frames=%d])",
                                       __func__, dest->frames()));
     is_rendering_ = true;
   }
 
-  return dest->frames();
+  return client_callback_->Render(delay, delay_timestamp, glitch_info, dest);
 }
 
 void RendererWebAudioDeviceImpl::OnRenderError() {

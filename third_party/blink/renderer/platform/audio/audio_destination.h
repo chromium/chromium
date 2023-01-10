@@ -34,6 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_renderer_sink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -64,7 +65,7 @@ class WebAudioSinkDescriptor;
 //    AudioWorkletThread.
 class PLATFORM_EXPORT AudioDestination final
     : public ThreadSafeRefCounted<AudioDestination>,
-      public WebAudioDevice::RenderCallback {
+      public media::AudioRendererSink::RenderCallback {
   USING_FAST_MALLOC(AudioDestination);
 
  public:
@@ -88,12 +89,14 @@ class PLATFORM_EXPORT AudioDestination final
   AudioDestination& operator=(const AudioDestination&) = delete;
   ~AudioDestination() override;
 
-  // The actual render function (WebAudioDevice::RenderCallback) isochronously
-  // invoked by the media renderer. This is never called after Stop() is called.
-  void Render(const WebVector<float*>& destination_data,
-              uint32_t number_of_frames,
-              double delay,
-              double delay_timestamp) override;
+  // The actual render function isochronously invoked by the media
+  // renderer. This is never called after Stop() is called.
+  int Render(base::TimeDelta delay,
+             base::TimeTicks delay_timestamp,
+             const media::AudioGlitchInfo& glitch_info,
+             media::AudioBus* dest) override;
+
+  void OnRenderError() override;
 
   void Start();
   void Stop();

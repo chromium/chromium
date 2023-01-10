@@ -7,6 +7,8 @@ include_rules = [
 
     # Dependencies.
     "+media/base/audio_bus.h",
+    "+media/base/audio_glitch_info.h",
+    "+media/base/audio_renderer_sink.h",
     "+media/base/multi_channel_resampler.h",
     "+third_party/blink/renderer/platform/cpu/mips/common_macros_msa.h",
     "+third_party/blink/renderer/platform/wtf/cross_thread_functional.h",

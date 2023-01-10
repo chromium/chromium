@@ -214,7 +214,7 @@ class BLINK_PLATFORM_EXPORT Platform {
       const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
-      WebAudioDevice::RenderCallback*) {
+      media::AudioRendererSink::RenderCallback*) {
     return nullptr;
   }
 
