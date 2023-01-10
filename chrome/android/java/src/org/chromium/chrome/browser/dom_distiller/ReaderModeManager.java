@@ -551,7 +551,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                                 .with(MessageBannerProperties.TITLE,
                                         resources.getString(R.string.reader_mode_message_title))
                                 .with(MessageBannerProperties.ICON_RESOURCE_ID,
-                                        R.drawable.infobar_mobile_friendly)
+                                        R.drawable.ic_mobile_friendly)
                                 .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                         resources.getString(R.string.reader_mode_message_button))
                                 .with(MessageBannerProperties.ON_PRIMARY_ACTION,

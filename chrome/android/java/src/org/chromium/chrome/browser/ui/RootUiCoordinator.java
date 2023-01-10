@@ -1094,7 +1094,7 @@ public class RootUiCoordinator
                     new ReaderModeToolbarButtonController(mActivityTabProvider,
                             mModalDialogManagerSupplier.get(),
                             AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.infobar_mobile_friendly));
+                                    mActivity, R.drawable.ic_mobile_friendly));
             ShareButtonController shareButtonController = new ShareButtonController(
                     AppCompatResources.getDrawable(
                             mActivity, R.drawable.ic_toolbar_share_offset_24dp),

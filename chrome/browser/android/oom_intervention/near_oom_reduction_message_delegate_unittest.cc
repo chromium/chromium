@@ -85,9 +85,8 @@ TEST_F(NearOomReductionMessageDelegateTest, MessagePropertyValues) {
       GetMessageWrapper()->GetDescription());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SHOW_CONTENT),
             GetMessageWrapper()->GetPrimaryButtonText());
-  EXPECT_EQ(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_MOBILE_FRIENDLY),
-      GetMessageWrapper()->GetIconResourceId());
+  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_IC_MOBILE_FRIENDLY),
+            GetMessageWrapper()->GetIconResourceId());
 
   DismissMessage();
 }  // namespace oom_intervention
