@@ -22,20 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="DigitalGoods.CrossSite" enum="Boolean"
-    expires_after="2023-01-22">
-  <owner>glenrob@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records whether the |GetDigitalGoodsService| method was called from a
-    cross-site sub-frame. This metric is emitted when the cross-site check is
-    made in the renderer, i.e. only when the payment method is non-empty and the
-    script context is not being destroyed.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.CheckoutFunnel"
     enum="PaymentRequestCheckoutFunnelSteps" expires_after="2023-05-27">
   <owner>rouslan@chromium.org</owner>

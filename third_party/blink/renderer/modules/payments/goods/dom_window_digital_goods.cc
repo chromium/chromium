@@ -82,8 +82,6 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
     return promise;
   }
 
-  base::UmaHistogramBoolean("DigitalGoods.CrossSite",
-                            window.IsCrossSiteSubframeIncludingScheme());
   if (window.IsCrossSiteSubframeIncludingScheme()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
