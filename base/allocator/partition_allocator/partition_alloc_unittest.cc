@@ -105,12 +105,14 @@ bool SetAddressSpaceLimit() {
   // https://crbug.com/674665.
   const size_t kAddressSpaceLimit = static_cast<size_t>(6144) * 1024 * 1024;
   struct rlimit limit;
-  if (getrlimit(RLIMIT_DATA, &limit) != 0)
+  if (getrlimit(RLIMIT_DATA, &limit) != 0) {
     return false;
+  }
   if (limit.rlim_cur == RLIM_INFINITY || limit.rlim_cur > kAddressSpaceLimit) {
     limit.rlim_cur = kAddressSpaceLimit;
-    if (setrlimit(RLIMIT_DATA, &limit) != 0)
+    if (setrlimit(RLIMIT_DATA, &limit) != 0) {
       return false;
+    }
   }
   return true;
 #else
@@ -123,11 +125,13 @@ bool ClearAddressSpaceLimit() {
   return true;
 #elif BUILDFLAG(IS_POSIX)
   struct rlimit limit;
-  if (getrlimit(RLIMIT_DATA, &limit) != 0)
+  if (getrlimit(RLIMIT_DATA, &limit) != 0) {
     return false;
+  }
   limit.rlim_cur = limit.rlim_max;
-  if (setrlimit(RLIMIT_DATA, &limit) != 0)
+  if (setrlimit(RLIMIT_DATA, &limit) != 0) {
     return false;
+  }
   return true;
 #else
   return false;
@@ -161,8 +165,9 @@ void AllocateRandomly(
   }
 
   for (size_t i = 0; i < count; ++i) {
-    if (allocations[i])
+    if (allocations[i]) {
       root->Free(allocations[i]);
+    }
   }
 }
 
@@ -456,16 +461,18 @@ class PartitionAllocTest
     for (i = 0; i < num_slots; ++i) {
       void* ptr = allocator.root()->Alloc(size, type_name);
       EXPECT_TRUE(ptr);
-      if (!i)
+      if (!i) {
         first = allocator.root()->ObjectToSlotStart(ptr);
-      else if (i == num_slots - 1)
+      } else if (i == num_slots - 1) {
         last = allocator.root()->ObjectToSlotStart(ptr);
+      }
     }
     EXPECT_EQ(SlotSpan::FromSlotStart(first), SlotSpan::FromSlotStart(last));
     if (bucket->num_system_pages_per_slot_span ==
-        NumSystemPagesPerPartitionPage())
+        NumSystemPagesPerPartitionPage()) {
       EXPECT_EQ(first & PartitionPageBaseMask(),
                 last & PartitionPageBaseMask());
+    }
     EXPECT_EQ(num_slots, bucket->active_slot_spans_head->num_allocated_slots);
     EXPECT_EQ(nullptr, bucket->active_slot_spans_head->get_freelist_head());
     EXPECT_TRUE(bucket->is_valid());
@@ -537,8 +544,9 @@ class PartitionAllocTest
         }
       }
 
-      if (!i)
+      if (!i) {
         EXPECT_TRUE(ptrs[0]);
+      }
       if (!ptrs[i]) {
         ptrs[i] = allocator.root()->AllocWithFlags(AllocFlags::kReturnNull,
                                                    alloc_size, type_name);
@@ -669,8 +677,9 @@ class MockPartitionStatsDumper : public PartitionStatsDumper {
 
   const PartitionBucketMemoryStats* GetBucketStats(size_t bucket_size) {
     for (auto& stat : bucket_stats) {
-      if (stat.bucket_slot_size == bucket_size)
+      if (stat.bucket_slot_size == bucket_size) {
         return &stat;
+      }
     }
     return nullptr;
   }
@@ -947,8 +956,9 @@ TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
   }
   EXPECT_EQ(slot_spans[num_to_fill_free_list_slot_span - 1],
             bucket->active_slot_spans_head);
-  for (i = 0; i < num_to_fill_free_list_slot_span; ++i)
+  for (i = 0; i < num_to_fill_free_list_slot_span; ++i) {
     FreeFullSlotSpan(allocator.root(), slot_spans[i]);
+  }
   EXPECT_EQ(SlotSpan::get_sentinel_slot_span(), bucket->active_slot_spans_head);
   EXPECT_TRUE(bucket->empty_slot_spans_head);
 
@@ -966,8 +976,9 @@ TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
   EXPECT_EQ(slot_spans[num_to_fill_free_list_slot_span - 1],
             bucket->active_slot_spans_head);
 
-  for (i = 0; i < num_to_fill_free_list_slot_span; ++i)
+  for (i = 0; i < num_to_fill_free_list_slot_span; ++i) {
     FreeFullSlotSpan(allocator.root(), slot_spans[i]);
+  }
   EXPECT_EQ(SlotSpan::get_sentinel_slot_span(), bucket->active_slot_spans_head);
   EXPECT_TRUE(bucket->empty_slot_spans_head);
 }
@@ -993,8 +1004,9 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
   for (i = 0; i < num_slot_spans_needed; ++i) {
     slot_spans[i] = GetFullSlotSpan(kTestAllocSize);
     uintptr_t slot_span_start = SlotSpan::ToSlotSpanStart(slot_spans[i]);
-    if (!i)
+    if (!i) {
       first_super_page_base = slot_span_start & kSuperPageBaseMask;
+    }
     if (i == num_slot_spans_needed - 1) {
       uintptr_t second_super_page_base = slot_span_start & kSuperPageBaseMask;
       uintptr_t second_super_page_offset =
@@ -1008,8 +1020,9 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
                 second_super_page_offset);
     }
   }
-  for (i = 0; i < num_slot_spans_needed; ++i)
+  for (i = 0; i < num_slot_spans_needed; ++i) {
     FreeFullSlotSpan(allocator.root(), slot_spans[i]);
+  }
 }
 
 // Test the generic allocation functions that can handle arbitrary sizes and
@@ -1388,8 +1401,9 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 TEST_P(PartitionAllocTest, IsValidPtrDelta) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   const size_t kMinReasonableTestSize =
       partition_alloc::internal::base::bits::AlignUp(
@@ -1496,14 +1510,16 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
           PtrPosWithinAlloc::kFarOOB);
     }
 
-    for (void* ptr : ptrs)
+    for (void* ptr : ptrs) {
       allocator.root()->Free(ptr);
+    }
   }
 }
 
 TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   auto* root = allocator.root();
   // Find the smallest bucket with multiple PartitionPages. When searching for
@@ -1514,10 +1530,12 @@ TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
   size_t real_size = 0;
   for (const auto& bucket : root->buckets) {
     if ((root->buckets + SizeToIndex(bucket.slot_size))->slot_size !=
-        bucket.slot_size)
+        bucket.slot_size) {
       continue;
-    if (bucket.slot_size <= ExtraAllocSize(allocator))
+    }
+    if (bucket.slot_size <= ExtraAllocSize(allocator)) {
       continue;
+    }
     if (bucket.num_system_pages_per_slot_span >
         NumSystemPagesPerPartitionPage()) {
       real_size = bucket.slot_size;
@@ -2062,8 +2080,9 @@ TEST_P(PartitionAllocTest, MappingCollision) {
       std::make_unique<SlotSpan*[]>(num_partition_pages_needed);
 
   size_t i;
-  for (i = 0; i < num_partition_pages_needed; ++i)
+  for (i = 0; i < num_partition_pages_needed; ++i) {
     first_super_page_pages[i] = GetFullSlotSpan(kTestAllocSize);
+  }
 
   uintptr_t slot_span_start =
       SlotSpan::ToSlotSpanStart(first_super_page_pages[0]);
@@ -2092,8 +2111,9 @@ TEST_P(PartitionAllocTest, MappingCollision) {
                  PageTag::kPartitionAlloc);
   EXPECT_TRUE(map2);
 
-  for (i = 0; i < num_partition_pages_needed; ++i)
+  for (i = 0; i < num_partition_pages_needed; ++i) {
     second_super_page_pages[i] = GetFullSlotSpan(kTestAllocSize);
+  }
 
   FreePages(map1, PageAllocationGranularity());
   FreePages(map2, PageAllocationGranularity());
@@ -2303,9 +2323,10 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 //
 // Disable these test on Windows, since they run slower, so tend to timout and
 // cause flake.
-#if !BUILDFLAG(IS_WIN) &&          \
-    (!defined(ARCH_CPU_64_BITS) || \
-     (BUILDFLAG(IS_POSIX) && !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)))) || \
+#if !BUILDFLAG(IS_WIN) &&                                      \
+        (!defined(ARCH_CPU_64_BITS) ||                         \
+         (BUILDFLAG(IS_POSIX) &&                               \
+          !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)))) || \
     BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_RepeatedAllocReturnNullDirect RepeatedAllocReturnNullDirect
 #define MAYBE_RepeatedReallocReturnNullDirect RepeatedReallocReturnNullDirect
@@ -3186,15 +3207,18 @@ TEST_P(PartitionAllocTest, PurgeDiscardableManyPages) {
   EXPECT_EQ(kSecondAllocPages * SystemPageSize(), stats->active_bytes);
   EXPECT_EQ(kFirstAllocPages * SystemPageSize(), stats->resident_bytes);
 
-  for (size_t i = 0; i < kFirstAllocPages; i++)
+  for (size_t i = 0; i < kFirstAllocPages; i++) {
     CHECK_PAGE_IN_CORE(p.PageAtIndex(i), true);
+  }
 
   allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
 
-  for (size_t i = 0; i < kSecondAllocPages; i++)
+  for (size_t i = 0; i < kSecondAllocPages; i++) {
     CHECK_PAGE_IN_CORE(p.PageAtIndex(i), true);
-  for (size_t i = kSecondAllocPages; i < kFirstAllocPages; i++)
+  }
+  for (size_t i = kSecondAllocPages; i < kFirstAllocPages; i++) {
     CHECK_PAGE_IN_CORE(p.PageAtIndex(i), false);
+  }
 }
 
 TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
@@ -3387,8 +3411,9 @@ TEST_P(PartitionAllocTest, ActiveListMaintenance) {
   allocated_memory_spans[kSpanIndex].pop_back();
 
   // Empty the last slot span.
-  for (void* ptr : allocated_memory_spans[kSpans - 1])
+  for (void* ptr : allocated_memory_spans[kSpans - 1]) {
     allocator.root()->Free(ptr);
+  }
   allocated_memory_spans.pop_back();
 
   // The active list now is:
@@ -3410,8 +3435,9 @@ TEST_P(PartitionAllocTest, ActiveListMaintenance) {
 
   // Free all memory.
   for (const auto& span : allocated_memory_spans) {
-    for (void* ptr : span)
+    for (void* ptr : span) {
       allocator.root()->Free(ptr);
+    }
   }
 }
 
@@ -3548,8 +3574,9 @@ TEST_P(PartitionAllocTest, Alignment) {
   std::vector<void*> allocated_ptrs;
 
   for (size_t size = 1; size <= PartitionPageSize(); size <<= 1) {
-    if (size <= ExtraAllocSize(allocator))
+    if (size <= ExtraAllocSize(allocator)) {
       continue;
+    }
     size_t requested_size = size - ExtraAllocSize(allocator);
 
     // All allocations which are not direct-mapped occupy contiguous slots of a
@@ -3569,8 +3596,9 @@ TEST_P(PartitionAllocTest, Alignment) {
     }
   }
 
-  for (void* ptr : allocated_ptrs)
+  for (void* ptr : allocated_ptrs) {
     allocator.root()->Free(ptr);
+  }
 }
 
 TEST_P(PartitionAllocTest, FundamentalAlignment) {
@@ -3628,8 +3656,9 @@ void VerifyAlignment(PartitionRoot<ThreadSafe>* root,
         << ", alignment=" << alignment;
   }
 
-  for (void* ptr : allocated_ptrs)
+  for (void* ptr : allocated_ptrs) {
     PartitionRoot<ThreadSafe>::Free(ptr);
+  }
 }
 
 TEST_P(PartitionAllocTest, AlignedAllocations) {
@@ -3667,8 +3696,9 @@ TEST_P(PartitionAllocTest, AlignedAllocations) {
 TEST_P(PartitionAllocTest, OptimizedGetSlotNumber) {
   for (size_t i = 0; i < kNumBuckets; ++i) {
     auto& bucket = allocator.root()->buckets[i];
-    if (SizeToIndex(bucket.slot_size) != i)
+    if (SizeToIndex(bucket.slot_size) != i) {
       continue;
+    }
     for (size_t slot = 0, offset = 0; slot < bucket.get_slots_per_span();
          ++slot, offset += bucket.slot_size) {
       EXPECT_EQ(slot, bucket.GetSlotNumber(offset));
@@ -3967,8 +3997,9 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 TEST_P(PartitionAllocTest, RefCountBasic) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   constexpr uint64_t kCookie = 0x1234567890ABCDEF;
   constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
@@ -4062,8 +4093,9 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
 }
 
 TEST_P(PartitionAllocTest, RefCountRealloc) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   size_t alloc_sizes[] = {500, 5000, 50000, 400000};
 
@@ -4111,8 +4143,9 @@ INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          testing::ValuesIn(GetPartitionAllocTestParams()));
 
 TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrNoReport) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
@@ -4129,8 +4162,9 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrNoReport) {
 }
 
 TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
@@ -4149,8 +4183,9 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
 TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   size_t alignment = internal::PageAllocationGranularity();
 
@@ -4178,8 +4213,9 @@ TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
 // Allocate memory, and reference it from 3 raw_ptr. Among them 2 will be
 // dangling.
 TEST_P(PartitionAllocTest, DanglingPtr) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   CountDanglingRawPtr dangling_checks;
 
@@ -4237,8 +4273,9 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
 // raw_ptr<T, DisableDanglingPtrDetection>. Among them 2 will be dangling. This
 // doesn't trigger any dangling raw_ptr checks.
 TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   CountDanglingRawPtr dangling_checks;
 
@@ -4279,8 +4316,9 @@ TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
 // When 'free' is called, it remain one raw_ptr<> and one
 // raw_ptr<T, DisableDanglingPtrDetection>. The raw_ptr<> is released first.
 TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   CountDanglingRawPtr dangling_checks;
 
@@ -4332,8 +4370,9 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
 // The raw_ptr<T, DisableDanglingPtrDetection> is released first. This
 // triggers the dangling raw_ptr<> checks.
 TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   CountDanglingRawPtr dangling_checks;
 
@@ -4384,8 +4423,9 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
 // raw_ptr<T, DisableDanglingPtrDetection>, then it is used to acquire one
 // dangling raw_ptr<>. Release the raw_ptr<> first.
 TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   CountDanglingRawPtr dangling_checks;
 
@@ -4422,8 +4462,9 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
 // Same as 'DanglingPtrUsedToAcquireNewRawPtr', but release the
 // raw_ptr<T, DisableDanglingPtrDetection> before the raw_ptr<>.
 TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   CountDanglingRawPtr dangling_checks;
 
@@ -4461,8 +4502,9 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
 // background, there is one raw_ptr<T, DisableDanglingPtrDetection>. This
 // doesn't trigger any dangling raw_ptr<T> checks.
 TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   CountDanglingRawPtr dangling_checks;
 
@@ -4499,8 +4541,9 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
 
 // Acquire() once, Release() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
@@ -4514,8 +4557,9 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
 
 // AcquireFromUnprotectedPtr() once, ReleaseFromUnprotectedPtr() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
-  if (!UseBRPPool())
+  if (!UseBRPPool()) {
     return;
+  }
 
   void* ptr =
       allocator.root()->Alloc(64 - ExtraAllocSize(allocator), type_name);
@@ -4723,8 +4767,9 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
   EXPECT_LE(allocated_size,
             PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan);
 
-  for (void* ptr_to_free : ptrs)
+  for (void* ptr_to_free : ptrs) {
     allocator.root()->FreeNoHooks(ptr_to_free);
+  }
 
   allocator.root()->FreeNoHooks(ptr);
   allocator.root()->FreeNoHooks(ptr2);
@@ -4958,8 +5003,9 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
 
   // Free everything at once, creating as many empty slot spans as there are
   // allocations (since they are from single-slot slot spans).
-  for (void* ptr : single_slot_allocated_memory)
+  for (void* ptr : single_slot_allocated_memory) {
     root.Free(ptr);
+  }
 
   // Still have some committed empty slot spans.
   // PA_TS_UNCHECKED_READ() is not an issue here, since everything is
@@ -4973,8 +5019,9 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   root.PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
   EXPECT_EQ(PA_TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
 
-  for (void* ptr : allocated_memory)
+  for (void* ptr : allocated_memory) {
     root.Free(ptr);
+  }
 }
 
 TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
@@ -5003,8 +5050,9 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
 
   // Free everything at once, creating as many empty slot spans as there are
   // allocations (since they are from single-slot slot spans).
-  for (void* ptr : single_slot_allocated_memory)
+  for (void* ptr : single_slot_allocated_memory) {
     root.Free(ptr);
+  }
   single_slot_allocated_memory.clear();
 
   // Some of the free()-s above overflowed the slot span ring.
@@ -5020,8 +5068,9 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
     single_slot_allocated_memory.push_back(ptr);
   }
 
-  for (void* ptr : single_slot_allocated_memory)
+  for (void* ptr : single_slot_allocated_memory) {
     root.Free(ptr);
+  }
   single_slot_allocated_memory.clear();
 
   // No overflow this time.
@@ -5034,8 +5083,9 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
     single_slot_allocated_memory.push_back(ptr);
   }
 
-  for (void* ptr : single_slot_allocated_memory)
+  for (void* ptr : single_slot_allocated_memory) {
     root.Free(ptr);
+  }
   single_slot_allocated_memory.clear();
 
   // Overflow still works.
@@ -5161,8 +5211,9 @@ TEST_P(PartitionAllocTest, SortFreelist) {
   void* first_ptr = allocator.root()->Alloc(allocation_size, "");
 
   std::vector<void*> allocations;
-  for (size_t i = 0; i < count; ++i)
+  for (size_t i = 0; i < count; ++i) {
     allocations.push_back(allocator.root()->Alloc(allocation_size, ""));
+  }
 
   // Shuffle and free memory out of order.
   std::random_device rd;
@@ -5171,8 +5222,9 @@ TEST_P(PartitionAllocTest, SortFreelist) {
 
   // Keep one allocation alive (first_ptr), so that the SlotSpan is not fully
   // empty.
-  for (void* ptr : allocations)
+  for (void* ptr : allocations) {
     allocator.root()->Free(ptr);
+  }
   allocations.clear();
 
   allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
@@ -5319,8 +5371,9 @@ TEST_P(PartitionAllocTest, OpenCL) {
 TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
   for (PartitionRoot<ThreadSafe>::Bucket& bucket : allocator.root()->buckets) {
     const size_t slot_size = bucket.slot_size;
-    if (slot_size == kInvalidBucketSize)
+    if (slot_size == kInvalidBucketSize) {
       continue;
+    }
 
     size_t small_system_page_count =
         partition_alloc::internal::ComputeSystemPagesPerSlotSpan(
@@ -5329,8 +5382,9 @@ TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
         (small_system_page_count * SystemPageSize()) % slot_size;
 
     EXPECT_LT(small_waste, .05 * SystemPageSize());
-    if (slot_size <= MaxRegularSlotSpanSize())
+    if (slot_size <= MaxRegularSlotSpanSize()) {
       EXPECT_LE(small_system_page_count, MaxSystemPagesPerRegularSlotSpan());
+    }
   }
 }
 
