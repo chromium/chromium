@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
 import copy
 from datetime import datetime
@@ -500,16 +498,6 @@ class Feature(object):
     self.feature_values = {}
     self.shared_values = {}
 
-  def _GetType(self, value):
-    """Returns the type of the given value.
-    """
-    # For Py3 compatibility we use str in the grammar and treat unicode as str
-    # in Py2.
-    if sys.version_info.major == 2 and type(value) is unicode:
-      return str
-
-    return type(value)
-
   def AddError(self, error):
     """Adds an error to the feature. If ENABLE_ASSERTIONS is active, this will
     also assert to stop the compilation process (since errors should never be
@@ -545,7 +533,7 @@ class Feature(object):
       self._AddKeyError(key, 'Illegal value: "%s"' % value)
       valid = False
 
-    t = self._GetType(value)
+    t = type(value)
     if expected_type and t is not expected_type:
       self._AddKeyError(key, 'Illegal value: "%s"' % value)
       valid = False
@@ -586,7 +574,7 @@ class Feature(object):
       self._AddKeyError(key, 'Key can be set at most once per feature.')
       return
 
-    value_type = self._GetType(v)
+    value_type = type(v)
     if value_type not in grammar:
       self._AddKeyError(key, 'Illegal value: "%s"' % v)
       return

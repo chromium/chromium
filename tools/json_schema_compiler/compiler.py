@@ -16,8 +16,6 @@ Usage example:
     --namespace extensions windows.json tabs.json
 """
 
-from __future__ import print_function
-
 import io
 import optparse
 import os

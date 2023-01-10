@@ -33,10 +33,7 @@ def _RemoveUnneededFields(schema):
   # Return a copy so that we don't pollute the global api object, which may be
   # used elsewhere.
   ret = copy.deepcopy(schema)
-  if sys.version_info.major == 2:
-    _RemoveKey(ret, 'description', basestring)
-  else:
-    _RemoveKey(ret, 'description', str)
+  _RemoveKey(ret, 'description', str)
   _RemoveKey(ret, 'compiler_options', dict)
   _RemoveKey(ret, 'nodoc', bool)
   _RemoveKey(ret, 'nocompile', bool)
@@ -58,8 +55,7 @@ def _PrefixSchemaWithNamespace(schema):
       assert not mandatory, (
              'Required key "%s" is not present in object.' % key)
       return
-    assert type(obj[key]) is str or (sys.version_info.major == 2 and
-                                     isinstance(obj[key], basestring))
+    assert type(obj[key]) is str
     if obj[key].find('.') == -1:
       obj[key] = '%s.%s' % (namespace, obj[key])
 

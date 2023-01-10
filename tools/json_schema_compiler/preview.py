@@ -5,8 +5,6 @@
 """Server for viewing the compiled C++ code from tools/json_schema_compiler.
 """
 
-from __future__ import print_function
-
 import cc_generator
 import code_util
 import cpp_type_generator

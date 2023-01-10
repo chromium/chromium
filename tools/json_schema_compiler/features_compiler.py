@@ -8,8 +8,6 @@ Usage example:
   features_compiler.py --destdir gen --root /home/Work/src _permissions.json
 """
 
-from __future__ import print_function
-
 import optparse
 import os
 

@@ -3,19 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import itertools
 import json
 import os.path
 import pprint
 import re
 import sys
-
-if sys.version_info.major == 2:
-  from itertools import izip_longest as zip_longest
-else:
-  from itertools import zip_longest
 
 from json_parse import OrderedDict
 
@@ -87,8 +80,8 @@ def ProcessComment(comment):
                     .replace('\n', ''))
 
   params = OrderedDict()
-  for (cur_param, next_param) in zip_longest(parameter_starts,
-                                             parameter_starts[1:]):
+  for (cur_param, next_param) in itertools.zip_longest(parameter_starts,
+                                                       parameter_starts[1:]):
     param_name = cur_param.group(1)
 
     # A parameter's comment goes from the end of its introduction to the
