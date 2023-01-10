@@ -105,7 +105,9 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
       continue;
     }
 
-    Value::Dict data = events[i++]->GetKnownArgAsDict("data");
+    EXPECT_LT(i, events.size());
+    Value::Dict data = events[i]->GetKnownArgAsDict("data");
+    ++i;
 
     if (score) {
       const absl::optional<double> traced_score = data.FindDouble("score");
