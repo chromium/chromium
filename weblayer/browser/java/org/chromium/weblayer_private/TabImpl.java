@@ -815,7 +815,8 @@ public final class TabImpl extends ITab.Stub {
             return true;
         }
 
-        SelectionPopupController popup = SelectionPopupController.fromWebContents(mWebContents);
+        SelectionPopupController popup =
+                SelectionPopupController.fromWebContentsNoCreate(mWebContents);
         if (popup != null && popup.isSelectActionBarShowing()) {
             popup.clearSelection();
             return true;
