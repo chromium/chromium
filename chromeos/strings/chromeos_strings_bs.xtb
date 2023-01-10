@@ -87,7 +87,7 @@
 <translation id="1706391837335750954">DNS razrješivač je prisutan</translation>
 <translation id="1715359911173058521">Postoji problem u komunikaciji sa skenerom. Provjerite mrežu ili USB vezu i pokušajte ponovo.</translation>
 <translation id="1717874160321062422">Uređajem upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
-<translation id="1726100011689679555">Poslužitelji naziva</translation>
+<translation id="1726100011689679555">Postavite naziv servera</translation>
 <translation id="1731082422893354635">Bluetooth dodirna podloga</translation>
 <translation id="1745577949879301685">Slike se nisu mogle učitati. Provjerite mrežnu vezu ili ponovo pokušajte učitati slike.</translation>
 <translation id="1751249301761991853">Lično</translation>
@@ -303,7 +303,7 @@
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
 <translation id="4034824040120875894">Štampač</translation>
 <translation id="4044093238444069296">Nije moguće kontaktirati pristupnika</translation>
-<translation id="4046123991198612571">Sljedeća pjesma</translation>
+<translation id="4046123991198612571">Sljedeća numera</translation>
 <translation id="404928562651467259">UPOZORENJE</translation>
 <translation id="4060260348856573701">Novi APN</translation>
 <translation id="4093865285251893588">Slika profila</translation>
@@ -542,7 +542,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6223752125779001553">Nijedan skener nije dostupan</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6235460611964961764">Ručno poništi prijenos podataka</translation>
-<translation id="6243280677745499710">Trenutačno postavljeno</translation>
+<translation id="6243280677745499710">Trenutno postavljeno</translation>
 <translation id="6275224645089671689">Strelica udesno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -562,11 +562,11 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6388847657025262518">Ulagač za dokumente skenera se zaglavio. Provjerite ulagač i pokušajte ponovo.</translation>
 <translation id="6394634179843537518">Dodajte fajl</translation>
 <translation id="6410257289063177456">Fajlovi slike</translation>
-<translation id="641081527798843608">Podudaranje predmeta</translation>
+<translation id="641081527798843608">Podudarnost predmeta</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odlazak u postavke računa</translation>
-<translation id="6456394469623773452">Solidan</translation>
+<translation id="6456394469623773452">Dobro</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
@@ -707,7 +707,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7856267634822906833">Bluetooth ekran na dodir</translation>
 <translation id="7869143217755017858">Onemogući tamni način rada</translation>
 <translation id="7881066108824108340">DNS</translation>
-<translation id="7882358943899516840">Vrsta davatelja usluge</translation>
+<translation id="7882358943899516840">Vrsta pružaoca usluge</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
 <translation id="7890841768028788197">Interni ekran na dodir</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server naziva</translation>
