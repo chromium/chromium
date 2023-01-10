@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_SOCKET_THREAD_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_SOCKET_THREAD_H_
 
+#include <atomic>
 #include <memory>
 
 #include "base/atomicops.h"
@@ -45,7 +46,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketThread
   void EnsureStarted();
 
   base::ThreadChecker thread_checker_;
-  base::subtle::Atomic32 active_socket_count_ = 0;
+  std::atomic<int> active_socket_count_{0};
   std::unique_ptr<base::Thread> thread_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };

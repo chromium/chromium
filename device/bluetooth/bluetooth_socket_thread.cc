@@ -42,13 +42,13 @@ BluetoothSocketThread::~BluetoothSocketThread() {
 
 void BluetoothSocketThread::OnSocketActivate() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::subtle::Barrier_AtomicIncrement(&active_socket_count_, 1);
+  active_socket_count_ += 1;
   EnsureStarted();
 }
 
 void BluetoothSocketThread::OnSocketDeactivate() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::subtle::Barrier_AtomicIncrement(&active_socket_count_, -1);
+  active_socket_count_ -= 1;
 }
 
 void BluetoothSocketThread::EnsureStarted() {
@@ -65,7 +65,7 @@ void BluetoothSocketThread::EnsureStarted() {
 
 scoped_refptr<base::SequencedTaskRunner> BluetoothSocketThread::task_runner()
     const {
-  DCHECK(base::subtle::NoBarrier_Load(&active_socket_count_) > 0);
+  DCHECK(active_socket_count_.load(std::memory_order_relaxed) > 0);
   DCHECK(thread_);
   DCHECK(task_runner_.get());
 
