@@ -86,7 +86,7 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser,
   }
   owned_menu_view_ = std::make_unique<ExtensionsMenuView>(
       extensions_container_->GetExtensionsButton(), browser_,
-      extensions_container_, true);
+      extensions_container_);
   menu_view_ = owned_menu_view_.get();
   // The static_cast is needed to disambiguate between View::AddObserver and
   // DialogDelegate::AddObserver.

@@ -131,9 +131,8 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
     extensions_menu_coordinator_->Show(this);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
-    menu = ExtensionsMenuView::ShowBubble(
-        this, browser_, extensions_container_,
-        extensions_container_->CanShowActionsInToolbar());
+    menu =
+        ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_);
   }
   menu->AddObserver(this);
 }

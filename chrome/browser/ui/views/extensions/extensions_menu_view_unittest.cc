@@ -116,7 +116,7 @@ void ExtensionsMenuViewUnitTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
 
   ExtensionsMenuView::ShowBubble(extensions_container()->GetExtensionsButton(),
-                                 browser(), extensions_container(), true);
+                                 browser(), extensions_container());
 }
 
 scoped_refptr<const extensions::Extension>

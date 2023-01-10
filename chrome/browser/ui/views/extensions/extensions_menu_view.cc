@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
@@ -71,13 +72,11 @@ InstalledExtensionMenuItemView* GetAsMenuItemView(views::View* view) {
 ExtensionsMenuView::ExtensionsMenuView(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainer* extensions_container,
-    bool allow_pinning)
+    ExtensionsContainer* extensions_container)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
       browser_(browser),
       extensions_container_(extensions_container),
-      allow_pinning_(allow_pinning),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())),
       cant_access_{nullptr, nullptr,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA_SHORT,
@@ -306,7 +305,8 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.
   auto* item = new InstalledExtensionMenuItemView(
-      browser_, std::move(controller), allow_pinning_);
+      browser_, std::move(controller),
+      extensions_container_->CanShowActionsInToolbar());
   extensions_menu_items_.insert(item);
   InsertMenuItem(item);
   // Sanity check that the item was added.
@@ -486,15 +486,14 @@ base::AutoReset<bool> ExtensionsMenuView::AllowInstancesForTesting() {
 views::Widget* ExtensionsMenuView::ShowBubble(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainer* extensions_container,
-    bool allow_pinning) {
+    ExtensionsContainer* extensions_container) {
   DCHECK(!g_extensions_dialog);
   // Experiment `kExtensionsMenuAccessControl` is introducing a new menu. Check
   // `ExtensionsMenuView` is only constructed when the experiment is disabled.
   DCHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
-  g_extensions_dialog = new ExtensionsMenuView(
-      anchor_view, browser, extensions_container, allow_pinning);
+  g_extensions_dialog =
+      new ExtensionsMenuView(anchor_view, browser, extensions_container);
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(g_extensions_dialog);
   widget->Show();
