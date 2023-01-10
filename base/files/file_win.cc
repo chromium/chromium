@@ -7,7 +7,11 @@
 #include <io.h>
 #include <stdint.h>
 
+#include <tuple>
+
 #include "base/check_op.h"
+#include "base/files/file_util.h"
+#include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -412,8 +416,12 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     access |= GENERIC_READ;
   if (flags & FLAG_WRITE_ATTRIBUTES)
     access |= FILE_WRITE_ATTRIBUTES;
-  if (flags & FLAG_WIN_EXECUTE)
+  if (flags & FLAG_WIN_EXECUTE) {
+    // Specifying both FLAG_WIN_EXECUTE and FLAG_WIN_NO_EXECUTE would
+    // constitute a security risk, so deny the access here.
+    CHECK_EQ(flags & FLAG_WIN_NO_EXECUTE, 0U);
     access |= GENERIC_EXECUTE;
+  }
   if (flags & FLAG_CAN_DELETE_ON_CLOSE)
     access |= DELETE;
 
@@ -448,6 +456,14 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
       created_ = (ERROR_ALREADY_EXISTS != GetLastError());
     else if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE))
       created_ = true;
+    if (flags & FLAG_WIN_NO_EXECUTE) {
+      // It is possible that the ACE could not be added if the file was created
+      // in a path for which the caller does not have WRITE_DAC access. In this
+      // case, ignore the error since if this is occurring then it's likely the
+      // file cannot be opened for write and more serious I/O failures are
+      // occurring or about to occur.
+      std::ignore = PreventExecuteMapping(path);
+    }
   } else {
     error_details_ = GetLastFileError();
   }

@@ -99,6 +99,9 @@ base::File VfsBackend::OpenFile(const base::FilePath& file_path,
   // process.
   flags |= base::File::FLAG_WIN_SHARE_DELETE;
 
+  // This File may be passed to an untrusted process.
+  flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+
   // Try to open/create the DB file.
   return base::File(file_path, flags);
 }

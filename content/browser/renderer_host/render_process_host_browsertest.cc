@@ -69,7 +69,13 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/features.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "sandbox/policy/switches.h"
 #endif
 
@@ -1941,6 +1947,100 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ZeroExecutionTimes) {
       1);
   process->Cleanup();
 }
+
+class RenderProcessHostWriteableFileDeathTest
+    : public RenderProcessHostTest,
+      public ::testing::WithParamInterface<
+          std::tuple</*enforcement_enabled=*/bool,
+                     /*add_no_execute_flags=*/bool>> {
+ public:
+  void SetUp() override {
+    enforcement_feature_.InitWithFeatureState(
+        base::features::kEnforceNoExecutableFileHandles,
+        IsEnforcementEnabled());
+    RenderProcessHostTest::SetUp();
+  }
+
+ protected:
+  bool IsEnforcementEnabled() { return std::get<0>(GetParam()); }
+  bool ShouldMarkNoExecute() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList enforcement_feature_;
+};
+
+IN_PROC_BROWSER_TEST_P(RenderProcessHostWriteableFileDeathTest,
+                       PassUnsafeWriteableExecutableFile) {
+  // This test only works if DCHECKs are enabled.
+#if !DCHECK_IS_ON()
+  GTEST_SKIP();
+#else
+  // This test only works if the renderer process is sandboxed.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kNoSandbox)) {
+    GTEST_SKIP();
+  }
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  RenderProcessHost* rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  mojo::Remote<mojom::TestService> test_service;
+  rph->BindReceiver(test_service.BindNewPipeAndPassReceiver());
+
+  uint32_t flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+                   base::File::FLAG_WRITE;
+  if (ShouldMarkNoExecute()) {
+    flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+  }
+
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+  base::File temp_file_writeable(file_path, flags);
+  ASSERT_TRUE(temp_file_writeable.IsValid());
+
+  static base::NoDestructor<std::string> fatal_log_string;
+  // Note: logging::ScopedLogAssertHandler can't be used here as it does not
+  // capture CHECK.
+  auto old_handler = logging::GetLogMessageHandler();
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t message_start,
+                                   const std::string& str) -> bool {
+    if (severity != logging::LOGGING_FATAL) {
+      return false;
+    }
+    *fatal_log_string = str;
+    return true;
+  });
+
+  base::RunLoop run_loop;
+  test_service->PassWriteableFile(std::move(temp_file_writeable),
+                                  run_loop.QuitClosure());
+  run_loop.Run();
+  logging::SetLogMessageHandler(old_handler);
+
+  // This test should only CHECK if enforcement is enabled and the file has not
+  // been marked no-execute correctly.
+  if (IsEnforcementEnabled() && !ShouldMarkNoExecute()) {
+    EXPECT_TRUE(fatal_log_string->find(
+                    "Transfer of writable handle to executable file to an "
+                    "untrusted process") != fatal_log_string->npos);
+  } else {
+    EXPECT_TRUE(fatal_log_string->empty());
+  }
+#endif  // DCHECK_IS_ON()
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderProcessHostWriteableFileDeathTest,
+    testing::Combine(/*enforcement_enabled=*/testing::Bool(),
+                     /*add_no_execute_flags=*/testing::Bool()));
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // This test verifies that the Pseudonymization salt that is generated in the

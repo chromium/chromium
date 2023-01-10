@@ -189,6 +189,9 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       break;
   }
 
+  // This file may be passed to an untrusted process.
+  flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+
   const base::FilePath full_path = MakeAbsolute(path);
   base::File file(full_path, flags);
   base::File::Error error = base::File::FILE_OK;

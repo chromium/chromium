@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -134,6 +135,11 @@ class TestRendererServiceImpl : public mojom::TestService {
                           PseudonymizeStringCallback callback) override {
     std::move(callback).Run(
         PseudonymizationUtil::PseudonymizeStringForTesting(value));
+  }
+
+  void PassWriteableFile(base::File file,
+                         PassWriteableFileCallback callback) override {
+    std::move(callback).Run();
   }
 
   mojo::Receiver<mojom::TestService> receiver_;

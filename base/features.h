@@ -14,6 +14,8 @@ namespace base::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
+BASE_EXPORT BASE_DECLARE_FEATURE(kEnforceNoExecutableFileHandles);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeDataUrls);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kSupportsUserDataFlatHashMap);

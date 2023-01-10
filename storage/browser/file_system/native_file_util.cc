@@ -157,6 +157,9 @@ base::File NativeFileUtil::CreateOrOpen(const base::FilePath& path,
   if (base::DirectoryExists(path))
     return base::File(base::File::FILE_ERROR_NOT_A_FILE);
 
+  // This file might be passed to an untrusted process.
+  file_flags = base::File::AddFlagsForPassingToUntrustedProcess(file_flags);
+
   return base::File(path, file_flags);
 }
 

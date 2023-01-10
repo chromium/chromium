@@ -130,8 +130,10 @@ mojom::PaintPreviewCaptureParamsPtr CreateRecordingRequestParams(
 
 // Unconditionally create or overwrite a file for writing.
 base::File CreateOrOverwriteFileForWriting(const base::FilePath& path) {
-  base::File file(path,
-                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  uint32_t flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE;
+  // This file will be passed to an untrusted process.
+  flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+  base::File file(path, flags);
   return file;
 }
 

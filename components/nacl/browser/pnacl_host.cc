@@ -191,10 +191,12 @@ void PnaclHost::DoCreateTemporaryFile(base::FilePath temp_dir,
   if (!rv) {
     PLOG(ERROR) << "Temp file creation failed.";
   } else {
-    file.Initialize(
-        file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                       base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
-                       base::File::FLAG_DELETE_ON_CLOSE);
+    uint32_t flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                     base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                     base::File::FLAG_DELETE_ON_CLOSE;
+    // This temporary file is being passed to an untrusted process.
+    flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+    file.Initialize(file_path, flags);
 
     if (!file.IsValid())
       PLOG(ERROR) << "Temp file open failed: " << file.error_details();

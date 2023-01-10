@@ -51,6 +51,10 @@ ShellBrowserContext::ShellBrowserContext(bool off_the_record,
     : resource_context_(std::make_unique<ShellResourceContext>()),
       off_the_record_(off_the_record) {
   InitWhileIOAllowed();
+#if BUILDFLAG(IS_WIN)
+  base::SetExtraNoExecuteAllowedPath(SHELL_DIR_USER_DATA);
+#endif  // BUILDFLAG(IS_WIN)
+
   if (!delay_services_creation) {
     BrowserContextDependencyManager::GetInstance()
         ->CreateBrowserContextServices(this);

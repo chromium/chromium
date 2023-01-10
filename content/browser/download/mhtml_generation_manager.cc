@@ -83,6 +83,8 @@ base::File CreateMHTMLFile(const base::FilePath& file_path) {
   // principals).
   uint32_t file_flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE;
 
+  file_flags = base::File::AddFlagsForPassingToUntrustedProcess(file_flags);
+
   base::File browser_file(file_path, file_flags);
   if (!browser_file.IsValid()) {
     DLOG(ERROR) << "Failed to create file to save MHTML at: "

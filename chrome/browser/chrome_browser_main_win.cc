@@ -528,6 +528,8 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
   bool os_crypt_init = OSCrypt::Init(local_state);
   DCHECK(os_crypt_init);
 
+  base::SetExtraNoExecuteAllowedPath(chrome::DIR_USER_DATA);
+
   ChromeBrowserMainParts::PreCreateMainMessageLoop();
   if (!is_integration_test()) {
     // Make sure that we know how to handle exceptions from the message loop.

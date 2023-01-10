@@ -395,6 +395,10 @@ OperationID FileSystemOperationRunner::OpenFile(const FileSystemURL& url,
                 base::OnceClosure());
     return id;
   }
+
+  // This file might be passed to an untrusted process.
+  file_flags = base::File::AddFlagsForPassingToUntrustedProcess(file_flags);
+
   if (file_flags &
       (base::File::FLAG_CREATE | base::File::FLAG_OPEN_ALWAYS |
        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_OPEN_TRUNCATED |

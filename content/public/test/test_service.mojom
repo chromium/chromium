@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
 interface TestService {
@@ -53,4 +54,8 @@ interface TestService {
 
   // Returns the value of PseudonymizeString for the given string.
   PseudonymizeString(string value) => (uint32 result);
+
+  // Pass a writeable file handle. This is used to test that the file cannot be
+  // passed if it can be opened with EXECUTE. See https://crbug.com/1335974.
+  PassWriteableFile(mojo_base.mojom.File file) => ();
 };

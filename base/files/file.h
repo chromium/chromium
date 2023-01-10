@@ -68,6 +68,10 @@ class BASE_EXPORT File {
     FLAG_CAN_DELETE_ON_CLOSE = 1 << 20,  // Requests permission to delete a file
                                          // via DeleteOnClose() (Windows only).
                                          // See DeleteOnClose() for details.
+    FLAG_WIN_NO_EXECUTE =
+        1 << 21,  // Windows only. Marks the file with a deny ACE that prevents
+                  // opening the file with EXECUTE access. Cannot be used with
+                  // FILE_WIN_EXECUTE flag. See also PreventExecuteMapping.
   };
 
   // This enum has been recorded in multiple histograms using PlatformFileError
@@ -370,6 +374,20 @@ class BASE_EXPORT File {
   static int Fstat(int fd, stat_wrapper_t* sb);
   static int Lstat(const char* path, stat_wrapper_t* sb);
 #endif
+
+  // This function can be used to augment `flags` with the correct flags
+  // required to create a File that can be safely passed to an untrusted
+  // process. It must be called if the File is intended to be transferred to an
+  // untrusted process, but can still be safely called even if the File is not
+  // intended to be transferred.
+  static constexpr uint32_t AddFlagsForPassingToUntrustedProcess(
+      uint32_t flags) {
+    if (flags & File::FLAG_WRITE || flags & File::FLAG_APPEND ||
+        flags & File::FLAG_WRITE_ATTRIBUTES) {
+      flags |= File::FLAG_WIN_NO_EXECUTE;
+    }
+    return flags;
+  }
 
  private:
   friend class FileTracing::ScopedTrace;

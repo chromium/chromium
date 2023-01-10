@@ -9,6 +9,12 @@ namespace base::features {
 
 // Alphabetical:
 
+// Enforce that writeable file handles passed to untrusted processes are not
+// backed by executable files.
+BASE_FEATURE(kEnforceNoExecutableFileHandles,
+             "EnforceNoExecutableFileHandles",
+             FEATURE_ENABLED_BY_DEFAULT);
+
 // Optimizes parsing and loading of data: URLs.
 BASE_FEATURE(kOptimizeDataUrls,
              "OptimizeDataUrls",

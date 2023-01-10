@@ -82,6 +82,9 @@ base::File OpenProfilingFile() {
   uint32_t flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                    base::File::FLAG_WRITE;
 
+  // The profiling file is passed to an untrusted process.
+  flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+
   base::File file(path, flags);
   if (!file.IsValid()) {
     LOG(ERROR) << "Opening file: " << path << " failed with "

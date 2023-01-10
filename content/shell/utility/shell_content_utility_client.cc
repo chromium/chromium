@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -129,6 +130,11 @@ class TestUtilityServiceImpl : public mojom::TestService {
                           PseudonymizeStringCallback callback) override {
     std::move(callback).Run(
         PseudonymizationUtil::PseudonymizeStringForTesting(value));
+  }
+
+  void PassWriteableFile(base::File file,
+                         PassWriteableFileCallback callback) override {
+    std::move(callback).Run();
   }
 
  private:

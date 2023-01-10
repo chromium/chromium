@@ -345,6 +345,8 @@ base::File DirectoryImpl::OpenFileHandleImpl(const std::string& raw_path,
     return base::File(base::File::FILE_ERROR_NOT_A_FILE);
   }
 
+  // This file may be passed to an untrusted process.
+  open_flags = base::File::AddFlagsForPassingToUntrustedProcess(open_flags);
   return base::File(path, open_flags);
 }
 

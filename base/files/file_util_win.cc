@@ -22,7 +22,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
@@ -46,12 +49,16 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "base/win/windows_version.h"
 
 namespace base {
 
 namespace {
+
+int g_extra_allowed_path_for_no_execute = 0;
 
 const DWORD kFileShareAll =
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
@@ -356,6 +363,42 @@ OnceClosure GetDeleteFileCallbackInternal(
   }
   return BindOnce(&DeleteFileWithRetry, path, recursive, /*attempt=*/0,
                   std::move(bound_callback));
+}
+
+// This function verifies that no code is attempting to set an ACL on a file
+// that is outside of 'safe' paths. A 'safe' path is defined as one that is
+// within the user data dir, or the temporary directory. This is explicitly to
+// prevent code from trying to pass a writeable handle to a file outside of
+// these directories to an untrusted process. E.g. if some future code created a
+// writeable handle to a file in c:\users\user\sensitive.dat, this DCHECK would
+// hit. Setting an ACL on a file outside of these chrome-controlled directories
+// might cause the browser or operating system to fail in unexpected ways.
+bool IsPathSafeToSetAclOn(const FilePath& path) {
+#if BUILDFLAG(CLANG_PROFILING)
+  // Ignore .profraw profiling files, as they can occur anywhere, and only occur
+  // during testing.
+  if (path.Extension() == FILE_PATH_LITERAL(".profraw")) {
+    return true;
+  }
+#endif  // BUILDFLAG(CLANG_PROFILING)
+  std::vector<int> valid_paths({base::DIR_TEMP});
+  // Admin users create temporary files in Program Files, see
+  // `CreateNewTempDirectory` below.
+  if (::IsUserAnAdmin()) {
+    valid_paths.push_back(base::DIR_PROGRAM_FILES);
+  }
+  if (g_extra_allowed_path_for_no_execute) {
+    valid_paths.push_back(g_extra_allowed_path_for_no_execute);
+  }
+  for (const auto path_type : valid_paths) {
+    base::FilePath valid_path;
+    if (base::PathService::Get(path_type, &valid_path)) {
+      if (valid_path.IsParent(path)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -1047,6 +1090,70 @@ bool PreReadFile(const FilePath& file_path,
     return internal::PreReadFileSlow(file_path, max_bytes);
   }
   return true;
+}
+
+bool PreventExecuteMapping(const FilePath& path) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnforceNoExecutableFileHandles)) {
+    return true;
+  }
+
+  bool is_path_safe = IsPathSafeToSetAclOn(path);
+
+  if (!is_path_safe) {
+    // To mitigate the effect of past OS bugs where attackers are able to use
+    // writeable handles to create malicious executable images which can be
+    // later mapped into unsandboxed processes, file handles that permit writing
+    // that are passed to untrusted processes, e.g. renderers, should be marked
+    // with a deny execute ACE. This prevents re-opening the file for execute
+    // later on.
+    //
+    // To accomplish this, code that needs to pass writable file handles to a
+    // renderer should open the file with the flags added by
+    // `AddFlagsForPassingToUntrustedProcess()` (explicitly
+    // FLAG_WIN_NO_EXECUTE). This results in this PreventExecuteMapping being
+    // called by base::File.
+    //
+    // However, simply using this universally on all files that are opened
+    // writeable is also undesirable: things can and will randomly break if they
+    // are marked no-exec (e.g. marking an exe that the user downloads as
+    // no-exec will prevent the user from running it). There are also
+    // performance implications of doing this for all files unnecessarily.
+    //
+    // Code that passes writable files to the renderer is also expected to
+    // reference files in places like the user data dir (e.g. for the filesystem
+    // API) or temp files. Any attempt to pass a writeable handle to a path
+    // outside these areas is likely its own security issue as an untrusted
+    // renderer process should never have write access to e.g. system files or
+    // downloads.
+    //
+    // This check aims to catch misuse of
+    // `AddFlagsForPassingToUntrustedProcess()` on paths outside these
+    // locations. Any time it hits it is also likely that a handle to a
+    // dangerous path is being passed to a renderer, which is inherently unsafe.
+    //
+    // If this check hits, please do not ignore it but consult security team.
+    NOTREACHED() << "Unsafe to deny execute access to path : " << path;
+
+    return false;
+  }
+
+  static constexpr wchar_t kEveryoneSid[] = L"WD";
+  auto sids = win::Sid::FromSddlStringVector({kEveryoneSid});
+
+  // Remove executable access from the file. The API does not add a duplicate
+  // ACE if it already exists.
+  return win::DenyAccessToPath(path, *sids, FILE_EXECUTE, /*NO_INHERITANCE=*/0,
+                               /*recursive=*/false);
+}
+
+void SetExtraNoExecuteAllowedPath(int path_key) {
+  DCHECK(!g_extra_allowed_path_for_no_execute ||
+         g_extra_allowed_path_for_no_execute == path_key);
+  g_extra_allowed_path_for_no_execute = path_key;
+  base::FilePath valid_path;
+  DCHECK(
+      base::PathService::Get(g_extra_allowed_path_for_no_execute, &valid_path));
 }
 
 // -----------------------------------------------------------------------------

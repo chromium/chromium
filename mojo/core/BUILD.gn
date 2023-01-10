@@ -204,6 +204,8 @@ template("core_impl_source_set") {
       sources += [
         "broker_win.cc",
         "channel_win.cc",
+        "platform_handle_security_util_win.cc",
+        "platform_handle_security_util_win.h",
       ]
     }
 

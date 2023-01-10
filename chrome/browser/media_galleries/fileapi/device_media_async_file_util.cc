@@ -312,9 +312,9 @@ void DeviceMediaAsyncFileUtil::CreateOrOpen(
     CreateOrOpenCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Returns an error if any unsupported flag is found.
-  if (file_flags & ~(base::File::FLAG_OPEN |
-                     base::File::FLAG_READ |
-                     base::File::FLAG_WRITE_ATTRIBUTES)) {
+  if (file_flags &
+      ~(base::File::FLAG_OPEN | base::File::FLAG_READ |
+        base::File::FLAG_WRITE_ATTRIBUTES | base::File::FLAG_WIN_NO_EXECUTE)) {
     std::move(callback).Run(base::File(base::File::FILE_ERROR_SECURITY),
                             base::OnceClosure());
     return;

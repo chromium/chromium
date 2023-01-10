@@ -17,6 +17,7 @@
 
 #include "base/win/nt_status.h"
 #include "base/win/scoped_handle.h"
+#include "mojo/core/platform_handle_security_util_win.h"
 #endif
 
 namespace mojo {
@@ -30,9 +31,7 @@ HANDLE TransferHandle(HANDLE handle,
                       base::ProcessHandle to_process,
                       PlatformHandleInTransit::TransferTargetTrustLevel trust) {
   if (trust == PlatformHandleInTransit::kUntrustedTarget) {
-    // TODO(https://crbug.com/1335974): Implement additional constraints
-    // regarding what type of handles may or may not be transferred to untrusted
-    // processes.
+    DcheckIfFileHandleIsUnsafe(handle);
   }
 
   HANDLE out_handle;

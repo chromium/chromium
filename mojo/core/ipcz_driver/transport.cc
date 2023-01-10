@@ -28,6 +28,10 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "mojo/core/platform_handle_security_util_win.h"
+#endif
+
 namespace mojo::core::ipcz_driver {
 
 namespace {
@@ -132,9 +136,7 @@ bool EncodeHandle(PlatformHandle& handle,
   DCHECK(remote_process.IsValid());
 #if BUILDFLAG(IS_WIN)
   if (is_remote_process_untrusted) {
-    // TODO(https://crbug.com/1335974): Implement additional constraints
-    // regarding what type of handles may or may not be transferred to untrusted
-    // processes.
+    DcheckIfFileHandleIsUnsafe(handle.GetHandle().get());
   }
 #endif
 

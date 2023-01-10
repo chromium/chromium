@@ -5391,6 +5391,8 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
 
         int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                     base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE;
+        // This File is being passed to an untrusted renderer process.
+        flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
         return base::File(base::FilePath(path), flags);
       }),
       base::BindOnce(

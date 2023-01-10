@@ -169,6 +169,24 @@ TEST(SecurityUtilTest, DenyAccessToPathFile) {
   EXPECT_EQ(kTest1DenyDacl, GetFileDacl(path));
 }
 
+TEST(SecurityUtilTest, DenyAccessToPathFileMultiple) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath path = temp_dir.GetPath().Append(L"test");
+  ASSERT_TRUE(CreateWithDacl(path, kBaseDacl, false));
+  EXPECT_EQ(kBaseDacl, GetFileDacl(path));
+  auto sids = Sid::FromSddlStringVector({kLocalGuestSid});
+  ASSERT_TRUE(sids);
+  EXPECT_TRUE(
+      DenyAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, true));
+  // Verify setting same ACE on same file does not change the ACL.
+  EXPECT_TRUE(
+      DenyAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, true));
+  EXPECT_TRUE(
+      DenyAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, true));
+  EXPECT_EQ(kTest1DenyDacl, GetFileDacl(path));
+}
+
 TEST(SecurityUtilTest, GrantAccessToPathDirectory) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
