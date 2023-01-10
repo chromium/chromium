@@ -9,7 +9,10 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/i18n/base_i18n_switches.h"
+#include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
@@ -102,6 +105,28 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
 
   std::unique_ptr<PluginInfoHostImpl> plugin_info_host_impl_;
 };
+
+#if BUILDFLAG(ENABLE_PDF)
+// Variation that tests under left-to-right and right-to-left directions. The
+// direction affects the PDF viewer extension, as the plugin name is derived
+// from the extension name, and the extension name may be adjusted to include
+// Unicode bidirectional control characters in RTL mode. These extra control
+// characters can break string comparisons (see crbug.com/1404260).
+class PluginInfoHostImplBidiTest : public PluginInfoHostImplTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam()) {
+      // Pass "--force-ui-direction=rtl" instead of setting an RTL locale, as
+      // setting a locale requires extra code on GLib platforms. Setting the UI
+      // direction has the same effect on the extension name, which is all
+      // that's needed for these tests.
+      command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                      switches::kForceDirectionRTL);
+    }
+  }
+};
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, CoverAllPlugins) {
   // Note that "internal" plugins are the only type that can be registered with
@@ -257,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, GetPluginInfoForPnacl) {
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(ENABLE_PDF)
-IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
+IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
                        GetPluginInfoForPdfViewerExtension) {
   const std::u16string kPluginName =
       base::UTF8ToUTF16(ChromeContentClient::kPDFExtensionPluginName);
@@ -279,7 +304,14 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
   EXPECT_EQ(kPluginName, plugin_info->group_name);
 
   // `WebPluginInfo` fields.
-  EXPECT_EQ(kPluginName, plugin_info->plugin.name);
+  std::u16string expected_plugin_name = kPluginName;
+  if (GetParam()) {
+    // Extra characters are added by `extensions::Extension::LoadName()`.
+    ASSERT_TRUE(
+        base::i18n::AdjustStringForLocaleDirection(&expected_plugin_name));
+  }
+  EXPECT_EQ(expected_plugin_name, plugin_info->plugin.name);
+
   EXPECT_EQ(base::FilePath(ChromeContentClient::kPDFExtensionPluginPath),
             plugin_info->plugin.path);
   EXPECT_EQ(u"", plugin_info->plugin.version);
@@ -301,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
   EXPECT_THAT(mime_type.additional_params, IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
+IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
                        GetPluginInfoForPdfViewerExtensionWhenDisabled) {
   SetAlwaysOpenPdfExternally();
 
@@ -369,4 +401,6 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
   EXPECT_EQ(PluginStatus::kAllowed, plugin_info->status);
   EXPECT_EQ(pdf::kInternalPluginMimeType, plugin_info->actual_mime_type);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, PluginInfoHostImplBidiTest, testing::Bool());
 #endif  // BUILDFLAG(ENABLE_PDF)

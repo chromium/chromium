@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -33,12 +32,11 @@ using content::BrowserThread;
 
 namespace {
 
-bool IsPDFViewerPlugin(const std::u16string& plugin_name) {
+bool IsPDFViewerPlugin(const content::WebPluginInfo& plugin) {
   // This should only match the external PDF plugin, not the internal PDF
   // plugin, which is also used for Print Preview. Note that only the PDF viewer
   // and Print Preview can create the internal PDF plugin in the first place.
-  return plugin_name ==
-         base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName);
+  return plugin.path.value() == ChromeContentClient::kPDFExtensionPluginPath;
 }
 
 }  // namespace
@@ -60,7 +58,7 @@ scoped_refptr<PluginPrefs> PluginPrefs::GetForTestingProfile(
 }
 
 bool PluginPrefs::IsPluginEnabled(const content::WebPluginInfo& plugin) const {
-  return !IsPDFViewerPlugin(plugin.name) || !always_open_pdf_externally_;
+  return !IsPDFViewerPlugin(plugin) || !always_open_pdf_externally_;
 }
 
 void PluginPrefs::UpdatePdfPolicy(const std::string& pref_name) {
