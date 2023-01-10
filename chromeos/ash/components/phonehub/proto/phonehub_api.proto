@@ -255,11 +255,31 @@ message App {
   AppStreamabilityStatus app_streamability_status = 7;
 }
 
+// Data required to verify the remote device.
+// Next ID: 3
+message AttestationData {
+  enum Type {
+    UNKNOWN = 0;
+
+    // A Chrome OS "soft-bind" certificate chain.
+    // The |certificates| field holds a PEM encoded X.509 certificate chain
+    // ordered from leaf to root.
+    CROS_SOFT_BIND_CERT_CHAIN = 1;
+  }
+
+  Type type = 1;
+
+  // The certificate data as specified by |type|.
+  repeated bytes certificates = 2;
+}
+
 message CrosState {
   NotificationSetting notification_setting = 1;
   CameraRollSetting camera_roll_setting = 2;
   // Optional in the case of un-updated phones.
   NotificationIconStyling notification_icon_styling = 3;
+  // Optional for older Chromebooks pre-attestation.
+  AttestationData attestation_data = 4;
 }
 
 message Action {
