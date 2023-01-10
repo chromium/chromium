@@ -73,16 +73,15 @@ int IOSChromeNetworkDelegate::OnBeforeURLRequest(
 bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
     const net::FirstPartySetMetadata& first_party_set_metadata,
-    net::CookieSettingOverrides overrides,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   // `cookie_settings_` is null during tests, or when we're running in the
   // system context.
-  bool allowed =
-      !cookie_settings_ || cookie_settings_->IsFullCookieAccessAllowed(
-                               request.url(), request.site_for_cookies(),
-                               request.isolation_info().top_frame_origin(),
-                               overrides, QueryReason::kCookies);
+  bool allowed = !cookie_settings_ ||
+                 cookie_settings_->IsFullCookieAccessAllowed(
+                     request.url(), request.site_for_cookies(),
+                     request.isolation_info().top_frame_origin(),
+                     request.cookie_setting_overrides(), QueryReason::kCookies);
 
   if (!allowed) {
     ExcludeAllCookies(
@@ -96,31 +95,28 @@ bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 bool IOSChromeNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
-    net::CookieOptions* options,
-    net::CookieSettingOverrides overrides) {
+    net::CookieOptions* options) {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_)
     return true;
 
   return cookie_settings_->IsFullCookieAccessAllowed(
       request.url(), request.site_for_cookies(),
-      request.isolation_info().top_frame_origin(), overrides,
-      QueryReason::kCookies);
+      request.isolation_info().top_frame_origin(),
+      request.cookie_setting_overrides(), QueryReason::kCookies);
 }
 
 net::NetworkDelegate::PrivacySetting
 IOSChromeNetworkDelegate::OnForcePrivacyMode(
-    const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    net::CookieSettingOverrides overrides) const {
+    const net::URLRequest& request) const {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_.get())
     return net::NetworkDelegate::PrivacySetting::kStateAllowed;
 
   return cookie_settings_->IsFullCookieAccessAllowed(
-             url, site_for_cookies, top_frame_origin, overrides,
-             QueryReason::kCookies)
+             request.url(), request.site_for_cookies(),
+             request.isolation_info().top_frame_origin(),
+             request.cookie_setting_overrides(), QueryReason::kCookies)
              ? net::NetworkDelegate::PrivacySetting::kStateAllowed
              : net::NetworkDelegate::PrivacySetting::kStateDisallowed;
 }

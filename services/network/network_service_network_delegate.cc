@@ -189,7 +189,6 @@ void NetworkServiceNetworkDelegate::OnPACScriptError(
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
     const net::FirstPartySetMetadata& first_party_set_metadata,
-    net::CookieSettingOverrides overrides,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   if (!network_context_->cookie_manager()
@@ -197,8 +196,8 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
            .AnnotateAndMoveUserBlockedCookies(
                request.url(), request.site_for_cookies(),
                base::OptionalToPtr(request.isolation_info().top_frame_origin()),
-               first_party_set_metadata, overrides, maybe_included_cookies,
-               excluded_cookies)) {
+               first_party_set_metadata, request.cookie_setting_overrides(),
+               maybe_included_cookies, excluded_cookies)) {
     // CookieSettings has already moved and annotated the cookies.
     return false;
   }
@@ -226,14 +225,16 @@ bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 bool NetworkServiceNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
-    net::CookieOptions* options,
-    net::CookieSettingOverrides overrides) {
+    net::CookieOptions* options) {
   bool allowed =
       network_context_->cookie_manager()->cookie_settings().IsCookieAccessible(
           cookie, request.url(), request.site_for_cookies(),
-          request.isolation_info().top_frame_origin(), overrides);
+          request.isolation_info().top_frame_origin(),
+          request.cookie_setting_overrides());
   if (!allowed)
     return false;
+  // The remaining checks do not consider setting overrides since they enforce
+  // explicit disablement via Android Webview APIs.
   URLLoader* url_loader = URLLoader::ForRequest(request);
   if (url_loader)
     return url_loader->AllowCookies(request.url(), request.site_for_cookies());
@@ -247,13 +248,12 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
 
 net::NetworkDelegate::PrivacySetting
 NetworkServiceNetworkDelegate::OnForcePrivacyMode(
-    const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    net::CookieSettingOverrides overrides) const {
+    const net::URLRequest& request) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
-      .IsPrivacyModeEnabled(url, site_for_cookies, top_frame_origin, overrides);
+      .IsPrivacyModeEnabled(request.url(), request.site_for_cookies(),
+                            request.isolation_info().top_frame_origin(),
+                            request.cookie_setting_overrides());
 }
 
 bool NetworkServiceNetworkDelegate::

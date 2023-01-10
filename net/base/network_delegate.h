@@ -82,13 +82,11 @@ class NET_EXPORT NetworkDelegate {
   bool AnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
-      CookieSettingOverrides overrides,
       CookieAccessResultList& maybe_included_cookies,
       CookieAccessResultList& excluded_cookies);
   bool CanSetCookie(const URLRequest& request,
                     const net::CanonicalCookie& cookie,
-                    CookieOptions* options,
-                    CookieSettingOverrides overrides);
+                    CookieOptions* options);
 
   // PrivacySetting is kStateDisallowed iff the given |url| has to be
   // requested over connection that is not tracked by the server.
@@ -105,11 +103,7 @@ class NET_EXPORT NetworkDelegate {
     // First-party requests will never have this setting.
     kPartitionedStateAllowedOnly,
   };
-  PrivacySetting ForcePrivacyMode(
-      const GURL& url,
-      const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      CookieSettingOverrides overrides) const;
+  PrivacySetting ForcePrivacyMode(const URLRequest& request) const;
 
   bool CancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
@@ -267,7 +261,6 @@ class NET_EXPORT NetworkDelegate {
   virtual bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
-      CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) = 0;
 
@@ -276,14 +269,10 @@ class NET_EXPORT NetworkDelegate {
   // LOAD_DO_NOT_SAVE_COOKIES is specified.
   virtual bool OnCanSetCookie(const URLRequest& request,
                               const CanonicalCookie& cookie,
-                              CookieOptions* options,
-                              CookieSettingOverrides overrides) = 0;
+                              CookieOptions* options) = 0;
 
   virtual PrivacySetting OnForcePrivacyMode(
-      const GURL& url,
-      const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
-      CookieSettingOverrides overrides) const = 0;
+      const URLRequest& request) const = 0;
 
   // Called when the |referrer_url| for requesting |target_url| during handling
   // of the |request| is does not comply with the referrer policy (e.g. a

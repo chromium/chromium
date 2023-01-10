@@ -51,7 +51,6 @@ void NetworkDelegateImpl::OnPACScriptError(int line_number,
 bool NetworkDelegateImpl::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
     const net::FirstPartySetMetadata& first_party_set_metadata,
-    CookieSettingOverrides overrides,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   return true;
@@ -59,16 +58,12 @@ bool NetworkDelegateImpl::OnAnnotateAndMoveUserBlockedCookies(
 
 bool NetworkDelegateImpl::OnCanSetCookie(const URLRequest& request,
                                          const net::CanonicalCookie& cookie,
-                                         CookieOptions* options,
-                                         CookieSettingOverrides overrides) {
+                                         CookieOptions* options) {
   return true;
 }
 
 NetworkDelegate::PrivacySetting NetworkDelegateImpl::OnForcePrivacyMode(
-    const GURL& url,
-    const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    CookieSettingOverrides overrides) const {
+    const URLRequest& request) const {
   return NetworkDelegate::PrivacySetting::kStateAllowed;
 }
 

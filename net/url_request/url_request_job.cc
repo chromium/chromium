@@ -399,9 +399,8 @@ void URLRequestJob::NotifySSLCertificateError(int net_error,
 }
 
 bool URLRequestJob::CanSetCookie(const net::CanonicalCookie& cookie,
-                                 CookieOptions* options,
-                                 CookieSettingOverrides overrides) const {
-  return request_->CanSetCookie(cookie, options, overrides);
+                                 CookieOptions* options) const {
+  return request_->CanSetCookie(cookie, options);
 }
 
 void URLRequestJob::NotifyHeadersComplete() {

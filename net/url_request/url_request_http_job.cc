@@ -413,10 +413,8 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
           ? NetworkDelegate::PrivacySetting::kStateAllowed
           : NetworkDelegate::PrivacySetting::kStateDisallowed;
   if (request_->network_delegate()) {
-    privacy_setting = request()->network_delegate()->ForcePrivacyMode(
-        request_->url(), request_->site_for_cookies(),
-        request_->isolation_info().top_frame_origin(),
-        GetCookieSettingOverrides());
+    privacy_setting =
+        request()->network_delegate()->ForcePrivacyMode(*request());
   }
   switch (privacy_setting) {
     case NetworkDelegate::PrivacySetting::kStateAllowed:
@@ -806,8 +804,8 @@ void URLRequestHttpJob::AnnotateAndMoveUserBlockedCookies(
   if (request()->network_delegate()) {
     can_get_cookies =
         request()->network_delegate()->AnnotateAndMoveUserBlockedCookies(
-            *request(), first_party_set_metadata_, GetCookieSettingOverrides(),
-            maybe_included_cookies, excluded_cookies);
+            *request(), first_party_set_metadata_, maybe_included_cookies,
+            excluded_cookies);
   }
 
   if (!can_get_cookies) {
@@ -898,8 +896,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
       // Make a copy of the cookie if we successfully made one.
       cookie_to_return = *cookie;
     }
-    if (cookie &&
-        !CanSetCookie(*cookie, &options, GetCookieSettingOverrides())) {
+    if (cookie && !CanSetCookie(*cookie, &options)) {
       returned_status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
     }
@@ -1715,10 +1712,6 @@ bool URLRequestHttpJob::IsPartitionedCookiesEnabled() const {
   // Only valid to call this after we've computed the key.
   DCHECK(cookie_partition_key_.has_value());
   return cookie_partition_key_.value().has_value();
-}
-
-CookieSettingOverrides URLRequestHttpJob::GetCookieSettingOverrides() const {
-  return CookieSettingOverrides();
 }
 
 }  // namespace net

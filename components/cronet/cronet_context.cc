@@ -123,7 +123,6 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
       const net::FirstPartySetMetadata& first_party_set_metadata,
-      net::CookieSettingOverrides overrides,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override {
     // Disallow sending cookies by default.
@@ -134,8 +133,7 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
 
   bool OnCanSetCookie(const net::URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      net::CookieOptions* options,
-                      net::CookieSettingOverrides overrides) override {
+                      net::CookieOptions* options) override {
     // Disallow saving cookies by default.
     return false;
   }
