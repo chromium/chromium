@@ -16,11 +16,20 @@ MetadataWriter::MetadataWriter(proto::SegmentationModelMetadata* metadata)
 MetadataWriter::~MetadataWriter() = default;
 
 void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
-                                    size_t features_size) {
+                                    size_t features_size,
+                                    bool is_output) {
   for (size_t i = 0; i < features_size; i++) {
     const auto& feature = features[i];
-    auto* input_feature = metadata_->add_input_features();
-    proto::UMAFeature* uma_feature = input_feature->mutable_uma_feature();
+    proto::UMAFeature* uma_feature;
+    if (is_output) {
+      auto* training_output =
+          metadata_->mutable_training_outputs()->add_outputs();
+      uma_feature =
+          training_output->mutable_uma_output()->mutable_uma_feature();
+    } else {
+      auto* input_feature = metadata_->add_input_features();
+      uma_feature = input_feature->mutable_uma_feature();
+    }
     uma_feature->set_type(feature.signal_type);
     uma_feature->set_name(feature.name);
     uma_feature->set_name_hash(base::HashMetricName(feature.name));

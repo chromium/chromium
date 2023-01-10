@@ -4095,6 +4095,11 @@ const FeatureEntry kFeatureEntries[] = {
          segmentation_platform::features::kContextualPageActionReaderMode,
          kContextualPageActionReaderModeVariations,
          "ContextualPageActionReaderMode")},
+    {"contextual-page-actions-share-model",
+     flag_descriptions::kContextualPageActionsShareModelName,
+     flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kContextualPageActionShareModel)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

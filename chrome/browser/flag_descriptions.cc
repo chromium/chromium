@@ -1591,6 +1591,11 @@ const char kContextualPageActionsReaderModeName[] =
 const char kContextualPageActionsReaderModeDescription[] =
     "Enables reader mode as a contextual page action.";
 
+const char kContextualPageActionsShareModelName[] =
+    "Contextual page actions - share model";
+const char kContextualPageActionsShareModelDescription[] =
+    "Enables share model data collection.";
+
 const char kEnableOsIntegrationSubManagersName[] =
     "OS Integration sub managers";
 const char kEnableOsIntegrationSubManagersDescription[] =

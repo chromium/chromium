@@ -57744,6 +57744,7 @@ from previous Chrome versions.
   <int value="-1817721380" label="RemoveCanceledTasksInTaskQueue2:disabled"/>
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
+  <int value="-1814266088" label="ContextualPageActionShareModel:enabled"/>
   <int value="-1813088913" label="CCTResizable90MaximumHeight:disabled"/>
   <int value="-1813070975" label="PageContentAnnotations:disabled"/>
   <int value="-1812838429" label="DragWindowToNewDesk:disabled"/>
@@ -63672,6 +63673,7 @@ from previous Chrome versions.
   <int value="1639314588" label="LookalikeUrlNavigationSuggestions:disabled"/>
   <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
+  <int value="1641671651" label="ContextualPageActionShareModel:disabled"/>
   <int value="1642478923" label="ContextualTriggersSelectionSize:enabled"/>
   <int value="1643450395" label="LacrosAuraCapture:disabled"/>
   <int value="1643626730" label="PrinterStatus:disabled"/>

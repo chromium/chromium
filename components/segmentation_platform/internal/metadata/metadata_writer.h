@@ -102,7 +102,9 @@ class MetadataWriter {
   };
 
   // Appends the list of UMA features in order.
-  void AddUmaFeatures(const UMAFeature features[], size_t features_size);
+  void AddUmaFeatures(const UMAFeature features[],
+                      size_t features_size,
+                      bool is_output = false);
 
   // Appends the list of SQL features in order.
   void AddSqlFeatures(const SqlFeature features[], size_t features_size);

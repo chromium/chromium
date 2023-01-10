@@ -882,6 +882,9 @@ extern const char kContextualPageActionsPriceTrackingDescription[];
 extern const char kContextualPageActionsReaderModeName[];
 extern const char kContextualPageActionsReaderModeDescription[];
 
+extern const char kContextualPageActionsShareModelName[];
+extern const char kContextualPageActionsShareModelDescription[];
+
 extern const char kEnableOsIntegrationSubManagersName[];
 extern const char kEnableOsIntegrationSubManagersDescription[];
 
