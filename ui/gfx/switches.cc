@@ -66,19 +66,4 @@ BASE_FEATURE(kPPAPISharedImagesSwapChain,
              "PPAPISharedImagesSwapChain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-GFX_SWITCHES_EXPORT bool UseSharedImagesSwapChainForPPAPI() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisablePPAPISharedImagesSwapChain)) {
-    // This log is to make diagnosing any outages for Enterprise customers
-    // easier.
-    LOG(WARNING) << "NaCL SwapChain: Disabled by policy";
-    return false;
-  }
-
-  auto enabled = base::FeatureList::IsEnabled(kPPAPISharedImagesSwapChain);
-  // This log is to make diagnosing any outages for Enterprise customers easier.
-  LOG(WARNING) << "NaCL SwapChain: Feature Controled: " << enabled;
-  return enabled;
-}
-
 }  // namespace features
