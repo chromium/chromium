@@ -446,7 +446,6 @@ std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
 ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
                                            const wchar_t* command_line,
                                            std::unique_ptr<TargetPolicy> policy,
-                                           ResultCode* last_warning,
                                            DWORD* last_error,
                                            PROCESS_INFORMATION* target_info) {
   if (!exe_path)
@@ -480,7 +479,6 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // correctly.
   static DWORD thread_id = ::GetCurrentThreadId();
   DCHECK(thread_id == ::GetCurrentThreadId());
-  *last_warning = SBOX_ALL_OK;
 
   // Launcher thread only needs to be opted out of ACG once. Do this on the
   // first child process being spawned.

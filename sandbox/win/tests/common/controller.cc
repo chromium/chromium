@@ -222,7 +222,6 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
   GetModuleFileNameW(NULL, prog_name, MAX_PATH);
 
   // Launch the sandboxed process.
-  ResultCode warning_result = SBOX_ALL_OK;
   DWORD last_error = ERROR_SUCCESS;
   PROCESS_INFORMATION target = {0};
 
@@ -239,9 +238,8 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
       return SBOX_ERROR_GENERIC;
     }
   } else {
-    result =
-        broker_->SpawnTarget(prog_name, arguments.c_str(), std::move(policy_),
-                             &warning_result, &last_error, &target);
+    result = broker_->SpawnTarget(prog_name, arguments.c_str(),
+                                  std::move(policy_), &last_error, &target);
   }
 
   if (SBOX_ALL_OK != result)

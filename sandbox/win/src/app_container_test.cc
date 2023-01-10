@@ -218,11 +218,9 @@ class AppContainerTest : public ::testing::Test {
     ASSERT_NE(DWORD{0}, ::GetModuleFileNameW(nullptr, prog_name, MAX_PATH));
 
     PROCESS_INFORMATION process_info = {};
-    ResultCode last_warning = SBOX_ALL_OK;
     DWORD last_error = 0;
     ResultCode result = broker_services_->SpawnTarget(
-        prog_name, prog_name, std::move(policy_), &last_warning, &last_error,
-        &process_info);
+        prog_name, prog_name, std::move(policy_), &last_error, &process_info);
     ASSERT_EQ(SBOX_ALL_OK, result) << "Last Error: " << last_error;
     scoped_process_info_.Set(process_info);
   }
