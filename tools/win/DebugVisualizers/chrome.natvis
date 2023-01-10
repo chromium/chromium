@@ -30,6 +30,78 @@
       <ExpandedItem Condition="engaged_">data_</ExpandedItem>
     </Expand>
   </Type>
+  <!-- Inspired by https://github.com/microsoft/STL/blob/main/stl/debugger/STL.natvis -->
+  <Type Name="absl::variant&lt;*&gt;">
+    <Intrinsic Name="index" Expression="(int)index_"/>
+    <DisplayString Condition="index() &lt; 0">[valueless_by_exception]</DisplayString>
+    <DisplayString Condition="index() ==  0" Optional="true">{{ index=0, value={state_.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  1" Optional="true">{{ index=1, value={state_.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  2" Optional="true">{{ index=2, value={state_.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  3" Optional="true">{{ index=3, value={state_.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  4" Optional="true">{{ index=4, value={state_.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  5" Optional="true">{{ index=5, value={state_.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  6" Optional="true">{{ index=6, value={state_.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  7" Optional="true">{{ index=7, value={state_.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  8" Optional="true">{{ index=8, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() ==  9" Optional="true">{{ index=9, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 10" Optional="true">{{ index=10, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 11" Optional="true">{{ index=11, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 12" Optional="true">{{ index=12, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 13" Optional="true">{{ index=13, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 14" Optional="true">{{ index=14, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 15" Optional="true">{{ index=15, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 16" Optional="true">{{ index=16, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 17" Optional="true">{{ index=17, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 18" Optional="true">{{ index=18, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 19" Optional="true">{{ index=19, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 20" Optional="true">{{ index=20, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 21" Optional="true">{{ index=21, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 22" Optional="true">{{ index=22, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 23" Optional="true">{{ index=23, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 24" Optional="true">{{ index=24, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 25" Optional="true">{{ index=25, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 26" Optional="true">{{ index=26, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 27" Optional="true">{{ index=27, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 28" Optional="true">{{ index=28, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 29" Optional="true">{{ index=29, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 30" Optional="true">{{ index=30, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <DisplayString Condition="index() == 31" Optional="true">{{ index=31, value={state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head} }}</DisplayString>
+    <Expand>
+      <Item Name="index">index()</Item>
+      <Item Name="[value]" Condition="index() ==  0" Optional="true">state_.head</Item>
+      <Item Name="[value]" Condition="index() ==  1" Optional="true">state_.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  2" Optional="true">state_.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  3" Optional="true">state_.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  4" Optional="true">state_.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  5" Optional="true">state_.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  6" Optional="true">state_.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  7" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  8" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() ==  9" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 10" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 11" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 12" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 13" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 14" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 15" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 16" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 17" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 18" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 19" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 20" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 21" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 22" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 23" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 24" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 25" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 26" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 27" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 28" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 29" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 30" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+      <Item Name="[value]" Condition="index() == 31" Optional="true">state_.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.tail.head</Item>
+    </Expand>
+  </Type>
   <Type Name="IPC::Message::Header">
     <DisplayString>{{Routing: {routing}, Type: {type}}}</DisplayString>
     <Expand>

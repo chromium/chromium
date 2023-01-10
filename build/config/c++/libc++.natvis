@@ -190,7 +190,7 @@
         </RightPointer>
         <ValueNode>
           ((std::Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
-              -&gt;__value_.__cc
+              -&gt;__value_.__cc_
         </ValueNode>
       </TreeItems>
     </Expand>
@@ -216,7 +216,7 @@
         </RightPointer>
         <ValueNode>
           ((std::Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
-              -&gt;__value_.__cc
+              -&gt;__value_.__cc_
         </ValueNode>
       </TreeItems>
     </Expand>
