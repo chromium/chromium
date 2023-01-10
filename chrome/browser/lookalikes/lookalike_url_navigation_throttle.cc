@@ -116,7 +116,9 @@ void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckAsync() {
   if (lookup_timer_.IsRunning())
     return;
   lookup_timer_.Start(
-      FROM_HERE, base::TimeDelta(),
+      FROM_HERE,
+      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          kPrewarmLookalikeCheck, "delay_before_task_start", 50)),
       base::BindOnce(&LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync,
                      base::Unretained(this)));
 }
