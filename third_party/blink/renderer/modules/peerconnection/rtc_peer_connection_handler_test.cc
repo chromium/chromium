@@ -919,11 +919,13 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   rtc::scoped_refptr<webrtc::RTCStatsReport> report =
       webrtc::RTCStatsReport::Create(42);
 
-  report->AddStats(std::unique_ptr<const webrtc::RTCStats>(
-      new webrtc::RTCTestStats("RTCUndefinedStats", 1000)));
+  report->AddStats(
+      std::unique_ptr<const webrtc::RTCStats>(new webrtc::RTCTestStats(
+          "RTCUndefinedStats", webrtc::Timestamp::Micros(1000))));
 
   std::unique_ptr<webrtc::RTCTestStats> stats_defined_members(
-      new webrtc::RTCTestStats("RTCDefinedStats", 2000));
+      new webrtc::RTCTestStats("RTCDefinedStats",
+                               webrtc::Timestamp::Micros(2000)));
   stats_defined_members->m_bool = true;
   stats_defined_members->m_int32 = 42;
   stats_defined_members->m_uint32 = 42;
