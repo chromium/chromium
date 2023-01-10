@@ -60,6 +60,19 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
+<variants name="ContextMenuAndroidTypes">
+  <variant name="" summary=""/>
+  <variant name=".Image"
+      summary="The context menu was shown for a (non-link) image."/>
+  <variant name=".ImageLink"
+      summary="The context menu was shown for an image which is also a link."/>
+  <variant name=".Link"
+      summary="The context menu was shown for a (non-image) link"/>
+  <variant name=".SharedHighlightingInteraction"
+      summary="The context menu was shown from tap on highlighted text."/>
+  <variant name=".Video" summary="The context menu was shown for a video"/>
+</variants>
+
 <variants name="DIPSCookieMode">
   <variant name=".Block3PC"
       summary="in a NON-off-the-record profile, with third-party cookies
@@ -3276,25 +3289,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="ContextMenu.SelectedOptionAndroid"
-    enum="ContextMenuOptionAndroid" expires_after="never">
-<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
-
-  <owner>avi@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    The option that the user selected from a context menu on Android. This is
-    logged on Android only; check out ContextMenu.SelectedOptionIOS for iOS, and
-    ContextMenu.SelectedOptionDesktop for desktop. Note that if a menu is
-    invoked on mixed content, only one of the submetrics receives the log; read
-    the code to determine which one.
-
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
-  </summary>
-</histogram>
-
 <histogram name="ContextMenu.SelectedOptionAndroid.{LinkType}.NewTabOption"
     enum="SelectedNewTabCreationOption" expires_after="M95">
   <owner>meiliang@chromium.org</owner>
@@ -3310,6 +3304,28 @@ chromium-metrics-reviews@google.com.
     <variant name="ImageLink" summary="an image link"/>
     <variant name="Link" summary="a link"/>
   </token>
+</histogram>
+
+<histogram name="ContextMenu.SelectedOptionAndroid{Type}"
+    enum="ContextMenuOptionAndroid" expires_after="never">
+<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
+
+  <owner>avi@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    {Type}
+
+    The option that the user selected from a context menu on Android. This is
+    logged on Android only; check out ContextMenu.SelectedOptionIOS for iOS, and
+    ContextMenu.SelectedOptionDesktop for desktop. Note that if a menu is
+    invoked on mixed content, only one of the submetrics receives the log; read
+    the code to determine which one.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+  <token key="Type" variants="ContextMenuAndroidTypes"/>
 </histogram>
 
 <histogram base="true" name="ContextMenu.SelectedOptionDesktop"
@@ -3347,12 +3363,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContextMenu.Shown" enum="BooleanPresent"
+<histogram name="ContextMenu.Shown{Type}" enum="BooleanPresent"
     expires_after="2023-05-27">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
+    {Type}
+
     Recorded when a context menu is shown, sliced by whether a web contents was
     present. (It generally should be; indeed, this code path should not be
     followed when it is absent. For instance, invoking a context menu from the
@@ -3363,6 +3381,7 @@ chromium-metrics-reviews@google.com.
     compare with RenderViewContextMenu.Shown and RenderViewContextMenu.Used on
     desktop.
   </summary>
+  <token key="Type" variants="ContextMenuAndroidTypes"/>
 </histogram>
 
 <histogram name="ContextMenu.ThumbnailFetched" enum="BooleanSuccess"

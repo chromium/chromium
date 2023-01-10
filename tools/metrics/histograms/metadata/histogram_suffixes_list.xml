@@ -1160,20 +1160,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ContextMenu.Shown"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContextMenuTypeAndroid" separator=".">
-  <suffix name="Image"
-      label="The context menu was shown for a (non-link) image"/>
-  <suffix name="ImageLink"
-      label="The context menu was shown for an image which is also a link"/>
-  <suffix name="Link"
-      label="The context menu was shown for a (non-image) link"/>
-  <suffix name="SharedHighlightingInteraction"
-      label="The context menu was shown from tap on highlighted text."/>
-  <suffix name="Video" label="The context menu was shown for a video"/>
-  <affected-histogram name="ContextMenu.SelectedOptionAndroid"/>
-  <affected-histogram name="ContextMenu.Shown"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContextMenuTypeDesktop" separator=".">
   <suffix name="Image"
       label="The context menu was shown for a (non-link) image"/>
