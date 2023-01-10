@@ -41732,6 +41732,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4436" label="CSSBackgroundClipBorder"/>
   <int value="4437" label="CSSBackgroundClipContent"/>
   <int value="4438" label="CSSBackgroundClipPadding"/>
+  <int value="4439"
+      label="DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
