@@ -13,6 +13,7 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/process/process_info.h"
 #include "base/rand_util.h"
 #include "base/scoped_native_library.h"
@@ -455,6 +456,31 @@ TEST(AppContainerLaunchTest, IsNotAppContainer) {
   TestRunner runner;
 
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
+}
+
+TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {
+  if (!features::IsAppContainerSandboxSupported()) {
+    return;
+  }
+
+  TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
+  EXPECT_EQ(SBOX_ALL_OK,
+            runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
+
+  // Now set the job level to be <= JobLevel::kLimitedUser
+  // and ensure we can no longer create a child process.
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetJobLevel(
+                             JobLevel::kLimitedUser, 0));
+
+  base::FilePath cmd;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd));
+  cmd = cmd.Append(L"calc.exe");
+
+  std::wstring test_command = L"TestChildProcess \"";
+  test_command += cmd.value().c_str();
+  test_command += L"\" false";
+
+  EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest(test_command.c_str()));
 }
 
 }  // namespace sandbox

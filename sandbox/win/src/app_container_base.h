@@ -72,8 +72,7 @@ class AppContainerBase final : public AppContainer {
   static bool Delete(const wchar_t* package_name);
 
   // Build the token for the lowbox
-  ResultCode BuildLowBoxToken(base::win::ScopedHandle* token,
-                              base::win::ScopedHandle* lockdown = nullptr);
+  ResultCode BuildLowBoxToken(base::win::ScopedHandle* token);
 
  private:
   AppContainerBase(base::win::Sid& package_sid, AppContainerType type);

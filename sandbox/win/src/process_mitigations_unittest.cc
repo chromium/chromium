@@ -571,7 +571,18 @@ SBOX_TESTS_COMMAND int TestChildProcess(int argc, wchar_t** argv) {
   }
   // Process failed to be created.
   // Note: GetLastError from CreateProcess returns 5, "ERROR_ACCESS_DENIED".
-  return SBOX_TEST_FAILED;
+  // Validate the NoChildProcessCreation policy is applied.
+  PROCESS_MITIGATION_CHILD_PROCESS_POLICY policy = {};
+  if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                    ProcessChildProcessPolicy, &policy,
+                                    sizeof(policy))) {
+    return SBOX_TEST_NOT_FOUND;
+  }
+  if (!policy.NoChildProcessCreation) {
+    return SBOX_TEST_FIRST_ERROR;
+  } else {
+    return SBOX_TEST_SECOND_ERROR;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -984,7 +995,7 @@ TEST(ProcessMitigationsTest, CheckChildProcessFailure) {
   test_command += cmd.value().c_str();
   test_command += L"\" false";
 
-  EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(test_command.c_str()));
+  EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest(test_command.c_str()));
 }
 
 // This test validates that when the sandboxed target within a job spawns a
