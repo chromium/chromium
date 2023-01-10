@@ -535,7 +535,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
               keyboard_client->IsEnableFlagSet(
                   keyboard::KeyboardEnableFlag::kAccessibilityEnabled));
   results.Set("hotrodmode", g_hotrod_keyboard_enabled);
-  base::Value features(base::Value::Type::LIST);
+  base::Value::List features;
 
   keyboard::KeyboardConfig config = keyboard_client->GetKeyboardConfig();
   // TODO(oka): Change this to use config.voice_input.
@@ -611,7 +611,7 @@ void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
     return;
 
   base::Value::List event_args;
-  event_args.Append(base::Value(std::move(*settings)));
+  event_args.Append(std::move(*settings));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_KEYBOARD_CONFIG_CHANGED,
