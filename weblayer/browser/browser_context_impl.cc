@@ -321,6 +321,8 @@ void BrowserContextImpl::RegisterPrefs(
   blink::web_pref::WebPreferences pref_defaults;
   pref_registry->RegisterBooleanPref(browser_ui::prefs::kWebKitForceEnableZoom,
                                      pref_defaults.force_enable_zoom);
+  pref_registry->SetDefaultPrefValue(::prefs::kSafeBrowsingEnhanced,
+                                     base::Value(true));
 #endif
 
   BrowserContextDependencyManager::GetInstance()
