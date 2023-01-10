@@ -18,7 +18,9 @@ suite('<bookmarks-toolbar>', function() {
   let testCommandManager: TestCommandManager;
 
   suiteSetup(function() {
-    chrome.bookmarkManagerPrivate.removeTrees = function() {};
+    chrome.bookmarkManagerPrivate.removeTrees = function() {
+      return Promise.resolve();
+    };
   });
 
   setup(function() {
@@ -51,6 +53,9 @@ suite('<bookmarks-toolbar>', function() {
 
     testCommandManager = new TestCommandManager();
     document.body.appendChild(testCommandManager.getCommandManager());
+
+    const toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
   });
 
   test('selecting multiple items shows toolbar overlay', function() {

@@ -202,6 +202,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     chrome.bookmarkManagerPrivate.drop = (id, index) => {
       calledId = id;
       calledIndex = index;
+      return Promise.resolve();
     };
 
     const draggableElements = getDraggableElements();
@@ -231,6 +232,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     chrome.bookmarkManagerPrivate.drop = (id, index) => {
       calledId = id;
       calledIndex = index;
+      return Promise.resolve();
     };
 
     const draggableElements = getDraggableElements();
