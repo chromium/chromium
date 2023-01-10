@@ -25,6 +25,7 @@
 #include "base/test/test_switches.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/common/in_process_child_thread_params.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -295,6 +296,12 @@ TEST_F(RenderThreadImplBrowserTest,
   // NOTE other than not being a resource message, the actual message is
   // unimportant.
   sender()->Send(new TestMsg_QuitRunLoop());
+
+  // In-process RenderThreadImpl does not start a browser loop so the random
+  // browser seed is never generated. To allow the ChildProcessHost to correctly
+  // send a seed to the ChildProcess without hitting a DCHECK, set the seed to
+  // an arbitrary non-zero value.
+  SetPseudonymizationSalt(0xDEADBEEF);
 
   run_loop_->Run();
 

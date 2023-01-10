@@ -50,4 +50,7 @@ interface TestService {
 
   // Returns the result of sandbox::policy::Sandbox::IsProcessSandboxed().
   IsProcessSandboxed() => (bool is_sandboxed);
+
+  // Returns the value of PseudonymizeString for the given string.
+  PseudonymizeString(string value) => (uint32 result);
 };

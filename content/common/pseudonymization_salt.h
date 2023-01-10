@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "content/common/content_export.h"
+
 namespace content {
 
 // Gets the pseudonymization salt.
@@ -24,13 +26,19 @@ namespace content {
 // anywhere or sent to a server.  Whoever has access to the salt can
 // de-anonymize results of the content::PseudonymizationUtil::PseudonymizeString
 // method.
-uint32_t GetPseudonymizationSalt();
+CONTENT_EXPORT uint32_t GetPseudonymizationSalt();
 
-// Called in child processes, for setting the pseudonymization `salt` received
-// in an IPC from a parent process.
+// In the browser process, this is called during initialization to set the
+// browser process salt. It is then called in each child processes via an IPC
+// from the browser process to synchronize the same pseudonymization salt across
+// each process.
 //
 // This function is thread-safe - it can be called on any thread.
-void SetPseudonymizationSalt(uint32_t salt);
+CONTENT_EXPORT void SetPseudonymizationSalt(uint32_t salt);
+
+// Allow the salt to be reset to zero. This allows unit tests that might share
+// the same process to function correctly, since the salt is process-wide.
+CONTENT_EXPORT void ResetSaltForTesting();
 
 }  // namespace content
 

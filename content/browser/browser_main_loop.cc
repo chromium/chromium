@@ -30,6 +30,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/process/process_metrics.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -101,6 +102,7 @@
 #include "content/browser/webui/content_web_ui_configs.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/common/skia_utils.h"
 #include "content/common/thread_pool_util.h"
 #include "content/public/browser/audio_service.h"
@@ -428,6 +430,15 @@ void BindHidManager(mojo::PendingReceiver<device::mojom::HidManager> receiver) {
 
   GetDeviceService().BindHidManager(std::move(receiver));
 #endif
+}
+
+uint32_t GenerateBrowserSalt() {
+  uint32_t salt;
+  do {
+    salt = base::RandUint64();
+  } while (salt == 0);
+
+  return salt;
 }
 
 }  // namespace
@@ -806,6 +817,12 @@ int BrowserMainLoop::PreCreateThreads() {
   // after base::FeatureList is initialized, but before any navigations can
   // happen.
   SiteIsolationPolicy::ApplyGlobalIsolatedOrigins();
+
+  // Generate the browser process salt. This is then accessible by calls to
+  // GetPseudonymizationSalt in the browser process. This generation is only
+  // needed in the browser process, because for other processes it is
+  // transferred to them over IPC from the relevant process host.
+  SetPseudonymizationSalt(GenerateBrowserSalt());
 
   return result_code_;
 }

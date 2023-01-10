@@ -15,6 +15,7 @@
 #include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
+#include "content/public/common/pseudonymization_util.h"
 #include "content/public/common/web_identity.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -127,6 +128,12 @@ class TestRendererServiceImpl : public mojom::TestService {
 
   void IsProcessSandboxed(IsProcessSandboxedCallback callback) override {
     std::move(callback).Run(sandbox::policy::Sandbox::IsProcessSandboxed());
+  }
+
+  void PseudonymizeString(const std::string& value,
+                          PseudonymizeStringCallback callback) override {
+    std::move(callback).Run(
+        PseudonymizationUtil::PseudonymizeStringForTesting(value));
   }
 
   mojo::Receiver<mojom::TestService> receiver_;

@@ -13,6 +13,12 @@
 namespace content {
 
 // static
+uint32_t PseudonymizationUtil::PseudonymizeStringForTesting(
+    base::StringPiece string) {
+  return PseudonymizeString(string);
+}
+
+// static
 uint32_t PseudonymizationUtil::PseudonymizeString(base::StringPiece string) {
   // Include `string` in the SHA1 hash.
   base::SHA1Context sha1_context;

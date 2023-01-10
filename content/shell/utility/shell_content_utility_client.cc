@@ -23,6 +23,7 @@
 #include "components/services/storage/test_api/test_api.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/pseudonymization_util.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/public/utility/utility_thread.h"
 #include "content/shell/common/power_monitor_test_impl.h"
@@ -122,6 +123,12 @@ class TestUtilityServiceImpl : public mojom::TestService {
 
   void IsProcessSandboxed(IsProcessSandboxedCallback callback) override {
     std::move(callback).Run(sandbox::policy::Sandbox::IsProcessSandboxed());
+  }
+
+  void PseudonymizeString(const std::string& value,
+                          PseudonymizeStringCallback callback) override {
+    std::move(callback).Run(
+        PseudonymizationUtil::PseudonymizeStringForTesting(value));
   }
 
  private:

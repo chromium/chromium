@@ -2577,6 +2577,7 @@ test("content_unittests") {
     "../common/input/event_with_latency_info_unittest.cc",
     "../common/input/gesture_event_stream_validator_unittest.cc",
     "../common/input/touch_event_stream_validator_unittest.cc",
+    "../common/pseudonymization_salt_unittest.cc",
     "../common/url_utils_unittest.cc",
     "../common/user_agent_unittest.cc",
     "../common/webid/identity_url_loader_throttle_unittest.cc",

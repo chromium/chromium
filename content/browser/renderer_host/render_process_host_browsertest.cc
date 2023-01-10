@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
@@ -35,6 +36,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/pseudonymization_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -1940,5 +1942,52 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ZeroExecutionTimes) {
   process->Cleanup();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+// This test verifies that the Pseudonymization salt that is generated in the
+// browser process is correctly synchronized with a child process, in this case,
+// two separate renderer processes.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
+                       SetPseudonymizationSaltSynchronized) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Ensure all sites get dedicated processes during the test.
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // Create two renderer processes.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
+  RenderProcessHost* rph1 =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  Shell* second_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(second_shell, embedded_test_server()->GetURL(
+                                              "b.com", "/simple_page.html")));
+  RenderProcessHost* rph2 =
+      second_shell->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  // This test needs two processes.
+  EXPECT_NE(rph1->GetProcess().Pid(), rph2->GetProcess().Pid());
+
+  const std::string test_string = "testing123";
+  uint32_t browser_result =
+      PseudonymizationUtil::PseudonymizeStringForTesting(test_string);
+
+  for (RenderProcessHost* rph : {rph1, rph2}) {
+    mojo::Remote<mojom::TestService> service;
+    rph->BindReceiver(service.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+
+    absl::optional<uint32_t> renderer_result = absl::nullopt;
+    service->PseudonymizeString(
+        test_string, base::BindLambdaForTesting([&](uint32_t result) {
+          renderer_result = result;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    ASSERT_TRUE(renderer_result.has_value());
+    EXPECT_EQ(*renderer_result, browser_result);
+  }
+}
 
 }  // namespace content
