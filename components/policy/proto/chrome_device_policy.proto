@@ -1113,7 +1113,14 @@ message DeviceLoginScreenExtensionsProto {
 
 // A boolean indicate if manifest v2 extension is available.
 message LoginScreenExtensionManifestV2AvailabilityProto {
-  optional bool login_screen_extension_manifest_v2_availability = 1;
+  enum Availability {
+    DEFAULT = 0;
+    DISABLE = 1;
+    ENABLE = 2;
+    ENABLE_FOR_FORCED_EXTENSIONS = 3;
+  }
+
+  optional Availability login_screen_extension_manifest_v2_availability = 1;
 }
 
 // A list of allowed locales on the login screen.
