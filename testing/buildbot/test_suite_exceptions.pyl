@@ -3385,6 +3385,12 @@
         # TODO(b/188822176): Restore to 100% when we have additional capacity.
         'experiment_percentage': 0,
       },
+      'linux-rel-cft': {
+        'args': [
+          '--xvfb',
+          '--jobs=1',
+        ],
+      },
       'linux-rel-no-external-ip': {
         'args': [
           '--xvfb',
