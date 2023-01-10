@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_DRAG_ICON_PROXY_H_
 
 #include <memory>
+#include "ash/style/system_shadow.h"
 #include "base/functional/callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -26,7 +27,6 @@ class Layer;
 }  // namespace ui
 
 namespace ash {
-class SystemShadow;
 
 // Manages the drag image shown while an app is being dragged in app list or
 // shelf. It creates a DragImageView widget in a window container used for
@@ -44,12 +44,14 @@ class AppDragIconProxy : public ui::ImplicitAnimationObserver {
   //     shown as a drag image.
   // `use_blurred_background` - whether the drag image should have blurred
   //     background.
+  // `is_folder_icon` - whether the icon dragged is a folder.
   AppDragIconProxy(aura::Window* root_window,
                    const gfx::ImageSkia& icon,
                    const gfx::Point& pointer_location_in_screen,
                    const gfx::Vector2d& pointer_offset_from_center,
                    float scale_factor,
-                   bool use_blurred_background);
+                   bool use_blurred_background,
+                   bool is_folder_icon = false);
   AppDragIconProxy(const AppDragIconProxy&) = delete;
   AppDragIconProxy& operator=(const AppDragIconProxy&) = delete;
   ~AppDragIconProxy() override;
@@ -79,6 +81,10 @@ class AppDragIconProxy : public ui::ImplicitAnimationObserver {
 
   // Returns the drag image widget.
   views::Widget* GetWidgetForTesting();
+
+  gfx::Rect shadow_bounds_for_testing() const {
+    return shadow_->GetContentBounds();
+  }
 
  private:
   // Whether close animation (see `AnimateToBoundsAndCloseWidget()`) is in

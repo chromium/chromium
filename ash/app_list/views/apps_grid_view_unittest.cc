@@ -1562,6 +1562,30 @@ TEST_F(AppsGridViewTest, ItemViewsDontHaveLayer) {
     EXPECT_FALSE(GetItemViewInTopLevelGrid(i)->layer());
 }
 
+TEST_P(AppsGridViewDragTest, AppAndFolderIconProxyShouldHaveSameShadowSizes) {
+  model_->CreateAndPopulateFolderWithApps(2);
+  model_->PopulateApps(1);
+  UpdateLayout();
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+                                     apps_grid_view_);
+  ASSERT_TRUE(apps_grid_view_->app_drag_icon_proxy_for_test());
+  const gfx::Rect dragged_folder_shadow_bounds =
+      apps_grid_view_->app_drag_icon_proxy_for_test()
+          ->shadow_bounds_for_testing();
+  EndDrag();
+
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
+                                     apps_grid_view_);
+  ASSERT_TRUE(apps_grid_view_->app_drag_icon_proxy_for_test());
+  const gfx::Rect dragged_app_shadow_bounds =
+      apps_grid_view_->app_drag_icon_proxy_for_test()
+          ->shadow_bounds_for_testing();
+  EndDrag();
+
+  EXPECT_EQ(dragged_folder_shadow_bounds.size(),
+            dragged_app_shadow_bounds.size());
+}
+
 TEST_P(AppsGridViewDragTest, DismissWhileDraggingDoesNotCrash) {
   model_->PopulateApps(2);
   UpdateLayout();
