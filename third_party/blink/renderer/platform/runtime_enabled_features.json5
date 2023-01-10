@@ -2335,6 +2335,10 @@
       status: {"Android": "stable", "default": ""},
     },
     {
+      name: "RemoveDataUrlInSvgUse",
+      status: "experimental"
+    },
+    {
       name: "RemoveMobileViewportDoubleTap",
       public: true,
       status: "stable"
