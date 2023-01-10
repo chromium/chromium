@@ -149,25 +149,16 @@ export class BrailleCaptionsBackground {
    * Asynchronously returns a display state representing the state of the
    * captions feature. This is used when no actual hardware display is
    * connected.
-   * @return {!Promise<!BrailleDisplayState>}
+   * @return {!BrailleDisplayState}
    */
-  static async getVirtualDisplayState() {
-    return new Promise(async resolve => {
-      if (BrailleCaptionsBackground.isEnabled()) {
-        let items = await new Promise(
-            resolve =>
-                chrome.storage.local.get({'virtualBrailleRows': 1}, resolve));
-        const rows = items['virtualBrailleRows'];
-        items = await new Promise(
-            resolve => chrome.storage.local.get(
-                {'virtualBrailleColumns': 40}, resolve));
-        const columns = items['virtualBrailleColumns'];
-        resolve(
-            {available: true, textRowCount: rows, textColumnCount: columns});
-      } else {
-        resolve({available: false, textRowCount: 0, textColumnCount: 0});
-      }
-    });
+  static getVirtualDisplayState() {
+    if (BrailleCaptionsBackground.isEnabled()) {
+      const rows = Number(LocalStorage.get('virtualBrailleRows', 1));
+      const columns = Number(LocalStorage.get('virtualBrailleColumns', 40));
+      return {available: true, textRowCount: rows, textColumnCount: columns};
+    } else {
+      return {available: false, textRowCount: 0, textColumnCount: 0};
+    }
   }
 
   /** @private */
