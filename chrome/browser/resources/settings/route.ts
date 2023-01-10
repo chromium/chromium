@@ -26,7 +26,8 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
 
-  if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
+  if (loadTimeData.getBoolean('isPrivacySandboxSettings4') &&
+      !loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
     r.PRIVACY_SANDBOX_TOPICS =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
