@@ -15,9 +15,9 @@
 #error "This file requires ARC support."
 #endif
 
-int GetIndexOfTabWithIdentifier(WebStateList* web_state_list,
-                                NSString* identifier,
-                                BOOL pinned) {
+int GetTabIndex(WebStateList* web_state_list,
+                NSString* identifier,
+                BOOL pinned) {
   int start, end;
   if (pinned) {
     DCHECK(IsPinnedTabsEnabled());
@@ -61,7 +61,7 @@ NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
   return web_state->GetStableIdentifier();
 }
 
-TabSwitcherItem* CreateItem(web::WebState* web_state) {
+TabSwitcherItem* GetTabSwitcherItem(web::WebState* web_state) {
   TabSwitcherItem* item = [[TabSwitcherItem alloc]
       initWithIdentifier:web_state->GetStableIdentifier()];
   // chrome://newtab (NTP) tabs have no title.

@@ -31,7 +31,7 @@ NSArray* CreateItems(WebStateList* web_state_list) {
   NSMutableArray* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items addObject:CreateItem(web_state)];
+    [items addObject:GetTabSwitcherItem(web_state)];
   }
   return [items copy];
 }
@@ -209,8 +209,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index =
-      GetIndexOfTabWithIdentifier(self.webStateList, itemID, /*pinned=*/NO);
+  int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/NO);
   if (index >= 0)
     self.webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
 }
@@ -234,7 +233,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
   [self.consumer replaceItemID:webState->GetStableIdentifier()
-                      withItem:CreateItem(webState)];
+                      withItem:GetTabSwitcherItem(webState)];
 }
 
 @end

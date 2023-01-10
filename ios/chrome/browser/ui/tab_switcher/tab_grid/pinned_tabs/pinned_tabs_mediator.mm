@@ -40,7 +40,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
     DCHECK(web_state_list->IsWebStatePinnedAt(i));
 
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items addObject:CreateItem(web_state)];
+    [items addObject:GetTabSwitcherItem(web_state)];
   }
   return [items copy];
 }
@@ -128,7 +128,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   [self.consumer
-          insertItem:CreateItem(webState)
+          insertItem:GetTabSwitcherItem(webState)
              atIndex:index
       selectedItemID:GetActiveWebStateIdentifier(webStateList, /*pinned=*/YES)];
 
@@ -168,7 +168,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   [self.consumer replaceItemID:oldWebState->GetStableIdentifier()
-                      withItem:CreateItem(newWebState)];
+                      withItem:GetTabSwitcherItem(newWebState)];
 
   _scopedWebStateObservation->RemoveObservation(oldWebState);
   _scopedWebStateObservation->AddObservation(newWebState);
@@ -236,7 +236,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   }
 
   if (webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer insertItem:CreateItem(webState)
+    [self.consumer insertItem:GetTabSwitcherItem(webState)
                       atIndex:index
                selectedItemID:GetActiveWebStateIdentifier(webStateList,
                                                           /*pinned=*/YES)];
@@ -280,14 +280,13 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
   [self.consumer replaceItemID:webState->GetStableIdentifier()
-                      withItem:CreateItem(webState)];
+                      withItem:GetTabSwitcherItem(webState)];
 }
 
 #pragma mark - TabCollectionCommands
 
 - (void)selectItemWithID:(NSString*)itemID {
-  int index =
-      GetIndexOfTabWithIdentifier(self.webStateList, itemID, /*pinned=*/YES);
+  int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/YES);
   WebStateList* itemWebStateList = self.webStateList;
 
   if (index == WebStateList::kInvalidIndex) {
