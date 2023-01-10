@@ -3620,6 +3620,7 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
+        "../browser/apps/app_preload_service/web_app_preload_installer_browsertest.cc",
         "../browser/apps/app_service/browser_app_instance_tracker_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",
         "../browser/apps/app_service/metrics/app_platform_metrics_browsertest.cc",
@@ -4270,6 +4271,7 @@ if (!is_android) {
         "//ash/webui/shimless_rma",
         "//ash/webui/shortcut_customization_ui",
         "//ash/webui/web_applications/test:test_support",
+        "//chrome/browser/apps/app_preload_service/proto",
         "//chrome/browser/ash",
         "//chrome/browser/ash:add_remove_user_event_proto",
         "//chrome/browser/ash:arc_test_support",
