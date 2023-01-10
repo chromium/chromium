@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="StartSurface.TimeSpent" units="ms" expires_after="2023-04-16">
+<histogram name="StartSurface.TimeSpent" units="ms" expires_after="2023-07-09">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
