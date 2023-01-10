@@ -691,13 +691,11 @@
 
   self.regularTabContextMenuHelper =
       [[TabContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                                  actionsDataSource:self.regularTabsMediator
                              tabContextMenuDelegate:self];
   self.baseViewController.regularTabsContextMenuProvider =
       self.regularTabContextMenuHelper;
   self.incognitoTabContextMenuHelper =
       [[TabContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
-                                  actionsDataSource:self.incognitoTabsMediator
                              tabContextMenuDelegate:self];
   self.baseViewController.incognitoTabsContextMenuProvider =
       self.incognitoTabContextMenuHelper;

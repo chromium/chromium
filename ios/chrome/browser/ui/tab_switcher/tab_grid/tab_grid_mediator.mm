@@ -136,25 +136,6 @@ void LogPriceDropMetrics(web::WebState* web_state) {
           .c_str()));
 }
 
-// Returns the WebState with `identifier` in `browser_state`. Returns `nullptr`
-// if not found.
-web::WebState* GetWebStateWithId(ChromeBrowserState* browser_state,
-                                 NSString* identifier) {
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
-  std::set<Browser*> browsers = browser_state->IsOffTheRecord()
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
-  for (Browser* browser : browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    int index = GetTabIndex(web_state_list, identifier, /*pinned=*/NO);
-    if (index != WebStateList::kInvalidIndex) {
-      return web_state_list->GetWebStateAt(index);
-    }
-  }
-  return nullptr;
-}
-
 // Returns the Browser with `identifier` in its WebStateList. Returns `nullptr`
 // if not found.
 Browser* GetBrowserForTabWithId(BrowserList* browser_list,
@@ -439,7 +420,8 @@ void RecordTabGridCloseTabsCount(int count) {
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
     didUpdateSnapshotForIdentifier:(NSString*)identifier {
   [self.appearanceCache removeObjectForKey:identifier];
-  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
+  web::WebState* webState =
+      GetWebState(self.webStateList, identifier, /*pinned=*/NO);
   if (webState) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
@@ -727,7 +709,8 @@ void RecordTabGridCloseTabsCount(int count) {
 
   NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
   for (NSString* itemIdentifier in items) {
-    TabItem* item = [self tabItemForCellIdentifier:itemIdentifier];
+    TabItem* item = GetTabItem(self.webStateList, itemIdentifier,
+                               /*pinned=*/NO);
     URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
                                                     title:item.title];
     [URLs addObject:URL];
@@ -858,7 +841,8 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
   _dragItemID = itemID;
-  web::WebState* webState = GetWebStateWithId(self.browserState, itemID);
+  web::WebState* webState =
+      GetWebState(self.webStateList, itemID, /*pinned=*/NO);
   return CreateTabDragItem(webState);
 }
 
@@ -962,7 +946,8 @@ void RecordTabGridCloseTabsCount(int count) {
     completion(self.appearanceCache[identifier]);
     return;
   }
-  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
+  web::WebState* webState =
+      GetWebState(self.webStateList, identifier, /*pinned=*/NO);
   if (webState) {
     SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
         ^(UIImage* image) {
@@ -973,7 +958,8 @@ void RecordTabGridCloseTabsCount(int count) {
 
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion {
-  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
+  web::WebState* webState =
+      GetWebState(self.webStateList, identifier, /*pinned=*/NO);
   if (!webState) {
     return;
   }
@@ -1014,31 +1000,11 @@ void RecordTabGridCloseTabsCount(int count) {
   [self.appearanceCache removeAllObjects];
 }
 
-#pragma mark - TabMenuActionsDataSource
-
-- (TabItem*)tabItemForCellIdentifier:(NSString*)identifier {
-  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
-
-  if (!webState) {
-    return nil;
-  }
-
-  TabItem* item = [[TabItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
-                                             url:webState->GetVisibleURL()];
-  return item;
-}
-
-- (BOOL)isTabItemBookmarked:(TabItem*)item {
-  bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
-  return item && bookmarkModel &&
-         bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);
-}
-
 #pragma mark - GridShareableItemsProvider
 
 - (BOOL)isItemWithIdentifierSharable:(NSString*)identifier {
-  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
+  web::WebState* webState =
+      GetWebState(self.webStateList, identifier, /*pinned=*/NO);
   const GURL& URL = webState->GetVisibleURL();
   return URL.is_valid() && URL.SchemeIsHTTPOrHTTPS();
 }
@@ -1124,7 +1090,8 @@ void RecordTabGridCloseTabsCount(int count) {
 - (NSArray<URLWithTitle*>*)urlsWithTitleFromItemIDs:(NSArray<NSString*>*)items {
   NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
   for (NSString* itemIdentifier in items) {
-    TabItem* item = [self tabItemForCellIdentifier:itemIdentifier];
+    TabItem* item = GetTabItem(self.webStateList, itemIdentifier,
+                               /*pinned=*/NO);
     URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
                                                     title:item.title];
     [URLs addObject:URL];

@@ -31,8 +31,11 @@ source_set("tab_utils") {
   deps = [
     ":tab_switcher",
     "//base",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/web_state_list",
     "//ios/web/public",

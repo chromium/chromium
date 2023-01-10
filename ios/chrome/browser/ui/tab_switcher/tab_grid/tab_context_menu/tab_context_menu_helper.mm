@@ -5,18 +5,24 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_list.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_observer_bridge.h"
+#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_actions_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,7 +36,6 @@
 
 @property(nonatomic, assign) Browser* browser;
 @property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
-@property(nonatomic, weak) id<TabMenuActionsDataSource> actionsDataSource;
 @property(nonatomic, assign) BOOL incognito;
 @end
 
@@ -39,7 +44,6 @@
 #pragma mark - TabContextMenuProvider
 
 - (instancetype)initWithBrowser:(Browser*)browser
-              actionsDataSource:(id<TabMenuActionsDataSource>)actionsDataSource
          tabContextMenuDelegate:
              (id<TabContextMenuDelegate>)tabContextMenuDelegate {
   self = [super init];
@@ -47,7 +51,6 @@
     _browser = browser;
     _browserObserver = std::make_unique<BrowserObserverBridge>(_browser, self);
     _contextMenuDelegate = tabContextMenuDelegate;
-    _actionsDataSource = actionsDataSource;
     _incognito = _browser->GetBrowserState()->IsOffTheRecord();
   }
   return self;
@@ -93,8 +96,10 @@
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:scenario];
 
-  TabItem* item =
-      [self.actionsDataSource tabItemForCellIdentifier:cell.itemIdentifier];
+  const BOOL pinned = scenario == MenuScenarioHistogram::kPinnedTabsEntry;
+
+  TabItem* item = [self tabItemForIdentifier:cell.itemIdentifier pinned:pinned];
+
   if (!item) {
     return @[];
   }
@@ -135,8 +140,7 @@
     }
 
     UIAction* bookmarkAction;
-    bool currentlyBookmarked =
-        [self.actionsDataSource isTabItemBookmarked:item];
+    const BOOL currentlyBookmarked = [self isTabItemBookmarked:item];
     if (currentlyBookmarked) {
       if ([self.contextMenuDelegate
               respondsToSelector:@selector(editBookmarkWithURL:)]) {
@@ -195,6 +199,35 @@
   DCHECK_EQ(browser, self.browser);
   _browserObserver.reset();
   self.browser = nullptr;
+}
+
+#pragma mark - Private
+
+// Returns `YES` if the tab `item` is already bookmarked.
+- (BOOL)isTabItemBookmarked:(TabItem*)item {
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+  return item && bookmarkModel &&
+         bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);
+}
+
+// Returns the TabItem object representing the tab with `identifier.
+// `pinned` tracks the pinned state of
+// the tab we are looking for.
+- (TabItem*)tabItemForIdentifier:(NSString*)identifier pinned:(BOOL)pinned {
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(_browser->GetBrowserState());
+  std::set<Browser*> browsers = _incognito ? browserList->AllIncognitoBrowsers()
+                                           : browserList->AllRegularBrowsers();
+  for (Browser* browser : browsers) {
+    WebStateList* webStateList = browser->GetWebStateList();
+    TabItem* item = GetTabItem(webStateList, identifier, /*pinned=*/pinned);
+    if (item != nil) {
+      return item;
+    }
+  }
+  return nil;
 }
 
 @end

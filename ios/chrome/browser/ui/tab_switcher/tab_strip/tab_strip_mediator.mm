@@ -47,18 +47,6 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   return web_state->GetStableIdentifier();
 }
 
-// Returns the WebState with `identifier` in `web_state_list`. Returns `nullptr`
-// if not found.
-web::WebState* GetWebStateWithId(WebStateList* web_state_list,
-                                 NSString* identifier) {
-  for (int i = 0; i < web_state_list->count(); i++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([identifier isEqualToString:web_state->GetStableIdentifier()])
-      return web_state;
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 @interface TabStripMediator () <CRWWebStateObserver, WebStateListObserving> {
@@ -156,7 +144,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion {
-  web::WebState* webState = GetWebStateWithId(_webStateList, identifier);
+  web::WebState* webState =
+      GetWebState(_webStateList, identifier, /*pinned=*/NO);
   if (!webState) {
     return;
   }

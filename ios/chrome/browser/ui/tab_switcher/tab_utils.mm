@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_list.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -61,6 +66,16 @@ NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
   return web_state->GetStableIdentifier();
 }
 
+web::WebState* GetWebState(WebStateList* web_state_list,
+                           NSString* identifier,
+                           BOOL pinned) {
+  int index = GetTabIndex(web_state_list, identifier, /*pinned=*/pinned);
+  if (index != WebStateList::kInvalidIndex) {
+    return web_state_list->GetWebStateAt(index);
+  }
+  return nullptr;
+}
+
 TabSwitcherItem* GetTabSwitcherItem(web::WebState* web_state) {
   TabSwitcherItem* item = [[TabSwitcherItem alloc]
       initWithIdentifier:web_state->GetStableIdentifier()];
@@ -70,5 +85,20 @@ TabSwitcherItem* GetTabSwitcherItem(web::WebState* web_state) {
   }
   item.title = tab_util::GetTabTitle(web_state);
   item.showsActivity = web_state->IsLoading();
+  return item;
+}
+
+TabItem* GetTabItem(WebStateList* web_state_list,
+                    NSString* identifier,
+                    BOOL pinned) {
+  web::WebState* web_state =
+      GetWebState(web_state_list, identifier, /*pinned=*/pinned);
+  if (!web_state) {
+    return nil;
+  }
+
+  TabItem* item =
+      [[TabItem alloc] initWithTitle:tab_util::GetTabTitle(web_state)
+                                 url:web_state->GetVisibleURL()];
   return item;
 }

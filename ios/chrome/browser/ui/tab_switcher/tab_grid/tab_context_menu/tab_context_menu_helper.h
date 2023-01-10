@@ -11,12 +11,10 @@
 
 class Browser;
 @protocol TabContextMenuDelegate;
-@protocol TabMenuActionsDataSource;
 
 //  TabContextMenuHelper controls the creation of context menus for tab items.
 @interface TabContextMenuHelper : NSObject <TabContextMenuProvider>
 - (instancetype)initWithBrowser:(Browser*)browser
-              actionsDataSource:(id<TabMenuActionsDataSource>)actionsDataSource
          tabContextMenuDelegate:
              (id<TabContextMenuDelegate>)tabContextMenuDelegate
     NS_DESIGNATED_INITIALIZER;
