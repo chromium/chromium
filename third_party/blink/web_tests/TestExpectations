@@ -487,7 +487,6 @@ crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-aft
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Failure Pass ]
 crbug.com/936891 virtual/threaded-prefer-compositing/fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Pass ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
-crbug.com/1095540 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Crash Failure Pass Timeout ]
 crbug.com/1279758 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
 crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass Timeout ]
 crbug.com/1058244 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
@@ -769,14 +768,11 @@ crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-control
 # Cross-origin iframe layerization is buggy with empty iframes.
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-masked-pointer-events-mixed-2.sub.html [ Failure ]
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
-crbug.com/1266900 [ Mac12 ] fast/events/touch/gesture/right-click-gestures-set-cursor-at-correct-position.html [ Crash Pass ]
 
 # Needs rebaseline on Fuchsia.
 crbug.com/1267498 [ Fuchsia ] paint/invalidation/svg/animated-svg-as-image-transformed-offscreen.html [ Failure ]
 crbug.com/1267498 [ Fuchsia ] compositing/layer-creation/fixed-position-out-of-view.html [ Failure ]
 crbug.com/1267498 [ Fuchsia ] transforms/transformed-caret.html [ Failure ]
-
-crbug.com/829028 [ Mac ] compositing/gestures/gesture-tapHighlight-lines-and-float-in-multicol.html [ Failure ]
 
 # Fail due to lack of fuzzy matching on Linux, Win and Mac platforms for WPT. The pixels in the pre-rotated reference
 # images do not exactly match the exif rotated images, probably due to jpeg decoding/encoding issues. Maybe
@@ -1877,9 +1873,6 @@ crbug.com/1093447 virtual/android/fullscreen/rendering/backdrop-video.html [ Fai
 
 # gpuBenchmarking.pinchBy is busted on desktops for touchscreen pinch
 crbug.com/787615 [ Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html [ Failure Pass ]
-
-# gpuBenchmarking.pinchBy is not implemented on Mac for touchscreen pinch
-crbug.com/613672 [ Mac ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html [ Crash Failure Pass Timeout ]
 
 crbug.com/520188 [ Win ] http/tests/local/fileapi/file-last-modified-after-delete.html [ Failure Pass ]
 crbug.com/520611 [ Debug ] fast/filesystem/workers/file-writer-events-shared-worker.html [ Failure Pass ]
@@ -3208,12 +3201,6 @@ crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-typing.html [ 
 crbug.com/626703 [ Linux ] external/wpt/infrastructure/testdriver/actions/eventOrder.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-cut-paste.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/CSS2/tables/table-anonymous-objects-211.xht [ Failure ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
 crbug.com/626703 external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
 crbug.com/626703 external/wpt/geolocation-API/non-fully-active.https.html [ Timeout ]
 crbug.com/626703 external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
@@ -4967,9 +4954,6 @@ crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/i
 # Sheriff 2021-05-07
 # Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
 
-# Sheriff 2021-05-10
-crbug.com/1207709 [ Mac10.13 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Failure Pass Timeout ]
-
 # For SkiaRenderer on MacOS
 crbug.com/1208173 [ Mac ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1208173 [ Mac ] css3/filters/backdrop-filter-boundary.html [ Failure ]
@@ -5269,8 +5253,6 @@ crbug.com/1229212 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [
 # Sheriff 2021-07-15
 crbug.com/1229666 external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
 crbug.com/1093027 http/tests/credentialmanagement/credentialscontainer-create-with-virtual-authenticator.html [ Crash Failure Pass Timeout ]
-# The next test was originally skipped on mac for lack of support (crbug.com/613672). It is now skipped everywhere due to flakiness.
-crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Crash Failure Pass Timeout ]
 # pause-on-elements-panel.js is marked as Slow, so it's required to also be Skipped due to it Timing out.
 crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Crash Failure Pass Timeout ]
 crbug.com/1085647 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Pass Timeout ]
@@ -5483,7 +5465,6 @@ crbug.com/1378476 [ Mac12-arm64 ] external/wpt/html/canvas/offscreen/manual/the-
 crbug.com/1378476 [ Mac11-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transfer.to.imagebitmap.w.html [ Crash Failure ]
 crbug.com/1378476 [ Mac12-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transferrable.w.html [ Crash Failure ]
 crbug.com/1378476 [ Mac12-arm64 ] external/wpt/paint-timing/with-first-paint/first-contentful-canvas-webgl2.html [ Crash Failure ]
-crbug.com/1378476 [ Mac12-arm64 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?touch [ Crash Failure ]
 crbug.com/1378476 [ Mac12-arm64 ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Crash Failure ]
 crbug.com/1378476 [ Mac12-arm64 ] external/wpt/video-rvfc/request-video-frame-callback-during-xr-session.https.html [ Crash Failure ]
 crbug.com/1378476 [ Mac12-arm64 ] external/wpt/webcodecs/videoFrame-texImage.any.html [ Crash Failure ]
@@ -5956,9 +5937,6 @@ crbug.com/1313396 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-e
 crbug.com/1194945 external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Failure Pass ]
 crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Failure Pass Timeout ]
 
-# Sheriff 2022-04-06
-crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure Pass ]
-
 # Sheriff 2022-04-07
 crbug.com/1314314 [ Linux ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Crash Failure Pass Timeout ]
 crbug.com/1314314 [ Release Win ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Crash Failure Pass Timeout ]
@@ -6229,7 +6207,6 @@ crbug.com/1358383 fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.h
 crbug.com/1358383 virtual/compositor_threaded_scrollbar_scrolling/fast/scrolling/scrollbars/mouse-scrolling-on-root-scrollbar-thumb.html [ Failure ]
 crbug.com/1358383 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-root-scrollbar-thumb.html [ Failure ]
 [ Linux ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass ]
-[ Mac ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass ]
 virtual/main-threaded-percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass ]
 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass ]
 virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass ]
