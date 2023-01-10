@@ -285,7 +285,6 @@
 Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="3080525922482950719">Може да зачувувате страници за да ги читате подоцна или офлајн</translation>
 <translation id="3081338492074632642">Проверете дали лозинката што ја зачувувате се совпаѓа со лозинката за <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Автоматско пополнување лозинки</translation>
 <translation id="3112556859945124369">Означи…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Видете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Историја и друго</translation>
@@ -531,6 +530,7 @@
 <translation id="4916679969857390442">Објектив</translation>
 <translation id="4922154083994158612">Поголема безбедност?</translation>
 <translation id="4930714375720679147">Вклучи</translation>
+<translation id="4938338714234463591">Ова ќе ви дозволи да го користите гласот со одредени функции на веб-сајтовите.</translation>
 <translation id="4941089862236492464">Се извинуваме, настана проблем при споделување на ставката.</translation>
 <translation id="4944543191714094452">Најди на страницата…</translation>
 <translation id="4945756290001680296">Пристапете до поставките за лозинка</translation>
@@ -902,6 +902,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7671141431838911305">ИНСТАЛИРАЈ</translation>
+<translation id="7679915578945954324">Адресата на сајтот е копирана</translation>
 <translation id="7687508192620387263">Достапна е датотека за календарот</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>

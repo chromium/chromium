@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Nincs következő gomb</translation>
 <translation id="2911433807131383493">A ChromeVox útmutatójának megnyitása</translation>
 <translation id="2912405967290226587">Csúsztassa három ujját jobbra</translation>
+<translation id="2919107550468490321">Intelligens beragadó mód bekapcsolva</translation>
 <translation id="2937799153569150791">Nincs következő 3. szintű címsor</translation>
 <translation id="2942710183375260152">Sötét palakék</translation>
 <translation id="2943596527105977722">Sötét aranyvessző</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Hangszín csökkentése</translation>
 <translation id="3009352964623081324">Keresés + O, majd S. Használja a hangok telepítéséhez, kezeléséhez és személyre szabásához.</translation>
 <translation id="3014130421870723208">@szerk 8pont</translation>
+<translation id="3018210433491759145">A ChromeVox betöltése folyamatban van</translation>
 <translation id="3030432017085518523">Menüelem választógomb</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{aposztróf}other{# aposztróf}}</translation>
 <translation id="3040901448410802366">Folyamatjelző</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Videó</translation>
 <translation id="3813387282697781382">Világos korallpiros</translation>
 <translation id="3816633764618089385">Következő médiaelem</translation>
+<translation id="3821689185319271077">Nincs mutatóhorgony</translation>
 <translation id="3840823741487267909">Rövidítés</translation>
 <translation id="3841319830220785495">Alapértelmezett természetes hang</translation>
 <translation id="385383972552776628">A beállítások oldalának megnyitása</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">űrlap</translation>
 <translation id="4601367666219428522"><ph name="TABLENAME" /> táblázat – <ph name="TABLEROWS" /> × <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">A következő gombnyomás figyelmen kívül hagyása</translation>
+<translation id="4617384941327705512">Intelligens beragadó mód kikapcsolva</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">A TalkBack már nem biztosít testreszabást a Chromebookok esetében. A funkciót továbbra is használhatja az alapértelmezett billentyűparancsokkal. A rendelkezésre álló billentyűparancsok megtekintéséhez nyomja le a Search + A billentyűkombinációt, majd pedig a K billentyűt. Ha továbbra is szeretné használni a TalkBack szolgáltatást, nyomja meg újra a parancsot.</translation>
 <translation id="463135993322337640">Nyomja meg a ChromeVox o, n billentyűket, ha többet szeretne megtudni az újdonságokról</translation>

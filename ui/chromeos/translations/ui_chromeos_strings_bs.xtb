@@ -39,7 +39,7 @@
 <translation id="1313405956111467313">Automatsko konfiguriranje proksi servera</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fajl ili direktorij se ne može koristiti.</translation>
-<translation id="1363028406613469049">Zvučni zapis</translation>
+<translation id="1363028406613469049">Numera</translation>
 <translation id="1378727793141957596">Dobro došli u Google Disk!</translation>
 <translation id="1379911846207762492">Možete postaviti dostupnost fajlova offline da im možete pristupati bez internetske veze.</translation>
 <translation id="1383876407941801731">Traži</translation>
@@ -81,7 +81,7 @@
 <translation id="1715848075824334077">Vožnja bicikla</translation>
 <translation id="1722487484194605434">Izrađivanje zip arhive sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Dodavanje profila...</translation>
-<translation id="1726100011689679555">Poslužitelji naziva</translation>
+<translation id="1726100011689679555">Postavite naziv servera</translation>
 <translation id="1729953886957086472">njemački (Njemačka)</translation>
 <translation id="1730235522912993863">kineski cangjie</translation>
 <translation id="1731889557567069540">Broj kopiranih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -151,7 +151,7 @@
 <translation id="2284767815536050991">uklonjiva pohrana</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Broj fajlova koji se trenutno otvara: <ph name="NUMBER_OF_FILES" />.</translation>
-<translation id="2303301624314357662">Otvaranje datoteke <ph name="FILE_NAME" />.</translation>
+<translation id="2303301624314357662">Otvaranje fajla <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> je izbačen.</translation>
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
@@ -369,7 +369,7 @@
 <translation id="4202378258276439759">španski (Latinska Amerika)</translation>
 <translation id="4202977638116331303">gruzijski</translation>
 <translation id="421017592316736757">Za pristup ovom fajlu morate biti na mreži</translation>
-<translation id="4212740939091998969">Mapa s nazivom "<ph name="FOLDER_NAME" />" već postoji. Odaberite drugi naziv.</translation>
+<translation id="4212740939091998969">Folder s nazivom "<ph name="FOLDER_NAME" />" već postoji. Odaberite drugi naziv fajla.</translation>
 <translation id="4218274196133425560">Uklanjanje izuzetka za <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google prezentacija</translation>
 <translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> je uključen.</translation>
@@ -510,14 +510,14 @@
 <translation id="5211614973734216083">farski</translation>
 <translation id="5218183485292899140">Švicarska francuska</translation>
 <translation id="5234764350956374838">Odbaci</translation>
-<translation id="5253070652067921974">Autor</translation>
+<translation id="5253070652067921974">Kreirao/la</translation>
 <translation id="5257456363153333584">Vilin konjic</translation>
-<translation id="5262311848634918433"><ph name="MARKUP_1" />Pristupite datotekama svugdje, čak i kada niste povezani s internetom.<ph name="MARKUP_2" />
-    Datoteke na Google disku ažurirane su i dostupne putem bilo kojeg uređaja.<ph name="MARKUP_3" />
-    <ph name="MARKUP_4" />Čuvajte svoje datoteke na sigurnom.<ph name="MARKUP_5" />
-    Što god da se dogodi s vašim uređajem, vaše su datoteke sigurno pohranjene na Google disku.<ph name="MARKUP_6" />
-    <ph name="MARKUP_7" />Dijelite, stvarajte i surađujte<ph name="MARKUP_8" />
-    na datotekama s drugima i sve to na jednom mjestu.<ph name="MARKUP_9" /></translation>
+<translation id="5262311848634918433"><ph name="MARKUP_1" />Pristupite fajlovima s bilo koje lokacije, čak i offline.<ph name="MARKUP_2" />
+    Fajlovi na Google Disku su ažurirani i dostupni s bilo kojeg uređaja.<ph name="MARKUP_3" />
+    <ph name="MARKUP_4" />Čuvajte fajlove na sigurnom.<ph name="MARKUP_5" />
+    Šta god da se dogodi vašem uređaju, vaši fajlovi su sigurno pohranjeni na Google Disku.<ph name="MARKUP_6" />
+    <ph name="MARKUP_7" />Na jednom mjestu dijelite, kreirajte<ph name="MARKUP_8" />
+     i sarađujte na fajlovima s drugima.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Oporavljeni fajlovi iz Google Diska</translation>
 <translation id="5278111733643988471">Da vratite ovu stavku, prevucite je u novi folder izvan otpada. Izvorni folder "<ph name="PARENT_FOLDER_NAME" />" ove stavke je izbrisan.</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
@@ -552,7 +552,7 @@
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je isključen.</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5500122897333236901">Islandska</translation>
-<translation id="5508696409934741614">Točke</translation>
+<translation id="5508696409934741614">Tačke</translation>
 <translation id="5522908512596376669">Spisak fajlova je izmijenjen na prikaz spiska.</translation>
 <translation id="5524517123096967210">Nije moguće pročitati fajl.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> slika</translation>
@@ -952,7 +952,7 @@
 <translation id="8790981080411996443">Osoba zaljeva biljke</translation>
 <translation id="8798099450830957504">Zadano</translation>
 <translation id="8808686172382650546">Mačka</translation>
-<translation id="8810671769985673465">Komprimiranje nije uspjelo, stavka postoji: "<ph name="FILE_NAME" />"</translation>
+<translation id="8810671769985673465">Zipovanje nije uspjelo, artikal postoji: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">španski (Španija)</translation>
 <translation id="8834164572807951958">Članovi grupe "<ph name="DESTINATION_NAME" />" dobit će pristup kopiji ovih stavki.</translation>
 <translation id="8849389110234859568">Pravila administratora ograničavaju pristup nekim fajlovima.</translation>

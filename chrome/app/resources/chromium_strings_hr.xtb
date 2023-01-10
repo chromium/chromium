@@ -251,6 +251,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6598877126913850652">Otvori postavke obavijesti za Chromium</translation>
 <translation id="6613594504749178791">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete Chromium.</translation>
 <translation id="665732753414869868">Chromium treba dopuštenje za fotoaparat kako bi mogao izraditi 3D kartu vašeg okruženja</translation>
+<translation id="6663852025006259149">Web-lokacije će vjerojatno funkcionirati kao što očekujete, ali vas neće zapamtiti nakon što zatvorite sve prozore Chromiuma</translation>
 <translation id="6676384891291319759">Pristup Internetu</translation>
 <translation id="668175097507315160">Chromium OS nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
 <translation id="6709350901466051922">Chromium treba dopuštenje za mikrofon za ovu web-lokaciju</translation>
@@ -381,5 +382,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="945990405696787151">Da biste primali buduća Chromiumova ažuriranja, trebat će vam macOS 10.13 ili novija verzija. Na ovom se računalu upotrebljava OS X 10.11.</translation>
 <translation id="965162752251293939">Tko upotrebljava Chromium?</translation>
 <translation id="967427899662692980">Odaberite najsnažniju Chromiumovu zaštitu sigurnosti</translation>
+<translation id="9792300276217204">Podaci web-lokacije uvijek se brišu s uređaja kada zatvorite Chromium</translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
 </translationbundle>

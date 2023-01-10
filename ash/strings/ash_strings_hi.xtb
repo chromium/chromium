@@ -28,6 +28,7 @@
 <translation id="1104621072296271835">साथ मिलकर आपके डिवाइस और बेहतर काम करते हैं</translation>
 <translation id="1111021433905331574">सेटिंग &gt; <ph name="APP_TITLE" /> में जाकर, अपने कीबोर्ड की बैकलाइट का रंग बदलने का विकल्प उपलब्ध है</translation>
 <translation id="112308213915226829">अलमारी कोअपने-आपछिपाएं</translation>
+<translation id="1135788167815124787">पोर्ट्रेट रीलाइटिंग</translation>
 <translation id="1142002900084379065">हाल ही की फ़ोटो</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> के लिए, जानकारी वाला डायलॉग खोलें</translation>
 <translation id="1150989369772528668">कैलेंडर</translation>
@@ -509,6 +510,7 @@
 <translation id="3713734891607377840">पूरा होने पर खोलें</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, और <ph name="UNAVAILABLE_APPS_COUNT" /> ऐप्लिकेशन इस डिवाइस पर मौजूद नहीं हैं.</translation>
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
+<translation id="3738664582935948253">अब स्क्रीन रिकॉर्डिंग के दौरान, कीबोर्ड शॉर्टकट और क्लिक दिखाए जा सकते हैं</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट लिया गया</translation>
 <translation id="3765841986579723851">इसमें, आज बदलाव किया गया था</translation>
 <translation id="3773700760453577392">किसी एडमिन ने <ph name="USER_EMAIL" /> के लिए एक से ज़्यादा 'साइन इन' नामंज़ूर कर दिए हैं.
@@ -696,6 +698,7 @@
 <translation id="4740516757091333363">सेव किया गया डेस्क मिटाना है?</translation>
 <translation id="4752784485658729358">सिर्फ़ छह डेस्क सेव किए जा सकते हैं. नया डेस्क सेव करने के लिए, पहले से सेव किया गया कोई डेस्क हटाएं.</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
+<translation id="4762573482154983647">ऐप्लिकेशन छिपाएं</translation>
 <translation id="4774338217796918551">कल <ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> के लिए पासवर्ड</translation>
 <translation id="4777825441726637019">Play Store</translation>

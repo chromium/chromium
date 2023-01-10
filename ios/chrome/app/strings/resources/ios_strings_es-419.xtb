@@ -285,7 +285,6 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión.</translation>
 <translation id="3081338492074632642">Asegúrate de que la contraseña que guardes coincida con la de <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Autocompletar contraseñas</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historial y más</translation>
@@ -453,6 +452,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4420409367264901497">Editar favorito</translation>
 <translation id="4442550905108052454">Abre la <ph name="BEGIN_BOLD" />Configuración<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Agregar idioma</translation>
+<translation id="4461286950227634995">Ofrecer guardar contraseñas</translation>
 <translation id="4462491365653392320">Realizar seguimiento de precios en las pestañas</translation>
 <translation id="4469418912670346607">Continuar con la configuración</translation>
 <translation id="4474494258097106883">Diseñado para tu iPhone</translation>

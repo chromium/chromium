@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1257458525759135959">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chromium เพิ่มไปยังรูปภาพ</translation>
 <translation id="1289216811211435351">เปลี่ยนไปใช้ Chromium</translation>
-<translation id="1311799238113893680">ใช้รหัสผ่านที่คุณบันทึกไว้ใน Chromium เพื่อลงชื่อเข้าใช้ได้เร็วขึ้น</translation>
 <translation id="1361748954329991663">Chromium เป็นเวอร์ชันเก่า หากไม่มีอัปเดตพร้อมใช้งานใน <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> แสดงว่าอุปกรณ์ของคุณอาจไม่รองรับ Chromium เวอร์ชันใหม่อีกต่อไป</translation>
 <translation id="1431818719585918472">ให้ Chromium ล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="1472013873724362412">บัญชีของคุณไม่ทำงานใน Chromium โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
@@ -115,7 +114,6 @@
 <translation id="8013573822802650211">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
 <translation id="8073677936375100957">ล้างข้อมูล Chromium ของคุณออกจากอุปกรณ์นี้ไหม</translation>
 <translation id="8240981428553046115">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
-<translation id="8308172444429103994">เคล็ดลับสำหรับ Chromium ลงชื่อเข้าใช้ได้เร็วขึ้นโดยการเลือกรหัสผ่านที่บันทึกไว้บริเวณด้านบนของแป้นพิมพ์</translation>
 <translation id="8409374867500149834">คุณได้รับการดูแลอย่างเข้มงวดที่สุดของ Chromium ให้ปลอดภัยจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="858114650497379505">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>

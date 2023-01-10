@@ -2748,6 +2748,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3469583217479686109">Valverkfæri</translation>
 <translation id="3470392222765168737">Fylgja vefsvæði</translation>
 <translation id="3471876058939596279">Ekki er hægt að nota HDMI- og USB-tengi (C-gerð) fyrir vídeó á saman tíma. Nota annað vídeótengi.</translation>
+<translation id="3472469028191701821">Opnast í nýjum flipa</translation>
 <translation id="3473241910002674503">Fara heim og til baka og skipta um forrit með hnöppum í spjaldtölvustillingu.</translation>
 <translation id="3473479545200714844">Skjástækkun</translation>
 <translation id="3474218480460386727">Notaðu 99 stafi eða færri fyrir ný orð</translation>
@@ -3135,6 +3136,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3820749202859700794">SECG sporger ferill secp521r1 (e.þ.s. NIST P-521)</translation>
 <translation id="3821074617718452587">Tilkynningar símstöðvar</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Viðbót var samþykkt}one{# viðbót var samþykkt}other{# viðbætur voru samþykktar}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Mælt er með að minnsta kosti <ph name="INSTALL_SIZE" /> af lausu plássi til að nota Linux.</translation>
 <translation id="3824621460022590830">Skráningarlykill tækis er ógildur. Hafðu samband við eiganda tækisins eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muna valið mitt fyrir þessa skráargerð: <ph name="FILE_TYPES" />}one{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}other{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}}</translation>
@@ -4053,6 +4055,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4675828034887792601">Búðu til flýtileiðir til að leita á vefsvæðum og stjórna leitarvélinni þinni</translation>
 <translation id="4676595058027112862">Símstöð, Frekari upplýsingar</translation>
 <translation id="4677772697204437347">Minni skjástýringar</translation>
+<translation id="4678848110205818817">Kredit-/debetkort</translation>
 <translation id="4680105648806843642">Slökkt var á hljóði á þessari síðu</translation>
 <translation id="4680112532510845139">Slepptu mynd hér</translation>
 <translation id="4681453295291708042">Slökkva á Nærdeilingu</translation>

@@ -407,6 +407,7 @@
       在 <ph name="PRODUCT_OS_NAME" /> 中，本政策只會套用至關聯的使用者。
 
       這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。</translation>
+<translation id="1413768951234456918">清除瀏覽記錄</translation>
 <translation id="1413936351612032792">回報 Linux 應用程式使用情形資訊</translation>
 <translation id="1417888712677507140">封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="1418387035898607074">針對從信任的來源下載的檔案略過安全瀏覽檢查</translation>
@@ -1324,9 +1325,6 @@
       這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。
 
       這項政策只會影響透過 Web Serial API 存取 USB 裝置的權限。如要授予透過 WebUSB API 存取 USB 裝置的權限，請參閱 <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
-<translation id="2246011554082893079">這項政策可控管 <ph name="BOREALIS_NAME" /> 是否適用於這部裝置。
-
-      如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於此裝置的所有使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這部裝置。</translation>
 <translation id="2246621891161157804">允許 Chrome 封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業</translation>
 <translation id="224750967938323855">不要在登入時顯示同步同意聲明</translation>
 <translation id="2252400912879027343">在 M109 以前，仍可在不安全的環境中使用 WebSQL，自 M110 起則無法使用</translation>
@@ -2580,6 +2578,11 @@
 <translation id="3412937883532015092">如果將這項政策設為數值，<ph name="PRODUCT_NAME" /> 在開啟替代瀏覽器前會先顯示一則等待訊息，並依據該數值 (以毫秒為單位) 來設定這則訊息要顯示多久的時間。
 
       如果未設定這項政策或設為 0，當使用者前往指定網址時，系統會立即在替代瀏覽器中開啟該網址。</translation>
+<translation id="3413763534078822244">這項政策已淘汰，請改用 <ph name="USER_BOREALIS_ALLOWED_NAME" />。
+
+      這項政策會控管是否可在這部裝置上使用 <ph name="BOREALIS_NAME" />。
+
+      如果將這項政策設為 False，這部裝置的所有使用者都將無法使用 <ph name="BOREALIS_NAME" />。如果將政策設為 True 或未設定，只要其他政策或設定未停用 <ph name="BOREALIS_NAME" />，就能在這部裝置上使用這個容器。</translation>
 <translation id="3415954062311826850">ARC 不支援這項政策。</translation>
 <translation id="34160070798637152">控管裝置通用的網路設定。</translation>
 <translation id="3417130629744653218">允許網站查詢可用的付款方式。</translation>
@@ -2704,6 +2707,7 @@
 
       如果不設定這項政策，系統不會套用任何限制。</translation>
 <translation id="3531084733660068324">家長監督設定</translation>
+<translation id="3532827558833318911">清除密碼登入資料</translation>
 <translation id="353611922042274900">一律在登入畫面上顯示系統資訊</translation>
 <translation id="3536263244905016305">停用「網路 Proxy 自動探索」(WPAD) 最佳化功能</translation>
 <translation id="3538869107794555625">在平板電腦模式下啟用螢幕小鍵盤</translation>
@@ -4143,6 +4147,7 @@
       如果將這項政策設為停用，系統會禁止 <ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
 <translation id="5033070732967197381">允許來自 TLS 憑證無效網站的 WebAuthn API 要求。</translation>
 <translation id="5034504101537897433">啟用裝置當機報告資訊回報功能</translation>
+<translation id="5036013147560568855">憑證佈建通訊協定的版本，預設為 1。1 是「靜態」通訊協定，2 是「動態」通訊協定。</translation>
 <translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
 <translation id="5055474681190962362">每月應重新啟動的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
@@ -4294,6 +4299,7 @@
 
       <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> 也是可以停用 DNS 攔截檢查功能的相關政策，這項政策是更有彈性的版本，可以個別控管內部網路重新導向資訊列，並且可能會在未來擴大適用範圍。
       如果 <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> 或這項政策要求停用攔截檢查功能，系統將停用檢查功能。</translation>
+<translation id="5210133032276211845">清除快取圖片和檔案</translation>
 <translation id="5212118847531454979">你可以設定時間範圍 (以毫秒為單位)，系統會在這段時間內通知使用者必須重新啟動 <ph name="PRODUCT_NAME" /> 或 <ph name="PRODUCT_OS_NAME" />裝置，才能套用未安裝的更新。
 
       在你設定的時間範圍內，使用者會持續收到更新通知。在 <ph name="PRODUCT_OS_NAME" />裝置上，系統會根據 <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" /> 政策，在系統匣中顯示重新啟動通知。在 <ph name="PRODUCT_NAME" /> 瀏覽器中，當通知時間過了三分之一後，應用程式選單會有所變更，表示瀏覽器需要重新啟動。這項通知會在時間過了三分之二後變更顏色，並於時間結束後再次變色。由 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 政策啟用的其他通知也會遵循相同的時間表。
@@ -4650,6 +4656,7 @@
       如果這份清單未包含任何內容，系統就不會分階段安裝更新，而會依其他裝置政策套用更新。
 
       版本切換不適用這項政策。</translation>
+<translation id="5517825566262498086">清除代管的應用程式資料</translation>
 <translation id="5519331583722582543">布林值標記，表示螢幕小鍵盤是否能透過手寫辨識技術提供輸入功能。</translation>
 <translation id="5519619299971727565">停用 Linux 應用程式使用情形報告功能</translation>
 <translation id="5521035900165046997">啟用裝置藍牙資訊回報功能</translation>
@@ -4901,6 +4908,7 @@
 
       如果安全瀏覽功能的設定為停用 (無論是根據政策設定或使用者自行停用)，則一律不會觸發這個行為。如要強制啟用安全瀏覽功能，請使用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策或 <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> 政策。</translation>
 <translation id="5835312413892670446">螢幕畫面擷取設定</translation>
+<translation id="5835674781974810379">清除 Cookie 和其他網站資料</translation>
 <translation id="5836064773277134605">限制遠端存取主機所使用的 UDP 連接埠範圍</translation>
 <translation id="583627479140113555">允許在第一次執行時匯入儲存的密碼</translation>
 <translation id="5837898601525273156">如果已設定 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />，你可以將 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 設為啟用，以在支援的裝置上，將進階充電模式電源管理政策保持啟用。這個模式會在非工作時間採用標準充電演算法和其他技術，讓使用者盡可能延長電池壽命。系統在工作時間會使用快速充電模式，加快充電的速度。請設定開始時間和持續期間，指定每天最常使用系統的時間。
@@ -5051,6 +5059,7 @@
 <translation id="5997543603646547632">預設使用 24 小時制時鐘</translation>
 <translation id="5997846976342452720">指定是否要停用外掛程式尋找工具 (已淘汰)</translation>
 <translation id="5998198091336830580">這項政策屬於下列不可部分完成的群組 (系統僅會套用群組中最高優先來源所設定的政策)：</translation>
+<translation id="6001621991816939414">清除下載記錄</translation>
 <translation id="600402562436559989">允許在 <ph name="PRODUCT_OS_NAME" /> 裝置和已連結的 Android 手機間同步 Wi-Fi 網路設定</translation>
 <translation id="6004575267180297869">
       指定是否可以跨來源傳送 WebAssembly 模組至其他視窗或工作站。跨來源 WebAssembly 模組分享功能將隨著 document.domain 一併淘汰，詳情請參閱 https://github.com/mikewest/deprecating-document-domain。這項政策可以重新啟用跨來源 WebAssembly 模組分享功能，藉此延長淘汰過程中的過渡期。
@@ -6660,6 +6669,7 @@
 <translation id="7519218194072744342">通訊協定處理常式的網址。</translation>
 <translation id="7519251620064708155">允許在這些網站上使用金鑰產生功能</translation>
 <translation id="7521864460386999758">不允許在 Chrome 中插入第三方程式碼</translation>
+<translation id="7524983116584990314">清除自動填入資料</translation>
 <translation id="7529144158022474049">自動更新分散係數</translation>
 <translation id="7529332889403151669">指定當裝置從休眠或全黑螢幕回到一般使用狀態時，是否要顯示全螢幕警示。
 
@@ -7807,6 +7817,7 @@
 <translation id="8657543427358173663">允許從 Google 服務收集 WebRTC 事件記錄</translation>
 <translation id="8659843732895043951">允許這些網站使用剪貼簿</translation>
 <translation id="8661297125441579970">不允許資料遷移功能和 ARC。</translation>
+<translation id="8661538142776716004">清除網站設定</translation>
 <translation id="8661980316738569557">啟用高對比模式</translation>
 <translation id="8664285601317301180">這項政策可控管列印工作中的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" />值。
 
@@ -8046,6 +8057,21 @@
 <translation id="8882307005437314052">在登入畫面上啟用螢幕小鍵盤，並允許使用者暫時停用</translation>
 <translation id="8883577480680089760">停用<ph name="PRODUCT_NAME" /> V2 服務，不要在登入時啟動遠端桌面</translation>
 <translation id="8887709920496070892">顯示警告對話方塊前的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會顯示警告對話方塊</translation>
+<translation id="8887847586787956456">如果達到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策指定的逾時時間，系統要執行的動作清單。
+
+      如果不設定 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策，這項政策就不會有任何作用。
+
+      假如達到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策指定的逾時時間，<ph name="PRODUCT_NAME" /> 就會執行在這項政策中設定的動作。
+
+      如果將這項政策留空或未設定，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策就不會有任何作用。
+
+      支援的動作為：
+
+      「<ph name="CLOSE_BROWSERS_ACTION" />」：關閉這個設定檔的所有瀏覽器視窗和 PWA。
+
+      「<ph name="SHOW_PROFILE_PICKER_ACTION" />」：顯示設定檔選擇畫面視窗。
+
+      「<ph name="CLEAR_BROWSING_HISTORY_ACTION" />」、「<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />」、「<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />」、「<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />」、「<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />」、「<ph name="CLEAR_AUTOFILL_ACTION" />」、「<ph name="CLEAR_SITE_SETTINGS_ACTION" />」、「<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />」：清除對應的瀏覽資料。詳情請參閱 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 政策。</translation>
 <translation id="8890438048579188548">隱藏 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="8891334958985336685">停用裝置系統資訊回報功能</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 需要的可用磁碟空間</translation>

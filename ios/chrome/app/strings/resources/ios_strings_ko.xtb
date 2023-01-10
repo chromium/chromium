@@ -285,7 +285,6 @@
 Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="3080525922482950719">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다.</translation>
 <translation id="3081338492074632642">저장하려는 비밀번호가 <ph name="WEBSITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
-<translation id="3103603146121354983">비밀번호 자동 완성</translation>
 <translation id="3112556859945124369">표시…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />동기화할 수 있는 항목 확인하기<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">방문 기록 및 기타 정보</translation>
@@ -531,6 +530,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4916679969857390442">렌즈</translation>
 <translation id="4922154083994158612">보안을 강화하시겠습니까?</translation>
 <translation id="4930714375720679147">사용 설정</translation>
+<translation id="4938338714234463591">이렇게 하면 웹사이트에서 특정 기능을 음성으로 이용할 수 있습니다.</translation>
 <translation id="4941089862236492464">죄송합니다. 항목을 공유하는 중에 문제가 발생했습니다.</translation>
 <translation id="4944543191714094452">페이지에서 찾기…</translation>
 <translation id="4945756290001680296">비밀번호 설정 액세스</translation>
@@ -902,6 +902,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7671141431838911305">설치</translation>
+<translation id="7679915578945954324">사이트 주소 복사됨</translation>
 <translation id="7687508192620387263">캘린더 파일 사용 가능</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7720410380936703141">다시 시도</translation>

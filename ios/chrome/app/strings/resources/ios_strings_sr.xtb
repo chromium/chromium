@@ -285,7 +285,6 @@
 Погледајте упутства претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="3080525922482950719">Можете да сачувате странице да бисте их читали касније или офлајн</translation>
 <translation id="3081338492074632642">Проверите да ли се лозинка коју чувате подудара са лозинком за <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Аутоматски попуните лозинке</translation>
 <translation id="3112556859945124369">Означи…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Историја и друго</translation>
@@ -531,6 +530,7 @@
 <translation id="4916679969857390442">Објектив</translation>
 <translation id="4922154083994158612">Више безбедности?</translation>
 <translation id="4930714375720679147">Укључи</translation>
+<translation id="4938338714234463591">То ће вам омогућити да користите глас са одређеним функцијама на веб-сајтовима.</translation>
 <translation id="4941089862236492464">Жао нам је, дошло је до проблема при дељењу ставке.</translation>
 <translation id="4944543191714094452">Пронађи на страници…</translation>
 <translation id="4945756290001680296">Приступите подешавањима лозинки</translation>
@@ -902,6 +902,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7671141431838911305">ИНСТАЛИРАЊЕ</translation>
+<translation id="7679915578945954324">Адресе сајтова су копиране</translation>
 <translation id="7687508192620387263">Доступан је фајл календара</translation>
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7720410380936703141">ПРОБАЈ ПОНОВО</translation>

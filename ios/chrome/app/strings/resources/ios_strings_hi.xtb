@@ -285,7 +285,6 @@
 अगर लागू हो, तो अपना खोज इतिहास मिटाने के लिए, अपने सर्च इंजन के निर्देश देखें.</translation>
 <translation id="3080525922482950719">आप पेजों को सेव कर सकते हैं, ताकि उन्हें बाद में या ऑफ़लाइन पढ़ सकें</translation>
 <translation id="3081338492074632642">पक्का करें कि आप जो पासवर्ड सेव कर रहे हैं वह <ph name="WEBSITE" /> के आपके पासवर्ड से मेल खाता हो</translation>
-<translation id="3103603146121354983">ऑटोमैटिक पासवर्ड भरने की सुविधा</translation>
 <translation id="3112556859945124369">चिह्नित करें...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />देखें कि क्या-क्या सिंक किया जा सकता है<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">इतिहास वगैरह</translation>
@@ -453,6 +452,7 @@
 <translation id="4420409367264901497">बुकमार्क में बदलाव करें</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />सेटिंग<ph name="END_BOLD" /> खोलें</translation>
 <translation id="4454246407045105932">भाषा जोड़ें</translation>
+<translation id="4461286950227634995">पासवर्ड सेव करने का विकल्प दें</translation>
 <translation id="4462491365653392320">टैब पर कीमतों को ट्रैक करें</translation>
 <translation id="4469418912670346607">सेट अप जारी रखें</translation>
 <translation id="4474494258097106883">आपके iPhone के लिए बनाया गया</translation>

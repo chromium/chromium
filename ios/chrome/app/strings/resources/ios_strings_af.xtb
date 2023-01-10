@@ -285,7 +285,6 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="3080525922482950719">Jy kan bladsye stoor om later of vanlyn te lees</translation>
 <translation id="3081338492074632642">Maak seker dat die wagwoord wat jy stoor, ooreenstem met jou wagwoord vir <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Vul wagwoorde outomaties in</translation>
 <translation id="3112556859945124369">Merk …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Sien wat jy kan sinkroniseer<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Geskiedenis en meer</translation>
@@ -531,6 +530,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="4916679969857390442">Lens</translation>
 <translation id="4922154083994158612">Nog sekuriteit?</translation>
 <translation id="4930714375720679147">Skakel aan</translation>
+<translation id="4938338714234463591">Dit sal dit vir jou moontlik maak om jou stem vir sekere kenmerke op webwerwe te gebruik.</translation>
 <translation id="4941089862236492464">Jammer, kon nie jou item deel nie.</translation>
 <translation id="4944543191714094452">Soek op bladsy …</translation>
 <translation id="4945756290001680296">Gaan by wagwoordinstelling in</translation>
@@ -902,6 +902,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7671141431838911305">INSTALLEER</translation>
+<translation id="7679915578945954324">Werfadresse is gekopieer</translation>
 <translation id="7687508192620387263">Kalenderlêer is beskikbaar</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7720410380936703141">PROBEER WEER</translation>

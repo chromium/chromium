@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">O programu Chromium</translation>
 <translation id="1257458525759135959">Da sačuvate slike, dodirnite Postavke da omogućite Chromiumu dodavanje u vaše fotografije</translation>
 <translation id="1289216811211435351">Pređite na Chromium</translation>
-<translation id="1311799238113893680">Koristite lozinku koju ste sačuvali Chromiumu da se brže prijavite</translation>
 <translation id="1361748954329991663">Chromium je zastario. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Storeu<ph name="END_LINK" />, moguće je da vaš uređaj više ne podržava nove verzije Chromiuma.</translation>
 <translation id="1431818719585918472">Omogućite Chromiumu da zaključa vaše anonimne kartice.</translation>
 <translation id="1472013873724362412">Vaš račun ne funkcionira na Chromiumu. Obratite se administratoru domene ili koristite obični Google račun za prijavu.</translation>
@@ -17,7 +16,7 @@
 <translation id="1722370509450468186">Vaša lozinka će se sačuvati na vašem računu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium podaci su obrisani</translation>
 <translation id="177102542580335555">Za ovaj Chromium profil dobijate standardnu sigurnosnu zaštitu</translation>
-<translation id="1838412507805038478">Chromium je potvrdio da je <ph name="ISSUER" /> izdao certifikat web-lokacije.</translation>
+<translation id="1838412507805038478">Chromium je potvrdio da je <ph name="ISSUER" /> izdao certifikat ove web lokacije.</translation>
 <translation id="1843424232666537147">Chromium sadrži funkcije koje vam pomažu kod upravljanja internetskim podacima i brzine učitavanja web lokacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1867772173333403444">4. Odaberite Chromium</translation>
@@ -115,7 +114,6 @@
 <translation id="8013573822802650211">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se na svim uređajima</translation>
 <translation id="8073677936375100957">Izbrisati Chromium podatke s ovog uređaja?</translation>
 <translation id="8240981428553046115">Chromium nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
-<translation id="8308172444429103994">Savjet za Chromium. Brže se prijavite tako što ćete odabrati sačuvanu lozinku na vrhu tastature.</translation>
 <translation id="8409374867500149834">Imate najjaču zaštitu Chromea od štetnih web lokacija</translation>
 <translation id="858114650497379505">Možete koristiti lozinke koje ste sačuvali u Upravitelju lozinki u drugim aplikacijama na iPhoneu.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" /> Autori Chromiuma. Sva prava zadržana.</translation>

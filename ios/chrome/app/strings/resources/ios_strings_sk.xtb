@@ -285,7 +285,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="3080525922482950719">Stránky si môžete uložiť a prečítať neskôr či offline</translation>
 <translation id="3081338492074632642">Ukladané heslo sa musí zhodovať s tým, ktoré používate pre web <ph name="WEBSITE" />.</translation>
-<translation id="3103603146121354983">Automatické dopĺňanie hesiel</translation>
 <translation id="3112556859945124369">Označiť…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Čo môžete synchronizovať<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">História a ďalšie nastavenia</translation>
@@ -531,6 +530,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="4916679969857390442">Lupa</translation>
 <translation id="4922154083994158612">Chcete zvýšiť zabezpečenie?</translation>
 <translation id="4930714375720679147">Zapnúť</translation>
+<translation id="4938338714234463591">Umožní vám to používať hlas v prípade určitých funkcií na weboch.</translation>
 <translation id="4941089862236492464">Je nám ľúto, pri zdieľaní položky sa vyskytol problém.</translation>
 <translation id="4944543191714094452">Nájsť na stránke…</translation>
 <translation id="4945756290001680296">Prejdite do nastavení hesla</translation>
@@ -902,6 +902,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7671141431838911305">INŠTALOVAŤ</translation>
+<translation id="7679915578945954324">Adresy webových stránok boli skopírované</translation>
 <translation id="7687508192620387263">K dispozícii je súbor kalendára</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7720410380936703141">SKÚSIŤ ZNOVA</translation>

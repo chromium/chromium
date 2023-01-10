@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 месяц}one{# месяц}few{# месяца}many{# месяцев}other{# месяца}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> МБ/с</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 час }one{# час }few{# часа }many{# часов }other{# часа }}</translation>
+<translation id="185013357618350178">&amp;Выбрать</translation>
 <translation id="1859234291848436338">Направление письма</translation>
 <translation id="1860796786778352021">Закрыть уведомление</translation>
 <translation id="186476001994626254">Контент в формате Web Smart Paste</translation>

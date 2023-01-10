@@ -285,7 +285,6 @@
 اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کیلئے اپنے سرچ انجن کی ہدایات دیکھیں۔</translation>
 <translation id="3080525922482950719">آپ بعد میں یا آف لائن پڑھنے کے لیے صفحات کو محفوظ کر سکتے ہیں</translation>
 <translation id="3081338492074632642">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے</translation>
-<translation id="3103603146121354983">آٹو فل پاس ورڈز</translation>
 <translation id="3112556859945124369">نشان زد کریں…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />دیکھیں کہ آپ کیا سِنک کر سکتے ہیں<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">سرگزشت اور مزید</translation>
@@ -531,6 +530,7 @@
 <translation id="4916679969857390442">لینز</translation>
 <translation id="4922154083994158612">مزید سیکیورٹی؟</translation>
 <translation id="4930714375720679147">آن کریں</translation>
+<translation id="4938338714234463591">یہ آپ کو ویب سائٹس پر مخصوص خصوصیات کے ساتھ اپنی آواز استعمال کرنے کی سہولت دے گا۔</translation>
 <translation id="4941089862236492464">معذرت، آپ کے آئٹم کا اشتراک کرتے ہوئے ایک مسئلہ پیش آگیا۔</translation>
 <translation id="4944543191714094452">صفحہ میں تلاش کریں…</translation>
 <translation id="4945756290001680296">پاس ورڈ کی ترتیبات تک رسائی حاصل کریں</translation>
@@ -902,6 +902,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7671141431838911305">انسٹال کریں</translation>
+<translation id="7679915578945954324">سائٹ کے پتے کاپی کیے گئے</translation>
 <translation id="7687508192620387263">کیلنڈر فائل دستیاب ہے</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7720410380936703141">دوبارہ کوشش کریں</translation>

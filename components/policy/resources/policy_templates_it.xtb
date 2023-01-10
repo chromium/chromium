@@ -1331,9 +1331,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Questo criterio esegue l'override di <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e delle preferenze dell'utente.
 
       Questo criterio viene applicato soltanto per l'accesso ai dispositivi USB tramite l'API Web Serial. Per concedere l'accesso ai dispositivi USB tramite l'API WebUSB, vedi il criterio <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="2246011554082893079">Consente di gestire la disponibilità di <ph name="BOREALIS_NAME" /> per questo dispositivo.
-
-      Se il criterio viene impostato su falso, <ph name="BOREALIS_NAME" /> non sarà disponibile per tutti gli utenti del dispositivo. In caso contrario (se il criterio non viene configurato o se viene impostato su vero) <ph name="BOREALIS_NAME" /> sarà disponibile soltanto se non viene disattivato da altri criteri o impostazioni.</translation>
 <translation id="2246621891161157804">Consenti a Chrome di bloccare le navigazioni verso protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="224750967938323855">Non mostrare il consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="2252400912879027343">WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.</translation>
@@ -2596,6 +2593,11 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3412937883532015092">Se per il criterio viene impostato un numero, <ph name="PRODUCT_NAME" /> mostra un messaggio relativo al numero di millisecondi impostato, quindi apre un browser alternativo.
 
       Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL definito, l'URL viene aperto subito in un browser alternativo.</translation>
+<translation id="3413763534078822244">Questo criterio è deprecato. Usa il criterio <ph name="USER_BOREALIS_ALLOWED_NAME" />.
+
+      Consente di gestire la disponibilità di <ph name="BOREALIS_NAME" /> per questo dispositivo.
+
+      Se il criterio viene impostato su false, <ph name="BOREALIS_NAME" /> non sarà disponibile per tutti gli utenti del dispositivo. In caso contrario (se il criterio non viene configurato o se viene impostato su true) <ph name="BOREALIS_NAME" /> sarà disponibile soltanto se non viene disattivato da altri criteri o altre impostazioni.</translation>
 <translation id="3415954062311826850">Il criterio non è supportato in Arc.</translation>
 <translation id="34160070798637152">Consente di controllare la configurazione di rete a livello di dispositivo.</translation>
 <translation id="3417130629744653218">Consenti ai siti web di chiedere se esistono metodi di pagamento disponibili</translation>

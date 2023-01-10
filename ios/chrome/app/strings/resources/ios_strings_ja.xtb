@@ -226,7 +226,7 @@
 <translation id="2704491540504985681">ダウンロード</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2709516037105925701">自動入力</translation>
-<translation id="271033894570825754">新しいファイル</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">ファイルを開けません</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
 <translation id="2747003861858887689">前の項目</translation>
@@ -285,7 +285,6 @@
 検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="3080525922482950719">ページを保存して、後で読んだり、オフラインで読んだりできます</translation>
 <translation id="3081338492074632642">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
-<translation id="3103603146121354983">パスワードの自動入力</translation>
 <translation id="3112556859945124369">マーク...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">履歴、その他</translation>
@@ -453,6 +452,7 @@
 <translation id="4420409367264901497">ブックマークを編集</translation>
 <translation id="4442550905108052454">[<ph name="BEGIN_BOLD" />設定<ph name="END_BOLD" />] を開く</translation>
 <translation id="4454246407045105932">言語の追加</translation>
+<translation id="4461286950227634995">パスワードを保存できるようにする</translation>
 <translation id="4462491365653392320">タブで価格をトラッキング</translation>
 <translation id="4469418912670346607">設定を続行</translation>
 <translation id="4474494258097106883">iPhone 向けの設計</translation>

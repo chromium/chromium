@@ -285,7 +285,6 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo.</translation>
 <translation id="3080525922482950719">Stranice možete spremati da biste ih čitali kasnije ili izvanmrežno</translation>
 <translation id="3081338492074632642">Provjerite podudara li se zaporka koju spremate sa zaporkom za <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Automatski unos zaporki</translation>
 <translation id="3112556859945124369">Označi...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Pogledajte što možete sinkronizirati<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Povijest i drugo</translation>
@@ -531,6 +530,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4916679969857390442">Leća</translation>
 <translation id="4922154083994158612">Dodatna zaštita?</translation>
 <translation id="4930714375720679147">Uključi</translation>
+<translation id="4938338714234463591">To će vam omogućiti da određenim značajkama na web-lokacijama upravljate glasovno.</translation>
 <translation id="4941089862236492464">Došlo je do problema prilikom dijeljenja vaše stavke.</translation>
 <translation id="4944543191714094452">Traži na stranici…</translation>
 <translation id="4945756290001680296">Pristupite postavkama zaporke</translation>
@@ -902,6 +902,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7671141431838911305">INSTALIRANJE</translation>
+<translation id="7679915578945954324">Adrese web-lokacija su kopirane</translation>
 <translation id="7687508192620387263">Datoteka kalendara dostupna</translation>
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7720410380936703141">PONOVI</translation>

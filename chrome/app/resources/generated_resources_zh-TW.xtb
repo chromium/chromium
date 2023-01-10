@@ -917,6 +917,7 @@
 <translation id="1819721979226826163">依序輕觸 [應用程式通知] &gt; [Google Play 服務]。</translation>
 <translation id="1820028137326691631">請輸入管理員提供的密碼</translation>
 <translation id="1822140782238030981">已經是 Chrome 使用者了嗎？請登入帳戶</translation>
+<translation id="1823781806707127806">將現有瀏覽資料加入受管理的設定檔</translation>
 <translation id="18245044880483936">備份資料不會計入貴子女的雲端硬碟儲存空間配額。</translation>
 <translation id="1825565032302550710">連接埠必須介於 1024 與 65535 之間</translation>
 <translation id="182577151972096764">最近瀏覽過的食譜</translation>
@@ -1077,6 +1078,7 @@
 <translation id="1963976881984600709">標準防護</translation>
 <translation id="1965624977906726414">沒有特殊權限。</translation>
 <translation id="1966649499058910679">醒目顯示每個朗讀的字詞</translation>
+<translation id="1967970931040389207">開啟無線基地台</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 筆)</translation>
 <translation id="1972325230031091483">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
 <translation id="197288927597451399">保留</translation>
@@ -1165,6 +1167,7 @@
 <translation id="2048554637254265991">啟動容器管理工具時發生錯誤，請再試一次。</translation>
 <translation id="2048653237708779538">無法執行操作</translation>
 <translation id="2050339315714019657">直向</translation>
+<translation id="2051555741181591333">自動停用無線基地台</translation>
 <translation id="2052572566310583903">你在其他裝置上安裝的應用程式</translation>
 <translation id="2053105195397337973">我們正在研究如何限制追蹤行為，同時讓網站能夠防範廣告垃圾內容和詐欺行為。</translation>
 <translation id="2053312383184521053">閒置狀態資料</translation>
@@ -1273,6 +1276,7 @@
 <translation id="2137128126782078222">不允許接收來自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="2139919072249842737">「設定」按鈕</translation>
 <translation id="2140788884185208305">電池壽命</translation>
+<translation id="2140902257485550046">選擇封鎖這個網站的所有擴充功能</translation>
 <translation id="2142328300403846845">以其他身分開啟連結</translation>
 <translation id="2142582065325732898">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />即可查看最近開啟的 Chrome 分頁。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">啟用全螢幕模式時一律顯示工具列</translation>
@@ -2004,6 +2008,7 @@
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2781120507965857989">開啟同步功能後，你就可以在這部裝置及任何其他保持同步的位置上取得你的書籤、密碼、歷史記錄等等。Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">已允許執行這個網站的擴充功能</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2783298271312924866">已下載</translation>
 <translation id="2783321960289401138">建立捷徑...</translation>
@@ -3207,6 +3212,7 @@
 <translation id="3898233949376129212">裝置語言</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> 要求<ph name="FIRST_PERMISSION" />以及<ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">你的「<ph name="WEBSITE" />」密碼分別儲存在這部裝置和 Google 帳戶中，請問要刪除哪裡的密碼？</translation>
+<translation id="3898768766145818464">播放或暫停影片</translation>
 <translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3902789559055749153">選擇為「<ph name="APP_NAME" />」建立密碼金鑰的方式</translation>
@@ -3827,6 +3833,7 @@
 <translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
 <translation id="449232563137139956">網站通常會顯示圖片以提供插圖，例如網路商店或新聞報導的相片</translation>
 <translation id="4492698018379445570">查看已加入購物車的商品，並在選購完成後結帳</translation>
+<translation id="4493167769966437077">將「<ph name="LANGUAGE_NAME" />」從一律不翻譯的語言中移除</translation>
 <translation id="4493468155686877504">建議大小 (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">要在 <ph name="SITE" /> 允許這個擴充功能嗎？</translation>
 <translation id="4495419450179050807">不要顯示這個網頁</translation>
@@ -4397,6 +4404,7 @@
 <translation id="5026874946691314267">不要再顯示這則通知</translation>
 <translation id="5027550639139316293">電子郵件憑證</translation>
 <translation id="5027562294707732951">新增擴充功能</translation>
+<translation id="5028445315206872221">已封鎖這個網站的擴充功能</translation>
 <translation id="5029568752722684782">清除複本</translation>
 <translation id="5029873138381728058">無法檢查 VM</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
@@ -4960,6 +4968,7 @@
 <translation id="5554866693883022680">在「<ph name="DEVICE_TYPE" />」上選取應用程式以開啟這個連結</translation>
 <translation id="5555363196923735206">切換鏡頭</translation>
 <translation id="5555525474779371165">選擇安全瀏覽防護設定</translation>
+<translation id="5555639311269196631">關閉無線基地台</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="55601339223879446">調整顯示畫面中的桌面邊界</translation>
@@ -6617,6 +6626,7 @@
 <translation id="7088960765736518739">切換控制功能</translation>
 <translation id="7089253021944603172">讓分頁恢復「使用中」狀態</translation>
 <translation id="7090160970140261931">你可以新增其他帳戶到<ph name="DEVICE_TYPE" />，以便透過這些帳戶存取網站和應用程式。你也可以控管哪些帳戶能夠使用 Android 應用程式。</translation>
+<translation id="7090714929377281710">自動關閉無線基地台</translation>
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093416310351037609">為了維護資料安全，貴機構規定所有符合資格的下載內容都必須儲存至機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
 <translation id="7093866338626856921">與下列名稱的裝置交換資料：<ph name="HOSTNAMES" /></translation>
@@ -7237,6 +7247,7 @@
 <translation id="7684718995427157417">如要建立並測試你的應用程式，請啟用 Android Debug Bridge (ADB)。請注意，這項操作會允許你安裝未經 Google 驗證的 Android 應用程式，而且需要將裝置恢復原廠設定才能停用。</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>
 <translation id="7685087414635069102">請輸入 PIN 碼</translation>
+<translation id="7686581688229391955">選擇允許執行這個網站的擴充功能</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7690378713476594306">從清單中選擇</translation>
@@ -8050,6 +8061,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
 <translation id="8417548266957501132">家長帳戶密碼</translation>
 <translation id="8418445294933751433">顯示為分頁(&amp;S)</translation>
+<translation id="8418675848396538775">新增「<ph name="LANGUAGE_NAME" />」</translation>
 <translation id="8419098111404128271">「<ph name="SEARCH_TEXT" />」的搜尋結果</translation>
 <translation id="8420308167132684745">編輯字典條目</translation>
 <translation id="8421361468937925547">即時字幕 (僅支援英文)</translation>
@@ -8820,6 +8832,7 @@
 <translation id="9121814364785106365">在固定分頁中開啟</translation>
 <translation id="9123287046453017203">這部裝置不是最新版本</translation>
 <translation id="9124003689441359348">你所儲存的密碼會顯示在這裡</translation>
+<translation id="9125910124977405374">將「<ph name="LANGUAGE_NAME" />」從自動翻譯的語言中移除</translation>
 <translation id="9126149354162942022">游標顏色</translation>
 <translation id="9128317794749765148">無法完成設定</translation>
 <translation id="9128335130883257666">開啟<ph name="INPUT_METHOD_NAME" />的設定頁面</translation>

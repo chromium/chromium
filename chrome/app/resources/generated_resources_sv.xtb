@@ -1252,6 +1252,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> har dolts</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnummer}}</translation>
 <translation id="2110941575868943054">Tillåts att söka efter Bluetooth-enheter</translation>
+<translation id="2111158890826137380">Något gick fel. Skicka feedback och ange #bruschetta i beskrivningen. Felkoden är <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Rensa typer</translation>
 <translation id="2111670510994270194">Ny flik till höger</translation>
 <translation id="2112554630428445878">Välkommen <ph name="USERNAME" />!</translation>
@@ -1797,6 +1798,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2575713839157415345">{YEARS,plural, =1{Den här enheten sparas i ett år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {YEARS} år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="257779572837908839">Konfigurera som Chromebox för möten</translation>
 <translation id="2579309488038515659">Aktivera surfzon</translation>
+<translation id="2579596474754516455">Skanna PDF-bilder för att konvertera text till skärmläsare vid behov</translation>
 <translation id="2580889980133367162">Tillåt alltid att <ph name="HOST" /> laddar flera filer</translation>
 <translation id="258095186877893873">Lång</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plattform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2899,6 +2901,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3616741288025931835">&amp;Rensa webbinformation...</translation>
 <translation id="3617891479562106823">Inga bakgrunder är tillgängliga. Försök igen senare.</translation>
+<translation id="3618286417582819036">Ett fel uppstod</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620136223548713675">Geolokalisering</translation>
 <translation id="362023940451053340">I ditt Google-konto, för <ph name="ACCOUNT" /></translation>
@@ -6695,6 +6698,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7149839598364933473">Konvertera den här enheten till en <ph name="DEVICE_OS" />-enhet.</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
 <translation id="7152478047064750137">Det här tillägget kräver inga särskilda behörigheter</translation>
+<translation id="7153309176431047193">Konvertera bilder till text</translation>
 <translation id="7154130902455071009">Ändra startsida till: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Konvertera bild till text</translation>
 <translation id="7159953856712257647">Installerat som standard</translation>

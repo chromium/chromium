@@ -285,7 +285,6 @@
 Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя).</translation>
 <translation id="3080525922482950719">Захоўвайце старонкі, каб прачытаць іх пазней або без падключэння да інтэрнэту</translation>
 <translation id="3081338492074632642">Праверце, ці супадае пароль, які вы захоўваеце, з паролем для сайта <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Аўтазапаўненне пароляў</translation>
 <translation id="3112556859945124369">Пазначыць…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Паказаць, якія тыпы даных можна сінхранізаваць<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Гісторыя і іншыя даныя</translation>
@@ -453,6 +452,7 @@
 <translation id="4420409367264901497">Рэдагаваць закладку</translation>
 <translation id="4442550905108052454">Адкрыйце <ph name="BEGIN_BOLD" />Налады<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Дадаванне мовы</translation>
+<translation id="4461286950227634995">Паказваць прапанову захаваць паролі</translation>
 <translation id="4462491365653392320">Адсочванне цэн на ўкладках</translation>
 <translation id="4469418912670346607">Працягнуць наладку</translation>
 <translation id="4474494258097106883">Распрацавана для iPhone</translation>

@@ -285,7 +285,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="3080525922482950719">Stránky si můžete uložit a přečíst si je později nebo v režimu offline</translation>
 <translation id="3081338492074632642">Zkontrolujte, zda se ukládané heslo shoduje s heslem pro web <ph name="WEBSITE" />.</translation>
-<translation id="3103603146121354983">Automatické vyplňování hesel</translation>
 <translation id="3112556859945124369">Označit…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Co lze synchronizovat<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historie a další</translation>
@@ -453,6 +452,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4420409367264901497">Upravit záložku</translation>
 <translation id="4442550905108052454">Otevřete <ph name="BEGIN_BOLD" />Nastavení<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Přidat jazyk</translation>
+<translation id="4461286950227634995">Nabízet uložení hesel</translation>
 <translation id="4462491365653392320">Sledovat ceny na kartách</translation>
 <translation id="4469418912670346607">Pokračovat v nastavování</translation>
 <translation id="4474494258097106883">Vytvořeno pro iPhone</translation>
@@ -530,6 +530,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4916679969857390442">Lupa</translation>
 <translation id="4922154083994158612">Chcete lepší zabezpečení?</translation>
 <translation id="4930714375720679147">Zapnout</translation>
+<translation id="4938338714234463591">S určitými funkcemi na webech budete moci používat hlas.</translation>
 <translation id="4941089862236492464">Litujeme, ale při sdílení položky došlo k potížím.</translation>
 <translation id="4944543191714094452">Najít na stránce…</translation>
 <translation id="4945756290001680296">Otevřít nastavení hesla</translation>
@@ -901,6 +902,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7671141431838911305">INSTALOVAT</translation>
+<translation id="7679915578945954324">Adresy webu byly zkopírovány</translation>
 <translation id="7687508192620387263">Je k dispozici soubor kalendáře</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7720410380936703141">ZKUSIT ZNOVU</translation>

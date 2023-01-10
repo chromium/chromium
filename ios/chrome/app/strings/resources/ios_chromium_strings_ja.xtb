@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1257458525759135959">画像を保存するには、[設定] をタップして写真への追加を Chromium に許可してください</translation>
 <translation id="1289216811211435351">Chromium に切り替え</translation>
-<translation id="1311799238113893680">Chromium に保存したパスワードを使用して、よりすばやくログインできます</translation>
 <translation id="1361748954329991663">Chromium は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chromium がサポートされなくなった可能性があります。</translation>
 <translation id="1431818719585918472">Chromium でシークレット タブをロックできるようにします。</translation>
 <translation id="1472013873724362412">このアカウントは Chromium では使用できません。ドメイン管理者に問い合わせるか、通常の Google アカウントでログインしてください。</translation>
@@ -115,7 +114,6 @@
 <translation id="8013573822802650211">どのデバイスからでも Chromium で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="8073677936375100957">Chromium データをこのデバイスから削除しますか？</translation>
 <translation id="8240981428553046115">Chromium でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
-<translation id="8308172444429103994">Chromium のヒント。キーボードの上部で保存したパスワードを選択すると、すばやくログインできます。</translation>
 <translation id="8409374867500149834">Chromium の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
 <translation id="858114650497379505">他のアプリや iPhone でパスワード マネージャに保存したパスワードを使用できます。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>

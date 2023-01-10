@@ -2730,6 +2730,7 @@
 <translation id="3469583217479686109">ସିଲେକ୍ସନ ଟୁଲ</translation>
 <translation id="3470392222765168737">ସାଇଟକୁ ଫଲୋ କରନ୍ତୁ</translation>
 <translation id="3471876058939596279">ଭିଡିଓ ପାଇଁ ସେହି ଏକା ସମୟରେ HDMI ଏବଂ USB ଟାଇପ୍-C ପୋର୍ଟ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଭିଡିଓ ପୋର୍ଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="3472469028191701821">ନୂଆ ଟାବରେ ଖୋଲେ</translation>
 <translation id="3473241910002674503">ଟାବଲେଟ୍ ମୋଡରେ ବଟନଗୁଡ଼ିକ ସାହାଯ୍ୟରେ ମୂଳ ପୃଷ୍ଠାକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ, ପଛକୁ ଫେରନ୍ତୁ ଏବଂ ଆପଗୁଡ଼ିକ ସ୍ୱିଚ୍ କରନ୍ତୁ।</translation>
 <translation id="3473479545200714844">ସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
 <translation id="3474218480460386727">ନୂଆ ଶବ୍ଦଗୁଡ଼ିକ ପାଇଁ 99ଟି କିମ୍ବା ତା'ଠାରୁ କମ୍ ଅକ୍ଷର ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -3117,6 +3118,7 @@
 <translation id="3820749202859700794">SECG ଅଣ୍ଡାକାର ବକ୍ର secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">ଫୋନ ହବ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{ଗୋଟିଏ ଏକ୍ସଟେନସନକୁ ଅନୁମୋଦନ କରାଯାଇଛି}other{#ଟି ଏକ୍ସଟେନସନକୁ ଅନୁମୋଦନ କରାଯାଇଛି}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux ପାଇଁ ଅତିକମରେ <ph name="INSTALL_SIZE" />ର ସ୍ଥାନ ସୁପାରିଶ କରାଯାଇଛି।</translation>
 <translation id="3824621460022590830">ଡିଭାଇସ୍ ପଞ୍ଜିକରଣ ଟୋକନ୍ ଅବୈଧ ଅଟେ। ଦୟାକରି ଆପଣଙ୍କ ଡିଭାଇସର ମାଲିକ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ। ତ୍ରୁଟି କୋଡ୍: <ph name="ERROR_CODE" />।</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ଏହି ଫାଇଲ ପ୍ରକାର ପାଇଁ ମୋ ପସନ୍ଦକୁ ମନେ ରଖ: <ph name="FILE_TYPES" />}other{ଏହି ଫାଇଲ ପ୍ରକାର ପାଇଁ ମୋ ପସନ୍ଦକୁ ମନେ ରଖ: <ph name="FILE_TYPES" />}}</translation>
@@ -4034,6 +4036,7 @@
 <translation id="4675828034887792601">ସାଇଟଗୁଡ଼ିକୁ ସନ୍ଧାନ କରିବା ପାଇଁ ସର୍ଟକଟଗୁଡ଼ିକୁ ତିଆରି କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ସନ୍ଧାନ ଇଞ୍ଜିନକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4676595058027112862">ଫୋନ୍ ହବ୍, ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="4677772697204437347">GPU ମେମୋରୀ</translation>
+<translation id="4678848110205818817">କ୍ରେଡିଟ/ଡେବିଟ କାର୍ଡ</translation>
 <translation id="4680105648806843642">ଏହି ପୃଷ୍ଠାରେ ସାଇଟ୍‌ ମ୍ୟୁଟ୍‌ କରାଯାଇଥିଲା</translation>
 <translation id="4680112532510845139">ଏଠାରେ ଏକ ଇମେଜ ଡ୍ରପ କରନ୍ତୁ</translation>
 <translation id="4681453295291708042">Nearby Share ଅକ୍ଷମ କରନ୍ତୁ</translation>

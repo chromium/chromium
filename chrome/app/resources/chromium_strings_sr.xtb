@@ -253,6 +253,7 @@
 <translation id="6598877126913850652">Иди на подешавања обавештења за Chromium</translation>
 <translation id="6613594504749178791">Промене ће ступити на снагу када следећи пут поново покренете Chromium.</translation>
 <translation id="665732753414869868">Chromium-у треба дозвола за камеру да би направио 3D мапу окружења</translation>
+<translation id="6663852025006259149">Сајтови ће вероватно радити на очекивани начин, али вас неће запамтити када затворите све Chromium прозоре</translation>
 <translation id="6676384891291319759">Приступите Интернету</translation>
 <translation id="668175097507315160">Chromium ОС не може да синхронизује податке због грешке при пријављивању.</translation>
 <translation id="6709350901466051922">Chromium-у треба дозвола за микрофон за овај сајт</translation>
@@ -383,5 +384,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="945990405696787151">Да бисте добијали будућа Chromium ажурирања, треба вам macOS 10.13 или новија верзија. Овај рачунар користи ОС X 10.11.</translation>
 <translation id="965162752251293939">Ко користи Chromium?</translation>
 <translation id="967427899662692980">Набавите најјачу Chromium заштиту</translation>
+<translation id="9792300276217204">Увек обришите податке о сајтовима са уређаја када затворите Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

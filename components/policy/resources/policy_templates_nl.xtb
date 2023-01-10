@@ -1335,9 +1335,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Dit beleid overschrijft <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.
 
       Dit beleid heeft alleen effect op USB-apparaten via de Web Serial API. Zie het beleid <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de WebUSB API.</translation>
-<translation id="2246011554082893079">Beheert de beschikbaarheid van <ph name="BOREALIS_NAME" /> voor dit apparaat.
-
-      Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar voor gebruikers van het apparaat. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
 <translation id="2246621891161157804">Toestaan dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="224750967938323855">Geen synchronisatietoestemming weergeven tijdens het inloggen</translation>
 <translation id="2252400912879027343">WebSQL in niet-beveiligde contexten blijft beschikbaar tot M109 en is niet meer beschikbaar vanaf M110.</translation>
@@ -2595,6 +2592,11 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="3412937883532015092">Als je het beleid instelt op een getal, toont <ph name="PRODUCT_NAME" /> gedurende dat aantal milliseconden een melding en wordt vervolgens de alternatieve browser geopend.
 
       Als je dit beleid niet instelt of instelt op '0', wordt de URL onmiddellijk in een alternatieve browser geopend als je naar de URL navigeert.</translation>
+<translation id="3413763534078822244">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="USER_BOREALIS_ALLOWED_NAME" />.
+
+      Beheert de beschikbaarheid van <ph name="BOREALIS_NAME" /> voor dit apparaat.
+
+      Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar voor gebruikers van het apparaat. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
 <translation id="3415954062311826850">Dit beleid wordt niet ondersteund binnen ARC.</translation>
 <translation id="34160070798637152">Beheert apparaatbrede netwerkconfiguratie.</translation>
 <translation id="3417130629744653218">Websites toestaan beschikbare betaalmethoden op te vragen</translation>

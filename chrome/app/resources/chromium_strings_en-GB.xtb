@@ -253,6 +253,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6598877126913850652">Go to Chromium notification settings</translation>
 <translation id="6613594504749178791">Your changes will take effect the next time you relaunch Chromium.</translation>
 <translation id="665732753414869868">Chromium needs camera permission to create a 3D map of your surroundings</translation>
+<translation id="6663852025006259149">Sites will probably work as you expect but won't remember you after you close all Chromium windows</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="668175097507315160">Chromium OS could not sync your data due to an error signing in.</translation>
 <translation id="6709350901466051922">Chromium needs microphone permission for this site</translation>
@@ -382,5 +383,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="945990405696787151">To get future Chromium updates, you'll need macOS 10.13 or later. This computer is using OS X 10.11.</translation>
 <translation id="965162752251293939">Who's using Chromium?</translation>
 <translation id="967427899662692980">Get Chromium's strongest security</translation>
+<translation id="9792300276217204">Always clear site data from your device when you close Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

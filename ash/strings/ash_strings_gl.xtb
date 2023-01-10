@@ -239,6 +239,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2224075387478458881">Non se pode gravar a pantalla cando nela se mostra contido protexido</translation>
 <translation id="2227179592712503583">Quitar suxestión</translation>
 <translation id="225680501294068881">Buscando dispositivos...</translation>
+<translation id="225716114209817872">Máximo</translation>
 <translation id="2257486738914982088">Produciuse un erro ao descargar o ficheiro <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Ficheiros suxeridos</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
@@ -508,6 +509,7 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="3713734891607377840">Abrir ao finalizar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacións máis non están neste dispositivo.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
+<translation id="3738664582935948253">Agora podes mostrar os clics e os atallos de teclado nas gravacións da pantalla</translation>
 <translation id="3742055079367172538">Captura de pantalla feita</translation>
 <translation id="3765841986579723851">Editouse hoxe</translation>
 <translation id="3773700760453577392">Un administrador non permitiu o inicio de sesión múltiple de <ph name="USER_EMAIL" />.
@@ -1015,6 +1017,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6537924328260219877">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Escaneando ficheiro <ph name="FILENAME" /> para descargalo</translation>
 <translation id="6542521951477560771">Emitindo en: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Desenfoque do fondo</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalación</translation>
 <translation id="6559976592393364813">Pedirllo ao administrador</translation>
@@ -1421,6 +1424,7 @@ Nova instalación</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, aplicación instalada, bloqueada</translation>
 <translation id="8785070478575117577">Conectar con <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Alto</translation>
 <translation id="8806053966018712535">Cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Axuda"</translation>
 <translation id="8814190375133053267">Wifi</translation>

@@ -2748,6 +2748,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3469583217479686109">Ithuluzi Lokukhetha</translation>
 <translation id="3470392222765168737">Landela isayithi</translation>
 <translation id="3471876058939596279">Izimbobo ze-HDMI ne-USB Type-C azikwazi ukusetshenziselwa ividiyo ngesikhathi esifanayo. Sebenzisa imbobo ehlukile yevidiyo.</translation>
+<translation id="3472469028191701821">Ivula kuthebhu elisha</translation>
 <translation id="3473241910002674503">Zulazula ekhaya, emuva bese ushintsha izinhlelo zokusebenza ngezinkinobho kumodi yethebulethi.</translation>
 <translation id="3473479545200714844">Isisondezi-skrini</translation>
 <translation id="3474218480460386727">Sebenzisa amaletha angu-99 noma ambalwa kumagama amasha</translation>
@@ -3135,6 +3136,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3820749202859700794">I-SECG elliptic curve secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">Izaziso Zehabhu Lefoni</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Isandiso sivunyelwe}one{# izandiso ezivunyelwe}other{# izandiso ezivunyelwe}}</translation>
+<translation id="3823019343150397277">I-IBAN</translation>
 <translation id="3823310065043511710">Kunconywa okungenani isikhala esingu-<ph name="INSTALL_SIZE" /> nge-Linux.</translation>
 <translation id="3824621460022590830">Ithokheni lokubhalisa idivayisi alivumelekile. Sicela uxhumane nomnikazi noma umlawuli wedivayisi yakho. Ikhodi yephutha: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Khumbula isinqumo sami salolu hlobo lwefayela: <ph name="FILE_TYPES" />}one{Khumbula isinqumo sami salezi zinhlobo zefayela: <ph name="FILE_TYPES" />}other{Khumbula isinqumo sami salezi zinhlobo zefayela: <ph name="FILE_TYPES" />}}</translation>
@@ -4052,6 +4054,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4675828034887792601">Dala isinqamuleli sokusesha amasayithi nokuphatha injini yosesho yakho</translation>
 <translation id="4676595058027112862">Ihabhu yefoni, Funda kabanzi</translation>
 <translation id="4677772697204437347">Imemori ye-GPU</translation>
+<translation id="4678848110205818817">Ikhadi lesikweletu/ledebithi</translation>
 <translation id="4680105648806843642">Umsindo uye wathuliswa kuleli khasi</translation>
 <translation id="4680112532510845139">Dedela umfanekiso lapha</translation>
 <translation id="4681453295291708042">Khubaza UkuThumela Eduze</translation>

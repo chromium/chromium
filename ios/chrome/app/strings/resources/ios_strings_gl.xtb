@@ -285,7 +285,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca.</translation>
 <translation id="3080525922482950719">Podes gardar páxinas para lelas máis tarde ou sen conexión</translation>
 <translation id="3081338492074632642">Asegúrate de que o contrasinal que gardas coincida co de <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Autocompletar contrasinais</translation>
 <translation id="3112556859945124369">Marcar como...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consultar o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historial e moito máis</translation>
@@ -453,6 +452,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4420409367264901497">Editar marcador</translation>
 <translation id="4442550905108052454">Abre <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /> (Configuración)</translation>
 <translation id="4454246407045105932">Engadir idioma</translation>
+<translation id="4461286950227634995">Ofrecer posibilidade de gardar contrasinais</translation>
 <translation id="4462491365653392320">Facer un seguimento dos prezos nas pestanas</translation>
 <translation id="4469418912670346607">Continuar coa configuración</translation>
 <translation id="4474494258097106883">Deseñado para iPhone</translation>

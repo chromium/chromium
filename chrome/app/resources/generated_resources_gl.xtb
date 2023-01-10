@@ -1236,6 +1236,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2105809836724866556">Ocultouse <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="2110941575868943054">Sitios que teñen permiso para buscar dispositivos Bluetooth</translation>
+<translation id="2111158890826137380">Vaia, produciuse un erro… Envía un comentario que inclúa "#bruschetta" na descrición. Código de erro: <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nova pestana á dereita</translation>
 <translation id="2112554630428445878">Dámosche a benvida, <ph name="USERNAME" /></translation>
@@ -1777,6 +1778,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2575713839157415345">{YEARS,plural, =1{Este dispositivo gardarase durante 1 ano e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}other{Este dispositivo gardarase durante {YEARS} anos e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}}</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reunións</translation>
 <translation id="2579309488038515659">Activar zona wifi</translation>
+<translation id="2579596474754516455">Escanea imaxes en PDF co fin de convertelas en texto para o lector de pantalla cando sexa necesario</translation>
 <translation id="2580889980133367162">Permitir sempre a <ph name="HOST" /> descargar varios ficheiros</translation>
 <translation id="258095186877893873">Longo</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (plataforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2729,6 +2731,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3469583217479686109">Ferramenta de selección</translation>
 <translation id="3470392222765168737">Seguir sitio</translation>
 <translation id="3471876058939596279">Os portos HDMI e USB tipo C non se poden utilizar ao mesmo tempo para o contido de vídeo. Utiliza un porto de vídeo distinto.</translation>
+<translation id="3472469028191701821">Ábrese nunha pestana nova</translation>
 <translation id="3473241910002674503">Vai ao inicio, volve atrás e cambia de aplicación usando os botóns no modo de tableta.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">As palabras novas non deben ter máis de 99 letras</translation>
@@ -2877,6 +2880,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616741288025931835">&amp;Borrar datos de navegación...</translation>
 <translation id="3617891479562106823">Os fondos non están dispoñibles. Téntao de novo máis tarde.</translation>
+<translation id="3618286417582819036">Produciuse un erro</translation>
 <translation id="3619115746895587757">Capuchino</translation>
 <translation id="3620136223548713675">Xeolocalización</translation>
 <translation id="362023940451053340">Almacenaríase na túa Conta de Google (<ph name="ACCOUNT" />)</translation>
@@ -3115,6 +3119,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3820749202859700794">SECG Elliptic Curve secp521r1 (tamén se denomina NIST P-521)</translation>
 <translation id="3821074617718452587">Notificacións de O meu teléfono</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Aprobouse 1 extensión}other{Aprobáronse # extensións}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">É recomendable dispoñer polo menos de <ph name="INSTALL_SIZE" /> de espazo para Linux.</translation>
 <translation id="3824621460022590830">O token de inscrición do dispositivo non é válido. Ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Lembrar selección para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Lembrar selección para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
@@ -4032,6 +4037,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4675828034887792601">Crea atallos para realizar buscas en sitios e xestionar o teu motor de busca</translation>
 <translation id="4676595058027112862">O meu teléfono. Máis información</translation>
 <translation id="4677772697204437347">Memoria da GPU</translation>
+<translation id="4678848110205818817">Tarxeta de crédito ou de débito</translation>
 <translation id="4680105648806843642">Silenciouse o son nesta páxina</translation>
 <translation id="4680112532510845139">Arrastra unha imaxe ata aquí</translation>
 <translation id="4681453295291708042">Desactivar Compartir por Nearby</translation>
@@ -6663,6 +6669,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7149839598364933473">Transforma este aparello nun dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión non necesita permisos especiais</translation>
+<translation id="7153309176431047193">Converter imaxes en texto</translation>
 <translation id="7154130902455071009">Cambiar a páxina de inicio a: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Converter imaxe en texto</translation>
 <translation id="7159953856712257647">Instalada de forma predeterminada</translation>

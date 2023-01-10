@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 mesec}one{# mesec}two{# meseca}few{# mesece}other{# mesecev}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 h in }one{# h in }two{# h in }few{# h in }other{# h in }}</translation>
+<translation id="185013357618350178">&amp;Izberi</translation>
 <translation id="1859234291848436338">Smer pisanja</translation>
 <translation id="1860796786778352021">Zapri obvestilo</translation>
 <translation id="186476001994626254">Spletna vsebina za pametno lepljenje</translation>

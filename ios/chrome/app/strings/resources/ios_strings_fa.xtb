@@ -285,7 +285,6 @@
 برای اینکه سابقه جستجویتان را (درصورت امکان) حذف کنید، به دستورالعمل‌های آن موتور جستجو مراجعه کنید.</translation>
 <translation id="3080525922482950719">می‌توانید صفحه‌ها را برای خواندن در فرصتی دیگر یا در حالت آفلاین ذخیره کنید</translation>
 <translation id="3081338492074632642">مطمئن شوید گذرواژه‌ای که ذخیره می‌کنید با گذرواژه <ph name="WEBSITE" /> مطابقت داشته باشد</translation>
-<translation id="3103603146121354983">تکمیل خودکار گذرواژه‌ها</translation>
 <translation id="3112556859945124369">علامت‌گذاری...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />دیدن مواردی که می‌توانید همگام‌سازی کنید<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">سابقه و موارد بیشتر</translation>
@@ -531,6 +530,7 @@
 <translation id="4916679969857390442">لنز</translation>
 <translation id="4922154083994158612">امنیت بیشتری می‌خواهید؟</translation>
 <translation id="4930714375720679147">روشن کردن</translation>
+<translation id="4938338714234463591">با این کار می‌توانید برای برخی‌از ویژگی‌های وب‌سایت‌ها از صدایتان استفاده کنید.</translation>
 <translation id="4941089862236492464">متأسفیم! مشكلی در اشتراک‌گذاری مورد شما وجود داشت.</translation>
 <translation id="4944543191714094452">یافتن در صفحه…</translation>
 <translation id="4945756290001680296">دسترسی به تنظیمات گذرواژه</translation>
@@ -902,6 +902,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7671141431838911305">نصب</translation>
+<translation id="7679915578945954324">نشانی‌های سایت کپی شد</translation>
 <translation id="7687508192620387263">فایل تقویم دردسترس است</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7720410380936703141">امتحان مجدد</translation>

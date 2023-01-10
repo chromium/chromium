@@ -240,6 +240,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2224075387478458881">Snimanje zaslona nije dopušteno ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="2227179592712503583">Ukloni prijedlog</translation>
 <translation id="225680501294068881">Pretraživanje uređaja...</translation>
+<translation id="225716114209817872">Maksimalno</translation>
 <translation id="2257486738914982088">Došlo je do pogreške prilikom preuzimanja <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Predložene datoteke</translation>
 <translation id="2268130516524549846">Bluetooth onemogućen</translation>
@@ -695,6 +696,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4740516757091333363">Želite li izbrisati spremljenu radnu površinu?</translation>
 <translation id="4752784485658729358">Dopušteno je samo 6 spremljenih radnih površina. Uklonite jednu radnu površinu da biste spremili novu.</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
+<translation id="4762573482154983647">Sakrijte aplikacije</translation>
 <translation id="4774338217796918551">Vrati se sutra u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Zaporka za adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
@@ -1015,6 +1017,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6537924328260219877">Jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Pregled preuzimanja datoteke <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Emitiranje na uređaj <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Zamućenje pozadine</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Novo instaliranje</translation>
 <translation id="6559976592393364813">Pitajte administratora</translation>
@@ -1421,6 +1424,7 @@ Novo instaliranje</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalirana aplikacija, blokirana</translation>
 <translation id="8785070478575117577">Povežite se sa satom <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Jako</translation>
 <translation id="8806053966018712535">Mapa <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Pomoć"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

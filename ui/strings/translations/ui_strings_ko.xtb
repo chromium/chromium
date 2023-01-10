@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1개월}other{#개월}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" />MB/초</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1시간 }other{#시간 }}</translation>
+<translation id="185013357618350178">선택(&amp;S)</translation>
 <translation id="1859234291848436338">쓰기 방향</translation>
 <translation id="1860796786778352021">알림 닫기</translation>
 <translation id="186476001994626254">웹 스마트 붙여넣기 콘텐츠</translation>

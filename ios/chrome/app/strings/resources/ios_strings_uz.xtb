@@ -285,7 +285,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsatmalarini oching.</translation>
 <translation id="3080525922482950719">Sahifalarni keyinroq yoki oflayn mutolaa qilish uchun saqlashingiz mumkin</translation>
 <translation id="3081338492074632642">Saqlayotgan parolingiz <ph name="WEBSITE" /> uchun mos kelishini tekshiring</translation>
-<translation id="3103603146121354983">Parollarni avtomatik kiritish</translation>
 <translation id="3112556859945124369">Belgilash…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Nimalarni sinxronlash mumkin<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Tarix va boshqa</translation>
@@ -531,6 +530,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="4916679969857390442">Lupa</translation>
 <translation id="4922154083994158612">Himoya kuchaytirilsinmi?</translation>
 <translation id="4930714375720679147">Yoqish</translation>
+<translation id="4938338714234463591">Bunda ayrim saytlarda ovozli funksiyalardan foydalanish mumkin.</translation>
 <translation id="4941089862236492464">Yozuvni joylab bo‘lmadi.</translation>
 <translation id="4944543191714094452">Sahifa ichidan qidirish…</translation>
 <translation id="4945756290001680296">Parol sozlamalariga kirish</translation>
@@ -902,6 +902,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7671141431838911305">O‘RNATISH</translation>
+<translation id="7679915578945954324">Sayt manzillari nusxalandi</translation>
 <translation id="7687508192620387263">Taqvim fayli mavjud</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7720410380936703141">QAYTADAN</translation>

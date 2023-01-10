@@ -929,6 +929,7 @@
 <translation id="1819721979226826163">Допрете „Известувања за апликации &gt; Услуги на Google Play“.</translation>
 <translation id="1820028137326691631">Внесете лозинка што ви ја обезбедил администраторот</translation>
 <translation id="1822140782238030981">Веќе сте корисник на Chrome? Најавете се</translation>
+<translation id="1823781806707127806">Додај ги постоечките податоци од прелистувањето на управуваниот профил</translation>
 <translation id="18245044880483936">Податоците од бекапот нема да се вбројуваат во квотата за простор на Drive на вашето дете.</translation>
 <translation id="1825565032302550710">Портата мора да биде помеѓу 1024 и 65535</translation>
 <translation id="182577151972096764">неодамна прегледани рецепти</translation>
@@ -1090,6 +1091,7 @@
 <translation id="1963976881984600709">Стандардна заштита</translation>
 <translation id="1965624977906726414">Нема специјални дозволи.</translation>
 <translation id="1966649499058910679">Нагласувај го секој збор додека се изговара</translation>
+<translation id="1967970931040389207">Вклучување на точката на пристап</translation>
 <translation id="1969654639948595766">Текстуална евиденција на WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Ќе прелистувате побрзо бидејќи содржините се вчитуваат проактивно според вашата тековна посета на веб-страницата</translation>
 <translation id="197288927597451399">Чувај</translation>
@@ -1178,6 +1180,7 @@
 <translation id="2048554637254265991">Грешка при стартувањето на управувачот со контејнери. Обидете се повторно.</translation>
 <translation id="2048653237708779538">Дејството не е достапно</translation>
 <translation id="2050339315714019657">Портрет</translation>
+<translation id="2051555741181591333">Автоматско оневозможување на точката на пристап</translation>
 <translation id="2052572566310583903">Инсталирана на вашите други уреди</translation>
 <translation id="2053105195397337973">Истражуваме начини како да го намалиме следењето, а притоа да им овозможуваме на сајтовите да ги сопрат спамот и измамите со реклами.</translation>
 <translation id="2053312383184521053">Податоци во состојба на неактивност</translation>
@@ -1286,6 +1289,7 @@
 <translation id="2137128126782078222">Не дозволувај известувања од <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Копче за поставување</translation>
 <translation id="2140788884185208305">Состојба на батеријата</translation>
+<translation id="2140902257485550046">Изберете за да ги блокирате сите екстензии на овој сајт</translation>
 <translation id="2142328300403846845">Отвори ја врската како</translation>
 <translation id="2142582065325732898">Вклучете <ph name="LINK1_BEGIN" />Синхронизација на Chrome<ph name="LINK1_END" /> за да ги прегледате неодамнешните картички на Chrome. <ph name="LINK2_BEGIN" />Дознајте повеќе<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Секогаш прикажувај го алатникот при цел екран</translation>
@@ -2020,6 +2024,7 @@
 <translation id="2778471504622896352">Додајте далечински апликации на стартерот на ChromeOS</translation>
 <translation id="2781120507965857989">Вклучете ја синхронизацијата за да ги добиете обележувачите, лозинките, историјата и друго на уредов и на сите други места каде што синхронизирате. Google може да ја користи вашата историја за да ги персонализира „Пребарувањето“ и другите услуги на Google.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Екстензиите се дозволени на овој сајт</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
 <translation id="2783298271312924866">Преземено</translation>
 <translation id="2783321960289401138">Креирај кратенка...</translation>
@@ -3845,6 +3850,7 @@
 <translation id="449126573531210296">Шифрирај синхронизирани лозинки со сметката на Google</translation>
 <translation id="449232563137139956">Сајтовите обично прикажуваат слики за илустративни цели како што се фотографиите за онлајн продавниците или статиите со вести</translation>
 <translation id="4492698018379445570">Проверете што сте додале во кошничките за купување и платете кога ќе бидете спремни</translation>
+<translation id="4493167769966437077">Отстранете го <ph name="LANGUAGE_NAME" /> од јазиците за кои никогаш не треба да се нуди превод</translation>
 <translation id="4493468155686877504">Препорачано (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Да се дозволи екстензијава на <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Да не се покажува на оваа страница</translation>
@@ -4416,6 +4422,7 @@
 <translation id="5026874946691314267">Не покажувај го ова повторно</translation>
 <translation id="5027550639139316293">Сертификат за е-пошта</translation>
 <translation id="5027562294707732951">Инсталирај екстензија</translation>
+<translation id="5028445315206872221">Екстензиите се блокирани на овој сајт</translation>
 <translation id="5029568752722684782">Исчисти копија</translation>
 <translation id="5029873138381728058">Не успеаја да се проверат виртуелните машини</translation>
 <translation id="503155457707535043">Апликациите се преземаат</translation>
@@ -4979,6 +4986,7 @@
 <translation id="5554866693883022680">Изберете апликација на <ph name="DEVICE_TYPE" /> за да го отворите линков</translation>
 <translation id="5555363196923735206">Префрли ја камерата</translation>
 <translation id="5555525474779371165">Изберете ја вашата заштита со „Безбедно прелистување“</translation>
+<translation id="5555639311269196631">Исклучување на точката на пристап</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5558129378926964177">Зумир&amp;ај</translation>
 <translation id="55601339223879446">Приспособете ги границите на работната површина во рамките на екранот</translation>
@@ -6641,6 +6649,7 @@
 <translation id="7088960765736518739">Пристап со прекинувачи</translation>
 <translation id="7089253021944603172">Картичката е активна повторно</translation>
 <translation id="7090160970140261931">Може да додадете дополнителни сметки на вашиот <ph name="DEVICE_TYPE" /> за користење со веб-сајтови и апликации на Android. Може да контролирате кои сметки се користат со апликациите на Android.</translation>
+<translation id="7090714929377281710">Автоматско исклучување на точката на пристап</translation>
 <translation id="7093220653036489319">Брзи одговори</translation>
 <translation id="7093416310351037609">За безбедност на податоците и сигурност, вашата организација бара сите подобни преземања да се зачувуваат во сметката <ph name="WEB_DRIVE" /> на вашата организација.</translation>
 <translation id="7093866338626856921">Разменете податоци со уредите наречени: <ph name="HOSTNAMES" /></translation>
@@ -7261,6 +7270,7 @@
 <translation id="7684718995427157417">За создавање и тестирање на вашите апликации, овозможете ја Android Debug Bridge (ADB). Имајте предвид дека дејствово овозможува инсталирање апликации за Android што не се потврдени од Google, а за оневозможувањето е потребно фабричко ресетирање.</translation>
 <translation id="7685049629764448582">Меморија на JavaScript</translation>
 <translation id="7685087414635069102">Потребен е PIN</translation>
+<translation id="7686581688229391955">Изберете за да ги дозволите сите екстензии на овој сајт</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
 <translation id="7690378713476594306">Изберете од списокот</translation>
@@ -8076,6 +8086,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (футрола за полнење)</translation>
 <translation id="8417548266957501132">Лозинка на родител</translation>
 <translation id="8418445294933751433">&amp;Прикажи како картичка</translation>
+<translation id="8418675848396538775">Додајте <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Резултати од пребарувањето за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="8420308167132684745">Измена на ставки во речникот</translation>
 <translation id="8421361468937925547">Автоматски титлови (само на англиски)</translation>
@@ -8847,6 +8858,7 @@
 <translation id="9121814364785106365">Отвори како прикачена картичка</translation>
 <translation id="9123287046453017203">Вашиот уред не е ажуриран</translation>
 <translation id="9124003689441359348">Зачуваните лозинки ќе се појават тука</translation>
+<translation id="9125910124977405374">Отстранете го <ph name="LANGUAGE_NAME" /> од јазиците што автоматски се преведуваат</translation>
 <translation id="9126149354162942022">Боја на курсор</translation>
 <translation id="9128317794749765148">Поставувањето не може да се заврши</translation>
 <translation id="9128335130883257666">Отворете ја страницата со поставки за <ph name="INPUT_METHOD_NAME" /></translation>

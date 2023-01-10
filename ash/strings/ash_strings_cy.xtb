@@ -239,6 +239,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2224075387478458881">Ni chaniateir recordio'r sgrîn pan fydd cynnwys gwarchodedig yn weladwy</translation>
 <translation id="2227179592712503583">Tynnu'r awgrym</translation>
 <translation id="225680501294068881">Wrthi'n chwilio am ddyfeisiau…</translation>
+<translation id="225716114209817872">Uchafswm</translation>
 <translation id="2257486738914982088">Aeth rhywbeth o'i le wrth lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Ffeiliau a awgrymir</translation>
 <translation id="2268130516524549846">Mae Bluetooth wedi'i analluogi</translation>
@@ -508,6 +509,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3713734891607377840">Agor pan fydd wedi'i gwblhau</translation>
 <translation id="3726171378575546917">Nid yw <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, a <ph name="UNAVAILABLE_APPS_COUNT" /> arall ar y ddyfais hon.</translation>
 <translation id="3735740477244556633">Trefnu yn ôl</translation>
+<translation id="3738664582935948253">Gallwch bellach ddangos cliciau a llwybrau byr bysellfwrdd mewn recordiadau sgrîn</translation>
 <translation id="3742055079367172538">Wedi tynnu sgrinlun</translation>
 <translation id="3765841986579723851">Golygwyd heddiw</translation>
 <translation id="3773700760453577392">Mae gweinyddwr wedi gwrthod mewngofnodi o sawl cyfrif ar gyfer <ph name="USER_EMAIL" />. Rhaid i bob defnyddiwr allgofnodi i barhau.</translation>
@@ -1014,6 +1016,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6537924328260219877">Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Batri'r Ffôn <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Wrthi'n sganio'r lawrlwythiad <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Wrthi'n castio i <ph name="RECEIVER_NAME" /></translation>
+<translation id="6548693220024099658">Niwlio'r Cefndir</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Gosodiad newydd</translation>
 <translation id="6559976592393364813">Gofyn i'r Gweinyddwr</translation>
@@ -1420,6 +1423,7 @@ Gosodiad newydd</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Ap wedi'i Osod, Wedi'i Rwystro</translation>
 <translation id="8785070478575117577">Cysylltu â <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8790998409862094015">Trwm</translation>
 <translation id="8806053966018712535">Ffolder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Help"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

@@ -1234,6 +1234,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> është e fshehur</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numër telefoni}other{# numra telefoni}}</translation>
 <translation id="2110941575868943054">Lejohen të kërkojnë për pajisjet me Bluetooth</translation>
+<translation id="2111158890826137380">Na vjen keq, por ndodhi një gabim. Jep komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" /></translation>
 <translation id="211144231511833662">Pastro llojet</translation>
 <translation id="2111670510994270194">Skedë e re djathtas</translation>
 <translation id="2112554630428445878">Mirë se erdhe, <ph name="USERNAME" /></translation>
@@ -1776,6 +1777,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2575713839157415345">{YEARS,plural, =1{Kjo pajisje do të ruhet për 1 vit dhe mund të lidhesh pa kod herën tjetër. Kjo është caktuar nga administratori yt.}other{Kjo pajisje do të ruhet për {YEARS} vite dhe mund të lidhesh pa kod herën tjetër. Kjo është caktuar nga administratori yt.}}</translation>
 <translation id="257779572837908839">Konfiguroje si "Chromebox për takime"</translation>
 <translation id="2579309488038515659">Aktivizo zonën e qasjes për internet</translation>
+<translation id="2579596474754516455">Skano imazhet në PDF për ta konvertuar tekstin për lexuesit e ekranit kur është e nevojshme</translation>
 <translation id="2580889980133367162">Lejo gjithmonë që <ph name="HOST" /> të shkarkojë shumë skedarë</translation>
 <translation id="258095186877893873">E gjatë</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2728,6 +2730,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3469583217479686109">Vegla e përzgjedhjes</translation>
 <translation id="3470392222765168737">Ndiq sajtin</translation>
 <translation id="3471876058939596279">HDMI dhe portat e tjera të USB-së së tipit C nuk mund të përdoren për video njëkohësisht. Përdor një portë tjetër video.</translation>
+<translation id="3472469028191701821">Hapet në skedë të re</translation>
 <translation id="3473241910002674503">Navigo për në faqen kryesore, kthehu prapa dhe ndërro aplikacionet me butonat në modalitetin e tabletit.</translation>
 <translation id="3473479545200714844">Zmadhuesi i ekranit</translation>
 <translation id="3474218480460386727">Përdor 99 shkronja ose më pak për fjalët e reja</translation>
@@ -2876,6 +2879,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616741288025931835">&amp;Pastro të dhënat e shfletimit...</translation>
 <translation id="3617891479562106823">Sfondet nuk disponohen. Provo sërish më vonë.</translation>
+<translation id="3618286417582819036">Na vjen keq, por ndodhi një gabim</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3620136223548713675">Vendndodhja gjeografike</translation>
 <translation id="362023940451053340">Në "Llogarinë tënde të Google", për <ph name="ACCOUNT" /></translation>
@@ -3114,6 +3118,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3820749202859700794">Kurba eliptike SECG secp521r1 (e njohur edhe si NIST P-521)</translation>
 <translation id="3821074617718452587">Njoftimet e Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Një shtesë është miratuar}other{# shtesa janë miratuar}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Për Linux rekomandohet të paktën <ph name="INSTALL_SIZE" /> hapësirë.</translation>
 <translation id="3824621460022590830">Kodi i regjistrimit të pajisjes është i pavlefshëm. Kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Kujto zgjedhjen time për këtë lloj skedari: <ph name="FILE_TYPES" />}other{Kujto zgjedhjen time për këto lloje skedarësh: <ph name="FILE_TYPES" />}}</translation>
@@ -4031,6 +4036,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4675828034887792601">Krijo shkurtore për të kërkuar në sajte dhe për të menaxhuar motorin e kërkimit</translation>
 <translation id="4676595058027112862">Phone Hub. Mëso më shumë</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
+<translation id="4678848110205818817">Kartë krediti/debiti</translation>
 <translation id="4680105648806843642">Tingulli u çaktivizua në këtë faqe</translation>
 <translation id="4680112532510845139">Lësho një imazh këtu</translation>
 <translation id="4681453295291708042">Çaktivizo "Ndarjen në afërsi"</translation>
@@ -6665,6 +6671,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7149839598364933473">Konvertoje këtë pajisje në një pajisje <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 orët e fundit</translation>
 <translation id="7152478047064750137">Kjo shtesë nuk kërkon leje të veçanta</translation>
+<translation id="7153309176431047193">Konverto imazhet në tekst</translation>
 <translation id="7154130902455071009">Ndrysho faqen tënde të nisjes te: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Konvertoje imazhin në tekst</translation>
 <translation id="7159953856712257647">Instaluar si parazgjedhje</translation>

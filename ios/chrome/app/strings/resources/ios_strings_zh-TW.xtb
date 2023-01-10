@@ -285,7 +285,6 @@
 如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="3080525922482950719">你可以儲存頁面以便稍後閱讀或離線閱讀</translation>
 <translation id="3081338492074632642">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
-<translation id="3103603146121354983">自動填入密碼</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">歷史記錄和其他資料</translation>
@@ -531,6 +530,7 @@
 <translation id="4916679969857390442">透鏡</translation>
 <translation id="4922154083994158612">想要讓安全性更上一層樓嗎？</translation>
 <translation id="4930714375720679147">開啟</translation>
+<translation id="4938338714234463591">這樣一來，你可以透過自己的語音在網站上使用特定功能。</translation>
 <translation id="4941089862236492464">很抱歉，分享您的項目時發生問題。</translation>
 <translation id="4944543191714094452">在網頁中尋找…</translation>
 <translation id="4945756290001680296">存取密碼設定</translation>
@@ -902,6 +902,7 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7671141431838911305">安裝</translation>
+<translation id="7679915578945954324">已複製網址</translation>
 <translation id="7687508192620387263">有可用的日曆檔案</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7720410380936703141">再試一次</translation>

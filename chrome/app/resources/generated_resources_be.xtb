@@ -1240,6 +1240,7 @@
 <translation id="2105809836724866556">Схавана: <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
 <translation id="2110941575868943054">Дазволена шукаць прылады з Bluetooth</translation>
+<translation id="2111158890826137380">На жаль, нешта пайшло не так. Адпраўце нам водгук, дадаўшы слова #bruschetta у яго апісанне. Код памылкі: <ph name="ERROR" />.</translation>
 <translation id="211144231511833662">Скасаваць выбар тыпаў прылад</translation>
 <translation id="2111670510994270194">Новая ўкладка справа</translation>
 <translation id="2112554630428445878">Вітаем, <ph name="USERNAME" /></translation>
@@ -1781,6 +1782,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{Прылада будзе захавана на 1 год – наступны раз можна будзе падключыцца без кода. Гэты параметр вызначаецца адміністратарам.}one{Прылада будзе захавана на {YEARS} год – наступны раз можна будзе падключыцца без кода. Гэты параметр вызначаецца адміністратарам.}few{Прылада будзе захавана на {YEARS} гады – наступны раз можна будзе падключыцца без кода. Гэты параметр вызначаецца адміністратарам.}many{Прылада будзе захавана на {YEARS} гадоў – наступны раз можна будзе падключыцца без кода. Гэты параметр вызначаецца адміністратарам.}other{Прылада будзе захавана на {YEARS} года – наступны раз можна будзе падключыцца без кода. Гэты параметр вызначаецца адміністратарам.}}</translation>
 <translation id="257779572837908839">Задаць як Chromebox для сустрэч</translation>
 <translation id="2579309488038515659">Уключэнне хот-спота</translation>
+<translation id="2579596474754516455">Калі ўзнікае такая неабходнасць, сканіраваць PDF-відарысы і пераўтвараць іх у тэкст для праграмы чытання з экрана</translation>
 <translation id="2580889980133367162">Заўсёды дазваляць хосту <ph name="HOST" /> спампоўваць некалькі файлаў</translation>
 <translation id="258095186877893873">Доўгая</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2733,6 +2735,7 @@
 <translation id="3469583217479686109">Інструмент "Выбар"</translation>
 <translation id="3470392222765168737">Падпісацца на сайт</translation>
 <translation id="3471876058939596279">Парты HDMI і USB Type-C не могуць выкарыстоўвацца для відэа адначасова. Паспрабуйце іншы відэапорт.</translation>
+<translation id="3472469028191701821">Адкрыецца ў новай укладцы</translation>
 <translation id="3473241910002674503">Пераход на Панэль запуску, вяртанне назад і пераключэнне праграм кнопкамі ў планшэтным рэжыме.</translation>
 <translation id="3473479545200714844">Экранная лупа</translation>
 <translation id="3474218480460386727">Новыя словы павінны складацца з не больш чым 99 літар</translation>
@@ -2881,6 +2884,7 @@
 <translation id="3616113530831147358">Аўдыя</translation>
 <translation id="3616741288025931835">&amp;Выдаліць гісторыю праглядаў...</translation>
 <translation id="3617891479562106823">Змяненне фону недаступнае. Паўтарыце спробу пазней.</translation>
+<translation id="3618286417582819036">Адбылася памылка</translation>
 <translation id="3619115746895587757">Капучына</translation>
 <translation id="3620136223548713675">Геалакацыя</translation>
 <translation id="362023940451053340">Ва Уліковы запіс Google для <ph name="ACCOUNT" /></translation>
@@ -3119,6 +3123,7 @@
 <translation id="3820749202859700794">SECG эліптычны secp521r1 (іншая назва – NIST P-521)</translation>
 <translation id="3821074617718452587">Апавяшчэнні Тэлефоннага цэнтра</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Пашырэнне ўхвалена}one{# пашырэнне ўхвалена}few{# пашырэнні ўхвалена}many{# пашырэнняў ухвалена}other{# пашырэння ўхвалены}}</translation>
+<translation id="3823019343150397277">Нумар IBAN</translation>
 <translation id="3823310065043511710">Для выкарыстання Linux рэкамендуецца мець як мінімум <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Токен рэгістрацыі прылады несапраўдны. Звярніцеся да адміністратара або ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомніць мой выбар для файлаў гэтага тыпу: <ph name="FILE_TYPES" />}one{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}few{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}many{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}other{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}}</translation>
@@ -4036,6 +4041,7 @@
 <translation id="4675828034887792601">Стварыць ярлыкі для вэб-сайтаў, на якіх выконваецца пошук, і кіраваць пошукавай сістэмай</translation>
 <translation id="4676595058027112862">Тэлефонны цэнтр, даведацца больш</translation>
 <translation id="4677772697204437347">Памяць GPU</translation>
+<translation id="4678848110205818817">Крэдытная/дэбетовая картка</translation>
 <translation id="4680105648806843642">Гук на гэтай старонцы быў выключаны</translation>
 <translation id="4680112532510845139">Перацягніце відарыс сюды</translation>
 <translation id="4681453295291708042">Выключыць функцыю "Абагульванне паблізу"</translation>
@@ -6676,6 +6682,7 @@
 <translation id="7149839598364933473">Усталяваць <ph name="DEVICE_OS" /> на гэту прыладу.</translation>
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
 <translation id="7152478047064750137">Пашырэнне не патрабуе спецыяльных дазволаў</translation>
+<translation id="7153309176431047193">Пераўтвараць відарысы ў тэкст</translation>
 <translation id="7154130902455071009">Змяніць пачатковую старонку на наступную: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Пераўтварыць відарыс у тэкст</translation>
 <translation id="7159953856712257647">Усталявана стандартна</translation>

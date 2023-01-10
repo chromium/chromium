@@ -1248,6 +1248,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> लपवले आहे</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फोन नंबर}other{# फोन नंबर}}</translation>
 <translation id="2110941575868943054">ब्लूटूथ डिव्हाइस शोधण्याची अनुमती आहे</translation>
+<translation id="2111158890826137380">सॉरी, काहीतरी चूक झाली. कृपया वर्णनात #bruschetta सह फीडबॅक नोंदवा. एरर कोड <ph name="ERROR" /> आहे</translation>
 <translation id="211144231511833662">प्रकार साफ करा</translation>
 <translation id="2111670510994270194">उजवीकडील नवीन टॅब</translation>
 <translation id="2112554630428445878">स्वागत आहे, <ph name="USERNAME" /></translation>
@@ -1792,6 +1793,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{हे डिव्हाइस एका वर्षासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {YEARS} वर्षांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
 <translation id="257779572837908839">मीटिंगसाठी Chromebox म्हणून सेट अप करा</translation>
 <translation id="2579309488038515659">हॉटस्पॉट सुरू केला</translation>
+<translation id="2579596474754516455">आवश्यक असेल, तेव्हा स्क्रीन रीडरसाठी मजकूर रूपांतरित करण्यासाठी PDF इमेज स्कॅन करा</translation>
 <translation id="2580889980133367162">एकापेक्षा जास्त फाइल डाउनलोड करण्यास <ph name="HOST" /> ला नेहमी अनुमती द्या</translation>
 <translation id="258095186877893873">दीर्घ</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (प्लॅटफॉर्म <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -2744,6 +2746,7 @@
 <translation id="3469583217479686109">निवड टूल</translation>
 <translation id="3470392222765168737">साइटला फॉलो करा</translation>
 <translation id="3471876058939596279">व्हिडिओसाठी HDMI आणि USB केबल एकाच वेळी वापरता येत नाहीत. वेगळी व्हिडिओ पोर्ट वापरा.</translation>
+<translation id="3472469028191701821">नवीन टॅबमध्ये उघडेल</translation>
 <translation id="3473241910002674503">टॅबलेट मोडमध्ये बटणांनी होम, परत जा वर नेव्हिगेट करा आणि अ‍ॅप्स स्विच करा.</translation>
 <translation id="3473479545200714844">स्क्रीन भिंग</translation>
 <translation id="3474218480460386727">नवीन शब्दांसाठी ९९ किंवा त्यापेक्षा कमी अक्षरे वापरा</translation>
@@ -2892,6 +2895,7 @@
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3616741288025931835">ब्राउझिंग डेटा &amp;साफ करा...</translation>
 <translation id="3617891479562106823">बॅकग्राउंड अनुपलब्ध आहेत. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="3618286417582819036">सॉरी, एरर आली</translation>
 <translation id="3619115746895587757">कॅपिचिनो</translation>
 <translation id="3620136223548713675">भौगोलिक स्थान</translation>
 <translation id="362023940451053340"><ph name="ACCOUNT" /> साठी, तुमच्या Google खाते मध्ये</translation>
@@ -3130,6 +3134,7 @@
 <translation id="3820749202859700794">SECG एल्लिपटिक कर्व्ह secp521r1 (aka NIST P-521)</translation>
 <translation id="3821074617718452587">फोन हब सूचना</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशनला मंजुरी देण्यात आली आहे}other{# एक्स्टेंशनना मंजुरी देण्यात आली आहे}}</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Linux साठी किमान <ph name="INSTALL_SIZE" /> जागेची शिफारस केली जाते.</translation>
 <translation id="3824621460022590830">डिव्हाइस नोंदणी टोकन चुकीचे आहे. कृपया तुमच्या डिव्हाइसच्या मालकाशी किंवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{या फाइल प्रकारासाठी माझी निवड लक्षात ठेवा: <ph name="FILE_TYPES" />}other{या फाइल प्रकारांसाठी माझी निवड लक्षात ठेवा: <ph name="FILE_TYPES" />}}</translation>
@@ -4046,6 +4051,7 @@
 <translation id="4675828034887792601">साइट शोधण्यासाठी शॉर्टकट तयार करा आणि तुमचे शोध इंजीन व्यवस्थापित करा</translation>
 <translation id="4676595058027112862">फोन हब, अधिक जाणून घ्या</translation>
 <translation id="4677772697204437347">GPU मेमरी</translation>
+<translation id="4678848110205818817">क्रेडिट/डेबिट कार्ड</translation>
 <translation id="4680105648806843642">या पेजवर आवाज म्यूट केला होता</translation>
 <translation id="4680112532510845139">येथे इमेज ड्रॉप करा</translation>
 <translation id="4681453295291708042">Nearby सह शेअरिंग बंद करा</translation>
@@ -6681,6 +6687,7 @@
 <translation id="7149839598364933473">हे डिव्हाइस <ph name="DEVICE_OS" /> डिव्हाइसमध्ये रूपांतरित करा.</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
 <translation id="7152478047064750137">या एक्स्टेंशनला कोणत्याही विशिष्ट परवानग्यांची आवश्यकता नाही</translation>
+<translation id="7153309176431047193">इमेज मजकुरात रूपांतरित करा</translation>
 <translation id="7154130902455071009">तुमचे सुरू पृष्ठ यावर बदला: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">इमेज ही मजकूरामध्ये रूपांतरित करा</translation>
 <translation id="7159953856712257647">बाय डीफॉल्ट इंस्टॉल केले</translation>

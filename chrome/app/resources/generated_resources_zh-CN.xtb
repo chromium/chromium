@@ -912,6 +912,7 @@
 <translation id="1819721979226826163">依次点按“应用通知”&gt;“Google Play 服务”。</translation>
 <translation id="1820028137326691631">请输入管理员提供的密码</translation>
 <translation id="1822140782238030981">已是 Chrome 用户？请登录</translation>
+<translation id="1823781806707127806">将现有浏览数据添加到受管理个人资料名下</translation>
 <translation id="18245044880483936">备份数据不会计入您孩子的云端硬盘存储空间配额。</translation>
 <translation id="1825565032302550710">端口必须介于 1024 到 65535 之间</translation>
 <translation id="182577151972096764">最近查看过的食谱</translation>
@@ -1070,6 +1071,7 @@
 <translation id="1963976881984600709">标准保护</translation>
 <translation id="1965624977906726414">无需特殊权限。</translation>
 <translation id="1966649499058910679">突出显示每个正被读出的字词</translation>
+<translation id="1967970931040389207">开启热点</translation>
 <translation id="1969654639948595766">WebRTC 文本日志 (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="197288927597451399">保留</translation>
@@ -1158,6 +1160,7 @@
 <translation id="2048554637254265991">启动容器管理器时出错。请重试。</translation>
 <translation id="2048653237708779538">无法执行操作</translation>
 <translation id="2050339315714019657">纵向</translation>
+<translation id="2051555741181591333">自动停用热点</translation>
 <translation id="2052572566310583903">已安装在您的其他设备上</translation>
 <translation id="2053105195397337973">我们正在探索如何既能让网站阻止垃圾广告和欺诈行为，又能限制跟踪。</translation>
 <translation id="2053312383184521053">闲置状态数据</translation>
@@ -1266,6 +1269,7 @@
 <translation id="2137128126782078222">不允许接收来自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="2139919072249842737">设置按钮</translation>
 <translation id="2140788884185208305">电池状况</translation>
+<translation id="2140902257485550046">选择开启可阻止在此网站上使用所有扩展程序</translation>
 <translation id="2142328300403846845">以其他身份打开链接</translation>
 <translation id="2142582065325732898">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能查看最近打开的 Chrome 标签页。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">在全屏模式下始终显示工具栏</translation>
@@ -1996,6 +2000,7 @@
 <translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
 <translation id="2781120507965857989">开启同步功能后，您便可在此设备上以及任何其他保持同步的位置获取您的书签、密码、历史记录等信息。Google 可能会根据您的历史记录在 Google 搜索及其他 Google 服务中为您提供个性化的体验。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">已允许在此网站上使用扩展程序</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
 <translation id="2783298271312924866">已下载</translation>
 <translation id="2783321960289401138">创建快捷方式…</translation>
@@ -3818,6 +3823,7 @@
 <translation id="449126573531210296">使用您的 Google 帐号加密已同步的密码</translation>
 <translation id="449232563137139956">网站通常会显示图片以提供插图（例如网店或新闻报道的图片）</translation>
 <translation id="4492698018379445570">查看您已添加到购物车的商品，并在选定后结帐</translation>
+<translation id="4493167769966437077">将“<ph name="LANGUAGE_NAME" />”从一律不提供翻译的语言的列表中移除</translation>
 <translation id="4493468155686877504">建议大小 (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">允许此扩展程序在 <ph name="SITE" /> 上运行？</translation>
 <translation id="4495419450179050807">不要在本页上显示</translation>
@@ -4388,6 +4394,7 @@
 <translation id="5026874946691314267">不再显示此通知</translation>
 <translation id="5027550639139316293">电子邮件证书</translation>
 <translation id="5027562294707732951">添加扩展程序</translation>
+<translation id="5028445315206872221">已阻止在此网站上使用扩展程序</translation>
 <translation id="5029568752722684782">清除副本</translation>
 <translation id="5029873138381728058">未能检查虚拟机</translation>
 <translation id="503155457707535043">正在下载所选应用</translation>
@@ -4951,6 +4958,7 @@
 <translation id="5554866693883022680">请在您的 <ph name="DEVICE_TYPE" /> 上选择一款应用以打开此链接</translation>
 <translation id="5555363196923735206">切换摄像头模式</translation>
 <translation id="5555525474779371165">选择所需的“安全浏览”功能保护级别</translation>
+<translation id="5555639311269196631">关闭热点</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
 <translation id="55601339223879446">调整您的桌面在显示屏内的边界</translation>
@@ -6608,6 +6616,7 @@
 <translation id="7088960765736518739">开关控制</translation>
 <translation id="7089253021944603172">标签页会重新变为活跃状态</translation>
 <translation id="7090160970140261931">您可向您的 <ph name="DEVICE_TYPE" /> 添加更多帐号，以用于登录网站和 Android 应用。您还可控制要使用哪些帐号登录 Android 应用。</translation>
+<translation id="7090714929377281710">自动关闭热点</translation>
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093416310351037609">为保障数据安全，贵单位要求将所有符合条件的下载内容保存到贵单位的“<ph name="WEB_DRIVE" />”帐号。</translation>
 <translation id="7093866338626856921">与具有下列名称的设备交换数据：<ph name="HOSTNAMES" /></translation>
@@ -7228,6 +7237,7 @@
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>
 <translation id="7685049629764448582">JavaScript 使用的内存</translation>
 <translation id="7685087414635069102">必须输入 PIN 码</translation>
+<translation id="7686581688229391955">选择关闭可允许在此网站上使用扩展程序</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
 <translation id="7690378713476594306">从列表中选择</translation>
@@ -8041,6 +8051,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（保护套）</translation>
 <translation id="8417548266957501132">家长登录密码</translation>
 <translation id="8418445294933751433">显示为标签页(&amp;S)</translation>
+<translation id="8418675848396538775">添加“<ph name="LANGUAGE_NAME" />”</translation>
 <translation id="8419098111404128271">与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="8420308167132684745">修改字典条目</translation>
 <translation id="8421361468937925547">实时字幕（仅支持英文）</translation>
@@ -8811,6 +8822,7 @@
 <translation id="9121814364785106365">在固定标签页中打开</translation>
 <translation id="9123287046453017203">您设备上的 OS 不是最新版本</translation>
 <translation id="9124003689441359348">已保存的密码将显示在这里</translation>
+<translation id="9125910124977405374">将“<ph name="LANGUAGE_NAME" />”从自动翻译的语言的列表中移除</translation>
 <translation id="9126149354162942022">光标颜色</translation>
 <translation id="9128317794749765148">无法完成设置</translation>
 <translation id="9128335130883257666">打开<ph name="INPUT_METHOD_NAME" />的“设置”页面</translation>

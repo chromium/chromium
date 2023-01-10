@@ -285,7 +285,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="3080525922482950719">Možete da sačuvate stranice da biste ih čitali kasnije ili oflajn</translation>
 <translation id="3081338492074632642">Proverite da li se lozinka koju čuvate podudara sa lozinkom za <ph name="WEBSITE" /></translation>
-<translation id="3103603146121354983">Automatski popunite lozinke</translation>
 <translation id="3112556859945124369">Označi…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Pogledajte šta možete da sinhronizujete<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Istorija i drugo</translation>
@@ -531,6 +530,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4916679969857390442">Objektiv</translation>
 <translation id="4922154083994158612">Više bezbednosti?</translation>
 <translation id="4930714375720679147">Uključi</translation>
+<translation id="4938338714234463591">To će vam omogućiti da koristite glas sa određenim funkcijama na veb-sajtovima.</translation>
 <translation id="4941089862236492464">Žao nam je, došlo je do problema pri deljenju stavke.</translation>
 <translation id="4944543191714094452">Pronađi na stranici…</translation>
 <translation id="4945756290001680296">Pristupite podešavanjima lozinki</translation>
@@ -902,6 +902,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7671141431838911305">INSTALIRANJE</translation>
+<translation id="7679915578945954324">Adrese sajtova su kopirane</translation>
 <translation id="7687508192620387263">Dostupan je fajl kalendara</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7720410380936703141">PROBAJ PONOVO</translation>

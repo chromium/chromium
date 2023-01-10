@@ -14,7 +14,7 @@
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Primite pomoć<ph name="END_LINK" /> dok tražite uređaje…</translation>
 <translation id="4925793601605263825">Aplikaciji <ph name="APP_NAME" /> treba odobrenje za pristup mikrofonu za ovu web lokaciju.</translation>
 <translation id="5230560987958996918">Web lokacija <ph name="SITE" /> želi skenirati Bluetooth uređaje u blizini. Pronađeni su sljedeći uređaji:</translation>
-<translation id="5527082711130173040">Chrome treba pristup lokaciji kako bi skenirao uređaje. <ph name="BEGIN_LINK1" />Ažurirajte dopuštenja<ph name="END_LINK1" />. Pristup lokaciji također je <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
+<translation id="5527082711130173040">Chrome mora pristupiti lokaciji da skenira uređaje. <ph name="BEGIN_LINK1" />Ažurirajte odobrenja<ph name="END_LINK1" />. Pristup lokaciji je također <ph name="BEGIN_LINK2" />isključen za ovaj uređaj<ph name="END_LINK2" />.</translation>
 <translation id="5817918615728894473">Upari</translation>
 <translation id="5858741533101922242">Chrome ne može uključiti Bluetooth adapter</translation>
 <translation id="5860491529813859533">Uključi</translation>

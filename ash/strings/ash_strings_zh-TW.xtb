@@ -411,7 +411,7 @@
 <translation id="3217205077783620295">音量已開啟；使用切換鈕可設為靜音。</translation>
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 則</translation>
 <translation id="3227137524299004712">麥克風</translation>
-<translation id="324366796737464147">噪音消除</translation>
+<translation id="324366796737464147">降噪</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移動到桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">設定</translation>
 <translation id="3255483164551725916">你會做些什麼？</translation>
@@ -696,6 +696,7 @@
 <translation id="4740516757091333363">要刪除已儲存的桌面嗎？</translation>
 <translation id="4752784485658729358">最多只能保存 6 個桌面。如要儲存新桌面，請先移除一個桌面。</translation>
 <translation id="4759238208242260848">下載</translation>
+<translation id="4762573482154983647">隱藏應用程式</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4777825441726637019">Play 商店</translation>

@@ -1338,9 +1338,6 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
       Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.
 
       Esta política solo afecta al acceso a los dispositivos USB a través de la API Web Serial. Para conceder acceso a dispositivos USB a través de la API WebUSB, consulta la política <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="2246011554082893079">Controla la disponibilidad de <ph name="BOREALIS_NAME" /> en este dispositivo.
-
-      Si se le asigna el valor false, <ph name="BOREALIS_NAME" /> no estará disponible para ningún usuario del dispositivo. Si, por el contrario, se le asigna el valor true o no se le asigna ningún valor, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no lo desactiva otra política o ajuste.</translation>
 <translation id="2246621891161157804">Permitir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="224750967938323855">No mostrar Sync Consent durante el inicio de sesión</translation>
 <translation id="2252400912879027343">WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, a partir de la M110, dejará de admitirse</translation>
@@ -2635,6 +2632,11 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="3412937883532015092">Si a esta política se le asigna un número como valor, <ph name="PRODUCT_NAME" /> mostrará un mensaje durante ese número de milisegundos y después abrirá un navegador alternativo.
 
       Si no se le asigna ningún valor o el valor es 0 (cero), al ir a una URL designada se abrirá inmediatamente en un navegador alternativo.</translation>
+<translation id="3413763534078822244">Esta política está obsoleta. Usa <ph name="USER_BOREALIS_ALLOWED_NAME" /> en su lugar.
+
+      Controla la disponibilidad de <ph name="BOREALIS_NAME" /> en este dispositivo.
+
+      Si se asigna el valor false a esta política, <ph name="BOREALIS_NAME" /> no estará disponible para ningún usuario del dispositivo. Si se asigna el valor true a esta política o no se define, <ph name="BOREALIS_NAME" /> estará disponible únicamente si ninguna otra política o ajuste lo inhabilita.</translation>
 <translation id="3415954062311826850">Esta política no se admite en ARC.</translation>
 <translation id="34160070798637152">Controla la configuración de red de todo el dispositivo.</translation>
 <translation id="3417130629744653218">Permite a los sitios web consultar los métodos de pago disponibles.</translation>

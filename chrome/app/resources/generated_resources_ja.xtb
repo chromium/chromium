@@ -1234,6 +1234,7 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> を非表示にしました</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="2110941575868943054">Bluetooth デバイスの検出が許可されているサイト</translation>
+<translation id="2111158890826137380">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" /></translation>
 <translation id="211144231511833662">タイプの選択をすべて解除</translation>
 <translation id="2111670510994270194">右隣に新しいタブを開く</translation>
 <translation id="2112554630428445878">ようこそ、<ph name="USERNAME" /> さん</translation>
@@ -1772,6 +1773,7 @@
 <translation id="2575713839157415345">{YEARS,plural, =1{このデバイスは 1 年間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {YEARS} 年間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="257779572837908839">Chromebox for meetings として設定</translation>
 <translation id="2579309488038515659">アクセス ポイントが有効</translation>
+<translation id="2579596474754516455">スクリーン リーダーで読み上げられるように、必要に応じて PDF 画像をスキャンしてテキストに変換する</translation>
 <translation id="2580889980133367162">複数のファイルをダウンロードすることを <ph name="HOST" /> に常に許可する</translation>
 <translation id="258095186877893873">長い</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（プラットフォーム <ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
@@ -1901,7 +1903,7 @@
 <translation id="270921614578699633">次の平均:</translation>
 <translation id="2709516037105925701">自動入力</translation>
 <translation id="2710101514844343743">使用状況データと診断データ</translation>
-<translation id="271033894570825754">新しいファイル</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">試用版</translation>
 <translation id="2712207122921938368">別のデバイスでパスキーを作成する</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
@@ -2122,7 +2124,7 @@
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
 <translation id="2891566119238851894">サイドパネルで検索を開きます。サイドパネルで検索が開いていません。</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
-<translation id="2893013536106749396">関心のある事柄についての最新情報を知らせてくれるカードを選んでください</translation>
+<translation id="2893013536106749396">関心のある事柄についての最新情報を表示するカードを選んでください</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
 <translation id="2893180576842394309">検索やその他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
@@ -2872,6 +2874,7 @@
 <translation id="3616113530831147358">音声</translation>
 <translation id="3616741288025931835">閲覧履歴を消去(&amp;C)...</translation>
 <translation id="3617891479562106823">背景を利用できません。しばらくしてからもう一度お試しください。</translation>
+<translation id="3618286417582819036">エラーが発生しました</translation>
 <translation id="3619115746895587757">カプチーノ</translation>
 <translation id="3620136223548713675">位置情報</translation>
 <translation id="362023940451053340">保存先: Google アカウント（<ph name="ACCOUNT" />）</translation>
@@ -4409,7 +4412,7 @@
 <translation id="5051836348807686060">選択した言語ではスペルチェックを使用できません</translation>
 <translation id="5052499409147950210">サイトの編集</translation>
 <translation id="505347685865235222">名前のないグループ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5054374119096692193">[<ph name="BEGIN_LINK" />Chrome をカスタマイズ<ph name="END_LINK" />] ですべてのカード オプションをご覧ください</translation>
+<translation id="5054374119096692193">[<ph name="BEGIN_LINK" />このページをカスタマイズ<ph name="END_LINK" />] ですべてのカード オプションを確認できます</translation>
 <translation id="5056950756634735043">コンテナに接続しています</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
 <translation id="5059241099014281248">ログイン制限</translation>
@@ -6658,6 +6661,7 @@
 <translation id="7149839598364933473">このデバイスを <ph name="DEVICE_OS" /> デバイスに変換します。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
+<translation id="7153309176431047193">画像をテキストに変換する</translation>
 <translation id="7154130902455071009">スタート ページを次に変更します: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">画像をテキストに変換</translation>
 <translation id="7159953856712257647">デフォルトでインストール</translation>

@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Нема следећег дугмета</translation>
 <translation id="2911433807131383493">Отварање ChromeVox водича</translation>
 <translation id="2912405967290226587">Превлачите надесно помоћу три прста</translation>
+<translation id="2919107550468490321">Паметан лепљиви режим је укључен</translation>
 <translation id="2937799153569150791">Нема следећег заглавља 3. нивоа</translation>
 <translation id="2942710183375260152">Тамна сивоплава</translation>
 <translation id="2943596527105977722">Тамна златножута</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Смањивање регистра</translation>
 <translation id="3009352964623081324">Тастер за претрагу + O, а затим S. Користите за инсталирање и прилагођавање гласова и управљање њима.</translation>
 <translation id="3014130421870723208">@изм 8тач</translation>
+<translation id="3018210433491759145">ChromeVox се учитава</translation>
 <translation id="3030432017085518523">Дугме за избор ставке менија</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{апостроф}one{# апостроф}few{# апострофа}other{# апострофа}}</translation>
 <translation id="3040901448410802366">Индикатор напретка</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3813387282697781382">Светлоцрвена</translation>
 <translation id="3816633764618089385">Следећа медијска датотека</translation>
+<translation id="3821689185319271077">Без сидра показивача</translation>
 <translation id="3840823741487267909">Скраћеница</translation>
 <translation id="3841319830220785495">Подразумевани природан глас</translation>
 <translation id="385383972552776628">Отварање странице опција</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">образац</translation>
 <translation id="4601367666219428522">таб <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Занемарујемо следећи притисак на тастер</translation>
+<translation id="4617384941327705512">Паметан лепљиви режим је искључен</translation>
 <translation id="4623097797855662355">Знак издавача</translation>
 <translation id="4624970070706497034">TalkBack више не пружа прилагођавање за Chromebook-ове. Још увек можете да га користите, али користите TalkBack подразумеване тастерске пречице. Притисните Search + A, па K да бисте видели доступне пречице. Ако још увек желите да користите TalkBack, притисните команду поново.</translation>
 <translation id="463135993322337640">Притисните ChromeVox o, n да бисте сазнали шта је ново</translation>
