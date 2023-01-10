@@ -57,3 +57,9 @@
 
 # TODO(crbug/1370814)
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSiteExceptionCookiesBlocked
+
+# TODO(crbug/1383670)
+-org.chromium.chrome.browser.firstrun.TosAndUmaFirstRunFragmentWithEnterpriseSupportTest.testRenderWhenMetricsReportingAreDisabledWithUmaDialogForChildAccount
+
+# TODO(crbug/1383879)
+-org.chromium.chrome.browser.partnercustomizations.PartnerHomepageIntegrationTest.testCloseAllTabs
