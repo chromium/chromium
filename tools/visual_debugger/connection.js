@@ -58,11 +58,19 @@ const Connection = {
 
     // Create WebSocket connection.
     this.socket = new WebSocket(url);
+
     const status = document.querySelector('#connection-status');
     const connect = document.querySelector('#connect');
     const disconnect = document.querySelector('#disconnect');
 
     this.next_command_id = 1;
+
+    this.socket.addEventListener('error', (event) => {
+      document.getElementById('autoconnect').checked = false;
+      window.alert("Websocket could not connect.\n You may need to add: \n " +
+      "--remote-allow-origins=* \n  to your chromium launch flags.");
+    });
+
 
     // Connection opened
     this.socket.addEventListener('open', (event) => {
@@ -74,6 +82,7 @@ const Connection = {
       disconnect.removeAttribute('disabled');
       status.classList.remove('disconnected');
     });
+
 
     // Listen for messages
     this.socket.addEventListener('message', (event) => {
