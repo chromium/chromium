@@ -21,13 +21,16 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
+import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -385,11 +388,10 @@ public class BookmarkBridgeTest {
         Assert.assertTrue(originalMeta.getShoppingSpecifics().getIsPriceTracked());
 
         ArrayList<CommerceSubscription> subscriptions = new ArrayList<>();
-        subscriptions.add(new CommerceSubscription(
-                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, Long.toString(offerId),
-                CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
-                CommerceSubscription.TrackingIdType.OFFER_ID));
-        mBookmarkBridge.getSubscriptionObserver().onUnsubscribe(subscriptions);
+        subscriptions.add(
+                new CommerceSubscription(SubscriptionType.PRICE_TRACK, IdentifierType.OFFER_ID,
+                        Long.toString(offerId), ManagementType.USER_MANAGED, null));
+        mBookmarkBridge.getSubscriptionObserver().onUnsubscribe(subscriptions, true);
 
         // The product with the unsubscribed ID should no longer be price tracked.
         PowerBookmarkMeta updatedMeta = mBookmarkBridge.getPowerBookmarkMeta(bookmark);

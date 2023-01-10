@@ -4,25 +4,11 @@
 
 import("//build/config/android/rules.gni")
 
-generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscription.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorage.java",
-  ]
-}
-
 android_library("subscriptions_java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscription.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionJsonSerializer.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsMetrics.java",
     "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsService.java",
     "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceConfig.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceProxy.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorage.java",
     "java/src/org/chromium/chrome/browser/subscriptions/ImplicitPriceDropSubscriptionsManager.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsManager.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsManagerImpl.java",
   ]
 
   deps = [
@@ -38,6 +24,7 @@ android_library("subscriptions_java") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//components/commerce/core/android:core_java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/user_prefs/android:java",

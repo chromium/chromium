@@ -10,15 +10,17 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
+import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,11 +32,11 @@ import java.util.concurrent.TimeUnit;
 public class ImplicitPriceDropSubscriptionsManager {
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
-    private final SubscriptionsManagerImpl mSubscriptionManager;
+    private final ShoppingService mShoppingService;
 
     public ImplicitPriceDropSubscriptionsManager(
-            TabModelSelector tabModelSelector, SubscriptionsManagerImpl subscriptionsManager) {
-        mSubscriptionManager = subscriptionsManager;
+            TabModelSelector tabModelSelector, ShoppingService shoppingService) {
+        mShoppingService = shoppingService;
         mTabModelSelector = tabModelSelector;
         mTabModelObserver = new TabModelObserver() {
             @Override
@@ -88,12 +90,12 @@ public class ImplicitPriceDropSubscriptionsManager {
                 String url = tab.getOriginalUrl().getSpec();
                 if (urlSet.contains(url)) return;
                 urlSet.add(url);
-                CommerceSubscription subscription =
-                        new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
-                                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-                mSubscriptionManager.subscribe(subscription, (status) -> {
+                CommerceSubscription subscription = new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK, IdentifierType.OFFER_ID, offerId,
+                        ManagementType.CHROME_MANAGED, null);
+                mShoppingService.subscribe(subscription, (status) -> {
                     // TODO: Add histograms for implicit tabs creation.
-                    assert status == SubscriptionsManager.StatusCode.OK;
+                    assert status;
                 });
             });
         }
@@ -105,10 +107,9 @@ public class ImplicitPriceDropSubscriptionsManager {
         fetchOfferId(tab, (offerId) -> {
             if (offerId == null) return;
             CommerceSubscription subscription =
-                    new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
-                            SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-            mSubscriptionManager.unsubscribe(subscription,
-                    (status) -> { assert status == SubscriptionsManager.StatusCode.OK; });
+                    new CommerceSubscription(SubscriptionType.PRICE_TRACK, IdentifierType.OFFER_ID,
+                            offerId, ManagementType.CHROME_MANAGED, null);
+            mShoppingService.unsubscribe(subscription, (status) -> { assert status; });
         });
     }
 

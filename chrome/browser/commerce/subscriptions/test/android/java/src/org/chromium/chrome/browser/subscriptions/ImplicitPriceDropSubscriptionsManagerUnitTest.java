@@ -29,9 +29,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -41,6 +38,11 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
+import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
@@ -72,8 +74,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         private String mMockTab2OfferId;
 
         TestImplicitPriceDropSubscriptionsManager(
-                TabModelSelector tabModelSelector, SubscriptionsManagerImpl subscriptionsManager) {
-            super(tabModelSelector, subscriptionsManager);
+                TabModelSelector tabModelSelector, ShoppingService shoppingService) {
+            super(tabModelSelector, shoppingService);
         }
 
         @Override
@@ -101,7 +103,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Mock
     TabModelSelector mTabModelSelector;
     @Mock
-    SubscriptionsManagerImpl mSubscriptionsManager;
+    ShoppingService mShoppingService;
     @Mock
     CriticalPersistedTabData mCriticalPersistedTabData1;
     @Mock
@@ -126,16 +128,16 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
                 + TimeUnit.DAYS.toMillis(7);
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData2).getTimestampMillis();
-        mSubscription1 = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, OFFER1_ID,
-                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-        mSubscription2 = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, OFFER2_ID,
-                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
+        mSubscription1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
+                IdentifierType.OFFER_ID, OFFER1_ID, ManagementType.CHROME_MANAGED, null);
+        mSubscription2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
+                IdentifierType.OFFER_ID, OFFER2_ID, ManagementType.CHROME_MANAGED, null);
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
 
-        mImplicitSubscriptionsManager = new TestImplicitPriceDropSubscriptionsManager(
-                mTabModelSelector, mSubscriptionsManager);
+        mImplicitSubscriptionsManager =
+                new TestImplicitPriceDropSubscriptionsManager(mTabModelSelector, mShoppingService);
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, OFFER1_ID, OFFER2_ID);
     }
 
@@ -190,22 +192,19 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Test
     public void testTabClosure() {
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
-        verify(mSubscriptionsManager, times(1))
-                .unsubscribe(eq(mSubscription1), any(Callback.class));
+        verify(mShoppingService, times(1)).unsubscribe(eq(mSubscription1), any(Callback.class));
     }
 
     @Test
     public void testTabRemove() {
         mTabModelObserverCaptor.getValue().tabRemoved(mTab1);
-        verify(mSubscriptionsManager, times(1))
-                .unsubscribe(eq(mSubscription1), any(Callback.class));
+        verify(mShoppingService, times(1)).unsubscribe(eq(mSubscription1), any(Callback.class));
     }
 
     @Test
     public void testTabSelected() {
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB2_ID);
-        verify(mSubscriptionsManager, times(1))
-                .unsubscribe(eq(mSubscription1), any(Callback.class));
+        verify(mShoppingService, times(1)).unsubscribe(eq(mSubscription1), any(Callback.class));
     }
 
     @Test
@@ -215,8 +214,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, OFFER1_ID, OFFER2_ID);
 
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
-        verify(mSubscriptionsManager, times(0))
-                .unsubscribe(eq(mSubscription1), any(Callback.class));
+        verify(mShoppingService, times(0)).unsubscribe(eq(mSubscription1), any(Callback.class));
     }
 
     @Test
@@ -224,8 +222,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, null, OFFER2_ID);
 
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
-        verify(mSubscriptionsManager, times(0))
-                .unsubscribe(eq(mSubscription1), any(Callback.class));
+        verify(mShoppingService, times(0)).unsubscribe(eq(mSubscription1), any(Callback.class));
     }
 
     @Test
@@ -252,9 +249,9 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     private void initializeSubscriptionsAndVerify(
             boolean shouldSubscribeTab1, boolean shouldSubscribeTab2) {
         mImplicitSubscriptionsManager.initializeSubscriptions();
-        verify(mSubscriptionsManager, times(shouldSubscribeTab1 ? 1 : 0))
+        verify(mShoppingService, times(shouldSubscribeTab1 ? 1 : 0))
                 .subscribe(eq(mSubscription1), any(Callback.class));
-        verify(mSubscriptionsManager, times(shouldSubscribeTab2 ? 1 : 0))
+        verify(mShoppingService, times(shouldSubscribeTab2 ? 1 : 0))
                 .subscribe(eq(mSubscription2), any(Callback.class));
     }
 

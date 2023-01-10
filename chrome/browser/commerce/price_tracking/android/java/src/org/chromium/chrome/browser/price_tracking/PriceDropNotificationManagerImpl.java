@@ -32,6 +32,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
@@ -41,16 +42,14 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
-import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
-import org.chromium.chrome.browser.subscriptions.SubscriptionsManagerImpl;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
+import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionType;
 
 import java.util.Locale;
 
@@ -233,16 +232,11 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
                     NotificationIntentInterceptor.INVALID_CREATE_TIME);
         } else if (actionId.equals(ACTION_ID_TURN_OFF_ALERT)) {
             if (offerId == null && clusterId == null) return;
-            SubscriptionsManagerImpl subscriptionsManager =
-                    (new CommerceSubscriptionsServiceFactory())
-                            .getForLastUsedProfile()
-                            .getSubscriptionsManager();
-            Callback<Integer> callback = (status) -> {
-                assert status
-                        == SubscriptionsManager.StatusCode.OK : "Failed to remove subscriptions.";
-                Log.e(TAG,
-                        String.format(
-                                Locale.US, "Failed to remove subscriptions. Status: %d", status));
+            ShoppingService shoppingService =
+                    ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+            Callback<Boolean> callback = (status) -> {
+                assert status : "Failed to remove subscriptions.";
+                Log.e(TAG, "Failed to remove subscriptions.");
             };
             final BookmarkModel bookmarkModel;
             if (sBookmarkModelForTesting != null) {
@@ -253,17 +247,17 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
             Runnable unsubscribeRunnable = () -> {
                 if (offerId != null) {
-                    subscriptionsManager.unsubscribe(
-                            new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
-                                    SubscriptionManagementType.CHROME_MANAGED,
-                                    TrackingIdType.OFFER_ID),
+                    shoppingService.unsubscribe(
+                            new CommerceSubscription(SubscriptionType.PRICE_TRACK,
+                                    IdentifierType.OFFER_ID, offerId, ManagementType.CHROME_MANAGED,
+                                    null),
                             callback);
                 }
                 if (clusterId != null) {
-                    subscriptionsManager.unsubscribe(
-                            new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                                    clusterId, SubscriptionManagementType.USER_MANAGED,
-                                    TrackingIdType.PRODUCT_CLUSTER_ID),
+                    shoppingService.unsubscribe(
+                            new CommerceSubscription(SubscriptionType.PRICE_TRACK,
+                                    IdentifierType.PRODUCT_CLUSTER_ID, clusterId,
+                                    ManagementType.USER_MANAGED, null),
                             callback);
                 }
             };

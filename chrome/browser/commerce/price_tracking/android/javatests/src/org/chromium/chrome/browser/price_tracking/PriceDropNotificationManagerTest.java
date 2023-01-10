@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,6 +30,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,24 +42,23 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.DismissNotificationChromeActivity;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
-import org.chromium.chrome.browser.subscriptions.SubscriptionsManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
+import org.chromium.components.commerce.core.ShoppingService;
 
 /**
  * Tests for  {@link PriceDropNotificationManager}.
@@ -99,13 +98,13 @@ public class PriceDropNotificationManagerTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Mock
-    private CommerceSubscriptionsService mMockSubscriptionsService;
-
-    @Mock
-    private SubscriptionsManagerImpl mMockSubscriptionsManager;
-
+    private ShoppingService mMockShoppingService;
     @Mock
     private BookmarkModel mMockBookmarkModel;
+    @Mock
+    private Profile mMockProfile;
+    @Captor
+    private ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
     @Before
     public void setUp() {
@@ -114,6 +113,8 @@ public class PriceDropNotificationManagerTest {
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
         when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
         PriceDropNotificationManagerImpl.setBookmarkModelForTesting(mMockBookmarkModel);
+        ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        Profile.setLastUsedProfileForTesting(mMockProfile);
     }
 
     @After
@@ -262,26 +263,20 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testOnNotificationActionClicked_TurnOffAlert() {
-        doReturn(mMockSubscriptionsManager)
-                .when(mMockSubscriptionsService)
-                .getSubscriptionsManager();
-        CommerceSubscriptionsServiceFactory.setSubscriptionsServiceForTesting(
-                mMockSubscriptionsService);
-
         String offerId = "offer_id";
-        CommerceSubscription commerceSubscription =
-                new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
-                        SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
 
         mPriceDropNotificationManager.onNotificationActionClicked(
                 ACTION_ID_TURN_OFF_ALERT, TEST_URL, null, null, false);
-        verify(mMockSubscriptionsManager, times(0))
-                .unsubscribe(eq(commerceSubscription), any(Callback.class));
+        verify(mMockShoppingService, times(0)).unsubscribe(any(), any(Callback.class));
 
         mPriceDropNotificationManager.onNotificationActionClicked(
                 ACTION_ID_TURN_OFF_ALERT, TEST_URL, offerId, null, false);
-        verify(mMockSubscriptionsManager, times(1))
-                .unsubscribe(eq(commerceSubscription), any(Callback.class));
+        verify(mMockShoppingService, times(1))
+                .unsubscribe(mSubscriptionCaptor.capture(), any(Callback.class));
+        assertEquals(IdentifierType.OFFER_ID, mSubscriptionCaptor.getValue().idType);
+        assertEquals(offerId, mSubscriptionCaptor.getValue().id);
+        assertEquals(ManagementType.CHROME_MANAGED, mSubscriptionCaptor.getValue().managementType);
+        assertEquals(null, mSubscriptionCaptor.getValue().userSeenOffer);
     }
 
     @Test

@@ -3297,8 +3297,6 @@ static_library("browser") {
       "//chrome/browser/commerce/merchant_viewer:merchant_signal_db",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/commerce/merchant_viewer/android:jni_headers",
-      "//chrome/browser/commerce/subscriptions:commerce_subscription_db",
-      "//chrome/browser/commerce/subscriptions/android:jni_headers",
       "//chrome/browser/consent_auditor/android:jni_headers",
       "//chrome/browser/content_creation/notes/internal/android:jni_headers",
       "//chrome/browser/creator/android:jni_headers",
