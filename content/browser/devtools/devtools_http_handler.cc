@@ -755,7 +755,15 @@ void DevToolsHttpHandler::OnWebSocketRequest(
   if (request.headers.count("origin") &&
       !remote_allow_origins_.count(request.headers.at("origin")) &&
       !remote_allow_origins_.count("*")) {
-    Send403(connection_id);
+    const std::string& origin = request.headers.at("origin");
+    const std::string message = base::StringPrintf(
+        "Rejected an incoming WebSocket connection from the %s origin. "
+        "Use the command line flag --remote-allow-origins=%s to allow "
+        "connections from this origin or --remote-allow-origins=* to allow all "
+        "origins.",
+        origin.c_str(), origin.c_str());
+    Send403(connection_id, message);
+    LOG(ERROR) << message;
     return;
   }
 
@@ -897,12 +905,13 @@ void DevToolsHttpHandler::Send404(int connection_id) {
                      base::Unretained(server_wrapper_.get()), connection_id));
 }
 
-void DevToolsHttpHandler::Send403(int connection_id) {
+void DevToolsHttpHandler::Send403(int connection_id,
+                                  const std::string& message) {
   if (!thread_) {
     return;
   }
   net::HttpServerResponseInfo response(net::HTTP_FORBIDDEN);
-  response.SetBody(std::string(), "text/html");
+  response.SetBody(message, "text/html");
   thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
                                 base::Unretained(server_wrapper_.get()),
