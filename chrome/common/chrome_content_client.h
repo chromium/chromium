@@ -37,8 +37,6 @@ class ChromeContentClient : public content::ContentClient {
   static const base::FilePath::CharType kNotPresent[];
 #endif
 
-  static const char kPDFExtensionPluginName[];
-  static const char kPDFInternalPluginName[];
   static const base::FilePath::CharType kPDFExtensionPluginPath[];
   static const base::FilePath::CharType kPDFInternalPluginPath[];
 

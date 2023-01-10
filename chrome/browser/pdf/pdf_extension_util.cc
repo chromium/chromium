@@ -8,9 +8,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -162,13 +162,18 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
 }  // namespace
 
 std::string GetManifest() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static constexpr char kExtensionName[] = "Chrome PDF Viewer";
+#else
+  static constexpr char kExtensionName[] = "Chromium PDF Viewer";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   std::string manifest_contents(
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           IDR_PDF_MANIFEST));
   DCHECK(manifest_contents.find(kNameTag) != std::string::npos);
-  base::ReplaceFirstSubstringAfterOffset(
-      &manifest_contents, 0, kNameTag,
-      ChromeContentClient::kPDFExtensionPluginName);
+  base::ReplaceFirstSubstringAfterOffset(&manifest_contents, 0, kNameTag,
+                                         kExtensionName);
 
   return manifest_contents;
 }

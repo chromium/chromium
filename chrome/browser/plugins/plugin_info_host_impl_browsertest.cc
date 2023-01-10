@@ -284,11 +284,11 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, GetPluginInfoForPnacl) {
 #if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
                        GetPluginInfoForPdfViewerExtension) {
-  const std::u16string kPluginName =
-      base::UTF8ToUTF16(ChromeContentClient::kPDFExtensionPluginName);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const std::u16string kPluginName = u"Chrome PDF Viewer";
   const std::string kGroupId = "google-chrome-pdf";
 #else
+  const std::u16string kPluginName = u"Chromium PDF Viewer";
   const std::string kGroupId = "chromium-pdf";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -348,11 +348,11 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
 
 IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
                        GetPluginInfoForPdfInternalPlugin) {
-  const std::u16string kPluginName =
-      base::UTF8ToUTF16(ChromeContentClient::kPDFInternalPluginName);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const std::u16string kPluginName = u"Chrome PDF Plugin";
   const std::string kGroupId = "google-chrome-pdf-plugin";
 #else
+  const std::u16string kPluginName = u"Chromium PDF Plugin";
   const std::string kGroupId = "chromium-pdf-plugin";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

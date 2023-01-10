@@ -137,12 +137,18 @@ void ChromeContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
 void ChromeContentClient::AddPlugins(
     std::vector<content::ContentPluginInfo>* plugins) {
 #if BUILDFLAG(ENABLE_PDF)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static constexpr char kPDFPluginName[] = "Chrome PDF Plugin";
+#else
+  static constexpr char kPDFPluginName[] = "Chromium PDF Plugin";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr char kPDFPluginExtension[] = "pdf";
   static constexpr char kPDFPluginDescription[] = "Portable Document Format";
+
   content::ContentPluginInfo pdf_info;
   pdf_info.is_internal = true;
   pdf_info.is_out_of_process = true;
-  pdf_info.name = ChromeContentClient::kPDFInternalPluginName;
+  pdf_info.name = kPDFPluginName;
   pdf_info.description = kPDFPluginDescription;
   pdf_info.path = base::FilePath(ChromeContentClient::kPDFInternalPluginPath);
   content::WebPluginMimeType pdf_mime_type(
