@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 
 #import "base/check.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 
@@ -18,7 +21,10 @@
 
 - (void)handleDisplay {
   DCHECK(self.handler);
-  [self.handler requestAppStoreReview];
+  if (GetApplicationContext()->GetLocalState()->GetBoolean(
+          prefs::kAppStoreRatingPolicyEnabled)) {
+    [self.handler requestAppStoreReview];
+  }
 }
 
 #pragma mark - PromoProtocol

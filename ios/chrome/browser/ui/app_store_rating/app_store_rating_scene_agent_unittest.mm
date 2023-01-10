@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
@@ -42,9 +43,13 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
     CreateAppStoreRatingSceneAgent();
   }
 
-  ~AppStoreRatingSceneAgentTest() override { ClearUserDefaults(); }
+  ~AppStoreRatingSceneAgentTest() override {
+    ClearUserDefaults();
+    local_state_.Get()->ClearPref(prefs::kAppStoreRatingPolicyEnabled);
+  }
 
  protected:
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::WebTaskEnvironment task_environment_;
   AppStoreRatingSceneAgent* test_scene_agent_;
@@ -194,6 +199,25 @@ TEST_F(AppStoreRatingSceneAgentTest, TestChromeNotDefaultBrowser) {
   SetTotalDaysOnChrome(15);
   EnableCPE();
   SetFalseChromeLikelyDefaultBrowser();
+
+  // Simulating the user launching or resuming the app.
+  [test_scene_agent_ sceneState:fake_scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+}
+
+// Tests that promo display is not requested when the App Store Rating policy is
+// disabled.
+TEST_F(AppStoreRatingSceneAgentTest, TestPolicyDisabled) {
+  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
+      .Times(0);
+
+  SetActiveDaysInPastWeek(3);
+  SetTotalDaysOnChrome(16);
+  EnableCPE();
+  SetTrueChromeLikelyDefaultBrowser();
+
+  // Disabling the policy.
+  local_state_.Get()->SetBoolean(prefs::kAppStoreRatingPolicyEnabled, false);
 
   // Simulating the user launching or resuming the app.
   [test_scene_agent_ sceneState:fake_scene_state_
