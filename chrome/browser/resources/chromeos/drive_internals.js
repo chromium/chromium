@@ -103,7 +103,6 @@ function updateMirroring(enabled) {
 function updateBulkPinning(enabled) {
   $('bulk-pinning-toggle').checked = enabled;
   $('bulk-pinning-setup-stage').innerText = '?';
-  $('bulk-pinning-setup-stage-error').innerText = '?';
   $('bulk-pinning-available-disk-space').innerText = '?';
   $('bulk-pinning-required-disk-space').innerText = '?';
   $('bulk-pinning-pinned-disk-space').innerText = '?';
@@ -115,7 +114,6 @@ function onBulkPinningProgress(progress) {
     return;
   }
   $('bulk-pinning-setup-stage').innerText = progress.stage;
-  $('bulk-pinning-setup-stage-error').innerText = progress.setupError;
   $('bulk-pinning-available-disk-space').innerText =
       progress.availableDiskSpace;
   $('bulk-pinning-required-disk-space').innerText = progress.requiredDiskSpace;

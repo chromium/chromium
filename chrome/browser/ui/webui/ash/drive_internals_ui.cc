@@ -626,15 +626,12 @@ class DriveInternalsWebUIHandler
 
     base::Value::Dict setup_progress;
     setup_progress.Set("stage", ToString(progress.stage));
-    setup_progress.Set("setupError", ToString(progress.error));
-    setup_progress.Set(
-        "availableDiskSpace",
-        ToString(HumanReadableSize(progress.available_disk_space)));
-    setup_progress.Set(
-        "requiredDiskSpace",
-        ToString(HumanReadableSize(progress.required_disk_space)));
+    setup_progress.Set("availableDiskSpace",
+                       ToString(HumanReadableSize(progress.free_space)));
+    setup_progress.Set("requiredDiskSpace",
+                       ToString(HumanReadableSize(progress.required_space)));
     setup_progress.Set("pinnedDiskSpace",
-                       ToString(HumanReadableSize(progress.pinned_disk_space)));
+                       ToString(HumanReadableSize(progress.pinned_space)));
     MaybeCallJavascript("onBulkPinningProgress",
                         base::Value(std::move(setup_progress)));
   }

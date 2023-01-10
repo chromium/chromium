@@ -39,32 +39,28 @@ extern const char kGCacheFolderName[];
 // map are identified as being `available_offline` or 0 byte files.
 extern const base::TimeDelta kPeriodicRemovalInterval;
 
-// Errors that are returned via the completion callback that indicate either
-// which stage the failure was at or whether the initial setup was a success.
-enum class SetupError {
-  kSuccess,
-  kManagerDisabled,
-  kManagerStopped,
-  kCannotCalculateFreeSpace,
-  kCannotRetrieveSearchResults,
-  kCannotPinItem,
-  kNotEnoughSpace,
-};
-
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
-std::ostream& operator<<(std::ostream& out, SetupError error);
-
 // The `DriveFsPinManager` first undergoes a setup phase, where it audits the
 // current disk space, pins all available files (disk space willing) then moves
 // to monitoring. This enum represents the various stages the setup goes
 // through.
 enum class SetupStage {
-  kError = -1,
+  // Initial stage.
   kNotStarted,
-  kStarted,
-  kCalculatedFreeSpace,
-  kCalculatedRequiredSpace,
-  kFinished,
+
+  // In-progress stages.
+  kCalculatingFreeSpace,
+  kCalculatingRequiredSpace,
+  kSyncing,
+
+  // Final success stage.
+  kSuccess,
+
+  // Final error stages.
+  kDisabled,
+  kStopped,
+  kCannotCalculateFreeSpace,
+  kCannotRetrieveSearchResults,
+  kNotEnoughSpace,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
@@ -91,25 +87,32 @@ struct DrivePathAndStatus {
 // When the manager is setting up, this struct maintains all the information
 // gathered.
 struct SetupProgress {
-  int64_t required_disk_space = 0;
-  int64_t available_disk_space = 0;
-  int64_t pinned_disk_space = 0;
-  int32_t batch_size = 50;
-  int32_t error_count = 0;
+  // Number of free bytes on the stateful partition. Estimated at the beginning
+  // of the setup process and left unchanged afterwards.
+  int64_t free_space = 0;
+
+  // Estimated number of bytes that are required to downsync the files to pin.
+  // Estimated at the beginning of the setup process and left unchanged
+  // afterwards.
+  int64_t required_space = 0;
+
+  // Number of bytes that have been downloaded so far to downsync the files.
+  int64_t pinned_space = 0;
+
+  // Number of pinned and downsynced files so far.
+  int32_t pinned_files = 0;
+
+  // Number of errors encountered so far.
+  int32_t errors = 0;
+
+  // Number of "useful" (ie non-duplicated) events received from DriveFS so far.
+  int32_t useful_events = 0;
+
+  // Number of duplicated events received from DriveFS so far.
+  int32_t duplicated_events = 0;
+
+  // Stage of the setup process.
   SetupStage stage = SetupStage::kNotStarted;
-  SetupError error = SetupError::kSuccess;
-
-  // Sets the `SetupProgress` back to the initial values above.
-  void Reset() { *this = SetupProgress(); }
-};
-
-// The managers current state.
-// TODO(b/261633796): Represent the monitoring stage here after setup has
-// finished.
-struct ManagerState {
-  SetupProgress progress;
-
-  bool SetupInProgress() const;
 };
 
 // Observe the setup progress via subscribing as an observer on the
@@ -138,7 +141,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
       bool enabled,
       const base::FilePath& profile_path,
       mojom::DriveFs* drivefs_interface,
-      std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space = nullptr);
+      std::unique_ptr<FreeDiskSpaceDelegate> free_space = nullptr);
 
   DriveFsPinManager(const DriveFsPinManager&) = delete;
   DriveFsPinManager& operator=(const DriveFsPinManager&) = delete;
@@ -153,7 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // which will ensure any new files created and switched to pinned state
   // automatically. The complete callback will be called once the initial
   // pinning has completed.
-  void Start(base::OnceCallback<void(SetupError)> complete_callback);
+  void Start(base::OnceCallback<void(SetupStage)> complete_callback);
 
   // Stop the syncing setup.
   void Stop();
@@ -168,76 +171,45 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   void OnError(const mojom::DriveError& error) override;
 
  private:
-  // A wrapper to maintain sequence-affinity on the `InProgressMap`. The
-  // instance of this is owned by `DriveFsPinManager`, is created and destroyed
-  // on the same task runner.
-  class TrackedFiles {
-   public:
-    ~TrackedFiles();
-    TrackedFiles();
+  // Adds an item to the tracked files.
+  void Add(const std::string& path, int64_t expected_size);
 
-    // Adds an item to the map.
-    void Add(const std::string& path, int64_t expected_size);
+  // Removes an item from the map. Does nothing if the item is not in the map.
+  // Updates the total number of bytes transferred so far.
+  // Returns whether an item was actually removed.
+  bool Remove(const std::string& path, int64_t bytes_transferred = -1);
 
-    // Removes an item from the map. Does nothing if the item is not in the map.
-    // Updates the total number of bytes transferred so far.
-    // Returns whether an item was actually removed.
-    bool Remove(const std::string& path, int64_t bytes_transferred = -1);
+  // Adds or updates the item keyed at `path` with the new progress bytes.
+  // Updates the total number of bytes transferred so far.
+  // Returns whether anything has actually been updated.
+  bool Update(const std::string& path,
+              int64_t bytes_transferred,
+              int64_t bytes_to_transfer);
 
-    // Adds or updates the item keyed at `path` with the new progress bytes.
-    // Updates the total number of bytes transferred so far.
-    // Returns whether anything has actually been updated.
-    bool Update(const std::string& path,
-                int64_t bytes_transferred,
-                int64_t bytes_to_transfer);
+  // Adds or updates the item to mark it in progress.
+  // Returns whether anything has actually been updated.
+  bool MarkInProgress(const std::string& path);
 
-    // Adds or updates the item to mark it in progress.
-    // Returns whether anything has actually been updated.
-    bool MarkInProgress(const std::string& path);
+  // Returns the paths of the tracked files that haven't started syncing yet.
+  std::vector<std::string> GetUnstartedPaths() const;
 
-    // Returns the number of items currently being tracked as in progress.
-    size_t GetCount() const;
+ private:
+  // Struct keeping track of the progress of a file being synced.
+  struct Progress {
+    // Number of bytes that have been transferred so far.
+    int64_t transferred = 0;
 
-    // Returns the paths of the tracked files that haven't started syncing yet.
-    std::vector<std::string> GetUnstartedPaths() const;
+    // Total expected number of bytes for this file.
+    int64_t total = 0;
 
-    // Returns the total number of bytes that have been transferred so far.
-    int64_t GetTotalBytesTransferred() const {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      return total_bytes_transferred_;
+    // Have we received in-progress events for this file?
+    bool in_progress = false;
+
+    friend std::ostream& operator<<(std::ostream& out, const Progress& p) {
+      return out << "{transferred: " << HumanReadableSize(p.transferred)
+                 << ", total: " << HumanReadableSize(p.total)
+                 << ", in_progress: " << p.in_progress << "}";
     }
-
-    // Resets this object.
-    void Reset();
-
-   private:
-    SEQUENCE_CHECKER(sequence_checker_);
-
-    // Struct keeping track of the progress of a file being synced.
-    struct Progress {
-      // Number of bytes that have been transferred so far.
-      int64_t transferred = 0;
-
-      // Total expected number of bytes for this file.
-      int64_t total = 0;
-
-      // Have we received in-progress events for this file?
-      bool in_progress = false;
-
-      friend std::ostream& operator<<(std::ostream& out, const Progress& p) {
-        return out << "{transferred: " << HumanReadableSize(p.transferred)
-                   << ", total: " << HumanReadableSize(p.total)
-                   << ", in_progress: " << p.in_progress << "}";
-      }
-    };
-
-    // Map that tracks the in-progress files indexed by their path.
-    using Files = std::map<std::string, Progress>;
-    Files files_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-    // Keeps track of the total bytes transferred by all the in progress syncing
-    // items.
-    int64_t total_bytes_transferred_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   };
 
   // Invoked on retrieval of available space in the `~/GCache` directory.
@@ -253,7 +225,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   // When the pinning has finished, this ensures appropriate cleanup happens on
   // the underlying search query mojo connection.
-  void Complete(SetupError status);
+  void Complete(SetupStage stage);
 
   // Once the verification that the files to pin will not exceed available disk
   // space, the files to pin can be batch pinned.
@@ -285,29 +257,29 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // If there are no remaining items left, get the next search query page.
   void MaybeContinueSearch();
 
-  // The `total_bytes_transferred` is guarded by a sequence in the
-  // `InProgressMap`, so after updating a single item the total bytes is
-  // notified via `NotifyProgress`.
-  void ReportTotalBytesTransferred();
-
   // Report progress to all the observers.
   void NotifyProgress();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Denotes whether the feature is enabled. If the feature is disabled no setup
   // nor monitoring occurs.
   bool enabled_ = false;
 
-  base::OnceCallback<void(SetupError)> complete_callback_;
-  const std::unique_ptr<FreeDiskSpaceDelegate> free_disk_space_;
+  base::OnceCallback<void(SetupStage)> complete_callback_;
+  const std::unique_ptr<FreeDiskSpaceDelegate> free_space_;
 
-  ManagerState state_;
+  SetupProgress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<DriveFsBulkPinObserver>::Unchecked observers_;
 
   const base::FilePath profile_path_;
   const raw_ptr<mojom::DriveFs> drivefs_interface_;
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
-  TrackedFiles tracked_files_;
+
+  // Map that tracks the in-progress files indexed by their path.
+  using Files = std::map<std::string, Progress>;
+  Files files_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 };
