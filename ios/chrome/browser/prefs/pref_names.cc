@@ -9,6 +9,9 @@ namespace prefs {
 // The application locale.
 const char kApplicationLocale[] = "intl.app_locale";
 
+// Boolean that is true when the AppStoreRatingEnabled policy is enabled.
+const char kAppStoreRatingPolicyEnabled[] = "ios.app_store_rating_enabled";
+
 // Boolean that is true when Suggest support is enabled.
 const char kArticlesForYouEnabled[] = "suggestions.articles_enabled";
 

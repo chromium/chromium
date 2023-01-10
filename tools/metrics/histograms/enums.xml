@@ -32341,6 +32341,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1045" label="LacrosSelection"/>
   <int value="1046" label="UseMojoVideoDecoderForPepperAllowed"/>
   <int value="1047" label="PPAPISharedImagesSwapChainAllowed"/>
+  <int value="1052" label="AppStoreRatingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

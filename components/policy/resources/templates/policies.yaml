@@ -1046,6 +1046,11 @@ policies:
   1045: LacrosSelection
   1046: UseMojoVideoDecoderForPepperAllowed
   1047: PPAPISharedImagesSwapChainAllowed
+  1048: ''
+  1049: ''
+  1050: ''
+  1051: ''
+  1052: AppStoreRatingEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

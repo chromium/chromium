@@ -1,5 +1,43 @@
 {
   "-- Instructions --": "See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/policy_pref_mapping_test.md (This file is interpreted by //ios/chrome/browser/policy/policy_unittest.mm)",
+  "AppStoreRatingEnabled": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ios.app_store_rating_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AppStoreRatingEnabled": false
+        },
+        "prefs": {
+          "ios.app_store_rating_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AppStoreRatingEnabled": true
+        },
+        "prefs": {
+          "ios.app_store_rating_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "AutofillAddressEnabled": {
     "os": [
       "ios"
