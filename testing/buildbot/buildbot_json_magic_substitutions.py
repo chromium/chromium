@@ -128,6 +128,23 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
   return retval
 
 
+def _GetGpusFromTestConfig(test_config):
+  """Generates all GPU dimension strings from a test config.
+  Args:
+    test_config: A dict containing a configuration for a specific test on a
+        specific builder.
+  """
+  dimensions = test_config.get('swarming', {}).get('dimension_sets', [])
+  assert dimensions
+  for d in dimensions:
+    # Split up multiple GPU/driver combinations if the swarming OR operator is
+    # being used.
+    if 'gpu' in d:
+      gpus = d['gpu'].split('|')
+      for gpu in gpus:
+        yield gpu
+
+
 def GPUParallelJobs(test_config, _, tester_config):
   """Substitutes the correct number of jobs for GPU tests.
 
@@ -147,19 +164,21 @@ def GPUParallelJobs(test_config, _, tester_config):
 
   # Return --jobs=1 for Windows Intel bots running the WebGPU CTS
   # These bots can't handle parallel tests. See crbug.com/1353938.
+  # The load can also negatively impact WebGL tests, so reduce the number of
+  # jobs there.
+  # TODO(crbug.com/1349828): Try removing the Windows/Intel special casing once
+  # we swap which machines we're using.
   is_webgpu_cts = test_name.startswith('webgpu_cts') or test_config.get(
       'telemetry_test_name') == 'webgpu_cts'
-  if os_type == 'win' and is_webgpu_cts:
-    dimensions = test_config.get('swarming', {}).get('dimension_sets', [])
-    assert dimensions
-    for d in dimensions:
-      # Split up multiple GPU/driver combinations if the swarming OR operator is
-      # being used.
-      if 'gpu' in d:
-        gpus = d['gpu'].split('|')
-        for gpu in gpus:
-          if gpu.startswith('8086'):
-            return ['--jobs=1']
+  is_webgl_cts = 'webgl_conformance' in test_name or test_config.get(
+      'telemetry_test_name') == 'webgl_conformance'
+  if os_type == 'win' and (is_webgl_cts or is_webgpu_cts):
+    for gpu in _GetGpusFromTestConfig(test_config):
+      if gpu.startswith('8086'):
+        # Especially flaky on '8086:9bc5' per crbug.com/1392149
+        if is_webgpu_cts or gpu.startswith('8086:9bc5'):
+          return ['--jobs=1']
+        return ['--jobs=2']
 
   if os_type in ['lacros', 'linux', 'mac', 'win']:
     return ['--jobs=4']
