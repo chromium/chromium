@@ -256,13 +256,13 @@ TEST_F(PrefMemberTest, InvalidList) {
 
   // Try to add a valid list first.
   base::Value list(base::Value::Type::LIST);
-  list.Append("foo");
+  list.GetList().Append("foo");
   std::vector<std::string> vector;
   EXPECT_TRUE(subtle::PrefMemberVectorStringUpdate(list, &vector));
   EXPECT_EQ(expected_vector, vector);
 
   // Now try to add an invalid list.  |vector| should not be changed.
-  list.Append(0);
+  list.GetList().Append(0);
   EXPECT_FALSE(subtle::PrefMemberVectorStringUpdate(list, &vector));
   EXPECT_EQ(expected_vector, vector);
 }
