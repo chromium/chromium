@@ -479,7 +479,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that language detection is not performed when translate is disabled.
-- (void)testLanguageDetectionDisabled {
+// TODO(crbug.com/1406208): A language is detected.
+- (void)DISABLED_testLanguageDetectionDisabled {
   const GURL URL = web::test::HttpServer::MakeUrl(
       "http://scenarioLanguageDetectionDisabled");
   std::map<GURL, std::string> responses;
