@@ -4086,6 +4086,13 @@ source_set("ash") {
       "printing/printer_info_stub.cc",
     ]
   }
+
+  if (use_libfuzzer) {
+    deps += [
+      "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/exo/wayland:weston_test_stub",
+    ]
+  }
 }
 
 action("dbus_service_files") {
