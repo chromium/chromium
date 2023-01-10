@@ -690,13 +690,6 @@ void GaiaScreenHandler::HandleAuthExtensionLoaded() {
   // used during the current sign-in attempt.
   extension_provided_client_cert_usage_observer_ =
       std::make_unique<LoginClientCertUsageObserver>();
-
-  // Clear old storage partitions after a new sign-in page is loaded. All
-  // reference to the old storage partitions should be cleared.
-  login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
-          Profile::FromWebUI(web_ui()));
-  signin_partition_manager->DisposeOldStoragePartitions();
 }
 
 void GaiaScreenHandler::HandleWebviewLoadAborted(int error_code) {
