@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/progress_reporter.h"
 
 namespace gpu {
@@ -130,6 +131,17 @@ bool GLTextureImageBackingFactory::IsSupported(
       SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_SCANOUT;
   if (usage & kInvalidUsages) {
     return false;
+  }
+
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    constexpr uint32_t kMetalInvalidUsages =
+        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
+        SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_GLES2 |
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_WEBGPU;
+    if (usage & kMetalInvalidUsages) {
+      return false;
+    }
   }
 
   // Doesn't support contexts other than GL for OOPR Canvas

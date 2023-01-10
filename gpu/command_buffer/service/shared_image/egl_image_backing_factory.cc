@@ -111,6 +111,17 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
     return false;
   }
 
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    constexpr uint32_t kMetalInvalidUsages =
+        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
+        SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_GLES2 |
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_WEBGPU;
+    if (usage & kMetalInvalidUsages) {
+      return false;
+    }
+  }
+
   return CanCreateSharedImage(size, pixel_data, GetFormatInfo(format),
                               GL_TEXTURE_2D);
 }
