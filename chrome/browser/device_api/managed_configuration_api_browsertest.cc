@@ -124,13 +124,13 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
               embedded_test_server()->GetURL(conf_url).spec());
     entry.Set(ManagedConfigurationAPI::kManagedConfigurationHashKey, conf_hash);
     trusted_apps.Append(std::move(entry));
-    profile()->GetPrefs()->Set(prefs::kManagedConfigurationPerOrigin,
-                               base::Value(std::move(trusted_apps)));
+    profile()->GetPrefs()->SetList(prefs::kManagedConfigurationPerOrigin,
+                                   std::move(trusted_apps));
   }
 
   void ClearConfiguration() {
-    profile()->GetPrefs()->Set(prefs::kManagedConfigurationPerOrigin,
-                               base::ListValue());
+    profile()->GetPrefs()->SetList(prefs::kManagedConfigurationPerOrigin,
+                                   base::Value::List());
   }
 
   absl::optional<base::Value::Dict> GetValues(
