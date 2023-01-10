@@ -92,7 +92,12 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // indicates whether the R, G, B samples in |rgb_pixels| should be multiplied
   // by alpha. |filter| specifies the chroma upsampling filter used for pixel
   // formats with chroma subsampling. If chroma planes in the pixel format are
-  // not subsampled, |filter| is ignored.
+  // not subsampled, |filter| is ignored. |disable_threading| indicates whether
+  // this method should convert |video_frame| without posting any tasks to
+  // base::ThreadPool, regardless of the frame size. If this method is called
+  // from a task running in base::ThreadPool, setting |disable_threading| to
+  // true can avoid a potential temporary deadlock of base::ThreadPool. See
+  // crbug.com/1402841.
   //
   // NOTE: If |video_frame| doesn't have an alpha plane, all the A samples in
   // |rgb_pixels| will be 255 (equivalent to an alpha of 1.0) and therefore the
@@ -102,7 +107,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                                            void* rgb_pixels,
                                            size_t row_bytes,
                                            bool premultiply_alpha = true,
-                                           FilterMode filter = kFilterNone);
+                                           FilterMode filter = kFilterNone,
+                                           bool disable_threading = false);
 
   // The output format that ConvertVideoFrameToRGBPixels will write.
   static viz::ResourceFormat GetRGBPixelsOutputFormat();

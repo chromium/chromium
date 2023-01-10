@@ -1150,7 +1150,8 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image,
     // https://bugs.chromium.org/p/libyuv/issues/detail?id=845
     media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
         frame.get(), rgba_8888, frame->visible_rect().width() * 4,
-        premultiply_alpha, media::PaintCanvasVideoRenderer::kFilterBilinear);
+        premultiply_alpha, media::PaintCanvasVideoRenderer::kFilterBilinear,
+        /*disable_threading=*/true);
 
     if (save_top_row) {
       base::ranges::copy(previous_last_decoded_row_, rgba_8888);
