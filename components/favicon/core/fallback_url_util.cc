@@ -4,7 +4,7 @@
 
 #include "components/favicon/core/fallback_url_util.h"
 
-#include "base/i18n/case_conversion.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -37,7 +37,7 @@ std::u16string GetFallbackIconText(const GURL& url) {
   if (domain.empty())
     return std::u16string();
   // TODO(huangs): Handle non-ASCII ("xn--") domain names.
-  return base::i18n::ToUpper(base::ASCIIToUTF16(domain.substr(0, 1)));
+  return base::ASCIIToUTF16(base::ToUpperASCII(domain.substr(0, 1)));
 }
 
 }  // namespace favicon
