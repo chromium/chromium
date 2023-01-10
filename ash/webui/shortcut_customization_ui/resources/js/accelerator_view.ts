@@ -5,6 +5,7 @@
 import './input_key.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,12 +16,6 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, isCustomizationDisabled} from './shortcut_utils.js';
-
-export interface AcceleratorViewElement {
-  $: {
-    container: HTMLDivElement,
-  };
-}
 
 enum KeyState {
   NOT_SELECTED = 'not-selected',
@@ -59,7 +54,7 @@ function getModifierString(modifier: Modifier): string {
  * the read-only and editable state of an accelerator.
  * TODO(jimmyxgong): Implement the edit mode.
  */
-const AcceleratorViewElementBase = I18nMixin(PolymerElement);
+const AcceleratorViewElementBase = StrictQueryMixin(I18nMixin(PolymerElement));
 
 export class AcceleratorViewElement extends AcceleratorViewElementBase {
   static get is(): string {
@@ -172,7 +167,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.addEventListener('focus', () => this.startCapture());
     this.addEventListener('mouseup', () => this.startCapture());
     this.addEventListener('blur', () => this.endCapture());
-    this.$.container.focus();
+    this.strictQueryDiv('#container').focus();
   }
 
   private unregisterKeyEventListeners(): void {

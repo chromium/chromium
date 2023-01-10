@@ -12,6 +12,7 @@ import 'chrome://resources/ash/common/page_toolbar.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -45,7 +46,8 @@ declare global {
  * customization app.
  */
 
-const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
+const ShortcutCustomizationAppElementBase =
+    StrictQueryMixin(I18nMixin(PolymerElement));
 
 export class ShortcutCustomizationAppElement extends
     ShortcutCustomizationAppElementBase {
@@ -175,7 +177,8 @@ export class ShortcutCustomizationAppElement extends
                   accel.state === AcceleratorState.kDisabledByUser);
             });
 
-    this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
+    this.strictQuery(
+            AcceleratorEditDialogElement.is, AcceleratorEditDialogElement)
         .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
   }
 

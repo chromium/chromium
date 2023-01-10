@@ -4,17 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './shortcut_input.html.js';
-
-export interface ShortcutInputElement {
-  $: {
-    input: CrInputElement,
-  };
-}
 
 enum AllowedModifierKeyCodes {
   SHIFT = 16,
@@ -37,7 +32,10 @@ export const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
  * 'shortcut-input' is the shortcut input element that consumes user inputs
  * and displays the shortcut.
  */
-export class ShortcutInputElement extends PolymerElement {
+
+const ShortcutInputElementBase = StrictQueryMixin(PolymerElement);
+
+export class ShortcutInputElement extends ShortcutInputElementBase {
   static get is(): string {
     return 'shortcut-input';
   }
@@ -94,7 +92,7 @@ export class ShortcutInputElement extends PolymerElement {
 
     this.capturing = false;
     this.pendingShortcut = '';
-    this.$.input.blur();
+    this.strictQuery(CrInputElement.is, CrInputElement);
   }
 
   private onKeyDown(e: KeyboardEvent): void {

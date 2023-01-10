@@ -4,6 +4,7 @@
 
 import './input_key.js';
 
+import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -18,7 +19,10 @@ import {getTemplate} from './text_accelerator.html.js';
  * have a kText LayoutStyle. It is responsible for displaying arbitrary text
  * that is passed into it, as well as styling key elements in the text.
  */
-export class TextAcceleratorElement extends PolymerElement {
+
+const TextAcceleratorElementBase = StrictQueryMixin(PolymerElement);
+
+export class TextAcceleratorElement extends TextAcceleratorElementBase {
   static get is(): string {
     return 'text-accelerator';
   }
@@ -44,9 +48,7 @@ export class TextAcceleratorElement extends PolymerElement {
         finalHtml += this.createInputKeyHtmlString(text, part.type);
       }
     }
-    // TODO(michaelcheco): Use strictQuery here.
-    (this.shadowRoot!.querySelector('#text-wrapper') as HTMLDivElement)
-        .innerHTML = finalHtml;
+    this.strictQueryDiv('#text-wrapper').innerHTML = finalHtml;
   }
 
   private createInputKeyHtmlString(text: string, type: TextAcceleratorPartType):
