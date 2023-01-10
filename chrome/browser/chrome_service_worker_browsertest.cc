@@ -317,17 +317,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
-// TODO(crbug.com/1395715): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
-#else
-#define MAYBE_SubresourceCountUKM SubresourceCountUKM
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
-  base::RunLoop ukm_loop;
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUKM) {
   ukm::TestAutoSetUkmRecorder test_recorder;
-  test_recorder.SetOnAddEntryCallback(
-      ukm::builders::ServiceWorker_OnLoad::kEntryName, ukm_loop.QuitClosure());
 
   WriteFile(FILE_PATH_LITERAL("fallback.css"), "");
   WriteFile(FILE_PATH_LITERAL("nofallback.css"), "");
@@ -380,7 +371,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Wait until the UKM record is updated.
-  ukm_loop.Run();
+  // Note that since we update multiple metrics in the entry, waiting for the
+  // entry metrics with `SetOnAddEntryCallback()` seems not to work well.
+  base::RunLoop().RunUntilIdle();
   auto entries = test_recorder.GetEntriesByName(
       ukm::builders::ServiceWorker_OnLoad::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
