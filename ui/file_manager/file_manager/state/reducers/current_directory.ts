@@ -119,8 +119,13 @@ export function updateSelection(
     return currentState;
   }
 
+  if (!currentState.currentDirectory.content) {
+    console.warn('Missing `currentDirectory.content`');
+    return currentState;
+  }
+
   const selectedKeys = action.payload.selectedKeys;
-  const contentKeys = new Set(currentState.currentDirectory!.content.keys);
+  const contentKeys = new Set(currentState.currentDirectory!.content!.keys);
   if (!selectedKeys.every(key => contentKeys.has(key))) {
     console.warn('Got selected keys that are not in current directory');
     return currentState;
