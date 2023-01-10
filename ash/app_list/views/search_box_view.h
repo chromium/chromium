@@ -115,9 +115,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Returns background color for the given state.
   SkColor GetBackgroundColorForState(AppListState state) const;
 
-  // Called when the wallpaper colors change.
-  void OnWallpaperColorsChanged();
-
   // Sets the autocomplete text if autocomplete conditions are met.
   void ProcessAutocomplete(SearchResultBaseView* first_result_view);
 

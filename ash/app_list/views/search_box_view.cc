@@ -294,7 +294,6 @@ void SearchBoxView::OnActiveAppListModelsChanged(AppListModel* model,
 
   ResetForShow();
   UpdateSearchIcon();
-  OnWallpaperColorsChanged();
   ShowAssistantChanged();
 }
 
@@ -458,7 +457,12 @@ void SearchBoxView::OnThemeChanged() {
         GetColorProvider()->GetColor(ui::kColorAshFocusRing));
   }
 
-  OnWallpaperColorsChanged();
+  UpdateSearchIcon();
+  UpdatePlaceholderTextStyle();
+  UpdateTextColor();
+
+  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
+  SchedulePaint();
 }
 
 void SearchBoxView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -654,16 +658,6 @@ SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
 
   return app_list_widget->GetColorProvider()->GetColor(
       kColorAshShieldAndBase80);
-}
-
-void SearchBoxView::OnWallpaperColorsChanged() {
-  UpdateSearchIcon();
-  UpdatePlaceholderTextStyle();
-  UpdateTextColor();
-
-  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
-
-  SchedulePaint();
 }
 
 void SearchBoxView::ProcessAutocomplete(

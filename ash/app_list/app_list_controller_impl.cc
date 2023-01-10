@@ -851,15 +851,6 @@ void AppListControllerImpl::OnTabletModeEnded() {
   DismissAppList();
 }
 
-void AppListControllerImpl::OnWallpaperColorsChanged() {
-  // Clamshell doesn't use wallpaper prominent color.
-  if (IsVisible(last_visible_display_id_) && IsTabletMode()) {
-    AppListView* app_list_view = fullscreen_presenter_->GetView();
-    DCHECK(app_list_view);
-    app_list_view->OnWallpaperColorsChanged();
-  }
-}
-
 void AppListControllerImpl::OnWallpaperPreviewStarted() {
   in_wallpaper_preview_ = true;
   UpdateHomeScreenVisibility();

@@ -757,10 +757,6 @@ void AppListView::OnKeyEvent(ui::KeyEvent* event) {
   RedirectKeyEventToSearchBox(event);
 }
 
-void AppListView::OnWallpaperColorsChanged() {
-  search_box_view_->OnWallpaperColorsChanged();
-}
-
 bool AppListView::HandleScroll(const gfx::Point& location,
                                const gfx::Vector2d& offset,
                                ui::EventType type) {

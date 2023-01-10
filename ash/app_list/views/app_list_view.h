@@ -185,9 +185,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // Called when the wallpaper colors change.
-  void OnWallpaperColorsChanged();
-
   // Handles scroll events from various sources.
   bool HandleScroll(const gfx::Point& location,
                     const gfx::Vector2d& offset,

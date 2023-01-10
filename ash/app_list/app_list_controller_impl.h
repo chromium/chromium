@@ -229,7 +229,6 @@ class ASH_EXPORT AppListControllerImpl
   void OnKeyboardVisibilityChanged(bool is_visible) override;
 
   // WallpaperControllerObserver:
-  void OnWallpaperColorsChanged() override;
   void OnWallpaperPreviewStarted() override;
   void OnWallpaperPreviewEnded() override;
 
