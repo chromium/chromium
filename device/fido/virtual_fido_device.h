@@ -338,6 +338,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // completely replaces its contents.
     void InjectLargeBlob(RegistrationData* credential, LargeBlob blob);
 
+    // Injects an opaque large blob. |blob| does not need to conform to the CTAP
+    // large-blob CBOR structure.
+    void InjectOpaqueLargeBlob(cbor::Value blob);
+
     // Clears all large blobs resetting |large_blob| to its default value.
     void ClearLargeBlobs();
 

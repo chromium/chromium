@@ -247,12 +247,12 @@ absl::optional<LargeBlob> LargeBlobData::Decrypt(LargeBlobKey key) const {
   return LargeBlob(*compressed_data, orig_size_);
 }
 
-cbor::Value::MapValue LargeBlobData::AsCBOR() const {
+cbor::Value LargeBlobData::AsCBOR() const {
   cbor::Value::MapValue map;
   map.emplace(static_cast<int>(LargeBlobDataKeys::kCiphertext), ciphertext_);
   map.emplace(static_cast<int>(LargeBlobDataKeys::kNonce), nonce_);
   map.emplace(static_cast<int>(LargeBlobDataKeys::kOrigSize), orig_size_);
-  return map;
+  return cbor::Value(map);
 }
 
 LargeBlobArrayReader::LargeBlobArrayReader() = default;
@@ -263,7 +263,7 @@ void LargeBlobArrayReader::Append(const std::vector<uint8_t>& fragment) {
   bytes_.insert(bytes_.end(), fragment.begin(), fragment.end());
 }
 
-absl::optional<std::vector<LargeBlobData>> LargeBlobArrayReader::Materialize() {
+absl::optional<cbor::Value::ArrayValue> LargeBlobArrayReader::Materialize() {
   if (!VerifyLargeBlobArrayIntegrity(bytes_)) {
     return absl::nullopt;
   }
@@ -275,28 +275,18 @@ absl::optional<std::vector<LargeBlobData>> LargeBlobArrayReader::Materialize() {
     return absl::nullopt;
   }
 
-  std::vector<LargeBlobData> large_blob_array;
+  cbor::Value::ArrayValue large_blob_array;
   const cbor::Value::ArrayValue& array = cbor->GetArray();
   for (const cbor::Value& value : array) {
-    absl::optional<LargeBlobData> large_blob_data = LargeBlobData::Parse(value);
-    if (!large_blob_data) {
-      continue;
-    }
-
-    large_blob_array.emplace_back(std::move(*large_blob_data));
+    large_blob_array.push_back(value.Clone());
   }
 
   return large_blob_array;
 }
 
 LargeBlobArrayWriter::LargeBlobArrayWriter(
-    const std::vector<LargeBlobData>& large_blob_array) {
-  cbor::Value::ArrayValue array;
-  for (const LargeBlobData& large_blob_data : large_blob_array) {
-    array.emplace_back(large_blob_data.AsCBOR());
-  }
-  bytes_ = *cbor::Writer::Write(cbor::Value(array));
-
+    cbor::Value::ArrayValue large_blob_array) {
+  bytes_ = *cbor::Writer::Write(cbor::Value(std::move(large_blob_array)));
   std::array<uint8_t, crypto::kSHA256Length> large_blob_hash =
       crypto::SHA256Hash(bytes_);
   bytes_.insert(bytes_.end(), large_blob_hash.begin(),

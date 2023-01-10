@@ -43,6 +43,7 @@ using LargeBlobKey = std::array<uint8_t, kLargeBlobKeyLength>;
 constexpr size_t kLargeBlobDefaultMaxFragmentLength = 960;
 constexpr size_t kLargeBlobReadEncodingOverhead = 64;
 constexpr size_t kLargeBlobArrayNonceLength = 12;
+constexpr size_t kMinLargeBlobSize = 1024;
 constexpr std::array<uint8_t, 2> kLargeBlobPinPrefix = {0x0c, 0x00};
 
 // A complete but still compressed large blob.
@@ -140,7 +141,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobData {
   bool operator==(const LargeBlobData&) const;
 
   absl::optional<LargeBlob> Decrypt(LargeBlobKey key) const;
-  cbor::Value::MapValue AsCBOR() const;
+  cbor::Value AsCBOR() const;
 
  private:
   LargeBlobData(std::vector<uint8_t> ciphertext,
@@ -167,7 +168,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayReader {
   // Verifies the integrity of the large blob array. This should be called after
   // all fragments have been |Append|ed.
   // If successful, parses and returns the array.
-  absl::optional<std::vector<LargeBlobData>> Materialize();
+  absl::optional<cbor::Value::ArrayValue> Materialize();
 
   // Returns the current size of the array fragments.
   size_t size() const { return bytes_.size(); }
@@ -180,8 +181,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayReader {
 // to divide a blob into chunks.
 class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayWriter {
  public:
-  explicit LargeBlobArrayWriter(
-      const std::vector<LargeBlobData>& large_blob_array);
+  explicit LargeBlobArrayWriter(cbor::Value::ArrayValue large_blob_array);
   LargeBlobArrayWriter(const LargeBlobArrayWriter&) = delete;
   LargeBlobArrayWriter& operator=(const LargeBlobArrayWriter&) = delete;
   LargeBlobArrayWriter(LargeBlobArrayWriter&&);

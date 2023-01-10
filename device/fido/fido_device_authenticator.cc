@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/cbor/values.h"
 #include "device/fido/appid_exclude_probe_task.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/credential_management.h"
@@ -903,32 +904,32 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
     return;
   }
 
-  absl::optional<std::vector<LargeBlobData>> large_blob_array =
+  absl::optional<cbor::Value::ArrayValue> large_blob_array =
       large_blob_array_reader->Materialize();
   if (!large_blob_array) {
-    // The large blob array is corrupted. Replace it completely with a new one.
-    // TODO(nsatragno): but maybe we want to do something else like trying
-    // again? It might have been corrupted while transported. Decide when we
-    // have hardware to test.
+    FIDO_LOG(ERROR) << "Large blob array corrupted. Replacing with a new one";
     large_blob_array.emplace();
-    return;
   }
 
   auto existing_large_blob = base::ranges::find_if(
-      *large_blob_array, [&large_blob_key](const LargeBlobData& blob) {
-        return blob.Decrypt(large_blob_key).has_value();
+      *large_blob_array, [&large_blob_key](const cbor::Value& blob_cbor) {
+        absl::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
+        return blob && blob->Decrypt(large_blob_key).has_value();
       });
 
-  LargeBlobData new_large_blob_data(large_blob_key, std::move(large_blob));
+  cbor::Value new_blob =
+      LargeBlobData(large_blob_key, std::move(large_blob)).AsCBOR();
+
   if (existing_large_blob != large_blob_array->end()) {
-    *existing_large_blob = std::move(new_large_blob_data);
+    *existing_large_blob = std::move(new_blob);
   } else {
-    large_blob_array->emplace_back(std::move(new_large_blob_data));
+    large_blob_array->emplace_back(std::move(new_blob));
   }
 
-  LargeBlobArrayWriter writer(*large_blob_array);
+  LargeBlobArrayWriter writer(std::move(*large_blob_array));
   if (writer.size() >
-      *device_->device_info()->max_serialized_large_blob_array) {
+      device_->device_info()->max_serialized_large_blob_array.value_or(
+          kMinLargeBlobSize)) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrRequestTooLarge);
     return;
   }
@@ -990,7 +991,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead(
     return;
   }
 
-  absl::optional<std::vector<LargeBlobData>> large_blob_array =
+  absl::optional<cbor::Value::ArrayValue> large_blob_array =
       large_blob_array_reader->Materialize();
   if (!large_blob_array) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrIntegrityFailure,
@@ -999,9 +1000,13 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead(
   }
 
   std::vector<std::pair<LargeBlobKey, LargeBlob>> result;
-  for (const LargeBlobData& blob : *large_blob_array) {
+  for (const cbor::Value& blob_cbor : *large_blob_array) {
+    absl::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
+    if (!blob.has_value()) {
+      continue;
+    }
     for (const LargeBlobKey& key : large_blob_keys) {
-      absl::optional<LargeBlob> plaintext = blob.Decrypt(key);
+      absl::optional<LargeBlob> plaintext = blob->Decrypt(key);
       if (plaintext) {
         result.emplace_back(key, std::move(*plaintext));
         break;

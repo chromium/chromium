@@ -22,6 +22,7 @@
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/virtual_fido_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -81,7 +82,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // The space available to store a large blob. In real authenticators this
     // may change depending on the number of resident credentials. We treat this
     // as a fixed size area for the large blob.
-    size_t available_large_blob_storage = 1024;
+    size_t available_large_blob_storage = kMinLargeBlobSize;
     bool cred_blob_support = false;
     // none_attestation causes a "none" attestation statement to be returned
     // from makeCredential calls.

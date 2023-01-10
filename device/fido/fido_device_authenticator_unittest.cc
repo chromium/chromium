@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
@@ -122,6 +121,48 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteSmallBlob) {
   ASSERT_EQ(large_blob_array->size(), 1u);
   EXPECT_EQ(large_blob_array->at(0).first, kDummyKey1);
   EXPECT_EQ(large_blob_array->at(0).second, kSmallBlob1);
+}
+
+// Tests that attempting to write a large blob overwrites the entire array if it
+// is corrupted.
+TEST_F(FidoDeviceAuthenticatorTest, TestWriteInvalidLargeBlob) {
+  authenticator_state_->large_blob[0] += 1;
+  WriteCallback write_callback;
+  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
+                                 write_callback.callback());
+  write_callback.WaitForCallback();
+  EXPECT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
+
+  ReadCallback read_callback;
+  authenticator_->ReadLargeBlob({kDummyKey1}, absl::nullopt,
+                                read_callback.callback());
+  read_callback.WaitForCallback();
+  ASSERT_EQ(read_callback.status(), CtapDeviceResponseCode::kSuccess);
+  auto large_blob_array = read_callback.value();
+  ASSERT_TRUE(large_blob_array);
+  ASSERT_EQ(large_blob_array->size(), 1u);
+  EXPECT_EQ(large_blob_array->at(0).first, kDummyKey1);
+  EXPECT_EQ(large_blob_array->at(0).second, kSmallBlob1);
+}
+
+// Regression test for crbug.com/1405288.
+TEST_F(FidoDeviceAuthenticatorTest,
+       TestWriteBlobDoesNotOverwriteNonStructuredData) {
+  virtual_device_->mutable_state()->InjectOpaqueLargeBlob(
+      cbor::Value("comet observatory"));
+
+  WriteCallback write_callback;
+  authenticator_->WriteLargeBlob(kSmallBlob1, {kDummyKey1}, absl::nullopt,
+                                 write_callback.callback());
+
+  write_callback.WaitForCallback();
+  ASSERT_EQ(write_callback.value(), CtapDeviceResponseCode::kSuccess);
+
+  LargeBlobArrayReader reader;
+  reader.Append(virtual_device_->mutable_state()->large_blob);
+  cbor::Value::ArrayValue large_blob_array = *reader.Materialize();
+  EXPECT_EQ(large_blob_array[0].GetString(), "comet observatory");
+  EXPECT_TRUE(LargeBlobData::Parse(large_blob_array[1]));
 }
 
 // Test reading and writing a blob that must fit in multiple fragments.

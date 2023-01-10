@@ -78,8 +78,8 @@ TEST_F(FidoLargeBlobTest, LargeBlobArrayReader_MaterializeValid) {
   LargeBlobArrayReader large_blob_array_reader;
   large_blob_array_reader.Append(
       fido_parsing_utils::Materialize(kValidLargeBlobArray));
-  std::vector<LargeBlobData> vector = *large_blob_array_reader.Materialize();
-  EXPECT_EQ(1u, vector.size());
+  cbor::Value::ArrayValue vector = *large_blob_array_reader.Materialize();
+  EXPECT_EQ(2u, vector.size());
 }
 
 // Test popping the large blob array in a fragment size that does not evenly
