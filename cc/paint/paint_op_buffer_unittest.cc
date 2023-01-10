@@ -441,7 +441,7 @@ TEST(PaintOpBufferTest, SaveDrawRestore_SingleOpRecordWithSingleNonDrawOp) {
 TEST(PaintOpBufferTest, SaveLayerRestore_DrawColor) {
   PaintOpBuffer buffer;
   float alpha = 0.4f;
-  SkColor original = SkColorSetA(50, SK_ColorRED);
+  SkColor original = SkColorSetA(SK_ColorRED, 50);
 
   buffer.push<SaveLayerAlphaOp>(alpha);
   buffer.push<DrawColorOp>(SkColor4f::FromColor(original),
@@ -453,8 +453,9 @@ TEST(PaintOpBufferTest, SaveLayerRestore_DrawColor) {
   EXPECT_EQ(canvas.save_count_, 0);
   EXPECT_EQ(canvas.restore_count_, 0);
 
-  uint8_t expected_alpha = SkMulDiv255Round(alpha, SkColorGetA(original));
-  EXPECT_EQ(canvas.paint_.getColor(), SkColorSetA(original, expected_alpha));
+  // original alpha of 50 * layer alpha of 0.4 == 20
+  SkColor expected_color = SkColorSetA(SK_ColorRED, 20);
+  EXPECT_EQ(canvas.paint_.getColor(), expected_color);
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_EmptyBuffer) {
