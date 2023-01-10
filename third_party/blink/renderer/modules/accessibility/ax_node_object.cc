@@ -1235,10 +1235,8 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kStrongTag))
     return ax::mojom::blink::Role::kStrong;
 
-  if (GetNode()->HasTagName(html_names::kDelTag) ||
-      GetNode()->HasTagName(html_names::kSTag)) {
+  if (GetNode()->HasTagName(html_names::kDelTag))
     return ax::mojom::blink::Role::kContentDeletion;
-  }
 
   if (GetNode()->HasTagName(html_names::kInsTag))
     return ax::mojom::blink::Role::kContentInsertion;
