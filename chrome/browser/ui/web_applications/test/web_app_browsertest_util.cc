@@ -66,20 +66,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
-#if BUILDFLAG(IS_MAC)
-#include <ImageIO/ImageIO.h>
-
-#include "base/mac/foundation_util.h"
-#import "skia/ext/skia_utils_mac.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include <shellapi.h>
-#include "ui/gfx/icon_util.h"
-#endif
-
 class GURL;
 
 namespace base {
@@ -105,40 +91,6 @@ void AutoAcceptDialogCallback(
 }
 
 }  // namespace
-
-SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
-#if BUILDFLAG(IS_MAC)
-  base::FilePath icon_path =
-      shortcut_path.AppendASCII("Contents/Resources/app.icns");
-  base::ScopedCFTypeRef<CFDictionaryRef> empty_dict(
-      CFDictionaryCreate(nullptr, nullptr, nullptr, 0, nullptr, nullptr));
-  base::ScopedCFTypeRef<CFURLRef> url = base::mac::FilePathToCFURL(icon_path);
-  base::ScopedCFTypeRef<CGImageSourceRef> source(
-      CGImageSourceCreateWithURL(url, nullptr));
-  if (!source)
-    return 0;
-  // Get the first icon in the .icns file (index 0)
-  base::ScopedCFTypeRef<CGImageRef> cg_image(
-      CGImageSourceCreateImageAtIndex(source, 0, empty_dict));
-  if (!cg_image)
-    return 0;
-  SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
-  if (bitmap.empty())
-    return 0;
-  return bitmap.getColor(0, 0);
-#else
-#if BUILDFLAG(IS_WIN)
-  SHFILEINFO file_info = {0};
-  if (SHGetFileInfo(shortcut_path.value().c_str(), FILE_ATTRIBUTE_NORMAL,
-                    &file_info, sizeof(file_info),
-                    SHGFI_ICON | 0 | SHGFI_USEFILEATTRIBUTES)) {
-    const SkBitmap bitmap = IconUtil::CreateSkBitmapFromHICON(file_info.hIcon);
-    return bitmap.getColor(0, 0);
-  }
-#endif
-  return 0;
-#endif
-}
 
 AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   NavigateToURLAndWait(browser, app_url);

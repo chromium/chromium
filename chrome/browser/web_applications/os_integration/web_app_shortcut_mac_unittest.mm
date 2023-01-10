@@ -132,7 +132,7 @@ class WebAppShortcutCreatorTest : public testing::Test {
 
     override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
     destination_dir_ =
-        override_registration_->test_override->chrome_apps_folder_.GetPath();
+        override_registration_->test_override->chrome_apps_folder();
 
     EXPECT_TRUE(temp_user_data_dir_.CreateUniqueTempDir());
     user_data_dir_ = temp_user_data_dir_.GetPath();
@@ -169,10 +169,7 @@ class WebAppShortcutCreatorTest : public testing::Test {
     // override DCHECK fails if the directories are not empty. To bypass this in
     // this unittest, we manually delete it.
     // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
-    if (override_registration_->test_override->chrome_apps_folder_.IsValid()) {
-      EXPECT_TRUE(
-          override_registration_->test_override->chrome_apps_folder_.Delete());
-    }
+    override_registration_->test_override->DeleteChromeAppsDir();
     override_registration_.reset();
     testing::Test::TearDown();
   }
@@ -894,8 +891,7 @@ TEST_F(WebAppShortcutCreatorTest, RunShortcut) {
 }
 
 TEST_F(WebAppShortcutCreatorTest, CreateFailure) {
-  ASSERT_TRUE(
-      override_registration_->test_override->chrome_apps_folder_.Delete());
+  ASSERT_TRUE(override_registration_->test_override->DeleteChromeAppsDir());
 
   NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
                                                        info_.get());

@@ -16,6 +16,10 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+class Profile;
 
 namespace web_app {
 
@@ -83,18 +87,69 @@ class OsIntegrationTestOverride
   static std::unique_ptr<BlockingRegistration> OverrideForTesting(
       const base::FilePath& base_path = base::FilePath());
 
+  // Looks into shortcuts stored for OS integration and returns if run on OS
+  // login mode is enabled based on the location. This should only be run on
+  // Windows, Mac and Linux.
+  bool IsRunOnOsLoginEnabled(Profile* profile,
+                             const AppId& app_id,
+                             const std::string& app_name);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Reads the icon color for a specific shortcut created
+  absl::optional<SkColor> GetShortcutIconTopLeftColor(
+      Profile* profile,
+      base::FilePath shortcut_dir,
+      const AppId& app_id,
+      const std::string& app_name);
+#endif
+
+  // Gets the current shortcut path based on a shortcut directory, app_id and
+  // app_name. This should only be run on Windows, Mac and Linux.
+  base::FilePath GetShortcutPath(Profile* profile,
+                                 base::FilePath shortcut_dir,
+                                 const AppId& app_id,
+                                 const std::string& app_name);
+
+  // Looks into the current shortcut paths to determine if a shortcut has
+  // been created or not. This should only be run on Windows, Mac and Linux.
+  bool IsShortcutCreated(Profile* profile,
+                         const AppId& app_id,
+                         const std::string& app_name);
+
+  // Delete shortcuts stored in the test override for a specific app. This
+  // should only be run on Windows, Mac and Linux.
+  bool SimulateDeleteShortcutsByUser(Profile* profile,
+                                     const AppId& app_id,
+                                     const std::string& app_name);
+
+  // Used to clear all shortcut override paths during tests. This should only be
+  // run on Windows, Mac and Linux.
+  bool ForceDeleteAllShortcuts();
+
 #if BUILDFLAG(IS_WIN)
-  base::ScopedTempDir desktop_;
-  base::ScopedTempDir application_menu_;
-  base::ScopedTempDir quick_launch_;
-  base::ScopedTempDir startup_;
+  bool DeleteDesktopDirOnWin();
+  bool DeleteApplicationMenuDirOnWin();
+  const base::FilePath& desktop() { return desktop_.GetPath(); }
+  const base::FilePath& application_menu() {
+    return application_menu_.GetPath();
+  }
+  const base::FilePath& quick_launch() { return quick_launch_.GetPath(); }
+  const base::FilePath& startup() { return startup_.GetPath(); }
 #elif BUILDFLAG(IS_MAC)
-  base::ScopedTempDir chrome_apps_folder_;
-  std::map<base::FilePath, bool> startup_enabled_;
+  bool DeleteChromeAppsDir();
+  bool IsChromeAppsValid() { return chrome_apps_folder_.IsValid(); }
+  const base::FilePath& chrome_apps_folder() {
+    return chrome_apps_folder_.GetPath();
+  }
+  void EnableOrDisablePathOnLogin(const base::FilePath& file_path,
+                                  bool enable_on_login);
 #elif BUILDFLAG(IS_LINUX)
-  base::ScopedTempDir desktop_;
-  base::ScopedTempDir startup_;
-  std::vector<LinuxFileRegistration> linux_file_registration_;
+  bool DeleteDesktopDirOnLinux();
+  const base::FilePath& desktop() { return desktop_.GetPath(); }
+  const base::FilePath& startup() { return startup_.GetPath(); }
+  const std::vector<LinuxFileRegistration>& linux_file_registration() {
+    return linux_file_registration_;
+  }
 #endif
 
   // Records all registration events for a given app id & protocol list. Due to
@@ -108,6 +163,27 @@ class OsIntegrationTestOverride
 
   explicit OsIntegrationTestOverride(const base::FilePath& base_path);
   ~OsIntegrationTestOverride();
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Reads an icon file (.ico/.png/.icns) and returns the color at the
+  // top left position (0,0).
+  SkColor GetIconTopLeftColorFromShortcutFile(
+      const base::FilePath& shortcut_path);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  base::ScopedTempDir desktop_;
+  base::ScopedTempDir application_menu_;
+  base::ScopedTempDir quick_launch_;
+  base::ScopedTempDir startup_;
+#elif BUILDFLAG(IS_MAC)
+  base::ScopedTempDir chrome_apps_folder_;
+  std::map<base::FilePath, bool> startup_enabled_;
+#elif BUILDFLAG(IS_LINUX)
+  base::ScopedTempDir desktop_;
+  base::ScopedTempDir startup_;
+  std::vector<LinuxFileRegistration> linux_file_registration_;
+#endif
 
   // |on_destruction_| has it's closure set only once (when BlockingRegistration
   // is destroyed) and executed when OsIntegrationTestOverride is destroyed.

@@ -770,8 +770,8 @@ bool AppShimLaunchDisabled() {
 base::FilePath GetChromeAppsFolder() {
   auto override = GetOsIntegrationTestOverride();
   if (override) {
-    if (override->chrome_apps_folder_.IsValid()) {
-      return override->chrome_apps_folder_.GetPath();
+    if (override->IsChromeAppsValid()) {
+      return override->chrome_apps_folder();
     }
     return base::FilePath();
   }
@@ -802,7 +802,8 @@ void WebAppAutoLoginUtil::AddToLoginItems(const base::FilePath& app_bundle_path,
                                           bool hide_on_startup) {
   auto override = GetOsIntegrationTestOverride();
   if (override) {
-    override->startup_enabled_[app_bundle_path] = true;
+    override->EnableOrDisablePathOnLogin(app_bundle_path,
+                                         /*enabled_on_start=*/true);
   } else {
     base::mac::AddToLoginItems(app_bundle_path, hide_on_startup);
   }
@@ -812,7 +813,8 @@ void WebAppAutoLoginUtil::RemoveFromLoginItems(
     const base::FilePath& app_bundle_path) {
   auto override = GetOsIntegrationTestOverride();
   if (override) {
-    override->startup_enabled_[app_bundle_path] = false;
+    override->EnableOrDisablePathOnLogin(app_bundle_path,
+                                         /*enabled_on_start=*/false);
   } else {
     base::mac::RemoveFromLoginItems(app_bundle_path);
   }

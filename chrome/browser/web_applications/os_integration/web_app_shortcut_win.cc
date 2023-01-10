@@ -777,22 +777,20 @@ std::vector<base::FilePath> GetShortcutPaths(
     base::FilePath test_path;
   } locations[] = {
       {creation_locations.on_desktop, ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-       testing_shortcuts ? testing_shortcuts->desktop_.GetPath()
-                         : base::FilePath()},
+       testing_shortcuts ? testing_shortcuts->desktop() : base::FilePath()},
       {creation_locations.applications_menu_location ==
            APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
        ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
-       testing_shortcuts ? testing_shortcuts->application_menu_.GetPath()
+       testing_shortcuts ? testing_shortcuts->application_menu()
                          : base::FilePath()},
       {// For some versions of Windows, `in_quick_launch_bar` indicates that we
        // are pinning to taskbar. This needs to be handled by callers.
        creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar(),
        ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH,
-       testing_shortcuts ? testing_shortcuts->quick_launch_.GetPath()
+       testing_shortcuts ? testing_shortcuts->quick_launch()
                          : base::FilePath()},
       {creation_locations.in_startup, ShellUtil::SHORTCUT_LOCATION_STARTUP,
-       testing_shortcuts ? testing_shortcuts->startup_.GetPath()
-                         : base::FilePath()}};
+       testing_shortcuts ? testing_shortcuts->startup() : base::FilePath()}};
 
   // Populate shortcut_paths.
   for (auto location : locations) {

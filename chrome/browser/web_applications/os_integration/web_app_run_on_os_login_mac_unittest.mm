@@ -81,7 +81,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
 
     override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
     destination_dir_ =
-        override_registration_->test_override->chrome_apps_folder_.GetPath();
+        override_registration_->test_override->chrome_apps_folder();
 
     EXPECT_TRUE(temp_user_data_dir_.CreateUniqueTempDir());
     user_data_dir_ = temp_user_data_dir_.GetPath();
@@ -115,8 +115,7 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     // override DCHECK fails if the directories are not empty. To bypass this in
     // this unittest, we manually delete it.
     // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
-    EXPECT_TRUE(
-        override_registration_->test_override->chrome_apps_folder_.Delete());
+    EXPECT_TRUE(override_registration_->test_override->DeleteChromeAppsDir());
     override_registration_.reset();
     WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting();
     WebAppTest::TearDown();

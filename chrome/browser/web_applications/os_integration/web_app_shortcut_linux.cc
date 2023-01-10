@@ -62,7 +62,7 @@ base::FilePath GetDesktopPath() {
   base::FilePath desktop_path;
   auto test_override = web_app::GetOsIntegrationTestOverride();
   if (test_override) {
-    return test_override->desktop_.GetPath();
+    return test_override->desktop();
   }
   base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
   return desktop_path;
@@ -71,7 +71,7 @@ base::FilePath GetDesktopPath() {
 base::FilePath GetAutostartPath(base::Environment* env) {
   auto test_override = web_app::GetOsIntegrationTestOverride();
   if (test_override) {
-    return test_override->startup_.GetPath();
+    return test_override->startup();
   }
   return AutoStart::GetAutostartDirectory(env);
 }
