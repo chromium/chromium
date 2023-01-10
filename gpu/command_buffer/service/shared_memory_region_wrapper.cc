@@ -93,21 +93,42 @@ bool SharedMemoryRegionWrapper::Initialize(
     return false;
   }
 
-  // Add plane offset separately so that we map the entire buffer even if we're
-  // accessing an individual plane - this helps with shared memory overlays on
-  // Windows by allowing access via the Y plane shared image only.
-  const size_t plane_index = GetPlaneIndex(plane, format);
-  const size_t plane_offset =
-      gfx::BufferOffsetForBufferFormat(size, format, plane_index);
+  size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
+  planes_.resize(num_planes);
+
+  if (num_planes > 1 && plane == gfx::BufferPlane::DEFAULT) {
+    // The offset/stride only make sense when GpuMemoryBufferHandle is for a
+    // single plane. Stride should be set as the expected stride for first plane
+    // and offset should always be zero.
+    DCHECK_EQ(static_cast<size_t>(handle.stride),
+              gfx::RowSizeForBufferFormat(size.width(), format, /*plane=*/0));
+    DCHECK_EQ(handle.offset, 0u);
+
+    for (size_t plane_index = 0; plane_index < num_planes; ++plane_index) {
+      const size_t plane_offset =
+          gfx::BufferOffsetForBufferFormat(size, format, plane_index);
+
+      planes_[plane_index].offset = memory_offset + plane_offset;
+      planes_[plane_index].stride =
+          RowSizeForBufferFormat(size.width(), format, plane_index);
+    }
+  } else {
+    // Add plane offset separately so that we map the entire buffer even if
+    // we're accessing an individual plane - this helps with shared memory
+    // overlays on Windows by allowing access via the Y plane shared image only.
+    const size_t plane_index = GetPlaneIndex(plane, format);
+    const size_t plane_offset =
+        gfx::BufferOffsetForBufferFormat(size, format, plane_index);
 #if DCHECK_IS_ON()
-  const gfx::Size plane_size = GetPlaneSize(plane, size);
-  const size_t plane_size_bytes =
-      gfx::PlaneSizeForBufferFormat(plane_size, format, plane_index);
-  DCHECK_LE(memory_offset + plane_offset + plane_size_bytes, map_size);
+    const gfx::Size plane_size = GetPlaneSize(plane, size);
+    const size_t plane_size_bytes =
+        gfx::PlaneSizeForBufferFormat(plane_size, format, plane_index);
+    DCHECK_LE(memory_offset + plane_offset + plane_size_bytes, map_size);
 #endif
 
-  offset_ = memory_offset + plane_offset;
-  stride_ = handle.stride;
+    planes_[0].offset = memory_offset + plane_offset;
+    planes_[0].stride = handle.stride;
+  }
 
   return true;
 }
@@ -116,22 +137,28 @@ bool SharedMemoryRegionWrapper::IsValid() const {
   return mapping_.IsValid();
 }
 
-uint8_t* SharedMemoryRegionWrapper::GetMemory() const {
+uint8_t* SharedMemoryRegionWrapper::GetMemory(int plane_index) const {
   DCHECK(IsValid());
-  return mapping_.GetMemoryAs<uint8_t>() + offset_;
+  return mapping_.GetMemoryAs<uint8_t>() + planes_[plane_index].offset;
 }
 
-base::span<const uint8_t> SharedMemoryRegionWrapper::GetMemoryAsSpan() const {
+size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {
   DCHECK(IsValid());
-  return mapping_.GetMemoryAsSpan<const uint8_t>().subspan(offset_);
+  return planes_[plane_index].stride;
 }
 
-size_t SharedMemoryRegionWrapper::GetStride() const {
+SkPixmap SharedMemoryRegionWrapper::MakePixmapForPlane(const SkImageInfo& info,
+                                                       int plane_index) const {
   DCHECK(IsValid());
-  return stride_;
+
+  SkPixmap pixmap(info, GetMemory(plane_index), GetStride(plane_index));
+  DCHECK_LE(planes_[plane_index].offset + pixmap.computeByteSize(),
+            mapping_.mapped_size());
+  return pixmap;
 }
 
-const base::UnguessableToken& SharedMemoryRegionWrapper::GetMappingGuid() {
+const base::UnguessableToken& SharedMemoryRegionWrapper::GetMappingGuid()
+    const {
   return mapping_.guid();
 }
 

@@ -108,7 +108,8 @@ bool SharedImageBacking::CopyToGpuMemoryBuffer() {
 
 void SharedImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
 
-bool SharedImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool SharedImageBacking::UploadFromMemory(
+    const std::vector<SkPixmap>& pixmaps) {
   NOTREACHED();
   return false;
 }

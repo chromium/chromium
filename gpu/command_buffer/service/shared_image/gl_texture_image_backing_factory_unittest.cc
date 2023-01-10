@@ -562,7 +562,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   bitmap.allocPixels(info, min_stride);
   bitmap.eraseColor(SK_ColorRED);
 
-  EXPECT_TRUE(backing->UploadFromMemory(bitmap.pixmap()));
+  EXPECT_TRUE(backing->UploadFromMemory({bitmap.pixmap()}));
 
   // Allocate a bitmap with much larger stride than necessary. Upload from that
   // bitmap should still work correctly.
@@ -571,7 +571,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   larger_bitmap.allocPixels(info, larger_stride);
   larger_bitmap.eraseColor(SK_ColorRED);
 
-  EXPECT_TRUE(backing->UploadFromMemory(larger_bitmap.pixmap()));
+  EXPECT_TRUE(backing->UploadFromMemory({larger_bitmap.pixmap()}));
 }
 
 TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
@@ -610,7 +610,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
   bitmap.allocPixels(info, min_stride);
   bitmap.eraseColor(SK_ColorRED);
 
-  EXPECT_TRUE(backing->UploadFromMemory(bitmap.pixmap()));
+  EXPECT_TRUE(backing->UploadFromMemory({bitmap.pixmap()}));
 
   {
     // Do readback with same stride and validate pixels match what was uploaded.

@@ -507,7 +507,11 @@ void ExternalVkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
 }
 
-bool ExternalVkImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool ExternalVkImageBacking::UploadFromMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), 1u);
+  auto& pixmap = pixmaps[0];
+
   if (!UploadToVkImage(pixmap))
     return false;
 

@@ -313,7 +313,10 @@ bool OzoneImageBacking::VaSync() {
   return !has_pending_va_writes_;
 }
 
-bool OzoneImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), 1u);
+  auto& pixmap = pixmaps[0];
+
   DCHECK(!pixmap.info().isEmpty());
 
   if (context_state_->context_lost())

@@ -8,6 +8,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -136,7 +137,7 @@ bool WrappedSkImageBackingFactory::IsSupported(
   // Currently, WrappedSkImage does not support LUMINANCE_8 format and this
   // format is used for single channel planes. See https://crbug.com/1252502 for
   // more details.
-  if (format.resource_format() == viz::LUMINANCE_8) {
+  if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
     return false;
   }
 

@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/raw_draw_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
@@ -79,6 +80,13 @@
 namespace gpu {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+// Only allow shmem overlays for NV12 on Windows.
+constexpr bool kAllowShmOverlays = true;
+#else
+constexpr bool kAllowShmOverlays = false;
+#endif
 
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   switch (type) {
@@ -372,13 +380,26 @@ bool SharedImageFactory::CreateSharedImage(
   // BufferPlane parameter.
   DCHECK(format.is_multi_plane());
 
+  // Since client GMB code still operates on BufferFormat the SharedImageFormat
+  // received here must have an equivalent BufferFormat or something has gone
+  // wrong.
+  DCHECK(HasEquivalentBufferFormat(format));
+
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 
-  SharedImageBackingFactory* factory = nullptr;
-  if (backing_factory_for_testing_) {
-    factory = backing_factory_for_testing_;
-  } else {
-    factory = GetFactoryByUsage(usage, format, size, {}, gmb_type);
+  bool use_compound = false;
+  SharedImageBackingFactory* factory =
+      GetFactoryByUsage(usage, format, size, {}, gmb_type);
+
+  if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER &&
+      !IsSharedBetweenThreads(usage)) {
+    // Check if CompoundImageBacking can hold shared memory buffer plus
+    // another GPU backing type to satisfy requirements.
+    if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size, format)) {
+      factory = GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, format,
+                                  size, /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+      use_compound = factory != nullptr;
+    }
   }
 
   if (!factory) {
@@ -386,11 +407,17 @@ bool SharedImageFactory::CreateSharedImage(
     return false;
   }
 
-  // TODO(kylechar): Might need to get `client_id` from caller and pass it along
-  // for mac.
-  auto backing = factory->CreateSharedImage(mailbox, format, size, color_space,
-                                            surface_origin, alpha_type, usage,
-                                            std::move(buffer_handle));
+  std::unique_ptr<SharedImageBacking> backing;
+  if (use_compound) {
+    backing = CompoundImageBacking::CreateSharedMemory(
+        factory, kAllowShmOverlays, mailbox, std::move(buffer_handle), format,
+        size, color_space, surface_origin, alpha_type, usage);
+  } else {
+    backing = factory->CreateSharedImage(mailbox, format, size, color_space,
+                                         surface_origin, alpha_type, usage,
+                                         std::move(buffer_handle));
+  }
+
   if (backing) {
     DVLOG(1) << "CreateSharedImageWithBuffer[" << backing->GetName()
              << "] size=" << size.ToString()
@@ -447,15 +474,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
-    // Only allow shmem overlays for NV12 on Windows.
-#if BUILDFLAG(IS_WIN)
-    const bool allow_shm_overlays =
-        format == gfx::BufferFormat::YUV_420_BIPLANAR;
-#else
-    const bool allow_shm_overlays = false;
-#endif
     backing = CompoundImageBacking::CreateSharedMemory(
-        factory, allow_shm_overlays, mailbox, std::move(handle), format, plane,
+        factory, kAllowShmOverlays, mailbox, std::move(handle), format, plane,
         size, color_space, surface_origin, alpha_type, usage);
   } else {
     backing = factory->CreateSharedImage(mailbox, client_id, std::move(handle),

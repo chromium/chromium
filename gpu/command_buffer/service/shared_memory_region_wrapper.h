@@ -8,6 +8,8 @@
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/unguessable_token.h"
+#include "gpu/gpu_gles2_export.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -19,7 +21,7 @@ namespace gpu {
 
 // Wrapper for shared memory region from a GpuMemoryBuffer with type
 // SHARED_MEMORY_BUFFER.
-class SharedMemoryRegionWrapper {
+class GPU_GLES2_EXPORT SharedMemoryRegionWrapper {
  public:
   SharedMemoryRegionWrapper();
   SharedMemoryRegionWrapper(SharedMemoryRegionWrapper&& other);
@@ -35,15 +37,22 @@ class SharedMemoryRegionWrapper {
                   gfx::BufferPlane plane);
 
   bool IsValid() const;
-  uint8_t* GetMemory() const;
-  base::span<const uint8_t> GetMemoryAsSpan() const;
-  size_t GetStride() const;
-  const base::UnguessableToken& GetMappingGuid();
+  uint8_t* GetMemory(int plane_index) const;
+  size_t GetStride(int plane_index) const;
+
+  // Returns SkPixmap pointing to memory for offset.
+  SkPixmap MakePixmapForPlane(const SkImageInfo& info, int plane_index) const;
+
+  const base::UnguessableToken& GetMappingGuid() const;
 
  private:
+  struct PlaneData {
+    size_t offset = 0;
+    size_t stride = 0;
+  };
+
   base::WritableSharedMemoryMapping mapping_;
-  size_t offset_ = 0;
-  size_t stride_ = 0;
+  std::vector<PlaneData> planes_;
 };
 
 }  // namespace gpu

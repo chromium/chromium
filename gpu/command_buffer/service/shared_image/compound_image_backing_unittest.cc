@@ -4,12 +4,14 @@
 
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/command_buffer/service/test_memory_tracker.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
@@ -107,6 +109,12 @@ class CompoundImageBackingTest : public testing::Test {
     return static_cast<TestImageBacking*>(gpu_backing);
   }
 
+  SharedMemoryImageBacking* GetShmImageBacking(CompoundImageBacking* backing) {
+    auto* shm_backing = backing->elements_[0].backing.get();
+    DCHECK_EQ(shm_backing->GetType(), SharedImageBackingType::kSharedMemory);
+    return static_cast<SharedMemoryImageBacking*>(shm_backing);
+  }
+
   bool GetShmHasLatestContent(CompoundImageBacking* backing) {
     return backing->elements_[0].content_id_ == backing->latest_content_id_;
   }
@@ -131,6 +139,26 @@ class CompoundImageBackingTest : public testing::Test {
     return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, allow_shm_overlays, Mailbox::GenerateForSharedImage(),
         std::move(handle), buffer_format, gfx::BufferPlane::DEFAULT, size,
+        gfx::ColorSpace(), kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+        SHARED_IMAGE_USAGE_DISPLAY_READ);
+  }
+
+  std::unique_ptr<SharedImageBacking> CreateMultiplanarCompoundBacking(
+      bool allow_shm_overlays = false) {
+    constexpr gfx::Size size(100, 100);
+    constexpr gfx::BufferFormat buffer_format =
+        gfx::BufferFormat::YUV_420_BIPLANAR;
+    constexpr gfx::BufferUsage buffer_usage =
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
+
+    gfx::GpuMemoryBufferHandle handle =
+        GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+            static_cast<gfx::GpuMemoryBufferId>(1), size, buffer_format,
+            buffer_usage);
+
+    return CompoundImageBacking::CreateSharedMemory(
+        &test_factory_, allow_shm_overlays, Mailbox::GenerateForSharedImage(),
+        std::move(handle), viz::MultiPlaneFormat::kYUV_420_BIPLANAR, size,
         gfx::ColorSpace(), kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
         SHARED_IMAGE_USAGE_DISPLAY_READ);
   }
@@ -366,6 +394,29 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
   // The backing factory to create GPU backing should be reset to avoid logging
   // about destroyed image multiple times.
   EXPECT_FALSE(HasGpuCreateBackingCallback(compound_backing));
+}
+
+TEST_F(CompoundImageBackingTest, Multiplanar) {
+  auto backing = CreateMultiplanarCompoundBacking();
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+
+  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+
+  // There should be two planes stored in shared memory backing.
+  auto* shm_backing = GetShmImageBacking(compound_backing);
+  EXPECT_EQ(shm_backing->pixmaps().size(), 2u);
+
+  auto overlay_rep =
+      manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+
+  auto* gpu_backing = GetGpuBacking(compound_backing);
+
+  // The compound backing hasn't been accessed yet.
+  EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+
+  // First access should trigger upload from memory to GPU.
+  overlay_rep->BeginScopedReadAccess();
+  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 }
 
 }  // namespace gpu

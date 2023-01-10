@@ -59,7 +59,7 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   // gpu::SharedImageBacking:
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
-  bool UploadFromMemory(const SkPixmap& pixmap) override;
+  bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
 
   enum class AccessStream { kGL, kVulkan, kWebGPU, kOverlay, kLast };

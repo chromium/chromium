@@ -287,11 +287,15 @@ SharedImageBackingType AngleVulkanImageBacking::GetType() const {
   return SharedImageBackingType::kAngleVulkan;
 }
 
-bool AngleVulkanImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool AngleVulkanImageBacking::UploadFromMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), 1u);
+
   PrepareBackendTexture();
   DCHECK(backend_texture_.isValid());
 
-  bool result = gr_context()->updateBackendTexture(backend_texture_, pixmap);
+  bool result =
+      gr_context()->updateBackendTexture(backend_texture_, pixmaps[0]);
   DCHECK(result);
   SyncImageLayoutFromBackendTexture();
   return result;
@@ -555,7 +559,7 @@ void AngleVulkanImageBacking::WritePixels(
     const base::span<const uint8_t>& pixel_data,
     size_t stride) {
   SkPixmap pixmap(AsSkImageInfo(), pixel_data.data(), stride);
-  UploadFromMemory(pixmap);
+  UploadFromMemory({pixmap});
 }
 
 }  // namespace gpu

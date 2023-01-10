@@ -203,7 +203,11 @@ void GLTextureImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
 
 void GLTextureImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
 
-bool GLTextureImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool GLTextureImageBacking::UploadFromMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), 1u);
+  auto& pixmap = pixmaps[0];
+
   DCHECK(SupportsPixelUploadWithFormat(format()));
   DCHECK(gl::GLContext::GetCurrent());
 

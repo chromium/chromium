@@ -20,6 +20,14 @@ int BitsPerPixel(viz::SharedImageFormat format) {
   return viz::BitsPerPixel(format.resource_format());
 }
 
+bool HasEquivalentBufferFormat(viz::SharedImageFormat format) {
+  return format.is_single_plane() ||
+         format == viz::MultiPlaneFormat::kYVU_420 ||
+         format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR ||
+         format == viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR ||
+         format == viz::MultiPlaneFormat::kP010;
+}
+
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     return viz::BufferFormat(format.resource_format());
@@ -83,8 +91,9 @@ GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
 }
 
 GLenum GLDataType(viz::SharedImageFormat format) {
-  if (format.is_single_plane())
+  if (format.is_single_plane()) {
     return viz::GLDataType(format.resource_format());
+  }
 
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
@@ -100,8 +109,9 @@ GLenum GLDataType(viz::SharedImageFormat format) {
 
 GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
-  if (format.is_single_plane())
+  if (format.is_single_plane()) {
     return viz::GLDataFormat(format.resource_format());
+  }
 
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel planes Y, U, V, A return GL_RED_EXT.
@@ -113,8 +123,9 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
 
 GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
-  if (format.is_single_plane())
+  if (format.is_single_plane()) {
     return viz::GLInternalFormat(format.resource_format());
+  }
 
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel 8-bit planes Y, U, V, A return GL_RED_EXT.
@@ -138,9 +149,10 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
                             bool use_angle_rgbx_format,
                             int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
-  if (format.is_single_plane())
+  if (format.is_single_plane()) {
     return viz::TextureStorageFormat(format.resource_format(),
                                      use_angle_rgbx_format);
+  }
 
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel 8-bit planes Y, U, V, A return GL_R8_EXT.

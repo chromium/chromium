@@ -169,9 +169,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   virtual void Update(std::unique_ptr<gfx::GpuFence> in_fence);
 
-  // Uploads pixels from memory into GPU texture. Backings must implement this
-  // if they support `SHARED_IMAGE_USAGE_CPU_UPLOAD`.
-  virtual bool UploadFromMemory(const SkPixmap& pixmap);
+  // Uploads pixels from memory into GPU texture. `pixmaps` should have one
+  // pixmap per plane. Backings must implement this if they support
+  // `SHARED_IMAGE_USAGE_CPU_UPLOAD`.
+  virtual bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps);
 
   // Reads back pixels from GPU texture into memory in `pixmap`.
   virtual bool ReadbackToMemory(SkPixmap& pixmap);

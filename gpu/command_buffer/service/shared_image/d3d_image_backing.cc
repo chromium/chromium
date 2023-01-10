@@ -457,7 +457,10 @@ void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   // which are synonymous with D3D textures, and no explicit update is needed.
 }
 
-bool D3DImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), 1u);
+  auto& pixmap = pixmaps[0];
+
   const uint8_t* source_memory = static_cast<const uint8_t*>(pixmap.addr());
   const size_t source_stride = pixmap.info().minRowBytes();
 

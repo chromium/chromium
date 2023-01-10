@@ -279,7 +279,10 @@ void WrappedSkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   NOTREACHED();
 }
 
-bool WrappedSkImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+bool WrappedSkImageBacking::UploadFromMemory(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), 1u);
+
   if (context_state_->context_lost()) {
     return false;
   }
@@ -287,7 +290,7 @@ bool WrappedSkImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   DCHECK(context_state_->IsCurrent(nullptr));
 
   return context_state_->gr_context()->updateBackendTexture(
-      backend_texture_, &pixmap, /*numLevels=*/1, nullptr, nullptr);
+      backend_texture_, &pixmaps[0], /*numLevels=*/1, nullptr, nullptr);
 }
 
 sk_sp<SkPromiseImageTexture> WrappedSkImageBacking::GetPromiseTexture() {

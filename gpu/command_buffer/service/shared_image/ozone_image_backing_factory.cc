@@ -35,25 +35,6 @@
 namespace gpu {
 namespace {
 
-// Returns BufferFormat for given `format`.
-gfx::BufferFormat GetBufferFormat(viz::SharedImageFormat format) {
-  if (format.is_single_plane())
-    viz::BufferFormat(format.resource_format());
-
-  switch (format.plane_config()) {
-    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-      return gfx::BufferFormat::YVU_420;
-    case viz::SharedImageFormat::PlaneConfig::kY_UV:
-      return format.channel_format() ==
-                     viz::SharedImageFormat::ChannelFormat::k10
-                 ? gfx::BufferFormat::P010
-                 : gfx::BufferFormat::YUV_420_BIPLANAR;
-    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-      return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-  }
-  NOTREACHED();
-}
-
 gfx::BufferUsage GetBufferUsage(uint32_t usage) {
   if (usage & SHARED_IMAGE_USAGE_WEBGPU) {
     // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
@@ -159,8 +140,9 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     SkImageInfo info = backing->AsSkImageInfo();
     SkPixmap pixmap(info, pixel_data.data(), info.minRowBytes());
 
-    if (!backing->UploadFromMemory(pixmap))
+    if (!backing->UploadFromMemory({pixmap})) {
       return nullptr;
+    }
   }
 
   return backing;
@@ -217,7 +199,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   scoped_refptr<gfx::NativePixmap> pixmap =
       surface_factory->CreateNativePixmapFromHandle(
-          kNullSurfaceHandle, size, GetBufferFormat(format),
+          kNullSurfaceHandle, size, ToBufferFormat(format),
           std::move(handle.native_pixmap_handle));
   if (!pixmap) {
     return nullptr;
