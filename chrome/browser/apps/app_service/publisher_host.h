@@ -19,12 +19,13 @@ class WebApps;
 namespace apps {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+class BorealisApps;
+class BruschettaApps;
 class BuiltInChromeOsApps;
 class CrostiniApps;
 class ExtensionAppsChromeOs;
 class PluginVmApps;
 class StandaloneBrowserApps;
-class BorealisApps;
 #else
 class ExtensionApps;
 #endif
@@ -56,6 +57,8 @@ class PublisherHost {
   raw_ptr<AppServiceProxy> proxy_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<BorealisApps> borealis_apps_;
+  std::unique_ptr<BruschettaApps> bruschetta_apps_;
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> chrome_apps_;
@@ -63,7 +66,6 @@ class PublisherHost {
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
   std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
   std::unique_ptr<web_app::WebApps> web_apps_;
-  std::unique_ptr<BorealisApps> borealis_apps_;
 #else
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> chrome_apps_;

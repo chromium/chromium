@@ -13,6 +13,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
+#include "chrome/browser/apps/app_service/publishers/bruschetta_apps.h"
 #include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
@@ -109,6 +110,9 @@ void PublisherHost::Initialize() {
     borealis_apps_ = std::make_unique<BorealisApps>(proxy_);
     borealis_apps_->Initialize();
   }
+
+  bruschetta_apps_ = std::make_unique<BruschettaApps>(proxy_);
+  bruschetta_apps_->Initialize();
 
   crostini_apps_ = std::make_unique<CrostiniApps>(proxy_);
   crostini_apps_->Initialize();

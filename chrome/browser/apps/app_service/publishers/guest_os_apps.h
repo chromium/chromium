@@ -1,0 +1,93 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_GUEST_OS_APPS_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_GUEST_OS_APPS_H_
+
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+
+class Profile;
+
+namespace apps {
+
+class PublisherHost;
+class GuestOSAppsTestHelper;
+
+// GuestOSApps holds the common code for GuestOS app publishers (in the App
+// Service sense). Subclasses like CrostiniApps and BruschettaApps should
+// inherit from this.
+class GuestOSApps : public KeyedService,
+                    public AppPublisher,
+                    public guest_os::GuestOsRegistryService::Observer {
+ public:
+  explicit GuestOSApps(AppServiceProxy* proxy);
+  GuestOSApps(const GuestOSApps&) = delete;
+  GuestOSApps& operator=(const GuestOSApps&) = delete;
+  ~GuestOSApps() override;
+
+ private:
+  friend class PublisherHost;  // It calls Initialize().
+  friend class GuestOSAppsTestHelper;
+
+  // Returns false if this kind of GuestOS isn't supported, e.g. missing
+  // hardware capabilities. This prevents the app publisher from being
+  // registered at all.
+  virtual bool CouldBeAllowed() const = 0;
+
+  virtual apps::AppType AppType() const = 0;
+  virtual guest_os::VmType VmType() const = 0;
+
+  virtual void Initialize();
+
+  // apps::AppPublisher overrides.
+  void GetCompressedIconData(const std::string& app_id,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             LoadIconCallback callback) override;
+
+  // GuestOsRegistryService::Observer overrides.
+  void OnRegistryUpdated(
+      guest_os::GuestOsRegistryService* registry_service,
+      guest_os::VmType vm_type,
+      const std::vector<std::string>& updated_apps,
+      const std::vector<std::string>& removed_apps,
+      const std::vector<std::string>& inserted_apps) override;
+
+  AppPtr CreateApp(
+      const guest_os::GuestOsRegistryService::Registration& registration,
+      bool generate_new_icon_key);
+
+  // CreateApp calls this to override App defaults with per-OS values.
+  virtual void CreateAppOverrides(
+      const guest_os::GuestOsRegistryService::Registration& registration,
+      App* app) {}
+
+ protected:
+  const raw_ptr<Profile> profile() const { return profile_; }
+  const raw_ptr<guest_os::GuestOsRegistryService> registry() const {
+    return registry_;
+  }
+
+ private:
+  const raw_ptr<Profile> profile_;
+  raw_ptr<guest_os::GuestOsRegistryService> registry_;
+  base::ScopedObservation<guest_os::GuestOsRegistryService, GuestOSApps>
+      registry_observation_{this};
+  apps_util::IncrementingIconKeyFactory icon_key_factory_;
+};
+
+}  // namespace apps
+
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_GUEST_OS_APPS_H_

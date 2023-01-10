@@ -111,7 +111,7 @@ TEST_F(CrostiniAppsTest, AppServiceHasCrostiniIntentFilters) {
   std::vector<std::unique_ptr<IntentFilter>> intent_filters =
       GetIntentFiltersForApp(app_id);
 
-  EXPECT_EQ(intent_filters.size(), 1U);
+  ASSERT_EQ(intent_filters.size(), 1U);
   EXPECT_EQ(intent_filters[0]->conditions.size(), 2U);
 
   // Check that the filter has the correct action type.
