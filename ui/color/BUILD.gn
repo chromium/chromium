@@ -145,6 +145,7 @@ component("mixers") {
     ":color",
     ":color_headers",
     "//skia",
+    "//third_party/material_color_utilities",
     "//ui/gfx:color_utils",
   ]
 
