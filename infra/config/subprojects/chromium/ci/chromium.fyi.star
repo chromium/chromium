@@ -344,7 +344,6 @@ ci.builder(
 ci.builder(
     name = "linux-chromeos-annotator-rel",
     builderless = True,
-    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
