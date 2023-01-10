@@ -178,7 +178,7 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 }
 
 #directory-tree .tree-item:not([disabled])
-  .tree-row[active] > .file-row > .item-icon {
+  .tree-row[active] > .file-row > .item-icon:not([style*='background-image']) {
   background-color: var(--cros-icon-color-selection);
 }
 
