@@ -5160,7 +5160,6 @@ static_library("browser") {
       "//components/metrics/structured:neutrino_logging_util",
       "//components/quirks",
       "//components/services/app_service/public/cpp:instance_update",
-      "//components/services/app_service/public/cpp:permission_utils",
       "//components/services/font:lib",
       "//components/services/font/public/mojom",
       "//components/session_manager/core",

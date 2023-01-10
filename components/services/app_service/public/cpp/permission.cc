@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/services/app_service/public/cpp/permission.h"
+
+#include <sstream>
+
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
@@ -126,140 +129,6 @@ bool IsEqual(const Permissions& source, const Permissions& target) {
     }
   }
   return true;
-}
-
-PermissionType ConvertMojomPermissionTypeToPermissionType(
-    apps::mojom::PermissionType mojom_permission_type) {
-  switch (mojom_permission_type) {
-    case apps::mojom::PermissionType::kUnknown:
-      return PermissionType::kUnknown;
-    case apps::mojom::PermissionType::kCamera:
-      return PermissionType::kCamera;
-    case apps::mojom::PermissionType::kLocation:
-      return PermissionType::kLocation;
-    case apps::mojom::PermissionType::kMicrophone:
-      return PermissionType::kMicrophone;
-    case apps::mojom::PermissionType::kNotifications:
-      return PermissionType::kNotifications;
-    case apps::mojom::PermissionType::kContacts:
-      return PermissionType::kContacts;
-    case apps::mojom::PermissionType::kStorage:
-      return PermissionType::kStorage;
-    case apps::mojom::PermissionType::kPrinting:
-      return PermissionType::kPrinting;
-    case apps::mojom::PermissionType::kFileHandling:
-      return PermissionType::kFileHandling;
-  }
-}
-
-apps::mojom::PermissionType ConvertPermissionTypeToMojomPermissionType(
-    PermissionType permission_type) {
-  switch (permission_type) {
-    case PermissionType::kUnknown:
-      return apps::mojom::PermissionType::kUnknown;
-    case PermissionType::kCamera:
-      return apps::mojom::PermissionType::kCamera;
-    case PermissionType::kLocation:
-      return apps::mojom::PermissionType::kLocation;
-    case PermissionType::kMicrophone:
-      return apps::mojom::PermissionType::kMicrophone;
-    case PermissionType::kNotifications:
-      return apps::mojom::PermissionType::kNotifications;
-    case PermissionType::kContacts:
-      return apps::mojom::PermissionType::kContacts;
-    case PermissionType::kStorage:
-      return apps::mojom::PermissionType::kStorage;
-    case PermissionType::kPrinting:
-      return apps::mojom::PermissionType::kPrinting;
-    case PermissionType::kFileHandling:
-      return apps::mojom::PermissionType::kFileHandling;
-  }
-}
-
-TriState ConvertMojomTriStateToTriState(apps::mojom::TriState mojom_tri_state) {
-  switch (mojom_tri_state) {
-    case apps::mojom::TriState::kAllow:
-      return TriState::kAllow;
-    case apps::mojom::TriState::kBlock:
-      return TriState::kBlock;
-    case apps::mojom::TriState::kAsk:
-      return TriState::kAsk;
-  }
-}
-
-apps::mojom::TriState ConvertTriStateToMojomTriState(TriState tri_state) {
-  switch (tri_state) {
-    case TriState::kAllow:
-      return apps::mojom::TriState::kAllow;
-    case TriState::kBlock:
-      return apps::mojom::TriState::kBlock;
-    case TriState::kAsk:
-      return apps::mojom::TriState::kAsk;
-  }
-}
-
-PermissionValuePtr ConvertMojomPermissionValueToPermissionValue(
-    const apps::mojom::PermissionValuePtr& mojom_permission_value) {
-  if (!mojom_permission_value) {
-    return nullptr;
-  }
-
-  if (mojom_permission_value->is_tristate_value()) {
-    return std::make_unique<PermissionValue>(ConvertMojomTriStateToTriState(
-        mojom_permission_value->get_tristate_value()));
-  } else if (mojom_permission_value->is_bool_value()) {
-    return std::make_unique<PermissionValue>(
-        mojom_permission_value->get_bool_value());
-  }
-  return nullptr;
-}
-
-apps::mojom::PermissionValuePtr ConvertPermissionValueToMojomPermissionValue(
-    const PermissionValuePtr& permission_value) {
-  if (!permission_value) {
-    return nullptr;
-  }
-
-  if (absl::holds_alternative<bool>(permission_value->value)) {
-    return apps::mojom::PermissionValue::NewBoolValue(
-        absl::get<bool>(permission_value->value));
-  }
-  if (absl::holds_alternative<TriState>(permission_value->value)) {
-    return apps::mojom::PermissionValue::NewTristateValue(
-        ConvertTriStateToMojomTriState(
-            absl::get<TriState>(permission_value->value)));
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
-PermissionPtr ConvertMojomPermissionToPermission(
-    const apps::mojom::PermissionPtr& mojom_permission) {
-  if (!mojom_permission) {
-    return nullptr;
-  }
-
-  return std::make_unique<Permission>(
-      ConvertMojomPermissionTypeToPermissionType(
-          mojom_permission->permission_type),
-      ConvertMojomPermissionValueToPermissionValue(mojom_permission->value),
-      mojom_permission->is_managed);
-}
-
-apps::mojom::PermissionPtr ConvertPermissionToMojomPermission(
-    const PermissionPtr& permission) {
-  auto mojom_permission = apps::mojom::Permission::New();
-  if (!permission) {
-    return mojom_permission;
-  }
-
-  mojom_permission->permission_type =
-      ConvertPermissionTypeToMojomPermissionType(permission->permission_type);
-  mojom_permission->value =
-      ConvertPermissionValueToMojomPermissionValue(permission->value);
-  mojom_permission->is_managed = permission->is_managed;
-  return mojom_permission;
 }
 
 }  // namespace apps
