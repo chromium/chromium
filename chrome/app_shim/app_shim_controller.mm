@@ -4,9 +4,6 @@
 
 #include "chrome/app_shim/app_shim_controller.h"
 
-#include "base/memory/raw_ptr.h"
-#import "base/task/single_thread_task_runner.h"
-
 #import <Cocoa/Cocoa.h>
 #include <mach/message.h>
 
@@ -22,9 +19,11 @@
 #include "base/mac/launch_services_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_delegate.h"
 #include "chrome/app_shim/app_shim_render_widget_host_view_mac_delegate.h"
@@ -152,14 +151,16 @@ void AppShimController::OnAppFinishedLaunching() {
   DCHECK_EQ(init_state_, InitState::kWaitingForAppToFinishLaunch);
   init_state_ = InitState::kWaitingForChromeReady;
 
-  // Ensure Chrome is launched.
-  FindOrLaunchChrome();
+  if (FindOrLaunchChrome()) {
+    // Start polling to see if Chrome is ready to connect.
+    PollForChromeReady(kPollTimeoutSeconds);
+  }
 
-  // Start polling to see if Chrome is ready to connect.
-  PollForChromeReady(kPollTimeoutSeconds);
+  // Otherwise, Chrome is in the process of launching and `PollForChromeReady`
+  // will be called when launching is complete.
 }
 
-void AppShimController::FindOrLaunchChrome() {
+bool AppShimController::FindOrLaunchChrome() {
   DCHECK(!chrome_to_connect_to_);
   DCHECK(!chrome_launched_by_app_);
   const base::CommandLine* app_command_line =
@@ -170,29 +171,34 @@ void AppShimController::FindOrLaunchChrome() {
   if (app_command_line->HasSwitch(app_mode::kLaunchedByChromeProcessId)) {
     std::string chrome_pid_string = app_command_line->GetSwitchValueASCII(
         app_mode::kLaunchedByChromeProcessId);
+
     int chrome_pid;
-    if (!base::StringToInt(chrome_pid_string, &chrome_pid))
+    if (!base::StringToInt(chrome_pid_string, &chrome_pid)) {
       LOG(FATAL) << "Invalid PID: " << chrome_pid_string;
+    }
 
     chrome_to_connect_to_.reset(
         [NSRunningApplication
             runningApplicationWithProcessIdentifier:chrome_pid],
         base::scoped_policy::RETAIN);
-    if (!chrome_to_connect_to_)
+    if (!chrome_to_connect_to_) {
       LOG(FATAL) << "Failed to open process with PID: " << chrome_pid;
-    return;
+    }
+
+    return true;
   }
 
   // Query the singleton lock. If the lock exists and specifies a running
   // Chrome, then connect to that process. Otherwise, launch a new Chrome
   // process.
   chrome_to_connect_to_ = FindChromeFromSingletonLock(params_.user_data_dir);
-  if (chrome_to_connect_to_)
-    return;
+  if (chrome_to_connect_to_) {
+    return true;
+  }
 
   // In tests, launching Chrome does nothing.
   if (app_command_line->HasSwitch(app_mode::kLaunchedForTest)) {
-    return;
+    return true;
   }
 
   // Otherwise, launch Chrome.
@@ -211,12 +217,27 @@ void AppShimController::FindOrLaunchChrome() {
         switches::kDisableFeatures,
         app_command_line->GetSwitchValueASCII(switches::kDisableFeatures));
   }
-  chrome_launched_by_app_.reset(base::mac::OpenApplicationWithPath(
-                                    chrome_bundle_path, browser_command_line,
-                                    NSWorkspaceLaunchNewInstance),
-                                base::scoped_policy::RETAIN);
-  if (!chrome_launched_by_app_)
-    LOG(FATAL) << "Failed to launch Chrome.";
+
+  base::mac::OpenApplication(
+      chrome_bundle_path, browser_command_line, /*url_specs=*/{},
+      /*options=*/{.create_new_instance = true},
+      base::BindOnce(
+          [](AppShimController* shim_controller,
+             base::expected<NSRunningApplication*, NSError*> result) {
+            if (!result.has_value()) {
+              LOG(FATAL) << "Failed to launch Chrome.";
+            }
+
+            shim_controller->chrome_launched_by_app_.reset(
+                result.value(), base::scoped_policy::RETAIN);
+
+            // Start polling to see if Chrome is ready to connect.
+            shim_controller->PollForChromeReady(kPollTimeoutSeconds);
+          },
+          // base::Unretained is safe because this is a singleton.
+          base::Unretained(this)));
+
+  return false;
 }
 
 // static

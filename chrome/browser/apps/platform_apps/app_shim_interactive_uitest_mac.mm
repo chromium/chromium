@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -17,11 +16,13 @@
 #import "base/mac/launch_services_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -58,14 +59,16 @@ namespace {
 
 // General end-to-end test for app shims.
 class AppShimInteractiveTest : public extensions::PlatformAppBrowserTest {
+ public:
+  AppShimInteractiveTest(const AppShimInteractiveTest&) = delete;
+  AppShimInteractiveTest& operator=(const AppShimInteractiveTest&) = delete;
+
  protected:
   // Type of app to install, when invoking InstallAppWithShim().
   enum AppType { APP_TYPE_PACKAGED, APP_TYPE_HOSTED };
 
   AppShimInteractiveTest()
       : auto_reset_(&g_app_shims_allow_update_and_launch_in_tests, true) {}
-  AppShimInteractiveTest(const AppShimInteractiveTest&) = delete;
-  AppShimInteractiveTest& operator=(const AppShimInteractiveTest&) = delete;
 
   // Install a test app of |type| and reliably wait for its app shim to be
   // created on disk. Sets |shim_path_|.
@@ -83,7 +86,7 @@ class AppShimInteractiveTest : public extensions::PlatformAppBrowserTest {
 // Watches for an app shim to connect.
 class WindowedAppShimLaunchObserver : public apps::AppShimManager {
  public:
-  WindowedAppShimLaunchObserver(const std::string& app_id)
+  explicit WindowedAppShimLaunchObserver(const std::string& app_id)
       : AppShimManager(
             std::make_unique<apps::ExtensionAppShimManagerDelegate>()),
         app_mode_id_(app_id) {
@@ -201,7 +204,7 @@ class HostedAppBrowserListObserver : public BrowserListObserver {
 
 class AppLifetimeMonitorObserver : public apps::AppLifetimeMonitor::Observer {
  public:
-  AppLifetimeMonitorObserver(Profile* profile) : profile_(profile) {
+  explicit AppLifetimeMonitorObserver(Profile* profile) : profile_(profile) {
     apps::AppLifetimeMonitorFactory::GetForBrowserContext(profile_)
         ->AddObserver(this);
   }
@@ -364,10 +367,16 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_HostedAppLaunch) {
     HostedAppBrowserListObserver listener(app->id());
     base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
     shim_cmdline.AppendSwitch(app_mode::kLaunchedForTest);
-    NSRunningApplication* shim_app = base::mac::OpenApplicationWithPath(
-        shim_path_, shim_cmdline, NSWorkspaceLaunchDefault);
+
+    base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
+        open_result;
+    base::mac::OpenApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
+                               /*options=*/{}, open_result.GetCallback());
+    ASSERT_TRUE(open_result.Get<0>().has_value());
+    NSRunningApplication* shim_app = open_result.Get<0>().value();
     ASSERT_TRUE(shim_app);
-    base::Process shim_process([shim_app processIdentifier]);
+
+    base::Process shim_process(shim_app.processIdentifier);
     listener.WaitUntilAdded();
 
     ASSERT_TRUE(GetFirstHostedAppWindow());
@@ -435,10 +444,16 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_Launch) {
     ExtensionTestMessageListener launched_listener("Launched");
     base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
     shim_cmdline.AppendSwitch(app_mode::kLaunchedForTest);
-    NSRunningApplication* shim_app = base::mac::OpenApplicationWithPath(
-        shim_path_, shim_cmdline, NSWorkspaceLaunchDefault);
+
+    base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
+        open_result;
+    base::mac::OpenApplication(shim_path_, shim_cmdline, /*url_specs=*/{},
+                               /*options=*/{}, open_result.GetCallback());
+    ASSERT_TRUE(open_result.Get<0>().has_value());
+    NSRunningApplication* shim_app = open_result.Get<0>().value();
     ASSERT_TRUE(shim_app);
-    base::Process shim_process([shim_app processIdentifier]);
+
+    base::Process shim_process(shim_app.processIdentifier);
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 
     ASSERT_TRUE(GetFirstAppWindow());
@@ -655,8 +670,13 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_RebuildShim) {
   //     behave normally.
   ExtensionTestMessageListener launched_listener("Launched");
   base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
-  NSRunningApplication* shim_app = base::mac::OpenApplicationWithPath(
-      shim_path, shim_cmdline, NSWorkspaceLaunchDefault);
+
+  base::test::TestFuture<base::expected<NSRunningApplication*, NSError*>>
+      open_result;
+  base::mac::OpenApplication(shim_path, shim_cmdline, /*url_specs=*/{},
+                             /*options=*/{}, open_result.GetCallback());
+  ASSERT_TRUE(open_result.Get<0>().has_value());
+  NSRunningApplication* shim_app = open_result.Get<0>().value();
   ASSERT_TRUE(shim_app);
 
   // Wait for the app to start (1). At this point there is no shim host.
