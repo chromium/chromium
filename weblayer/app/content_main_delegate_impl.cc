@@ -276,9 +276,9 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
   const bool is_browser_process =
       command_line.GetSwitchValueASCII(::switches::kProcessType).empty();
   if (is_browser_process &&
-      command_line.HasSwitch(switches::kWebLayerUserDataDir)) {
+      command_line.HasSwitch(switches::kWebEngineUserDataDir)) {
     base::FilePath path =
-        command_line.GetSwitchValuePath(switches::kWebLayerUserDataDir);
+        command_line.GetSwitchValuePath(switches::kWebEngineUserDataDir);
     if (base::DirectoryExists(path) || base::CreateDirectory(path)) {
       // Profile needs an absolute path, which we would normally get via
       // PathService. In this case, manually ensure the path is absolute.

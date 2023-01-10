@@ -7,11 +7,11 @@
 namespace weblayer {
 namespace switches {
 
-// Makes WebLayer Shell use the given path for its data directory.
+// Makes WebEngine Shell use the given path for its data directory.
 // NOTE: If changing this value, change the corresponding Java-side value in
 // WebLayerBrowserTestsActivity.java#getUserDataDirectoryCommandLineSwitch() to
 // match.
-const char kWebLayerUserDataDir[] = "weblayer-user-data-dir";
+const char kWebEngineUserDataDir[] = "webengine-user-data-dir";
 
 }  // namespace switches
 }  //  namespace weblayer

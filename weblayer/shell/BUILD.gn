@@ -14,7 +14,7 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-static_library("weblayer_shell_lib") {
+static_library("webengine_shell_lib") {
   testonly = true
   sources = [
     "app/shell_main_params.cc",
@@ -101,7 +101,7 @@ static_library("weblayer_shell_lib") {
   }
 }
 
-grit("weblayer_shell_resources_grit") {
+grit("webengine_shell_resources_grit") {
   testonly = true
 
   # External code should depend on ":resources" instead.
@@ -109,17 +109,17 @@ grit("weblayer_shell_resources_grit") {
   source = "shell_resources.grd"
   outputs = [
     "grit/shell_resources.h",
-    "weblayer_shell_resources.pak",
+    "webengine_shell_resources.pak",
   ]
 }
 
 copy("copy_shell_resources") {
   testonly = true
 
-  sources = [ "$target_gen_dir/weblayer_shell_resources.pak" ]
-  outputs = [ "$root_out_dir/weblayer_shell_resources.pak" ]
+  sources = [ "$target_gen_dir/webengine_shell_resources.pak" ]
+  outputs = [ "$root_out_dir/webengine_shell_resources.pak" ]
 
-  public_deps = [ ":weblayer_shell_resources_grit" ]
+  public_deps = [ ":webengine_shell_resources_grit" ]
 }
 
 group("resources") {
@@ -131,10 +131,10 @@ group("resources") {
 repack("shell_pak") {
   testonly = true
 
-  sources = [ "$root_gen_dir/weblayer/shell/weblayer_shell_resources.pak" ]
+  sources = [ "$root_gen_dir/weblayer/shell/webengine_shell_resources.pak" ]
 
   deps = [ ":resources" ]
-  output = "$root_out_dir/weblayer_shell.pak"
+  output = "$root_out_dir/webengine_shell.pak"
 }
 
 repack("support_pak") {
@@ -194,7 +194,7 @@ repack("pak") {
   testonly = true
 
   sources = [
-    "$root_out_dir/weblayer_shell.pak",
+    "$root_out_dir/webengine_shell.pak",
     "$root_out_dir/weblayer_support.pak",
   ]
 
@@ -211,7 +211,7 @@ if (is_android) {
     deps = [ "//weblayer/shell/android:weblayer_support_apk" ]
   }
 } else {
-  executable("weblayer_shell") {
+  executable("webengine_shell") {
     testonly = true
 
     sources = [ "app/shell_main.cc" ]
@@ -223,7 +223,7 @@ if (is_android) {
     defines = []
 
     deps = [
-      ":weblayer_shell_lib",
+      ":webengine_shell_lib",
       "//base",
       "//build/win:default_exe_manifest",
       "//net",

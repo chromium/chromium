@@ -21,7 +21,7 @@ int TestLauncherDelegateImpl::RunTestSuite(int argc, char** argv) {
 }
 
 std::string TestLauncherDelegateImpl::GetUserDataDirectoryCommandLineSwitch() {
-  return switches::kWebLayerUserDataDir;
+  return switches::kWebEngineUserDataDir;
 }
 
 #if !BUILDFLAG(IS_ANDROID)

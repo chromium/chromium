@@ -127,6 +127,6 @@ public class WebLayerBrowserTestsActivity extends NativeBrowserTestActivity {
      * causes test failures due to state bleedthrough. See crbug.com/617734 for details.
      */
     protected String getUserDataDirectoryCommandLineSwitch() {
-        return "weblayer-user-data-dir";
+        return "webengine-user-data-dir";
     }
 }

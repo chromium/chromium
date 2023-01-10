@@ -4,7 +4,7 @@
     <output filename="grit/shell_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
-    <output filename="weblayer_shell_resources.pak" type="data_package" />
+    <output filename="webengine_shell_resources.pak" type="data_package" />
   </outputs>
   <translations />
 </grit>

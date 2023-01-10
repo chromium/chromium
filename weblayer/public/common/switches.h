@@ -8,7 +8,7 @@
 namespace weblayer {
 namespace switches {
 
-extern const char kWebLayerUserDataDir[];
+extern const char kWebEngineUserDataDir[];
 
 }  // namespace switches
 }  //  namespace weblayer

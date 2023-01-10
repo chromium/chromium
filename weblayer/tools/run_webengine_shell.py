@@ -19,7 +19,7 @@ from devil.android import device_utils
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--shell-apk-path', type=os.path.abspath, required=True,
-                      help='Absolute path to the WebLayer shell APK to use.')
+                      help='Absolute path to the WebEngine shell APK to use.')
   parser.add_argument('--support-apk-path', action='append',
                       type=os.path.abspath, default=[],
                       help='Absolute path to the WebLayer support APKs to '
@@ -55,25 +55,7 @@ def main():
       device.SetWebViewImplementation(package)
       print('Done')
 
-    if os.path.basename(args.shell_apk_path) == 'WebLayerShell.apk':
-      # When launching weblayer shell use 'weblayer_shell_apk', which supports
-      # more options.
-      launch_cmd = [os.path.join(os.path.dirname(args.shell_apk_path),
-                                 os.pardir, 'bin', 'weblayer_shell_apk'),
-                    'launch']
-      launch_cmd.extend(args.remaining_args)
-      subprocess.call(launch_cmd)
-    elif (os.path.basename(args.shell_apk_path) ==
-          'WebLayerShellSystemWebView.apk'):
-      # When launching weblayer shell use 'weblayer_shell_apk', which supports
-      # more options.
-      launch_cmd = [os.path.join(os.path.dirname(args.shell_apk_path),
-                                 os.pardir, 'bin',
-                                 'weblayer_shell_system_webview_apk'),
-                    'launch']
-      launch_cmd.extend(args.remaining_args)
-      subprocess.call(launch_cmd)
-    elif (os.path.basename(args.shell_apk_path) == "WEShellLocal.apk"):
+    if (os.path.basename(args.shell_apk_path) == "WEShellLocal.apk"):
       launch_cmd = [
         os.path.join(os.path.dirname(args.shell_apk_path),
                      os.pardir, 'bin', 'webengine_shell_local_apk'),
@@ -89,9 +71,8 @@ def main():
       ]
       launch_cmd.extend(args.remaining_args)
       subprocess.call(launch_cmd)
-
     else:
-      device.adb.Shell('monkey -p org.chromium.weblayer.shell 1')
+      device.adb.Shell('monkey -p org.chromium.webengine.shell 1')
 
   device_utils.DeviceUtils.parallel(devices).pMap(install)
 

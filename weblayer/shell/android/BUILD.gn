@@ -15,7 +15,7 @@ import("//weblayer/variables.gni")
 generate_wrapper("run_webengine_shell") {
   testonly = true
   wrapper_script = "$root_out_dir/bin/run_webengine_shell"
-  executable = "//weblayer/tools/run_weblayer_shell.py"
+  executable = "//weblayer/tools/run_webengine_shell.py"
   executable_args = [
     "--shell-apk-path",
     "@WrappedPath(apks/WEShellSandbox.apk)",
@@ -35,7 +35,7 @@ generate_wrapper("run_webengine_shell") {
 generate_wrapper("run_webengine_shell_local") {
   testonly = true
   wrapper_script = "$root_out_dir/bin/run_webengine_shell_local"
-  executable = "//weblayer/tools/run_weblayer_shell.py"
+  executable = "//weblayer/tools/run_webengine_shell.py"
   executable_args = [
     "--shell-apk-path",
     "@WrappedPath(apks/WEShellLocal.apk)",
