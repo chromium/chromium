@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -26,7 +25,6 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -51,12 +49,13 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private static final String FOOTER_PREFERENCE = "fledge_page_footer";
 
     private ChromeSwitchPreference mFledgeTogglePreference;
-    private PreferenceCategory mCurrentSitesCategory;
-    private TextMessagePreference mEmptyFledgePreference;
-    private TextMessagePreference mDisabledFledgePreference;
+    private PreferenceCategoryWithClickableSummary mCurrentSitesCategory;
+    private PreferenceCategoryWithClickableSummary mEmptyFledgePreference;
+    private PreferenceCategoryWithClickableSummary mDisabledFledgePreference;
     private ChromeBasePreference mAllSitesPreference;
     private LargeIconBridge mLargeIconBridge;
     private ClickableSpansTextMessagePreference mFooterPreference;
+    private boolean mMoreThanMaxSitesToDisplay;
 
     static boolean isFledgePrefEnabled() {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
@@ -89,6 +88,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mFledgeTogglePreference.setChecked(isFledgePrefEnabled());
         mFledgeTogglePreference.setOnPreferenceChangeListener(this);
         mFledgeTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
+        mMoreThanMaxSitesToDisplay = false;
 
         mCurrentSitesCategory.setSummary(SpanApplier.applySpans(
                 getResources().getString(R.string.settings_fledge_page_current_sites_description),
@@ -177,6 +177,8 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         }
 
         mCurrentSitesCategory.removeAll();
+        mMoreThanMaxSitesToDisplay = currentSites.size() > MAX_DISPLAYED_SITES;
+
         int nrDisplayedSites = Math.min(currentSites.size(), MAX_DISPLAYED_SITES);
         for (int i = 0; i < nrDisplayedSites; i++) {
             String site = currentSites.get(i);
@@ -189,6 +191,8 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
             preference.setOnPreferenceClickListener(this);
             mCurrentSitesCategory.addPreference(preference);
         }
+
+        updatePreferenceVisibility();
     }
 
     private void updatePreferenceVisibility() {
@@ -203,7 +207,9 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
 
         // Visible when Fledge is enabled and the current sites list is not empty.
         mCurrentSitesCategory.setVisible(fledgeEnabled && !sitesEmpty);
-        mAllSitesPreference.setVisible(fledgeEnabled && !sitesEmpty);
+
+        // Visible when Fledge is enabled and has more than MAX_DISPLAYED_SITES allowed sites.
+        mAllSitesPreference.setVisible(fledgeEnabled && mMoreThanMaxSitesToDisplay);
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
