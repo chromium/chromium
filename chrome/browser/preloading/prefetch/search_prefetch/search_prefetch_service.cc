@@ -30,6 +30,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -632,8 +633,9 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     return;
   for (const auto& match : result) {
     // Return early if neither prefetch nor prerender are enabled for the match.
-    if (!ShouldPrefetch(match))
+    if (!ShouldPrefetch(match)) {
       continue;
+    }
 
     // In the case of Default Search Engine Prediction, the confidence depends
     // on the type of preloading. For prerender requests, the confidence is
@@ -656,6 +658,25 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     preloading_data->AddPreloadingPrediction(
         ToPreloadingPredictor(ChromePreloadingPredictor::kDefaultSearchEngine),
         confidence, std::move(same_url_matcher));
+
+    // Record a prediction for default match prefetch suggest predictions.
+    if (result.default_match() == &match) {
+      preloading_data =
+          content::PreloadingData::GetOrCreateForWebContents(web_contents);
+
+      same_url_matcher =
+          base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+                              web_contents->GetBrowserContext());
+
+      // Create PreloadingPrediction for this match.
+      preloading_data->AddPreloadingPrediction(
+          ToPreloadingPredictor(
+              ChromePreloadingPredictor::kOmniboxSearchSuggestDefaultMatch),
+          confidence, std::move(same_url_matcher));
+    } else if (OnlyAllowDefaultMatchPreloading()) {
+      // Only prefetch default match when in the experiment.
+      continue;
+    }
 
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
         prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {

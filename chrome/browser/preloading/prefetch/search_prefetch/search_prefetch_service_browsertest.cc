@@ -3888,3 +3888,64 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchNoCancelBrowserTest,
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
 }
+
+class SearchNavigationPrefetchDefaultMatchBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchNavigationPrefetchDefaultMatchBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kSearchPrefetchServicePrefetching,
+         {{"max_attempts_per_caching_duration", "3"},
+          {"cache_size", "1"},
+          {"device_memory_threshold_MB", "0"}}},
+        {kSearchPrefetchOnlyAllowDefaultMatchPreloading, {{}}}};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchDefaultMatchBrowserTest,
+                       NotDefaultMatch) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = "search";
+  std::string user_input = "terms";
+  AddNewSuggestionRule(user_input, {user_input, search_terms},
+                       /*prefetch_index=*/1, /*prerender_index=*/-1);
+
+  // Trigger an omnibox suggest fetch that does not have a prefetch hint.
+  AutocompleteInput input(
+      base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  LocationBar* location_bar = browser()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  AutocompleteController* autocomplete_controller =
+      omnibox->model()->autocomplete_controller();
+
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(10));
+  autocomplete_controller->Start(input);
+
+  ui_test_utils::WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  WaitForDuration(base::Milliseconds(50));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+
+  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+}

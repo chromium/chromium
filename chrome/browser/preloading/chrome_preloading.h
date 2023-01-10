@@ -57,6 +57,11 @@ enum class ChromePreloadingPredictor {
   kOmniboxMousePredictor =
       static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 4,
 
+  // When the default match in omnibox has the search prefetch or prerender
+  // hint.
+  kOmniboxSearchSuggestDefaultMatch =
+      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 5,
+
   // TODO(crbug.com/1309934): Integrate more Preloading predictors with
   // Preloading logging APIs.
 };

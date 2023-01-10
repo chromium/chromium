@@ -94,3 +94,12 @@ bool PrefetchSearchHistorySuggestions() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kSearchNavigationPrefetch, "prefetch_search_history", true);
 }
+
+BASE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading,
+             "SearchPrefetchOnlyAllowDefaultMatchPreloading",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool OnlyAllowDefaultMatchPreloading() {
+  return base::FeatureList::IsEnabled(
+      kSearchPrefetchOnlyAllowDefaultMatchPreloading);
+}

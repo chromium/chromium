@@ -14,6 +14,8 @@ BASE_DECLARE_FEATURE(kSearchPrefetchBlockBeforeHeaders);
 
 BASE_DECLARE_FEATURE(kSearchPrefetchSkipsCancel);
 
+BASE_DECLARE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading);
+
 // Whether matching prefetches can block navigation until they are determined to
 // be serve-able or not based on headers.
 bool SearchPrefetchBlockBeforeHeadersIsEnabled();
@@ -64,5 +66,9 @@ bool AllowTopNavigationPrefetch();
 // Allows search history suggestions to be prefetched by navigation prefetch
 // strategies.
 bool PrefetchSearchHistorySuggestions();
+
+// Whether Omnibox prefetch and prerender should be restricted to the suggestion
+// being the default match.
+bool OnlyAllowDefaultMatchPreloading();
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
