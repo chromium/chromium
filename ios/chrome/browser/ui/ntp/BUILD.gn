@@ -195,7 +195,6 @@ source_set("ntp_internal") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/metrics",
-    "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/prefs",
     "//components/signin/public/identity_manager/objc",

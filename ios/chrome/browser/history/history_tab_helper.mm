@@ -8,7 +8,6 @@
 #import "components/history/core/browser/history_constants.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/ntp_snippets/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/core/common/language_detection_details.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -108,10 +107,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
   // Navigations originating from New Tab Page or Reading List should not
   // contribute to Most Visited.
-  const bool content_suggestions_navigation =
-      referrer_url == ntp_snippets::GetContentSuggestionsReferrerURL() &&
-      ui::PageTransitionCoreTypeIs(transition,
-                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  const bool content_suggestions_navigation = ui::PageTransitionCoreTypeIs(
+      transition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   const bool consider_for_ntp_most_visited =
       !content_suggestions_navigation &&
       referrer_url != kReadingListReferrerURL;

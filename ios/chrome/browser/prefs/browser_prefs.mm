@@ -25,12 +25,6 @@
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/network_time/network_time_tracker.h"
-#import "components/ntp_snippets/category_rankers/click_based_category_ranker.h"
-#import "components/ntp_snippets/content_suggestions_service.h"
-#import "components/ntp_snippets/remote/remote_suggestions_provider_impl.h"
-#import "components/ntp_snippets/remote/remote_suggestions_scheduler_impl.h"
-#import "components/ntp_snippets/remote/request_throttler.h"
-#import "components/ntp_snippets/user_classifier.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/popular_sites_impl.h"
 #import "components/omnibox/browser/zero_suggest_provider.h"
@@ -125,6 +119,55 @@ const char kPrefPromoObject[] = "ios.ntppromo";
 
 // Deprecated 11/2022.
 const char kLocalConsentsDictionary[] = "local_consents";
+
+// Deprecated 01/2023.
+const char kClickBasedCategoryRankerOrderWithClicks[] =
+    "ntp_suggestions.click_based_category_ranker.category_order_with_clicks";
+const char kClickBasedCategoryRankerLastDecayTime[] =
+    "ntp_suggestions.click_based_category_ranker.last_decay_time";
+const char kDismissedCategories[] = "ntp_suggestions.dismissed_categories";
+const char kRemoteSuggestionCategories[] = "ntp_snippets.remote_categories";
+const char kLastSuccessfulBackgroundFetchTime[] =
+    "ntp_suggestions.remote.last_successful_background_fetch_time";
+const char kSnippetPersistentFetchingIntervalWifi[] =
+    "ntp_snippets.fetching_interval_wifi";
+const char kSnippetPersistentFetchingIntervalFallback[] =
+    "ntp_snippets.fetching_interval_fallback";
+const char kSnippetStartupFetchingIntervalWifi[] =
+    "ntp_snippets.startup_fetching_interval_wifi";
+const char kSnippetStartupFetchingIntervalFallback[] =
+    "ntp_snippets.startup_fetching_interval_fallback";
+const char kSnippetShownFetchingIntervalWifi[] =
+    "ntp_snippets.soft_fetching_interval_wifi";
+const char kSnippetShownFetchingIntervalFallback[] =
+    "ntp_snippets.soft_fetching_interval_fallback";
+const char kSnippetLastFetchAttemptTime[] = "ntp_snippets.last_fetch_attempt";
+const char kSnippetLastSuccessfulFetchTime[] =
+    "ntp_snippets.last_successful_fetch_time";
+const char kSnippetFetcherRequestCount[] =
+    "ntp.request_throttler.suggestion_fetcher.count";
+const char kSnippetFetcherInteractiveRequestCount[] =
+    "ntp.request_throttler.suggestion_fetcher.interactive_count";
+const char kSnippetFetcherRequestsDay[] =
+    "ntp.request_throttler.suggestion_fetcher.day";
+const char kSnippetThumbnailsRequestCount[] =
+    "ntp.request_throttler.suggestion_thumbnails.count";
+const char kSnippetThumbnailsInteractiveRequestCount[] =
+    "ntp.request_throttler.suggestion_thumbnails.interactive_count";
+const char kSnippetThumbnailsRequestsDay[] =
+    "ntp.request_throttler.suggestion_thumbnails.day";
+const char kUserClassifierAverageNTPOpenedPerHour[] =
+    "ntp_suggestions.user_classifier.average_ntp_opened_per_hour";
+const char kUserClassifierAverageSuggestionsShownPerHour[] =
+    "ntp_suggestions.user_classifier.average_suggestions_shown_per_hour";
+const char kUserClassifierAverageSuggestionsUsedPerHour[] =
+    "ntp_suggestions.user_classifier.average_suggestions_used_per_hour";
+const char kUserClassifierLastTimeToOpenNTP[] =
+    "ntp_suggestions.user_classifier.last_time_to_open_ntp";
+const char kUserClassifierLastTimeToShowSuggestions[] =
+    "ntp_suggestions.user_classifier.last_time_to_show_suggestions";
+const char kUserClassifierLastTimeToUseSuggestions[] =
+    "ntp_suggestions.user_classifier.last_time_to_use_suggestions";
 
 }  // namespace
 
@@ -224,12 +267,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
-  ntp_snippets::ClickBasedCategoryRanker::RegisterProfilePrefs(registry);
-  ntp_snippets::ContentSuggestionsService::RegisterProfilePrefs(registry);
-  ntp_snippets::RemoteSuggestionsProviderImpl::RegisterProfilePrefs(registry);
-  ntp_snippets::RemoteSuggestionsSchedulerImpl::RegisterProfilePrefs(registry);
-  ntp_snippets::RequestThrottler::RegisterProfilePrefs(registry);
-  ntp_snippets::UserClassifier::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   ntp_tiles::PopularSitesImpl::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);
@@ -414,4 +451,81 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 12/2022.
   prefs->ClearPref(reading_list::prefs::kDeprecatedReadingListHasUnseenEntries);
+
+  // Added 01/2023.
+  if (prefs->FindPreference(kClickBasedCategoryRankerOrderWithClicks)) {
+    prefs->ClearPref(kClickBasedCategoryRankerOrderWithClicks);
+  }
+  if (prefs->FindPreference(kClickBasedCategoryRankerLastDecayTime)) {
+    prefs->ClearPref(kClickBasedCategoryRankerLastDecayTime);
+  }
+  if (prefs->FindPreference(kDismissedCategories)) {
+    prefs->ClearPref(kDismissedCategories);
+  }
+  if (prefs->FindPreference(kRemoteSuggestionCategories)) {
+    prefs->ClearPref(kRemoteSuggestionCategories);
+  }
+  if (prefs->FindPreference(kLastSuccessfulBackgroundFetchTime)) {
+    prefs->ClearPref(kLastSuccessfulBackgroundFetchTime);
+  }
+  if (prefs->FindPreference(kSnippetPersistentFetchingIntervalWifi)) {
+    prefs->ClearPref(kSnippetPersistentFetchingIntervalWifi);
+  }
+  if (prefs->FindPreference(kSnippetPersistentFetchingIntervalFallback)) {
+    prefs->ClearPref(kSnippetPersistentFetchingIntervalFallback);
+  }
+  if (prefs->FindPreference(kSnippetStartupFetchingIntervalWifi)) {
+    prefs->ClearPref(kSnippetStartupFetchingIntervalWifi);
+  }
+  if (prefs->FindPreference(kSnippetStartupFetchingIntervalFallback)) {
+    prefs->ClearPref(kSnippetStartupFetchingIntervalFallback);
+  }
+  if (prefs->FindPreference(kSnippetShownFetchingIntervalWifi)) {
+    prefs->ClearPref(kSnippetShownFetchingIntervalWifi);
+  }
+  if (prefs->FindPreference(kSnippetShownFetchingIntervalFallback)) {
+    prefs->ClearPref(kSnippetShownFetchingIntervalFallback);
+  }
+  if (prefs->FindPreference(kSnippetLastFetchAttemptTime)) {
+    prefs->ClearPref(kSnippetLastFetchAttemptTime);
+  }
+  if (prefs->FindPreference(kSnippetLastSuccessfulFetchTime)) {
+    prefs->ClearPref(kSnippetLastSuccessfulFetchTime);
+  }
+  if (prefs->FindPreference(kSnippetFetcherRequestCount)) {
+    prefs->ClearPref(kSnippetFetcherRequestCount);
+  }
+  if (prefs->FindPreference(kSnippetFetcherInteractiveRequestCount)) {
+    prefs->ClearPref(kSnippetFetcherInteractiveRequestCount);
+  }
+  if (prefs->FindPreference(kSnippetFetcherRequestsDay)) {
+    prefs->ClearPref(kSnippetFetcherRequestsDay);
+  }
+  if (prefs->FindPreference(kSnippetThumbnailsRequestCount)) {
+    prefs->ClearPref(kSnippetThumbnailsRequestCount);
+  }
+  if (prefs->FindPreference(kSnippetThumbnailsInteractiveRequestCount)) {
+    prefs->ClearPref(kSnippetThumbnailsInteractiveRequestCount);
+  }
+  if (prefs->FindPreference(kSnippetThumbnailsRequestsDay)) {
+    prefs->ClearPref(kSnippetThumbnailsRequestsDay);
+  }
+  if (prefs->FindPreference(kUserClassifierAverageNTPOpenedPerHour)) {
+    prefs->ClearPref(kUserClassifierAverageNTPOpenedPerHour);
+  }
+  if (prefs->FindPreference(kUserClassifierAverageSuggestionsShownPerHour)) {
+    prefs->ClearPref(kUserClassifierAverageSuggestionsShownPerHour);
+  }
+  if (prefs->FindPreference(kUserClassifierAverageSuggestionsUsedPerHour)) {
+    prefs->ClearPref(kUserClassifierAverageSuggestionsUsedPerHour);
+  }
+  if (prefs->FindPreference(kUserClassifierLastTimeToOpenNTP)) {
+    prefs->ClearPref(kUserClassifierLastTimeToOpenNTP);
+  }
+  if (prefs->FindPreference(kUserClassifierLastTimeToShowSuggestions)) {
+    prefs->ClearPref(kUserClassifierLastTimeToShowSuggestions);
+  }
+  if (prefs->FindPreference(kUserClassifierLastTimeToUseSuggestions)) {
+    prefs->ClearPref(kUserClassifierLastTimeToUseSuggestions);
+  }
 }

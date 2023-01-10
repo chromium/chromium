@@ -15,8 +15,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
-#import "components/ntp_snippets/category.h"
-#import "components/ntp_snippets/category_info.h"
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/ntp_tile.h"
@@ -45,7 +43,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_category_wrapper.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -133,11 +130,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     ContentSuggestionsSectionInformation* mostVisitedSectionInfo;
 // Whether the page impression has been recorded.
 @property(nonatomic, assign) BOOL recordedPageImpression;
-// Map the section information created to the relevant category.
-@property(nonatomic, strong, nonnull)
-    NSMutableDictionary<ContentSuggestionsCategoryWrapper*,
-                        ContentSuggestionsSectionInformation*>*
-        sectionInformationByCategory;
 // Mediator fetching the favicons for the items.
 @property(nonatomic, strong) ContentSuggestionsFaviconMediator* faviconMediator;
 // Item for the reading list action item.  Reference is used to update the
@@ -181,8 +173,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
     _contentSuggestionsPolicyEnabled =
         prefService->FindPreference(prefs::kNTPContentSuggestionsEnabled);
-
-    _sectionInformationByCategory = [[NSMutableDictionary alloc] init];
 
     _faviconMediator = [[ContentSuggestionsFaviconMediator alloc]
         initWithLargeIconService:largeIconService
@@ -525,14 +515,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       return;
     }
   }
-}
-
-#pragma mark - ContentSuggestionsMetricsRecorderDelegate
-
-- (ContentSuggestionsCategoryWrapper*)categoryWrapperForSectionInfo:
-    (ContentSuggestionsSectionInformation*)sectionInfo {
-  return [[self.sectionInformationByCategory allKeysForObject:sectionInfo]
-      firstObject];
 }
 
 #pragma mark - Private

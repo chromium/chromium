@@ -32,8 +32,6 @@ source_set("start_suggest") {
 
 source_set("content_suggestions") {
   sources = [
-    "content_suggestions_category_wrapper.h",
-    "content_suggestions_category_wrapper.mm",
     "content_suggestions_coordinator.h",
     "content_suggestions_coordinator.mm",
     "content_suggestions_favicon_mediator.h",
@@ -56,7 +54,6 @@ source_set("content_suggestions") {
     "//components/favicon/ios",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/feed/core/v2/public/ios:feed_ios_public",
-    "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/pref_registry",
     "//components/prefs",
@@ -270,7 +267,6 @@ source_set("content_suggestions_ui_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_suggestions_category_wrapper_unittest.mm",
     "content_suggestions_collection_utils_unittest.mm",
     "content_suggestions_mediator_unittest.mm",
     "content_suggestions_tile_saver_unittest.mm",
@@ -283,7 +279,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/favicon/core",
     "//components/favicon/core/test:test_support",
-    "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/omnibox/browser:test_support",
     "//components/reading_list/core",
@@ -410,8 +405,6 @@ source_set("eg_app_support+eg2") {
   sources = [
     "new_tab_page_app_interface.h",
     "new_tab_page_app_interface.mm",
-    "ntp_home_provider_test_singleton.h",
-    "ntp_home_provider_test_singleton.mm",
     "ntp_home_test_utils.h",
     "ntp_home_test_utils.mm",
   ]
@@ -423,8 +416,6 @@ source_set("eg_app_support+eg2") {
     ":content_suggestions_ui_util",
     "//base/test:test_support",
     "//components/keyed_service/ios",
-    "//components/ntp_snippets",
-    "//components/ntp_snippets:test_support",
     "//components/search_engines",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",

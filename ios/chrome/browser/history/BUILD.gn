@@ -69,7 +69,6 @@ source_set("tab_helper") {
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//components/ntp_snippets",
     "//components/strings",
     "//components/translate/core/browser",
     "//components/translate/core/common",

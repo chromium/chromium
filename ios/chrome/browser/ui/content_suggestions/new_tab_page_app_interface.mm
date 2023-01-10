@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_provider_test_singleton.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_test_utils.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -26,9 +25,6 @@
 #endif
 
 using content_suggestions::SearchFieldWidth;
-using testing::_;
-using testing::Invoke;
-using testing::WithArg;
 
 @implementation NewTabPageAppInterface
 
