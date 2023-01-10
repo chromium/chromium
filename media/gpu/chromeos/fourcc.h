@@ -92,6 +92,9 @@ class MEDIA_GPU_EXPORT Fourcc {
     // Two-plane 10-bit YUV 4:2:0. Each sample is a two-byte little-endian value
     // with the bottom six bits ignored.
     P010 = ComposeFourcc('P', '0', '1', '0'),
+
+    // Single plane 8-bit little-endian ARGB (bytes in reverse B-G-R-A order).
+    AR24 = ComposeFourcc('A', 'R', '2', '4'),
   };
 
   explicit constexpr Fourcc(Fourcc::Value fourcc) : value_(fourcc) {}

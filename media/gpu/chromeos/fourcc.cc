@@ -33,6 +33,7 @@ absl::optional<Fourcc> Fourcc::FromUint32(uint32_t fourcc) {
     case MT21:
     case MM21:
     case P010:
+    case AR24:
       return Fourcc(static_cast<Value>(fourcc));
   }
   DVLOGF(3) << "Unmapped fourcc: " << FourccToString(fourcc);
@@ -59,10 +60,11 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
         return Fourcc(YU16);
       case PIXEL_FORMAT_P016LE:
         return Fourcc(P010);
+      case PIXEL_FORMAT_ARGB:
+        return Fourcc(AR24);
       case PIXEL_FORMAT_UYVY:
         NOTREACHED();
         [[fallthrough]];
-      case PIXEL_FORMAT_ARGB:
       case PIXEL_FORMAT_ABGR:
       case PIXEL_FORMAT_XRGB:
       case PIXEL_FORMAT_XBGR:
@@ -181,6 +183,8 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
       return PIXEL_FORMAT_NV12;
     case P010:
       return PIXEL_FORMAT_P016LE;
+    case AR24:
+      return PIXEL_FORMAT_ARGB;
   }
   NOTREACHED() << "Unmapped Fourcc: " << ToString();
   return PIXEL_FORMAT_UNKNOWN;
@@ -215,6 +219,8 @@ absl::optional<Fourcc> Fourcc::FromVAFourCC(uint32_t va_fourcc) {
       return Fourcc(YUYV);
     case VA_FOURCC_P010:
       return Fourcc(P010);
+    case VA_FOURCC_ARGB:
+      return Fourcc(AR24);
   }
   DVLOGF(3) << "Unmapped VAFourCC: " << FourccToString(va_fourcc);
   return absl::nullopt;
@@ -234,6 +240,8 @@ absl::optional<uint32_t> Fourcc::ToVAFourCC() const {
       return VA_FOURCC_YUY2;
     case P010:
       return VA_FOURCC_P010;
+    case AR24:
+      return VA_FOURCC_ARGB;
     case YM12:
     case YM21:
     case NM12:
@@ -262,6 +270,7 @@ absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
     case NV21:
     case P010:
     case MM21:
+    case AR24:
       return Fourcc(value_);
     case YM12:
       return Fourcc(YU12);
@@ -292,6 +301,7 @@ bool Fourcc::IsMultiPlanar() const {
     case NV21:
     case YU16:
     case P010:
+    case AR24:
       return false;
     case YM12:
     case YM21:
@@ -321,6 +331,7 @@ static_assert(Fourcc::NM21 == V4L2_PIX_FMT_NV21M, "Mismatch Fourcc");
 static_assert(Fourcc::YU16 == V4L2_PIX_FMT_YUV422P, "Mismatch Fourcc");
 static_assert(Fourcc::YM16 == V4L2_PIX_FMT_YUV422M, "Mismatch Fourcc");
 static_assert(Fourcc::MT21 == V4L2_PIX_FMT_MT21C, "Mismatch Fourcc");
+static_assert(Fourcc::AR24 == V4L2_PIX_FMT_ABGR32, "Mismatch Fourcc");
 #ifdef V4L2_PIX_FMT_MM21
 // V4L2_PIX_FMT_MM21 is not yet upstreamed.
 static_assert(Fourcc::MM21 == V4L2_PIX_FMT_MM21, "Mismatch Fourcc");
