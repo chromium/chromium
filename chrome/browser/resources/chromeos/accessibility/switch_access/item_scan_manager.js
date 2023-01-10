@@ -16,7 +16,7 @@ import {FocusRingManager} from './focus_ring_manager.js';
 import {FocusData, FocusHistory} from './history.js';
 import {MenuManager} from './menu_manager.js';
 import {Navigator} from './navigator.js';
-import {ItemNavigatorInterface} from './navigator_interface.js';
+import {ItemNavigatorInterface} from './navigator_interfaces.js';
 import {BackButtonNode} from './nodes/back_button_node.js';
 import {BasicNode, BasicRootNode} from './nodes/basic_node.js';
 import {DesktopNode} from './nodes/desktop_node.js';

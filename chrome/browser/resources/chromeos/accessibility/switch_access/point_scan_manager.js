@@ -7,7 +7,7 @@ import {EventGenerator} from '../common/event_generator.js';
 
 import {ActionManager} from './action_manager.js';
 import {FocusRingManager} from './focus_ring_manager.js';
-import {PointNavigatorInterface} from './navigator_interface.js';
+import {PointNavigatorInterface} from './navigator_interfaces.js';
 import {SwitchAccess} from './switch_access.js';
 import {SAConstants} from './switch_access_constants.js';
 

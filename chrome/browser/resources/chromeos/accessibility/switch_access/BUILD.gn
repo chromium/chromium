@@ -64,7 +64,7 @@ run_jsbundler("switch_access_copied_files") {
     "menu_manager.js",
     "metrics.js",
     "navigator.js",
-    "navigator_interface.js",
+    "navigator_interfaces.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
     "nodes/combo_box_node.js",
@@ -164,7 +164,7 @@ js_type_check("closure_compile") {
     ":metrics",
     ":modal_dialog_node",
     ":navigator",
-    ":navigator_interface",
+    ":navigator_interfaces",
     ":point_scan_manager",
     ":preference_manager",
     ":slider_node",
@@ -328,7 +328,7 @@ js_library("item_scan_manager") {
     ":menu_manager",
     ":metrics",
     ":modal_dialog_node",
-    ":navigator_interface",
+    ":navigator_interfaces",
     ":switch_access_constants",
     ":switch_access_node",
     ":switch_access_predicate",
@@ -391,10 +391,10 @@ js_library("modal_dialog_node") {
 }
 
 js_library("navigator") {
-  deps = [ ":navigator_interface" ]
+  deps = [ ":navigator_interfaces" ]
 }
 
-js_library("navigator_interface") {
+js_library("navigator_interfaces") {
   deps = [ ":basic_node" ]
   externs_list = [
     "$externs_path/accessibility_private.js",

@@ -4,7 +4,7 @@
 
 import {constants} from '../common/constants.js';
 
-import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
+import {SAChildNode, SANode, SARootNode} from './nodes/switch_access_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
@@ -30,12 +30,15 @@ export class ItemNavigatorInterface {
    */
   enterKeyboard() {}
 
-  /** Unconditionally exits the current group. @abstract */
+  /**
+   * Unconditionally exits the current group.
+   * @abstract
+   */
   exitGroupUnconditionally() {}
 
   /**
    * Exits the specified node, if it is the currently focused group.
-   * @param {?AutomationNode|!SAChildNode|!SARootNode} node
+   * @param {?AutomationNode|SANode} node
    * @abstract
    */
   exitIfInGroup(node) {}

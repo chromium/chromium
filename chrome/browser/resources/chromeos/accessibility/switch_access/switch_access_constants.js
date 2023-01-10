@@ -75,6 +75,7 @@ export const SAConstants = {
     NEXT_INVALID: 13,
     PREVIOUS_INVALID: 14,
     INVALID_SELECTION_BOUNDS: 15,
+    UNINITIALIZED: 16,
   },
 
   /**

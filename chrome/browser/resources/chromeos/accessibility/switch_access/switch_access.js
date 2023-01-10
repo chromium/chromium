@@ -150,12 +150,12 @@ export class SwitchAccess {
   }
 
   /**
-   * @param {!chrome.automation.AutomationNode} desktop
+   * @param {!AutomationNode} desktop
    * @private
    */
   static finishInit_(desktop) {
     // Navigator must be initialized first.
-    Navigator.initializeSingletonInstance(desktop);
+    Navigator.initializeSingletonInstances(desktop);
 
     SwitchAccess.commands = new SACommands();
     KeyboardRootNode.startWatchingVisibility();
