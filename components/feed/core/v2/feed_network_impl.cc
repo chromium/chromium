@@ -50,9 +50,6 @@
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-// Token override for Feedv2NewTabPageCardInstrumentationTest.java:
-// #define TOKEN_OVERRIDE_FOR_TESTING  "put-test-token-here"
-
 namespace feed {
 namespace {
 constexpr char kApplicationXProtobuf[] = "application/x-protobuf";
@@ -379,9 +376,12 @@ class FeedNetworkImpl::NetworkFetch {
     variations::SignedIn signed_in_status = variations::SignedIn::kNo;
     if (!access_token_.empty()) {
       base::StringPiece token = access_token_;
-#ifdef TOKEN_OVERRIDE_FOR_TESTING
-      token = TOKEN_OVERRIDE_FOR_TESTING;
-#endif
+      std::string token_override =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              "feed-token-override");
+      if (!token_override.empty()) {
+        token = token_override;
+      }
       request.headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                 base::StrCat({"Bearer ", token}));
       signed_in_status = variations::SignedIn::kYes;
@@ -604,7 +604,12 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
   GURL url(base::StrCat({kDiscoverHost, request_path}));
   // Override url if requested.
   std::string host_override =
-      pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "feedv2-discover-host-override");
+  if (host_override.empty()) {
+    host_override =
+        pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
+  }
   if (!host_override.empty()) {
     GURL override_url(host_override);
     if (override_url.is_valid()) {
