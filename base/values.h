@@ -1258,22 +1258,7 @@ class BASE_EXPORT DictionaryValue : public Value {
 // DEPRECATED: prefer `base::Value::List`.
 class BASE_EXPORT ListValue : public Value {
  public:
-  // Returns `value` if it is a list, nullptr otherwise.
-  static std::unique_ptr<ListValue> From(std::unique_ptr<Value> value);
-
   ListValue();
-
-  // Appends a Value to the end of the list.
-  // DEPRECATED: prefer `Value::List::Append()`.
-  using Value::Append;
-  // DEPRECATED: prefer `Value::List::Append()`. Provided to simplify
-  // incremental migration and intentionally only defined on ListValue and not
-  // Value.
-  void Append(base::Value::Dict in_dict);
-  void Append(base::Value::List in_list);
-
-  // Iteration: Use a range-based for loop over `base::Value::List` directly
-  // instead.
 };
 
 // Adapter so `Value::Dict` or `Value::List` can be directly passed to JSON
