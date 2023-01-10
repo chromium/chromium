@@ -26,12 +26,6 @@
 
 namespace media {
 
-namespace {
-
-constexpr GLenum kTextureTarget = GL_TEXTURE_EXTERNAL_OES;
-
-}  // anonymous namespace
-
 class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
  public:
   using GetGpuChannelCB =
@@ -300,9 +294,20 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
     return;
   input_frame_queue_.pop();
 
+  DCHECK_EQ(frame->format(), origin_frame->format());
+  auto buffer_format = VideoPixelFormatToGfxBufferFormat(frame->format());
+  if (!buffer_format) {
+    return;
+  }
+
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
+
   mailbox_holders[0] =
-      gpu::MailboxHolder(mailbox, gpu::SyncToken(), kTextureTarget);
+      gpu::MailboxHolder(mailbox, gpu::SyncToken(),
+                         gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
+                             *buffer_format, gfx::BufferPlane::DEFAULT)
+                             ? gpu::GetPlatformSpecificTextureTarget()
+                             : GL_TEXTURE_2D);
 
   VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
