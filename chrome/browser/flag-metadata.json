@@ -4206,11 +4206,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "installed-apps-in-cbd",
-    "owners": [ "jarrydg", "pwnall" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "instance-switcher",
     "owners": [ "jinsukkim" ],
     "expiry_milestone": 100

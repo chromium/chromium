@@ -1767,11 +1767,6 @@ const char kInstallIsolatedWebAppFromUrlDescription[] =
     "Installs a new developer mode Isolated Web App whose contents are hosted "
     "at the provided HTTP(S) URL.";
 
-const char kInstalledAppsInCbdName[] = "Installed Apps in Clear Browsing Data";
-const char kInstalledAppsInCbdDescription[] =
-    "Adds the installed apps warning dialog to the clear browsing data flow "
-    "which allows users to protect installed apps' data from being deleted.";
-
 const char kJavascriptHarmonyName[] = "Experimental JavaScript";
 const char kJavascriptHarmonyDescription[] =
     "Enable web pages to use experimental JavaScript features.";

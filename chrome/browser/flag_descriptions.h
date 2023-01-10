@@ -987,9 +987,6 @@ extern const char kInstallIsolatedWebAppFromFileDescription[];
 extern const char kInstallIsolatedWebAppFromUrl[];
 extern const char kInstallIsolatedWebAppFromUrlDescription[];
 
-extern const char kInstalledAppsInCbdName[];
-extern const char kInstalledAppsInCbdDescription[];
-
 extern const char kJavascriptHarmonyName[];
 extern const char kJavascriptHarmonyDescription[];
 

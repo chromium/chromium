@@ -541,12 +541,6 @@ BASE_FEATURE(kInstalledAppProvider,
              "InstalledAppProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Show warning about clearing data from installed apps in the clear browsing
-// data flow. The warning will be shown in a second dialog.
-BASE_FEATURE(kInstalledAppsInCbd,
-             "InstalledAppsInCbd",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable support for isolated web apps. This will guard features like serving
 // isolated web apps via the isolated-app:// scheme, and other advanced isolated
 // app functionality. See https://github.com/reillyeon/isolated-web-apps for a

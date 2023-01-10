@@ -52147,12 +52147,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
              PackageManager"/>
 </enum>
 
-<enum name="InstalledAppsDialogActions">
-  <int value="0" label="User closed dialog"/>
-  <int value="1" label="User clicked cancel button on dialog"/>
-  <int value="2" label="User clicked clear data button on dialog"/>
-</enum>
-
 <enum name="InstalledVersionPollType">
   <obsolete>
     Removed in M90.
