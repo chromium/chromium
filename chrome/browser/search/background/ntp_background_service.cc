@@ -12,6 +12,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"
 #include "chrome/browser/search/background/ntp_backgrounds.h"
+#include "components/search/ntp_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -126,6 +127,11 @@ void NtpBackgroundService::FetchCollectionInfo() {
   // milestone post release.
   request.add_filtering_label(base::StrCat(
       {kFilteringLabel, ".M", version_info::GetMajorVersionNumber()}));
+  // Add filtering for Panorama feature.
+  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+    request.add_filtering_label(base::StrCat({kFilteringLabel, ".panorama"}));
+  }
+
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
 
