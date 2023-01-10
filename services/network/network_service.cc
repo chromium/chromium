@@ -315,8 +315,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   // Make sure OpenSSL is initialized before using it to histogram data.
   crypto::EnsureOpenSSLInit();
 
-  // Measure CPUs with broken NEON units. See https://crbug.com/341598.
-  UMA_HISTOGRAM_BOOLEAN("Net.HasBrokenNEON", CRYPTO_has_broken_NEON());
   // Measure Android kernels with missing AT_HWCAP2 auxv fields. See
   // https://crbug.com/boringssl/46.
   UMA_HISTOGRAM_BOOLEAN("Net.NeedsHWCAP2Workaround",

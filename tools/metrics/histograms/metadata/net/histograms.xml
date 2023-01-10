@@ -1698,6 +1698,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.HasBrokenNEON" enum="BooleanBroken"
     expires_after="2023-02-19">
+  <obsolete>
+    Removed 2023-01. The workaround is now effectively disabled in Chromium (but
+    not Cronet, as of writing), and the latest Chromium-side metrics report
+    0.00% of devices are still affected.
+  </obsolete>
   <owner>davidben@chromium.org</owner>
   <summary>
     Records, on startup, for ARM devices running Android, whether the CPU is
