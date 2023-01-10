@@ -725,6 +725,10 @@ void VolumeManager::Initialize() {
     return;
   }
 
+  if (!fusebox_daemon_) {
+    fusebox_daemon_ = file_manager::FuseBoxDaemon::GetInstance();
+  }
+
   const base::FilePath localVolume =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   const bool success = RegisterDownloadsMountPoint(profile_, localVolume);
