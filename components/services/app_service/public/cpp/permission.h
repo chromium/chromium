@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "components/services/app_service/public/cpp/macros.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -85,38 +84,6 @@ Permissions ClonePermissions(const Permissions& source_permissions);
 
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const Permissions& source, const Permissions& target);
-
-// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
-// AppService.
-COMPONENT_EXPORT(APP_TYPES)
-PermissionType ConvertMojomPermissionTypeToPermissionType(
-    apps::mojom::PermissionType mojom_permission_type);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::PermissionType ConvertPermissionTypeToMojomPermissionType(
-    PermissionType permission_type);
-
-COMPONENT_EXPORT(APP_TYPES)
-TriState ConvertMojomTriStateToTriState(apps::mojom::TriState mojom_tri_state);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::TriState ConvertTriStateToMojomTriState(TriState tri_state);
-
-COMPONENT_EXPORT(APP_TYPES)
-PermissionValuePtr ConvertMojomPermissionValueToPermissionValue(
-    const apps::mojom::PermissionValuePtr& mojom_permission_value);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::PermissionValuePtr ConvertPermissionValueToMojomPermissionValue(
-    const PermissionValuePtr& permission_value);
-
-COMPONENT_EXPORT(APP_TYPES)
-PermissionPtr ConvertMojomPermissionToPermission(
-    const apps::mojom::PermissionPtr& mojom_permission);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::PermissionPtr ConvertPermissionToMojomPermission(
-    const PermissionPtr& permission);
 
 }  // namespace apps
 
