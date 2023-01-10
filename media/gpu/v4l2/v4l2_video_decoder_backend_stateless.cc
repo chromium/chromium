@@ -241,6 +241,11 @@ V4L2StatelessVideoDecoderBackend::CreateSurface() {
     // until deallocating V4L2Queue. But we need to know when the buffer is not
     // used by the client. So we wrap the frame here.
     scoped_refptr<VideoFrame> origin_frame = output_buf->GetVideoFrame();
+    if (!origin_frame) {
+      LOG(ERROR) << "There is no available VideoFrame from the V4L2 buffer.";
+      return nullptr;
+    }
+
     frame = VideoFrame::WrapVideoFrame(origin_frame, origin_frame->format(),
                                        origin_frame->visible_rect(),
                                        origin_frame->natural_size());
