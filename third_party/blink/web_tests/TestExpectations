@@ -1772,8 +1772,11 @@ crbug.com/248894 external/wpt/css/css-typed-om/the-stylepropertymap/properties/t
 crbug.com/248894 external/wpt/web-animations/responsive/textIndent.html [ Failure ]
 
 # nth-* selectors
-crbug.com/304163 external/wpt/css/selectors/nth-child-of-no-space-after-of.html [ Failure ]
-crbug.com/304163 external/wpt/css/selectors/nth-last-child-of-no-space-after-of.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-attr.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-class.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-has.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-in-ancestor.html [ Failure ]
+crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-sibling.html [ Failure ]
 
 crbug.com/1377648 external/wpt/css/selectors/media/media-loading-state.html [ Skip Timeout ]
 crbug.com/1377648 external/wpt/css/selectors/media/media-playback-state.html [ Timeout ]
