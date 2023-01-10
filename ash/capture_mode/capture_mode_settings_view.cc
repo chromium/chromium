@@ -117,7 +117,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
         AddChildView(std::make_unique<CaptureModeMenuToggleButton>(
             kCaptureModeDemoToolsSettingsMenuEntryPointIcon,
             l10n_util::GetStringUTF16(
-                IDS_ASH_SCREEN_CAPTURE_DEMO_TOOLS_SHOW_KEYS_AND_CLICKS),
+                IDS_ASH_SCREEN_CAPTURE_DEMO_TOOLS_SHOW_CLICKS_AND_KEYS),
             CaptureModeController::Get()->enable_demo_tools(),
             base::BindRepeating(
                 &CaptureModeSettingsView::OnDemoToolsButtonToggled,
