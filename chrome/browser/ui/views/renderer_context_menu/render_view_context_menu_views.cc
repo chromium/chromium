@@ -382,7 +382,8 @@ void RenderViewContextMenuViews::ExecOpenInReadAnything() {
   Browser* browser = GetBrowser();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   browser_view->side_panel_coordinator()->Show(
-      SidePanelEntry::Id::kReadAnything);
+      SidePanelEntry::Id::kReadAnything,
+      SidePanelUtil::SidePanelOpenTrigger::kReadAnythingContextMenu);
 }
 
 void RenderViewContextMenuViews::Show() {
