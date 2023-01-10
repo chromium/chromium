@@ -243,8 +243,8 @@ class HistoryService : public KeyedService {
       VisitContentAnnotations::PasswordState password_state);
 
   // Updates the history database with the content model annotations for the
-  // visit.
-  void AddContentModelAnnotationsForVisit(
+  // visit. Virtual for testing.
+  virtual void AddContentModelAnnotationsForVisit(
       const VisitContentModelAnnotations& model_annotations,
       VisitID visit_id);
 
@@ -255,10 +255,10 @@ class HistoryService : public KeyedService {
       VisitID visit_id);
 
   // Updates the history database with the search metadata for a search-like
-  // visit.
-  void AddSearchMetadataForVisit(const GURL& search_normalized_url,
-                                 const std::u16string& search_terms,
-                                 VisitID visit_id);
+  // visit. Virtual for testing.
+  virtual void AddSearchMetadataForVisit(const GURL& search_normalized_url,
+                                         const std::u16string& search_terms,
+                                         VisitID visit_id);
 
   // Updates the history database with additional page metadata.
   void AddPageMetadataForVisit(const std::string& alternative_title,

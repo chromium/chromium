@@ -60,16 +60,25 @@ class PageContentAnnotationsWebContentsObserver;
 struct HistoryVisit {
   HistoryVisit();
   HistoryVisit(base::Time nav_entry_timestamp, GURL url, int64_t navigation_id);
+  explicit HistoryVisit(history::VisitID visit_id);
   ~HistoryVisit();
   HistoryVisit(const HistoryVisit&);
 
   base::Time nav_entry_timestamp;
   GURL url;
   int64_t navigation_id = 0;
+  absl::optional<history::VisitID> visit_id;
   absl::optional<std::string> text_to_annotate;
 
   struct Comp {
     bool operator()(const HistoryVisit& lhs, const HistoryVisit& rhs) const {
+      if (lhs.visit_id && rhs.visit_id) {
+        return *lhs.visit_id < *rhs.visit_id;
+      }
+      if (lhs.visit_id) {
+        // If we get here, this means that |rhs| does not have a visit ID.
+        return false;
+      }
       if (lhs.nav_entry_timestamp != rhs.nav_entry_timestamp)
         return lhs.nav_entry_timestamp < rhs.nav_entry_timestamp;
       return lhs.url < rhs.url;

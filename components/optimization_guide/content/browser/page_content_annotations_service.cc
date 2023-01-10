@@ -92,6 +92,11 @@ void MaybeRecordVisibilityUKM(
     const HistoryVisit& visit,
     const absl::optional<history::VisitContentModelAnnotations>&
         content_annotations) {
+  if (visit.visit_id) {
+    // This is for a remote visit not tied to a navigation.
+    return;
+  }
+
   if (!content_annotations)
     return;
 
@@ -417,7 +422,8 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
     annotated_text_cache_.Put(*visit.text_to_annotate, *content_annotations);
   }
 
-  if (is_new_entry) {
+  // Only log entities for new entries for local visits.
+  if (is_new_entry && !visit.visit_id) {
     for (const auto& entity : content_annotations->entities) {
       // Skip low weight entities.
       if (entity.weight < 50)
@@ -436,11 +442,18 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   if (!features::ShouldWriteContentAnnotationsToHistoryService())
     return;
 
-  QueryURL(visit,
-           base::BindOnce(
-               &history::HistoryService::AddContentModelAnnotationsForVisit,
-               history_service_->AsWeakPtr(), *content_annotations),
-           PageContentAnnotationsType::kModelAnnotations);
+  if (visit.visit_id) {
+    // If the visit ID is known, directly add the annotations for that visit
+    // rather than querying history for the closest match.
+    history_service_->AddContentModelAnnotationsForVisit(*content_annotations,
+                                                         *visit.visit_id);
+  } else {
+    QueryURL(visit,
+             base::BindOnce(
+                 &history::HistoryService::AddContentModelAnnotationsForVisit,
+                 history_service_->AsWeakPtr(), *content_annotations),
+             PageContentAnnotationsType::kModelAnnotations);
+  }
 }
 #endif
 
@@ -636,21 +649,35 @@ void PageContentAnnotationsService::OnURLVisited(
     const history::VisitRow& visit_row) {
   DCHECK_EQ(history_service, history_service_);
 
-  if (!template_url_service_) {
-    // `template_url_service_` is only nullptr in unit tests.
-    return;
-  }
+  // By default, annotate the title.
+  HistoryVisit history_visit(visit_row.visit_id);
+  history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
 
-  if (optimization_guide::features::
-          ShouldPersistSearchMetadataForNonGoogleSearches() ||
-      google_util::IsGoogleSearchUrl(url_row.url())) {
+  if (template_url_service_ &&
+      (optimization_guide::features::
+           ShouldPersistSearchMetadataForNonGoogleSearches() ||
+       google_util::IsGoogleSearchUrl(url_row.url()))) {
     auto search_metadata =
         template_url_service_->ExtractSearchMetadata(url_row.url());
     if (search_metadata) {
       history_service_->AddSearchMetadataForVisit(
           search_metadata->normalized_url, search_metadata->search_terms,
           visit_row.visit_id);
+
+      // If there's search metadata, annotate search terms instead.
+      history_visit.text_to_annotate =
+          base::UTF16ToUTF8(search_metadata->search_terms);
     }
+  }
+
+  // Annotate remote visits with the text that was determined above.
+  if (!visit_row.originator_cache_guid.empty()) {
+    if (switches::ShouldLogPageContentAnnotationsInput()) {
+      LOG(ERROR) << "Annotating remote visit " << visit_row.visit_id << ":\n"
+                 << "URL: " << url_row.url() << "\n"
+                 << "Text: " << *(history_visit.text_to_annotate);
+    }
+    Annotate(history_visit);
   }
 }
 
@@ -741,6 +768,10 @@ HistoryVisit::HistoryVisit(base::Time nav_entry_timestamp,
   this->nav_entry_timestamp = nav_entry_timestamp;
   this->url = url;
   this->navigation_id = navigation_id;
+}
+
+HistoryVisit::HistoryVisit(history::VisitID visit_id) {
+  this->visit_id = visit_id;
 }
 
 HistoryVisit::~HistoryVisit() = default;
