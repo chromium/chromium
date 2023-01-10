@@ -5657,6 +5657,21 @@
     'name': 'chromium.updater',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'mac-updater-builder-arm64-dbg': {
+        'additional_compile_targets': ['chrome/updater:all'],
+      },
+      'mac-updater-builder-arm64-rel': {
+        'additional_compile_targets': ['chrome/updater:all'],
+      },
+      'mac-updater-builder-asan-dbg': {
+        'additional_compile_targets': ['chrome/updater:all'],
+      },
+      'mac-updater-builder-dbg': {
+        'additional_compile_targets': ['chrome/updater:all'],
+      },
+      'mac-updater-builder-rel': {
+        'additional_compile_targets': ['chrome/updater:all'],
+      },
       'mac10.13-updater-tester-dbg': {
         'test_suites': {
           'gtest_tests': 'updater_gtests_mac',
@@ -5832,6 +5847,12 @@
           ]
         },
       },
+      'win-updater-builder-dbg': {
+        'additional_compile_targets': ['chrome/updater:all'],
+      },
+      'win-updater-builder-rel': {
+        'additional_compile_targets': ['chrome/updater:all'],
+      },
       'win10-32-on-64-updater-tester-dbg': {
         'mixins': [
           'win10',
@@ -5931,6 +5952,9 @@
             }
           ]
         },
+      },
+      'win32-updater-builder-dbg': {
+        'additional_compile_targets': ['chrome/updater:all'],
       },
       'win32-updater-builder-rel': {
         'additional_compile_targets': ['chrome/updater:all'],
