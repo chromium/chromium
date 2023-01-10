@@ -450,6 +450,7 @@ void ChromeDownloadManagerDelegate::SetDownloadManager(DownloadManager* dm) {
 #if BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     gfx::NativeWindow native_window,
+    const std::string& download_url,
     int64_t total_bytes,
     DownloadLocationDialogType dialog_type,
     const base::FilePath& suggested_path,
@@ -465,8 +466,8 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     connection_type = net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G;
   }
   download_dialog_bridge_->ShowDialog(
-      native_window, total_bytes, connection_type, dialog_type, suggested_path,
-      supports_later_dialog, show_date_time_picker, is_incognito,
+      native_window, download_url, total_bytes, connection_type, dialog_type,
+      suggested_path, supports_later_dialog, show_date_time_picker, is_incognito,
       std::move(callback));
 }
 
@@ -1099,6 +1100,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
           base::BindOnce(
               &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
               weak_ptr_factory_.GetWeakPtr(), native_window,
+              download->GetURL().spec(), download->GetTotalBytes(),
               show_download_later_dialog, std::move(callback)));
       return;
     }
@@ -1131,8 +1133,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
 
     gfx::NativeWindow native_window = web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
     ShowDownloadDialog(
-        native_window, download->GetTotalBytes(), dialog_type, suggested_path,
-        ShouldShowDownloadLaterDialog(download),
+        native_window, download->GetURL().spec(), download->GetTotalBytes(),
+        dialog_type, suggested_path, ShouldShowDownloadLaterDialog(download),
         base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
     return;
 
@@ -1195,6 +1197,8 @@ void ChromeDownloadManagerDelegate::ShowFilePickerForDownload(
 #if BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
     gfx::NativeWindow native_window,
+    const std::string& download_url,
+    int64_t total_bytes,
     bool show_download_later_dialog,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     PathValidationResult result,
@@ -1205,7 +1209,7 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
   if (result == PathValidationResult::SUCCESS) {
     if (download_prefs_->PromptForDownload() || show_download_later_dialog) {
       ShowDownloadDialog(
-          native_window, 0 /* total_bytes */,
+          native_window, download_url, total_bytes,
           DownloadLocationDialogType::NAME_CONFLICT, target_path,
           show_download_later_dialog,
           base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
@@ -1564,6 +1568,15 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     content::DownloadTargetCallback callback,
     std::unique_ptr<DownloadTargetInfo> target_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (target_info->result == download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED) {
+    std::move(callback).Run(
+          target_info->target_path, target_info->target_disposition,
+          target_info->danger_type, target_info->mixed_content_status,
+          target_info->intermediate_path, target_info->display_name,
+          target_info->mime_type, std::move(target_info->download_schedule),
+          target_info->result);
+    return;
+  }
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (item) {
     if (!target_info->target_path.empty() &&

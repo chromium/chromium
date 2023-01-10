@@ -1806,6 +1806,10 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   RecordDownloadCountWithSource(DOWNLOAD_TARGET_DETERMINED_COUNT,
                                 download_source_);
 
+  if (interrupt_reason == DOWNLOAD_INTERRUPT_REASON_USER_CANCELED) {
+    Remove();
+    return;
+  }
   if (IsCancellation(interrupt_reason) || target_path.empty()) {
     Cancel(true);
     return;

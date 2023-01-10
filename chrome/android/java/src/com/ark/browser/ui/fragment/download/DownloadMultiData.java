@@ -258,6 +258,9 @@ public class DownloadMultiData extends SingleTypeMultiData<DownloadItem> {
                                     .setPositiveButton((fragment1, which) -> {
                                         mission.setHasBeenExternallyRemoved(fragment1.isChecked());
                                         downloadManagerService.removeDownload(mission.getId(), null, fragment1.isChecked());
+                                        if (mission.isComplete() && fragment1.isChecked()) {
+                                            FileUtils.deleteFile(mission.getDownloadInfo().getFilePath());
+                                        }
                                     })
                                     .show(context);
                             break;

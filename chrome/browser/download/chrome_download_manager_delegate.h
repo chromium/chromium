@@ -74,6 +74,7 @@ class ChromeDownloadManagerDelegate
 
 #if BUILDFLAG(IS_ANDROID)
   void ShowDownloadDialog(gfx::NativeWindow native_window,
+                          const std::string& download_url,
                           int64_t total_bytes,
                           DownloadLocationDialogType dialog_type,
                           const base::FilePath& suggested_path,
@@ -294,6 +295,8 @@ class ChromeDownloadManagerDelegate
   // TARGET_CONFLICT and the new file name should be displayed to the user.
   void GenerateUniqueFileNameDone(
       gfx::NativeWindow native_window,
+      const std::string& download_url,
+      int64_t total_bytes,
       bool show_download_later_dialog,
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,

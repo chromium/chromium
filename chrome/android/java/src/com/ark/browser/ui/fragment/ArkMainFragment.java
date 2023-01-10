@@ -165,6 +165,7 @@ public class ArkMainFragment extends BaseFragment implements
             @Override
             public void showDialog(DownloadDialogBridge downloadDialogBridge,
                                    @NonNull Activity activity,
+                                   String downloadUrl,
                                    long totalBytes,
                                    @ConnectionType int connectionType,
                                    @DownloadLocationDialogType int dialogType,
@@ -186,10 +187,9 @@ public class ArkMainFragment extends BaseFragment implements
                             .setOnCancelListener(dialog -> downloadDialogBridge.onCancel())
                             .show(activity);
                 } else {
-                    // TODO url
                     new DownloadDialog()
                             .setFileName(FileUtils.getFileName(suggestedPath))
-                            .setUrl("TODO url")
+                            .setUrl(downloadUrl)
                             .setDownloadDialogBridge(downloadDialogBridge)
                             .setFileSize(FileUtils.formatFileSize(totalBytes))
                             .setDownloadPath(suggestedPath)

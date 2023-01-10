@@ -45,6 +45,7 @@ DownloadDialogBridge::~DownloadDialogBridge() {
 
 void DownloadDialogBridge::ShowDialog(
     gfx::NativeWindow native_window,
+    const std::string& download_url,
     int64_t total_bytes,
     net::NetworkChangeNotifier::ConnectionType connection_type,
     DownloadLocationDialogType dialog_type,
@@ -89,6 +90,7 @@ void DownloadDialogBridge::ShowDialog(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DownloadDialogBridge_showDialog(
       env, java_obj_, native_window ? native_window->GetJavaObject() : nullptr,
+      base::android::ConvertUTF8ToJavaString(env, download_url),
       static_cast<long>(total_bytes), static_cast<int>(connection_type),
       static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,

@@ -49,6 +49,7 @@ class DownloadDialogBridge {
   // Shows the download dialog.
   virtual void ShowDialog(
       gfx::NativeWindow native_window,
+      const std::string& download_url,
       int64_t total_bytes,
       net::NetworkChangeNotifier::ConnectionType connection_type,
       DownloadLocationDialogType dialog_type,
