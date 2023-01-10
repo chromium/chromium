@@ -40,6 +40,8 @@ suite('AppListTest', () => {
           mayShowRunOnOsLoginMode: false,
           mayToggleRunOnOsLoginMode: false,
           runOnOsLoginMode: 0 /*kNotRun*/,
+          mayShowOpenInWindow: false,
+          openInWindow: false,
         },
         {
           id: 'ahfgeienlihckogmotestdlkjgocpleb',
@@ -52,6 +54,8 @@ suite('AppListTest', () => {
           mayShowRunOnOsLoginMode: false,
           mayToggleRunOnOsLoginMode: false,
           runOnOsLoginMode: 0 /*kNotRun*/,
+          mayShowOpenInWindow: false,
+          openInWindow: false,
         },
       ],
     };
@@ -66,6 +70,8 @@ suite('AppListTest', () => {
       mayShowRunOnOsLoginMode: false,
       mayToggleRunOnOsLoginMode: false,
       runOnOsLoginMode: 0 /*kNotRun*/,
+      mayShowOpenInWindow: false,
+      openInWindow: false,
     };
     testBrowserProxy = new TestAppHomeBrowserProxy(apps);
     callbackRouterRemote = testBrowserProxy.callbackRouterRemote;

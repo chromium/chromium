@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -31,8 +33,7 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -48,6 +49,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/gurl.h"
 
@@ -67,6 +69,18 @@ const int kWebAppLargeIconSize = 128;
 // TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
 bool IsYoutubeExtension(const std::string& extension_id) {
   return extension_id == extension_misc::kYoutubeAppId;
+}
+
+void AcquireAppLockAndScheduleCallback(
+    const std::string& operation_name,
+    web_app::WebAppProvider& provider,
+    const web_app::AppId& app_id,
+    base::OnceCallback<void(web_app::AppLock& lock)> callback) {
+  provider.scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+      operation_name,
+      std::make_unique<web_app::AppLockDescription,
+                       base::flat_set<web_app::AppId>>({app_id}),
+      std::move(callback));
 }
 
 }  // namespace
@@ -233,6 +247,24 @@ void AppHomePageHandler::LaunchAppInternal(
   }
 }
 
+void AppHomePageHandler::SetUserDisplayMode(
+    const std::string& app_id,
+    web_app::mojom::UserDisplayMode user_display_mode) {
+  AcquireAppLockAndScheduleCallback(
+      "AppHomePageHandler::SetWebAppDisplayMode", *web_app_provider_, app_id,
+      base::BindOnce(
+          [](const web_app::AppId& app_id,
+             web_app::mojom::UserDisplayMode user_display_mode,
+             web_app::AppLock& lock) {
+            if (lock.registrar().IsLocallyInstalled(app_id)) {
+              lock.sync_bridge().SetAppUserDisplayMode(app_id,
+                                                       user_display_mode,
+                                                       /*is_user_action=*/true);
+            }
+          },
+          app_id, user_display_mode));
+}
+
 void AppHomePageHandler::ShowWebAppSettings(const std::string& app_id) {
   chrome::ShowWebAppSettings(
       GetCurrentBrowser(), app_id,
@@ -301,6 +333,10 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   app_info->may_toggle_run_on_os_login_mode = login_mode.user_controllable;
   app_info->run_on_os_login_mode = login_mode.value;
 
+  app_info->may_show_open_in_window = is_locally_installed;
+  // Treat all other types of display mode as "open as window".
+  app_info->open_in_window = registrar.GetAppEffectiveDisplayMode(app_id) !=
+                             blink::mojom::DisplayMode::kBrowser;
   return app_info;
 }
 
@@ -322,6 +358,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   app_info->may_show_run_on_os_login_mode = false;
   app_info->may_toggle_run_on_os_login_mode = false;
 
+  app_info->may_show_open_in_window = false;
   return app_info;
 }
 
@@ -519,6 +556,12 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
 void AppHomePageHandler::OnWebAppRunOnOsLoginModeChanged(
     const web_app::AppId& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
+  page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
+}
+
+void AppHomePageHandler::OnWebAppUserDisplayModeChanged(
+    const web_app::AppId& app_id,
+    web_app::mojom::UserDisplayMode user_display_mode) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 

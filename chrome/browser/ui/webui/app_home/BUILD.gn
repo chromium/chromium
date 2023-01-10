@@ -10,6 +10,7 @@ mojom("mojo_bindings") {
   use_typescript_sources = true
 
   public_deps = [
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
@@ -28,6 +29,7 @@ mojom("mojo_bindings") {
       ]
       traits_sources =
           [ "//chrome/browser/ui/webui/app_home/app_home_mojom_traits.cc" ]
+
       traits_public_deps =
           [ "//chrome/browser/web_applications:web_applications" ]
     },

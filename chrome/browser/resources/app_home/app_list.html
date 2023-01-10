@@ -40,23 +40,26 @@
 
 <cr-action-menu id="menu">
   <div tabindex="0" class="dropdown-item"
-      on-click="onOpenInWindowItemClick_">
+      on-click="onOpenInWindowItemClick_"
+      hidden="{{!selectedActionMenuModel_.appInfo.mayShowOpenInWindow}}"
+      >
     <div class="dropdown-item-label">
       Open in window
     </div>
-    <cr-checkbox>
+    <cr-checkbox checked="{{selectedActionMenuModel_.appInfo.openInWindow}}">
         Enable opening app in window
     </cr-checkbox>
   </div>
   <div tabindex="0" class="dropdown-item"
       on-click="onLaunchOnStartupItemClick_"
-      hidden="{{!actionMenuModel_.appInfo.mayShowRunOnOsLoginMode}}"
-      disabled="{{!actionMenuModel_.appInfo.mayToggleRunOnOsLoginMode}}">
+      hidden="{{!selectedActionMenuModel_.appInfo.mayShowRunOnOsLoginMode}}"
+      disabled=
+        "{{!selectedActionMenuModel_.appInfo.mayToggleRunOnOsLoginMode}}">
     <div class="dropdown-item-label">
       Launch on startup
     </div>
     <cr-checkbox 
-      checked="{{actionMenuModel_.runOnOsLoginModeChecked}}"
+      checked="{{selectedActionMenuModel_.runOnOsLoginModeChecked}}"
       on-change="onLaunchOnStartupItemClick_">
         Enable launching app on startup
       </cr-checkbox>

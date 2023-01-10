@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import {AppInfo, ClickEvent, PageCallbackRouter, PageHandlerInterface, PageRemote, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
+import {UserDisplayMode} from 'chrome://apps/user_display_mode.mojom-webui.js';
 
 interface AppList {
   appList: AppInfo[];
@@ -34,6 +35,8 @@ export class FakePageHandler implements PageHandlerInterface {
   launchDeprecatedAppDialog() {}
 
   installAppLocally(_appId: string) {}
+
+  setUserDisplayMode(_appId: string, _userDisplayMode: UserDisplayMode) {}
 }
 
 export class TestAppHomeBrowserProxy implements BrowserProxy {

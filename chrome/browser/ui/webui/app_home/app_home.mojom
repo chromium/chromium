@@ -6,6 +6,8 @@ module app_home.mojom;
 
 import "url/mojom/url.mojom";
 
+import "chrome/browser/web_applications/mojom/user_display_mode.mojom";
+
 // The RunOnOsLoginModes must be kept in sync with RunOnOsLoginMode in
 // chrome/browser/web_applications/web_app_constants.h
 enum RunOnOsLoginMode {
@@ -35,6 +37,11 @@ struct AppInfo {
   // The app's `RunOnOsLoginMode`, including `RunOnOsLoginModeNotRun` and
   // `RunOnOsLoginModeWindowed`.
   RunOnOsLoginMode run_on_os_login_mode;
+  // Whether to show `open_in_window` menu item.
+  bool may_show_open_in_window;
+  // Whether the app open in a app window or as a browser tab.
+  bool open_in_window;
+
 };
 
 struct ClickEvent {
@@ -73,6 +80,8 @@ interface PageHandler {
   // Install app and set this app locally installed.
   // A locally installed app has shortcuts installed on various UI surfaces.
   InstallAppLocally(string app_id);
+  // Set user display mode for web app.
+  SetUserDisplayMode(string app_id, web_app.mojom.UserDisplayMode display_mode);
 };
 
 // The `Page` interface is used for sending mojom action messsage

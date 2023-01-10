@@ -13,6 +13,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {AppInfo, PageCallbackRouter, RunOnOsLoginMode} from './app_home.mojom-webui.js';
 import {getTemplate} from './app_list.html.js';
 import {BrowserProxy} from './browser_proxy.js';
+import {UserDisplayMode} from './user_display_mode.mojom-webui.js';
 
 export interface ActionMenuModel {
   appInfo: AppInfo;
@@ -46,7 +47,7 @@ export class AppListElement extends PolymerElement {
         },
       },
 
-      actionMenuModel_: Object,
+      selectedActionMenuModel_: Object,
     };
   }
 
@@ -112,7 +113,17 @@ export class AppListElement extends PolymerElement {
   }
 
   private onOpenInWindowItemClick_() {
-    this.$.menu.close();
+    if (this.selectedActionMenuModel_) {
+      const appInfo = this.selectedActionMenuModel_.appInfo;
+      if (appInfo.openInWindow) {
+        BrowserProxy.getInstance().handler.setUserDisplayMode(
+            appInfo.id, UserDisplayMode.kBrowser);
+      } else {
+        BrowserProxy.getInstance().handler.setUserDisplayMode(
+            appInfo.id, UserDisplayMode.kStandalone);
+      }
+    }
+    this.closeMenu_();
   }
 
   // Changing the app's launch mode.
