@@ -1114,4 +1114,28 @@ TEST_F(StructuredMetricsProviderTest, EventSequenceLogging) {
   ExpectNoErrors();
 }
 
+TEST_F(StructuredMetricsProviderTest, EventsClone) {
+  Init();
+
+  events::v2::cr_os_events::Test1 event;
+
+  const int test_time = 50;
+  const double test_metric = 1.0;
+
+  event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
+  event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
+  event.SetMetric1(test_metric);
+
+  auto cloned_event = event.Clone();
+
+  EXPECT_EQ(event.event_sequence_metadata().reset_counter,
+            cloned_event.event_sequence_metadata().reset_counter);
+  EXPECT_EQ(event.project_name(), cloned_event.project_name());
+  EXPECT_EQ(event.event_name(), cloned_event.event_name());
+  EXPECT_EQ(event.is_event_sequence(), cloned_event.is_event_sequence());
+  EXPECT_EQ(event.recorded_time_since_boot(),
+            cloned_event.recorded_time_since_boot());
+  EXPECT_EQ(event.metric_values(), cloned_event.metric_values());
+}
+
 }  // namespace metrics::structured

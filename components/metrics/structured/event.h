@@ -105,6 +105,7 @@ class Event {
 
   const std::string& project_name() const;
   const std::string& event_name() const;
+  bool is_event_sequence() const;
   const std::map<std::string, MetricValue>& metric_values() const;
 
   const base::TimeDelta recorded_time_since_boot() const;
