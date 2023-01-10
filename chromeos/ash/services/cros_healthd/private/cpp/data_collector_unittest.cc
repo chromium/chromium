@@ -148,7 +148,7 @@ TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOffToOn) {
 }
 
 // Test that privacy screen set request will be accepted when privacy screen is
-// off and is to be turned ff.
+// off and is to be turned off.
 TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOffToff) {
   delegate_.SetPrivacyScreenAttributes(/*supported=*/true,
                                        /*managed=*/false, /*enabled=*/false);
