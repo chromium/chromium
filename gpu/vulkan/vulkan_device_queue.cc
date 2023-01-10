@@ -302,8 +302,8 @@ bool VulkanDeviceQueue::Initialize(
       VK_MAX_MEMORY_HEAPS,
       heap_memory_limit ? heap_memory_limit : VK_WHOLE_SIZE);
   vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
-                       heap_size_limit.data(), is_thread_safe,
-                       &owned_vma_allocator_);
+                       enabled_extensions_, heap_size_limit.data(),
+                       is_thread_safe, &owned_vma_allocator_);
   vma_allocator_ = owned_vma_allocator_;
 
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
@@ -330,7 +330,8 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
   enabled_extensions_ = std::move(enabled_extensions);
 
   if (vma_allocator_ == VK_NULL_HANDLE) {
-    vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_, nullptr,
+    vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
+                         enabled_extensions_, /*heap_size_limit=*/nullptr,
                          /*is_thread_safe =*/false, &owned_vma_allocator_);
     vma_allocator_ = owned_vma_allocator_;
   }

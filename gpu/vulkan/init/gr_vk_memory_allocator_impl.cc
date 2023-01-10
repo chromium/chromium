@@ -196,10 +196,18 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
   }
 
   std::pair<uint64_t, uint64_t> totalAllocatedAndUsedMemory() const override {
-    VmaStats stats;
-    vma::CalculateStats(allocator_, &stats);
-    return {stats.total.usedBytes + stats.total.unusedBytes,
-            stats.total.usedBytes};
+    uint64_t total_allocated_memory = 0, total_used_memory = 0;
+    VmaBudget budget[VK_MAX_MEMORY_HEAPS];
+    vma::GetBudget(allocator_, budget);
+    const VkPhysicalDeviceMemoryProperties* physical_device_memory_properties;
+    vmaGetMemoryProperties(allocator_, &physical_device_memory_properties);
+    for (uint32_t i = 0; i < physical_device_memory_properties->memoryHeapCount;
+         ++i) {
+      total_allocated_memory += budget[i].blockBytes;
+      total_used_memory += budget[i].allocationBytes;
+    }
+    DCHECK_LE(total_used_memory, total_allocated_memory);
+    return {total_allocated_memory, total_used_memory};
   }
 
   const VmaAllocator allocator_;

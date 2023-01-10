@@ -70,6 +70,7 @@ if (enable_vulkan) {
       ":vulkan_function_pointers",
       "//base",
       "//third_party/vulkan_memory_allocator",
+      "//ui/gfx:gfx",
     ]
   }
 

@@ -1329,6 +1329,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.Vulkan.ExtMemoryBudgetSupported" units="BooleanSupported"
+    expires_after="2023-11-11">
+  <owner>vikassoni@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Whether the extension VK_EXT_memory_budget is supported or not. Recorded
+    once during every gpu process initialization.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Vulkan.PipelineCache.LoadCacheHit" enum="BooleanCacheHit"
     expires_after="2022-05-08">
   <owner>backer@chromium.org</owner>
