@@ -99,6 +99,11 @@ void ApplyIconEffects(IconEffects icon_effects,
                       IconValuePtr iv,
                       LoadIconCallback callback);
 
+// Encodes `iv` as a compressed PNG icon with `scale_factor`.
+void ConvertUncompressedIconToCompressedIconWithScale(float rep_icon_scale,
+                                                      LoadIconCallback callback,
+                                                      IconValuePtr iv);
+
 // Encodes |iv| as a compressed PNG icon.
 void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
                                              LoadIconCallback callback);

@@ -488,14 +488,26 @@ void ApplyIconEffects(IconEffects icon_effects,
   icon_loader->ApplyIconEffects(icon_effects, std::move(iv));
 }
 
-void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
-                                             LoadIconCallback callback) {
+void ConvertUncompressedIconToCompressedIconWithScale(float rep_icon_scale,
+                                                      LoadIconCallback callback,
+                                                      IconValuePtr iv) {
+  if (!iv) {
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    return;
+  }
+
   iv->uncompressed.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
-                     /*rep_icon_scale=*/1.0f),
+                     /*rep_icon_scale=*/rep_icon_scale),
       base::BindOnce(&CompleteIconWithCompressed, std::move(callback)));
+}
+
+void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
+                                             LoadIconCallback callback) {
+  ConvertUncompressedIconToCompressedIconWithScale(
+      /*rep_icon_scale=*/1.0f, std::move(callback), std::move(iv));
 }
 
 void LoadIconFromExtension(IconType icon_type,

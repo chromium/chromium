@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/path_service.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -49,6 +51,7 @@
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -62,6 +65,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/layout.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -137,6 +141,35 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
       app_registry_cache_observation_{this};
 };
 
+class FakeAppListModelUpdaterObserver : public AppListModelUpdaterObserver {
+ public:
+  // AppListModelUpdaterObserver:
+  void OnAppListItemUpdated(ChromeAppListItem* item) override {
+    app_updated_count_[item->id()]++;
+    if (app_icon_updated_callback_.count(item->id()) > 0) {
+      std::move(app_icon_updated_callback_[item->id()]).Run();
+      app_icon_updated_callback_.erase(item->id());
+    }
+  }
+
+  void WaitForIconUpdates(const std::string& app_id) {
+    // If the feature kUnifiedAppServiceIconLoading is disabled, or the app has
+    // been updated, we don't need to wait for the icon update.
+    if (!base::FeatureList::IsEnabled(apps::kUnifiedAppServiceIconLoading) ||
+        app_updated_count_.count(app_id) > 0) {
+      return;
+    }
+
+    base::RunLoop run_loop;
+    app_icon_updated_callback_[app_id] = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  std::map<std::string, int> app_updated_count_;
+  std::map<std::string, base::OnceClosure> app_icon_updated_callback_;
+};
+
 class MockImageDownloader : public RemoteAppsManager::ImageDownloader {
  public:
   MOCK_METHOD(void,
@@ -150,7 +183,15 @@ gfx::ImageSkia CreateTestIcon(int size, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size, size);
   bitmap.eraseColor(color);
-  return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+
+  gfx::ImageSkia image_skia;
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
+  for (auto& scale : scale_factors) {
+    image_skia.AddRepresentation(
+        gfx::ImageSkiaRep(bitmap, ui::GetScaleForResourceScaleFactor(scale)));
+  }
+  return image_skia;
 }
 
 void CheckIconsEqual(const gfx::ImageSkia& expected,
@@ -199,6 +240,7 @@ class RemoteAppsManagerBrowsertest
     app_list_syncable_service_ =
         app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
     app_list_model_updater_ = app_list_syncable_service_->GetModelUpdater();
+    app_list_model_updater_->AddObserver(&app_list_model_updater_observer_);
     manager_ = RemoteAppsManagerFactory::GetForProfile(profile_);
     std::unique_ptr<FakeIdGenerator> id_generator =
         std::make_unique<FakeIdGenerator>(
@@ -224,6 +266,11 @@ class RemoteAppsManagerBrowsertest
     device_local_accounts->set_auto_login_id("user@test");
     device_local_accounts->set_auto_login_delay(0);
     RefreshDevicePolicy();
+  }
+
+  void TearDownOnMainThread() override {
+    app_list_model_updater_->RemoveObserver(&app_list_model_updater_observer_);
+    DevicePolicyCrosBrowserTest::InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void ExpectImageDownloaderDownload(const GURL& icon_url,
@@ -342,6 +389,7 @@ class RemoteAppsManagerBrowsertest
 
   app_list::AppListSyncableService* app_list_syncable_service_;
   AppListModelUpdater* app_list_model_updater_;
+  FakeAppListModelUpdaterObserver app_list_model_updater_observer_;
   ash::AppListTestApi app_list_test_api_;
   RemoteAppsManager* manager_ = nullptr;
   MockImageDownloader* image_downloader_ = nullptr;
@@ -362,6 +410,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
   // App has id kId1.
   AddAppAndWaitForIconChange(kExtensionId1, kId1, name, std::string(), icon_url,
                              icon, /*add_to_front=*/false);
+  app_list_model_updater_observer_.WaitForIconUpdates(kId1);
+
   ash::AppListItem* item = GetAppListItem(kId1);
   EXPECT_FALSE(item->is_folder());
   EXPECT_EQ(name, item->name());
@@ -391,6 +441,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
   // a placeholder icon.
   AddAppAndWaitForIconChange(kExtensionId1, kId1, name, std::string(), GURL(),
                              gfx::ImageSkia(), /*add_to_front=*/false);
+  app_list_model_updater_observer_.WaitForIconUpdates(kId1);
+
   ash::AppListItem* item = GetAppListItem(kId1);
   EXPECT_FALSE(item->is_folder());
   EXPECT_EQ(name, item->name());

@@ -28,8 +28,8 @@ void RemoteApps::AddApp(const ash::RemoteAppsModel::AppInfo& info) {
 
 void RemoteApps::UpdateAppIcon(const std::string& app_id) {
   auto app = std::make_unique<App>(AppType::kRemote, app_id);
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(IconEffects::kNone));
+  app->icon_key = std::move(
+      *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
   AppPublisher::Publish(std::move(app));
 }
 
@@ -43,8 +43,8 @@ AppPtr RemoteApps::CreateApp(const ash::RemoteAppsModel::AppInfo& info) {
   auto app = AppPublisher::MakeApp(AppType::kRemote, info.id, Readiness::kReady,
                                    info.name, InstallReason::kUser,
                                    apps::InstallSource::kUnknown);
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(IconEffects::kNone));
+  app->icon_key = std::move(
+      *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
   app->show_in_launcher = true;
   app->show_in_management = false;
   app->show_in_search = true;
@@ -90,6 +90,27 @@ void RemoteApps::LoadIcon(const std::string& app_id,
                                  : IconEffects::kMdIconStyle;
   ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon),
                    std::move(callback));
+}
+
+void RemoteApps::GetCompressedIconData(const std::string& app_id,
+                                       int32_t size_in_dip,
+                                       ui::ResourceScaleFactor scale_factor,
+                                       LoadIconCallback callback) {
+  auto icon = std::make_unique<IconValue>();
+  gfx::ImageSkia icon_image = delegate_->GetIcon(app_id);
+  if (icon_image.isNull()) {
+    icon_image = delegate_->GetPlaceholderIcon(app_id, size_in_dip);
+    if (icon_image.isNull()) {
+      std::move(callback).Run(std::make_unique<IconValue>());
+      return;
+    }
+  }
+
+  icon->icon_type = IconType::kUncompressed;
+  icon->uncompressed = icon_image;
+  ConvertUncompressedIconToCompressedIconWithScale(
+      ui::GetScaleForResourceScaleFactor(scale_factor), std::move(callback),
+      std::move(icon));
 }
 
 void RemoteApps::Launch(const std::string& app_id,
