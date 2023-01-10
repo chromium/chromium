@@ -22,7 +22,6 @@ found in the LICENSE file.
 
   <org.chromium.components.browser_ui.settings.TextMessagePreference
       android:key="bullet_two"
-      android:summary="@string/website_settings_category_cookie_subpage_bullet_two"
       android:icon="@drawable/ic_block"
       app:iconTint="@color/default_icon_color_tint_list"
       app:allowDividerBelow="false" />

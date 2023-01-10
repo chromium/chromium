@@ -27,12 +27,14 @@ public class FPSCookieSettings
         extends SiteSettingsPreferenceFragment implements Preference.OnPreferenceChangeListener {
     public static final String ALLOW_FPS_COOKIE_PREFERENCE = "allow_fps";
     public static final String SUBTITLE = "subtitle";
+    public static final String BULLET_TWO = "bullet_two";
 
     public static final String EXTRA_COOKIE_PAGE_STATE = "cookie_page_state";
 
     // UI Elements.
     private ChromeSwitchPreference mAllowFPSPreference;
     private TextMessagePreference mSubtitle;
+    private TextMessagePreference mBulletTwo;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -40,6 +42,7 @@ public class FPSCookieSettings
 
         getActivity().setTitle(getContext().getString(R.string.cookies_title));
         mSubtitle = (TextMessagePreference) findPreference(SUBTITLE);
+        mBulletTwo = (TextMessagePreference) findPreference(BULLET_TWO);
         mAllowFPSPreference = (ChromeSwitchPreference) findPreference(ALLOW_FPS_COOKIE_PREFERENCE);
 
         @CookieControlsMode
@@ -49,10 +52,13 @@ public class FPSCookieSettings
             setupAllowFPSPreference();
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
+            mBulletTwo.setSummary(R.string.website_settings_category_cookie_subpage_bullet_two);
             mAllowFPSPreference.setVisible(true);
         } else if (pageState == CookieControlsMode.INCOGNITO_ONLY) {
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_incognito_subtitle);
+            mBulletTwo.setSummary(
+                    R.string.website_settings_category_cookie_subpage_incognito_bullet_two);
             mAllowFPSPreference.setVisible(false);
         } else {
             assert false : "Unexpected cookies subpage state: " + pageState + "."
