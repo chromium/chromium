@@ -690,6 +690,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    @DisabledTest(message = "https://crbug.com/1395173")
     public void testSiteExceptionSiteDataBlocked() throws Exception {
         setGlobalToggleForCategory(SiteSettingsCategory.Type.SITE_DATA, true);
 
