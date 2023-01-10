@@ -67,19 +67,14 @@ export class BrailleDisplayManager {
     this.translatorManager_.addChangeListener(
         () => this.translateContent_(this.content_, this.expansionType_));
 
-    chrome.storage.onChanged.addListener((changes, area) => {
-      if (area === 'local' && 'brailleWordWrap' in changes) {
-        this.updatePanStrategy_(changes.brailleWordWrap.newValue);
-      }
-      if (area === 'local' &&
-          ('virtualBrailleRows' in changes ||
-           'virtualBrailleColumns' in changes)) {
-        this.onCaptionsStateChanged_();
-      }
-    });
-    chrome.storage.local.get(
-        {brailleWordWrap: true},
-        items => this.updatePanStrategy_(items.brailleWordWrap));
+    LocalStorage.addListenerForKey(
+        'brailleWordWrap', wrap => this.updatePanStrategy_(wrap));
+    LocalStorage.addListenerForKey(
+        'virtualBrailleRows', () => this.onCaptionsStateChanged_());
+    LocalStorage.addListenerForKey(
+        'virtualBrailleColumns', () => this.onCaptionsStateChanged_());
+
+    this.updatePanStrategy_(LocalStorage.getBoolean('brailleWordWrap', true));
 
     BrailleCaptionsBackground.init(() => this.onCaptionsStateChanged_());
     if (goog.isDef(chrome.brailleDisplayPrivate)) {
@@ -244,8 +239,7 @@ export class BrailleDisplayManager {
       processDisplayState(newState);
       LocalStorage.set('menuBrailleCommands', true);
     } else {
-      const state = BrailleCaptionsBackground.getVirtualDisplayState();
-      processDisplayState(state);
+      processDisplayState(BrailleCaptionsBackground.getVirtualDisplayState());
       LocalStorage.set('menuBrailleCommands', false);
     }
   }
