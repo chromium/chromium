@@ -3202,11 +3202,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"siteSettingsExtensionIdDescription",
      IDS_SETTINGS_SITE_SETTINGS_EXTENSION_ID_DESCRIPTION},
     {"siteSettingsSiteDataAllowedSubLabel",
-     IDS_SETTINGS_SITE_SETTINGS_SITE_DATA_ALLOWED_SUB_LABEL},
+     IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_ALLOWED_SUB_LABEL},
     {"siteSettingsSiteDataBlockedSubLabel",
-     IDS_SETTINGS_SITE_SETTINGS_SITE_DATA_BLOCKED_SUB_LABEL},
+     IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_BLOCKED_SUB_LABEL},
     {"siteSettingsSiteDataClearOnExitSubLabel",
-     IDS_SETTINGS_SITE_SETTINGS_SITE_DATA_CLEAR_ON_EXIT_SUB_LABEL},
+     IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_CLEAR_ON_EXIT_SUB_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

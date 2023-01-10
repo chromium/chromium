@@ -3896,15 +3896,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_EXTENSION_ID_DESCRIPTION" desc="Description for an extension using its extension id.">
     ID: <ph name="EXTENSION_ID">$1<ex>mhabknllooicelmdboebjilbohdbihln</ex></ph>
   </message>
-  <!-- TODO(crbug.com/1378703): Update to use final strings -->
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_DATA_ALLOWED_SUB_LABEL" translateable="false" desc="The sublabel for the site data link when site data is allowed">
-    Allowed cras in lectus mi ac magna dapibus
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_ALLOWED_SUB_LABEL" desc="1 of 3 possible states for the On-device site data setting. This text appears beneath the 'On-device site data' label and shows the user the state of the setting. With this status, sites have the most flexibility.">
+    Sites can save data on your device
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_DATA_BLOCKED_SUB_LABEL" translateable="false" desc="The sublabel for the site data link when site data is blocked">
-    Blocked cras in lectus mi ac magna dapibus
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_BLOCKED_SUB_LABEL" desc="2 of 3 possible states for the On-device site data setting. This text appears beneath the 'On-device site data' label and shows the user the state of the setting. With this status, sites have the least flexibility.">
+    Sites aren't allowed to save data on your device
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_DATA_CLEAR_ON_EXIT_SUB_LABEL" translateable="false" desc="The sublabel for the site data link when site data is cleared on exit">
-    Clear on exit cras in lectus mi ac magna dapibus
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_CLEAR_ON_EXIT_SUB_LABEL" desc="3 of 3 possible states for the On-device site data setting. This text appears beneath the 'On-device site data' label and shows the user the state of the setting. With this status, data stored on the user's device is deleted each time the user closes all Chrome windows.">
+    Site data is cleared from your device when you close all windows
   </message>
 
   <!-- Site Settings - Site Data Page-->
