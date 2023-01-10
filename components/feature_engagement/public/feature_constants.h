@@ -192,6 +192,10 @@ BASE_DECLARE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature);
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_DECLARE_FEATURE(kIPHGoogleOneOfferNotificationFeature);
+#endif
+
 }  // namespace feature_engagement
 
 #endif  // COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONSTANTS_H_

@@ -277,6 +277,11 @@ DEFINE_VARIATION_PARAM(kIPHAutofillVirtualCardSuggestionFeature,
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DEFINE_VARIATION_PARAM(kIPHGoogleOneOfferNotificationFeature,
+                       "IPH_GoogleOneOfferNotification");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 // Defines the array of which features should be listed in the chrome://flags
@@ -417,6 +422,10 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        VARIATION_ENTRY(kIPHGoogleOneOfferNotificationFeature),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 #undef DEFINE_VARIATION_PARAM

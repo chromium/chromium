@@ -80,6 +80,7 @@
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/ash/google_one_offer_iph_tab_helper.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
@@ -524,6 +525,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   app_list::CrOSActionRecorderTabTracker::CreateForWebContents(web_contents);
+  GoogleOneOfferIphTabHelper::CreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

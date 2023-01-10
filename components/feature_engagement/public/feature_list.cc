@@ -160,6 +160,10 @@ const base::Feature* const kAllFeatures[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    &kIPHGoogleOneOfferNotificationFeature,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 }  // namespace
 

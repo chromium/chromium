@@ -36016,6 +36016,8 @@ should be able to be added at any place in this file.
   <suffix name="GMCCastStartStop" label="For GMCCastStartStop feature."/>
   <suffix name="GMCCastStartStopFeature"
       label="For Global Media Controls Cast start and stop feature."/>
+  <suffix name="GoogleOneOfferNotification"
+      label="For google one offer notification feature."/>
   <suffix name="HighEfficiencyInfoMode"
       label="For HighEfficiencyInfoMode feature."/>
   <suffix name="HighEfficiencyModeFeature"

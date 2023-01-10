@@ -7531,6 +7531,7 @@ test("unit_tests") {
       "../browser/ui/ash/desks/chrome_desks_templates_delegate_unittest.cc",
       "../browser/ui/ash/device_scheduled_reboot/reboot_notification_controller_unittest.cc",
       "../browser/ui/ash/device_scheduled_reboot/scheduled_reboot_dialog_unittest.cc",
+      "../browser/ui/ash/google_one_offer_iph_tab_helper_unittest.cc",
       "../browser/ui/ash/holding_space/holding_space_keyed_service_unittest.cc",
       "../browser/ui/ash/ime_controller_client_impl_unittest.cc",
       "../browser/ui/ash/in_session_auth_dialog_client_unittest.cc",

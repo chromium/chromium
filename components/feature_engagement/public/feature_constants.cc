@@ -435,4 +435,10 @@ BASE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature,
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kIPHGoogleOneOfferNotificationFeature,
+             "IPH_GoogleOneOfferNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace feature_engagement

@@ -72858,6 +72858,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="162" label="Dictation no DLCs downloaded"/>
   <int value="163" label="Dictation only Pumpkin DLC downloaded"/>
   <int value="164" label="Dictation only SODA DLC downloaded"/>
+  <int value="165" label="Google One offer"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">

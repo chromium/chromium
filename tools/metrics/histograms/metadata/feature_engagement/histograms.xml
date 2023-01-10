@@ -145,6 +145,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
   <variant name="IPH_GMCCastStartStop"
       summary="Cast start stop in the Zenith dialog"/>
+  <variant name="IPH_GoogleOneOfferNotification"
+      summary="show google one offer notification with a visit to Google
+               Drive or Google Photo"/>
   <variant name="IPH_HighEfficiencyInfoMode" summary="High efficiency info"/>
   <variant name="IPH_HighEfficiencyMode"
       summary="encourages users to turn on high efficiency mode"/>
