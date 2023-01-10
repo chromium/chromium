@@ -9,7 +9,12 @@
 #import "base/mac/bundle_locations.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/test/js_test_util_internal.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
+#import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,6 +58,22 @@ id ExecuteJavaScript(WKWebView* web_view,
     *error = block_error;
   }
   return result;
+}
+
+id ExecuteJavaScriptForFeature(web::WebState* web_state,
+                               NSString* script,
+                               JavaScriptFeature* feature) {
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(web_state->GetBrowserState());
+  JavaScriptContentWorld* world =
+      feature_manager->GetContentWorldForFeature(feature);
+
+  web::WebStateImpl* web_state_impl =
+      static_cast<web::WebStateImpl*>(web_state);
+  WKWebView* web_view =
+      [web_state_impl->GetWebController() ensureWebViewCreated];
+  return web::test::ExecuteJavaScript(web_view, world->GetWKContentWorld(),
+                                      script);
 }
 
 bool LoadHtml(WKWebView* web_view, NSString* html, NSURL* base_url) {

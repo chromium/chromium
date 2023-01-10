@@ -8,6 +8,7 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
 
@@ -29,8 +30,8 @@ void AutofillTestWithWebState::SetUpForUniqueIds(web::WebFrame* frame) {
 
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return [ExecuteJavaScriptForFeature(
-               @"document[__gCrWeb.fill.ID_SYMBOL]",
+    return [web::test::ExecuteJavaScriptForFeature(
+               web_state(), @"document[__gCrWeb.fill.ID_SYMBOL]",
                autofill::FormUtilJavaScriptFeature::GetInstance()) intValue] ==
            static_cast<int>(next_available_id);
   }));
@@ -54,8 +55,8 @@ void AutofillTestWithWebState::TrackFormMutations(web::WebFrame* frame) {
 
   // Wait for |TrackFormMutations| to add form listeners.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return [ExecuteJavaScriptForFeature(
-        @"trackFormMutationsComplete",
+    return [web::test::ExecuteJavaScriptForFeature(
+        web_state(), @"trackFormMutationsComplete",
         autofill::FormHandlersJavaScriptFeature::GetInstance()) boolValue];
   }));
 }

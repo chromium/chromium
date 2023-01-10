@@ -9,6 +9,10 @@
 #import <WebKit/WebKit.h>
 
 namespace web {
+
+class JavaScriptFeature;
+class WebState;
+
 namespace test {
 
 // These functions synchronously execute JavaScript and return result as id.
@@ -26,6 +30,12 @@ id ExecuteJavaScript(WKWebView* web_view,
 // Executes JavaScript on `web_view` and returns the result as an id.
 // Fails if there was an error during script execution.
 id ExecuteJavaScript(WKWebView* web_view, NSString* script);
+
+// Synchronously executes JavaScript in the content world associated with
+// `feature` and returns the result as id.
+id ExecuteJavaScriptForFeature(web::WebState* web_state,
+                               NSString* script,
+                               JavaScriptFeature* feature);
 
 // Synchronously loads `html` into `web_view`. Returns true is successful or
 // false if the `web_view` never finishes loading.

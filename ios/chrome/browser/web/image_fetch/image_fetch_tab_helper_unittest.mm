@@ -15,6 +15,7 @@
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -91,19 +92,6 @@ class ImageFetchTabHelperTest : public PlatformTest {
                                          kImageData, status);
   }
 
-  id ExecuteJavaScriptForFeature(NSString* script,
-                                 web::JavaScriptFeature* feature) {
-    web::JavaScriptFeatureManager* feature_manager =
-        web::JavaScriptFeatureManager::FromBrowserState(browser_state_.get());
-    web::JavaScriptContentWorld* world =
-        feature_manager->GetContentWorldForFeature(feature);
-
-    WKWebView* web_view =
-        [web::test::GetWebController(web_state()) ensureWebViewCreated];
-    return web::test::ExecuteJavaScript(web_view, world->GetWKContentWorld(),
-                                        script);
-  }
-
   ImageFetchTabHelper* image_fetch_tab_helper() {
     return ImageFetchTabHelper::FromWebState(web_state());
   }
@@ -129,7 +117,8 @@ class ImageFetchTabHelperTest : public PlatformTest {
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
   // Inject fake `__gCrWeb.imageFetch.getImageData` that returns `kImageData`
   // in base64 format.
-  id script_result = ExecuteJavaScriptForFeature(
+  id script_result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       [NSString
           stringWithFormat:
               @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
@@ -161,7 +150,8 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
   // Inject fake `__gCrWeb.imageFetch.getImageData` that returns `kImageData`
   // in base64 format.
-  id script_result = ExecuteJavaScriptForFeature(
+  id script_result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       [NSString
           stringWithFormat:
               @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
@@ -192,7 +182,8 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
 // Tests that ImageFetchTabHelper::GetImageData gets image data from server when
 // Js fails.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
-  id script_result = ExecuteJavaScriptForFeature(
+  id script_result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
        "function(id, url) { "
        "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
@@ -220,7 +211,8 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
 // Js does not send a message back.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
   // Inject fake `__gCrWeb.imageFetch.getImageData` that does not do anything.
-  id script_result = ExecuteJavaScriptForFeature(
+  id script_result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;",
       ImageFetchJavaScriptFeature::GetInstance());
@@ -247,7 +239,8 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
 // WebState is destroyed.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
   // Inject fake `__gCrWeb.imageFetch.getImageData` that does not do anything.
-  id script_result = ExecuteJavaScriptForFeature(
+  id script_result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;",
       ImageFetchJavaScriptFeature::GetInstance());
@@ -274,7 +267,8 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
 // WebState navigates to a new web page.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateNavigate) {
   // Inject fake `__gCrWeb.imageFetch.getImageData` that does not do anything.
-  id script_result = ExecuteJavaScriptForFeature(
+  id script_result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
       @"function(id, url) {}; true;",
       ImageFetchJavaScriptFeature::GetInstance());

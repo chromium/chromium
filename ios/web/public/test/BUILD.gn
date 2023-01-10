@@ -137,6 +137,7 @@ source_set("util") {
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui",
     "//ios/web/web_view:util",

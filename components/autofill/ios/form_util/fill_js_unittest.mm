@@ -7,6 +7,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -63,7 +64,8 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
                                    html_action];
 
     LoadHtml(html);
-    id result = ExecuteJavaScriptForFeature(
+    id result = web::test::ExecuteJavaScriptForFeature(
+        web_state(),
         @"__gCrWeb.fill.getCanonicalActionForForm(document.body.children[0])",
         autofill::FormUtilJavaScriptFeature::GetInstance());
     NSString* base_url = base::SysUTF8ToNSString(BaseUrl());
@@ -80,7 +82,8 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
 TEST_F(FillJsTest, GetAriaLabel) {
   LoadHtml(@"<input id='input' type='text' aria-label='the label'/>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"the label";
@@ -97,7 +100,8 @@ TEST_F(FillJsTest, GetAriaLabelledBySingle) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"Name";
@@ -114,7 +118,8 @@ TEST_F(FillJsTest, GetAriaLabelledByMulti) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"Billing Name";
@@ -132,7 +137,8 @@ TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"Name";
@@ -150,7 +156,8 @@ TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"";
@@ -168,7 +175,8 @@ TEST_F(FillJsTest, GetAriaLabelledByFallback) {
             "</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"valid";
@@ -182,7 +190,8 @@ TEST_F(FillJsTest, GetAriaDescriptionSingle) {
             "<div id='div1'>aria description</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"aria description";
@@ -197,7 +206,8 @@ TEST_F(FillJsTest, GetAriaDescriptionMulti) {
             "<div id='div1'>aria</div>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"aria description";
@@ -210,7 +220,8 @@ TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
             "<input id='input' type='text' aria-describedby='invalid'/>"
             "</body></html>");
 
-  id result = ExecuteJavaScriptForFeature(
+  id result = web::test::ExecuteJavaScriptForFeature(
+      web_state(),
       @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));",
       autofill::FormUtilJavaScriptFeature::GetInstance());
   NSString* expected_result = @"";
