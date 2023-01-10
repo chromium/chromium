@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "third_party/libaddressinput/chromium/addressinput_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_normalizer.h"
@@ -155,7 +154,7 @@ void AddressValidator::RulesLoaded(bool success,
   if (success || attempts_number_[region_code] + 1 >= kMaxAttemptsNumber)
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AddressValidator::RetryLoadRules,
                      weak_factory_.GetWeakPtr(), region_code),
