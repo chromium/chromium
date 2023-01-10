@@ -211,7 +211,6 @@ fyi_reclient_test_builder(
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_profiler_service = "reclient-mac",
-    reclient_scandeps_server = True,
 )
 
 fyi_reclient_staging_builder(
@@ -324,7 +323,6 @@ fyi_reclient_test_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
-    reclient_scandeps_server = True,
 )
 
 fyi_reclient_staging_builder(
@@ -401,7 +399,6 @@ fyi_reclient_test_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
-    reclient_scandeps_server = True,
 )
 
 ci.builder(
