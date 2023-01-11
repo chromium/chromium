@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-NOTRUN Encoding and decoding cycle Unsupported config: {"codec":"avc1.42001E","avc":{"format":"annexb"},"hasEmbeddedColorSpace":true,"hardwareAcceleration":"prefer-software","width":320,"height":200,"bitrate":1000000,"bitrateMode":"constant","framerate":30}
-NOTRUN Encoding and decoding cycle w/ stripped color space Unsupported config: {"codec":"avc1.42001E","avc":{"format":"annexb"},"hasEmbeddedColorSpace":true,"hardwareAcceleration":"prefer-software","width":320,"height":200,"bitrate":1000000,"bitrateMode":"constant","framerate":30}
-Harness: the test ran to completion.
-

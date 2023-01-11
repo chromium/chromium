@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The popover should be bottom left positioned assert_equals: expected 36 but got 20
-Harness: the test ran to completion.
-

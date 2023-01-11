@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Tests that when timeout is non-zero, the success callback is called as expected.
-Harness: the test ran to completion.
-

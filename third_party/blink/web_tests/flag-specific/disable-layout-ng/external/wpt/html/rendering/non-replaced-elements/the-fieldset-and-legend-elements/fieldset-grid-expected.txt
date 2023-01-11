@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Grid assert_equals: height expected "90px" but got "180px"
-FAIL Inline grid assert_equals: height expected "90px" but got "180px"
-Harness: the test ran to completion.
-

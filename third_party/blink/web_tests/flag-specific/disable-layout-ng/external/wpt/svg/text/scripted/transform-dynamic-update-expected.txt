@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Dynamic update of transform CSS property assert_approx_equals: expected 17.90625 +/- 0.8 but got 19
-Harness: the test ran to completion.
-

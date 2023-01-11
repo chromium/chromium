@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Redundant columns of fixed-layout tables are not being merged assert_equals: expected 100 but got 50
-FAIL Redundant rows of fixed-layout tables are not being merged assert_equals: expected 50 but got 25
-Harness: the test ran to completion.
-

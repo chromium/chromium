@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSSOM View - GetClientRects().length is the same regardless source new lines assert_equals: count2 expected 1 but got 2
-Harness: the test ran to completion.
-

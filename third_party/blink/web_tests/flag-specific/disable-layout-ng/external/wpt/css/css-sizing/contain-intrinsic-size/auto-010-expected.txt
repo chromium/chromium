@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Last remembered size supports multiple fragments
-PASS Last remembered size is updated when 2nd fragment changes size
-Harness: the test ran to completion.
-

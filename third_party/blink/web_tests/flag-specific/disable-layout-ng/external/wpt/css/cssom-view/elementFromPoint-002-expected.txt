@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Checking whether dynamic changes to visibility interact correctly with
-  table anonymous boxes assert_equals: Should hit the overlay first. expected Element node <div id="overlay"><div></div></div> but got Element node <div id="target">Some text</div>
-Harness: the test ran to completion.
-

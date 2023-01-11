@@ -13,7 +13,8 @@
   },
   {
     "name": "disable-layout-ng",
-    "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"]
+    "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"],
+    "smoke_file": "SmokeTests/disable-layout-ng"
   },
   {
     "name": "disable-site-isolation-trials",

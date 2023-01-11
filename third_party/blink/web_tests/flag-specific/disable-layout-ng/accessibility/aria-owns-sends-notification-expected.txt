@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS A mark dirty notification is fired when an aria-owned child gets added to the tree.
-PASS A mark dirty notification is fired when an aria-owned attribute is added to an element that causes it to reparent another element to become its child.
-PASS A mark dirty notification is fired on the old parent when one of its children gets reparented to another element due to aria-owns.
-Harness: the test ran to completion.
-

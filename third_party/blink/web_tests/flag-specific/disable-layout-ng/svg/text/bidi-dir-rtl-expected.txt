@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Correctness of bidi reordering assert_array_equals: expected property 1 to be object "[object SVGPoint]" but got object "[object SVGPoint]" (expected array [object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]"] got [object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]", object "[object SVGPoint]"])
-Harness: the test ran to completion.
-
