@@ -57,6 +57,13 @@ async function sendEvent(
     assignDimension(event, dimen);
   }
 
+  if (event.eventValue !== undefined && !Number.isInteger(event.eventValue)) {
+    // Round the duration here since GA expects that the value is an
+    // integer. Reference:
+    // https://support.google.com/analytics/answer/1033068
+    event.eventValue = Math.round(event.eventValue);
+  }
+
   await ready.wait();
 
   // This value reflects the logging consent option in OS settings.
@@ -402,10 +409,7 @@ export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
         eventCategory: 'perf',
         eventAction: event,
         eventLabel: facing,
-        // Round the duration here since GA expects that the value is an
-        // integer. Reference:
-        // https://support.google.com/analytics/answer/1033068
-        eventValue: Math.round(duration),
+        eventValue: duration,
       },
       new Map([
         [MetricDimension.RESOLUTION, `${resolution}`],

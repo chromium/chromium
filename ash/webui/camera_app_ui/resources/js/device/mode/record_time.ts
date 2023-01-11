@@ -125,7 +125,7 @@ abstract class RecordTimeBase {
    * Returns the recorded duration in milliseconds.
    */
   inMilliseconds(): number {
-    return this.totalDuration;
+    return Math.round(this.totalDuration);
   }
 }
 
