@@ -751,15 +751,6 @@ DownloadManagerImpl::GetQuarantineConnectionCallback() {
   return delegate_->GetQuarantineConnectionCallback();
 }
 
-std::unique_ptr<download::DownloadItemRenameHandler>
-DownloadManagerImpl::GetRenameHandlerForDownload(
-    download::DownloadItemImpl* download_item) {
-  if (!delegate_)
-    return nullptr;
-
-  return delegate_->GetRenameHandlerForDownload(download_item);
-}
-
 void DownloadManagerImpl::StartDownload(
     std::unique_ptr<download::DownloadCreateInfo> info,
     std::unique_ptr<download::InputStream> stream,
