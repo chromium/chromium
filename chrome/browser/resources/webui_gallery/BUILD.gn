@@ -76,6 +76,7 @@ generate_grd("build_grd") {
     "demos/cr_toggle_demo.html",
     "demos/cr_toolbar/index.html",
     "demos/cr_tree/index.html",
+    "demos/cr_url_list_item/index.html",
     "demos/demo.css",
     "demos/md_select/index.html",
     "demos/nav_menu/index.html",

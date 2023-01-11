@@ -1,0 +1,142 @@
+<link rel="stylesheet" href="../demo.css">
+<style>
+  .chip {
+    align-items: center;
+    background: var(--google-grey-200);
+    border-radius: 100px;
+    display: inline-flex;
+    font-size: 12px;
+    gap: 4px;
+    height: 20px;
+    padding: 2px 8px 2px 6px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .chip {
+      background: var(--google-grey-700);
+    }
+  }
+
+  iron-icon {
+    height: 12px;
+    width: 12px;
+  }
+
+  cr-input {
+    --cr-input-error-display: none;
+  }
+
+  cr-checkbox::part(label-container) {
+    display: none;
+  }
+</style>
+
+<h1>cr-url-list-item</h1>
+<div class="demos">
+  <cr-url-list-item count="23">
+    <div slot="title">A Bookmark Folder</div>
+    <div slot="description">23 bookmarks</div>
+  </cr-url-list-item>
+
+  <cr-url-list-item count="23" always-show-suffix-icons>
+    <div slot="title">A folder with the X icon always visible</div>
+    <div slot="description">23 bookmarks</div>
+    <cr-icon-button iron-icon="cr:close" slot="suffix-icon">
+    </cr-icon-button>
+  </cr-url-list-item>
+
+  <cr-url-list-item url="http://www.google.com">
+    <div slot="title">Google</div>
+    <div slot="description">google.com</div>
+    <cr-icon-button iron-icon="cr:check-circle" slot="suffix-icon">
+    </cr-icon-button>
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix-icon">
+    </cr-icon-button>
+  </cr-url-list-item>
+
+  <cr-url-list-item url="http://www.google.com">
+    <div slot="title">Google</div>
+    <div slot="description">google.com</div>
+    <div class="chip" slot="chips">
+      <iron-icon icon="cr:error-outline"></iron-icon> Chip 1
+    </div>
+    <div class="chip" slot="chips">
+      <iron-icon icon="cr:insert-drive-file"></iron-icon> Chip 2
+    </div>
+    <cr-icon-button iron-icon="cr:check-circle" slot="suffix-icon">
+    </cr-icon-button>
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix-icon">
+    </cr-icon-button>
+  </cr-url-list-item>
+
+  <cr-url-list-item url="http://maps.google.com">
+    <div slot="title">
+      A really really really really really really really really really really
+      really really really really really really really really really really
+      really long title
+    </div>
+    <div slot="description">
+      aurlthatisreallyreallyreallyreallyreallyreallyreallyreallylong.com
+    </div>
+  </cr-url-list-item>
+</div>
+
+<h2>Compact</h2>
+<div class="demos">
+  <cr-url-list-item url="http://www.google.com" size="compact">
+    <div slot="title">Google</div>
+    <div slot="description">google.com</div>
+    <div class="chip" slot="chips">
+      <iron-icon icon="cr:error-outline"></iron-icon> Chip 1
+    </div>
+    <div class="chip" slot="chips">
+      <iron-icon icon="cr:insert-drive-file"></iron-icon> Chip 2
+    </div>
+  </cr-url-list-item>
+
+  <cr-url-list-item url="http://www.google.com" size="compact">
+    <div slot="title">
+      A really really really really really really really really really really
+      really really really really really really really really really really
+      really long title
+    </div>
+    <div slot="description">
+      aurlthatisreallyreallyreallyreallyreallyreallyreallyreallylong.com
+    </div>
+  </cr-url-list-item>
+
+  <cr-url-list-item count="23" size="compact">
+    <div slot="title">Bookmark folder</div>
+    <div slot="description">23 bookmarks</div>
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix-icon">
+    </cr-icon-button>
+  </cr-url-list-item>
+</div>
+
+<h2>Large</h2>
+<div class="demos">
+  <cr-url-list-item url="http://www.google.com" size="large">
+    <div slot="title">Google</div>
+    <div slot="description">google.com</div>
+    <div class="chip" slot="chips">
+      <iron-icon icon="cr:error-outline"></iron-icon> Chip 1
+    </div>
+    <div class="chip" slot="chips">
+      <iron-icon icon="cr:insert-drive-file"></iron-icon> Chip 2
+    </div>
+  </cr-url-list-item>
+
+<h2>With other types of content</h2>
+<div class="demos">
+  <cr-url-list-item count="23" size="compact">
+    <div slot="title"><cr-input value="Item name"></cr-input></div>
+    <cr-icon-button iron-icon="cr:more-vert" slot="suffix-icon" disabled>
+    </cr-icon-button>
+  </cr-url-list-item>
+
+  <cr-url-list-item url="http://www.google.com" size="compact">
+    <cr-checkbox slot="prefix"></cr-checkbox>
+    <div slot="title">Bookmark folder</div>
+    <div slot="description">23 bookmarks</div>
+  </cr-url-list-item>
+</div>

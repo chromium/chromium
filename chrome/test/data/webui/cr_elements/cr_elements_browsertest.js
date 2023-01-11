@@ -405,3 +405,15 @@ var CrElementsWebUiListenerMixinTest = class extends CrElementsBrowserTest {
 TEST_F('CrElementsWebUiListenerMixinTest', 'All', function() {
   mocha.run();
 });
+
+
+var CrElementsUrlListItemTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/cr_url_list_item_test.js';
+  }
+};
+
+TEST_F('CrElementsUrlListItemTest', 'All', function() {
+  mocha.run();
+});

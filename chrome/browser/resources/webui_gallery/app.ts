@@ -138,6 +138,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               path: 'tree',
               src: 'cr_tree/index.html',
             },
+            {
+              name: 'URL List Item',
+              path: 'url-list-item',
+              src: 'cr_url_list_item/index.html',
+            },
           ];
         },
       },

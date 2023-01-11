@@ -1,0 +1,185 @@
+<style include="cr-icons">
+  :host {
+    align-items: center;
+    box-sizing: border-box;
+    cursor: default;
+    display: flex;
+    height: 52px;
+    padding: 6px 16px;
+    width: 100%;
+  }
+
+  :host([size=compact]) {
+    height: 32px;
+    padding: 8px 20px;
+  }
+
+  :host([size=large]) {
+    height: 68px;
+    padding: 6px 16px;
+  }
+
+  :host(.hovered),
+  :host(:focus-within) {
+    background: var(--google-grey-200);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host(.hovered),
+    :host(:focus-within) {
+      background: var(--google-grey-800);
+    }
+  }
+
+  ::slotted([slot=prefix]) {
+    margin-inline-end: 16px;
+  }
+
+  #iconContainer {
+    align-items: center;
+    background: var(--google-grey-50);
+    border-radius: 4px;
+    display: flex;
+    flex-shrink: 0;
+    height: 40px;
+    justify-content: center;
+    margin-inline-end: 16px;
+    width: 40px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #iconContainer {
+      --cr-icon-color: var(--google-grey-100);
+      background: rgba(var(--google-grey-200-rgb), .11);
+    }
+  }
+
+  :host([size=compact]) #iconContainer {
+    background: transparent;
+    height: 16px;
+    margin-inline-end: 12px;
+    width: 16px;
+  }
+
+  :host([size=large]) #iconContainer {
+    height: 56px;
+    margin-inline-end: 16px;
+    width: 56px;
+  }
+
+  .favicon {
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 16px;
+    width: 16px;
+  }
+
+  .folder {
+    height: 16px;
+    margin: 0;
+    width: 16px;
+  }
+
+  .metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  :host([size=compact]) .metadata {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  :host([size=large]) .metadata {
+    gap: 4px;
+  }
+
+  ::slotted([slot=title]) {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .descriptions {
+    align-items: center;
+    display: flex;
+    gap: 3px;
+    height: 14px;
+  }
+
+  :host([size=compact]) .descriptions {
+    display: contents;
+  }
+
+  :host([size=large]) .descriptions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    height: auto;
+  }
+
+  ::slotted([slot=description]) {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  ::slotted([slot=title]),
+  ::slotted([slot=description]) {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chips {
+    align-items: flex-start;
+    display: flex;
+    gap: 4px;
+    min-width: fit-content;
+  }
+
+  .suffix-icons {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  ::slotted(cr-icon-button[slot=suffix-icon]) {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-button-margin-start: 0;
+    display: none;
+  }
+
+  :host(.hovered) ::slotted(cr-icon-button[slot=suffix-icon]),
+  :host(:focus-within) ::slotted(cr-icon-button[slot=suffix-icon]),
+  :host([always-show-suffix-icons]) ::slotted(cr-icon-button[slot=suffix-icon]) {
+    display: block;
+  }
+</style>
+
+<slot name="prefix"></slot>
+<div id="iconContainer">
+  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, count)]]"
+      style$="background-image: [[getFavicon_(url)]];">
+  </div>
+  <div class="folder cr-icon icon-folder-open"
+      hidden$="[[shouldShowFavicon_(url, count)]]">
+  </div>
+</div>
+<div class="metadata">
+  <slot name="title"></slot>
+  <div class="descriptions">
+    <slot name="description"></slot>
+    <div class="chips"><slot name="chips"></slot></div>
+  </div>
+</div>
+<div class="suffix-icons">
+  <slot name="suffix-icon"></slot>
+</div>
