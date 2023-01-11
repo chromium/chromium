@@ -4,7 +4,6 @@
 
 import './accelerator_row.js';
 
-import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -23,13 +22,18 @@ interface AcceleratorRowData {
   layoutInfo: LayoutInfo;
 }
 
+export interface AcceleratorSubsectionElement {
+  $: {
+    list: DomRepeat,
+  };
+}
+
 /**
  * @fileoverview
  * 'accelerator-subsection' is a wrapper component for a subsection of
  * shortcuts.
  */
-const AcceleratorSubsectionElementBase =
-    StrictQueryMixin(I18nMixin(PolymerElement));
+const AcceleratorSubsectionElementBase = I18nMixin(PolymerElement);
 export class AcceleratorSubsectionElement extends
     AcceleratorSubsectionElementBase {
   static get is(): string {
@@ -78,7 +82,7 @@ export class AcceleratorSubsectionElement extends
     // a deep check on objects so it won't detect changes to same size length
     // array of objects.
     this.set('acceleratorContainer', []);
-    this.strictQuery('#list', DomRepeat).render();
+    this.$.list.render();
     this.onCategoryUpdated();
   }
 

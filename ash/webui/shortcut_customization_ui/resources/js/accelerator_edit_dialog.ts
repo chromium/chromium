@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -16,9 +15,14 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_edit_dialog.html.js';
-import {AcceleratorEditViewElement} from './accelerator_edit_view.js';
-import {AcceleratorViewElement, ViewState} from './accelerator_view.js';
+import {ViewState} from './accelerator_view.js';
 import {AcceleratorInfo, AcceleratorSource} from './shortcut_types.js';
+
+export interface AcceleratorEditDialogElement {
+  $: {
+    editDialog: CrDialogElement,
+  };
+}
 
 declare global {
   interface HTMLElementEventMap {
@@ -33,8 +37,7 @@ declare global {
  * a given shortcut. Allows users to edit the accelerators.
  * TODO(jimmyxgong): Implement editing accelerators.
  */
-const AcceleratorEditDialogElementBase =
-    StrictQueryMixin(I18nMixin(PolymerElement));
+const AcceleratorEditDialogElementBase = I18nMixin(PolymerElement);
 
 export class AcceleratorEditDialogElement extends
     AcceleratorEditDialogElementBase {
@@ -93,7 +96,7 @@ export class AcceleratorEditDialogElement extends
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.strictQuery(CrDialogElement.is, CrDialogElement).showModal();
+    this.$.editDialog.showModal();
 
     window.addEventListener(
         'accelerator-capturing-started',
@@ -112,7 +115,9 @@ export class AcceleratorEditDialogElement extends
   }
 
   private getViewList(): DomRepeat {
-    return this.strictQuery('#viewList', DomRepeat);
+    const viewList = this.shadowRoot!.querySelector('#viewList') as DomRepeat;
+    assert(viewList);
+    return viewList;
   }
 
   updateDialogAccelerators(updatedAccels: AcceleratorInfo[]): void {
@@ -122,7 +127,7 @@ export class AcceleratorEditDialogElement extends
   }
 
   protected onDoneButtonClicked(): void {
-    this.strictQuery(CrDialogElement.is, CrDialogElement).close();
+    this.$.editDialog.close();
   }
 
   protected onDialogClose(): void {
@@ -139,13 +144,13 @@ export class AcceleratorEditDialogElement extends
   }
 
   private focusAcceleratorItemContainer(): void {
-    const editDialog = this.strictQuery(CrDialogElement.is, CrDialogElement);
-    const editView = editDialog.querySelector<AcceleratorEditViewElement>(
-        '#pendingAccelerator');
+    const editView = this.$.editDialog.querySelector('#pendingAccelerator');
     assert(editView);
-    const accelItem =
-        editView.strictQuery(AcceleratorViewElement.is, AcceleratorViewElement);
-    const container = accelItem.strictQueryDiv('#container');
+    const accelItem = editView.shadowRoot!.querySelector('#acceleratorItem');
+    assert(accelItem);
+    const container =
+        accelItem.shadowRoot!.querySelector<HTMLElement>('#container');
+    assert(container);
     container!.focus();
   }
 
