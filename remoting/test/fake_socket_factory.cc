@@ -88,8 +88,7 @@ FakeUdpSocket::FakeUdpSocket(FakePacketSocketFactory* factory,
     : factory_(factory),
       dispatcher_(dispatcher),
       local_address_(local_address),
-      state_(STATE_BOUND) {
-}
+      state_(STATE_BOUND) {}
 
 FakeUdpSocket::~FakeUdpSocket() {
   factory_->OnSocketDestroyed(local_address_.port());
@@ -111,13 +110,15 @@ rtc::SocketAddress FakeUdpSocket::GetRemoteAddress() const {
   return rtc::SocketAddress();
 }
 
-int FakeUdpSocket::Send(const void* data, size_t data_size,
+int FakeUdpSocket::Send(const void* data,
+                        size_t data_size,
                         const rtc::PacketOptions& options) {
   NOTREACHED();
   return EINVAL;
 }
 
-int FakeUdpSocket::SendTo(const void* data, size_t data_size,
+int FakeUdpSocket::SendTo(const void* data,
+                          size_t data_size,
                           const rtc::SocketAddress& address,
                           const rtc::PacketOptions& options) {
   scoped_refptr<net::IOBuffer> buffer =
@@ -161,17 +162,14 @@ void FakeUdpSocket::SetError(int error) {
 
 }  // namespace
 
-FakePacketSocketFactory::PendingPacket::PendingPacket()
-    : data_size(0) {
-}
+FakePacketSocketFactory::PendingPacket::PendingPacket() : data_size(0) {}
 
 FakePacketSocketFactory::PendingPacket::PendingPacket(
     const rtc::SocketAddress& from,
     const rtc::SocketAddress& to,
     const scoped_refptr<net::IOBuffer>& data,
     int data_size)
-    : from(from), to(to), data(data), data_size(data_size) {
-}
+    : from(from), to(to), data(data), data_size(data_size) {}
 
 FakePacketSocketFactory::PendingPacket::PendingPacket(
     const PendingPacket& other) = default;
@@ -228,8 +226,9 @@ rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateUdpSocket(
         break;
       }
     }
-    if (port < 0)
+    if (port < 0) {
       return nullptr;
+    }
   } else {
     do {
       port = next_port_;
@@ -240,9 +239,8 @@ rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateUdpSocket(
 
   CHECK(local_address.ipaddr() == address_);
 
-  FakeUdpSocket* result =
-      new FakeUdpSocket(this, dispatcher_,
-                        rtc::SocketAddress(local_address.ipaddr(), port));
+  FakeUdpSocket* result = new FakeUdpSocket(
+      this, dispatcher_, rtc::SocketAddress(local_address.ipaddr(), port));
 
   udp_sockets_[port] = base::BindRepeating(&FakeUdpSocket::ReceivePacket,
                                            base::Unretained(result));
@@ -267,8 +265,7 @@ rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateClientTcpSocket(
   return nullptr;
 }
 
-rtc::AsyncResolverInterface*
-FakePacketSocketFactory::CreateAsyncResolver() {
+rtc::AsyncResolverInterface* FakePacketSocketFactory::CreateAsyncResolver() {
   return nullptr;
 }
 
@@ -302,16 +299,18 @@ void FakePacketSocketFactory::ReceivePacket(
   }
 
   total_buffer_delay_ += delay;
-  if (delay > max_buffer_delay_)
+  if (delay > max_buffer_delay_) {
     max_buffer_delay_ = delay;
+  }
   ++total_packets_received_;
 
   if (latency_average_.is_positive()) {
     delay += base::Milliseconds(GetNormalRandom(
         latency_average_.InMillisecondsF(), latency_stddev_.InMillisecondsF()));
   }
-  if (delay.is_negative())
+  if (delay.is_negative()) {
     delay = base::TimeDelta();
+  }
 
   // Put the packet to the |pending_packets_| and post a task for
   // DoReceivePackets(). Note that the DoReceivePackets() task posted here may

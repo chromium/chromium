@@ -26,21 +26,15 @@ namespace {
 template <typename T>
 class NoBarrierAtomic {
  public:
-  T operator++() {
-    return base::subtle::NoBarrier_AtomicIncrement(&i_, 1) - 1;
-  }
+  T operator++() { return base::subtle::NoBarrier_AtomicIncrement(&i_, 1) - 1; }
 
-  T operator++(int) {
-    return base::subtle::NoBarrier_AtomicIncrement(&i_, 1);
-  }
+  T operator++(int) { return base::subtle::NoBarrier_AtomicIncrement(&i_, 1); }
 
   T operator--() {
     return base::subtle::NoBarrier_AtomicIncrement(&i_, -1) - 1;
   }
 
-  T operator--(int) {
-    return base::subtle::NoBarrier_AtomicIncrement(&i_, -1);
-  }
+  T operator--(int) { return base::subtle::NoBarrier_AtomicIncrement(&i_, -1); }
 
   T operator+=(T other) {
     return base::subtle::NoBarrier_AtomicIncrement(&i_, other);
@@ -50,9 +44,7 @@ class NoBarrierAtomic {
     return base::subtle::NoBarrier_AtomicIncrement(&i_, -other);
   }
 
-  T operator*() const {
-    return base::subtle::NoBarrier_Load(&i_);
-  }
+  T operator*() const { return base::subtle::NoBarrier_Load(&i_); }
 
  private:
   volatile T i_;
@@ -207,7 +199,8 @@ void MessageCounter::DisplayStatistics(std::ostream& os) {
 
 // Analyzes messages from DeliverHostMessage function.
 class FakeConnectionEventLogger::CounterClientStub
-    : public protocol::ClientStub, public MessageCounter {
+    : public protocol::ClientStub,
+      public MessageCounter {
  public:
   CounterClientStub();
 
@@ -232,8 +225,8 @@ void FakeConnectionEventLogger::CounterClientStub::DeliverHostMessage(
 }
 
 // Analyzes messages from DeliverClientMessage function.
-class FakeConnectionEventLogger::CounterHostStub
-    : public protocol::HostStub, public MessageCounter {
+class FakeConnectionEventLogger::CounterHostStub : public protocol::HostStub,
+                                                   public MessageCounter {
  public:
   CounterHostStub();
 
@@ -262,8 +255,8 @@ void FakeConnectionEventLogger::CounterHostStub::DeliverClientMessage(
 }
 
 // Analyzes messages from ProcessAudioPacket function.
-class FakeConnectionEventLogger::CounterAudioStub
-    : public protocol::AudioStub, public MessageCounter {
+class FakeConnectionEventLogger::CounterAudioStub : public protocol::AudioStub,
+                                                    public MessageCounter {
  public:
   CounterAudioStub();
 
@@ -285,8 +278,8 @@ void FakeConnectionEventLogger::CounterAudioStub::ProcessAudioPacket(
 }
 
 // Analyzes messages from ProcessVideoPacket function.
-class FakeConnectionEventLogger::CounterVideoStub
-    : public protocol::VideoStub, public MessageCounter {
+class FakeConnectionEventLogger::CounterVideoStub : public protocol::VideoStub,
+                                                    public MessageCounter {
  public:
   CounterVideoStub(protocol::FakeConnectionToClient* connection);
 
@@ -323,8 +316,7 @@ void FakeConnectionEventLogger::CounterVideoStub::ProcessVideoPacket(
     base::OnceClosure done) {
   if (video_packet && video_packet->has_capture_overhead_time_ms()) {
     // Not a keepalive packet.
-    if (connection_ &&
-        connection_->video_feedback_stub()) {
+    if (connection_ && connection_->video_feedback_stub()) {
       std::unique_ptr<VideoAck> ack(new VideoAck());
       ack->set_frame_id(video_packet->frame_id());
       connection_->video_feedback_stub()->ProcessVideoAck(std::move(ack));
@@ -339,10 +331,10 @@ void FakeConnectionEventLogger::CounterVideoStub::ProcessVideoPacket(
 
 FakeConnectionEventLogger::FakeConnectionEventLogger(
     protocol::FakeConnectionToClient* connection)
-  : client_stub_(new CounterClientStub()),
-    host_stub_(new CounterHostStub()),
-    audio_stub_(new CounterAudioStub()),
-    video_stub_(new CounterVideoStub(connection)) {}
+    : client_stub_(new CounterClientStub()),
+      host_stub_(new CounterHostStub()),
+      audio_stub_(new CounterAudioStub()),
+      video_stub_(new CounterVideoStub(connection)) {}
 
 FakeConnectionEventLogger::~FakeConnectionEventLogger() {}
 

@@ -80,8 +80,9 @@ TEST_P(CodecPerfTest, EncodeLatency) {
     base::TimeDelta latency = ended - started;
 
     total_latency += latency;
-    if (packet)
+    if (packet) {
       total_bytes += packet->data().size();
+    }
 
     switch (frame_generator_->last_frame_type()) {
       case CyclicFrameGenerator::ChangeType::NO_CHANGES:
@@ -110,15 +111,15 @@ TEST_P(CodecPerfTest, EncodeLatency) {
           << (total_latency_big_frames / big_frame_count).InMillisecondsF();
 
   if (small_frame_count) {
-    VLOG(0) << "Average encode latency for small frames: "
-            << (total_latency_small_frames / small_frame_count)
-                   .InMillisecondsF();
+    VLOG(0)
+        << "Average encode latency for small frames: "
+        << (total_latency_small_frames / small_frame_count).InMillisecondsF();
   }
 
   if (empty_frame_count) {
-    VLOG(0) << "Average encode latency for empty frames: "
-            << (total_latency_empty_frames / empty_frame_count)
-                   .InMillisecondsF();
+    VLOG(0)
+        << "Average encode latency for empty frames: "
+        << (total_latency_empty_frames / empty_frame_count).InMillisecondsF();
   }
 
   VLOG(0) << "Encoded bytes: " << total_bytes;

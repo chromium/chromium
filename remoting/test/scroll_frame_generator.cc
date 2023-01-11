@@ -36,7 +36,7 @@ std::unique_ptr<webrtc::DesktopFrame> ScrollFrameGenerator::GenerateFrame(
   result->CopyPixelsFrom(
       *base_frame_, webrtc::DesktopVector(0, 0),
       webrtc::DesktopRect::MakeLTRB(0, top_height, base_frame_->size().width(),
-                                  base_frame_->size().height()));
+                                    base_frame_->size().height()));
 
   result->mutable_updated_region()->SetRect(
       webrtc::DesktopRect::MakeSize(result->size()));

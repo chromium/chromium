@@ -14,7 +14,7 @@ class FilePath;
 namespace webrtc {
 class DesktopFrame;
 class DesktopRect;
-}
+}  // namespace webrtc
 
 namespace remoting {
 namespace test {

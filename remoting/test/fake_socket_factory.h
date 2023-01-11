@@ -100,11 +100,10 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
  private:
   struct PendingPacket {
     PendingPacket();
-    PendingPacket(
-        const rtc::SocketAddress& from,
-        const rtc::SocketAddress& to,
-        const scoped_refptr<net::IOBuffer>& data,
-        int data_size);
+    PendingPacket(const rtc::SocketAddress& from,
+                  const rtc::SocketAddress& to,
+                  const scoped_refptr<net::IOBuffer>& data,
+                  int data_size);
     PendingPacket(const PendingPacket& other);
     ~PendingPacket();
 

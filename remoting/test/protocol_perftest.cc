@@ -142,8 +142,9 @@ class ProtocolPerfTest
                          protocol::ErrorCode error) override {
     if (state == protocol::ConnectionToHost::CONNECTED) {
       client_connected_ = true;
-      if (host_connected_)
+      if (host_connected_) {
         connecting_loop_->Quit();
+      }
     }
   }
   void OnConnectionReady(bool ready) override {}
@@ -172,10 +173,12 @@ class ProtocolPerfTest
   void DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
                  base::OnceClosure done) override {
     last_video_frame_ = std::move(frame);
-    if (on_frame_task_)
+    if (on_frame_task_) {
       on_frame_task_.Run();
-    if (done)
+    }
+    if (done) {
       std::move(done).Run();
+    }
   }
 
   protocol::FrameConsumer::PixelFormat GetPixelFormat() override {
@@ -185,8 +188,9 @@ class ProtocolPerfTest
   // FrameStatsConsumer interface.
   void OnVideoFrameStats(const protocol::FrameStats& frame_stats) override {
     // Ignore store stats for empty frames.
-    if (!frame_stats.host_stats.frame_size)
+    if (!frame_stats.host_stats.frame_size) {
       return;
+    }
 
     frame_stats_.push_back(frame_stats);
 
@@ -224,8 +228,9 @@ class ProtocolPerfTest
 
   void OnHostConnectedMainThread() {
     host_connected_ = true;
-    if (client_connected_)
+    if (client_connected_) {
       connecting_loop_->Quit();
+    }
   }
 
   std::unique_ptr<webrtc::DesktopFrame> ReceiveFrame() {
@@ -255,7 +260,7 @@ class ProtocolPerfTest
   // host is started on |host_thread_| while the client works on the main
   // thread.
   void StartHostAndClient(bool use_webrtc) {
-    fake_network_dispatcher_ =  new FakeNetworkDispatcher();
+    fake_network_dispatcher_ = new FakeNetworkDispatcher();
 
     client_signaling_ =
         std::make_unique<FakeSignalStrategy>(SignalingAddress(kClientJid));
@@ -640,8 +645,9 @@ void ProtocolPerfTest::MeasureScrollPerformance(bool use_webrtc) {
           << " ms";
   VLOG(0) << "Total size: " << total_size << " bytes";
   VLOG(0) << "Bandwidth utilization: "
-          << 100 * total_size / (total_time.InSecondsF() *
-                                 GetParam().bandwidth_kbps * 1000 / 8)
+          << 100 * total_size /
+                 (total_time.InSecondsF() * GetParam().bandwidth_kbps * 1000 /
+                  8)
           << "%";
   VLOG(0) << "Network buffer delay (bufferbloat), average: "
           << client_socket_factory_->average_buffer_delay().InMilliseconds()

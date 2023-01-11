@@ -159,8 +159,9 @@ void It2MeCliHost::SendMessageToHost(const std::string& type,
 }
 
 void It2MeCliHost::DoSendMessage(const std::string& json) {
-  if (!host_)
+  if (!host_) {
     return;
+  }
   host_->OnMessage(json);
 }
 
@@ -197,8 +198,9 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
 }
 
 void It2MeCliHost::ShutdownHost() {
-  if (!host_)
+  if (!host_) {
     return;
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&It2MeCliHost::DoShutdownHost,
                                 weak_factory_.GetWeakPtr()));
@@ -231,10 +233,11 @@ void It2MeCliHost::OnStateError(const std::string& error_state,
   } else {
     auto* error_code_value =
         message.FindKeyOfType(kErrorMessageCode, base::Value::Type::STRING);
-    if (error_code_value)
+    if (error_code_value) {
       error_message = error_code_value->GetString();
-    else
+    } else {
       error_message = "Unknown CRD Error";
+    }
   }
   // Notify callback if command is still running.
   if (command_awaiting_crd_access_code_) {
@@ -257,8 +260,9 @@ void It2MeCliHost::OnStateRemoteConnected(const base::Value& message) {
 void It2MeCliHost::OnStateRemoteDisconnected() {
   // There could be a connection attempt that was not successful, we will
   // receive "disconnected" message without actually receiving "connected".
-  if (!remote_connected_)
+  if (!remote_connected_) {
     return;
+  }
   remote_connected_ = false;
   // Remote has disconnected, time to send "disconnect" that would result
   // in shutting down the host.

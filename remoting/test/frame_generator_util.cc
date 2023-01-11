@@ -44,9 +44,10 @@ std::unique_ptr<webrtc::DesktopFrame> LoadDesktopFrameFromPng(
   file_path = file_path.AppendASCII(name);
 
   std::string file_content;
-  if (!base::ReadFileToString(file_path, &file_content))
+  if (!base::ReadFileToString(file_path, &file_content)) {
     LOG(FATAL) << "Failed to read " << file_path.MaybeAsASCII()
                << ". Please run remoting/test/data/download.sh";
+  }
   SkBitmap bitmap;
   gfx::PNGCodec::Decode(reinterpret_cast<const uint8_t*>(file_content.data()),
                         file_content.size(), &bitmap);

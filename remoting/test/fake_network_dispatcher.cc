@@ -14,9 +14,7 @@
 
 namespace remoting {
 
-FakeNetworkDispatcher::FakeNetworkDispatcher()
-    : allocated_address_(0) {
-}
+FakeNetworkDispatcher::FakeNetworkDispatcher() : allocated_address_(0) {}
 
 FakeNetworkDispatcher::~FakeNetworkDispatcher() {
   CHECK(nodes_.empty());
