@@ -40,6 +40,11 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/proc/meminfo")};
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  permissions.push_back(BrokerFilePermission::ReadOnly("/proc/self/status"));
+  permissions.push_back(BrokerFilePermission::ReadOnly("/proc/cpuinfo"));
+#endif
+
   // The models are in the same folder as the library, and the library requires
   // read access for them.
   if (!library_path.empty()) {

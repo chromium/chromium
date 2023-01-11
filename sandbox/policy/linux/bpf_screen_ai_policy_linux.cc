@@ -53,6 +53,11 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
     case __NR_prlimit64:
       return RestrictPrlimitToGetrlimit(GetPolicyPid());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case __NR_sysinfo:
+      return Allow();
+#endif
+
     default:
       if (SyscallSets::IsGoogle3Threading(system_call_number)) {
         return RestrictGoogle3Threading(system_call_number);
