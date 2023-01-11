@@ -34,6 +34,10 @@ void DecoderBufferReader::ProvideBuffer(media::mojom::DecoderBufferPtr buffer) {
   TryGetNextBuffer();
 }
 
+void DecoderBufferReader::ClearReadPending() {
+  is_read_pending_ = false;
+}
+
 void DecoderBufferReader::ReadBufferAsync() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

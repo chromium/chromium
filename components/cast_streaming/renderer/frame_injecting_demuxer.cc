@@ -97,7 +97,9 @@ class FrameInjectingDemuxerStream
       return;
     }
 
-    if (buffer->end_of_stream()) {
+    if (!buffer) {
+      std::move(pending_read_cb_).Run(Status::kAborted, {});
+    } else if (buffer->end_of_stream()) {
       std::move(pending_read_cb_).Run(Status::kError, {});
     } else {
       std::move(pending_read_cb_).Run(Status::kOk, {std::move(buffer)});

@@ -86,6 +86,9 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
   void WaitForNewStreamInfo() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     is_new_stream_info_pending_ = true;
+    if (current_callback_) {
+      std::move(current_callback_).Run(nullptr);
+    }
   }
 
   // Sets the buffer to be passed to the renderer process as part of the
@@ -154,6 +157,7 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
 
     current_callback_ = std::move(callback);
     if (is_new_stream_info_pending_) {
+      std::move(current_callback_).Run(nullptr);
       return;
     }
 

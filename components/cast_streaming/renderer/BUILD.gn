@@ -161,7 +161,5 @@ source_set("unit_tests") {
   # they are built on all platforms even when bots don't build "all".
   # TODO(crbug.com/1357085): Add tests or handle this in a more appropriate way.
   # Merging of other targets (see other TODOs) may address this.
-  deps += [
-    #    ":renderer",
-  ]
+  deps += [ ":renderer" ]
 }

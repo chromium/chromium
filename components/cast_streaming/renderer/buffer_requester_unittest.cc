@@ -121,6 +121,7 @@ class BufferRequesterTest : public testing::Test {
 TEST_F(BufferRequesterTest, BufferReceivedOverMojoTriggersCallback) {
   EXPECT_CALL(client_, OnBufferReceivedOverMojo(testing::_))
       .WillOnce([this](media::mojom::DecoderBufferPtr response) {
+        ASSERT_TRUE(!!response);
         scoped_refptr<media::DecoderBuffer> media_buffer(
             response.To<scoped_refptr<media::DecoderBuffer>>());
         EXPECT_TRUE(media_buffer->MatchesMetadataForTesting(*buffer_));

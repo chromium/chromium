@@ -80,7 +80,8 @@ class BufferRequester
 
   // DecoderBufferProviderImpl::Client implementation.
   using BufferProviderRequestCB =
-      base::OnceCallback<void(media::mojom::DecoderBufferPtr)>;
+      typename DecoderBufferProviderImpl<typename DemuxerStreamTraits<
+          TMojoRemoteType>::ConfigType>::Client::BufferProviderRequestCB;
   void RequestBufferAsync(BufferProviderRequestCB on_buffer_received) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!buffer_request_cb_);
@@ -102,8 +103,13 @@ class BufferRequester
     DVLOG(3) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(buffer_provider_);
-
     DCHECK(buffer_request_cb_);
+
+    if (!get_buffer_response) {
+      std::move(buffer_request_cb_).Run(nullptr);
+      return;
+    }
+
     if (get_buffer_response->is_stream_info()) {
       buffer_request_cb_ = BufferProviderRequestCB{};
       typename Traits::StreamInfoType& data_stream_info =
@@ -111,6 +117,7 @@ class BufferRequester
       OnNewConfig(std::move(data_stream_info->decoder_config),
                   std::move(data_stream_info->data_pipe));
     } else {
+      DCHECK(get_buffer_response->is_buffer());
       std::move(buffer_request_cb_)
           .Run(std::move(get_buffer_response->get_buffer()));
     }

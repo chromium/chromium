@@ -37,6 +37,10 @@ class DecoderBufferReader {
   // Client.
   void ReadBufferAsync();
 
+  // Informs this instance that an ongoing read call has been cancelled, and no
+  // call to |new_buffer_cb_| is expected.
+  void ClearReadPending();
+
   bool is_queue_empty() { return pending_buffer_metadata_.empty(); }
 
  private:

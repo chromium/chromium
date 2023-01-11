@@ -35,9 +35,10 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
 
     // Requests a new buffer be provided to this class, which will be returned
     // via call to |on_buffer_received|.
+    using BufferProviderRequestCB =
+        base::OnceCallback<void(media::mojom::DecoderBufferPtr)>;
     virtual void RequestBufferAsync(
-        base::OnceCallback<void(media::mojom::DecoderBufferPtr)>
-            on_buffer_received) = 0;
+        BufferProviderRequestCB n_buffer_received) = 0;
   };
 
   DecoderBufferProviderImpl(
@@ -103,6 +104,12 @@ class DecoderBufferProviderImpl : public DecoderBufferProvider<TConfigType> {
       return;
     }
 
+    DCHECK(new_buffer_callback_);
+    if (!buffer) {
+      buffer_reader_->ClearReadPending();
+      std::move(new_buffer_callback_).Run(nullptr);
+      return;
+    }
     buffer_reader_->ProvideBuffer(std::move(buffer));
   }
 
