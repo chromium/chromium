@@ -182,6 +182,7 @@
 #include "third_party/blink/renderer/core/events/after_print_event.h"
 #include "third_party/blink/renderer/core/events/before_print_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
+#include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -2654,6 +2655,18 @@ void WebLocalFrameImpl::CommitNavigation(
     navigation_params->storage_key = GetFrame()->DomWindow()->GetStorageKey();
     navigation_params->document_ukm_source_id =
         GetFrame()->DomWindow()->UkmSourceID();
+
+    // This corresponds to step 8 of
+    // https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context.
+    // Most of these steps are handled in the caller
+    // (RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318) but the
+    // caller doesn't have access to the core frame (LocalFrame).
+    // The actual agent is determined downstream, but here we need to request
+    // whether an origin-keyed agent is needed. Since this case is only
+    // for about:blank navigations this reduces to copying the agent flag from
+    // the current document.
+    navigation_params->origin_agent_cluster =
+        GetFrame()->GetDocument()->GetAgent().IsOriginKeyedForInheritance();
   }
   if (GetTextFinder())
     GetTextFinder()->ClearActiveFindMatch();
