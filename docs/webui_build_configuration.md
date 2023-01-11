@@ -413,7 +413,7 @@ from other parts of the build.
 ```
 
 List of files params:
-static_files: Required parameter. List of
+static_files: Optional parameter. List of
               1) non Web Component HTML/CSS files (don't confuse with
                  |css_files| below). These are passed to preprocess_if_expr()
               2) JPG/PNG/SVG files. These are included in the build verbatim
@@ -465,6 +465,8 @@ optimize_webui_out_files: See |out_files| in optimize_webui().
 
 Other params:
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
+grd_resource_path_prefix: See |resource_path_prefix| in generate_grd(). Optional
+                          parameter.
 html_to_wrapper_template: See |template| in html_to_wrapper().
 extra_grdp_deps: List of external generate_grd() targets that generate .grdp
                  files. These will be included in the final generated

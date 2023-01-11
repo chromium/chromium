@@ -55,8 +55,14 @@ build_webui("build") {
     "//tools/typescript/definitions/tabs.d.ts",
   ]
   ts_deps = [
+    "../shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
+  ts_path_mappings =
+      [ "chrome://bookmarks-side-panel.top-chrome/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
+            target_gen_dir) ]
 }

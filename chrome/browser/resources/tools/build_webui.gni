@@ -16,11 +16,7 @@ import("../tools/optimize_webui.gni")
 template("build_webui") {
   not_needed([ "target_name" ])
 
-  forward_variables_from(invoker,
-                         [
-                           "grd_prefix",
-                           "static_files",
-                         ])
+  forward_variables_from(invoker, [ "grd_prefix" ])
 
   preprocess_dir = "${target_gen_dir}/preprocessed"
   tsc_dir = "${target_gen_dir}/tsc"
@@ -82,16 +78,18 @@ template("build_webui") {
     }
   }
 
-  # Compute which static_files should be preprocessed.
-  non_preprocessed_files_filter = [
-    "*.jpg",
-    "*.png",
-    "*.svg",
-  ]
-  static_non_preprocessed_files =
-      filter_include(static_files, non_preprocessed_files_filter)
-  static_preprocessed_files =
-      filter_exclude(static_files, non_preprocessed_files_filter)
+  if (defined(invoker.static_files)) {
+    # Compute which static_files should be preprocessed.
+    non_preprocessed_files_filter = [
+      "*.jpg",
+      "*.png",
+      "*.svg",
+    ]
+    static_non_preprocessed_files =
+        filter_include(invoker.static_files, non_preprocessed_files_filter)
+    static_preprocessed_files =
+        filter_exclude(invoker.static_files, non_preprocessed_files_filter)
+  }
 
   ### Define the various targets that are required by the build pipeline.
 
@@ -104,13 +102,15 @@ template("build_webui") {
   #  5) generate_grd()
   #  6) grit()
 
-  preprocess_if_expr("preprocess_static_files") {
-    visibility = [ ":build_grd" ]
-    defines = chrome_grit_defines
-    in_folder = "."
-    out_folder = preprocess_dir
-    in_files = static_preprocessed_files
-    out_manifest = "${target_gen_dir}/preprocess_static_files_manifest.json"
+  if (defined(invoker.static_files)) {
+    preprocess_if_expr("preprocess_static_files") {
+      visibility = [ ":build_grd" ]
+      defines = chrome_grit_defines
+      in_folder = "."
+      out_folder = preprocess_dir
+      in_files = static_preprocessed_files
+      out_manifest = "${target_gen_dir}/preprocess_static_files_manifest.json"
+    }
   }
 
   preprocess_if_expr("preprocess") {
@@ -256,12 +256,17 @@ template("build_webui") {
     grd_prefix = grd_prefix
     out_grd = "$target_gen_dir/resources.grd"
 
-    input_files = static_non_preprocessed_files
-    input_files_base_dir = rebase_path(".", "//")
+    deps = []
+    manifest_files = []
 
-    deps = [ ":preprocess_static_files" ]
-    manifest_files =
-        [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
+    if (defined(invoker.static_files)) {
+      input_files = static_non_preprocessed_files
+      input_files_base_dir = rebase_path(".", "//")
+
+      deps += [ ":preprocess_static_files" ]
+      manifest_files +=
+          [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
+    }
 
     if (optimize) {
       deps += [ ":build_bundle" ]
@@ -276,6 +281,10 @@ template("build_webui") {
     if (defined(invoker.extra_grdp_deps)) {
       deps += invoker.extra_grdp_deps
       grdp_files = invoker.extra_grdp_files
+    }
+
+    if (defined(invoker.grd_resource_path_prefix)) {
+      resource_path_prefix = invoker.grd_resource_path_prefix
     }
   }
 

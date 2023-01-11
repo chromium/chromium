@@ -50,6 +50,7 @@ group("resources") {
       "side_panel/history_clusters:resources",
       "side_panel/read_anything:resources",
       "side_panel/reading_list:resources",
+      "side_panel/shared:resources",
       "side_panel/user_notes:resources",
       "signin:resources",
       "support_tool:resources",

@@ -23,6 +23,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources_map.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/commerce/core/shopping_service.h"
@@ -127,6 +129,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
                               base::make_span(kSidePanelBookmarksResources,
                                               kSidePanelBookmarksResourcesSize),
                               resource);
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();

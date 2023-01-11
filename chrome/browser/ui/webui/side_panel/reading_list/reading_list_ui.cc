@@ -21,6 +21,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_reading_list_resources.h"
 #include "chrome/grit/side_panel_reading_list_resources_map.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -74,6 +76,8 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       base::make_span(kSidePanelReadingListResources,
                       kSidePanelReadingListResourcesSize),
       IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 }
 
 ReadingListUI::~ReadingListUI() = default;
