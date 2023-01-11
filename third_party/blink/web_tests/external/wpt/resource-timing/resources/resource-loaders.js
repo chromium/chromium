@@ -16,11 +16,8 @@ const load = {
   image_with_attrs: async (path, attribute_map) => {
     return new Promise(resolve => {
       const img = new Image();
-      if (attribute_map instanceof Object) {
-        for (const [key, value] of Object.entries(attribute_map)) {
-          img[key] = value;
-        }
-      }
+      for (const key in attribute_map)
+          img[key] = attribute_map[key];
       img.onload = img.onerror = resolve;
       img.src = load.cache_bust(path);
     });
@@ -31,6 +28,10 @@ const load = {
   image: path => {
     return load.image_with_attrs(path, undefined);
   },
+
+  // Returns a promise that settles once the given path has been fetched as an
+  // image resource.
+  image_cors: path => load.image_with_attrs(path, {crossOrigin: "anonymous"}),
 
   // Returns a promise that settles once the given path has been fetched as a
   // font resource.

@@ -644,8 +644,6 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   }
 
   result->cache_state = info.CacheState();
-  result->encoded_body_size = final_response.EncodedBodyLength();
-  result->decoded_body_size = final_response.DecodedBodyLength();
   result->did_reuse_connection = final_response.ConnectionReused();
   // Use SecurityOrigin::Create to handle cases like blob:https://.
   result->is_secure_transport = base::Contains(
@@ -664,11 +662,24 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
 
   result->render_blocking_status = info.RenderBlockingStatus();
   result->content_type = g_empty_string;
-  if (PassesCORSConditions(final_response, destination_origin,
-                           info.RequestMode(), redirect_chain)) {
+
+  bool passes_cors = PassesCORSConditions(final_response, destination_origin,
+                                          info.RequestMode(), redirect_chain);
+
+  if (passes_cors) {
     result->response_status = final_response.HttpStatusCode();
     result->content_type = final_response.HttpContentType();
   }
+
+  bool expose_body_sizes =
+      RuntimeEnabledFeatures::ResourceTimingUseCORSForBodySizesEnabled()
+          ? passes_cors
+          : result->allow_timing_details;
+
+  result->encoded_body_size =
+      expose_body_sizes ? final_response.EncodedBodyLength() : 0;
+  result->decoded_body_size =
+      expose_body_sizes ? final_response.DecodedBodyLength() : 0;
 
   return result;
 }
