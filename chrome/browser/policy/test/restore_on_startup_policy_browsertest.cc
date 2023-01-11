@@ -138,11 +138,11 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     policies.Set(key::kRestoreOnStartup, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                  base::Value(SessionStartupPref::kPrefValueLast), nullptr);
-    base::Value urls(base::Value::Type::LIST);
+    base::Value::List urls;
     for (const auto* url_string : kRestoredURLs)
       urls.Append(url_string);
     policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, std::move(urls), nullptr);
+                 POLICY_SOURCE_CLOUD, base::Value(std::move(urls)), nullptr);
     provider_.UpdateChromePolicy(policies);
     // This should restore the tabs opened at PRE_RunTest below, yet all should
     // be blocked.

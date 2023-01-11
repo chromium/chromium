@@ -354,14 +354,17 @@ void UpdatePolicyViaMockPolicyProvider(
       policy_map.GetMutable(policy::key::kExtensionInstallForcelist);
   if (existing_entry && existing_entry->value(base::Value::Type::LIST)) {
     // Append to the existing policy.
-    existing_entry->value(base::Value::Type::LIST)->Append(policy_item_value);
+    existing_entry->value(base::Value::Type::LIST)
+        ->GetList()
+        .Append(policy_item_value);
   } else {
     // Set the new policy value.
-    base::Value policy_value(base::Value::Type::LIST);
+    base::Value::List policy_value;
     policy_value.Append(policy_item_value);
     policy_map.Set(policy::key::kExtensionInstallForcelist,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                   policy::POLICY_SOURCE_CLOUD, std::move(policy_value),
+                   policy::POLICY_SOURCE_CLOUD,
+                   base::Value(std::move(policy_value)),
                    /*external_data_fetcher=*/nullptr);
   }
   mock_policy_provider->UpdateChromePolicy(policy_map);

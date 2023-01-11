@@ -89,13 +89,13 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Now exempt the URL from being blocked by setting policy.
-  base::Value disabled_urls(base::Value::Type::LIST);
+  base::Value::List disabled_urls;
   disabled_urls.Append(https_server_ok.host_port_pair().HostForURL());
 
   PolicyMap policies;
   policies.Set(key::kCertificateTransparencyEnforcementDisabledForUrls,
                POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               std::move(disabled_urls), nullptr);
+               base::Value(std::move(disabled_urls)), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
@@ -160,13 +160,13 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   net::HashValue leaf_hash;
   ASSERT_TRUE(net::x509_util::CalculateSha256SpkiHash(
       https_server_ok.GetCertificate()->cert_buffer(), &leaf_hash));
-  base::Value disabled_spkis(base::Value::Type::LIST);
+  base::Value::List disabled_spkis;
   disabled_spkis.Append(leaf_hash.ToString());
 
   PolicyMap policies;
   policies.Set(key::kCertificateTransparencyEnforcementDisabledForCas,
                POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               std::move(disabled_spkis), nullptr);
+               base::Value(std::move(disabled_spkis)), nullptr);
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 

@@ -98,6 +98,14 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     UpdateProviderPolicy(policies);
   }
 
+  // Convenience overload of UpdateSystemFeaturesDisableList() that allows
+  // callers to provide a base::Value::List instead of a base::Value.
+  void UpdateSystemFeaturesDisableList(base::Value::List system_features,
+                                       const char* disabled_mode) {
+    UpdateSystemFeaturesDisableList(base::Value(std::move(system_features)),
+                                    disabled_mode);
+  }
+
   void VerifyExtensionAppState(const char* app_id,
                                apps::Readiness expected_readiness,
                                bool blocked_icon,
@@ -165,7 +173,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
   }
 
   void VerifyAppDisableMode(const char* app_id, const char* feature) {
-    base::Value system_features(base::Value::Type::LIST);
+    base::Value::List system_features;
     system_features.Append(feature);
     VisibilityFlags expected_visibility =
         GetVisibilityFlags(false /* is_hidden */);
@@ -199,7 +207,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
 
     // The URL navigation is still allowed because the app is not installed,
     // though it is disabled by policy.
-    base::Value system_features(base::Value::Type::LIST);
+    base::Value::List system_features;
     system_features.Append(feature);
     UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
     EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
@@ -224,7 +232,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(kWebStoreFeature);
   VisibilityFlags expected_visibility =
       GetVisibilityFlags(false /* is_hidden */);
@@ -247,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreAfterInstall) {
   EnableExtensions(false);
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(kWebStoreFeature);
   VisibilityFlags expected_visibility =
       GetVisibilityFlags(false /* is_hidden */);
@@ -271,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreAfterInstall) {
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                        DisableWebStoreAfterInstallWithModes) {
   EnableExtensions(false);
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(kWebStoreFeature);
   VisibilityFlags expected_visibility =
       GetVisibilityFlags(false /* is_hidden */);
@@ -324,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   InstallPWA(GURL(kCanvasAppURL), web_app::kCanvasAppId);
 
   // Disable app with hidden mode.
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(kCameraFeature);
   system_features.Append(kScanningFeature);
   system_features.Append(kWebStoreFeature);
@@ -381,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                        DisableMultipleAppsWithHiddenModeBeforeInstall) {
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(kCameraFeature);
   system_features.Append(kScanningFeature);
   system_features.Append(kWebStoreFeature);
@@ -410,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(kBrowserSettingsFeature);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
 
@@ -424,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectCroshURL) {
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(kCroshFeature);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
 

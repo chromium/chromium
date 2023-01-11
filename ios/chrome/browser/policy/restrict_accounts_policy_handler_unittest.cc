@@ -42,19 +42,19 @@ class RestrictAccountsPolicyHandlerTest
 
   // Returns a List of valid patterns.
   base::Value ValidPatterns() {
-    base::Value value(base::Value::Type::LIST);
+    base::Value::List value;
     value.Append("*@example.com");
     value.Append("user@managedchrome.com");
-    return value;
+    return base::Value(std::move(value));
   }
 
   // Returns a List of invalid patterns.
   base::Value InvalidPatterns() {
-    base::Value value(base::Value::Type::LIST);
+    base::Value::List value;
     value.Append("*@example.com");
     value.Append("invalidPattern\\");
     value.Append("user@managedchrome.com");
-    return value;
+    return base::Value(std::move(value));
   }
 };
 

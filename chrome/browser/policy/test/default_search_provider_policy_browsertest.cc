@@ -75,12 +75,12 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   policies.Set(key::kDefaultSearchProviderSearchURL, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kSearchURL),
                nullptr);
-  base::Value alternate_urls(base::Value::Type::LIST);
+  base::Value::List alternate_urls;
   alternate_urls.Append(kAlternateURL0);
   alternate_urls.Append(kAlternateURL1);
   policies.Set(key::kDefaultSearchProviderAlternateURLs, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               std::move(alternate_urls), nullptr);
+               base::Value(std::move(alternate_urls)), nullptr);
   policies.Set(key::kDefaultSearchProviderImageURL, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kImageURL),
                nullptr);

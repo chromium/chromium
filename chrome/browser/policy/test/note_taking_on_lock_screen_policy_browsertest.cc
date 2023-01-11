@@ -105,9 +105,9 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
             GetLockScreenSupportForApp(app->id()));
 
-  base::Value policy(base::Value::Type::LIST);
+  base::Value::List policy;
   policy.Append(kTestAppId);
-  SetPolicyValue(std::move(policy));
+  SetPolicyValue(base::Value(std::move(policy)));
 
   EXPECT_EQ(ash::LockScreenAppSupport::kSupported,
             GetLockScreenSupportForApp(app->id()));

@@ -2229,22 +2229,20 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     policy_app_url_ = embedded_test_server()->GetURL(test_page_);
-    base::Value url(policy_app_url_.spec());
-    base::Value launch_container("window");
 
-    base::Value item(base::Value::Type::DICTIONARY);
-    item.SetKey("url", std::move(url));
-    item.SetKey("default_launch_container", std::move(launch_container));
+    base::Value::Dict item;
+    item.Set("url", policy_app_url_.spec());
+    item.Set("default_launch_container", "window");
     if (fallback_app_name_.has_value()) {
-      base::Value fallback_app_name(fallback_app_name_.value());
-      item.SetKey("fallback_app_name", std::move(fallback_app_name));
+      item.Set("fallback_app_name", fallback_app_name_.value());
     }
 
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(std::move(item));
 
     PolicyMap policies;
-    SetPolicy(&policies, key::kWebAppInstallForceList, std::move(list));
+    SetPolicy(&policies, key::kWebAppInstallForceList,
+              base::Value(std::move(list)));
     provider_.UpdateChromePolicy(policies);
   }
 

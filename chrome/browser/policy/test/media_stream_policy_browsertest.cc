@@ -92,7 +92,7 @@ class MediaStreamDevicesControllerBrowserTest
     if (allowlist_policy) {
       // Add an entry to the allowlist that allows the specified URL regardless
       // of the setting of kAudioCapturedAllowed.
-      base::Value list(base::Value::Type::LIST);
+      base::Value::List list;
       if (allow_rule) {
         list.Append(allow_rule);
         request_url_allowed_via_allowlist_ = true;
@@ -104,7 +104,7 @@ class MediaStreamDevicesControllerBrowserTest
         request_url_allowed_via_allowlist_ = false;
       }
       policies->Set(allowlist_policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                    POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+                    POLICY_SOURCE_CLOUD, base::Value(std::move(list)), nullptr);
     }
   }
 

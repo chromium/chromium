@@ -117,9 +117,9 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
 
   // Sets the "Recommended" list of recommended field names in |onc_value|,
   // which must be a dictionary, to |recommended_field_names|. If a
-  // "Recommended" list already existed in |onc_value|, it's replaced.
+  // "Recommended" list already existed in |onc_dict|, it's replaced.
   void SetRecommended(
-      base::Value* onc_value,
+      base::Value::Dict& onc_dict,
       std::initializer_list<base::StringPiece> recommended_field_names);
 
   std::string LogHeader() const;

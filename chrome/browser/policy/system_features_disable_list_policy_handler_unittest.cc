@@ -31,19 +31,19 @@ class SystemFeaturesDisableListPolicyHandlerTest : public testing::Test {
 
   void ApplyPolicySettings(std::vector<std::string> list) {
     PolicyMap policy_map;
-    base::Value features_list(base::Value::Type::LIST);
+    base::Value::List features_list;
     for (auto& i : list) {
       features_list.Append(i);
     }
     policy_map.Set(policy::key::kSystemFeaturesDisableList,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                   policy::POLICY_SOURCE_CLOUD, std::move(features_list),
-                   nullptr);
+                   policy::POLICY_SOURCE_CLOUD,
+                   base::Value(std::move(features_list)), nullptr);
     policy_handler_.ApplyPolicySettings(policy_map, &prefs_);
   }
 
   void VerifyPrefList(std::vector<SystemFeature> expected) {
-    base::Value expected_list(base::Value::Type::LIST);
+    base::Value::List expected_list;
     for (auto& i : expected) {
       expected_list.Append(static_cast<int>(i));
     }

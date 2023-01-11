@@ -237,23 +237,19 @@ void NetworkConfigurationUpdater::
     if (network_config_onc_dict.contains(::onc::kRecommended)) {
       continue;
     }
-    base::Value* static_ip_config =
-        network_config_onc_dict.Find(::onc::network_config::kStaticIPConfig);
-    if (static_ip_config && static_ip_config->is_dict() &&
-        static_ip_config->GetDict().contains(::onc::kRecommended)) {
+
+    // Ensure kStaticIPConfig exists because a "Recommended" field will be added
+    // to it, if not already present.
+    base::Value::Dict* static_ip_config = network_config_onc_dict.EnsureDict(
+        ::onc::network_config::kStaticIPConfig);
+    if (static_ip_config->contains(::onc::kRecommended)) {
       continue;
     }
 
-    // Ensure kStaticIPConfig exists because a "Recommended" field will be added
-    // to it.
-    if (!static_ip_config) {
-      static_ip_config = network_config_onc_dict.Set(
-          ::onc::network_config::kStaticIPConfig, base::Value::Dict());
-    }
-    SetRecommended(&network_config_onc,
+    SetRecommended(network_config_onc_dict,
                    {::onc::network_config::kIPAddressConfigType,
                     ::onc::network_config::kNameServersConfigType});
-    SetRecommended(static_ip_config,
+    SetRecommended(*static_ip_config,
                    {::onc::ipconfig::kGateway, ::onc::ipconfig::kIPAddress,
                     ::onc::ipconfig::kRoutingPrefix, ::onc::ipconfig::kType,
                     ::onc::ipconfig::kNameServers});
@@ -261,15 +257,13 @@ void NetworkConfigurationUpdater::
 }
 
 void NetworkConfigurationUpdater::SetRecommended(
-    base::Value* onc_value,
+    base::Value::Dict& onc_dict,
     std::initializer_list<base::StringPiece> recommended_field_names) {
-  DCHECK(onc_value);
-  DCHECK(onc_value->is_dict());
-  base::Value recommended_list(base::Value::Type::LIST);
+  base::Value::List recommended_list;
   for (const auto& recommended_field_name : recommended_field_names) {
-    recommended_list.Append(base::Value(recommended_field_name));
+    recommended_list.Append(recommended_field_name);
   }
-  onc_value->SetKey(::onc::kRecommended, std::move(recommended_list));
+  onc_dict.Set(::onc::kRecommended, std::move(recommended_list));
 }
 
 std::string NetworkConfigurationUpdater::LogHeader() const {

@@ -94,26 +94,26 @@ TEST_F(SerialAllowUsbDevicesForUrlsPolicyHandlerTest, CheckPolicySettings) {
                                &pref_value));
   EXPECT_TRUE(pref_value);
 
-  base::Value expected_device1(base::Value::Type::DICTIONARY);
-  expected_device1.SetIntKey("vendor_id", 1234);
-  expected_device1.SetIntKey("product_id", 5678);
+  base::Value::Dict expected_device1;
+  expected_device1.Set("vendor_id", 1234);
+  expected_device1.Set("product_id", 5678);
 
-  base::Value expected_device2(base::Value::Type::DICTIONARY);
-  expected_device2.SetIntKey("vendor_id", 4321);
+  base::Value::Dict expected_device2;
+  expected_device2.Set("vendor_id", 4321);
 
-  base::Value expected_devices(base::Value::Type::LIST);
+  base::Value::List expected_devices;
   expected_devices.Append(std::move(expected_device1));
   expected_devices.Append(std::move(expected_device2));
 
-  base::Value expected_urls(base::Value::Type::LIST);
+  base::Value::List expected_urls;
   expected_urls.Append("https://google.com");
   expected_urls.Append("https://www.youtube.com");
 
-  base::Value expected_item(base::Value::Type::DICTIONARY);
-  expected_item.SetKey("devices", std::move(expected_devices));
-  expected_item.SetKey("urls", std::move(expected_urls));
+  base::Value::Dict expected_item;
+  expected_item.Set("devices", std::move(expected_devices));
+  expected_item.Set("urls", std::move(expected_urls));
 
-  base::Value expected(base::Value::Type::LIST);
+  base::Value::List expected;
   expected.Append(std::move(expected_item));
 
   EXPECT_EQ(expected, *pref_value);
