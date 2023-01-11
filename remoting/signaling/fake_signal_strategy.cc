@@ -53,8 +53,9 @@ void FakeSignalStrategy::SetState(State state) {
     return;
   }
   state_ = state;
-  for (auto& observer : listeners_)
+  for (auto& observer : listeners_) {
     observer.OnSignalStrategyStateChange(state_);
+  }
 }
 
 void FakeSignalStrategy::SetPeerCallback(const PeerCallback& peer_callback) {
@@ -148,13 +149,15 @@ void FakeSignalStrategy::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool FakeSignalStrategy::SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
+bool FakeSignalStrategy::SendStanza(
+    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   address_.SetInMessage(stanza.get(), SignalingAddress::FROM);
 
-  if (peer_callback_.is_null())
+  if (peer_callback_.is_null()) {
     return false;
+  }
 
   if (send_delay_.is_zero()) {
     peer_callback_.Run(std::move(stanza));
@@ -211,8 +214,9 @@ void FakeSignalStrategy::NotifyListeners(
   }
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingStanza(stanza_ptr))
+    if (listener.OnSignalStrategyIncomingStanza(stanza_ptr)) {
       break;
+    }
   }
 }
 

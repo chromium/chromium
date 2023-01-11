@@ -16,7 +16,8 @@ namespace remoting {
 namespace {
 
 std::unique_ptr<jingle_xmpp::XmlElement> GetEmptyJingleMessage() {
-  return std::unique_ptr<jingle_xmpp::XmlElement>(jingle_xmpp::XmlElement::ForStr(
+  return std::unique_ptr<
+      jingle_xmpp::XmlElement>(jingle_xmpp::XmlElement::ForStr(
       "<iq xmlns='jabber:client'><jingle xmlns='urn:xmpp:jingle:1'/></iq>"));
 }
 

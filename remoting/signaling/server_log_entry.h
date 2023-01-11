@@ -23,10 +23,7 @@ namespace remoting {
 class ServerLogEntry {
  public:
   // The mode of a connection.
-  enum Mode {
-    IT2ME,
-    ME2ME
-  };
+  enum Mode { IT2ME, ME2ME };
 
   ServerLogEntry();
   ServerLogEntry(const ServerLogEntry& other);

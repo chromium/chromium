@@ -53,17 +53,15 @@ XmlElement* GetSingleLogEntryFromStanza(XmlElement* stanza) {
   return entry;
 }
 
-bool VerifyStanza(
-    const std::map<std::string, std::string>& key_value_pairs,
-    const std::set<std::string> keys,
-    const XmlElement* elem,
-    std::string* error) {
+bool VerifyStanza(const std::map<std::string, std::string>& key_value_pairs,
+                  const std::set<std::string> keys,
+                  const XmlElement* elem,
+                  std::string* error) {
   int attrCount = 0;
   for (const XmlAttr* attr = elem->FirstAttr(); attr != nullptr;
        attr = attr->NextAttr(), attrCount++) {
     if (attr->Name().Namespace().length() != 0) {
-      *error = "attribute has non-empty namespace " +
-          attr->Name().Namespace();
+      *error = "attribute has non-empty namespace " + attr->Name().Namespace();
       return false;
     }
     const std::string& key = attr->Name().LocalPart();
@@ -77,7 +75,7 @@ bool VerifyStanza(
     } else {
       if (iter->second != value) {
         *error = "attribute " + key + " has value " + iter->second +
-            ": expected " + value;
+                 ": expected " + value;
         return false;
       }
     }

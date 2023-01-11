@@ -51,22 +51,25 @@ void DelegatingSignalStrategy::OnIncomingMessageFromDelegate(
 
 void DelegatingSignalStrategy::OnIncomingMessage(const std::string& message) {
   DCHECK(client_task_runner_->BelongsToCurrentThread());
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza(jingle_xmpp::XmlElement::ForStr(message));
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza(
+      jingle_xmpp::XmlElement::ForStr(message));
   if (!stanza.get()) {
     LOG(WARNING) << "Malformed XMPP stanza received: " << message;
     return;
   }
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingStanza(stanza.get()))
+    if (listener.OnSignalStrategyIncomingStanza(stanza.get())) {
       break;
+    }
   }
 }
 
 void DelegatingSignalStrategy::Connect() {
   DCHECK(client_task_runner_->BelongsToCurrentThread());
-  for (auto& observer : listeners_)
+  for (auto& observer : listeners_) {
     observer.OnSignalStrategyStateChange(CONNECTED);
+  }
 }
 
 void DelegatingSignalStrategy::Disconnect() {
