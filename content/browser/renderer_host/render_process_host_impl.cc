@@ -3983,17 +3983,22 @@ void RenderProcessHostImpl::Cleanup() {
                     perfetto::Track::FromPointer(this),
                     ChromeTrackEvent::kRenderProcessHost, *this);
 
+  // We cannot delete `this` twice; if this fails, there is an issue with our
+  // control flow.
+  //
+  // TODO(crbug.com/1200340): Revert this to a DCHECK after some investigation.
+  CHECK(!deleting_soon_);
+
+  // There are no `return` statements anywhere below - at this point we have
+  // made a decision to destroy `this` `RenderProcessHostImpl` object and we
+  // *will* post a `DeleteSoon` task a bit further down.
+  deleting_soon_ = true;
+
   if (is_initialized_) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&WebRtcLog::ClearLogMessageCallback, GetID()));
   }
-
-  // We cannot clean up twice; if this fails, there is an issue with our
-  // control flow.
-  //
-  // TODO(crbug.com/1200340): Revert this to a DCHECK after some investigation.
-  CHECK(!deleting_soon_);
 
   DCHECK_EQ(0, pending_views_);
 
@@ -4031,8 +4036,6 @@ void RenderProcessHostImpl::Cleanup() {
 #endif
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 this);
-  deleting_soon_ = true;
-
   // Destroy all mojo bindings and IPC channels that can cause calls to this
   // object, to avoid method invocations that trigger usages of profile.
   ResetIPC();
