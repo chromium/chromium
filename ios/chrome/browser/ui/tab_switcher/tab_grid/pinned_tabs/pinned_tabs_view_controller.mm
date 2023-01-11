@@ -400,6 +400,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.collectionView.backgroundView.hidden = NO;
 }
 
+- (void)collectionView:(UICollectionView*)collectionView
+     dropSessionDidEnd:(id<UIDropSession>)session {
+  // Reset the background if the drop cames from another app.
+  self.collectionView.backgroundColor = _backgroundColor;
+  self.collectionView.backgroundView.hidden = NO;
+}
+
 - (UICollectionViewDropProposal*)
               collectionView:(UICollectionView*)collectionView
         dropSessionDidUpdate:(id<UIDropSession>)session
