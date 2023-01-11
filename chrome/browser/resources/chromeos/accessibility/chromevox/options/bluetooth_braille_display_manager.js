@@ -156,9 +156,7 @@ export class BluetoothBrailleDisplayManager {
       this.connectInternal(display);
     } else {
       chrome.bluetoothPrivate.disconnectAll(
-          this.preferredDisplayAddress_, () => {
-            this.connectInternal(display);
-          });
+          this.preferredDisplayAddress_, () => this.connectInternal(display));
     }
   }
 
