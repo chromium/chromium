@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_RAW_DRAW_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_RAW_DRAW_IMAGE_BACKING_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "cc/paint/paint_op_buffer.h"

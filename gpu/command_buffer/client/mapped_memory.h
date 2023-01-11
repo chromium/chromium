@@ -10,8 +10,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/bits.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"

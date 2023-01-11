@@ -4,8 +4,8 @@
 
 #include "gpu/command_buffer/service/command_buffer_direct.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 
 namespace gpu {

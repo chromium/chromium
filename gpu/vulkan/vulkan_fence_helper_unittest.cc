@@ -4,7 +4,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "gpu/vulkan/tests/basic_vulkan_test.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"

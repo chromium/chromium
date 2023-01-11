@@ -7,10 +7,10 @@
 #include <algorithm>
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/raw_ptr.h"

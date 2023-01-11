@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_fence.h"
 

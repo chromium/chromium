@@ -4,7 +4,7 @@
 
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 

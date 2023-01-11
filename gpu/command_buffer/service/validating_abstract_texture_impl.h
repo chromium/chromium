@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_VALIDATING_ABSTRACT_TEXTURE_IMPL_H_
 #define GPU_COMMAND_BUFFER_SERVICE_VALIDATING_ABSTRACT_TEXTURE_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"

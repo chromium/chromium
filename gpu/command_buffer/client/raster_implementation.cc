@@ -18,9 +18,9 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/bind.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"

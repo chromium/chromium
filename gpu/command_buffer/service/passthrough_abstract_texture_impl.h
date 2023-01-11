@@ -10,7 +10,7 @@
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 

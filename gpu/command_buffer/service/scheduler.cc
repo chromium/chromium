@@ -8,9 +8,9 @@
 #include <cstddef>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/cpu_reduction_experiment.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"

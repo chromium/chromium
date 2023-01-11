@@ -9,7 +9,7 @@
 // Once in a gpu test with an in-process command buffer.
 // Once in a browsertest with an out-of-process command buffer and gpu-process.
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"

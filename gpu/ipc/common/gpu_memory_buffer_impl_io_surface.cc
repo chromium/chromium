@@ -4,9 +4,9 @@
 
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"

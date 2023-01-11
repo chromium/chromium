@@ -6,7 +6,7 @@
 
 #include <chrono>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "ui/gl/gl_bindings.h"

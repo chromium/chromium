@@ -22,9 +22,9 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"

@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gcm/base/gcm_export.h"

@@ -8,7 +8,7 @@
 #ifndef GOOGLE_APIS_DRIVE_DRIVE_COMMON_CALLBACKS_H_
 #define GOOGLE_APIS_DRIVE_DRIVE_COMMON_CALLBACKS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace google_apis {

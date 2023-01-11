@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/gl_state_restorer_impl.h"

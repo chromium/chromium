@@ -4,7 +4,7 @@
 
 #include "gpu/vulkan/vulkan_implementation.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_instance.h"

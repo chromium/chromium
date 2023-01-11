@@ -4,8 +4,8 @@
 
 #include "gin/data_object_builder.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "gin/dictionary.h"
 #include "gin/public/isolate_holder.h"

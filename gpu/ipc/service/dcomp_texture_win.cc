@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"

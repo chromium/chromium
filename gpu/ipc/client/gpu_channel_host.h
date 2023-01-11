@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"

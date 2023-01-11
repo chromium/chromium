@@ -5,7 +5,7 @@
 #ifndef GPU_IPC_SERVICE_IMAGE_TRANSPORT_SURFACE_DELEGATE_H_
 #define GPU_IPC_SERVICE_IMAGE_TRANSPORT_SURFACE_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "gpu/ipc/common/surface_handle.h"

@@ -4,7 +4,7 @@
 
 #include "gin/arguments.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
 #include "gin/public/isolate_holder.h"

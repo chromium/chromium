@@ -4,8 +4,8 @@
 
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
-#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

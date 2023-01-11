@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"

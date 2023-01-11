@@ -8,7 +8,7 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"

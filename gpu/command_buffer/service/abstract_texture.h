@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_H_
 #define GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/gpu_gles2_export.h"

@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/atomicops.h"
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"

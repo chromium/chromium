@@ -5,7 +5,7 @@
 #ifndef GOOGLE_APIS_COMMON_TASK_UTIL_H_
 #define GOOGLE_APIS_COMMON_TASK_UTIL_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace google_apis {

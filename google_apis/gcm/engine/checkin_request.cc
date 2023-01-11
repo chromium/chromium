@@ -4,7 +4,7 @@
 
 #include "google_apis/gcm/engine/checkin_request.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
