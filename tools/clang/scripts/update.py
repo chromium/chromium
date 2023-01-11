@@ -153,7 +153,7 @@ def EnsureDirExists(path):
     os.makedirs(path)
 
 
-def DownloadAndUnpack(url, output_dir, path_prefixes=None):
+def DownloadAndUnpack(url, output_dir, path_prefixes=None, is_known_zip=False):
   """Download an archive from url and extract into output_dir. If path_prefixes
      is not None, only extract files whose paths within the archive start with
      any prefix in path_prefixes."""
@@ -161,7 +161,7 @@ def DownloadAndUnpack(url, output_dir, path_prefixes=None):
     DownloadUrl(url, f)
     f.seek(0)
     EnsureDirExists(output_dir)
-    if url.endswith('.zip'):
+    if url.endswith('.zip') or is_known_zip:
       assert path_prefixes is None
       zipfile.ZipFile(f).extractall(path=output_dir)
     else:
