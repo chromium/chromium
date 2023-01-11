@@ -117,6 +117,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ActionSetIconFailureType"
     enum="ExtensionActionSetIconFailureType" expires_after="M88">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1294,6 +1297,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.FeatureProviderStaticInitTime" units="ms"
     expires_after="M90">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2115,6 +2121,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.InitPrefGetExtensionsTime" units="ms"
     expires_after="M90">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

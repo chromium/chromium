@@ -33100,6 +33100,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="ExtensionActionSetIconFailureType">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <int value="0" label="Failed to parse function details"/>
   <int value="1" label="Failed to decode image canvas string"/>
   <int value="2" label="Failed to unpickle image canvas"/>

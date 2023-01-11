@@ -496,10 +496,7 @@ void BackgroundModeManager::OnAppTerminating() {
 void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
   BackgroundModeManager::BackgroundModeData* bmd =
       GetBackgroundModeData(profile);
-  if (bmd) {
-    UMA_HISTOGRAM_COUNTS_100("BackgroundMode.BackgroundApplicationsCount",
-                             bmd->applications()->size());
-  }
+
   // Extensions are loaded, so we don't need to manually keep the browser
   // process alive any more when running in no-startup-window mode.
   ReleaseStartupKeepAlive();

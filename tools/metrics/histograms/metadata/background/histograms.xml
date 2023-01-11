@@ -199,6 +199,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="BackgroundMode.BackgroundApplicationsCount" units="units"
     expires_after="2021-09-12">
+  <obsolete>
+    Code removed 2022/12.
+  </obsolete>
   <owner>atwilson@chromium.org</owner>
   <owner>mvanouwerkerk@chromium.org</owner>
   <summary>

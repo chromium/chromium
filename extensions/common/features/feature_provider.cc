@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -17,10 +16,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
-#include "content/public/common/content_switches.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/switches.h"
 
 namespace extensions {
 
@@ -49,7 +46,6 @@ class FeatureProviderStatic {
   FeatureProviderStatic() {
     TRACE_EVENT0("startup",
                  "extensions::FeatureProvider::FeatureProviderStatic");
-    base::Time begin_time = base::Time::Now();
 
     ExtensionsClient* client = ExtensionsClient::Get();
     feature_providers_["api"] = client->CreateFeatureProvider("api");
@@ -57,20 +53,6 @@ class FeatureProviderStatic {
     feature_providers_["permission"] =
         client->CreateFeatureProvider("permission");
     feature_providers_["behavior"] = client->CreateFeatureProvider("behavior");
-
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    std::string process_type =
-        command_line->GetSwitchValueASCII(::switches::kProcessType);
-
-    // Measure time only for browser process. This method gets called by the
-    // browser process on startup, as well as on renderer and extension
-    // processes throughout the execution of the browser. We are more
-    // interested in how long this takes as a startup cost, so we are
-    // just measuring the time in the browser process.
-    if (process_type == std::string()) {
-      UMA_HISTOGRAM_TIMES("Extensions.FeatureProviderStaticInitTime",
-                          base::Time::Now() - begin_time);
-    }
   }
 
   FeatureProviderStatic(const FeatureProviderStatic&) = delete;

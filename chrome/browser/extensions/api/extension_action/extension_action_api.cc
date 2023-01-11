@@ -437,26 +437,7 @@ void ExtensionActionSetIconFunction::SetReportErrorForInvisibleIconForTesting(
 
 ExtensionFunction::ResponseAction
 ExtensionActionSetIconFunction::RunExtensionAction() {
-  // TODO(devlin): Temporary logging to track down https://crbug.com/1087948.
-  // Remove this (and the redundant `if (!x) { VALIDATE(x); }`) checks after
-  // the bug is fixed.
-  // Don't reorder or remove values.
-  enum class FailureType {
-    kFailedToParseDetails = 0,
-    kFailedToDecodeCanvas = 1,
-    kFailedToUnpickleCanvas = 2,
-    kNoImageDataOrIconIndex = 3,
-    kMaxValue = kNoImageDataOrIconIndex,
-  };
-
-  auto log_set_icon_failure = [](FailureType type) {
-    base::UmaHistogramEnumeration("Extensions.ActionSetIconFailureType", type);
-  };
-
-  if (!details_) {
-    log_set_icon_failure(FailureType::kFailedToParseDetails);
-    EXTENSION_FUNCTION_VALIDATE(details_);
-  }
+  EXTENSION_FUNCTION_VALIDATE(details_);
 
   // setIcon can take a variant argument: either a dictionary of canvas
   // ImageData, or an icon index.
@@ -466,21 +447,8 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
 
     ExtensionAction::IconParseResult parse_result =
         ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon);
-
-    if (parse_result != ExtensionAction::IconParseResult::kSuccess) {
-      switch (parse_result) {
-        case ExtensionAction::IconParseResult::kDecodeFailure:
-          log_set_icon_failure(FailureType::kFailedToDecodeCanvas);
-          break;
-        case ExtensionAction::IconParseResult::kUnpickleFailure:
-          log_set_icon_failure(FailureType::kFailedToUnpickleCanvas);
-          break;
-        case ExtensionAction::IconParseResult::kSuccess:
-          NOTREACHED();
-          break;
-      }
-      EXTENSION_FUNCTION_VALIDATE(false);
-    }
+    EXTENSION_FUNCTION_VALIDATE(parse_result ==
+                                ExtensionAction::IconParseResult::kSuccess);
 
     if (icon.isNull())
       return RespondNow(Error("Icon invalid."));
@@ -499,9 +467,9 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
     // Obsolete argument: ignore it.
     return RespondNow(NoArguments());
   } else {
-    log_set_icon_failure(FailureType::kNoImageDataOrIconIndex);
     EXTENSION_FUNCTION_VALIDATE(false);
   }
+
   NotifyChange();
   return RespondNow(NoArguments());
 }

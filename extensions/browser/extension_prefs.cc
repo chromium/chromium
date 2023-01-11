@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/json/values_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -1886,12 +1885,8 @@ void ExtensionPrefs::InitPrefStore() {
 
   // When this is called, the PrefService is initialized and provides access
   // to the user preferences stored in a JSON file.
-  std::unique_ptr<ExtensionsInfo> extensions_info;
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER("Extensions.InitPrefGetExtensionsTime");
-    extensions_info =
-        GetInstalledExtensionsInfo(/*include_component_extensions = */ true);
-  }
+  std::unique_ptr<ExtensionsInfo> extensions_info =
+      GetInstalledExtensionsInfo(/*include_component_extensions = */ true);
 
   if (extensions_disabled_) {
     // Normally, if extensions are disabled, we don't want to load the
