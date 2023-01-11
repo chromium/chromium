@@ -15,9 +15,6 @@ UDPSocketMojoRemote::UDPSocketMojoRemote(ExecutionContext* execution_context)
 UDPSocketMojoRemote::~UDPSocketMojoRemote() = default;
 
 void UDPSocketMojoRemote::Close() {
-  if (udp_socket_.is_bound()) {
-    udp_socket_->Close();
-  }
   udp_socket_.reset();
 }
 

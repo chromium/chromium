@@ -91,7 +91,4 @@ interface DirectUDPSocket {
   // |result| is net::OK. On failure, |result| is a network error code.
   Send(mojo_base.mojom.ReadOnlyBuffer data)
       => (int32 result);
-
-  // Closes the socket.
-  Close();
 };

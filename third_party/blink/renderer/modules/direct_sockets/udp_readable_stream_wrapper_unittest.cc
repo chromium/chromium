@@ -42,8 +42,6 @@ class FakeDirectUDPSocket : public blink::mojom::blink::DirectUDPSocket {
     num_requested_datagrams += num_additional_datagrams;
   }
 
-  void Close() override { NOTIMPLEMENTED(); }
-
   void ProvideRequestedDatagrams() {
     DCHECK(remote_.is_bound());
     while (num_requested_datagrams > 0) {
