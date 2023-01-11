@@ -6,13 +6,20 @@
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_DEBUG_JSONS_H_
 
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/history_clusters_service.h"
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace history_clusters {
+
+// Gets a loggable string representation of `time`.
+std::string GetDebugTime(const base::Time time);
 
 // Gets a loggable JSON representation of `visits`.
 std::string GetDebugJSONForVisits(

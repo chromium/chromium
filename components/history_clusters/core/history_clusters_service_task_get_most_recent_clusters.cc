@@ -141,9 +141,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
         ")");
     weak_history_clusters_service_->NotifyDebugMessage(
         "  continuation_time = " +
-        (continuation_params.continuation_time.is_null()
-             ? "null (i.e. exhausted history)"
-             : base::TimeToISO8601(continuation_params.continuation_time)));
+        GetDebugTime(continuation_params.continuation_time));
     weak_history_clusters_service_->NotifyDebugMessage(
         base::StringPrintf("GET MOST RECENT CLUSTERS TASK - VISITS %zu:",
                            annotated_visits.size()));

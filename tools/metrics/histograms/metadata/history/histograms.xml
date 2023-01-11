@@ -1079,6 +1079,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Backend.UpdateClusters.Counts.{Segment}"
+    units="count" expires_after="2023-10-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Near startup and every 1 hour afterwards, unclustered visits are clustered,
+    and the clusters are persisted in the history DB.
+
+    As needed, both fresh and persisted clusters are fetched. Clusters are
+    fetched for: a) displaying on the Journeys WebUI and b) generating keyword
+    caches to match with omnibox inputs and show journey chips or suggestions in
+    the omnibox.
+
+    Each update consists of multiple batches of 1-3 days. The number of batches
+    depends on how long ago the last update occurred, which could have been 0-90
+    days ago.
+
+    Recorded for every batch of visits clustered; can be recorded more than once
+    every hour.
+
+    {Segment}
+  </summary>
+  <token key="Segment">
+    <variant name="NumClustersReplaced"
+        summary="This slice records the number of clusters included in the
+                 visits and therefore replaced from the DB. Not recorded if
+                 there were 0 visits. Recorded even if there were 0 model
+                 clusters or 0 replaced clusters."/>
+    <variant name="NumClustersReturned"
+        summary="This slice records the number of clusters returned from the
+                 cluster model. Not recorded if there were 0 visits. Recorded
+                 een if there were 0 clusters."/>
+    <variant name="NumVisitsToCluster"
+        summary="This slice records the number of visits returned and sent to
+                 the cluster model. Recorded even if there were 0 visits."/>
+  </token>
+</histogram>
+
 <histogram name="History.Clusters.Backend.UpdateClusters.{Segment}" units="ms"
     expires_after="2023-10-01">
   <owner>manukh@chromium.org</owner>

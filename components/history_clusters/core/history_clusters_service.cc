@@ -169,14 +169,9 @@ HistoryClustersService::QueryClusters(
     HistoryClustersServiceTaskGetMostRecentClusters::Source source) {
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("HistoryClustersService::QueryClusters()");
-    NotifyDebugMessage(
-        "  begin_time = " +
-        (begin_time.is_null() ? "null" : base::TimeToISO8601(begin_time)));
-    NotifyDebugMessage(
-        "  end_time = " +
-        (continuation_params.continuation_time.is_null()
-             ? "null"
-             : base::TimeToISO8601(continuation_params.continuation_time)));
+    NotifyDebugMessage("  begin_time = " + GetDebugTime(begin_time));
+    NotifyDebugMessage("  end_time = " +
+                       GetDebugTime(continuation_params.continuation_time));
   }
 
   DCHECK(history_service_);
@@ -333,13 +328,13 @@ void HistoryClustersService::ClearKeywordCache() {
 void HistoryClustersService::PrintKeywordBagStateToLogMessage() const {
   NotifyDebugMessage("-- Printing Short-Time Keyword Bag --");
   NotifyDebugMessage("Timestamp: " +
-                     base::TimeToISO8601(short_keyword_cache_timestamp_));
+                     GetDebugTime(short_keyword_cache_timestamp_));
   NotifyDebugMessage(GetDebugJSONForKeywordMap(short_keyword_cache_));
   NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(short_url_keywords_cache_));
 
   NotifyDebugMessage("-- Printing All-Time Keyword Bag --");
   NotifyDebugMessage("Timestamp: " +
-                     base::TimeToISO8601(all_keywords_cache_timestamp_));
+                     GetDebugTime(all_keywords_cache_timestamp_));
   NotifyDebugMessage(GetDebugJSONForKeywordMap(all_keywords_cache_));
   NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(all_url_keywords_cache_));
 
