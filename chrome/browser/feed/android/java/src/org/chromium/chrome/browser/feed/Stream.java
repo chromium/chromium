@@ -27,12 +27,17 @@ public interface Stream {
          * Allows the switching to another Stream.
          * @param streamKind The {@link StreamKind} of the stream to switch to.
          */
-        void switchToStreamKind(@StreamKind int streamKind);
+        default void switchToStreamKind(@StreamKind int streamKind) {}
 
         /**
          * Request the immediate refresh of the contents of the active stream.
          */
-        void refreshStream();
+        default void refreshStream() {}
+
+        /**
+         * Disable the follow button, used in case of an error scenario.
+         */
+        default void disableFollowButton() {}
     }
     /** Called when the Stream is no longer needed. */
     default void destroy() {}

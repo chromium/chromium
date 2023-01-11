@@ -601,6 +601,7 @@ public class FeedStream implements Stream {
     private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
     FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
+    private Stream.StreamsMediator mStreamsMediator;
     // Snackbar (and post-Follow dialog) controller used exclusively for handling in-feed
     // post-Follow and post-Unfollow UX.
     WebFeedSnackbarController mWebFeedSnackbarController;
@@ -680,15 +681,15 @@ public class FeedStream implements Stream {
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
         mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
+        mStreamsMediator = streamsMediator;
         WebFeedSnackbarController.FeedLauncher snackbarAction;
-        // Note: for now there's no need to store streamsMediator as an instance variable.
         if (mStreamKind == StreamKind.FOLLOWING) {
             snackbarAction = () -> {
-                streamsMediator.refreshStream();
+                mStreamsMediator.refreshStream();
             };
         } else {
             snackbarAction = () -> {
-                streamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
+                mStreamsMediator.switchToStreamKind(StreamKind.FOLLOWING);
             };
         }
         mWebFeedSnackbarController = new WebFeedSnackbarController(
@@ -1154,6 +1155,7 @@ public class FeedStream implements Stream {
                 creatorErrorCard = LayoutInflater.from(mActivity).inflate(
                         R.layout.creator_content_unavailable_error, mRecyclerView, false);
             } else {
+                mStreamsMediator.disableFollowButton();
                 creatorErrorCard = LayoutInflater.from(mActivity).inflate(
                         R.layout.creator_general_error, mRecyclerView, false);
             }

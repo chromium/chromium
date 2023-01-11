@@ -195,11 +195,19 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 /* FeedAutoplaySettingsDelegate */ this, feedActionDelegate,
                 helpAndFeedbackLauncher,
                 /* FeedContentFirstLoadWatcher */ this,
-                /* streamsMediator */ null, mWebFeedId);
+                /* streamsMediator */ new StreamsMediatorImpl(), mWebFeedId);
 
         mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
                 mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount,
                 /* shouldScrollToTop */ false);
+    }
+
+    private class StreamsMediatorImpl implements Stream.StreamsMediator {
+        @Override
+        public void disableFollowButton() {
+            mRecyclerView.findViewById(R.id.creator_follow_button).setEnabled(false);
+            mRecyclerView.findViewById(R.id.creator_following_button).setEnabled(false);
+        }
     }
 
     public ViewGroup getView() {
