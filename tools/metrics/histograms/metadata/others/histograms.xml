@@ -10368,6 +10368,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Process.Sandbox.Launch.Warning" enum="WinGetLastError"
+    expires_after="never">
+<!-- expires-never: metric needed for diagnosing sandbox issues. -->
+
+  <owner>forshaw@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Warnings returned while launching sandboxed process on Windows. For decoding
+    error code please refer to http://goo.gl/fJJiAv. This will only be logged
+    when SpawnTarget succeeds with SBOX_ALL_OK but the last warning result does
+    not equal SBOX_ALL_OK.
+
+    Warning: this histogram expired in M87, and was revived in M103; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="Process.Sandbox.Launch.WarningResultCode"
+    enum="LaunchErrorCodes" expires_after="never">
+<!-- expires-never: metric needed for diagnosing sandbox issues. -->
+
+  <owner>forshaw@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    The warning launch error returned while launching sandboxed process on
+    Windows. This will only be logged when SpawnTarget succeeds with SBOX_ALL_OK
+    but the last warning result does not equal SBOX_ALL_OK.
+
+    Warning: this histogram expired in M87, and was revived in M103; data may be
+    missing.
+  </summary>
+</histogram>
+
 <histogram name="Process.Sandbox.Lowbox.Launch.Error" enum="WinGetLastError"
     expires_after="never">
 <!-- expires-never: metric needed for diagnosing sandbox issues. -->

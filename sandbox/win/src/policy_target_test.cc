@@ -272,6 +272,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
+  ResultCode warning_result = SBOX_ALL_OK;
   DWORD last_error = ERROR_SUCCESS;
   base::win::ScopedProcessInformation target;
 
@@ -280,8 +281,9 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
   PROCESS_INFORMATION temp_process_info = {};
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
+  result =
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)
@@ -326,6 +328,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
+  ResultCode warning_result = SBOX_ALL_OK;
   DWORD last_error = ERROR_SUCCESS;
   base::win::ScopedProcessInformation target;
 
@@ -337,8 +340,9 @@ TEST(PolicyTargetTest, DesktopPolicy) {
   // Keep the desktop name to test against later (note - it was precreated).
   std::wstring desktop_name =
       broker->GetDesktopName(Desktop::kAlternateDesktop);
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
+  result =
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)
@@ -390,6 +394,7 @@ TEST(PolicyTargetTest, WinstaPolicy) {
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
+  ResultCode warning_result = SBOX_ALL_OK;
   base::win::ScopedProcessInformation target;
 
   auto policy = broker->CreatePolicy();
@@ -401,8 +406,9 @@ TEST(PolicyTargetTest, WinstaPolicy) {
   // Keep the desktop name for later (note - it was precreated).
   std::wstring desktop_name =
       broker->GetDesktopName(Desktop::kAlternateWinstation);
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
+  result =
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)
@@ -503,14 +509,16 @@ TEST(PolicyTargetTest, ShareHandleTest) {
 
   // Launch the app.
   ResultCode result = SBOX_ALL_OK;
+  ResultCode warning_result = SBOX_ALL_OK;
   base::win::ScopedProcessInformation target;
 
   EXPECT_EQ(SBOX_ALL_OK, policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE,
                                                             USER_LOCKDOWN));
   PROCESS_INFORMATION temp_process_info = {};
   DWORD last_error = ERROR_SUCCESS;
-  result = broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
-                               &last_error, &temp_process_info);
+  result =
+      broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
+                          &warning_result, &last_error, &temp_process_info);
 
   EXPECT_EQ(SBOX_ALL_OK, result);
   if (result == SBOX_ALL_OK)

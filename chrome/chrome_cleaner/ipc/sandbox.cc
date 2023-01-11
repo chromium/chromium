@@ -268,14 +268,16 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
   // Spawn the sandbox target process.
   PROCESS_INFORMATION temp_process_info = {0};
   DWORD last_win_error = 0;
+  sandbox::ResultCode last_sbox_warning = sandbox::SBOX_ALL_OK;
   LOG(INFO) << "Starting sandbox process with command line arguments: "
             << command_line.GetArgumentsString();
   sandbox::ResultCode sandbox_result = sandbox_broker_services->SpawnTarget(
       command_line.GetProgram().value().c_str(),
       command_line.GetCommandLineString().c_str(), std::move(policy),
-      &last_win_error, &temp_process_info);
+      &last_sbox_warning, &last_win_error, &temp_process_info);
   if (sandbox_result != sandbox::SBOX_ALL_OK) {
     LOG(DFATAL) << "Failed to spawn sandbox target: " << sandbox_result
+                << ", last sandbox warning: " << last_sbox_warning
                 << ", last windows error: "
                 << logging::SystemErrorCodeToString(last_win_error);
     return RESULT_CODE_FAILED_TO_START_SANDBOX_PROCESS;

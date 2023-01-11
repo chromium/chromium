@@ -343,6 +343,12 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   return SBOX_ALL_OK;
 }
 
+void LogLaunchWarning(ResultCode last_warning, DWORD last_error) {
+  base::UmaHistogramSparse("Process.Sandbox.Launch.WarningResultCode",
+                           last_warning);
+  base::UmaHistogramSparse("Process.Sandbox.Launch.Warning", last_error);
+}
+
 ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
   // Prevents the renderers from manipulating low-integrity processes.
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
@@ -1097,11 +1103,12 @@ ResultCode SandboxWin::StartSandboxedProcess(
   TRACE_EVENT_BEGIN0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
 
   PROCESS_INFORMATION temp_process_info = {};
+  ResultCode last_warning = sandbox::SBOX_ALL_OK;
   DWORD last_error = ERROR_SUCCESS;
   result = g_broker_services->SpawnTarget(
       cmd_line.GetProgram().value().c_str(),
-      cmd_line.GetCommandLineString().c_str(), std::move(policy), &last_error,
-      &temp_process_info);
+      cmd_line.GetCommandLineString().c_str(), std::move(policy), &last_warning,
+      &last_error, &temp_process_info);
   auto time_process_spawned = timer.Elapsed();
 
   base::win::ScopedProcessInformation target(temp_process_info);
@@ -1123,6 +1130,9 @@ ResultCode SandboxWin::StartSandboxedProcess(
     tracker->RecordProcessLaunch(target.process_id(),
                                  cmd_line.GetCommandLineString());
   }
+
+  if (SBOX_ALL_OK != last_warning)
+    LogLaunchWarning(last_warning, last_error);
 
   delegate->PostSpawnTarget(target.process_handle());
   CHECK(ResumeThread(target.thread_handle()) != static_cast<DWORD>(-1));
