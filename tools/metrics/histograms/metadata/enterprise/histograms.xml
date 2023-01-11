@@ -2990,6 +2990,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.OSType" enum="OsSuite"
+    expires_after="2024-01-10">
+  <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    The rough Windows suite we are running on. This check is performed once at
+    start-up on Windows. The histogram was removed in 108 and reinstated in 111.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
