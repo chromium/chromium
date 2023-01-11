@@ -29,7 +29,7 @@ export function createTextAcceleratorInfo(
   return {
     layoutProperties: {
       textAccelerator: {
-        textAccelerator: parts,
+        parts,
       },
     },
     locked,
