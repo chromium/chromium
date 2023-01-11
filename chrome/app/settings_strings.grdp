@@ -2867,11 +2867,11 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_DESCRIPTION" desc="Description of the ads content setting. In order to comply with the ND4C regulations the translations for this message should use one of the legally approved terms as an alternative to 'free'.">
     Sites usually show ads so they can provide content or services free of charge. But, some sites are known to show intrusive or misleading ads.
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_ALLOWED" desc="Label for the enabled option of the ads content setting.">
-    All sites can show any ads to you
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_ALLOWED" desc="1 of 2 states for the 'Intrusive ads' setting.">
+    Any site you visit can show any ad to you
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCKED" desc="Label for the disabled option of the ads content setting.">
-    Block ads on sites that show intrusive or misleading ads
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_BLOCKED" desc="2 of 2 states for the 'intrusive ads' setting.">
+    Ads are blocked on sites known to show intrusive or misleading ads
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the ads content setting.">
     Allowed to show any ads
