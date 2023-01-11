@@ -142,18 +142,9 @@ void BrowserImpl::PrepareForShutdown(JNIEnv* env) {
   PrepareForShutdown();
 }
 
-ScopedJavaLocalRef<jbyteArray> BrowserImpl::GetBrowserPersisterCryptoKey(
-    JNIEnv* env) {
-  std::vector<uint8_t> key;
-  if (browser_persister_)
-    key = browser_persister_->GetCryptoKey();
-  return base::android::ToJavaByteArray(env, key);
-}
-
 void BrowserImpl::RestoreStateIfNecessary(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_persistence_id,
-    const JavaParamRef<jbyteArray>& j_persistence_crypto_key) {
+    const JavaParamRef<jstring>& j_persistence_id) {
   if (!j_persistence_id.obj())
     return;
 
@@ -163,10 +154,6 @@ void BrowserImpl::RestoreStateIfNecessary(
   if (persistence_info.id.empty())
     return;
 
-  if (j_persistence_crypto_key.obj()) {
-    base::android::JavaByteArrayToByteVector(
-        env, j_persistence_crypto_key, &(persistence_info.last_crypto_key));
-  }
   RestoreStateIfNecessary(persistence_info);
 }
 
@@ -365,8 +352,8 @@ void BrowserImpl::RestoreStateIfNecessary(
     const PersistenceInfo& persistence_info) {
   persistence_id_ = persistence_info.id;
   if (!persistence_id_.empty()) {
-    browser_persister_ = std::make_unique<BrowserPersister>(
-        GetBrowserPersisterDataPath(), this, persistence_info.last_crypto_key);
+    browser_persister_ =
+        std::make_unique<BrowserPersister>(GetBrowserPersisterDataPath(), this);
   }
 }
 

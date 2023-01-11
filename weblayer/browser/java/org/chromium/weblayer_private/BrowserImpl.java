@@ -66,7 +66,6 @@ public class BrowserImpl extends IBrowser.Stub {
     // This persistence state is saved to disk, and loaded async.
     private static final class FullPersistenceInfo {
         String mPersistenceId;
-        byte[] mCryptoKey;
     };
     /**
      * Allows observing of visible security state of the active tab.
@@ -98,10 +97,9 @@ public class BrowserImpl extends IBrowser.Stub {
 
         mProfile.checkNotDestroyed(); // TODO(swestphal): or mProfile != null
 
-        if (!TextUtils.isEmpty(persistenceId)) {
+        if (!isIncognito && !TextUtils.isEmpty(persistenceId)) {
             mFullPersistenceInfo = new FullPersistenceInfo();
             mFullPersistenceInfo.mPersistenceId = persistenceId;
-            mFullPersistenceInfo.mCryptoKey = null;
         }
 
         mNativeBrowser = BrowserImplJni.get().createBrowser(mProfile.getNativeProfile(), this);
@@ -312,7 +310,7 @@ public class BrowserImpl extends IBrowser.Stub {
             FullPersistenceInfo persistenceInfo = mFullPersistenceInfo;
             mFullPersistenceInfo = null;
             BrowserImplJni.get().restoreStateIfNecessary(
-                    mNativeBrowser, persistenceInfo.mPersistenceId, persistenceInfo.mCryptoKey);
+                    mNativeBrowser, persistenceInfo.mPersistenceId);
         } else {
             boolean setActiveResult = setActiveTab(createTab());
             assert setActiveResult;
@@ -415,9 +413,7 @@ public class BrowserImpl extends IBrowser.Stub {
         void setActiveTab(long nativeBrowserImpl, long nativeTab);
         TabImpl getActiveTab(long nativeBrowserImpl);
         void prepareForShutdown(long nativeBrowserImpl);
-        byte[] getBrowserPersisterCryptoKey(long nativeBrowserImpl);
-        void restoreStateIfNecessary(
-                long nativeBrowserImpl, String persistenceId, byte[] persistenceCryptoKey);
+        void restoreStateIfNecessary(long nativeBrowserImpl, String persistenceId);
         void webPreferencesChanged(long nativeBrowserImpl);
         void onFragmentStart(long nativeBrowserImpl);
         void onFragmentResume(long nativeBrowserImpl);

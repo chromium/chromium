@@ -11,6 +11,7 @@ android_library("webengine_java_tests") {
   sources = [
     "src/org/chromium/webengine/test/CookieManagerTest.java",
     "src/org/chromium/webengine/test/ExecuteScriptTest.java",
+    "src/org/chromium/webengine/test/StatePersistenceTest.java",
     "src/org/chromium/webengine/test/TabManagerTest.java",
     "src/org/chromium/webengine/test/TabNavigationControllerTest.java",
     "src/org/chromium/webengine/test/TabPrerenderTest.java",

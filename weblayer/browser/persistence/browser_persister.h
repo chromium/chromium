@@ -44,9 +44,7 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
                          public BrowserObserver,
                          public TabImpl::DataObserver {
  public:
-  BrowserPersister(const base::FilePath& path,
-                   BrowserImpl* browser,
-                   const std::vector<uint8_t>& decryption_key);
+  BrowserPersister(const base::FilePath& path, BrowserImpl* browser);
 
   BrowserPersister(const BrowserPersister&) = delete;
   BrowserPersister& operator=(const BrowserPersister&) = delete;
@@ -57,10 +55,6 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
 
   void SaveIfNecessary();
 
-  // Returns the key used to encrypt the file. Empty if not encrypted.
-  // Encryption is done when saving and the profile is off the record.
-  const std::vector<uint8_t>& GetCryptoKey() const;
-
  private:
   friend class BrowserPersisterTestHelper;
 
@@ -69,7 +63,6 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
   // CommandStorageManagerDelegate:
   bool ShouldUseDelayedSave() override;
   void OnWillSaveCommands() override;
-  void OnGeneratedNewCryptoKey(const std::vector<uint8_t>& key) override;
   void OnErrorWritingSessionCommands() override;
 
   // BrowserObserver;
@@ -134,8 +127,6 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
 
   // Force session commands to be rebuild before next save event.
   bool rebuild_on_next_save_;
-
-  std::vector<uint8_t> crypto_key_;
 
   base::ScopedMultiSourceObservation<TabImpl, TabImpl::DataObserver>
       data_observations_{this};

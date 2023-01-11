@@ -76,15 +76,12 @@ class BrowserImpl : public Browser {
   void PrepareForShutdown(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetPersistenceId(JNIEnv* env);
   void SaveBrowserPersisterIfNecessary(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jbyteArray> GetBrowserPersisterCryptoKey(
-      JNIEnv* env);
   base::android::ScopedJavaLocalRef<jbyteArray> GetMinimalPersistenceState(
       JNIEnv* env,
       int max_navigations_per_tab);
   void RestoreStateIfNecessary(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_persistence_id,
-      const base::android::JavaParamRef<jbyteArray>& j_persistence_crypto_key);
+      const base::android::JavaParamRef<jstring>& j_persistence_id);
   void WebPreferencesChanged(JNIEnv* env);
   void OnFragmentStart(JNIEnv* env);
   void OnFragmentResume(JNIEnv* env);
