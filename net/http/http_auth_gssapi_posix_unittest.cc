@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/native_library.h"
 #include "base/path_service.h"

@@ -7,9 +7,9 @@
 #include <string>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"

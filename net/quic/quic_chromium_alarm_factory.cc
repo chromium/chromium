@@ -4,8 +4,8 @@
 
 #include "net/quic/quic_chromium_alarm_factory.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"

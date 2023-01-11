@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"

@@ -20,9 +20,9 @@
 
 #include "net/test/url_request/url_request_test_job_backed_by_file.h"
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_runner.h"

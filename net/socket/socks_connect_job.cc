@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"

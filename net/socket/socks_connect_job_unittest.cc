@@ -4,9 +4,9 @@
 
 #include "net/socket/socks_connect_job.h"
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

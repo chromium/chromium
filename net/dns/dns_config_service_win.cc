@@ -10,11 +10,11 @@
 #include <set>
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"

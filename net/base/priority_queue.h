@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 
 #if !defined(NDEBUG)

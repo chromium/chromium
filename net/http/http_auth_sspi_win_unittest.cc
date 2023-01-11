@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth.h"

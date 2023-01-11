@@ -4,9 +4,9 @@
 
 #include "net/http/http_response_body_drainer.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "net/base/io_buffer.h"

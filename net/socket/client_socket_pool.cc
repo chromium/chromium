@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"

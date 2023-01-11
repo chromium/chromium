@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"

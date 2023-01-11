@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"

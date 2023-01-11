@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/base/net_export.h"
 
 class GURL;

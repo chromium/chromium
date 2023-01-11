@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"

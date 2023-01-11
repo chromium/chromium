@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"

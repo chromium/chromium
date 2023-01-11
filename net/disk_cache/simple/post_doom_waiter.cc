@@ -4,9 +4,9 @@
 
 #include "net/disk_cache/simple/post_doom_waiter.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "net/disk_cache/simple/simple_histogram_macros.h"
 
 namespace disk_cache {

@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"

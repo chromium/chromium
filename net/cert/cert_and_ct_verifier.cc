@@ -4,7 +4,7 @@
 
 #include "net/cert/cert_and_ct_verifier.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/cert/ct_verifier.h"
 
 namespace net {

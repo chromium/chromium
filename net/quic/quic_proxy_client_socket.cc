@@ -7,8 +7,8 @@
 #include <cstdio>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "net/base/proxy_delegate.h"
 #include "net/http/http_auth_controller.h"

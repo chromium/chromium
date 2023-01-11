@@ -9,8 +9,8 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/atomicops.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"

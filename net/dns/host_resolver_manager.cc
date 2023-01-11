@@ -17,9 +17,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
@@ -29,6 +26,9 @@
 #include "base/containers/linked_list.h"
 #include "base/debug/debugger.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/identity.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

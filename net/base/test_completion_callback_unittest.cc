@@ -6,8 +6,8 @@
 
 #include "net/base/test_completion_callback.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"

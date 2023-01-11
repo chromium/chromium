@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_private_key.h"
 

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"

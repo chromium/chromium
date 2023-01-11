@@ -18,12 +18,12 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

@@ -9,9 +9,9 @@
 #include <tuple>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"

@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"

@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

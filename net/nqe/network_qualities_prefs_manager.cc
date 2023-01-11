@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"

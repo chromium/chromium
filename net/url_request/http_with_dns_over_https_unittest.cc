@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "base/big_endian.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"

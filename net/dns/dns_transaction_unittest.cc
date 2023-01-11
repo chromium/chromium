@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"

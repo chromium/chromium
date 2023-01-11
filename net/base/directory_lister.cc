@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/location.h"
 #include "base/notreached.h"

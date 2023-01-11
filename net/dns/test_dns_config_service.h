@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

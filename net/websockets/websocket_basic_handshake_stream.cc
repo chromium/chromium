@@ -11,9 +11,9 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"

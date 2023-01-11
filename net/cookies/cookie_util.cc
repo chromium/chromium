@@ -9,10 +9,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"

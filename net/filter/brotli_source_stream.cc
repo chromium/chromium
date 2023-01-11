@@ -4,9 +4,9 @@
 
 #include "net/filter/brotli_source_stream.h"
 
-#include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/base/io_buffer.h"

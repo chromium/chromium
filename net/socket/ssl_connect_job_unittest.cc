@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

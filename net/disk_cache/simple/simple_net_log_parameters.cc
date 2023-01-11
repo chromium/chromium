@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"

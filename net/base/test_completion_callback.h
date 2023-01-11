@@ -10,8 +10,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"

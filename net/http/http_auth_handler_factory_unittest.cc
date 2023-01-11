@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"

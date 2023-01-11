@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"

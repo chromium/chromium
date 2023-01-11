@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/log/net_log_event_type.h"
 #include "net/spdy/bidirectional_stream_spdy_impl.h"

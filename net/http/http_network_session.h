@@ -15,9 +15,9 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/bind.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

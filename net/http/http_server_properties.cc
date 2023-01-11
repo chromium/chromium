@@ -4,11 +4,11 @@
 
 #include "net/http/http_server_properties.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"

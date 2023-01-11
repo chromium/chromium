@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

@@ -4,8 +4,8 @@
 
 #include "net/url_request/report_sender.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_delegate_impl.h"

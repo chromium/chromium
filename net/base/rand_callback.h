@@ -5,7 +5,7 @@
 #ifndef NET_BASE_RAND_CALLBACK_H_
 #define NET_BASE_RAND_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace net {
 

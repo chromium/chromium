@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"

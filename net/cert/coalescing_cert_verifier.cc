@@ -4,9 +4,9 @@
 
 #include "net/cert/coalescing_cert_verifier.h"
 
-#include "base/bind.h"
 #include "base/containers/linked_list.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"

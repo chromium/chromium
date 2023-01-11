@@ -14,10 +14,10 @@
 
 #include "base/base64url.h"
 #include "base/big_endian.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"

@@ -6,7 +6,7 @@
 
 #include "base/android/base_jni_onload.h"
 #include "base/android/jni_android.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/test/embedded_test_server/android/embedded_test_server_android.h"
 
 namespace net::test {

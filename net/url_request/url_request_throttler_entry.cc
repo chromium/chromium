@@ -7,8 +7,8 @@
 #include <cmath>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"

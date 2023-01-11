@@ -13,8 +13,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"

@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"

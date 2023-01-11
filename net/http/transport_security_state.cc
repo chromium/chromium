@@ -12,11 +12,11 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/build_time.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"

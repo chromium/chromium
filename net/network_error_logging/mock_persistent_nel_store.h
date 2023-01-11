@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "url/origin.h"
 

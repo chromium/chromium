@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/first_party_sets/first_party_set_entry.h"

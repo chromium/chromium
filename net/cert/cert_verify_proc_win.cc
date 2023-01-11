@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"

@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 

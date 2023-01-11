@@ -7,7 +7,7 @@
 #include <set>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_request_info.h"

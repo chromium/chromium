@@ -12,10 +12,10 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"

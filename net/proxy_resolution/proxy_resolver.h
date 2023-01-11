@@ -5,7 +5,7 @@
 #ifndef NET_PROXY_RESOLUTION_PROXY_RESOLVER_H_
 #define NET_PROXY_RESOLUTION_PROXY_RESOLVER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"

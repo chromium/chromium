@@ -8,9 +8,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/base/ip_address.h"

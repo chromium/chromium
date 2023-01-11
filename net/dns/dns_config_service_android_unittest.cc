@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/android/build_info.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"

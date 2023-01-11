@@ -4,7 +4,7 @@
 
 #include "net/proxy_resolution/network_delegate_error_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"

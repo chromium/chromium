@@ -6,9 +6,9 @@
 
 #include <vector>
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"

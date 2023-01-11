@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"

@@ -8,9 +8,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"

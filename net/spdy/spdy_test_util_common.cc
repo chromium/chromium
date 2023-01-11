@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"

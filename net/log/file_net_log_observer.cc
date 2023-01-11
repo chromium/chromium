@@ -9,10 +9,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

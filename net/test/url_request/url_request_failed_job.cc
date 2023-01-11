@@ -4,8 +4,8 @@
 
 #include "net/test/url_request/url_request_failed_job.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"

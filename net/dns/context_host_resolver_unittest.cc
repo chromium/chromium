@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"

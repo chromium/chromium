@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

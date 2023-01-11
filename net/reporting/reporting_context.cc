@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"

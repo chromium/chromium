@@ -4,8 +4,8 @@
 
 #include "net/test/scoped_disable_exit_on_dfatal.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 
 namespace net::test {

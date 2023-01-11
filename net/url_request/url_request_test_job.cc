@@ -8,9 +8,9 @@
 #include <list>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase_list.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"

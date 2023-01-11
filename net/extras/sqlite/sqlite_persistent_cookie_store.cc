@@ -11,11 +11,11 @@
 #include <tuple>
 #include <unordered_set>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

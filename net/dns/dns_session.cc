@@ -9,7 +9,7 @@
 #include <limits>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "net/dns/dns_config.h"
 #include "net/log/net_log.h"

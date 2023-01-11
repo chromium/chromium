@@ -5,7 +5,7 @@
 #ifndef NET_SSL_CLIENT_CERT_IDENTITY_H_
 #define NET_SSL_CLIENT_CERT_IDENTITY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"

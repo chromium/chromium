@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
