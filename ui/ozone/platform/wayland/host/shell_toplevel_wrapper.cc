@@ -6,6 +6,10 @@
 
 namespace ui {
 
+XDGToplevelWrapperImpl* ShellToplevelWrapper::AsXDGToplevelWrapper() {
+  return nullptr;
+}
+
 bool CheckIfWlArrayHasValue(struct wl_array* wl_array, uint32_t value) {
   // wl_array_for_each has a bug in upstream. It tries to assign void* to
   // uint32_t *, which is not allowed in C++. Explicit cast should be

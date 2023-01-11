@@ -61,6 +61,15 @@ void XDGSurfaceWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
                                   bounds.width(), bounds.height());
 }
 
+XDGSurfaceWrapperImpl* XDGSurfaceWrapperImpl::AsXDGSurfaceWrapper() {
+  return this;
+}
+
+xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {
+  DCHECK(xdg_surface_);
+  return xdg_surface_.get();
+}
+
 // static
 void XDGSurfaceWrapperImpl::Configure(void* data,
                                       struct xdg_surface* xdg_surface,
@@ -77,11 +86,6 @@ void XDGSurfaceWrapperImpl::Configure(void* data,
     return;
 
   weak_window->OnSurfaceConfigureEvent();
-}
-
-xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {
-  DCHECK(xdg_surface_);
-  return xdg_surface_.get();
 }
 
 }  // namespace ui

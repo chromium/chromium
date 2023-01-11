@@ -262,6 +262,10 @@ void XDGPopupWrapperImpl::SetScaleFactor(float scale_factor) {
   }
 }
 
+XDGPopupWrapperImpl* XDGPopupWrapperImpl::AsXDGPopupWrapper() {
+  return this;
+}
+
 wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner() {
   wl::Object<xdg_positioner> positioner(
       xdg_wm_base_create_positioner(connection_->shell()));

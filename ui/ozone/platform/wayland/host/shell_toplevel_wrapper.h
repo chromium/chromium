@@ -17,6 +17,7 @@ class Rect;
 namespace ui {
 
 class WaylandConnection;
+class XDGToplevelWrapperImpl;
 enum class ZOrderLevel;
 
 // A wrapper around different versions of xdg toplevels. Allows
@@ -167,6 +168,9 @@ class ShellToplevelWrapper {
   // feedback.
   virtual void ShowSnapPreview(WaylandWindowSnapDirection snap_direction,
                                bool allow_haptic_feedback) = 0;
+
+  // Casts `this` to XDGToplevelWrapperImpl, if it is of that type.
+  virtual XDGToplevelWrapperImpl* AsXDGToplevelWrapper();
 };
 
 // Look for |value| in |wl_array| in C++ style.

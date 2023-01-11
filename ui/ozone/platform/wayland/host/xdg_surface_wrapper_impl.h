@@ -35,6 +35,7 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   void AckConfigure(uint32_t serial) override;
   bool IsConfigured() override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
+  XDGSurfaceWrapperImpl* AsXDGSurfaceWrapper() override;
 
   struct xdg_surface* xdg_surface() const;
 

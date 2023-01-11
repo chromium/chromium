@@ -18,6 +18,7 @@ namespace ui {
 
 class WaylandConnection;
 class WaylandWindow;
+class XDGPopupWrapperImpl;
 
 struct ShellPopupParams {
   ShellPopupParams();
@@ -72,6 +73,9 @@ class ShellPopupWrapper {
   // Sets the scale factor for the next commit. Scale factor persists until a
   // new one is set.
   virtual void SetScaleFactor(float scale_factor) = 0;
+
+  // Casts `this` to XDGPopupWrapperImpl, if it is of that type.
+  virtual XDGPopupWrapperImpl* AsXDGPopupWrapper();
 
  protected:
   // Asks the compositor to take explicit-grab for this popup.

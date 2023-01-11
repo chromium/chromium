@@ -66,6 +66,10 @@ void ShellPopupWrapper::FillAnchorData(
   *constraints = OwnedWindowConstraintAdjustment::kAdjustmentFlipY;
 }
 
+XDGPopupWrapperImpl* ShellPopupWrapper::AsXDGPopupWrapper() {
+  return nullptr;
+}
+
 void ShellPopupWrapper::GrabIfPossible(WaylandConnection* connection,
                                        WaylandWindow* parent_window) {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

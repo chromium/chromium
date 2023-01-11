@@ -619,4 +619,8 @@ void XDGToplevelWrapperImpl::ShowSnapPreview(
   }
 }
 
+XDGToplevelWrapperImpl* XDGToplevelWrapperImpl::AsXDGToplevelWrapper() {
+  return this;
+}
+
 }  // namespace ui

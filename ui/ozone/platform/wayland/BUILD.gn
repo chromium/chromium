@@ -65,6 +65,7 @@ source_set("wayland") {
     "host/shell_object_factory.h",
     "host/shell_popup_wrapper.cc",
     "host/shell_popup_wrapper.h",
+    "host/shell_surface_wrapper.cc",
     "host/shell_surface_wrapper.h",
     "host/shell_toplevel_wrapper.cc",
     "host/shell_toplevel_wrapper.h",
