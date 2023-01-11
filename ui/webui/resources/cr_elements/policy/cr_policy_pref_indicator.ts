@@ -9,9 +9,8 @@
 import '../cr_hidden_style.css.js';
 import './cr_tooltip_icon.js';
 
+import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assert} from '../../js/assert_ts.js';
 
 import {CrPolicyIndicatorMixin, CrPolicyIndicatorType} from './cr_policy_indicator_mixin.js';
 import {getTemplate} from './cr_policy_pref_indicator.html.js';

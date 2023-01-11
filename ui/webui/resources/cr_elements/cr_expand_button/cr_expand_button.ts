@@ -12,9 +12,9 @@ import '../cr_icon_button/cr_icon_button.js';
 import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 
+import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {focusWithoutInk} from '../../js/focus_without_ink.js';
 import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
 import {getTemplate} from './cr_expand_button.html.js';

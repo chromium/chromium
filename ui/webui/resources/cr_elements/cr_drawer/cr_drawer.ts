@@ -4,10 +4,9 @@
 
 import '../cr_shared_vars.css.js';
 
+import {assertNotReached} from '//resources/js/assert_ts.js';
+import {listenOnce} from '//resources/js/util_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertNotReached} from '../../js/assert_ts.js';
-import {listenOnce} from '../../js/util_ts.js';
 
 import {getTemplate} from './cr_drawer.html.js';
 

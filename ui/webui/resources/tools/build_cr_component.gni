@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
@@ -113,7 +112,6 @@ template("build_cr_component") {
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
       visibility = [ ":build_grdp" ]
-      defines = chrome_grit_defines
       in_folder = "."
       out_folder = preprocess_dir
       in_files = static_preprocessed_files
@@ -128,7 +126,6 @@ template("build_cr_component") {
       ":html_wrapper_files",
     ]
 
-    defines = chrome_grit_defines
     in_folder = "."
     out_folder = preprocess_dir
     in_files = ts_files

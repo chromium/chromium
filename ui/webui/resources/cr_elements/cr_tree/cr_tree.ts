@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '../../js/assert_ts.js';
-import {isMac} from '../../js/platform.js';
+import {assert, assertNotReached} from '//resources/js/assert_ts.js';
+import {isMac} from '//resources/js/platform.js';
 
 import {getTemplate} from './cr_tree.html.js';
 import {CrTreeBaseElement} from './cr_tree_base.js';

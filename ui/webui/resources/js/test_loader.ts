@@ -15,8 +15,10 @@
 // chrome://test/ data source only exists in a testing context, so using this
 // script in production will result in a failed network request.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-
 import {loadTestModule} from './test_loader_util.js';
 
-assert(loadTestModule());
+const loaded = loadTestModule();
+
+if (!loaded) {
+  throw new Error('Failed to load test module');
+}

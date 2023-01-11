@@ -5,10 +5,10 @@
 import '../cr_radio_button/cr_radio_button.js';
 import '../cr_shared_vars.css.js';
 
+import {assert} from '//resources/js/assert_ts.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../js/assert_ts.js';
-import {EventTracker} from '../../js/event_tracker.js';
 import {CrRadioButtonElement} from '../cr_radio_button/cr_radio_button.js';
 
 import {getTemplate} from './cr_radio_group.html.js';

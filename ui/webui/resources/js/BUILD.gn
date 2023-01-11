@@ -4,41 +4,65 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("./js.gni")
+
+import("../tools/build_cr_component.gni")
+
+include_polymer = !is_android && !is_ios
+
+build_cr_component("build") {
+  grd_prefix = "webui_js"
+
+  non_web_component_files = [
+    "action_link.ts",
+    "assert_ts.ts",
+    "color_utils.ts",
+    "cr.ts",
+    "custom_element.ts",
+    "drag_wrapper.ts",
+    "event_tracker.ts",
+    "focus_grid.ts",
+    "focus_outline_manager.ts",
+    "focus_row.ts",
+    "icon.ts",
+    "keyboard_shortcut_list.ts",
+    "load_time_data.ts",
+    "parse_html_subset.ts",
+    "platform.ts",
+    "plural_string_proxy.ts",
+    "promise_resolver.ts",
+    "search_highlight_utils.ts",
+    "static_types.ts",
+    "store_ts.ts",
+    "test_loader.ts",
+    "test_loader_util.ts",
+    "util_ts.ts",
+  ]
+
+  if (is_chromeos) {
+    non_web_component_files += [ "os_about.ts" ]
+  }
+
+  if (include_polymer) {
+    non_web_component_files += [
+      "focus_row_mixin.ts",
+      "focus_without_ink.ts",
+    ]
+  }
+
+  tsc_dir = "$root_gen_dir/ui/webui/resources/preprocessed/js"
+  ts_deps = [ "../mojo:library" ]
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+}
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js"
 preprocess_src_manifest = "preprocessed_src_manifest.json"
 
-include_polymer = !is_android && !is_ios
-
-generate_grd("build_grdp") {
+generate_grd("build_grdp_deprecated") {
   grd_prefix = "webui_js"
-  out_grd = "$target_gen_dir/resources.grdp"
-  public_deps = [ ":preprocess" ]
+  out_grd = "$target_gen_dir/resources_deprecated.grdp"
+  public_deps = [ ":preprocess_src" ]
   manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
-  if (include_polymer) {
-    manifest_files += [ "$target_gen_dir/browser_command/build_ts.manifest" ]
-  }
   resource_path_prefix = "js"
-}
-
-group("preprocess") {
-  public_deps = [
-    ":preprocess_src",
-    ":preprocess_src_ts",
-  ]
-  if (include_polymer) {
-    public_deps += [ "browser_command:build_ts" ]
-  }
-}
-
-# TS files are passed to a separate target so that they are not listed in the
-# |out_manifest|.
-preprocess_if_expr("preprocess_src_ts") {
-  in_folder = "."
-  out_folder = preprocess_folder
-  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_src") {

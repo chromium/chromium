@@ -7,9 +7,8 @@
 import '../cr_hidden_style.css.js';
 import './cr_toast.js';
 
+import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assert} from '../../js/assert_ts.js';
 
 import {CrToastElement} from './cr_toast.js';
 import {getTemplate} from './cr_toast_manager.html.js';
