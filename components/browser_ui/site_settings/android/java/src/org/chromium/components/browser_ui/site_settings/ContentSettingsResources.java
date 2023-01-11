@@ -93,9 +93,21 @@ public class ContentSettingsResources {
     private static ResourceItem getResourceItem(int contentType, SiteSettingsDelegate delegate) {
         switch (contentType) {
             case ContentSettingsType.ADS:
-                return new ResourceItem(R.drawable.web_asset, R.string.ads_permission_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0,
-                        R.string.website_settings_category_ads_blocked);
+                if (delegate == null) {
+                    return new ResourceItem(
+                            0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0);
+                }
+                return new ResourceItem(R.drawable.web_asset,
+                        delegate.isPrivacySandboxSettings4Enabled()
+                                ? R.string.site_settings_page_intrusive_ads_label
+                                : R.string.ads_permission_title,
+                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
+                        delegate.isPrivacySandboxSettings4Enabled()
+                                ? R.string.site_settings_page_intrusive_allowed_sub_label
+                                : 0,
+                        delegate.isPrivacySandboxSettings4Enabled()
+                                ? R.string.site_settings_page_intrusive_blocked_sub_label
+                                : R.string.website_settings_category_ads_blocked);
 
             case ContentSettingsType.AR:
                 return new ResourceItem(R.drawable.gm_filled_cardboard_24,

@@ -325,6 +325,15 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED_LIST" desc="Summary text explaining that the Ads permission is set to block ads on some sites. To be shown in the list of permission categories.">
     Blocked on some sites
   </message>
+  <message name="IDS_SITE_SETTINGS_PAGE_INTRUSIVE_ADS_LABEL" desc="We're renaming the existing 'Ads' setting (visit chrome://settings/content and click 'Additional content settings'). We need to rename this setting because we're introducing 3 new ad settings on the new 'Ad privacy' page. This string is the name of a setting. Here, it serves as the label of a button that opens the 'Intrusive ads' page.">
+    Intrusive ads
+  </message>
+  <message name="IDS_SITE_SETTINGS_PAGE_INTRUSIVE_ALLOWED_SUB_LABEL" desc="1 of 2 states for the 'Intrusive ads' setting.">
+    Any site you visit can show any ad to you
+  </message>
+  <message name="IDS_SITE_SETTINGS_PAGE_INTRUSIVE_BLOCKED_SUB_LABEL" desc="2 of 2 states for the 'intrusive ads' setting.">
+    Ads are blocked on sites known to show intrusive or misleading ads
+  </message>
 
   <!-- Augmented reality -->
 
