@@ -2,33 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_android)
 
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [
+    "notifications_internals.ts",
+    "notifications_internals_browser_proxy.ts",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
+}
+
 generate_grd("build_grdp") {
   grd_prefix = "notifications_internals"
   out_grd = "$target_gen_dir/resources.grdp"
-  input_files = [
-    "notifications_internals_browser_proxy.js",
-    "notifications_internals.html",
-    "notifications_internals.js",
-  ]
+  input_files = [ "notifications_internals.html" ]
   input_files_base_dir = rebase_path(".", "//")
-}
-
-js_type_check("closure_compile") {
-  deps = [
-    ":notifications_internals",
-    ":notifications_internals_browser_proxy",
-  ]
-}
-
-js_library("notifications_internals") {
-  deps = [ ":notifications_internals_browser_proxy" ]
-}
-
-js_library("notifications_internals_browser_proxy") {
-  externs_list = [ "$externs_path/chrome_send.js" ]
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
