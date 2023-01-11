@@ -480,10 +480,16 @@ uint64_t PerformanceResourceTiming::transferSize() const {
 }
 
 uint64_t PerformanceResourceTiming::encodedBodySize() const {
+  if (!AllowTimingDetails())
+    return 0;
+
   return GetEncodedBodySize();
 }
 
 uint64_t PerformanceResourceTiming::decodedBodySize() const {
+  if (!AllowTimingDetails())
+    return 0;
+
   return GetDecodedBodySize();
 }
 

@@ -75,6 +75,8 @@ const invariants = {
     assert_positive_(entry, [
       "fetchStart",
       "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
   },
 
@@ -96,6 +98,8 @@ const invariants = {
       "secureConnectionStart",
       "redirectStart",
       "redirectEnd",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
 
     assert_not_negative_(entry, [
@@ -135,6 +139,8 @@ const invariants = {
     assert_positive_(entry, [
       "fetchStart",
       "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
   },
 
@@ -166,6 +172,8 @@ const invariants = {
     assert_positive_(entry, [
       "fetchStart",
       "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
   },
 
@@ -188,6 +196,8 @@ const invariants = {
       "secureConnectionStart",
       "redirectStart",
       "redirectEnd",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
 
     assert_not_negative_(entry, [
@@ -219,6 +229,8 @@ const invariants = {
       "workerStart",
       "redirectStart",
       "redirectEnd",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
 
     assert_not_negative_(entry, [
@@ -393,6 +405,8 @@ const invariants = {
       "requestStart",
       "responseStart",
       "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
 
     assert_ordered_(entry, [
@@ -426,6 +440,8 @@ const invariants = {
       "requestStart",
       "responseStart",
       "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
     ]);
   }
 
