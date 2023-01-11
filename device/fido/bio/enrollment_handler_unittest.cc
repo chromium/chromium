@@ -8,8 +8,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "device/fido/bio/enrollment_handler.h"
 #include "device/fido/fido_transport_protocol.h"

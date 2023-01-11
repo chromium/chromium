@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"

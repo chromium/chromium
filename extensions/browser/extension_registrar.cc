@@ -4,10 +4,10 @@
 
 #include "extensions/browser/extension_registrar.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"

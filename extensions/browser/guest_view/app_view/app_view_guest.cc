@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/render_process_host.h"

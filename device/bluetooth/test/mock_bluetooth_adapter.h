@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"

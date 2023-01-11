@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_MANAGEMENT_MANAGEMENT_API_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_MANAGEMENT_MANAGEMENT_API_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/api/management.h"

@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/bindings/binding_access_checker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "gin/converter.h"
 

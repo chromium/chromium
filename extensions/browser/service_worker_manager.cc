@@ -4,8 +4,8 @@
 
 #include "extensions/browser/service_worker_manager.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"

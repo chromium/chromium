@@ -5,8 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_MEDIA_PERCEPTION_API_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_MEDIA_PERCEPTION_API_DELEGATE_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception_service.mojom.h"
 #include "extensions/common/api/media_perception_private.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

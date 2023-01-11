@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"

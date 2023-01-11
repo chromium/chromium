@@ -7,7 +7,7 @@
 
 #include <lib/fit/function.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 // Adapts a base::OnceCallback<> to a fit::function<>, to allow //base callbacks
 // to be used directly as FIDL result callbacks.

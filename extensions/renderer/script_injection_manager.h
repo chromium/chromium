@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"

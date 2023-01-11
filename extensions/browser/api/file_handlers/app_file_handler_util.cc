@@ -7,7 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"

@@ -4,8 +4,8 @@
 
 #include "extensions/browser/path_util.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"

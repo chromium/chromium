@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"

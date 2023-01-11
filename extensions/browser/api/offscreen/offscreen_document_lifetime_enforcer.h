@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_OFFSCREEN_OFFSCREEN_DOCUMENT_LIFETIME_ENFORCER_H_
 #define EXTENSIONS_BROWSER_API_OFFSCREEN_OFFSCREEN_DOCUMENT_LIFETIME_ENFORCER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace extensions {

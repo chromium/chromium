@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_NETWORK_PERMISSIONS_UPDATER_H_
 #define EXTENSIONS_BROWSER_NETWORK_PERMISSIONS_UPDATER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 

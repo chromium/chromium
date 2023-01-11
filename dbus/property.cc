@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 
 #include "dbus/message.h"

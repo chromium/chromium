@@ -7,8 +7,8 @@
 #include <functional>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"

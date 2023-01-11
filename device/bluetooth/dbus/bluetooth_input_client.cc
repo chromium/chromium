@@ -6,8 +6,8 @@
 
 #include <map>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"

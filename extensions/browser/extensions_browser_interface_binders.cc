@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

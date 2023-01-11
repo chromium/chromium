@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "device/base/features.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap2_device_operation.h"

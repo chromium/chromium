@@ -4,7 +4,7 @@
 
 #include "device/fido/mac/fake_touch_id_context.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 
 namespace device {

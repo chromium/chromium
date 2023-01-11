@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_APP_WINDOW_APP_WINDOW_CLIENT_H_
 #define EXTENSIONS_BROWSER_APP_WINDOW_APP_WINDOW_CLIENT_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/api/app_runtime.h"
 

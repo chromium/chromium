@@ -8,10 +8,10 @@
 #include <XInput.h>
 #include <winerror.h>
 
-#include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"

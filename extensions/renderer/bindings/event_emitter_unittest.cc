@@ -4,8 +4,8 @@
 
 #include "extensions/renderer/bindings/event_emitter.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test.h"

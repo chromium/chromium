@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/test_features_native_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/json_feature_provider_source.h"

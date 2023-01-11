@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/v8_context_native_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"

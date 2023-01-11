@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/api/networking_private.h"

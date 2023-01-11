@@ -6,8 +6,8 @@
 
 #include <type_traits>
 
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "components/cbor/values.h"
 
 namespace device {

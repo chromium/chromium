@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"

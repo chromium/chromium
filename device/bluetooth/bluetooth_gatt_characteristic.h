@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

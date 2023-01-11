@@ -4,8 +4,8 @@
 
 #include "extensions/browser/api/diagnostics/diagnostics_api.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"

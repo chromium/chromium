@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/module_system_test.h"
 
 namespace extensions {

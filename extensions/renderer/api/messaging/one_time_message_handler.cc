@@ -6,10 +6,10 @@
 
 #include <map>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "content/public/renderer/render_frame.h"

@@ -5,7 +5,7 @@
 #include "extensions/browser/extension_util.h"
 
 #include "base/barrier_closure.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/id_util.h"

@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"

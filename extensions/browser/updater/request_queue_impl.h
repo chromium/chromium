@@ -11,8 +11,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "extensions/browser/updater/request_queue.h"
 
 namespace extensions {

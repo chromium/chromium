@@ -10,9 +10,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial_params.h"

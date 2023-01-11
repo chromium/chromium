@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/websocket_handshake_request_info.h"

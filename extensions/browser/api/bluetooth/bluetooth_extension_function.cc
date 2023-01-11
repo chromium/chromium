@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/bluetooth/bluetooth_extension_function.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"

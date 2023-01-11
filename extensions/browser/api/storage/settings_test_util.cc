@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/storage_frontend.h"

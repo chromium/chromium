@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"

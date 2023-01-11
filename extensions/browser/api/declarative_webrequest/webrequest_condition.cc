@@ -4,8 +4,8 @@
 
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_factory.h"

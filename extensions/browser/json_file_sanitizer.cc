@@ -4,8 +4,8 @@
 
 #include "extensions/browser/json_file_sanitizer.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_file_task_runner.h"

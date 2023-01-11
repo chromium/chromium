@@ -10,7 +10,7 @@
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "fuchsia_web/webengine/browser/fake_semantic_tree.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

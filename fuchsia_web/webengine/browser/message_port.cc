@@ -15,11 +15,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/functional/bind.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"

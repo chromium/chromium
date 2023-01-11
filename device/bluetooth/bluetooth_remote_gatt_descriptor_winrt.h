@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"

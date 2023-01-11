@@ -10,8 +10,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/callback.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/callback.h"
 
 namespace device {
 

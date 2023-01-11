@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "extensions/renderer/gc_callback.h"
 #include "extensions/renderer/script_context.h"
 #include "v8/include/v8-function-callback.h"

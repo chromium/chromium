@@ -4,8 +4,8 @@
 
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "dbus/bus.h"

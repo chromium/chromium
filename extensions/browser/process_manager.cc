@@ -8,8 +8,8 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"

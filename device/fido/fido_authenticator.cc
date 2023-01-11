@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"

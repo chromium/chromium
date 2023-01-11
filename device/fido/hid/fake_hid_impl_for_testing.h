@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "device/fido/fido_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

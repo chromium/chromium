@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"

@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "testing/gmock/include/gmock/gmock.h"

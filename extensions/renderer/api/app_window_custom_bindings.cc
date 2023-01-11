@@ -4,8 +4,8 @@
 
 #include "extensions/renderer/api/app_window_custom_bindings.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"

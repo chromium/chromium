@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"

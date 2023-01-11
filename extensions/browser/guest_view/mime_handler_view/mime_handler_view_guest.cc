@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/host_zoom_map.h"

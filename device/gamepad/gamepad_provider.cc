@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_number_conversions.h"

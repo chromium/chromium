@@ -4,8 +4,8 @@
 
 #include "extensions/browser/updater/extension_cache_fake.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

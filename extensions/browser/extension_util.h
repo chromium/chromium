@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/common/manifest.h"
 #include "url/gurl.h"
 

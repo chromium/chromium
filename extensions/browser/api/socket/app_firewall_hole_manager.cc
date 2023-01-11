@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/firewall_hole_proxy.h"

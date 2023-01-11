@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"

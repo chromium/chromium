@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"

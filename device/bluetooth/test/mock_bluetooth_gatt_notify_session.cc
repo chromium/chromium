@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "device/bluetooth/test/mock_bluetooth_gatt_notify_session.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_characteristic.h"
 

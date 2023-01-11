@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"

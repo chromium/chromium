@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_registrar.h"

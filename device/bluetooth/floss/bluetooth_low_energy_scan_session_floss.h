@@ -5,7 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_LOW_ENERGY_SCAN_SESSION_FLOSS_H_
 #define DEVICE_BLUETOOTH_FLOSS_BLUETOOTH_LOW_ENERGY_SCAN_SESSION_FLOSS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"

@@ -9,9 +9,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 
 namespace cr_fuchsia {
 

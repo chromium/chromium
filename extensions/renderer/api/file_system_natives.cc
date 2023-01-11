@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/renderer/script_context.h"

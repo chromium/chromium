@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/common/socket_permission_request.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/api/sockets_tcp_server/tcp_server_socket_event_dispatcher.h"

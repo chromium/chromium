@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_service.h"
 #include "device/bluetooth/cast/bluetooth_device_cast.h"

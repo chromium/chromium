@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/socket/socket.h"

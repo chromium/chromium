@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/skia/include/core/SkColor.h"

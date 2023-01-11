@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "device/fido/cbor_extract.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "components/cbor/values.h"

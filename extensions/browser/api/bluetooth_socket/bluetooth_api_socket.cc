@@ -4,8 +4,8 @@
 
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "net/base/io_buffer.h"

@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_PRIVATE_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_PRIVATE_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"

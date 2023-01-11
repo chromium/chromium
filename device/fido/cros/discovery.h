@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "device/fido/cros/authenticator.h"

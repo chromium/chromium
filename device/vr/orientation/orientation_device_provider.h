@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "device/vr/orientation/orientation_device.h"
 #include "device/vr/public/cpp/vr_device_provider.h"

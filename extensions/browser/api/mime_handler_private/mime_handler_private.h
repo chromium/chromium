@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_MIME_HANDLER_PRIVATE_MIME_HANDLER_PRIVATE_H_
 #define EXTENSIONS_BROWSER_API_MIME_HANDLER_PRIVATE_MIME_HANDLER_PRIVATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

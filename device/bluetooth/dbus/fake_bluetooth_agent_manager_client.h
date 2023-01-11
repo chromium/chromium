@@ -5,8 +5,8 @@
 #ifndef DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_AGENT_MANAGER_CLIENT_H_
 #define DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_AGENT_MANAGER_CLIENT_H_
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/object_path.h"

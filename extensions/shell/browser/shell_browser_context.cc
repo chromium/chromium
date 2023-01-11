@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/shell/browser/shell_special_storage_policy.h"

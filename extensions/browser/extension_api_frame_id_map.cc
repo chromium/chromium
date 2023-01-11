@@ -7,8 +7,8 @@
 #include <tuple>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"

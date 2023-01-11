@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/socket/socket.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "net/base/address_list.h"

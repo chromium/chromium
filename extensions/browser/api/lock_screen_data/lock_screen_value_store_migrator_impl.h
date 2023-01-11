@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_value_store_migrator.h"

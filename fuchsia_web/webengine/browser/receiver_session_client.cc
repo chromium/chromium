@@ -4,7 +4,7 @@
 
 #include "fuchsia_web/webengine/browser/receiver_session_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"

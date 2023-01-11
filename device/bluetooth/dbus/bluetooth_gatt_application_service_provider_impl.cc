@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/dbus/bluetooth_gatt_application_service_provider_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

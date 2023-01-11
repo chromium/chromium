@@ -4,8 +4,8 @@
 
 #include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
 #include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"

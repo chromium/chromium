@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/system_memory/system_memory_api.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/browser/api/system_memory/memory_info_provider.h"
 
 namespace extensions {

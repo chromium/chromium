@@ -10,8 +10,8 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"

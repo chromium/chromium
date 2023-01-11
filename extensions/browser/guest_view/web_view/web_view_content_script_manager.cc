@@ -4,7 +4,7 @@
 
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"

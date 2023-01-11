@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"

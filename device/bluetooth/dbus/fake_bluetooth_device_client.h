@@ -10,8 +10,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"

@@ -10,8 +10,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

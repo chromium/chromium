@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/async_operation.h"

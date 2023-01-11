@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "v8/include/v8-forward.h"
 

@@ -8,8 +8,8 @@
 #include <array>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 

@@ -4,7 +4,7 @@
 
 #include "extensions/browser/updater/null_extension_cache.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace extensions {
 

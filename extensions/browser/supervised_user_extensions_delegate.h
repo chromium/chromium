@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_SUPERVISED_USER_EXTENSIONS_DELEGATE_H_
 #define EXTENSIONS_BROWSER_SUPERVISED_USER_EXTENSIONS_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/common/extension.h"
 
 namespace content {

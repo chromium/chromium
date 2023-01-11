@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"

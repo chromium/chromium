@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_RENDER_FRAME_OBSERVER_H_
 #define FUCHSIA_WEB_WEBENGINE_RENDERER_WEB_ENGINE_RENDER_FRAME_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/url_rewrite/renderer/url_request_rules_receiver.h"
 #include "content/public/renderer/render_frame_observer.h"
 

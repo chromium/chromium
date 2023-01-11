@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/api/media_perception_private/media_perception_private_api.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace extensions {
 

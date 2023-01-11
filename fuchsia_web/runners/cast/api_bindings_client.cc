@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"

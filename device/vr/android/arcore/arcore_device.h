@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"

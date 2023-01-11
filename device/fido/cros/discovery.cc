@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/dbus/u2f/u2f_client.h"

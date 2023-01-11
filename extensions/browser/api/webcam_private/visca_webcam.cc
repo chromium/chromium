@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 using content::BrowserThread;
 

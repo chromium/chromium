@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/activity_log_converter_strategy.h"
 #include "extensions/renderer/dispatcher.h"

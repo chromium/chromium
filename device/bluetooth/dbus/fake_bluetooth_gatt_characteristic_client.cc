@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/observer_list.h"

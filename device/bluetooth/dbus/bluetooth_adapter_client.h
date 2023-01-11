@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"

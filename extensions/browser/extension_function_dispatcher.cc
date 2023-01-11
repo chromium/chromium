@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"

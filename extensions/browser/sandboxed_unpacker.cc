@@ -12,10 +12,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_macros.h"

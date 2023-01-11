@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/testing_pref_service.h"

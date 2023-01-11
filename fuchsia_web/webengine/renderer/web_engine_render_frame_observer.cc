@@ -4,7 +4,7 @@
 
 #include "fuchsia_web/webengine/renderer/web_engine_render_frame_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 

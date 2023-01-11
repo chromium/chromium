@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"

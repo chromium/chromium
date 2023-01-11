@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"

@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_RUNTIME_RUNTIME_API_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_RUNTIME_RUNTIME_API_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/version.h"
 #include "extensions/common/api/runtime.h"
 

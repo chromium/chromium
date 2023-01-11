@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

@@ -9,7 +9,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"

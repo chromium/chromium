@@ -5,7 +5,7 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_ANCHOR_REQUEST_H_
 #define DEVICE_VR_OPENXR_OPENXR_ANCHOR_REQUEST_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/gfx/geometry/transform.h"

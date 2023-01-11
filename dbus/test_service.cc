@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"

@@ -15,10 +15,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/queue.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"

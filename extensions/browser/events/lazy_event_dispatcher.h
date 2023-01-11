@@ -8,7 +8,7 @@
 #include <set>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/lazy_context_id.h"

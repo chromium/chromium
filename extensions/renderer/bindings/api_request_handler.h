@@ -9,7 +9,7 @@
 #include <memory>
 #include <set>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "extensions/renderer/bindings/api_binding_types.h"

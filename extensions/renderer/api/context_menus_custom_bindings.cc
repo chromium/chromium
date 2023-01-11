@@ -8,8 +8,8 @@
 
 #include <atomic>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "v8/include/v8.h"
 
 namespace {

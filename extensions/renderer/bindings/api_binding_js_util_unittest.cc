@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding_js_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"

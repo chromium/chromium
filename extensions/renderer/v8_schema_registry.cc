@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_api.h"

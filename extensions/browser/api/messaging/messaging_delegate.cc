@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 
 namespace extensions {

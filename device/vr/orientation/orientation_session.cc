@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "device/vr/orientation/orientation_device.h"
 
 namespace device {

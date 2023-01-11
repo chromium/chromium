@@ -15,12 +15,12 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "base/fuchsia/test_component_controller.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

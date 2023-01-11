@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/common/api/offscreen.h"

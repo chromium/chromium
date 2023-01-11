@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

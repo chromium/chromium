@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "v8/include/v8.h"

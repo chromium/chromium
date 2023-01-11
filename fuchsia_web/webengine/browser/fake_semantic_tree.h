@@ -10,7 +10,7 @@
 #include <lib/fidl/cpp/binding.h>
 #include <unordered_map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece_forward.h"
 
 class FakeSemanticTree

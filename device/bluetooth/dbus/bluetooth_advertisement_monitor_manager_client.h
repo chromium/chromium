@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"

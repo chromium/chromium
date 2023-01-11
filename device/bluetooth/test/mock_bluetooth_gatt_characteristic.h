@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

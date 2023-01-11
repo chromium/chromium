@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/values.h"

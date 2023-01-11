@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/virtual_keyboard.h"

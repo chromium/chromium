@@ -4,7 +4,7 @@
 
 #include "extensions/browser/background_script_executor.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"

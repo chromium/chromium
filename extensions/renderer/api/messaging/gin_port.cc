@@ -7,7 +7,7 @@
 #include <cstring>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"

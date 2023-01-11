@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"

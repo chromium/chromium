@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/lazy_background_page_native_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/renderer/extension_frame_helper.h"

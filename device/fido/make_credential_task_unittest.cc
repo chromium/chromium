@@ -6,7 +6,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "device/bluetooth/bluetooth_device.h"

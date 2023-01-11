@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 

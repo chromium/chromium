@@ -10,10 +10,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"

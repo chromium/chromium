@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/blob_native_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_blob.h"

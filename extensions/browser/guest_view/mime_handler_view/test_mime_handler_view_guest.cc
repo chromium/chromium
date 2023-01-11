@@ -4,7 +4,7 @@
 
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"

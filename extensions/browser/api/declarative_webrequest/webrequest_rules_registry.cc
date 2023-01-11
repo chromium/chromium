@@ -9,8 +9,8 @@
 #include <limits>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"

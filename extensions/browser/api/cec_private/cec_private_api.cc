@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "extensions/common/api/cec_private.h"

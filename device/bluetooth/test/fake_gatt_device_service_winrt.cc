@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"

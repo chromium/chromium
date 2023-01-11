@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_event_listeners.h"

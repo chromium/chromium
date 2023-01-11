@@ -10,7 +10,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"

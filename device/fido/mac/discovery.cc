@@ -4,7 +4,7 @@
 
 #include "device/fido/mac/discovery.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "device/fido/mac/authenticator.h"
 
 namespace device {

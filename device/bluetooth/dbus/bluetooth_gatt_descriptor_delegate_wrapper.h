@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"

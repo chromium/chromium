@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

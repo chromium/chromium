@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/logging_native_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "extensions/renderer/script_context.h"
 #include "v8/include/v8-function-callback.h"

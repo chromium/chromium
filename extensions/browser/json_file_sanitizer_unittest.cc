@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/test/browser_task_environment.h"

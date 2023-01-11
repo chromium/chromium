@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_BINDINGS_TEST_JS_RUNNER_H_
 #define EXTENSIONS_RENDERER_BINDINGS_TEST_JS_RUNNER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/renderer/bindings/js_runner.h"
 
 namespace extensions {

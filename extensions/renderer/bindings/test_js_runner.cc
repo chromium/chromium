@@ -6,7 +6,7 @@
 
 #include <ostream>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 

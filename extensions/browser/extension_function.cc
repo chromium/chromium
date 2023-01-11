@@ -9,8 +9,8 @@
 #include <tuple>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"

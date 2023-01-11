@@ -4,7 +4,7 @@
 
 #include "device/fido/cable/websocket_adapter.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
 #include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"

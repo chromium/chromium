@@ -8,11 +8,11 @@
 #include <set>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"

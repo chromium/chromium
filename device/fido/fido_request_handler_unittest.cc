@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"

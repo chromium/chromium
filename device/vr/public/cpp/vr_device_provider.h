@@ -5,8 +5,8 @@
 #ifndef DEVICE_VR_PUBLIC_CPP_VR_DEVICE_PROVIDER_H_
 #define DEVICE_VR_PUBLIC_CPP_VR_DEVICE_PROVIDER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

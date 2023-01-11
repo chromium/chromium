@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"

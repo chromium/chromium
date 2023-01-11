@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"

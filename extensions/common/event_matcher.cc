@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 namespace {

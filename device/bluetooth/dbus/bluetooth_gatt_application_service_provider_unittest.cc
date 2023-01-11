@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

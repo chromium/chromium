@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/api_definitions_natives.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/renderer/dispatcher.h"

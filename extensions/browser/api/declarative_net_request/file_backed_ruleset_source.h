@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"

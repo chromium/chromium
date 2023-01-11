@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/component_export.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "device/fido/fido_discovery_base.h"

@@ -5,7 +5,7 @@
 #ifndef FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_DEVTOOLS_CONTROLLER_H_
 #define FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_DEVTOOLS_CONTROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/devtools_agent_host.h"
 
 namespace base {

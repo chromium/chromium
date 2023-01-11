@@ -4,8 +4,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"

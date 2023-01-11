@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"

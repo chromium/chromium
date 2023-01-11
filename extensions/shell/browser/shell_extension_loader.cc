@@ -6,9 +6,9 @@
 
 #include "apps/launcher.h"
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"

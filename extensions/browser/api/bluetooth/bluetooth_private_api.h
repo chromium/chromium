@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_PRIVATE_API_H_
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_PRIVATE_API_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "extensions/browser/api/bluetooth/bluetooth_extension_function.h"

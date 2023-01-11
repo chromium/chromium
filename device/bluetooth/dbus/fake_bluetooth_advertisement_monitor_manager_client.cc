@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"

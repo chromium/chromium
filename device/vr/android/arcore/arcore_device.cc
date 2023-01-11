@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/numerics/math_constants.h"
 #include "base/task/single_thread_task_runner.h"

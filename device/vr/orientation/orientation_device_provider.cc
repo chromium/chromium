@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "device/vr/orientation/orientation_device.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 

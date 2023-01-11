@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/guest_view/common/guest_view_constants.h"

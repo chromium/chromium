@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"

@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"

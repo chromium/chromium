@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_context.h"
 
 namespace extensions {

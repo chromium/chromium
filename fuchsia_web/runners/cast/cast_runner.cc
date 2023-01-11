@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -18,6 +17,7 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"

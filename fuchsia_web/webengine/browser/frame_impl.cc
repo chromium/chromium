@@ -11,12 +11,12 @@
 
 #include <limits>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_piece.h"

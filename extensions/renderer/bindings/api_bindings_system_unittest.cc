@@ -4,9 +4,9 @@
 
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding.h"

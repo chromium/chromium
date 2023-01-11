@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"

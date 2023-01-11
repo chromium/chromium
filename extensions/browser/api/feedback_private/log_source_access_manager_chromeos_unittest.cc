@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api_unittest_base_chromeos.h"

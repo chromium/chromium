@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/native_handler.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"

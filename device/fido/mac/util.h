@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"

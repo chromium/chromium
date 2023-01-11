@@ -4,8 +4,8 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_pending_task.h"
 #include "base/test/test_simple_task_runner.h"

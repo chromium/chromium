@@ -4,9 +4,9 @@
 
 #include "extensions/browser/lazy_background_task_queue.h"
 
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"

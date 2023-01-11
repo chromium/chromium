@@ -4,8 +4,8 @@
 
 #include "extensions/renderer/bindings/api_last_error.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "gin/converter.h"

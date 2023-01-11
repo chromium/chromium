@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/updater/extension_downloader_types.h"

@@ -264,7 +264,7 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 
 
 ``` cpp
-#include "base/bind.h"
+#include "base/functional/bind.h"
 ...
 // static
 void LoginBubbleDialogView::Show(View* anchor_view,
@@ -439,7 +439,7 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"

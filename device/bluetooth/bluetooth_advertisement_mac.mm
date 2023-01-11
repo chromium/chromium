@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/bluetooth_advertisement_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #import "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 

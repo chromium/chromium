@@ -4,7 +4,7 @@
 
 #include "extensions/browser/test_image_loader.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
 #include "third_party/skia/include/core/SkBitmap.h"

@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/user_gestures_native_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"

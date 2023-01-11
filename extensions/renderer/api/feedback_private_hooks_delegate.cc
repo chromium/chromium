@@ -4,8 +4,8 @@
 
 #include "extensions/renderer/api/feedback_private_hooks_delegate.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/v8_helpers.h"
 

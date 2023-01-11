@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/gc_callback.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

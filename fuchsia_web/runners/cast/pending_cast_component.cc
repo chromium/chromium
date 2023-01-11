@@ -4,9 +4,9 @@
 
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 
 PendingCastComponent::PendingCastComponent(

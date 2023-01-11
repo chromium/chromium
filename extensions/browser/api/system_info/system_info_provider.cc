@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/system_info/system_info_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

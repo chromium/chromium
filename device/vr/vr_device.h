@@ -5,8 +5,8 @@
 #ifndef DEVICE_VR_VR_DEVICE_H_
 #define DEVICE_VR_VR_DEVICE_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 
 namespace device {
 

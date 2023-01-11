@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"

@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "components/crx_file/crx_creator.h"
 #include "components/crx_file/id_util.h"

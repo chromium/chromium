@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

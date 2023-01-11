@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"

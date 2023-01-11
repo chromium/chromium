@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EVENTS_EVENT_ACK_DATA_H_
 #define EXTENSIONS_BROWSER_EVENTS_EVENT_ACK_DATA_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {

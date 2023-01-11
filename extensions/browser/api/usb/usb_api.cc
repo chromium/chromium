@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "extensions/browser/api/device_permissions_manager.h"

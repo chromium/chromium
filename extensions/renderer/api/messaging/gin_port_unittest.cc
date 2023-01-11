@@ -4,9 +4,9 @@
 
 #include "extensions/renderer/api/messaging/gin_port.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"

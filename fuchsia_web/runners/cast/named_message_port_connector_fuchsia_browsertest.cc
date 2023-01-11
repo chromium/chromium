@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"

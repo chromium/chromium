@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

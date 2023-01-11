@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/observer_list.h"
 #include "components/value_store/value_store_factory.h"

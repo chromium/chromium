@@ -11,7 +11,6 @@
 #include <lib/sys/cpp/service_directory.h>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -20,6 +19,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/startup_context.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "fuchsia_web/runners/buildflags.h"

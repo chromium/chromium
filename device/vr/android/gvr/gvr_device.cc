@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"

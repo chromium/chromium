@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"

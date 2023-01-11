@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "extensions/renderer/bindings/argument_spec.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"

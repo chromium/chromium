@@ -4,8 +4,8 @@
 
 #include "device/bluetooth/server_socket.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"

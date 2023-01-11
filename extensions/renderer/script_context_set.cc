@@ -4,8 +4,8 @@
 
 #include "extensions/renderer/script_context_set.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/common/url_constants.h"

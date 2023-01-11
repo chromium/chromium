@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {

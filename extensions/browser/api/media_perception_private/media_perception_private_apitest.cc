@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
 #include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"

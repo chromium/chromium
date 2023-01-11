@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"

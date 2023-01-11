@@ -8,9 +8,9 @@
 #include <fuchsia/input/virtualkeyboard/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
-#include "base/callback.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/test/test_bluetooth_local_gatt_service_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "device/bluetooth/test/bluetooth_gatt_server_test.h"
 
 namespace device {

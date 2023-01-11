@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/common/extension_api.h"

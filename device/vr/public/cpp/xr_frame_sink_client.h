@@ -6,8 +6,8 @@
 #define DEVICE_VR_PUBLIC_CPP_XR_FRAME_SINK_CLIENT_H_
 
 #include <memory>
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

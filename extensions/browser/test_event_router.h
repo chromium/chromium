@@ -10,7 +10,7 @@
 #include <string>
 #include <type_traits>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "extensions/browser/event_router.h"

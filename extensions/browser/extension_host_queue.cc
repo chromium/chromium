@@ -4,7 +4,7 @@
 
 #include "extensions/browser/extension_host_queue.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"

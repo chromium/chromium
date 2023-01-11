@@ -5,7 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_LOW_ENERGY_SCAN_SESSION_H_
 #define DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_LOW_ENERGY_SCAN_SESSION_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 
 namespace device {

@@ -6,11 +6,11 @@
 #include <fuchsia/ui/input3/cpp/fidl.h>
 #include <lib/fit/function.h>
 
-#include "base/callback.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"

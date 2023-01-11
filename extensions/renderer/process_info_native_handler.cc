@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/process_info_native_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/converter.h"
 

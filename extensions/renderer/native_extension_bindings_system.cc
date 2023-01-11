@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"

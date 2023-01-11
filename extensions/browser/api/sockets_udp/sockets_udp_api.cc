@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"

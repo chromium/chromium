@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"

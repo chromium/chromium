@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 

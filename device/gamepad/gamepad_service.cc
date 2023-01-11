@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "base/threading/thread.h"

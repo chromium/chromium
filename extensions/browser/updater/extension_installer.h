@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "components/update_client/update_client.h"
 
 namespace extensions {

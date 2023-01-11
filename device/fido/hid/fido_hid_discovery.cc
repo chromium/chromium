@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/hid/fido_hid_device.h"

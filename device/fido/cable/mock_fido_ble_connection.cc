@@ -4,7 +4,7 @@
 
 #include "device/fido/cable/mock_fido_ble_connection.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/fido/cable/fido_ble_uuids.h"
 

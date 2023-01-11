@@ -9,7 +9,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"

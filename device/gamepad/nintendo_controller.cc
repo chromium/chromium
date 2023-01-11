@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
