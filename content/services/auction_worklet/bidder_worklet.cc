@@ -117,6 +117,7 @@ BidderWorklet::BidderWorklet(
     const absl::optional<GURL>& wasm_helper_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
     const url::Origin& top_window_origin,
+    mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     absl::optional<uint16_t> experiment_group_id)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(v8_helper),
@@ -142,8 +143,8 @@ BidderWorklet::BidderWorklet(
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper, debug_id_, script_source_url_, top_window_origin_,
-                  wasm_helper_url_, trusted_bidding_signals_url,
-                  weak_ptr_factory_.GetWeakPtr()),
+                  std::move(permissions_policy_state), wasm_helper_url_,
+                  trusted_bidding_signals_url, weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
@@ -410,6 +411,7 @@ BidderWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     const GURL& script_source_url,
     const url::Origin& top_window_origin,
+    mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     const absl::optional<GURL>& wasm_helper_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
     base::WeakPtr<BidderWorklet> parent)
@@ -419,6 +421,7 @@ BidderWorklet::V8State::V8State(
       user_thread_(base::SequencedTaskRunner::GetCurrentDefault()),
       script_source_url_(script_source_url),
       top_window_origin_(top_window_origin),
+      permissions_policy_state_(std::move(permissions_policy_state)),
       wasm_helper_url_(wasm_helper_url),
       trusted_bidding_signals_url_(trusted_bidding_signals_url) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
@@ -497,7 +500,8 @@ void BidderWorklet::V8State::ReportWin(
   ContextRecycler context_recycler(v8_helper_.get());
   context_recycler.AddReportBindings();
   context_recycler.AddRegisterAdBeaconBindings();
-  context_recycler.AddPrivateAggregationBindings();
+  context_recycler.AddPrivateAggregationBindings(
+      permissions_policy_state_->private_aggregation_allowed);
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -756,7 +760,8 @@ BidderWorklet::V8State::GenerateSingleBid(
     fresh_context_recycler =
         std::make_unique<ContextRecycler>(v8_helper_.get());
     fresh_context_recycler->AddForDebuggingOnlyBindings();
-    fresh_context_recycler->AddPrivateAggregationBindings();
+    fresh_context_recycler->AddPrivateAggregationBindings(
+        permissions_policy_state_->private_aggregation_allowed);
     fresh_context_recycler->AddSetBidBindings();
     fresh_context_recycler->AddSetPriorityBindings();
     fresh_context_recycler->AddSetPrioritySignalsOverrideBindings();

@@ -17,6 +17,15 @@ struct BrowserSignals {
   url.mojom.Origin seller;
 };
 
+// The permissions policy features state of the bidder/seller worklet
+// environment. Only a few features exist in the worklet, so rather than
+// propagating the state of all available permissions policy features, we only
+// propagate the state of the features that are potentially needed in the
+// worklet.
+struct AuctionWorkletPermissionsPolicyState {
+  bool private_aggregation_allowed;
+};
+
 // Used by the browser to load and run FLEDGE worklets. This can run in a
 // sandboxed utility process (non-Android) or inside a regular renderer
 // (Android).
@@ -63,6 +72,8 @@ interface AuctionWorkletService {
   // `top_window_origin` The origin of the top-level window running the
   //  auction(s) the BidderWorklet will be used in.
   //
+  // `permissions_policy_state` The permissions policy state of the worklet.
+  //
   // `experiment_group_id`, `has_experiment_group_id`: An optional parameter to
   // pass to trusted bidding server.
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
@@ -74,6 +85,7 @@ interface AuctionWorkletService {
       url.mojom.Url? wasm_helper_url,
       url.mojom.Url? trusted_bidding_signals_url,
       url.mojom.Origin top_window_origin,
+      AuctionWorkletPermissionsPolicyState permissions_policy_state,
       bool has_experiment_group_id,
       uint16 experiment_group_id);
 
@@ -113,6 +125,8 @@ interface AuctionWorkletService {
   //
   // `top_window_origin` The origin of the top-level window running the auction.
   //
+  // `permissions_policy_state` The permissions policy state of the worklet.
+  //
   // `experiment_group_id`, `has_experiment_group_id`: An optional parameter to
   // pass to trusted signals server and as part of AuctionConfig.
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
@@ -123,6 +137,7 @@ interface AuctionWorkletService {
       url.mojom.Url script_source_url,
       url.mojom.Url? trusted_scoring_signals_url,
       url.mojom.Origin top_window_origin,
+      AuctionWorkletPermissionsPolicyState permissions_policy_state,
       bool has_experiment_group_id,
       uint16 experiment_group_id);
 };

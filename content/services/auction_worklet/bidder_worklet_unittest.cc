@@ -304,6 +304,9 @@ class BidderWorkletTest : public testing::Test {
     per_buyer_signals_ = "[\"per_buyer_signals\"]";
     per_buyer_timeout_ = absl::nullopt;
     top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true);
     experiment_group_id_ = absl::nullopt;
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
@@ -563,7 +566,8 @@ class BidderWorkletTest : public testing::Test {
         v8_helper_, pause_for_debugger_on_start, std::move(url_loader_factory),
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
-        top_window_origin_, experiment_group_id_);
+        top_window_origin_, permissions_policy_state_.Clone(),
+        experiment_group_id_);
     auto* bidder_worklet_ptr = bidder_worklet_impl.get();
     mojo::Remote<mojom::BidderWorklet> bidder_worklet;
     mojo::ReceiverId receiver_id =
@@ -768,6 +772,7 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<GURL> direct_from_seller_auction_signals_;
   absl::optional<base::TimeDelta> per_buyer_timeout_;
   url::Origin top_window_origin_;
+  mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
   absl::optional<uint16_t> experiment_group_id_;
   url::Origin browser_signal_seller_origin_;
   absl::optional<url::Origin> browser_signal_top_level_seller_origin_;
@@ -5429,6 +5434,34 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         std::move(expected_pa_requests));
   }
 
+  // Set the private-aggregation permissions policy to disallowed.
+  {
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/false);
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+          )"),
+        /*expected_bid=*/nullptr,
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/
+        {"https://url.test/:6 Uncaught TypeError: The \"private-aggregation\" "
+         "Permissions Policy denied the method on privateAggregation."},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true);
+  }
+
   // Large bucket
   {
     PrivateAggregationRequests expected_pa_requests;
@@ -5621,6 +5654,27 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_report_url =*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
         /*expected_errors=*/{});
+  }
+
+  // Set the private-aggregation permissions policy to disallowed.
+  {
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/false);
+
+    RunReportWinWithFunctionBodyExpectingResult(
+        R"(
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+        )",
+        /*expected_report_url =*/absl::nullopt,
+        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_errors=*/
+        {"https://url.test/:12 Uncaught TypeError: The \"private-aggregation\" "
+         "Permissions Policy denied the method on privateAggregation."});
+
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true);
   }
 
   // Large bucket

@@ -107,7 +107,8 @@ class CONTENT_EXPORT ContextRecycler {
     return for_debugging_only_bindings_.get();
   }
 
-  void AddPrivateAggregationBindings();
+  void AddPrivateAggregationBindings(
+      bool private_aggregation_permissions_policy_allowed);
   PrivateAggregationBindings* private_aggregation_bindings() {
     return private_aggregation_bindings_.get();
   }
