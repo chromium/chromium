@@ -21024,6 +21024,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="CRAS_METRICS_HFP_MIC_SR_ENABLE_FAILED"/>
   <int value="2" label="CRAS_METRICS_HFP_MIC_SR_FEATURE_DISABLED"/>
   <int value="3" label="CRAS_METRICS_HFP_MIC_SR_DLC_UNAVAILABLE"/>
+  <int value="4" label="CRAS_METRICS_HFP_MIC_SR_FEATURE_UNSUPPORTED"/>
 </enum>
 
 <enum name="CrasHfpScoError">
