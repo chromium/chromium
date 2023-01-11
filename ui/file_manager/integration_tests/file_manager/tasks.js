@@ -340,25 +340,50 @@ testcase.genericTaskAndNonGenericTask = async () => {
 };
 
 testcase.noActionBarOpenForDirectories = async () => {
-  const tasks = [new FakeTask(
+  const fileTasks = [new FakeTask(
       true,
       {appId: 'dummytaskid', taskType: 'fake-type', actionId: 'open-with'},
-      'DummyTask1')];
+      'FileTask1')];
+
+  const dirTasks = [
+    new FakeTask(
+        true,
+        {appId: 'dummytaskid-1', taskType: 'fake-type', actionId: 'open-with'},
+        'DirTask1'),
+    new FakeTask(
+        true,
+        {appId: 'dummytaskid-2', taskType: 'fake-type', actionId: 'open-with'},
+        'DirTask2'),
+  ];
 
   // Override tasks for the test.
-  const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
+  const appId = await setupTaskTest(RootPath.DOWNLOADS, fileTasks);
 
   // Select file and ensure action bar open is shown.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
   await remoteCall.waitForElement(appId, '#tasks:not([hidden])');
 
   // Select dir and ensure action bar open is hidden, but context menu is shown.
+  // Use different tasks for dir.
+  await remoteCall.callRemoteTestUtil('overrideTasks', appId, [dirTasks]);
   await remoteCall.waitUntilSelected(appId, 'photos');
   await remoteCall.waitForElement(appId, '#tasks[hidden]');
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
       'fakeMouseRightClick', appId, ['#file-list .table-row[selected]']));
   await remoteCall.waitForElement(
       appId, '#default-task-menu-item:not([hidden])');
+
+  // Click 'Open with'.
+  await remoteCall.waitAndClickElement(
+      appId, 'cr-menu-item[command="#open-with"]:not([hidden])');
+  // Ensure apps are shown.
+  await remoteCall.waitForElement(appId, '#tasks-menu:not([hidden])');
+  const appOptions = await remoteCall.callRemoteTestUtil(
+      'queryAllElements', appId, ['#tasks-menu [tabindex]']);
+  chrome.test.assertEq(3, appOptions.length);
+  chrome.test.assertEq('DirTask1 (default)', appOptions[0].text);
+  chrome.test.assertEq('DirTask2', appOptions[1].text);
+  chrome.test.assertEq('Change default…', appOptions[2].text);
 };
 
 testcase.executeViaDblClick = async () => {

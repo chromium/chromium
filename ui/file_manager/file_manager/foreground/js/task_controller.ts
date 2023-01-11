@@ -246,8 +246,9 @@ export class TaskController {
   }
 
   /**
-   * Setup a task picker combobutton based on the given tasks. The combobutton
-   * is not shown if there are no tasks, or if any entry is a directory.
+   * Populate the #tasks-menu with the open-with tasks. The menu is managed by
+   * the top task menu Open combobutton, but it is also used as the right-click
+   * open-with context menu.
    */
   private updateTasksDropdown_(fileTasks: FileTasks) {
     const combobutton = this.ui_.taskMenuButton;
@@ -256,8 +257,9 @@ export class TaskController {
     combobutton.hidden =
         tasks.length == 0 || fileTasks.entries.some(e => e.isDirectory);
 
-    // If it's hidden, we don't have to update further the DOM.
-    if (combobutton.hidden) {
+    // Even if the task menu button is hidden, we still update the items if
+    // tasks exist since they are used for the right-click context menu.
+    if (tasks.length == 0) {
       return;
     }
 
