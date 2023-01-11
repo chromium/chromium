@@ -37,7 +37,7 @@ const cycleTabsAccelerator: MojoAcceleratorInfo = {
   locked: true,
   layoutProperties: {
     textAccelerator: {
-      parts: [
+      textAccelerator: [
         {
           text: stringToMojoString16('ctrl'),
           type: TextAcceleratorPartType.kModifier,

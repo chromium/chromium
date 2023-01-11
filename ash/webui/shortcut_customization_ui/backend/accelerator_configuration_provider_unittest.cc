@@ -631,7 +631,7 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
         // (keys/modifiers). Validating the plain text parts is handled by the
         // paramaterized tests below.
         const auto& text_accel_parts = RemovePlainTextParts(
-            info->layout_properties->get_text_accelerator()->parts);
+            info->layout_properties->get_text_accelerator()->text_accelerator);
         const auto& replacement_parts = GetReplacementsForAction(id);
         for (size_t i = 0; i < replacement_parts.size(); i++) {
           ValidateTextAccelerators(replacement_parts[i], text_accel_parts[i]);
@@ -761,11 +761,11 @@ TEST_P(TextAcceleratorParsingTest, TextAcceleratorParsing) {
   auto& bundle = ui::ResourceBundle::GetSharedInstance();
   int FAKE_RESOURCE_ID = 1;
   bundle.OverrideLocaleStringResource(FAKE_RESOURCE_ID, replacement_string_);
-  const auto text_accelerator = provider_->CreateTextAcceleratorProperties(
+  const auto parts = provider_->CreateTextAcceleratorProperties(
       {FAKE_RESOURCE_ID, replacements_});
-  EXPECT_EQ(expected_parts_.size(), text_accelerator->parts.size());
+  EXPECT_EQ(expected_parts_.size(), parts->text_accelerator.size());
   for (size_t i = 0; i < expected_parts_.size(); i++) {
-    ValidateTextAccelerators(expected_parts_[i], text_accelerator->parts[i]);
+    ValidateTextAccelerators(expected_parts_[i], parts->text_accelerator[i]);
   }
 }
 

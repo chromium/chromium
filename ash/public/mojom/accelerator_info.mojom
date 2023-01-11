@@ -104,7 +104,7 @@ struct TextAcceleratorPart {
 // An accelerator that can display arbitrary text with optional modifiers/keys
 // interspersed.
 struct TextAcceleratorProperties {
-  array<TextAcceleratorPart> parts;
+  array<TextAcceleratorPart> text_accelerator;
 };
 
 // An accelerator that has at least one modifier and a set of keys.

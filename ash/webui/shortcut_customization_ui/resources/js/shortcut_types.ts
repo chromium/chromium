@@ -98,7 +98,8 @@ export type StandardAcceleratorInfo =
 export type TextAcceleratorInfo =
     Omit<AcceleratorInfoTypes.AcceleratorInfo, 'layoutProperties'>&{
       layoutProperties: {
-        textAccelerator: {parts: AcceleratorInfoTypes.TextAcceleratorPart[]},
+        textAccelerator:
+            {textAccelerator: AcceleratorInfoTypes.TextAcceleratorPart[]},
       },
     };
 

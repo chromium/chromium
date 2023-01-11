@@ -145,7 +145,7 @@ export class AcceleratorRowElement extends PolymerElement {
     assert(info.length === 1);
     const textAcceleratorInfo = info[0];
     assert(isTextAcceleratorInfo(textAcceleratorInfo));
-    return textAcceleratorInfo.layoutProperties.textAccelerator.parts;
+    return textAcceleratorInfo.layoutProperties.textAccelerator.textAccelerator;
   }
 
   static get template(): HTMLTemplateElement {
