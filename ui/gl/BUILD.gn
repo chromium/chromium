@@ -34,6 +34,7 @@ buildflag_header("buildflags") {
     "USE_DAWN=$use_dawn",
     "USE_STATIC_ANGLE=$use_static_angle",
     "USE_OPENGL_APITRACE=$enable_opengl_apitrace",
+    "ENABLE_VALIDATING_COMMAND_DECODER=$enable_validating_command_decoder",
   ]
 }
 

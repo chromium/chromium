@@ -25,6 +25,9 @@ declare_args() {
   # Should Dawn test binaries (unittests, end2end_tests, perf_tests) be built?
   # Independent of use_dawn, which controls whether Dawn is used in Chromium.
   build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
+
+  enable_validating_command_decoder =
+      !is_win && !is_mac && !(is_linux && !is_castos) && !is_fuchsia
 }
 
 declare_args() {

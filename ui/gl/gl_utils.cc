@@ -89,7 +89,7 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
     switch_value = command_line->GetSwitchValueASCII(switches::kUseCmdDecoder);
   }
 
-#if defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
+#if !BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
   if (switch_value == kCmdDecoderValidatingName) {
     LOG(WARNING) << "Ignoring request for the validating command decoder. It "
                     "is not supported on this platform.";
@@ -104,7 +104,7 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
     // Unrecognized or missing switch, use the default.
     return features::UsePassthroughCommandDecoder();
   }
-#endif  // defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
+#endif  // !BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 }
 
 bool PassthroughCommandDecoderSupported() {

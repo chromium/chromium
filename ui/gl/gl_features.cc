@@ -75,7 +75,7 @@ BASE_FEATURE(kAndroidFrameDeadline,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
+#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 // Use the passthrough command decoder by default.  This can be overridden with
 // the --use-cmd-decoder=passthrough or --use-cmd-decoder=validating flags.
 // Feature lives in ui/gl because it affects the GL binding initialization on
@@ -106,7 +106,7 @@ bool IsAndroidFrameDeadlineEnabled() {
 }
 
 bool UsePassthroughCommandDecoder() {
-#if defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
+#if !BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
   return true;
 #else
 
