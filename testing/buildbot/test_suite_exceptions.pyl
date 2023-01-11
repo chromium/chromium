@@ -277,6 +277,7 @@
             },
           ],
           'shards': 12,
+          'inverse_quickrun_shards': 24,
         },
       },
       'Mac12 Tests (dbg)': {
@@ -356,7 +357,8 @@
           'Release_x64',
         ],
         'swarming': {
-          "shards": 12
+          "shards": 12,
+          "inverse_quickrun_shards": 24,
         },
       },
       'Win10 Tests x64 (dbg)': {
@@ -598,6 +600,7 @@
             },
           ],
           'shards': 18,
+          'inverse_quickrun_shards': 36,
         },
       },
       'Mac12 Tests (dbg)': {
@@ -677,7 +680,8 @@
           'Release_x64',
         ],
         'swarming': {
-          "shards": 18
+          "shards": 18,
+          "inverse_quickrun_shards": 36,
         },
       },
       'Win10 Tests x64 (dbg)': {
@@ -1554,6 +1558,16 @@
           'shards': 2,
         },
       },
+      'Mac12 Tests': {
+        'swarming': {
+          'inverse_quickrun_shards': 2,
+        },
+      },
+      'Win10 Tests x64': {
+        'swarming': {
+          'inverse_quickrun_shards': 2,
+        },
+      },
       'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1192348): Fix the test failure
@@ -1565,6 +1579,11 @@
           # TODO(crbug.com/1192348): Fix the test failure
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
+      },
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'inverse_quickrun_shards': 12,
+        },
       },
       'win-asan': {
         # With a single shard seems to hit time limit.
@@ -1630,6 +1649,7 @@
       'Mac12 Tests': {
         'swarming': {
           'shards': 12,
+          'inverse_quickrun_shards': 24,
         },
       },
       'Mac12 Tests (dbg)': { # https://crbug.com/1279504
@@ -1867,6 +1887,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter',
         ],
+        'swarming': {
+          'inverse_quickrun_shards': 6,
+        },
       },
       'android-nougat-x86-rel': {
         'args': [
@@ -2459,6 +2482,7 @@
       'Mac12 Tests': {
         'swarming': {
           'shards': 6,
+          'inverse_quickrun_shards': 12,
         },
       },
       'Mac12 Tests (dbg)': { # https://crbug.com/1265051
@@ -2808,6 +2832,11 @@
         'swarming': {
           'shards': 4,
         }
+      },
+      'android-12-x64-rel': {
+        'swarming': {
+          'inverse_quickrun_shards': 6,
+        },
       },
       'android-cronet-x86-dbg-10-tests': {
         'args': [
@@ -3210,6 +3239,7 @@
         ],
         'swarming': {
           'shards': 2,
+          'inverse_quickrun_shards': 4,
         },
       },
       'fuchsia-code-coverage': {
@@ -3491,6 +3521,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
+      },
+      'Mac12 Tests': {
+        'swarming': {
+          'inverse_quickrun_shards': 2,
+        },
       },
       'Mac12 Tests (dbg)': {
         'swarming': {
@@ -3984,6 +4019,11 @@
           'shards': 2,
         },
       },
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'inverse_quickrun_shards': 12,
+        },
+      },
     },
   },
   'webview_64_cts_tests': {
@@ -4046,6 +4086,11 @@
           # TODO(crbug.com/1189746) Enable this test once the issue is fixed.
           '--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers',
         ],
+      },
+      'android-12-x64-rel': {
+        'swarming': {
+          'inverse_quickrun_shards': 14,
+        },
       },
       'android-nougat-x86-rel': {
         'args': [
