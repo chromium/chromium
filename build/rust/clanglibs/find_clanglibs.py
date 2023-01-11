@@ -48,7 +48,7 @@ def main():
           basename = m.group(1)
           output.write("#[link(name=\"{}\")]\n".format(basename))
           full_path = os.path.join(args.clang_libs_dir, f)
-          depfile.write(" {}\n".format(full_path))
+          depfile.write(" {} \\\n".format(full_path))
       output.write("#[link(name=\"stdc++\")]\n")
       output.write("#[link(name=\"z\")]\n")
       output.write("extern {}\n")
