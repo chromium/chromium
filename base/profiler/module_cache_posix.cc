@@ -8,6 +8,7 @@
 #include <elf.h>
 
 #include "base/debug/elf_reader.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -65,7 +66,8 @@ size_t GetLastExecutableOffset(const void* module_addr) {
   return max_offset;
 }
 
-FilePath GetDebugBasenameForModule(const void* base_address, const char* file) {
+FilePath GetDebugBasenameForModule(const void* base_address,
+                                   base::StringPiece file) {
 #if BUILDFLAG(IS_ANDROID)
   // Preferentially identify the library using its soname on Android. Libraries
   // mapped directly from apks have the apk filename in |dl_info.dli_fname|, and
@@ -75,6 +77,22 @@ FilePath GetDebugBasenameForModule(const void* base_address, const char* file) {
   if (library_name)
     return FilePath(*library_name);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // SetProcessTitleFromCommandLine() does not play well with dladdr(). In
+  // particular, after calling our setproctitle(), calling dladdr() with an
+  // address in the main binary will return the complete command line of the
+  // program, including all arguments, in dli_fname. If we get a complete
+  // command-line like "/opt/google/chrome/chrome --type=gpu-process
+  // --gpu-sandbox-failures-fatal=yes --enable-logging ...", strip off
+  // everything that looks like an argument. This is safe on ChromeOS, where we
+  // control the directory and file names and know that no chrome binary or
+  // system library will have a " --" in the path.
+  base::StringPiece::size_type pos = file.find(" --");
+  if (pos != base::StringPiece::npos) {
+    file = file.substr(0, pos);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return FilePath(file).BaseName();
 }
