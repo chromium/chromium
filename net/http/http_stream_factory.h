@@ -155,11 +155,6 @@ class NET_EXPORT HttpStreamFactory {
       bool enable_alternative_services,
       const NetLogWithSource& net_log);
 
-  // Called when the Job detects that the endpoint indicated by the
-  // Alternate-Protocol does not work. Lets the factory update
-  // HttpAlternateProtocols with the failure and resets the SPDY session key.
-  void OnBrokenAlternateProtocol(const Job*, const HostPortPair& origin);
-
   // Called when the Preconnect completes. Used for testing.
   virtual void OnPreconnectsCompleteInternal() {}
 
