@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
@@ -89,6 +90,56 @@ public class ChromeTabCreator extends TabCreator {
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
     }
 
+    /**
+     * Converts a tabLaunchType to a histogram TabLaunchType key used in
+     * Android.Tab.CreateNewTabDuration.{TabLaunchType} histogram. These must be kept in sync.
+     */
+    private static String tabLaunchTypeToHistogramKey(@TabLaunchType Integer tabLaunchType) {
+        switch (tabLaunchType) {
+            case TabLaunchType.FROM_LINK:
+                return "Link";
+            case TabLaunchType.FROM_EXTERNAL_APP:
+                return "ExternalApp";
+            case TabLaunchType.FROM_CHROME_UI:
+                return "ChromeUI";
+            case TabLaunchType.FROM_RESTORE:
+                return "Restore";
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND:
+                return "LongressForeground";
+            case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
+                return "LongpressBackground";
+            case TabLaunchType.FROM_REPARENTING:
+                return "Reparenting";
+            case TabLaunchType.FROM_LAUNCHER_SHORTCUT:
+                return "LauncherShortcut";
+            case TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION:
+                return "SpeculativeBackgroundCreation";
+            case TabLaunchType.FROM_BROWSER_ACTIONS:
+                return "BrowserActions";
+            case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB:
+                return "NewIncognitoTab";
+            case TabLaunchType.FROM_STARTUP:
+                return "Startup";
+            case TabLaunchType.FROM_START_SURFACE:
+                return "StartSurface";
+            case TabLaunchType.FROM_TAB_GROUP_UI:
+                return "TabGroupUI";
+            case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
+                return "LongpressBackgroundInGroup";
+            case TabLaunchType.FROM_APP_WIDGET:
+                return "AppWidget";
+            case TabLaunchType.FROM_LONGPRESS_INCOGNITO:
+                return "LongpressIncognito";
+            case TabLaunchType.FROM_RECENT_TABS:
+                return "RecentTabs";
+            case TabLaunchType.FROM_READING_LIST:
+                return "ReadingList";
+            default:
+                assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
+                return "TypeUnknown";
+        }
+    }
+
     @Override
     public boolean createsTabsAsynchronously() {
         return false;
@@ -155,8 +206,11 @@ public class ChromeTabCreator extends TabCreator {
                         NewTabPageUtils.decodeOriginFromNtpUrl(loadUrlParams.getUrl()))) {
             return null;
         }
-        try {
-            TraceEvent.begin("ChromeTabCreator.createNewTab");
+        // Measure tab creation duration for different launch types to understand tab creation
+        // performance.
+        try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createNewTab");
+                TimingMetric unused = TimingMetric.mediumUptime(
+                        "Android.Tab.CreateNewTabDuration." + tabLaunchTypeToHistogramKey(type))) {
             int parentId = parent != null ? parent.getId() : Tab.INVALID_TAB_ID;
 
             GURL url = UrlFormatter.fixupUrl(loadUrlParams.getUrl());
@@ -252,8 +306,6 @@ public class ChromeTabCreator extends TabCreator {
             }
             mTabModel.addTab(tab, position, type, creationState);
             return tab;
-        } finally {
-            TraceEvent.end("ChromeTabCreator.createNewTab");
         }
     }
 
@@ -264,30 +316,37 @@ public class ChromeTabCreator extends TabCreator {
         int parentId = parent != null ? parent.getId() : Tab.INVALID_TAB_ID;
         if (mTabModel.isClosurePending(parentId)) return false;
 
-        // If parent is in the same tab model, place the new tab next to it.
-        int position = TabModel.INVALID_TAB_INDEX;
-        int index = TabModelUtils.getTabIndexById(mTabModel, parentId);
-        if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
+        // Measure tab creation duration for different launch types to understand tab creation
+        // performance using an existing WebContents.
+        try (TraceEvent te = TraceEvent.scoped("ChromeTabCreator.createTabWithWebContents");
+                TimingMetric unused = TimingMetric.mediumUptime("Android.Tab.CreateNewTabDuration."
+                        + tabLaunchTypeToHistogramKey(type) + ".WithExistingWebContents")) {
+            // If parent is in the same tab model, place the new tab next to it.
+            int position = TabModel.INVALID_TAB_INDEX;
+            int index = TabModelUtils.getTabIndexById(mTabModel, parentId);
+            if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
 
-        boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);
-        TabDelegateFactory delegateFactory =
-                parent == null ? createDefaultTabDelegateFactory() : null;
-        Tab tab = TabBuilder.createLiveTab(!openInForeground)
-                          .setParent(parent)
-                          .setIncognito(mIncognito)
-                          .setWindow(mNativeWindow)
-                          .setLaunchType(type)
-                          .setWebContents(webContents)
-                          .setDelegateFactory(delegateFactory)
-                          .setInitiallyHidden(!openInForeground)
-                          .build();
-        @TabCreationState
-        int creationState = openInForeground
-                ? TabCreationState.LIVE_IN_FOREGROUND
-                : ((type == TabLaunchType.FROM_RECENT_TABS) ? TabCreationState.FROZEN_FOR_LAZY_LOAD
-                                                            : TabCreationState.LIVE_IN_BACKGROUND);
-        mTabModel.addTab(tab, position, type, creationState);
-        return true;
+            boolean openInForeground = mOrderController.willOpenInForeground(type, mIncognito);
+            TabDelegateFactory delegateFactory =
+                    parent == null ? createDefaultTabDelegateFactory() : null;
+            Tab tab = TabBuilder.createLiveTab(!openInForeground)
+                              .setParent(parent)
+                              .setIncognito(mIncognito)
+                              .setWindow(mNativeWindow)
+                              .setLaunchType(type)
+                              .setWebContents(webContents)
+                              .setDelegateFactory(delegateFactory)
+                              .setInitiallyHidden(!openInForeground)
+                              .build();
+            @TabCreationState
+            int creationState =
+                    openInForeground ? TabCreationState.LIVE_IN_FOREGROUND
+                                     : ((type == TabLaunchType.FROM_RECENT_TABS)
+                                                     ? TabCreationState.FROZEN_FOR_LAZY_LOAD
+                                                     : TabCreationState.LIVE_IN_BACKGROUND);
+            mTabModel.addTab(tab, position, type, creationState);
+            return true;
+        }
     }
 
     @Override

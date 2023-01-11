@@ -3451,6 +3451,104 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Tab.CreateNewTabDuration.{TabLaunchType}" units="ms"
+    expires_after="2023-07-10">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Records the duration of new tab creation for {TabLaunchType}. Emitted
+    everytime a new tab is finished being created. Take into account that
+    low-end devices create tabs more slowly, so adjust your analysis
+    accordingly.
+  </summary>
+  <token key="TabLaunchType">
+    <variant name="AppWidget" summary="tabs opened from an app widget"/>
+    <variant name="BrowserActions"
+        summary="tabs opened from browser actions context menu"/>
+    <variant name="ChromeUI" summary="tabs opened via Chrome UI"/>
+    <variant name="ExternalApp" summary="tabs opened from an external app"/>
+    <variant name="LauncherShortcut"
+        summary="tabs opened from launcher shortcut"/>
+    <variant name="Link" summary="tabs opened from a link"/>
+    <variant name="LongpressBackground"
+        summary="tabs opened from the long press context menu which are
+                 opened in the background"/>
+    <variant name="LongpressBackgroundInGroup"
+        summary="tabs opened from long press context menu item 'Open in new
+                 tab in group'"/>
+    <variant name="LongpressForeground"
+        summary="tabs opended from the long press context menu"/>
+    <variant name="LongpressIncognito"
+        summary="tabs opened from the long press context menu item 'Open in
+                 Incognito Tab'"/>
+    <variant name="NewIncognitoTab"
+        summary="tabs opened by an external application launching a new
+                 Chrome incognito tab"/>
+    <variant name="ReadingList" summary="tabs opened from the reading list"/>
+    <variant name="RecentTabs"
+        summary="tabs opened in backrgound from recent tabs"/>
+    <variant name="Reparenting" summary="tabs opened from changing windows"/>
+    <variant name="Restore" summary="tabs opened from restores"/>
+    <variant name="SpeculativeBackgroundCreation"
+        summary="tabs opened from CCT in the background"/>
+    <variant name="StartSurface" summary="tabs opened from the start surface"/>
+    <variant name="Startup" summary="tabs opened during the startup process"/>
+    <variant name="TabGroupUI" summary="tabs opened from Tab group UI"/>
+    <variant name="TypeUnknown"
+        summary="tabs opened from a different case than one's listed"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Android.Tab.CreateNewTabDuration.{TabLaunchType}.WithExistingWebContents"
+    units="ms" expires_after="2023-07-10">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Records the duration of the creation of a new tab from an existing
+    WebContents for {TabLaunchType}. A record is made each time a tab is created
+    using an existing WebContents.
+  </summary>
+  <token key="TabLaunchType">
+    <variant name="AppWidget" summary="tabs opened from an app widget"/>
+    <variant name="BrowserActions"
+        summary="tabs opened from browser actions context menu"/>
+    <variant name="ChromeUI" summary="tabs opened via Chrome UI"/>
+    <variant name="ExternalApp" summary="tabs opened from an external app"/>
+    <variant name="LauncherShortcut"
+        summary="tabs opened from launcher shortcut"/>
+    <variant name="Link" summary="tabs opened from a link"/>
+    <variant name="LongpressBackground"
+        summary="tabs opened from the long press context menu which are
+                 opened in the background"/>
+    <variant name="LongpressBackgroundInGroup"
+        summary="tabs opened from long press context menu item 'Open in new
+                 tab in group'"/>
+    <variant name="LongpressForeground"
+        summary="tabs opended from the long press context menu"/>
+    <variant name="LongpressIncognito"
+        summary="tabs opened from the long press context menu item 'Open in
+                 Incognito Tab'"/>
+    <variant name="NewIncognitoTab"
+        summary="tabs opened by an external application launching a new
+                 Chrome incognito tab"/>
+    <variant name="ReadingList" summary="tabs opened from the reading list"/>
+    <variant name="RecentTabs"
+        summary="tabs opened in backrgound from recent tabs"/>
+    <variant name="Reparenting" summary="tabs opened from changing windows"/>
+    <variant name="Restore" summary="tabs opened from restores"/>
+    <variant name="SpeculativeBackgroundCreation"
+        summary="tabs opened from CCT in the background"/>
+    <variant name="StartSurface" summary="tabs opened from the start surface"/>
+    <variant name="Startup" summary="tabs opened during the startup process"/>
+    <variant name="TabGroupUI" summary="tabs opened from Tab group UI"/>
+    <variant name="TypeUnknown"
+        summary="tabs opened from a different case than one's listed"/>
+  </token>
+</histogram>
+
 <histogram name="Android.TabMultiSelectV2.BookmarkTabsCount" units="count"
     expires_after="2023-11-23">
   <owner>ckitagawa@chromium.org</owner>
