@@ -11,7 +11,7 @@ namespace features {
 // Enables batching decoding of related images in a single process.
 BASE_FEATURE(kBatchImageDecoding,
              "BatchImageDecoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features

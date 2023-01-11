@@ -9607,7 +9607,9 @@ TEST_F(WebFrameSwapTest, AdHighlightEarlyApply) {
             SkColorSetARGB(128, 255, 0, 0));
 }
 
-TEST_F(WebFrameSwapTest, DoNotPropagateDisplayNonePropertyOnSwap) {
+// TODO(crbug.com/1314493): This test is flaky with the TimedHTMLParserBudget
+// feature enabled.
+TEST_F(WebFrameSwapTest, DISABLED_DoNotPropagateDisplayNonePropertyOnSwap) {
   WebFrameSwapTestClient* main_frame_client =
       static_cast<WebFrameSwapTestClient*>(MainFrame()->Client());
   EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
@@ -11898,7 +11900,9 @@ class TestResourcePriorityWebFrameClient
   HashMap<KURL, std::unique_ptr<ExpectedRequest>> expected_requests_;
 };
 
-TEST_F(WebFrameTest, ChangeResourcePriority) {
+// TODO(crbug.com/1314493): This test is flaky with the TimedHTMLParserBudget
+// feature enabled.
+TEST_F(WebFrameTest, DISABLED_ChangeResourcePriority) {
   TestResourcePriorityWebFrameClient client;
   RegisterMockedHttpURLLoad("promote_img_in_viewport_priority.html");
   RegisterMockedHttpURLLoad("image_slow.pl");

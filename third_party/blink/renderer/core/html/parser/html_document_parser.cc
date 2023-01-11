@@ -199,15 +199,33 @@ base::TimeDelta GetDefaultTimedBudget() {
 
 base::TimeDelta GetTimedBudget(int times_yielded) {
   static const base::FeatureParam<int> kNumYieldsWithDefaultBudgetParam{
-      &features::kTimedHTMLParserBudget, "num-yields-with-default-budget",
-      kNumYieldsWithDefaultBudget};
+    &features::kTimedHTMLParserBudget, "num-yields-with-default-budget",
+    // These constants were chosen using experiment data from the field to
+    // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
+    // Experiments were run on both Android and desktop to determine the values
+    // that gave the best aggregate CWV pass rate.
+#if BUILDFLAG(IS_ANDROID)
+        2
+#else
+        6
+#endif
+  };
   // Cache the value to avoid parsing the param string more than once.
   static const int kNumYieldsWithDefaultBudgetValue =
       kNumYieldsWithDefaultBudgetParam.Get();
 
   static const base::FeatureParam<base::TimeDelta> kLongParserBudgetParam{
-      &features::kTimedHTMLParserBudget, "long-parser-budget",
-      base::Milliseconds(500)};
+    &features::kTimedHTMLParserBudget, "long-parser-budget",
+    // These constants were chosen using experiment data from the field to
+    // optimize Core Web Vitals metrics: https://web.dev/vitals/#core-web-vitals
+    // Experiments were run on both Android and desktop to determine the values
+    // that gave the best aggregate CWV pass rate.
+#if BUILDFLAG(IS_ANDROID)
+        base::Milliseconds(50)
+#else
+        base::Milliseconds(500)
+#endif
+  };
   // Cache the value to avoid parsing the param string more than once.
   static const base::TimeDelta kLongParserBudgetValue =
       kLongParserBudgetParam.Get();

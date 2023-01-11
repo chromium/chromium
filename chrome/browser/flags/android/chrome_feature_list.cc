@@ -848,7 +848,7 @@ BASE_FEATURE(kSpecialUserDecision,
 
 BASE_FEATURE(kSplitCompositorTask,
              "SplitCompositorTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStoreHoursAndroid,
              "StoreHoursAndroid",
