@@ -2234,6 +2234,14 @@ void aom_get_var_sse_sum_16x16_dual_c(const uint8_t* src_ptr,
                                       unsigned int* tot_sse,
                                       int* tot_sum,
                                       uint32_t* var16x16);
+void aom_get_var_sse_sum_16x16_dual_sse2(const uint8_t* src_ptr,
+                                         int source_stride,
+                                         const uint8_t* ref_ptr,
+                                         int ref_stride,
+                                         uint32_t* sse16x16,
+                                         unsigned int* tot_sse,
+                                         int* tot_sum,
+                                         uint32_t* var16x16);
 void aom_get_var_sse_sum_16x16_dual_avx2(const uint8_t* src_ptr,
                                          int source_stride,
                                          const uint8_t* ref_ptr,
@@ -9860,7 +9868,7 @@ static void setup_rtcd_internal(void) {
   if (flags & HAS_AVX2) {
     aom_get_blk_sse_sum = aom_get_blk_sse_sum_avx2;
   }
-  aom_get_var_sse_sum_16x16_dual = aom_get_var_sse_sum_16x16_dual_c;
+  aom_get_var_sse_sum_16x16_dual = aom_get_var_sse_sum_16x16_dual_sse2;
   if (flags & HAS_AVX2) {
     aom_get_var_sse_sum_16x16_dual = aom_get_var_sse_sum_16x16_dual_avx2;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Alliance for Open Media. All rights reserved
+ * Copyright (c) 2023, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -48,6 +48,7 @@
 #define CONFIG_NORMAL_TILE_MODE 1
 #define CONFIG_OPTICAL_FLOW_API 0
 #define CONFIG_OS_SUPPORT 1
+#define CONFIG_OUTPUT_FRAME_SIZE 0
 #define CONFIG_PARTITION_SEARCH_ORDER 0
 #define CONFIG_PIC 1
 #define CONFIG_RATECTRL_LOG 0

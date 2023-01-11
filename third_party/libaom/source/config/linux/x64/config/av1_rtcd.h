@@ -1287,14 +1287,6 @@ void av1_get_nz_map_contexts_sse2(const uint8_t* const levels,
                                   int8_t* const coeff_contexts);
 #define av1_get_nz_map_contexts av1_get_nz_map_contexts_sse2
 
-void av1_highbd_fwht4x4_c(const int16_t* input, tran_low_t* output, int stride);
-void av1_highbd_fwht4x4_sse4_1(const int16_t* input,
-                               tran_low_t* output,
-                               int stride);
-RTCD_EXTERN void (*av1_highbd_fwht4x4)(const int16_t* input,
-                                       tran_low_t* output,
-                                       int stride);
-
 void av1_highbd_inv_txfm_add_c(const tran_low_t* input,
                                uint8_t* dest,
                                int stride,
@@ -3055,10 +3047,6 @@ static void setup_rtcd_internal(void) {
   }
   if (flags & HAS_AVX2) {
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_avx2;
-  }
-  av1_highbd_fwht4x4 = av1_highbd_fwht4x4_c;
-  if (flags & HAS_SSE4_1) {
-    av1_highbd_fwht4x4 = av1_highbd_fwht4x4_sse4_1;
   }
   av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_c;
   if (flags & HAS_SSE4_1) {

@@ -1117,7 +1117,15 @@ void aom_get_var_sse_sum_16x16_dual_c(const uint8_t* src_ptr,
                                       unsigned int* tot_sse,
                                       int* tot_sum,
                                       uint32_t* var16x16);
-#define aom_get_var_sse_sum_16x16_dual aom_get_var_sse_sum_16x16_dual_c
+void aom_get_var_sse_sum_16x16_dual_neon(const uint8_t* src_ptr,
+                                         int source_stride,
+                                         const uint8_t* ref_ptr,
+                                         int ref_stride,
+                                         uint32_t* sse16x16,
+                                         unsigned int* tot_sse,
+                                         int* tot_sum,
+                                         uint32_t* var16x16);
+#define aom_get_var_sse_sum_16x16_dual aom_get_var_sse_sum_16x16_dual_neon
 
 void aom_get_var_sse_sum_8x8_quad_c(const uint8_t* src_ptr,
                                     int source_stride,
@@ -1280,12 +1288,18 @@ void aom_hadamard_16x16_neon(const int16_t* src_diff,
 void aom_hadamard_32x32_c(const int16_t* src_diff,
                           ptrdiff_t src_stride,
                           tran_low_t* coeff);
-#define aom_hadamard_32x32 aom_hadamard_32x32_c
+void aom_hadamard_32x32_neon(const int16_t* src_diff,
+                             ptrdiff_t src_stride,
+                             tran_low_t* coeff);
+#define aom_hadamard_32x32 aom_hadamard_32x32_neon
 
 void aom_hadamard_4x4_c(const int16_t* src_diff,
                         ptrdiff_t src_stride,
                         tran_low_t* coeff);
-#define aom_hadamard_4x4 aom_hadamard_4x4_c
+void aom_hadamard_4x4_neon(const int16_t* src_diff,
+                           ptrdiff_t src_stride,
+                           tran_low_t* coeff);
+#define aom_hadamard_4x4 aom_hadamard_4x4_neon
 
 void aom_hadamard_8x8_c(const int16_t* src_diff,
                         ptrdiff_t src_stride,

@@ -1,5 +1,5 @@
 ;
-; Copyright (c) 2022, Alliance for Open Media. All rights reserved
+; Copyright (c) 2023, Alliance for Open Media. All rights reserved
 ;
 ; This source code is subject to the terms of the BSD 2 Clause License and
 ; the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -46,6 +46,7 @@ CONFIG_NN_V2 equ 0
 CONFIG_NORMAL_TILE_MODE equ 1
 CONFIG_OPTICAL_FLOW_API equ 0
 CONFIG_OS_SUPPORT equ 1
+CONFIG_OUTPUT_FRAME_SIZE equ 0
 CONFIG_PARTITION_SEARCH_ORDER equ 0
 CONFIG_PIC equ 1
 CONFIG_RATECTRL_LOG equ 0

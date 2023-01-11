@@ -524,9 +524,6 @@ void av1_get_nz_map_contexts_c(const uint8_t* const levels,
                                int8_t* const coeff_contexts);
 #define av1_get_nz_map_contexts av1_get_nz_map_contexts_c
 
-void av1_highbd_fwht4x4_c(const int16_t* input, tran_low_t* output, int stride);
-#define av1_highbd_fwht4x4 av1_highbd_fwht4x4_c
-
 void av1_highbd_inv_txfm_add_c(const tran_low_t* input,
                                uint8_t* dest,
                                int stride,

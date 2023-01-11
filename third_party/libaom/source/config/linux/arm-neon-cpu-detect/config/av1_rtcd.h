@@ -962,14 +962,6 @@ RTCD_EXTERN void (*av1_get_nz_map_contexts)(const uint8_t* const levels,
                                             const TX_CLASS tx_class,
                                             int8_t* const coeff_contexts);
 
-void av1_highbd_fwht4x4_c(const int16_t* input, tran_low_t* output, int stride);
-void av1_highbd_fwht4x4_neon(const int16_t* input,
-                             tran_low_t* output,
-                             int stride);
-RTCD_EXTERN void (*av1_highbd_fwht4x4)(const int16_t* input,
-                                       tran_low_t* output,
-                                       int stride);
-
 void av1_highbd_inv_txfm_add_c(const tran_low_t* input,
                                uint8_t* dest,
                                int stride,
@@ -2401,10 +2393,6 @@ static void setup_rtcd_internal(void) {
   av1_get_nz_map_contexts = av1_get_nz_map_contexts_c;
   if (flags & HAS_NEON) {
     av1_get_nz_map_contexts = av1_get_nz_map_contexts_neon;
-  }
-  av1_highbd_fwht4x4 = av1_highbd_fwht4x4_c;
-  if (flags & HAS_NEON) {
-    av1_highbd_fwht4x4 = av1_highbd_fwht4x4_neon;
   }
   av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_c;
   if (flags & HAS_NEON) {
