@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 
 namespace mojo {
@@ -134,7 +135,8 @@ struct ArrayTraits<base::flat_set<T>> {
 template <typename K, typename V>
 struct MapValuesArrayView {
   explicit MapValuesArrayView(const std::map<K, V>& map) : map(map) {}
-  const std::map<K, V>& map;
+  // `map` is not a raw_ref<...> as that leads to a binary size increase.
+  RAW_PTR_EXCLUSION const std::map<K, V>& map;
 };
 
 // Convenience function to create a MapValuesArrayView<> that infers the

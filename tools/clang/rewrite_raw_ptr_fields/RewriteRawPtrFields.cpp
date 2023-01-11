@@ -1123,6 +1123,7 @@ class RawRefRewriter {
         fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
                         unless(anyOf(
                             isExpansionInSystemHeader(), isInExternCContext(),
+                            isRawPtrExclusionAnnotated(),
                             isInThirdPartyLocation(), isInGeneratedLocation(),
                             isInLocationListedInFilterFile(&paths_to_exclude),
                             isFieldDeclListedInFilterFile(&fields_to_exclude),

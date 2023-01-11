@@ -3,28 +3,47 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 
 #define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
 
-class SomeClass;
+class SomeClass {
+ public:
+  int member;
+};
 
 class MyClass {
+ public:
   // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field;
   raw_ptr<SomeClass> raw_ptr_field;
+
+  // Expected rewrite: raw_ref<SomeClass> raw_ref_field;
+  const raw_ref<SomeClass> raw_ref_field;
+
   RAW_PTR_EXCLUSION SomeClass* excluded_raw_ptr_field;
+  RAW_PTR_EXCLUSION SomeClass& excluded_raw_ref_field;
 };
 
 struct MyStruct {
   // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field;
   raw_ptr<SomeClass> raw_ptr_field;
+  // Expected rewrite: raw_ref<SomeClass> raw_ref_field;
+  const raw_ref<SomeClass> raw_ref_field;
   RAW_PTR_EXCLUSION SomeClass* excluded_raw_ptr_field;
+  RAW_PTR_EXCLUSION SomeClass& excluded_raw_ref_field;
 };
 
 template <typename T>
 class MyTemplate {
+ public:
   // Expected rewrite: raw_ptr<T> raw_ptr_field;
   raw_ptr<T> raw_ptr_field;
+
+  // Expected rewrite: raw_ref<T> raw_ref_field;
+  const raw_ref<T> raw_ref_field;
+
   RAW_PTR_EXCLUSION T* excluded_raw_ptr_field;
+  RAW_PTR_EXCLUSION T& excluded_raw_ref_field;
 };
 
 // The field below won't compile without the |typename| keyword (because

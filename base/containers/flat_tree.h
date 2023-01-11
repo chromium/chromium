@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/not_fn.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 
 namespace base {
@@ -480,7 +481,7 @@ class flat_tree {
     // to binary size increase. There's also little value to rewriting this
     // member as it points to `flat_tree::comp_`. The flat_tree itself should be
     // holding raw_ptr/raw_ref if necessary.
-    const key_compare& comp_;
+    RAW_PTR_EXCLUSION const key_compare& comp_;
   };
 
   iterator const_cast_it(const_iterator c_it) {

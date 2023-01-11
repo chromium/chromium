@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -55,7 +56,8 @@ class ArrayIterator<Traits, MaybeConstUserType, true> {
   const MaybeConstUserType& input() const { return input_; }
 
  private:
-  MaybeConstUserType& input_;
+  // `input_` is not a raw_ref<...> as that leads to a binary size increase.
+  RAW_PTR_EXCLUSION MaybeConstUserType& input_;
   IteratorType iter_;
 };
 
@@ -76,7 +78,8 @@ class ArrayIterator<Traits, MaybeConstUserType, false> {
   const MaybeConstUserType& input() const { return input_; }
 
  private:
-  MaybeConstUserType& input_;
+  // `input_` is not a raw_ref<...> as it leads to a binary size increase.
+  RAW_PTR_EXCLUSION MaybeConstUserType& input_;
   size_t iter_;
 };
 
