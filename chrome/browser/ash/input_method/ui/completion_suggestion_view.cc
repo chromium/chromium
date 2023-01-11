@@ -16,7 +16,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -100,10 +100,6 @@ CompletionSuggestionView::CompletionSuggestionView(PressedCallback callback)
   tab_annotation_label_->SetVisible(false);
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
 CompletionSuggestionView::~CompletionSuggestionView() = default;
@@ -161,6 +157,13 @@ void CompletionSuggestionView::SetSuggestionText(
     const size_t confirmed_length) {
   suggestion_label_->SetPrefixAndPrediction(text.substr(0, confirmed_length),
                                             text.substr(confirmed_length));
+
+  // Because this view is accessibility-focusable, it must have an accessible
+  // name so that screen readers know what to speak/braille when it claims
+  // focus. We can accomplish this by setting the labelled-by relationship so
+  // that it points to `suggestion_label_`. That will cause this view's
+  // accessible name to be the same as the label text.
+  GetViewAccessibility().OverrideLabelledBy(suggestion_label_);
 }
 
 void CompletionSuggestionView::SetHighlighted(bool highlighted) {
