@@ -3,20 +3,20 @@ Tests that cache entry data is correctly deleted by the inspector.
 Dumping CacheStorage tree:
     (empty)
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         0, /1, default, text/plain, 0
         1, /2, default, text/plain, 0
         totalCount: 2
-    cache: testCache2 - http://127.0.0.1:8000
+    cache: testCache2 - http://127.0.0.1:8000/
         0, /1, default, text/plain, 0
         1, /2, default, text/plain, 0
         totalCount: 2
 Deleting CacheStorage entry http://fake.request2.com/2 in cache testCache2
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         0, /1, default, text/plain, 0
         totalCount: 1
-    cache: testCache2 - http://127.0.0.1:8000
+    cache: testCache2 - http://127.0.0.1:8000/
         0, /1, default, text/plain, 0
         totalCount: 1
 

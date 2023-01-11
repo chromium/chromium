@@ -3,15 +3,15 @@ Tests that cache names are correctly loaded and displayed in the inspector.
 Dumping CacheStorage tree:
     (empty)
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         (cache empty)
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         (cache empty)
-    cache: testCache2 - http://127.0.0.1:8000
+    cache: testCache2 - http://127.0.0.1:8000/
         (cache empty)
-    cache: testCache3 - http://127.0.0.1:8000
+    cache: testCache3 - http://127.0.0.1:8000/
         (cache empty)
-    cache: testCache4 - http://127.0.0.1:8000
+    cache: testCache4 - http://127.0.0.1:8000/
         (cache empty)
 

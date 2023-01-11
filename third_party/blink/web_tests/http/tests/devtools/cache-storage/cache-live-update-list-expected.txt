@@ -3,14 +3,14 @@ Tests that the cache storage list live updates.
 Dumping CacheStorage tree:
     (empty)
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         (cache empty)
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         (cache empty)
-    cache: testCache2 - http://127.0.0.1:8000
+    cache: testCache2 - http://127.0.0.1:8000/
         (cache empty)
 Dumping CacheStorage tree:
-    cache: testCache2 - http://127.0.0.1:8000
+    cache: testCache2 - http://127.0.0.1:8000/
         (cache empty)
 

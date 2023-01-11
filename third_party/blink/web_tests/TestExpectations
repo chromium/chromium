@@ -6958,3 +6958,10 @@ crbug.com/1404252 [ Mac11-arm64 Release ] external/wpt/resource-timing/response-
 # Sheriff 2023-01-11
 crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.worker.html [ Failure Pass ]
 crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.sharedworker.html [ Failure Pass ]
+
+crbug.com/1347831 http/tests/devtools/cache-storage/cache-data.js [ Failure Pass ]
+crbug.com/1347831 http/tests/devtools/cache-storage/cache-deletion.js [ Failure Pass ]
+crbug.com/1347831 http/tests/devtools/cache-storage/cache-entry-deletion.js [ Failure Pass ]
+crbug.com/1347831 http/tests/devtools/cache-storage/cache-live-update-cache-content.js [ Failure Pass ]
+crbug.com/1347831 http/tests/devtools/cache-storage/cache-live-update-list.js [ Failure Pass ]
+crbug.com/1347831 http/tests/devtools/cache-storage/cache-names.js [ Failure Pass ]

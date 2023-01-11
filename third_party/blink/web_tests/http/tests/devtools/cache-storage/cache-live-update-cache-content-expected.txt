@@ -3,15 +3,15 @@ Tests that cache view updates when the cache is changed.
 Dumping CacheStorage tree:
     (empty)
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         (cache empty)
 Added entry
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         0, /1, default, text/plain, 0
         totalCount: 1
 Deleted entry
 Dumping CacheStorage tree:
-    cache: testCache1 - http://127.0.0.1:8000
+    cache: testCache1 - http://127.0.0.1:8000/
         (cache empty)
 
