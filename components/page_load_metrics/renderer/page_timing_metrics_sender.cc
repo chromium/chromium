@@ -290,12 +290,14 @@ void PageTimingMetricsSender::UpdateCpuTiming(base::TimeDelta task_time) {
 }
 
 void PageTimingMetricsSender::EnsureSendTimer(bool urgent) {
-  // https://linear.app/replay/issue/RUN-571
-  recordreplay::Assert("[RUN-571] PageTimingMetricsSender::EnsureSendTimer %d", urgent);
-
   if (urgent)
     timer_->Stop();
   else if (timer_->IsRunning())
+    return;
+
+  // Due to the use of weak pointers the points when we try to send metrics can
+  // vary between recording and replaying, so we only send metrics urgently.
+  if (!urgent && recordreplay::IsRecordingOrReplaying("no-page-timing-metrics"))
     return;
 
   int delay_ms;
