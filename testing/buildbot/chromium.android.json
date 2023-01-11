@@ -29855,6 +29855,7 @@
           "--recover-devices",
           "--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -29902,6 +29903,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -29947,6 +29949,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -29992,6 +29995,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30037,6 +30041,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30086,6 +30091,7 @@
           "--use-persistent-shell"
         ],
         "ci_only": true,
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30138,6 +30144,7 @@
           "--recover-devices",
           "--git-revision=${got_revision}"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30193,6 +30200,7 @@
         ],
         "ci_only": true,
         "experiment_percentage": 100,
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30245,6 +30253,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30291,6 +30300,7 @@
           "--recover-devices",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30341,6 +30351,7 @@
         ],
         "ci_only": true,
         "experiment_percentage": 100,
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30388,6 +30399,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30433,6 +30445,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30478,6 +30491,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30523,6 +30537,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30569,6 +30584,7 @@
           "--recover-devices",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30624,6 +30640,7 @@
           "--use-persistent-shell"
         ],
         "ci_only": true,
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30670,6 +30687,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -30712,6 +30730,7 @@
     ],
     "scripts": [
       {
+        "isolate_profile_data": true,
         "name": "check_network_annotations",
         "resultdb": {
           "enable": true,
