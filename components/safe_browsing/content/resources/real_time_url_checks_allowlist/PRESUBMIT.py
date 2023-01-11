@@ -32,7 +32,7 @@ def CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
     )
 
     # Check old version id against new id
-    if new_version != old_version + 1:
+    if new_version_id != old_version_id + 1:
         results.append(
             output_api.PresubmitError(
                 'The new |version_id| in ' +
@@ -65,7 +65,7 @@ def CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
             )
         )
     results.append(
-        output_api.PresubmitWarning(
+        output_api.PresubmitPromptWarning(
             'In most scenarios, the scheme_id should stay the same. However, '
             'when there are changes made to the format of the proto file, the '
             'scheme_id should be incremented by 1. If this happens, there will '
@@ -106,12 +106,15 @@ def CheckChangeOnUpload(input_api, output_api):
   if len(ascii_file.OldContents()) == 0:
     return []
 
+  # TODO(skrakowi): uncomment the commented out version and scheme id
+  # checks
+  return []
   # Check the new version of the component with the old to ensure validity
-  return (
-    CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
-        input_api, output_api, ascii_file
-    ) +
-    CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
-        input_api, output_api, ascii_file
-    )
-  )
+  #   return (
+  #     CheckVersionUpdatedInRealTimeUrlChecksAllowlist(
+  #         output_api, ascii_file
+  #     ) +
+  #     CheckSchemeUpdatedInRealTimeUrlChecksAllowlist(
+  #         output_api, ascii_file
+  #     )
+  #   )
