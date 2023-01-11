@@ -300,6 +300,9 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       is_updating_layout_(false)
 #endif
 {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::RegisterPointer("LocalFrameView", this);
+
   // Propagate the marginwidth/height and scrolling modes to the view.
   if (frame_->Owner() && frame_->Owner()->ScrollbarMode() ==
                              mojom::blink::ScrollbarMode::kAlwaysOff)
@@ -307,6 +310,9 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
 }
 
 LocalFrameView::~LocalFrameView() {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::UnregisterPointer(this);
+
 #if DCHECK_IS_ON()
   DCHECK(has_been_disposed_);
 #endif
@@ -1706,6 +1712,10 @@ void LocalFrameView::SetBaseBackgroundColor(const Color& background_color) {
 
 void LocalFrameView::SetUseColorAdjustBackground(UseColorAdjustBackground use,
                                                  bool color_scheme_changed) {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LocalFrameView::SetUseColorAdjustBackground %d",
+                       recordreplay::PointerId(this));
+
   if (use_color_adjust_background_ == use && !color_scheme_changed)
     return;
 

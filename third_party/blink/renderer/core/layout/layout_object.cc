@@ -2504,6 +2504,10 @@ void LayoutObject::SetPseudoElementStyle(
 DISABLE_CFI_PERF
 void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
                             ApplyStyleChanges apply_changes) {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutObject::SetStyle %d %d %d",
+                       RecordReplayId(), style_ == style, (int)apply_changes);
+
   NOT_DESTROYED();
   if (style_ == style)
     return;
@@ -4571,12 +4575,16 @@ void LayoutObject::SetShouldCheckForPaintInvalidation() {
 }
 
 void LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange() {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange %d",
+                       RecordReplayId());
+
   NOT_DESTROYED();
   if (ShouldCheckForPaintInvalidation())
     return;
 
   // https://linear.app/replay/issue/RUN-966
-  recordreplay::Assert("[RUN-966] LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange %d",
+  recordreplay::Assert("[RUN-966] LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange #1 %d",
                        RecordReplayId());
 
   GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();

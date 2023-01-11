@@ -1284,6 +1284,10 @@ void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
 }
 
 void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] CSSAnimations::MaybeApplyPendingUpdate %d",
+                       element->RecordReplayId());
+
   previous_active_interpolations_for_animations_.clear();
   if (pending_update_.IsEmpty()) {
     return;
@@ -1347,6 +1351,11 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
            cancelled_indices[i] < cancelled_indices[i + 1]);
     Animation& animation =
         *running_animations_[cancelled_indices[i]]->animation;
+
+    // https://linear.app/replay/issue/RUN-966
+    recordreplay::Assert("[RUN-966] CSSAnimations::MaybeApplyPendingUpdate #5 %d",
+                         animation.RecordReplayId());
+
     animation.ClearOwningElement();
     if (animation.IsCSSAnimation() &&
         !DynamicTo<CSSAnimation>(animation)->getIgnoreCSSPlayState())
@@ -1383,6 +1392,11 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     DCHECK(transitions_.Contains(property));
 
     Animation* animation = transitions_.Take(property)->animation;
+
+    // https://linear.app/replay/issue/RUN-966
+    recordreplay::Assert("[RUN-966] CSSAnimations::MaybeApplyPendingUpdate #10 %d",
+                         animation->RecordReplayId());
+
     auto* effect = To<KeyframeEffect>(animation->effect());
     if (effect && effect->HasActiveAnimationsOnCompositor(property) &&
         pending_update_.NewTransitions().find(property) !=

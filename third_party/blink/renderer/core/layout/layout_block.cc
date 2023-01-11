@@ -229,6 +229,10 @@ static double ComputeSquaredLocalFontSizeScalingFactor(
 
 void LayoutBlock::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("[RUN-966] LayoutBlock::StyleDidChange %d",
+                       RecordReplayId());
+
   NOT_DESTROYED();
   // Computes old scaling factor before PaintLayer::UpdateTransform()
   // updates Layer()->Transform().
