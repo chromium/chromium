@@ -29,67 +29,66 @@
  * categories.
  */
 
-export const CommandStore = {};
+export class CommandStore {
+  /**
+   * Gets a message given a command.
+   * @param {!Command} command The command to query.
+   * @return {string|undefined} The message id, if any.
+   */
+  static messageForCommand(command) {
+    return (CommandStore.CMD_ALLOWLIST[command] || {}).msgId;
+  }
 
-/**
- * Gets a message given a command.
- * @param {!Command} command The command to query.
- * @return {string|undefined} The message id, if any.
- */
-CommandStore.messageForCommand = function(command) {
-  return (CommandStore.CMD_ALLOWLIST[command] || {}).msgId;
-};
+  /**
+   * Gets a category given a command.
+   * @param {!Command} command The command to query.
+   * @return {string|undefined} The category, if any.
+   */
+  static categoryForCommand(command) {
+    return (CommandStore.CMD_ALLOWLIST[command] || {}).category;
+  }
 
-
-/**
- * Gets a category given a command.
- * @param {!Command} command The command to query.
- * @return {string|undefined} The category, if any.
- */
-CommandStore.categoryForCommand = function(command) {
-  return (CommandStore.CMD_ALLOWLIST[command] || {}).category;
-};
-
-/**
- * Gets the first command associated with the message id
- * @param {string} msgId
- * @return {!Command|undefined} The command, if any.
- */
-CommandStore.commandForMessage = function(msgId) {
-  for (const commandName in CommandStore.CMD_ALLOWLIST) {
-    const command = CommandStore.CMD_ALLOWLIST[commandName];
-    if (command.msgId === msgId) {
-      return commandName;
+  /**
+   * Gets the first command associated with the message id
+   * @param {string} msgId
+   * @return {!Command|undefined} The command, if any.
+   */
+  static commandForMessage(msgId) {
+    for (const commandName in CommandStore.CMD_ALLOWLIST) {
+      const command = CommandStore.CMD_ALLOWLIST[commandName];
+      if (command.msgId === msgId) {
+        return commandName;
+      }
     }
   }
-};
 
-/**
- * Gets all commands for a category.
- * @param {string} category The category to query.
- * @return {Array<!Command>} The commands, if any.
- */
-CommandStore.commandsForCategory = function(category) {
-  const ret = [];
-  for (const cmd in CommandStore.CMD_ALLOWLIST) {
-    const struct = CommandStore.CMD_ALLOWLIST[cmd];
-    if (category === struct.category) {
-      ret.push(cmd);
+  /**
+   * Gets all commands for a category.
+   * @param {string} category The category to query.
+   * @return {Array<!Command>} The commands, if any.
+   */
+  static commandsForCategory(category) {
+    const ret = [];
+    for (const cmd in CommandStore.CMD_ALLOWLIST) {
+      const struct = CommandStore.CMD_ALLOWLIST[cmd];
+      if (category === struct.category) {
+        ret.push(cmd);
+      }
     }
+    return ret;
   }
-  return ret;
-};
 
-/**
- * @param {!Command} command The command to query.
- * @return {boolean} Whether or not this command is denied in the OOBE.
- */
-CommandStore.denySignedOut = function(command) {
-  if (!CommandStore.CMD_ALLOWLIST[command]) {
-    return false;
+  /**
+   * @param {!Command} command The command to query.
+   * @return {boolean} Whether or not this command is denied in the OOBE.
+   */
+  static denySignedOut(command) {
+    if (!CommandStore.CMD_ALLOWLIST[command]) {
+      return false;
+    }
+    return Boolean(CommandStore.CMD_ALLOWLIST[command].denySignedOut);
   }
-  return Boolean(CommandStore.CMD_ALLOWLIST[command].denySignedOut);
-};
+}
 
 /**
  * List of commands. Please keep list alphabetical.

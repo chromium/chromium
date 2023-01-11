@@ -71,7 +71,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
     /**
      * To support viewGraphicAsBraille_(), the current image node.
-     * @type {?AutomationNode}
+     * @private {?AutomationNode}
      */
     this.imageNode_;
 
