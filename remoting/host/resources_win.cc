@@ -11,7 +11,6 @@ bool LoadResources(const std::string& pref_locale) {
   return false;
 }
 
-void UnloadResources() {
-}
+void UnloadResources() {}
 
 }  // namespace remoting

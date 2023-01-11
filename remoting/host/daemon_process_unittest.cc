@@ -78,8 +78,7 @@ class MockDaemonProcess : public DaemonProcess {
 };
 
 FakeDesktopSession::FakeDesktopSession(DaemonProcess* daemon_process, int id)
-    : DesktopSession(daemon_process, id) {
-}
+    : DesktopSession(daemon_process, id) {}
 
 FakeDesktopSession::~FakeDesktopSession() = default;
 
@@ -134,8 +133,7 @@ class DaemonProcessTest : public testing::Test {
   int terminal_id_;
 };
 
-DaemonProcessTest::DaemonProcessTest() : terminal_id_(0) {
-}
+DaemonProcessTest::DaemonProcessTest() : terminal_id_(0) {}
 
 DaemonProcessTest::~DaemonProcessTest() = default;
 

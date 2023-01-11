@@ -35,7 +35,7 @@ namespace remoting {
 
 namespace {
 
-void SetOrClearBit(uint64_t &value, uint64_t bit, bool set_bit) {
+void SetOrClearBit(uint64_t& value, uint64_t bit, bool set_bit) {
   value = set_bit ? (value | bit) : (value & ~bit);
 }
 
@@ -48,10 +48,11 @@ void CreateAndPostKeyEvent(int keycode,
       CGEventCreateKeyboardEvent(nullptr, keycode, pressed));
   if (eventRef) {
     CGEventSetFlags(eventRef, static_cast<CGEventFlags>(flags));
-    if (!unicode.empty())
+    if (!unicode.empty()) {
       CGEventKeyboardSetUnicodeString(
           eventRef, unicode.size(),
           reinterpret_cast<const UniChar*>(unicode.data()));
+    }
     CGEventPost(kCGSessionEventTap, eventRef);
   }
 }
@@ -77,8 +78,9 @@ void PostMouseEvent(int32_t x,
   CGError error =
       CGPostMouseEvent(position, true, 3, left_down, right_down, middle_down);
 #pragma clang diagnostic pop
-  if (error != kCGErrorSuccess)
+  if (error != kCGErrorSuccess) {
     LOG(WARNING) << "CGPostMouseEvent error " << error;
+  }
 }
 
 // Must be called on UI thread.
@@ -101,8 +103,8 @@ const int kWakeUpDisplayIntervalMs = 1000;
 
 using protocol::ClipboardEvent;
 using protocol::KeyEvent;
-using protocol::TextEvent;
 using protocol::MouseEvent;
+using protocol::TextEvent;
 using protocol::TouchEvent;
 
 // A class to generate events on Mac.
@@ -244,8 +246,9 @@ void InputInjectorMac::Core::InjectClipboardEvent(const ClipboardEvent& event) {
 
 void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
   // HostEventDispatcher should filter events missing the pressed field.
-  if (!event.has_pressed() || !event.has_usb_keycode())
+  if (!event.has_pressed() || !event.has_usb_keycode()) {
     return;
+  }
 
   WakeUpDisplay();
 
@@ -256,8 +259,9 @@ void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
           << " to keycode: " << keycode << std::dec;
 
   // If we couldn't determine the Mac virtual key code then ignore the event.
-  if (keycode == ui::KeycodeConverter::InvalidNativeKeycode())
+  if (keycode == ui::KeycodeConverter::InvalidNativeKeycode()) {
     return;
+  }
 
   // If this is a modifier key, remember its new state so that it can be
   // correctly applied to subsequent events.
@@ -350,10 +354,11 @@ void InputInjectorMac::Core::InjectMouseEvent(const MouseEvent& event) {
       VLOG(2) << "Button " << event.button()
               << (event.button_down() ? " down" : " up");
       int button_change = 1 << (event.button() - 1);
-      if (event.button_down())
+      if (event.button_down()) {
         mouse_button_state_ |= button_change;
-      else
+      } else {
         mouse_button_state_ &= ~button_change;
+      }
     } else {
       VLOG(1) << "Unknown mouse button: " << event.button();
     }
@@ -418,10 +423,8 @@ void InputInjectorMac::Core::WakeUpDisplay() {
   // re-awaken at the moment the assertion is created.
   IOPMAssertionID power_assertion_id = kIOPMNullAssertionID;
   IOReturn result = IOPMAssertionCreateWithName(
-      CFSTR("UserIsActive"),
-      kIOPMAssertionLevelOn,
-      CFSTR("Chrome Remote Desktop connection active"),
-      &power_assertion_id);
+      CFSTR("UserIsActive"), kIOPMAssertionLevelOn,
+      CFSTR("Chrome Remote Desktop connection active"), &power_assertion_id);
   if (result == kIOReturnSuccess) {
     IOPMAssertionRelease(power_assertion_id);
   }

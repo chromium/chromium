@@ -28,8 +28,8 @@ class FakeAudioVolumeFilter : public AudioVolumeFilter {
 }  // namespace
 
 TEST(AudioVolumeFilterTest, TwoChannels) {
-  int16_t samples[] =
-      {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10};
+  int16_t samples[] = {1, 1, 2, 2, 3, 3, 4, 4, 5,  5,
+                       6, 6, 7, 7, 8, 8, 9, 9, 10, 10};
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.5f);
   filter.Initialize(9, 2);
@@ -40,8 +40,8 @@ TEST(AudioVolumeFilterTest, TwoChannels) {
 }
 
 TEST(AudioVolumeFilterTest, ThreeChannels) {
-  int16_t samples[] =
-      {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
+  int16_t samples[] = {1, 1, 2, 2, 3, 3, 4, 4,  5,  5, 6,
+                       6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.5f);
   filter.Initialize(6, 3);
@@ -49,8 +49,8 @@ TEST(AudioVolumeFilterTest, ThreeChannels) {
 }
 
 TEST(AudioVolumeFilterTest, SilentSamples) {
-  int16_t samples[] =
-      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int16_t samples[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.5f);
   filter.Initialize(9, 2);
@@ -58,8 +58,8 @@ TEST(AudioVolumeFilterTest, SilentSamples) {
 }
 
 TEST(AudioVolumeFilterTest, AudioLevel0) {
-  int16_t samples[] =
-      {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10};
+  int16_t samples[] = {1, 1, 2, 2, 3, 3, 4, 4, 5,  5,
+                       6, 6, 7, 7, 8, 8, 9, 9, 10, 10};
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0);
   filter.Initialize(9, 2);
@@ -67,8 +67,8 @@ TEST(AudioVolumeFilterTest, AudioLevel0) {
 }
 
 TEST(AudioVolumeFilterTest, SilentAfterApplying) {
-  int16_t samples[] =
-      {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+  int16_t samples[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.9f);
   filter.Initialize(9, 2);

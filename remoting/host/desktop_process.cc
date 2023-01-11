@@ -192,4 +192,4 @@ void DesktopProcess::CrashProcess(const std::string& function_name,
   ::remoting::CrashProcess(function_name, file_name, line_number);
 }
 
-} // namespace remoting
+}  // namespace remoting

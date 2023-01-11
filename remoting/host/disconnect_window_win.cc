@@ -64,12 +64,13 @@ class DisconnectWindowWin : public HostWindow {
   void EnableAutoHide(std::unique_ptr<LocalInputMonitor> local_input_monitor);
 
   // HostWindow overrides.
-  void Start(
-      const base::WeakPtr<ClientSessionControl>& client_session_control)
+  void Start(const base::WeakPtr<ClientSessionControl>& client_session_control)
       override;
 
  private:
-  static INT_PTR CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam,
+  static INT_PTR CALLBACK DialogProc(HWND hwnd,
+                                     UINT message,
+                                     WPARAM wparam,
                                      LPARAM lparam);
 
   BOOL OnDialogMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -141,8 +142,9 @@ bool GetControlText(HWND control, std::wstring* text) {
   // the buffer.
   WCHAR buffer[256];
   int result = GetWindowText(control, buffer, std::size(buffer));
-  if (!result)
+  if (!result) {
     return false;
+  }
 
   text->assign(buffer);
   return true;
@@ -154,8 +156,9 @@ bool GetControlTextWidth(HWND control, const std::wstring& text, LONG* width) {
   base::win::ScopedGetDC dc(control);
   base::win::ScopedSelectObject font(
       dc, (HFONT)SendMessage(control, WM_GETFONT, 0, 0));
-  if (!DrawText(dc, text.c_str(), -1, &rect, DT_CALCRECT | DT_SINGLELINE))
+  if (!DrawText(dc, text.c_str(), -1, &rect, DT_CALCRECT | DT_SINGLELINE)) {
     return false;
+  }
 
   *width = rect.right;
   return true;
@@ -215,8 +218,9 @@ INT_PTR CALLBACK DisconnectWindowWin::DialogProc(HWND hwnd,
     // Store |this| to the window's user data.
     SetLastError(ERROR_SUCCESS);
     LONG_PTR result = SetWindowLongPtr(hwnd, DWLP_USER, self);
-    if (result == 0 && GetLastError() != ERROR_SUCCESS)
+    if (result == 0 && GetLastError() != ERROR_SUCCESS) {
       reinterpret_cast<DisconnectWindowWin*>(self)->EndDialog();
+    }
   } else {
     self = GetWindowLongPtr(hwnd, DWLP_USER);
   }
@@ -260,8 +264,9 @@ BOOL DisconnectWindowWin::OnDialogMessage(HWND hwnd,
 
     // Ensure the dialog stays visible if the work area dimensions change.
     case WM_SETTINGCHANGE:
-      if (wparam == SPI_SETWORKAREA)
+      if (wparam == SPI_SETWORKAREA) {
         SetDialogPosition();
+      }
       return TRUE;
 
     // Ensure the dialog stays visible if the display dimensions change.
@@ -307,8 +312,9 @@ bool DisconnectWindowWin::BeginDialog() {
   hwnd_ =
       CreateDialogParam(CURRENT_MODULE(), MAKEINTRESOURCE(IDD_DISCONNECT),
                         nullptr, DialogProc, reinterpret_cast<LPARAM>(this));
-  if (!hwnd_)
+  if (!hwnd_) {
     return false;
+  }
 
   // Set up handler for Ctrl-Alt-Esc shortcut.
   if (!has_hotkey_ && RegisterHotKey(hwnd_, DISCONNECT_HOTKEY_ID,
@@ -316,8 +322,9 @@ bool DisconnectWindowWin::BeginDialog() {
     has_hotkey_ = true;
   }
 
-  if (!SetStrings())
+  if (!SetStrings()) {
     return false;
+  }
 
   SetDialogPosition();
   ShowWindow(hwnd_, SW_SHOW);
@@ -340,8 +347,9 @@ void DisconnectWindowWin::EndDialog() {
   // Disable auto-hide events since the window has been destroyed.
   auto_hide_timer_.Stop();
 
-  if (client_session_control_)
+  if (client_session_control_) {
     client_session_control_->DisconnectSession(protocol::OK);
+  }
 }
 
 void DisconnectWindowWin::ShowDialog() {
@@ -352,32 +360,37 @@ void DisconnectWindowWin::ShowDialog() {
                                           base::Unretained(this)));
   }
 
-  if (!was_auto_hidden_)
+  if (!was_auto_hidden_) {
     return;
+  }
 
   // Make sure the dialog is fully visible when it is reshown.
-  if (!local_input_seen_)
+  if (!local_input_seen_) {
     SetDialogPosition();
+  }
 
   if (!AnimateWindow(hwnd_, kAnimationDurationMs, AW_BLEND)) {
     PLOG(ERROR) << "AnimateWindow() failed to show dialog: ";
     ShowWindow(hwnd_, SW_SHOW);
 
     // If the window still isn't visible, then disconnect the session.
-    if (!IsWindowVisible(hwnd_))
+    if (!IsWindowVisible(hwnd_)) {
       client_session_control_->DisconnectSession(protocol::OK);
+    }
   }
   was_auto_hidden_ = false;
 }
 
 void DisconnectWindowWin::HideDialog() {
-  if (was_auto_hidden_ || !local_input_monitor_ || !hwnd_)
+  if (was_auto_hidden_ || !local_input_monitor_ || !hwnd_) {
     return;
+  }
 
-  if (!AnimateWindow(hwnd_, kAnimationDurationMs, AW_BLEND | AW_HIDE))
+  if (!AnimateWindow(hwnd_, kAnimationDurationMs, AW_BLEND | AW_HIDE)) {
     PLOG(ERROR) << "AnimateWindow() failed to hide dialog: ";
-  else
+  } else {
     was_auto_hidden_ = true;
+  }
 }
 
 void DisconnectWindowWin::StopAutoHideBehavior() {
@@ -425,13 +438,15 @@ void DisconnectWindowWin::DrawBorder(HWND hwnd, HDC hdc) {
 
 // Returns |control| rectangle in the dialog coordinates.
 bool DisconnectWindowWin::GetControlRect(HWND control, RECT* rect) {
-  if (!GetWindowRect(control, rect))
+  if (!GetWindowRect(control, rect)) {
     return false;
+  }
   SetLastError(ERROR_SUCCESS);
-  int result = MapWindowPoints(HWND_DESKTOP, hwnd_,
-                               reinterpret_cast<LPPOINT>(rect), 2);
-  if (!result && GetLastError() != ERROR_SUCCESS)
+  int result =
+      MapWindowPoints(HWND_DESKTOP, hwnd_, reinterpret_cast<LPPOINT>(rect), 2);
+  if (!result && GetLastError() != ERROR_SUCCESS) {
     return false;
+  }
 
   return true;
 }
@@ -462,8 +477,9 @@ void DisconnectWindowWin::SetDialogPosition() {
   // Adjust the top value if the window is in auto-hide mode and we have not
   // seen local input yet.  We adjust the position to make the dialog a bit more
   // obtrusive so that a local user will notice it before it auto-hides.
-  if (local_input_monitor_ && !local_input_seen_)
+  if (local_input_monitor_ && !local_input_seen_) {
     top = top * 0.7;
+  }
 
   SetWindowPos(hwnd_, nullptr, left, top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
@@ -475,8 +491,9 @@ bool DisconnectWindowWin::SetStrings() {
   // labels.
   HWND hwnd_button = GetDlgItem(hwnd_, IDC_DISCONNECT);
   HWND hwnd_message = GetDlgItem(hwnd_, IDC_DISCONNECT_SHARINGWITH);
-  if (!hwnd_button || !hwnd_message)
+  if (!hwnd_button || !hwnd_message) {
     return false;
+  }
 
   std::wstring button_text;
   std::wstring message_text;
@@ -488,59 +505,63 @@ bool DisconnectWindowWin::SetStrings() {
   // Format and truncate "Your desktop is shared with ..." message.
   message_text = base::AsWString(base::ReplaceStringPlaceholders(
       base::AsString16(message_text), base::UTF8ToUTF16(username_), nullptr));
-  if (message_text.length() > kMaxSharingWithTextLength)
+  if (message_text.length() > kMaxSharingWithTextLength) {
     message_text.erase(kMaxSharingWithTextLength);
+  }
 
-  if (!SetWindowText(hwnd_message, message_text.c_str()))
+  if (!SetWindowText(hwnd_message, message_text.c_str())) {
     return false;
+  }
 
   // Calculate the margin between controls in pixels.
   RECT rect = {0};
   rect.right = kWindowTextMargin;
-  if (!MapDialogRect(hwnd_, &rect))
+  if (!MapDialogRect(hwnd_, &rect)) {
     return false;
+  }
   int margin = rect.right;
 
   // Resize |hwnd_message| so that the text is not clipped.
   RECT message_rect;
-  if (!GetControlRect(hwnd_message, &message_rect))
+  if (!GetControlRect(hwnd_message, &message_rect)) {
     return false;
+  }
 
   LONG control_width;
-  if (!GetControlTextWidth(hwnd_message, message_text, &control_width))
+  if (!GetControlTextWidth(hwnd_message, message_text, &control_width)) {
     return false;
+  }
   message_rect.right = message_rect.left + control_width + margin;
 
-  if (!SetWindowPos(hwnd_message, nullptr,
-                    message_rect.left, message_rect.top,
+  if (!SetWindowPos(hwnd_message, nullptr, message_rect.left, message_rect.top,
                     message_rect.right - message_rect.left,
-                    message_rect.bottom - message_rect.top,
-                    SWP_NOZORDER)) {
+                    message_rect.bottom - message_rect.top, SWP_NOZORDER)) {
     return false;
   }
 
   // Reposition and resize |hwnd_button| as well.
   RECT button_rect;
-  if (!GetControlRect(hwnd_button, &button_rect))
+  if (!GetControlRect(hwnd_button, &button_rect)) {
     return false;
+  }
 
-  if (!GetControlTextWidth(hwnd_button, button_text, &control_width))
+  if (!GetControlTextWidth(hwnd_button, button_text, &control_width)) {
     return false;
+  }
 
   button_rect.left = message_rect.right;
   button_rect.right = button_rect.left + control_width + margin * 2;
-  if (!SetWindowPos(hwnd_button, nullptr,
-                    button_rect.left, button_rect.top,
+  if (!SetWindowPos(hwnd_button, nullptr, button_rect.left, button_rect.top,
                     button_rect.right - button_rect.left,
-                    button_rect.bottom - button_rect.top,
-                    SWP_NOZORDER)) {
+                    button_rect.bottom - button_rect.top, SWP_NOZORDER)) {
     return false;
   }
 
   // Resize the whole window to fit the resized controls.
   RECT window_rect;
-  if (!GetWindowRect(hwnd_, &window_rect))
+  if (!GetWindowRect(hwnd_, &window_rect)) {
     return false;
+  }
   int width = button_rect.right + margin;
   int height = window_rect.bottom - window_rect.top;
   if (!SetWindowPos(hwnd_, nullptr, 0, 0, width, height,
@@ -551,15 +572,17 @@ bool DisconnectWindowWin::SetStrings() {
   // Make the corners of the disconnect window rounded.
   HRGN rgn = CreateRoundRectRgn(0, 0, width, height, kWindowBorderRadius,
                                 kWindowBorderRadius);
-  if (!rgn)
+  if (!rgn) {
     return false;
-  if (!SetWindowRgn(hwnd_, rgn, TRUE))
+  }
+  if (!SetWindowRgn(hwnd_, rgn, TRUE)) {
     return false;
+  }
 
   return true;
 }
 
-} // namespace
+}  // namespace
 
 // static
 std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {

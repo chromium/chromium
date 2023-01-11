@@ -34,8 +34,7 @@ const wchar_t kPairingRegistrySecretsKeyName[] = L"secrets";
 // Creator of this object is responsible for passing the registry key handles
 // with appropriate access. |privileged| may be nullptr if read-only access is
 // sufficient. Shared secrets will not be returned in such a case.
-class PairingRegistryDelegateWin
-    : public protocol::PairingRegistry::Delegate {
+class PairingRegistryDelegateWin : public protocol::PairingRegistry::Delegate {
  public:
   PairingRegistryDelegateWin();
 

@@ -221,8 +221,9 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
 
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
-  if (options_.enable_curtaining())
+  if (options_.enable_curtaining()) {
     return desktop_capturer;
+  }
 #endif
   return std::make_unique<DesktopAndCursorConditionalComposer>(
       std::move(desktop_capturer));

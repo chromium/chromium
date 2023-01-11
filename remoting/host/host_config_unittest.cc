@@ -16,13 +16,13 @@ namespace remoting {
 namespace {
 
 const char* kTestConfig =
-"{\n"
-"  \"xmpp_login\" : \"test@gmail.com\",\n"
-"  \"oauth_refresh_token\" : \"TEST_REFRESH_TOKEN\",\n"
-"  \"host_id\" : \"TEST_HOST_ID\",\n"
-"  \"host_name\" : \"TEST_MACHINE_NAME\",\n"
-"  \"private_key\" : \"TEST_PRIVATE_KEY\"\n"
-"}\n";
+    "{\n"
+    "  \"xmpp_login\" : \"test@gmail.com\",\n"
+    "  \"oauth_refresh_token\" : \"TEST_REFRESH_TOKEN\",\n"
+    "  \"host_id\" : \"TEST_HOST_ID\",\n"
+    "  \"host_name\" : \"TEST_MACHINE_NAME\",\n"
+    "  \"private_key\" : \"TEST_PRIVATE_KEY\"\n"
+    "}\n";
 
 }  // namespace
 

@@ -29,8 +29,7 @@ namespace {
 // ui/base/clipboard/clipboard_win.cc.
 class ScopedClipboard {
  public:
-  ScopedClipboard() : opened_(false) {
-  }
+  ScopedClipboard() : opened_(false) {}
 
   ~ScopedClipboard() {
     if (opened_) {
@@ -113,8 +112,7 @@ class ClipboardWin : public Clipboard {
 
   void Start(
       std::unique_ptr<protocol::ClipboardStub> client_clipboard) override;
-  void InjectClipboardEvent(
-      const protocol::ClipboardEvent& event) override;
+  void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
 
  private:
   void OnClipboardUpdate();
@@ -133,8 +131,9 @@ class ClipboardWin : public Clipboard {
 ClipboardWin::ClipboardWin() {}
 
 ClipboardWin::~ClipboardWin() {
-  if (window_)
+  if (window_) {
     ::RemoveClipboardFormatListener(window_->hwnd());
+  }
 }
 
 void ClipboardWin::Start(
@@ -156,14 +155,15 @@ void ClipboardWin::Start(
   }
 }
 
-void ClipboardWin::InjectClipboardEvent(
-    const protocol::ClipboardEvent& event) {
-  if (!window_)
+void ClipboardWin::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
+  if (!window_) {
     return;
+  }
 
   // Currently we only handle UTF-8 text.
-  if (event.mime_type().compare(kMimeTypeTextUtf8) != 0)
+  if (event.mime_type().compare(kMimeTypeTextUtf8) != 0) {
     return;
+  }
   if (!base::IsStringUTF8AllowingNoncharacters(event.data())) {
     LOG(ERROR) << "ClipboardEvent: data is not UTF-8 encoded.";
     return;
@@ -234,8 +234,10 @@ void ClipboardWin::OnClipboardUpdate() {
   }
 }
 
-bool ClipboardWin::HandleMessage(
-    UINT message, WPARAM wparam, LPARAM lparam, LRESULT* result) {
+bool ClipboardWin::HandleMessage(UINT message,
+                                 WPARAM wparam,
+                                 LPARAM lparam,
+                                 LRESULT* result) {
   if (message == WM_CLIPBOARDUPDATE) {
     OnClipboardUpdate();
     *result = 0;

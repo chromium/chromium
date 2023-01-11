@@ -19,7 +19,7 @@
 #include "remoting/host/host_window.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-@interface DisconnectWindowController()
+@interface DisconnectWindowController ()
 - (BOOL)isRToL;
 - (void)Hide;
 @property(nonatomic, retain) NSTextField* connectedToField;
@@ -201,8 +201,8 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   if ([self isRToL]) {
     // Handle right to left case
     CGFloat buttonInset = NSWidth(windowFrame) - NSMaxX(disconnectFrame);
-    CGFloat buttonTextSpacing
-        = NSMinX(disconnectFrame) - NSMaxX(connectedToFrame);
+    CGFloat buttonTextSpacing =
+        NSMinX(disconnectFrame) - NSMaxX(connectedToFrame);
     disconnectFrame.origin.x = buttonInset;
     connectedToFrame.origin.x = NSMaxX(disconnectFrame) + buttonTextSpacing;
     self.connectedToField.frame = connectedToFrame;
@@ -224,8 +224,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
 @end
 
-
-@interface DisconnectWindow()
+@interface DisconnectWindow ()
 - (BOOL)isRToL;
 @end
 
@@ -260,8 +259,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
 @end
 
-
-@interface DisconnectView()
+@interface DisconnectView ()
 - (BOOL)isRToL;
 @end
 
@@ -276,7 +274,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   // All magic numbers taken from screen shots provided by UX.
   NSRect bounds = NSInsetRect([self bounds], 1, 1);
 
-  NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:bounds
+  NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:bounds
                                                        xRadius:5
                                                        yRadius:5];
   NSColor* bgColor;
@@ -303,14 +301,13 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   [frameColor setStroke];
   [path stroke];
 
-
   // Draw drag handle on proper side
   const CGFloat kHeight = 21.0;
   const CGFloat kBaseInset = 12.0;
   const CGFloat kDragHandleWidth = 5.0;
 
   // Turn off aliasing so it's nice and crisp.
-  NSGraphicsContext *context = [NSGraphicsContext currentContext];
+  NSGraphicsContext* context = [NSGraphicsContext currentContext];
   BOOL alias = [context shouldAntialias];
   [context setShouldAntialias:NO];
 

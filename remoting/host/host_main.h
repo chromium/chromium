@@ -14,6 +14,6 @@ namespace remoting {
 // needs to run.
 HOST_EXPORT int HostMain(int argc, char** argv);
 
-} // namespace remoting
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_HOST_MAIN_H_

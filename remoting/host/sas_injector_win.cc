@@ -63,10 +63,9 @@ ScopedSoftwareSasPolicy::~ScopedSoftwareSasPolicy() {
 
 bool ScopedSoftwareSasPolicy::Apply() {
   // Query the currently set SoftwareSASGeneration policy.
-  LONG result = system_policy_.Open(HKEY_LOCAL_MACHINE,
-                                    kSystemPolicyKeyName,
-                                    KEY_QUERY_VALUE | KEY_SET_VALUE |
-                                        KEY_WOW64_64KEY);
+  LONG result =
+      system_policy_.Open(HKEY_LOCAL_MACHINE, kSystemPolicyKeyName,
+                          KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_64KEY);
   if (result != ERROR_SUCCESS) {
     SetLastError(result);
     PLOG(ERROR) << "Failed to open 'HKLM\\" << kSystemPolicyKeyName << "'";
@@ -91,7 +90,7 @@ bool ScopedSoftwareSasPolicy::Apply() {
   return true;
 }
 
-} // namespace
+}  // namespace
 
 // Sends Secure Attention Sequence.  Checks the current policy before sending.
 class SasInjectorWin : public SasInjector {
@@ -142,4 +141,4 @@ std::unique_ptr<SasInjector> SasInjector::Create() {
   return std::make_unique<SasInjectorWin>();
 }
 
-} // namespace remoting
+}  // namespace remoting

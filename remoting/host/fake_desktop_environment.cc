@@ -30,29 +30,34 @@ void FakeInputInjector::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {}
 
 void FakeInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
-  if (key_events_)
+  if (key_events_) {
     key_events_->push_back(event);
+  }
 }
 
 void FakeInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
-  if (text_events_)
+  if (text_events_) {
     text_events_->push_back(event);
+  }
 }
 
 void FakeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
-  if (mouse_events_)
+  if (mouse_events_) {
     mouse_events_->push_back(event);
+  }
 }
 
 void FakeInputInjector::InjectTouchEvent(const protocol::TouchEvent& event) {
-  if (touch_events_)
+  if (touch_events_) {
     touch_events_->push_back(event);
+  }
 }
 
 void FakeInputInjector::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
-  if (clipboard_events_)
+  if (clipboard_events_) {
     clipboard_events_->push_back(event);
+  }
 }
 
 FakeScreenControls::FakeScreenControls() = default;
@@ -93,8 +98,9 @@ std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
 
 std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer() {
   auto fake_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
-  if (!frame_generator_.is_null())
+  if (!frame_generator_.is_null()) {
     fake_capturer->set_frame_generator(frame_generator_);
+  }
 
   auto result = std::make_unique<DesktopCapturerProxy>(capture_thread_);
   result->set_capturer(std::move(fake_capturer));

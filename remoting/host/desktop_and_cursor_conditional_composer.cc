@@ -21,12 +21,14 @@ DesktopAndCursorConditionalComposer::~DesktopAndCursorConditionalComposer() =
     default;
 
 void DesktopAndCursorConditionalComposer::SetComposeEnabled(bool enabled) {
-  if (enabled == compose_enabled_)
+  if (enabled == compose_enabled_) {
     return;
+  }
 
   if (enabled) {
-    if (mouse_cursor_)
+    if (mouse_cursor_) {
       capturer_->OnMouseCursor(webrtc::MouseCursor::CopyOf(*mouse_cursor_));
+    }
   } else {
     webrtc::MouseCursor* empty = new webrtc::MouseCursor(
         new webrtc::BasicDesktopFrame(webrtc::DesktopSize(0, 0)),
@@ -40,14 +42,16 @@ void DesktopAndCursorConditionalComposer::SetComposeEnabled(bool enabled) {
 void DesktopAndCursorConditionalComposer::SetMouseCursor(
     std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
   mouse_cursor_ = std::move(mouse_cursor);
-  if (compose_enabled_)
+  if (compose_enabled_) {
     capturer_->OnMouseCursor(webrtc::MouseCursor::CopyOf(*mouse_cursor_));
+  }
 }
 
 void DesktopAndCursorConditionalComposer::SetMouseCursorPosition(
     const webrtc::DesktopVector& position) {
-  if (compose_enabled_)
+  if (compose_enabled_) {
     capturer_->OnMouseCursorPosition(position);
+  }
 }
 
 void DesktopAndCursorConditionalComposer::Start(

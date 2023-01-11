@@ -81,9 +81,8 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
 
 // Used to create IpcDesktopEnvironment objects integrating with the desktop via
 // a helper process and talking to that process via IPC.
-class IpcDesktopEnvironmentFactory
-    : public DesktopEnvironmentFactory,
-      public DesktopSessionConnector {
+class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
+                                     public DesktopSessionConnector {
  public:
   // Passes a reference to the IPC channel connected to the daemon process and
   // relevant task runners. |daemon_channel| must outlive this object.

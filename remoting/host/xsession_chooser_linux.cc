@@ -81,11 +81,10 @@ class SessionDialog {
       GtkTreeIter iter;
       gtk_list_store_append(session_store, &iter);
       // gtk_list_store_set makes its own internal copy of the strings.
-      gtk_list_store_set(session_store, &iter,
-                         INDEX_COLUMN, static_cast<guint>(i),
-                         NAME_COLUMN, choices_[i].name.c_str(),
-                         COMMENT_COLUMN, choices_[i].comment.c_str(),
-                         -1);
+      gtk_list_store_set(session_store, &iter, INDEX_COLUMN,
+                         static_cast<guint>(i), NAME_COLUMN,
+                         choices_[i].name.c_str(), COMMENT_COLUMN,
+                         choices_[i].comment.c_str(), -1);
     }
 
     g_signal_connect(gtk_builder_get_object(ui_, "session_list"),

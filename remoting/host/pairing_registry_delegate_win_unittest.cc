@@ -38,8 +38,8 @@ class PairingRegistryDelegateWinTest : public testing::Test {
     privileged_.Close();
     unprivileged_.Close();
     EXPECT_TRUE(
-        SHDeleteKey(HKEY_CURRENT_USER,
-                    base::UTF8ToWide(key_name_).c_str()) == ERROR_SUCCESS);
+        SHDeleteKey(HKEY_CURRENT_USER, base::UTF8ToWide(key_name_).c_str()) ==
+        ERROR_SUCCESS);
   }
 
  protected:

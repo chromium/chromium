@@ -57,14 +57,17 @@ constexpr char kLocationAuthzError[] = "Error Code 23:";
 // choose the first one.  This function should not be used for validation, only
 // for logging or determining which certificate to select for validation.
 std::string GetPreferredIssuerFieldValue(const net::X509Certificate* cert) {
-  if (!cert->issuer().common_name.empty())
+  if (!cert->issuer().common_name.empty()) {
     return cert->issuer().common_name;
+  }
   if (!cert->issuer().organization_names.empty() &&
-      !cert->issuer().organization_names[0].empty())
+      !cert->issuer().organization_names[0].empty()) {
     return cert->issuer().organization_names[0];
+  }
   if (!cert->issuer().organization_unit_names.empty() &&
-      !cert->issuer().organization_unit_names[0].empty())
+      !cert->issuer().organization_unit_names[0].empty()) {
     return cert->issuer().organization_unit_names[0];
+  }
 
   return std::string();
 }
@@ -94,14 +97,17 @@ bool WorseThan(const std::string& issuer,
                const base::Time& now,
                const net::X509Certificate* c1,
                const net::X509Certificate* c2) {
-  if (!IsCertificateValid(issuer, now, c2))
+  if (!IsCertificateValid(issuer, now, c2)) {
     return false;
+  }
 
-  if (!IsCertificateValid(issuer, now, c1))
+  if (!IsCertificateValid(issuer, now, c1)) {
     return true;
+  }
 
-  if (c1->valid_start() != c2->valid_start())
+  if (c1->valid_start() != c2->valid_start()) {
     return c1->valid_start() < c2->valid_start();
+  }
 
   return c1->valid_expiry() < c2->valid_expiry();
 }
@@ -163,8 +169,9 @@ void TokenValidatorBase::OnResponseStarted(net::URLRequest* source,
   }
 
   int bytes_read = request_->Read(buffer_.get(), kBufferSize);
-  if (bytes_read != net::ERR_IO_PENDING)
+  if (bytes_read != net::ERR_IO_PENDING) {
     OnReadCompleted(request_.get(), bytes_read);
+  }
 }
 
 void TokenValidatorBase::OnReadCompleted(net::URLRequest* source,
@@ -177,8 +184,9 @@ void TokenValidatorBase::OnReadCompleted(net::URLRequest* source,
     net_result = request_->Read(buffer_.get(), kBufferSize);
   }
 
-  if (net_result == net::ERR_IO_PENDING)
+  if (net_result == net::ERR_IO_PENDING) {
     return;
+  }
 
   retrying_request_ = false;
   auto validation_result = ProcessResponse(net_result);

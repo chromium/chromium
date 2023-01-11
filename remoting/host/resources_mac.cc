@@ -29,8 +29,9 @@ bool LoadResources(const std::string& pref_locale) {
     base::mac::SetOverrideFrameworkBundlePath(path);
 
     // Override the locale with the value from Cocoa.
-    if (pref_locale.empty())
+    if (pref_locale.empty()) {
       l10n_util::OverrideLocaleWithCocoaLocale();
+    }
 
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         pref_locale, NULL, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);

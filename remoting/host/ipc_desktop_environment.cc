@@ -151,8 +151,9 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   int id = next_id_++;
-  bool inserted = active_connections_.insert(
-      std::make_pair(id, desktop_session_proxy)).second;
+  bool inserted =
+      active_connections_.insert(std::make_pair(id, desktop_session_proxy))
+          .second;
   CHECK(inserted);
 
   VLOG(1) << "Network: registered desktop environment " << id;
@@ -167,8 +168,9 @@ void IpcDesktopEnvironmentFactory::DisconnectTerminal(
 
   ActiveConnectionsList::iterator i;
   for (i = active_connections_.begin(); i != active_connections_.end(); ++i) {
-    if (i->second == desktop_session_proxy)
+    if (i->second == desktop_session_proxy) {
       break;
+    }
   }
 
   if (i != active_connections_.end()) {
@@ -187,8 +189,9 @@ void IpcDesktopEnvironmentFactory::SetScreenResolution(
 
   ActiveConnectionsList::iterator i;
   for (i = active_connections_.begin(); i != active_connections_.end(); ++i) {
-    if (i->second == desktop_session_proxy)
+    if (i->second == desktop_session_proxy) {
       break;
+    }
   }
 
   if (i != active_connections_.end()) {

@@ -299,8 +299,9 @@ bool DesktopSessionProxy::AttachToDesktop(
   DCHECK(!desktop_channel_);
 
   // Ignore the attach event if the client session has already disconnected.
-  if (!client_session_control_.get())
+  if (!client_session_control_.get()) {
     return false;
+  }
 
   // Connect to the desktop process.
   desktop_channel_ = IPC::ChannelProxy::Create(
@@ -423,8 +424,9 @@ void DesktopSessionProxy::DisconnectSession(protocol::ErrorCode error) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   // Disconnect the client session if it hasn't been disconnected yet.
-  if (client_session_control_.get())
+  if (client_session_control_.get()) {
     client_session_control_->DisconnectSession(error);
+  }
 }
 
 void DesktopSessionProxy::InjectClipboardEvent(
@@ -498,8 +500,9 @@ void DesktopSessionProxy::SetScreenResolution(
   // Desktop-size-restore functionality (via an empty resolution param) does not
   // exist for the Daemon process.  Passing an empty resolution object is
   // treated as a critical error so we want to prevent that here.
-  if (desktop_session_connector_.get() && !screen_resolution_.IsEmpty())
+  if (desktop_session_connector_.get() && !screen_resolution_.IsEmpty()) {
     desktop_session_connector_->SetScreenResolution(this, screen_resolution_);
+  }
 
   // Passing an empty |screen_resolution_| value to the desktop process
   // indicates that the original resolution, if one exists, should be restored.
@@ -646,8 +649,9 @@ void DesktopSessionProxy::OnUrlForwarderStateChange(
 DesktopSessionProxy::~DesktopSessionProxy() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (desktop_session_connector_.get() && is_desktop_session_connected_)
+  if (desktop_session_connector_.get() && is_desktop_session_connected_) {
     desktop_session_connector_->DisconnectTerminal(this);
+  }
 }
 
 scoped_refptr<DesktopSessionProxy::IpcSharedBufferCore>

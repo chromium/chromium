@@ -86,8 +86,8 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution,
   for (std::list<ScreenResolution>::const_iterator i = resolutions.begin();
        i != resolutions.end(); ++i, ++index) {
     if (i->Equals(resolution)) {
-      CGDisplayModeRef mode = const_cast<CGDisplayModeRef>(
-          static_cast<const CGDisplayMode*>(
+      CGDisplayModeRef mode =
+          const_cast<CGDisplayModeRef>(static_cast<const CGDisplayMode*>(
               CFArrayGetValueAtIndex(modes, index)));
       int depth = 0;
 #pragma clang diagnostic push
@@ -99,13 +99,13 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution,
       if (CFStringCompare(encoding, CFSTR(IO32BitDirectPixels),
                           kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
         depth = 32;
-      } else if (CFStringCompare(
-          encoding, CFSTR(IO16BitDirectPixels),
-          kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
+      } else if (CFStringCompare(encoding, CFSTR(IO16BitDirectPixels),
+                                 kCFCompareCaseInsensitive) ==
+                 kCFCompareEqualTo) {
         depth = 16;
-      } else if(CFStringCompare(
-          encoding, CFSTR(IO8BitIndexedPixels),
-          kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
+      } else if (CFStringCompare(encoding, CFSTR(IO8BitIndexedPixels),
+                                 kCFCompareCaseInsensitive) ==
+                 kCFCompareEqualTo) {
         depth = 8;
       }
       if (depth > best_depth) {
@@ -116,10 +116,10 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution,
   }
   if (best_mode) {
     HOST_LOG << "Changing mode to " << best_mode << " ("
-              << resolution.dimensions().width() << "x"
-              << "x" << resolution.dimensions().height() << "x"
-              << best_depth << " @ "
-              << resolution.dpi().x() << "x" << resolution.dpi().y() << " dpi)";
+             << resolution.dimensions().width() << "x"
+             << "x" << resolution.dimensions().height() << "x" << best_depth
+             << " @ " << resolution.dpi().x() << "x" << resolution.dpi().y()
+             << " dpi)";
     CGDisplaySetDisplayMode(display, best_mode, nullptr);
   }
 }
@@ -151,8 +151,7 @@ void DesktopResizerMac::GetSupportedModesAndResolutions(
   CFIndex count = CFArrayGetCount(*modes);
   for (CFIndex i = 0; i < count; ++i) {
     CGDisplayModeRef mode = const_cast<CGDisplayModeRef>(
-        static_cast<const CGDisplayMode*>(
-            CFArrayGetValueAtIndex(*modes, i)));
+        static_cast<const CGDisplayMode*>(CFArrayGetValueAtIndex(*modes, i)));
     if (CGDisplayModeIsUsableForDesktopGUI(mode)) {
       // TODO(jamiewalch): Get the correct DPI: http://crbug.com/172405.
       ScreenResolution resolution(

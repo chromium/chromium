@@ -137,8 +137,9 @@ void InputInjectorX11::Core::InjectClipboardEvent(const ClipboardEvent& event) {
 
 void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
   // HostEventDispatcher should filter events missing the pressed field.
-  if (!event.has_pressed() || !event.has_usb_keycode())
+  if (!event.has_pressed() || !event.has_usb_keycode()) {
     return;
+  }
 
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(FROM_HERE,
@@ -157,14 +158,16 @@ void InputInjectorX11::Core::InjectKeyEvent(const KeyEvent& event) {
           << " to keycode: " << keycode << std::dec;
 
   // Ignore events which can't be mapped.
-  if (keycode == ui::KeycodeConverter::InvalidNativeKeycode())
+  if (keycode == ui::KeycodeConverter::InvalidNativeKeycode()) {
     return;
+  }
 
   if (event.pressed()) {
     if (pressed_keys_.find(keycode) != pressed_keys_.end()) {
       // Ignore repeats for modifier keys.
-      if (IsDomModifierKey(static_cast<ui::DomCode>(event.usb_keycode())))
+      if (IsDomModifierKey(static_cast<ui::DomCode>(event.usb_keycode()))) {
         return;
+      }
       // Key is already held down, so lift the key up to ensure this repeated
       // press takes effect.
       connection_->xtest().FakeInput(
@@ -223,9 +226,10 @@ void InputInjectorX11::Core::InjectTextEvent(const TextEvent& event) {
   // Release all keys before injecting text event. This is necessary to avoid
   // any interference with the currently pressed keys. E.g. if Shift is pressed
   // when TextEvent is received.
-  for (int key : pressed_keys_)
+  for (int key : pressed_keys_) {
     connection_->xtest().FakeInput(
         {x11::KeyEvent::Release, static_cast<uint8_t>(key)});
+  }
   pressed_keys_.clear();
 
   const std::string text = event.text();
@@ -249,8 +253,9 @@ void InputInjectorX11::Core::InitClipboard() {
 }
 
 bool InputInjectorX11::Core::IsAutoRepeatEnabled() {
-  if (auto reply = connection_->GetKeyboardControl().Sync())
+  if (auto reply = connection_->GetKeyboardControl().Sync()) {
     return reply->global_auto_repeat == x11::AutoRepeatMode::On;
+  }
   LOG(ERROR) << "Failed to get keyboard auto-repeat status, assuming ON.";
   return true;
 }
@@ -264,15 +269,17 @@ void InputInjectorX11::Core::SetAutoRepeatEnabled(bool mode) {
 
 bool InputInjectorX11::Core::IsLockKey(x11::KeyCode keycode) {
   auto state = connection_->xkb().GetState().Sync();
-  if (!state)
+  if (!state) {
     return false;
+  }
   auto mods = state->baseMods | state->latchedMods | state->lockedMods;
   auto keysym =
       connection_->KeycodeToKeysym(keycode, static_cast<unsigned>(mods));
-  if (state && keysym)
+  if (state && keysym) {
     return keysym == XK_Caps_Lock || keysym == XK_Num_Lock;
-  else
+  } else {
     return false;
+  }
 }
 
 void InputInjectorX11::Core::SetLockStates(absl::optional<bool> caps_lock,
@@ -362,8 +369,9 @@ void InputInjectorX11::Core::InjectMouseEvent(const MouseEvent& event) {
     new_mouse_position.set(screen_location.x(), screen_location.y());
 #endif
     if (event.has_button() && event.has_button_down() && !event.button_down()) {
-      if (new_mouse_position.equals(latest_mouse_position_))
+      if (new_mouse_position.equals(latest_mouse_position_)) {
         inject_motion = false;
+      }
     }
 
     if (inject_motion) {
@@ -477,18 +485,22 @@ void InputInjectorX11::Core::InitMouseButtonMap() {
   // Note that if a user has a global mapping that completely disables a button
   // (by assigning 0 to it), we won't be able to inject it.
   std::vector<uint8_t> pointer_mapping;
-  if (auto reply = connection_->GetPointerMapping().Sync())
+  if (auto reply = connection_->GetPointerMapping().Sync()) {
     pointer_mapping = std::move(reply->map);
-  for (int& i : pointer_button_map_)
+  }
+  for (int& i : pointer_button_map_) {
     i = -1;
+  }
   for (size_t i = 0; i < pointer_mapping.size(); i++) {
     // Reverse the mapping.
-    if (pointer_mapping[i] > 0 && pointer_mapping[i] <= kNumPointerButtons)
+    if (pointer_mapping[i] > 0 && pointer_mapping[i] <= kNumPointerButtons) {
       pointer_button_map_[pointer_mapping[i] - 1] = i + 1;
+    }
   }
   for (int i = 0; i < kNumPointerButtons; i++) {
-    if (pointer_button_map_[i] == -1)
+    if (pointer_button_map_[i] == -1) {
       LOG(ERROR) << "Global pointer mapping does not support button " << i + 1;
+    }
   }
 
   if (!connection_->QueryExtension("XInputExtension").Sync()) {
@@ -533,8 +545,9 @@ void InputInjectorX11::Core::InitMouseButtonMap() {
           connection_->xinput().GetDeviceButtonMapping({device_id}).Sync()) {
     size_t num_device_buttons = mapping->map.size();
     std::vector<uint8_t> new_mapping;
-    for (size_t i = 0; i < num_device_buttons; i++)
+    for (size_t i = 0; i < num_device_buttons; i++) {
       new_mapping.push_back(i + 1);
+    }
     if (!connection_->xinput()
              .SetDeviceButtonMapping({device_id, new_mapping})
              .Sync()) {
@@ -596,8 +609,9 @@ void InputInjectorX11::Core::Start(
   // done for the duration of the session because some window managers do
   // not handle changes to this setting efficiently.
   saved_auto_repeat_enabled_ = IsAutoRepeatEnabled();
-  if (saved_auto_repeat_enabled_)
+  if (saved_auto_repeat_enabled_) {
     SetAutoRepeatEnabled(false);
+  }
 }
 
 void InputInjectorX11::Core::Stop() {
@@ -609,8 +623,9 @@ void InputInjectorX11::Core::Stop() {
   clipboard_.reset();
   character_injector_.reset();
   // Re-enable auto-repeat, if necessary, on disconnect.
-  if (saved_auto_repeat_enabled_)
+  if (saved_auto_repeat_enabled_) {
     SetAutoRepeatEnabled(true);
+  }
 }
 
 // static

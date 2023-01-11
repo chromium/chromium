@@ -181,8 +181,8 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
 
   // Detach the session from the local console if the caller requested.
   if (desktop_environment_options().enable_curtaining()) {
-    curtain_ = CurtainMode::Create(
-        caller_task_runner(), ui_task_runner(), client_session_control);
+    curtain_ = CurtainMode::Create(caller_task_runner(), ui_task_runner(),
+                                   client_session_control);
     if (!curtain_->Activate()) {
       LOG(ERROR) << "Failed to activate the curtain mode.";
       curtain_ = nullptr;
@@ -242,8 +242,7 @@ Me2MeDesktopEnvironmentFactory::Me2MeDesktopEnvironmentFactory(
                                      input_task_runner,
                                      ui_task_runner) {}
 
-Me2MeDesktopEnvironmentFactory::~Me2MeDesktopEnvironmentFactory() {
-}
+Me2MeDesktopEnvironmentFactory::~Me2MeDesktopEnvironmentFactory() = default;
 
 std::unique_ptr<DesktopEnvironment> Me2MeDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,

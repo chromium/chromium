@@ -85,7 +85,7 @@ base::FilePath BuildHostBinaryPath() {
 
   return directory.Append(FILE_PATH_LITERAL("remoting_host.exe"));
 #else
-  #error "BuildHostBinaryPath is not implemented for current platform."
+#error "BuildHostBinaryPath is not implemented for current platform."
 #endif
 }
 

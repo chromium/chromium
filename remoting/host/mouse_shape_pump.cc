@@ -64,22 +64,23 @@ void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
   uint8_t* current_row = cursor->image()->data();
   for (int y = 0; y < cursor->image()->size().height(); ++y) {
     cursor_proto->mutable_data()->append(
-        current_row,
-        current_row + cursor->image()->size().width() *
-            webrtc::DesktopFrame::kBytesPerPixel);
+        current_row, current_row + cursor->image()->size().width() *
+                                       webrtc::DesktopFrame::kBytesPerPixel);
     current_row += cursor->image()->stride();
   }
 
   cursor_shape_stub_->SetCursorShape(*cursor_proto);
 
-  if (callback_)
+  if (callback_) {
     callback_->OnMouseCursor(owned_cursor.release());
+  }
 }
 
 void MouseShapePump::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
-  if (callback_)
+  if (callback_) {
     callback_->OnMouseCursorPosition(position);
+  }
 }
 
 }  // namespace remoting

@@ -50,10 +50,12 @@ webrtc::DesktopSize DesktopDisplayInfo::CalcSizeDips(webrtc::DesktopSize size,
                                                      int dpi_y) {
   // Guard against invalid input.
   // TODO: Replace with a DCHECK, once crbug.com/938648 is fixed.
-  if (dpi_x == 0)
+  if (dpi_x == 0) {
     dpi_x = kDefaultDpi;
-  if (dpi_y == 0)
+  }
+  if (dpi_y == 0) {
     dpi_y = kDefaultDpi;
+  }
 
   webrtc::DesktopSize size_dips(size.width() * kDefaultDpi / dpi_x,
                                 size.height() * kDefaultDpi / dpi_y);
@@ -70,8 +72,9 @@ int DesktopDisplayInfo::NumDisplays() const {
 
 const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(
     unsigned int id) const {
-  if (id < 0 || id >= displays_.size())
+  if (id < 0 || id >= displays_.size()) {
     return nullptr;
+  }
   return &displays_[id];
 }
 
@@ -129,10 +132,12 @@ webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
   int dx = 0;
   int dy = 0;
   for (const auto& display : displays_) {
-    if (display.x < dx)
+    if (display.x < dx) {
       dx = display.x;
-    if (display.y < dy)
+    }
+    if (display.y < dy) {
       dy = display.y;
+    }
   }
   webrtc::DesktopVector topleft(dx, dy);
 

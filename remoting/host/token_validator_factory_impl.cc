@@ -40,7 +40,6 @@ const size_t kNonceLength = 16;  // 128 bits.
 
 namespace remoting {
 
-
 class TokenValidatorImpl : public TokenValidatorBase {
  public:
   TokenValidatorImpl(
@@ -99,13 +98,13 @@ void TokenValidatorImpl::StartValidateRequest(const std::string& token) {
 #error VERSION is not set.
 #endif
   // Set a user-agent for logging/auditing purposes.
-  request_->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kUserAgent,
-                                        app_name + " " + STRINGIZE(VERSION),
-                                        true);
-
   request_->SetExtraRequestHeaderByName(
-      net::HttpRequestHeaders::kContentType,
-      "application/x-www-form-urlencoded", true);
+      net::HttpRequestHeaders::kUserAgent,
+      app_name + " " + STRINGIZE(VERSION), true);
+
+  request_->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
+                                        "application/x-www-form-urlencoded",
+                                        true);
   request_->set_method("POST");
   std::unique_ptr<net::UploadElementReader> reader(
       new net::UploadBytesElementReader(post_body_.data(), post_body_.size()));
@@ -114,9 +113,8 @@ void TokenValidatorImpl::StartValidateRequest(const std::string& token) {
   request_->Start();
 }
 
-std::string TokenValidatorImpl::CreateScope(
-    const std::string& local_jid,
-    const std::string& remote_jid) {
+std::string TokenValidatorImpl::CreateScope(const std::string& local_jid,
+                                            const std::string& remote_jid) {
   std::string nonce_bytes;
   crypto::RandBytes(base::WriteInto(&nonce_bytes, kNonceLength + 1),
                     kNonceLength);
@@ -138,8 +136,7 @@ TokenValidatorFactoryImpl::TokenValidatorFactoryImpl(
     scoped_refptr<net::URLRequestContextGetter> request_context_getter)
     : third_party_auth_config_(third_party_auth_config),
       key_pair_(key_pair),
-      request_context_getter_(request_context_getter) {
-}
+      request_context_getter_(request_context_getter) {}
 
 TokenValidatorFactoryImpl::~TokenValidatorFactoryImpl() = default;
 

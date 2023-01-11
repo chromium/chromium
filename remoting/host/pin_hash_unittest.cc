@@ -10,8 +10,7 @@
 
 namespace remoting {
 
-class PinHashTest : public testing::Test {
-};
+class PinHashTest : public testing::Test {};
 
 TEST_F(PinHashTest, KnownHashValue) {
   std::string hash = MakeHostPinHash("Host ID", "1234");
@@ -23,15 +22,12 @@ TEST_F(PinHashTest, VerifyHostPinHash) {
   std::string host_id2("Host ID 2");
   std::string pin1("1234");
   std::string pin2("4321");
-  ASSERT_TRUE(VerifyHostPinHash(MakeHostPinHash(host_id1, pin1),
-                                host_id1,
-                                pin1));
-  ASSERT_FALSE(VerifyHostPinHash(MakeHostPinHash(host_id1, pin1),
-                                 host_id2,
-                                 pin1));
-  ASSERT_FALSE(VerifyHostPinHash(MakeHostPinHash(host_id1, pin1),
-                                 host_id1,
-                                 pin2));
+  ASSERT_TRUE(
+      VerifyHostPinHash(MakeHostPinHash(host_id1, pin1), host_id1, pin1));
+  ASSERT_FALSE(
+      VerifyHostPinHash(MakeHostPinHash(host_id1, pin1), host_id2, pin1));
+  ASSERT_FALSE(
+      VerifyHostPinHash(MakeHostPinHash(host_id1, pin1), host_id1, pin2));
 }
 
 }  // namespace remoting

@@ -22,14 +22,17 @@ namespace remoting {
 
 // Provide comparison operation for ScreenResolution so we can use it in
 // std::map.
-static inline bool operator <(const ScreenResolution& a,
-                              const ScreenResolution& b) {
-  if (a.dimensions().width() != b.dimensions().width())
+static inline bool operator<(const ScreenResolution& a,
+                             const ScreenResolution& b) {
+  if (a.dimensions().width() != b.dimensions().width()) {
     return a.dimensions().width() < b.dimensions().width();
-  if (a.dimensions().height() != b.dimensions().height())
+  }
+  if (a.dimensions().height() != b.dimensions().height()) {
     return a.dimensions().height() < b.dimensions().height();
-  if (a.dpi().x() != b.dpi().x())
+  }
+  if (a.dpi().x() != b.dpi().x()) {
     return a.dpi().x() < b.dpi().x();
+  }
   return a.dpi().y() < b.dpi().y();
 }
 
@@ -58,8 +61,9 @@ class DesktopResizerWin : public DesktopResizer {
 
   // Calls EnumDisplaySettingsEx() for the primary monitor.
   // Returns false if |mode_number| does not exist.
-  static bool GetPrimaryDisplayMode(
-      DWORD mode_number, DWORD flags, DEVMODE* mode);
+  static bool GetPrimaryDisplayMode(DWORD mode_number,
+                                    DWORD flags,
+                                    DEVMODE* mode);
 
   // Returns true if the mode has width, height, bits-per-pixel, frequency
   // and orientation fields.
@@ -81,37 +85,40 @@ DesktopResizerWin::DesktopResizerWin() {
   }
 }
 
-DesktopResizerWin::~DesktopResizerWin() {
-}
+DesktopResizerWin::~DesktopResizerWin() {}
 
 ScreenResolution DesktopResizerWin::GetCurrentResolution(
     webrtc::ScreenId screen_id) {
   DEVMODE current_mode;
   if (GetPrimaryDisplayMode(ENUM_CURRENT_SETTINGS, 0, &current_mode) &&
-      IsModeValid(current_mode))
+      IsModeValid(current_mode)) {
     return GetModeResolution(current_mode);
+  }
   return ScreenResolution();
 }
 
 std::list<ScreenResolution> DesktopResizerWin::GetSupportedResolutions(
     const ScreenResolution& preferred,
     webrtc::ScreenId screen_id) {
-  if (!IsResizeSupported())
+  if (!IsResizeSupported()) {
     return std::list<ScreenResolution>();
+  }
 
   // Enumerate the resolutions to return, and where there are multiple modes of
   // the same resolution, store the one most closely matching the current mode
   // in |best_mode_for_resolution_|.
   DEVMODE current_mode;
   if (!GetPrimaryDisplayMode(ENUM_CURRENT_SETTINGS, 0, &current_mode) ||
-      !IsModeValid(current_mode))
+      !IsModeValid(current_mode)) {
     return std::list<ScreenResolution>();
+  }
 
   best_mode_for_resolution_.clear();
-  for (DWORD i = 0; ; ++i) {
+  for (DWORD i = 0;; ++i) {
     DEVMODE candidate_mode;
-    if (!GetPrimaryDisplayMode(i, EDS_ROTATEDMODE, &candidate_mode))
+    if (!GetPrimaryDisplayMode(i, EDS_ROTATEDMODE, &candidate_mode)) {
       break;
+    }
     UpdateBestModeForResolution(current_mode, candidate_mode);
   }
 
@@ -124,21 +131,24 @@ std::list<ScreenResolution> DesktopResizerWin::GetSupportedResolutions(
 
 void DesktopResizerWin::SetResolution(const ScreenResolution& resolution,
                                       webrtc::ScreenId screen_id) {
-  if (best_mode_for_resolution_.count(resolution) == 0)
+  if (best_mode_for_resolution_.count(resolution) == 0) {
     return;
+  }
 
   DEVMODE new_mode = best_mode_for_resolution_[resolution];
   DWORD result = ChangeDisplaySettings(&new_mode, CDS_FULLSCREEN);
-  if (result != DISP_CHANGE_SUCCESSFUL)
+  if (result != DISP_CHANGE_SUCCESSFUL) {
     LOG(ERROR) << "SetResolution failed: " << result;
+  }
 }
 
 void DesktopResizerWin::RestoreResolution(const ScreenResolution& original,
                                           webrtc::ScreenId screen_id) {
   // Restore the display mode based on the registry configuration.
   DWORD result = ChangeDisplaySettings(nullptr, 0);
-  if (result != DISP_CHANGE_SUCCESSFUL)
+  if (result != DISP_CHANGE_SUCCESSFUL) {
     LOG(ERROR) << "RestoreResolution failed: " << result;
+  }
 }
 
 void DesktopResizerWin::SetVideoLayout(const protocol::VideoLayout& layout) {
@@ -242,20 +252,21 @@ bool DesktopResizerWin::IsResizeSupported() {
 }
 
 // static
-bool DesktopResizerWin::GetPrimaryDisplayMode(
-    DWORD mode_number, DWORD flags, DEVMODE* mode) {
- memset(mode, 0, sizeof(DEVMODE));
- mode->dmSize = sizeof(DEVMODE);
- if (!EnumDisplaySettingsEx(nullptr, mode_number, mode, flags))
-   return false;
- return true;
+bool DesktopResizerWin::GetPrimaryDisplayMode(DWORD mode_number,
+                                              DWORD flags,
+                                              DEVMODE* mode) {
+  memset(mode, 0, sizeof(DEVMODE));
+  mode->dmSize = sizeof(DEVMODE);
+  if (!EnumDisplaySettingsEx(nullptr, mode_number, mode, flags)) {
+    return false;
+  }
+  return true;
 }
 
 // static
 bool DesktopResizerWin::IsModeValid(const DEVMODE& mode) {
-  const DWORD kRequiredFields =
-      DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL |
-      DM_DISPLAYFREQUENCY | DM_DISPLAYORIENTATION;
+  const DWORD kRequiredFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL |
+                                DM_DISPLAYFREQUENCY | DM_DISPLAYORIENTATION;
   return (mode.dmFields & kRequiredFields) == kRequiredFields;
 }
 

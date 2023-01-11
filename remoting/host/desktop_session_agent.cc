@@ -85,8 +85,9 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
     BOOL success =
         ::DuplicateHandle(process, region.UnsafeGetPlatformHandle(), process,
                           &handle, 0, FALSE, DUPLICATE_SAME_ACCESS);
-    if (!success)
+    if (!success) {
       return nullptr;
+    }
     base::ReadOnlySharedMemoryRegion read_only_region =
         base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
 #else
@@ -97,8 +98,9 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
     base::WritableSharedMemoryMapping mapping =
         std::move(region_mapping.mapping);
 #endif
-    if (!mapping.IsValid())
+    if (!mapping.IsValid()) {
       return nullptr;
+    }
     // The SharedMemoryImpl ctor is private, so std::make_unique can't be
     // used.
     return base::WrapUnique(
@@ -257,8 +259,9 @@ void DesktopSessionAgent::OnChannelError() {
   network_channel_.reset();
 
   // Notify the caller that the channel has been disconnected.
-  if (delegate_.get())
+  if (delegate_.get()) {
     delegate_->OnNetworkProcessDisconnected();
+  }
 }
 
 void DesktopSessionAgent::OnAssociatedInterfaceRequest(
@@ -433,8 +436,9 @@ void DesktopSessionAgent::Start(
   // Begin observing the desktop display(s) for changes. Note that some
   // desktop environments may not provide a display info monitor.
   auto* display_info_monitor = desktop_environment_->GetDisplayInfoMonitor();
-  if (display_info_monitor)
+  if (display_info_monitor) {
     display_info_monitor->Start();
+  }
 
   // Set up the message handler for file transfers.
   session_file_operations_handler_.emplace(
@@ -491,16 +495,18 @@ void DesktopSessionAgent::OnMouseCursor(webrtc::MouseCursor* cursor) {
     desktop_session_event_handler_->OnMouseCursorChanged(*owned_cursor);
   }
 
-  if (video_capturer_)
+  if (video_capturer_) {
     video_capturer_->SetMouseCursor(std::move(owned_cursor));
+  }
 }
 
 void DesktopSessionAgent::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (video_capturer_)
+  if (video_capturer_) {
     video_capturer_->SetMouseCursorPosition(position);
+  }
 }
 
 void DesktopSessionAgent::OnClipboardEvent(
@@ -722,8 +728,9 @@ void DesktopSessionAgent::SetScreenResolution(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
 
-  if (screen_controls_)
+  if (screen_controls_) {
     screen_controls_->SetScreenResolution(resolution, absl::nullopt);
+  }
 }
 
 void DesktopSessionAgent::StartAudioCapturer() {

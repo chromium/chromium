@@ -53,8 +53,7 @@ class ContinueWindowMac : public ContinueWindow {
   base::scoped_nsobject<ContinueWindowMacController> controller_;
 };
 
-ContinueWindowMac::ContinueWindowMac() {
-}
+ContinueWindowMac::ContinueWindowMac() {}
 
 ContinueWindowMac::~ContinueWindowMac() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -102,7 +101,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   // Generate window shade
   NSArray* screens = [NSScreen screens];
   _shades.reset([[NSMutableArray alloc] initWithCapacity:[screens count]]);
-  for (NSScreen *screen in screens) {
+  for (NSScreen* screen in screens) {
     NSWindow* shade =
         [[[NSWindow alloc] initWithContentRect:[screen frame]
                                      styleMask:NSWindowStyleMaskBorderless
@@ -125,20 +124,18 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   _continue_alert.reset([[NSAlert alloc] init]);
   [_continue_alert setMessageText:l10n_util::GetNSString(IDS_CONTINUE_PROMPT)];
 
-  NSButton* continue_button =
-      [_continue_alert addButtonWithTitle:l10n_util::GetNSString(
-          IDS_CONTINUE_BUTTON)];
+  NSButton* continue_button = [_continue_alert
+      addButtonWithTitle:l10n_util::GetNSString(IDS_CONTINUE_BUTTON)];
   [continue_button setAction:@selector(onContinue:)];
   [continue_button setTarget:self];
 
-  NSButton* cancel_button =
-      [_continue_alert addButtonWithTitle:l10n_util::GetNSString(
-          IDS_STOP_SHARING_BUTTON)];
+  NSButton* cancel_button = [_continue_alert
+      addButtonWithTitle:l10n_util::GetNSString(IDS_STOP_SHARING_BUTTON)];
   [cancel_button setAction:@selector(onCancel:)];
   [cancel_button setTarget:self];
 
-  NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  NSString *imagePath = [bundle pathForResource:@"chromoting128" ofType:@"png"];
+  NSBundle* bundle = [NSBundle bundleForClass:[self class]];
+  NSString* imagePath = [bundle pathForResource:@"chromoting128" ofType:@"png"];
   base::scoped_nsobject<NSImage> image(
       [[NSImage alloc] initByReferencingFile:imagePath]);
   [_continue_alert setIcon:image];

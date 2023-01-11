@@ -32,6 +32,6 @@ class HostEventLogger {
   HostEventLogger() {}
 };
 
-}
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_HOST_EVENT_LOGGER_H_

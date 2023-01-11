@@ -112,7 +112,7 @@ class CandidateResolution {
     // 640x640), just pick the widest, since desktop UIs are typically designed
     // for landscape aspect ratios.
     return resolution().dimensions().width() >
-        other.resolution().dimensions().width();
+           other.resolution().dimensions().width();
   }
 
  private:
@@ -131,8 +131,9 @@ ResizingHostObserver::ResizingHostObserver(
       clock_(base::DefaultTickClock::GetInstance()) {}
 
 ResizingHostObserver::~ResizingHostObserver() {
-  if (restore_)
+  if (restore_) {
     RestoreAllScreenResolutions();
+  }
 }
 
 void ResizingHostObserver::RegisterForDisplayChanges(

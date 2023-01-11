@@ -467,9 +467,9 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
   policy::PolicyServiceImpl::Providers providers;
   std::unique_ptr<policy::PolicyService> owned_policy_service(
       new policy::PolicyServiceImpl(providers));
-  return base::WrapUnique(new PolicyWatcher(
-      owned_policy_service.get(), std::move(owned_policy_service), nullptr,
-      CreateSchemaRegistry()));
+  return base::WrapUnique(new PolicyWatcher(owned_policy_service.get(),
+                                            std::move(owned_policy_service),
+                                            nullptr, CreateSchemaRegistry()));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED() << "CreateWithPolicyService() should be used on ChromeOS.";
   return nullptr;

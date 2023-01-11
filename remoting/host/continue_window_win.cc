@@ -37,7 +37,9 @@ class ContinueWindowWin : public ContinueWindow {
   void HideUi() override;
 
  private:
-  static BOOL CALLBACK DialogProc(HWND hwmd, UINT msg, WPARAM wParam,
+  static BOOL CALLBACK DialogProc(HWND hwmd,
+                                  UINT msg,
+                                  WPARAM wParam,
                                   LPARAM lParam);
 
   BOOL OnDialogMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -47,9 +49,7 @@ class ContinueWindowWin : public ContinueWindow {
   HWND hwnd_;
 };
 
-ContinueWindowWin::ContinueWindowWin()
-    : hwnd_(nullptr) {
-}
+ContinueWindowWin::ContinueWindowWin() : hwnd_(nullptr) {}
 
 ContinueWindowWin::~ContinueWindowWin() {
   EndDialog();
@@ -60,7 +60,7 @@ void ContinueWindowWin::ShowUi() {
   DCHECK(!hwnd_);
 
   hwnd_ = CreateDialogParam(CURRENT_MODULE(), MAKEINTRESOURCE(IDD_CONTINUE),
-                            nullptr, (DLGPROC)DialogProc, (LPARAM) this);
+                            nullptr, (DLGPROC)DialogProc, (LPARAM)this);
   if (!hwnd_) {
     LOG(ERROR) << "Unable to create Disconnect dialog for remoting.";
     return;
@@ -75,8 +75,10 @@ void ContinueWindowWin::HideUi() {
   EndDialog();
 }
 
-BOOL CALLBACK ContinueWindowWin::DialogProc(HWND hwnd, UINT msg,
-                                            WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK ContinueWindowWin::DialogProc(HWND hwnd,
+                                            UINT msg,
+                                            WPARAM wParam,
+                                            LPARAM lParam) {
   ContinueWindowWin* win = nullptr;
   if (msg == WM_INITDIALOG) {
     win = reinterpret_cast<ContinueWindowWin*>(lParam);
@@ -86,13 +88,16 @@ BOOL CALLBACK ContinueWindowWin::DialogProc(HWND hwnd, UINT msg,
     LONG_PTR lp = GetWindowLongPtr(hwnd, DWLP_USER);
     win = reinterpret_cast<ContinueWindowWin*>(lp);
   }
-  if (win == nullptr)
+  if (win == nullptr) {
     return FALSE;
+  }
   return win->OnDialogMessage(hwnd, msg, wParam, lParam);
 }
 
-BOOL ContinueWindowWin::OnDialogMessage(HWND hwnd, UINT msg,
-                                        WPARAM wParam, LPARAM lParam) {
+BOOL ContinueWindowWin::OnDialogMessage(HWND hwnd,
+                                        UINT msg,
+                                        WPARAM wParam,
+                                        LPARAM lParam) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (msg) {

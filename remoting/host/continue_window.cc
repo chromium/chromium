@@ -38,8 +38,9 @@ void ContinueWindow::ContinueSession() {
 
   disconnect_timer_.Stop();
 
-  if (!client_session_control_)
+  if (!client_session_control_) {
     return;
+  }
 
   // Hide the Continue window and resume the session.
   HideUi();
@@ -53,15 +54,17 @@ void ContinueWindow::DisconnectSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   disconnect_timer_.Stop();
-  if (client_session_control_)
+  if (client_session_control_) {
     client_session_control_->DisconnectSession(protocol::MAX_SESSION_LENGTH);
+  }
 }
 
 void ContinueWindow::OnSessionExpired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!client_session_control_)
+  if (!client_session_control_) {
     return;
+  }
 
   // Stop the remote input while the Continue window is shown.
   client_session_control_->SetDisableInputs(true);

@@ -159,16 +159,18 @@ class ChromotingHostTest : public testing::Test {
 
     if (authenticate) {
       client_ptr->OnConnectionAuthenticated();
-      if (!reject)
+      if (!reject) {
         client_ptr->OnConnectionChannelsConnected();
+      }
     } else {
       client_ptr->OnConnectionClosed(protocol::AUTHENTICATION_FAILED);
     }
   }
 
   void TearDown() override {
-    if (host_)
+    if (host_) {
       ShutdownHost();
+    }
     task_runner_ = nullptr;
 
     base::RunLoop().RunUntilIdle();

@@ -9,7 +9,6 @@
 
 #include "remoting/protocol/authenticator.h"
 
-
 // PamAuthorizationFactory abuses the AuthenticatorFactory interface to apply
 // PAM-based authorization on top of some underlying authentication scheme.
 

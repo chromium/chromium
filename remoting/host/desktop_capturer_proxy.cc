@@ -112,8 +112,9 @@ void DesktopCapturerProxy::Core::CreateCapturer(
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!capturer_)
+  if (!capturer_) {
     LOG(ERROR) << "Failed to initialize screen capturer.";
+  }
 }
 
 void DesktopCapturerProxy::Core::Start(
@@ -122,8 +123,9 @@ void DesktopCapturerProxy::Core::Start(
   DCHECK(!caller_task_runner_);
 
   caller_task_runner_ = caller_task_runner;
-  if (capturer_)
+  if (capturer_) {
     capturer_->Start(this);
+  }
 }
 
 void DesktopCapturerProxy::Core::SetSharedMemoryFactory(

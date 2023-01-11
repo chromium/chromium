@@ -6,7 +6,9 @@
 #define REMOTING_HOST_TOUCH_INJECTOR_WIN_H_
 
 #include <windows.h>
+
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <vector>

@@ -20,8 +20,7 @@ namespace {
 const base::FilePath::CharType kConfigDir[] =
     FILE_PATH_LITERAL("Google\\Chrome Remote Desktop");
 #else
-const base::FilePath::CharType kConfigDir[] =
-    FILE_PATH_LITERAL("Chromoting");
+const base::FilePath::CharType kConfigDir[] = FILE_PATH_LITERAL("Chromoting");
 #endif
 #elif BUILDFLAG(IS_APPLE)
 const base::FilePath::CharType kConfigDir[] =
@@ -31,7 +30,7 @@ const base::FilePath::CharType kConfigDir[] =
     FILE_PATH_LITERAL(".config/chrome-remote-desktop");
 #endif
 
-} // namespace
+}  // namespace
 
 namespace remoting {
 
@@ -53,4 +52,4 @@ base::FilePath GetConfigDir() {
   return app_data_dir.Append(kConfigDir);
 }
 
-} // namespace remoting
+}  // namespace remoting

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-
 namespace remoting {
 
 // Helper used in audio capturers to detect and drop silent audio packets.

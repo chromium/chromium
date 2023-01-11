@@ -157,8 +157,9 @@ void DaemonProcess::CloseDesktopSession(int terminal_id) {
   // It is OK if the terminal ID wasn't found. There is a race between
   // the network and daemon processes. Each frees its own recources first and
   // notifies the other party if there was something to clean up.
-  if (i == desktop_sessions_.end())
+  if (i == desktop_sessions_.end()) {
     return;
+  }
 
   delete *i;
   desktop_sessions_.erase(i);
@@ -242,8 +243,9 @@ void DaemonProcess::SetScreenResolution(int terminal_id,
   // It is OK if the terminal ID wasn't found. There is a race between
   // the network and daemon processes. Each frees its own resources first and
   // notifies the other party if there was something to clean up.
-  if (i == desktop_sessions_.end())
+  if (i == desktop_sessions_.end()) {
     return;
+  }
 
   (*i)->SetScreenResolution(resolution);
 }
@@ -285,29 +287,33 @@ bool DaemonProcess::WasTerminalIdAllocated(int terminal_id) {
 void DaemonProcess::OnClientAccessDenied(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_monitor_->observers())
+  for (auto& observer : status_monitor_->observers()) {
     observer.OnClientAccessDenied(signaling_id);
+  }
 }
 
 void DaemonProcess::OnClientAuthenticated(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_monitor_->observers())
+  for (auto& observer : status_monitor_->observers()) {
     observer.OnClientAuthenticated(signaling_id);
+  }
 }
 
 void DaemonProcess::OnClientConnected(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_monitor_->observers())
+  for (auto& observer : status_monitor_->observers()) {
     observer.OnClientConnected(signaling_id);
+  }
 }
 
 void DaemonProcess::OnClientDisconnected(const std::string& signaling_id) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_monitor_->observers())
+  for (auto& observer : status_monitor_->observers()) {
     observer.OnClientDisconnected(signaling_id);
+  }
 }
 
 void DaemonProcess::OnClientRouteChange(const std::string& signaling_id,
@@ -315,22 +321,25 @@ void DaemonProcess::OnClientRouteChange(const std::string& signaling_id,
                                         const protocol::TransportRoute& route) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_monitor_->observers())
+  for (auto& observer : status_monitor_->observers()) {
     observer.OnClientRouteChange(signaling_id, channel_name, route);
+  }
 }
 
 void DaemonProcess::OnHostStarted(const std::string& owner_email) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_monitor_->observers())
+  for (auto& observer : status_monitor_->observers()) {
     observer.OnHostStarted(owner_email);
+  }
 }
 
 void DaemonProcess::OnHostShutdown() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_monitor_->observers())
+  for (auto& observer : status_monitor_->observers()) {
     observer.OnHostShutdown();
+  }
 }
 
 void DaemonProcess::DeleteAllDesktopSessions() {

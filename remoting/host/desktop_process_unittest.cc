@@ -229,10 +229,8 @@ DesktopProcessTest::CreateDesktopEnvironment() {
       .WillOnce(
           Return(ByMove(std::make_unique<FakeUrlForwarderConfigurator>())));
   EXPECT_CALL(*desktop_environment, CreateFileOperations()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, GetCapabilities())
-      .Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, SetCapabilities(_))
-      .Times(AtMost(1));
+  EXPECT_CALL(*desktop_environment, GetCapabilities()).Times(AtMost(1));
+  EXPECT_CALL(*desktop_environment, SetCapabilities(_)).Times(AtMost(1));
 
   // Notify the test that the desktop environment has been created.
   network_listener_.OnDesktopEnvironmentCreated();
@@ -360,8 +358,8 @@ TEST_F(DesktopProcessTest, CreateNetworkChannel) {
         CreateNetworkChannel(std::move(desktop_pipe));
       });
   EXPECT_CALL(network_listener_, OnChannelConnected(_))
-      .WillOnce(InvokeWithoutArgs(
-          this, &DesktopProcessTest::DisconnectChannels));
+      .WillOnce(
+          InvokeWithoutArgs(this, &DesktopProcessTest::DisconnectChannels));
 
   RunDesktopProcess();
 }
@@ -382,8 +380,8 @@ TEST_F(DesktopProcessTest, StartSessionAgent) {
   }
 
   EXPECT_CALL(network_listener_, OnDesktopEnvironmentCreated())
-      .WillOnce(InvokeWithoutArgs(
-          this, &DesktopProcessTest::PostDisconnectChannels));
+      .WillOnce(
+          InvokeWithoutArgs(this, &DesktopProcessTest::PostDisconnectChannels));
 
   RunDesktopProcess();
 }

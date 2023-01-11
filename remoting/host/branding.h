@@ -18,6 +18,6 @@ extern const wchar_t kWindowsServiceName[];
 // Returns the location of the host configuration directory.
 base::FilePath GetConfigDir();
 
-} // namespace remoting
+}  // namespace remoting
 
-#endif // REMOTING_HOST_BRANDING_H_
+#endif  // REMOTING_HOST_BRANDING_H_

@@ -35,4 +35,3 @@ void IpcMouseCursorMonitor::OnMouseCursor(
 }
 
 }  // namespace remoting
-

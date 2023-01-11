@@ -105,7 +105,7 @@ MATCHER(IsClientDisconnected, "") {
     return false;
   }
   jingle_xmpp::XmlElement* log_stanza = arg->FirstChild()->AsElement();
-  if (log_stanza->Name() !=QName(kChromotingNamespace, "log")) {
+  if (log_stanza->Name() != QName(kChromotingNamespace, "log")) {
     return false;
   }
   if (log_stanza->NextChild()) {
@@ -208,8 +208,8 @@ TEST_F(HostStatusLoggerTest, SendTwoEntriesLater) {
     EXPECT_CALL(signal_strategy_, AddListener(_));
     EXPECT_CALL(signal_strategy_, GetNextId());
     EXPECT_CALL(signal_strategy_,
-        SendStanzaPtr(IsTwoClientsConnected("direct", "stun")))
-            .WillOnce(DoAll(DeleteArg<0>(), Return(true)));
+                SendStanzaPtr(IsTwoClientsConnected("direct", "stun")))
+        .WillOnce(DoAll(DeleteArg<0>(), Return(true)));
     EXPECT_CALL(signal_strategy_, RemoveListener(_))
         .WillOnce(QuitRunLoop(&run_loop))
         .RetiresOnSaturation();

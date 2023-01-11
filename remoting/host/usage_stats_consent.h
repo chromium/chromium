@@ -21,6 +21,6 @@ bool IsUsageStatsAllowed();
 // statistics.
 bool SetUsageStatsConsent(bool allowed);
 
-}  // remoting
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_USAGE_STATS_CONSENT_H_

@@ -188,8 +188,9 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
 
   int consumed = 0;
   for (auto& listener : signal_strategy_listeners_) {
-    if (listener.OnSignalStrategyIncomingStanza(response.get()))
+    if (listener.OnSignalStrategyIncomingStanza(response.get())) {
       consumed++;
+    }
   }
   EXPECT_EQ(1, consumed);
 

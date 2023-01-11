@@ -69,8 +69,8 @@ bool PamAuthorizer::started() const {
   return underlying_->started();
 }
 
-protocol::Authenticator::RejectionReason
-PamAuthorizer::rejection_reason() const {
+protocol::Authenticator::RejectionReason PamAuthorizer::rejection_reason()
+    const {
   if (local_login_status_ == DISALLOWED) {
     return RejectionReason::INVALID_CREDENTIALS;
   } else {
@@ -93,7 +93,8 @@ void PamAuthorizer::OnMessageProcessed(base::OnceClosure resume_callback) {
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement> PamAuthorizer::GetNextMessage() {
-  std::unique_ptr<jingle_xmpp::XmlElement> result(underlying_->GetNextMessage());
+  std::unique_ptr<jingle_xmpp::XmlElement> result(
+      underlying_->GetNextMessage());
   MaybeCheckLocalLogin();
   return result;
 }
@@ -118,17 +119,17 @@ bool PamAuthorizer::IsLocalLoginAllowed() {
   if (username.empty()) {
     return false;
   }
-  struct pam_conv conv = { PamConversation, nullptr };
+  struct pam_conv conv = {PamConversation, nullptr};
   pam_handle_t* handle = nullptr;
-  int result = pam_start("chrome-remote-desktop", username.c_str(),
-                         &conv, &handle);
+  int result =
+      pam_start("chrome-remote-desktop", username.c_str(), &conv, &handle);
   if (result == PAM_SUCCESS) {
     result = pam_acct_mgmt(handle, 0);
   }
   pam_end(handle, result);
 
   HOST_LOG << "Local login check for " << username
-            << (result == PAM_SUCCESS ? " succeeded." : " failed.");
+           << (result == PAM_SUCCESS ? " succeeded." : " failed.");
 
   return result == PAM_SUCCESS;
 }

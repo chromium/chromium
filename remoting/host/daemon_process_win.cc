@@ -356,8 +356,9 @@ void DaemonProcessWin::DisableAutoStart() {
 
 bool DaemonProcessWin::InitializePairingRegistry() {
   if (!pairing_registry_privileged_key_.Valid()) {
-    if (!OpenPairingRegistry())
+    if (!OpenPairingRegistry()) {
       return false;
+    }
   }
 
   // Initialize the pairing registry in the network process. This has to be done
@@ -369,11 +370,13 @@ bool DaemonProcessWin::InitializePairingRegistry() {
       DuplicateRegistryKeyHandle(pairing_registry_privileged_key_);
   base::win::ScopedHandle unprivileged_key =
       DuplicateRegistryKeyHandle(pairing_registry_unprivileged_key_);
-  if (!(privileged_key.IsValid() && unprivileged_key.IsValid()))
+  if (!(privileged_key.IsValid() && unprivileged_key.IsValid())) {
     return false;
+  }
 
-  if (!remoting_host_control_)
+  if (!remoting_host_control_) {
     return false;
+  }
 
   remoting_host_control_->InitializePairingRegistry(
       mojo::PlatformHandle(std::move(privileged_key)),
@@ -393,9 +396,9 @@ bool DaemonProcessWin::OpenPairingRegistry() {
   // Open the root of the pairing registry. Create if absent.
   base::win::RegKey root;
   DWORD disposition;
-  LONG result = root.CreateWithDisposition(
-      HKEY_LOCAL_MACHINE, kPairingRegistryKeyName, &disposition,
-      KEY_READ | KEY_CREATE_SUB_KEY);
+  LONG result =
+      root.CreateWithDisposition(HKEY_LOCAL_MACHINE, kPairingRegistryKeyName,
+                                 &disposition, KEY_READ | KEY_CREATE_SUB_KEY);
 
   if (result != ERROR_SUCCESS) {
     ::SetLastError(result);
@@ -403,8 +406,9 @@ bool DaemonProcessWin::OpenPairingRegistry() {
     return false;
   }
 
-  if (disposition == REG_CREATED_NEW_KEY)
+  if (disposition == REG_CREATED_NEW_KEY) {
     LOG(WARNING) << "Created pairing registry root key which was absent.";
+  }
 
   // Open the pairing registry clients key. Create if absent.
   base::win::RegKey unprivileged;
@@ -419,13 +423,14 @@ bool DaemonProcessWin::OpenPairingRegistry() {
     return false;
   }
 
-  if (disposition == REG_CREATED_NEW_KEY)
+  if (disposition == REG_CREATED_NEW_KEY) {
     LOG(WARNING) << "Created pairing registry client key which was absent.";
+  }
 
   // Open the pairing registry secret key.
   base::win::RegKey privileged;
-  result = privileged.Open(
-      root.Handle(), kPairingRegistrySecretsKeyName, KEY_READ | KEY_WRITE);
+  result = privileged.Open(root.Handle(), kPairingRegistrySecretsKeyName,
+                           KEY_READ | KEY_WRITE);
 
   if (result == ERROR_FILE_NOT_FOUND) {
     LOG(WARNING) << "Pairing registry privileged key absent, creating.";
@@ -447,9 +452,9 @@ bool DaemonProcessWin::OpenPairingRegistry() {
     security_attributes.bInheritHandle = FALSE;
 
     HKEY key = nullptr;
-    result = ::RegCreateKeyEx(
-        root.Handle(), kPairingRegistrySecretsKeyName, 0, nullptr, 0,
-        KEY_READ | KEY_WRITE, &security_attributes, &key, &disposition);
+    result = ::RegCreateKeyEx(root.Handle(), kPairingRegistrySecretsKeyName, 0,
+                              nullptr, 0, KEY_READ | KEY_WRITE,
+                              &security_attributes, &key, &disposition);
     privileged.Set(key);
   }
 

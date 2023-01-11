@@ -67,4 +67,4 @@ std::unique_ptr<HostExtensionSession> FakeExtension::CreateExtensionSession(
   return std::make_unique<Session>(this, message_type_);
 }
 
-} // namespace remoting
+}  // namespace remoting

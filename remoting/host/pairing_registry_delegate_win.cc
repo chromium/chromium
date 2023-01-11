@@ -101,11 +101,9 @@ bool WriteValue(base::win::RegKey& key,
 
 using protocol::PairingRegistry;
 
-PairingRegistryDelegateWin::PairingRegistryDelegateWin() {
-}
+PairingRegistryDelegateWin::PairingRegistryDelegateWin() {}
 
-PairingRegistryDelegateWin::~PairingRegistryDelegateWin() {
-}
+PairingRegistryDelegateWin::~PairingRegistryDelegateWin() {}
 
 bool PairingRegistryDelegateWin::SetRootKeys(HKEY privileged,
                                              HKEY unprivileged) {
@@ -113,12 +111,14 @@ bool PairingRegistryDelegateWin::SetRootKeys(HKEY privileged,
   DCHECK(!unprivileged_.Valid());
   DCHECK(unprivileged);
 
-  if (!DuplicateKeyHandle(unprivileged, &unprivileged_))
+  if (!DuplicateKeyHandle(unprivileged, &unprivileged_)) {
     return false;
+  }
 
   if (privileged) {
-    if (!DuplicateKeyHandle(privileged, &privileged_))
+    if (!DuplicateKeyHandle(privileged, &privileged_)) {
       return false;
+    }
   }
 
   return true;
@@ -162,8 +162,9 @@ bool PairingRegistryDelegateWin::DeleteAll() {
     // presubmit: allow wstring
     std::wstring value_name;
     LONG result = unprivileged_.GetValueNameAt(0, &value_name);
-    if (result == ERROR_SUCCESS)
+    if (result == ERROR_SUCCESS) {
       result = unprivileged_.DeleteValue(value_name.c_str());
+    }
 
     success = success && (result == ERROR_SUCCESS);
     count = unprivileged_.GetValueCount();
@@ -174,8 +175,9 @@ bool PairingRegistryDelegateWin::DeleteAll() {
     // presubmit: allow wstring
     std::wstring value_name;
     LONG result = privileged_.GetValueNameAt(0, &value_name);
-    if (result == ERROR_SUCCESS)
+    if (result == ERROR_SUCCESS) {
       result = privileged_.DeleteValue(value_name.c_str());
+    }
 
     success = success && (result == ERROR_SUCCESS);
     count = privileged_.GetValueCount();
@@ -192,15 +194,17 @@ PairingRegistry::Pairing PairingRegistryDelegateWin::Load(
   // Read unprivileged fields first.
   absl::optional<base::Value::Dict> pairing =
       ReadValue(unprivileged_, value_name.c_str());
-  if (!pairing)
+  if (!pairing) {
     return PairingRegistry::Pairing();
+  }
 
   // Read the shared secret.
   if (privileged_.Valid()) {
     absl::optional<base::Value::Dict> secret =
         ReadValue(privileged_, value_name.c_str());
-    if (!secret)
+    if (!secret) {
       return PairingRegistry::Pairing();
+    }
 
     // Merge the two dictionaries.
     pairing->Merge(std::move(*secret));
@@ -212,7 +216,7 @@ PairingRegistry::Pairing PairingRegistryDelegateWin::Load(
 bool PairingRegistryDelegateWin::Save(const PairingRegistry::Pairing& pairing) {
   if (!privileged_.Valid()) {
     LOG(ERROR) << "Cannot save pairing entry '" << pairing.client_id()
-                << "': the pairing registry privileged key is invalid.";
+               << "': the pairing registry privileged key is invalid.";
     return false;
   }
 
@@ -241,15 +245,14 @@ bool PairingRegistryDelegateWin::Save(const PairingRegistry::Pairing& pairing) {
 bool PairingRegistryDelegateWin::Delete(const std::string& client_id) {
   if (!privileged_.Valid()) {
     LOG(ERROR) << "Cannot delete pairing entry '" << client_id
-                << "': the delegate is read-only.";
+               << "': the delegate is read-only.";
     return false;
   }
 
   // presubmit: allow wstring
   std::wstring value_name = base::UTF8ToWide(client_id);
   LONG result = privileged_.DeleteValue(value_name.c_str());
-  if (result != ERROR_SUCCESS &&
-      result != ERROR_FILE_NOT_FOUND &&
+  if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND &&
       result != ERROR_PATH_NOT_FOUND) {
     SetLastError(result);
     PLOG(ERROR) << "Cannot delete pairing entry '" << client_id << "'";
@@ -257,8 +260,7 @@ bool PairingRegistryDelegateWin::Delete(const std::string& client_id) {
   }
 
   result = unprivileged_.DeleteValue(value_name.c_str());
-  if (result != ERROR_SUCCESS &&
-      result != ERROR_FILE_NOT_FOUND &&
+  if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND &&
       result != ERROR_PATH_NOT_FOUND) {
     SetLastError(result);
     PLOG(ERROR) << "Cannot delete pairing entry '" << client_id << "'";

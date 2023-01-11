@@ -54,7 +54,7 @@ class HostEventLoggerPosix : public HostEventLogger, public HostStatusObserver {
   std::string application_name_;
 };
 
-} //namespace
+}  // namespace
 
 HostEventLoggerPosix::HostEventLoggerPosix(
     scoped_refptr<HostStatusMonitor> monitor,

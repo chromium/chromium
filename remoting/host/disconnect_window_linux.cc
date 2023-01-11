@@ -74,7 +74,9 @@ class DisconnectWindowGtk : public HostWindow {
 // Helper function for creating a rectangular path with rounded corners, as
 // Cairo doesn't have this facility.  |radius| is the arc-radius of each
 // corner.  The bounding rectangle extends from (0, 0) to (width, height).
-void AddRoundRectPath(cairo_t* cairo_context, int width, int height,
+void AddRoundRectPath(cairo_t* cairo_context,
+                      int width,
+                      int height,
                       int radius) {
   cairo_new_sub_path(cairo_context);
   cairo_arc(cairo_context, width - radius, radius, radius, -base::kPiDouble / 2,
@@ -142,10 +144,7 @@ void DrawBackground(cairo_t* cairo_context, int width, int height) {
 }
 
 DisconnectWindowGtk::DisconnectWindowGtk()
-    : disconnect_window_(nullptr),
-      current_width_(0),
-      current_height_(0) {
-}
+    : disconnect_window_(nullptr), current_width_(0), current_height_(0) {}
 
 DisconnectWindowGtk::~DisconnectWindowGtk() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -260,8 +259,9 @@ void DisconnectWindowGtk::Start(
   // GTK4 always uses an RGBA visual for windows.
   GdkScreen* screen = gtk_widget_get_screen(disconnect_window_);
   GdkVisual* visual = gdk_screen_get_rgba_visual(screen);
-  if (visual)
+  if (visual) {
     gtk_widget_set_visual(disconnect_window_, visual);
+  }
 
   // GTK4 shows windows by default.
   gtk_widget_show_all(disconnect_window_);
@@ -280,16 +280,17 @@ void DisconnectWindowGtk::Start(
 void DisconnectWindowGtk::OnClicked(GtkButton* button) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (client_session_control_.get())
+  if (client_session_control_.get()) {
     client_session_control_->DisconnectSession(protocol::OK);
+  }
 }
 
-gboolean DisconnectWindowGtk::OnDelete(GtkWidget* window,
-                                       GdkEvent* event) {
+gboolean DisconnectWindowGtk::OnDelete(GtkWidget* window, GdkEvent* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (client_session_control_.get())
+  if (client_session_control_.get()) {
     client_session_control_->DisconnectSession(protocol::OK);
+  }
   return TRUE;
 }
 
@@ -298,8 +299,9 @@ gboolean DisconnectWindowGtk::OnConfigure(GtkWidget* widget,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Only generate bitmaps if the size has actually changed.
-  if (event->width == current_width_ && event->height == current_height_)
+  if (event->width == current_width_ && event->height == current_height_) {
     return FALSE;
+  }
 
   current_width_ = event->width;
   current_height_ = event->height;
@@ -320,11 +322,8 @@ gboolean DisconnectWindowGtk::OnButtonPress(GtkWidget* widget,
                                             GdkEventButton* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  gtk_window_begin_move_drag(GTK_WINDOW(disconnect_window_),
-                             event->button,
-                             event->x_root,
-                             event->y_root,
-                             event->time);
+  gtk_window_begin_move_drag(GTK_WINDOW(disconnect_window_), event->button,
+                             event->x_root, event->y_root, event->time);
   return FALSE;
 }
 

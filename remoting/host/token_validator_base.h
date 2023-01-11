@@ -22,9 +22,8 @@ class ClientCertStore;
 
 namespace remoting {
 
-class TokenValidatorBase
-    : public net::URLRequest::Delegate,
-      public protocol::TokenValidator {
+class TokenValidatorBase : public net::URLRequest::Delegate,
+                           public protocol::TokenValidator {
  public:
   TokenValidatorBase(
       const ThirdPartyAuthConfig& third_party_auth_config,

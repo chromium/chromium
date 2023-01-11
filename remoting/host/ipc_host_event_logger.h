@@ -50,6 +50,6 @@ class IpcHostEventLogger : public HostEventLogger, public HostStatusObserver {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_IPC_HOST_EVENT_LOGGER_H_

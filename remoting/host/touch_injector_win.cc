@@ -42,9 +42,8 @@ void AppendMapValuesToVector(
   }
 }
 
-void ConvertToPointerTouchInfoImpl(
-    const TouchEventPoint& touch_point,
-    POINTER_TOUCH_INFO* pointer_touch_info) {
+void ConvertToPointerTouchInfoImpl(const TouchEventPoint& touch_point,
+                                   POINTER_TOUCH_INFO* pointer_touch_info) {
   pointer_touch_info->touchMask =
       TOUCH_MASK_CONTACTAREA | TOUCH_MASK_ORIENTATION;
   pointer_touch_info->touchFlags = TOUCH_FLAG_NONE;
@@ -54,8 +53,7 @@ void ConvertToPointerTouchInfoImpl(
   // MSDN mentions that if the digitizer does not detect the size of the touch
   // point, rcContact should be set to 0 by 0 rectangle centered at the
   // coordinate.
-  pointer_touch_info->rcContact.left =
-      touch_point.x() - touch_point.radius_x();
+  pointer_touch_info->rcContact.left = touch_point.x() - touch_point.radius_x();
   pointer_touch_info->rcContact.top = touch_point.y() - touch_point.radius_y();
   pointer_touch_info->rcContact.right =
       touch_point.x() + touch_point.radius_x();
@@ -68,9 +66,8 @@ void ConvertToPointerTouchInfoImpl(
     pointer_touch_info->touchMask |= TOUCH_MASK_PRESSURE;
     const float kMinimumPressure = 0.0;
     const float kMaximumPressure = 1.0;
-    const float clamped_touch_point_pressure =
-        std::max(kMinimumPressure,
-                 std::min(kMaximumPressure, touch_point.pressure()));
+    const float clamped_touch_point_pressure = std::max(
+        kMinimumPressure, std::min(kMaximumPressure, touch_point.pressure()));
 
     const int kWindowsMaxTouchPressure = 1024;  // Defined in MSDN.
     const int pressure =
@@ -86,13 +83,13 @@ void ConvertToPointerTouchInfoImpl(
 
 // The caller should set memset(0) the struct and set
 // pointer_touch_info->pointerInfo.pointerFlags.
-void ConvertToPointerTouchInfo(
-    const TouchEventPoint& touch_point,
-    POINTER_TOUCH_INFO* pointer_touch_info) {
+void ConvertToPointerTouchInfo(const TouchEventPoint& touch_point,
+                               POINTER_TOUCH_INFO* pointer_touch_info) {
   // TODO(zijiehe): Use GetFullscreenTopLeft() once
   // https://chromium-review.googlesource.com/c/581951/ is submitted.
-  webrtc::DesktopVector top_left = webrtc::GetScreenRect(
-      webrtc::kFullDesktopScreenId, std::wstring()).top_left();
+  webrtc::DesktopVector top_left =
+      webrtc::GetScreenRect(webrtc::kFullDesktopScreenId, std::wstring())
+          .top_left();
   if (top_left.is_zero()) {
     ConvertToPointerTouchInfoImpl(touch_point, pointer_touch_info);
     return;
@@ -164,16 +161,18 @@ TouchInjectorWin::~TouchInjectorWin() = default;
 // so that a mock delegate can be injected in tests and set expectations on the
 // mock and return value of this method.
 bool TouchInjectorWin::Init() {
-  if (!delegate_)
+  if (!delegate_) {
     delegate_ = TouchInjectorWinDelegate::Create();
+  }
 
   // If initializing the delegate failed above, then the platform likely doesn't
   // support touch (or the libraries failed to load for some reason).
-  if (!delegate_)
+  if (!delegate_) {
     return false;
+  }
 
-  if (!delegate_->InitializeTouchInjection(
-          kMaxSimultaneousTouchCount, TOUCH_FEEDBACK_DEFAULT)) {
+  if (!delegate_->InitializeTouchInjection(kMaxSimultaneousTouchCount,
+                                           TOUCH_FEEDBACK_DEFAULT)) {
     // delagate_ is reset here so that the function that need the delegate
     // can check if it is null.
     delegate_.reset();

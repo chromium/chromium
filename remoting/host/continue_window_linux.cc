@@ -39,9 +39,7 @@ class ContinueWindowGtk : public ContinueWindow {
   GtkWidget* continue_window_;
 };
 
-ContinueWindowGtk::ContinueWindowGtk()
-    : continue_window_(nullptr) {
-}
+ContinueWindowGtk::ContinueWindowGtk() : continue_window_(nullptr) {}
 
 ContinueWindowGtk::~ContinueWindowGtk() {
   if (continue_window_) {
@@ -73,13 +71,11 @@ void ContinueWindowGtk::CreateWindow() {
   DCHECK(!continue_window_);
 
   continue_window_ = gtk_dialog_new_with_buttons(
-      l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str(),
-      nullptr,
+      l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str(), nullptr,
       GTK_DIALOG_MODAL,
       l10n_util::GetStringUTF8(IDS_STOP_SHARING_BUTTON).c_str(),
       GTK_RESPONSE_CANCEL,
-      l10n_util::GetStringUTF8(IDS_CONTINUE_BUTTON).c_str(),
-      GTK_RESPONSE_OK,
+      l10n_util::GetStringUTF8(IDS_CONTINUE_BUTTON).c_str(), GTK_RESPONSE_OK,
       nullptr);
 
   gtk_dialog_set_default_response(GTK_DIALOG(continue_window_),
@@ -90,8 +86,8 @@ void ContinueWindowGtk::CreateWindow() {
   // DisconnectWindow.
   gtk_window_set_keep_above(GTK_WINDOW(continue_window_), TRUE);
 
-  g_signal_connect(continue_window_, "response",
-                   G_CALLBACK(OnResponseThunk), this);
+  g_signal_connect(continue_window_, "response", G_CALLBACK(OnResponseThunk),
+                   this);
 
   GtkWidget* content_area =
       gtk_dialog_get_content_area(GTK_DIALOG(continue_window_));

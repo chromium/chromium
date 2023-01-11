@@ -30,7 +30,7 @@ static constexpr char kSeparator[] = ",";
 
 struct Attribute {
   const char* name;
-  bool(* get_value_func)();
+  bool (*get_value_func)();
 };
 
 inline constexpr bool IsDebug() {
@@ -47,7 +47,7 @@ inline constexpr bool IsChromeBranded() {
 #elif BUILDFLAG(CHROMIUM_BRANDING)
   return false;
 #else
-  #error Only Chrome and Chromium brands are supported.
+#error Only Chrome and Chromium brands are supported.
 #endif
 }
 
@@ -78,11 +78,11 @@ inline constexpr bool IsNonOfficialBuild() {
 // So we need IsDebug() function, and "Debug-Build" Attribute.
 
 static constexpr Attribute kAttributes[] = {
-  { "Debug-Build", &IsDebug },
-  { "ChromeBrand", &IsChromeBranded },
-  { "ChromiumBrand", &IsChromiumBranded },
-  { "OfficialBuild", &IsOfficialBuild },
-  { "NonOfficialBuild", &IsNonOfficialBuild },
+    {"Debug-Build", &IsDebug},
+    {"ChromeBrand", &IsChromeBranded},
+    {"ChromiumBrand", &IsChromiumBranded},
+    {"OfficialBuild", &IsOfficialBuild},
+    {"NonOfficialBuild", &IsNonOfficialBuild},
 };
 
 }  // namespace

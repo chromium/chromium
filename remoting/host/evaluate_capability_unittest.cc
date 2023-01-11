@@ -35,9 +35,10 @@ TEST(EvaluateCapabilityTest, DISABLED_ShouldReturnCrashResult) {
 TEST(EvaluateCapabilityTest, ShouldReturnExitCodeAndOutput) {
   std::string output;
   ASSERT_EQ(EvaluateCapability("test", &output), 234);
-  ASSERT_EQ("In EvaluateTest(): Line 1\n"
-            "In EvaluateTest(): Line 2",
-            NormalizeOutput(output));
+  ASSERT_EQ(
+      "In EvaluateTest(): Line 1\n"
+      "In EvaluateTest(): Line 2",
+      NormalizeOutput(output));
 }
 
 TEST(EvaluateCapabilityTest, ShouldReturnSuccessAndOutput) {

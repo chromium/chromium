@@ -17,8 +17,8 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::InSequence;
 using ::testing::ExpectationSet;
+using ::testing::InSequence;
 using ::testing::Return;
 
 namespace remoting {
@@ -63,11 +63,14 @@ MATCHER_P(EqualsPointerTouchInfoFlag, id_to_flag_map, "") {
   for (size_t i = 0; i < id_to_flag_map.size(); ++i) {
     const POINTER_TOUCH_INFO* touch_info = arg + i;
     const uint32_t id = touch_info->pointerInfo.pointerId;
-    if (!base::Contains(id_to_flag_map, id))
+    if (!base::Contains(id_to_flag_map, id)) {
       return false;
+    }
 
-    if (id_to_flag_map.find(id)->second != touch_info->pointerInfo.pointerFlags)
+    if (id_to_flag_map.find(id)->second !=
+        touch_info->pointerInfo.pointerFlags) {
       return false;
+    }
   }
   return true;
 }
@@ -239,25 +242,24 @@ TEST(TouchInjectorWinTest, Reinitialize) {
 
   InSequence s;
   EXPECT_CALL(*delegate_mock_before_deinitialize,
-              InitializeTouchInjection(_, _)).WillOnce(Return(1));
+              InitializeTouchInjection(_, _))
+      .WillOnce(Return(1));
 
   IdFlagMap id_to_flags;
   id_to_flags[0u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock_before_deinitialize,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock_before_deinitialize,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
-  EXPECT_CALL(*delegate_mock_after_deinitialize,
-              InitializeTouchInjection(_, _)).WillOnce(Return(1));
+  EXPECT_CALL(*delegate_mock_after_deinitialize, InitializeTouchInjection(_, _))
+      .WillOnce(Return(1));
 
   // After deinitializing and then initializing, previous touch points should be
   // gone.
   id_to_flags.clear();
   id_to_flags[1u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock_after_deinitialize,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock_after_deinitialize,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   TouchInjectorWin injector;
@@ -290,9 +292,8 @@ TEST(TouchInjectorWinTest, StartTouchPoint) {
 
   IdFlagMap id_to_flags;
   id_to_flags[0u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   TouchInjectorWin injector;
@@ -311,22 +312,19 @@ TEST(TouchInjectorWinTest, MoveTouchPoint) {
   TouchEventPoint* point = event.add_touch_points();
   point->set_id(0u);
 
-
   InSequence s;
   EXPECT_CALL(*delegate_mock, InitializeTouchInjection(_, _))
       .WillOnce(Return(1));
 
   IdFlagMap id_to_flags;
   id_to_flags[0u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags[0u] = kMoveFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   TouchInjectorWin injector;
@@ -353,15 +351,13 @@ TEST(TouchInjectorWinTest, EndTouchPoint) {
 
   IdFlagMap id_to_flags;
   id_to_flags[0u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags[0u] = kEndFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   TouchInjectorWin injector;
@@ -388,15 +384,13 @@ TEST(TouchInjectorWinTest, CancelTouchPoint) {
 
   IdFlagMap id_to_flags;
   id_to_flags[0u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags[0u] = kCancelFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   TouchInjectorWin injector;
@@ -425,47 +419,41 @@ TEST(TouchInjectorWinTest, MultiTouch) {
 
   IdFlagMap id_to_flags;
   id_to_flags[0u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags[0u] = kMoveFlag;
   id_to_flags[1u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(2, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(2, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags[0u] = kMoveFlag;
   id_to_flags[1u] = kMoveFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(2, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(2, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags[0u] = kMoveFlag;
   id_to_flags[1u] = kMoveFlag;
   id_to_flags[2u] = kStartFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(3, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(3, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags[0u] = kMoveFlag;
   id_to_flags[1u] = kEndFlag;
   id_to_flags[2u] = kMoveFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(3, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(3, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   id_to_flags.erase(1u);
   id_to_flags[0u] = kCancelFlag;
   id_to_flags[2u] = kCancelFlag;
-  EXPECT_CALL(
-      *delegate_mock,
-      InjectTouchInput(2, EqualsPointerTouchInfoFlag(id_to_flags)))
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(2, EqualsPointerTouchInfoFlag(id_to_flags)))
       .WillOnce(Return(1));
 
   TouchInjectorWin injector;

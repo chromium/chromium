@@ -174,8 +174,9 @@ void GdkLayoutMonitorOnGtkThread::OnEvent(const x11::Event& event) {
   } else if (auto* notify = event.As<x11::Xkb::StateNotifyEvent>()) {
     int new_group = notify->baseGroup + notify->latchedGroup +
                     static_cast<int16_t>(notify->lockedGroup);
-    if (new_group != current_group_)
+    if (new_group != current_group_) {
       QueryLayout();
+    }
   }
 }
 
@@ -190,8 +191,9 @@ void GdkLayoutMonitorOnGtkThread::QueryLayout() {
 
   auto req = connection_->xkb().GetState(
       {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd)});
-  if (auto reply = req.Sync())
+  if (auto reply = req.Sync()) {
     current_group_ = static_cast<int>(reply->group);
+  }
 
   for (ui::DomCode key : KeyboardLayoutMonitorLinux::kSupportedKeys) {
     // Skip single-layout IME keys for now, as they are always present in the

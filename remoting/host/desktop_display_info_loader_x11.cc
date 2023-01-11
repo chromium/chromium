@@ -94,8 +94,9 @@ void DesktopDisplayInfoLoaderX11::OnEvent(const x11::Event& xevent) {
 }
 
 void DesktopDisplayInfoLoaderX11::LoadMonitors() {
-  if (xrandr_version_ < kMinRandrVersion)
+  if (xrandr_version_ < kMinRandrVersion) {
     return;
+  }
 
   auto reply = randr_->GetMonitors({ui::GetX11RootWindow()}).Sync();
   if (reply) {

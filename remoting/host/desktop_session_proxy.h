@@ -210,7 +210,7 @@ class DesktopSessionProxy
 
   class IpcSharedBufferCore;
   class IpcSharedBuffer;
-  typedef std::map<int, scoped_refptr<IpcSharedBufferCore> > SharedBuffers;
+  typedef std::map<int, scoped_refptr<IpcSharedBufferCore>> SharedBuffers;
 
   ~DesktopSessionProxy() override;
 

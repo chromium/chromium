@@ -57,8 +57,9 @@ XmppRegisterSupportHostRequest::XmppRegisterSupportHostRequest(
     : directory_bot_jid_(directory_bot_jid) {}
 
 XmppRegisterSupportHostRequest::~XmppRegisterSupportHostRequest() {
-  if (signal_strategy_)
+  if (signal_strategy_) {
     signal_strategy_->RemoveListener(this);
+  }
 }
 
 void XmppRegisterSupportHostRequest::StartRequest(

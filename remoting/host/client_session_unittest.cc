@@ -67,8 +67,9 @@ constexpr char kTestDataChannelCallbackName[] = "test_channel_name";
 // Matches a |protocol::Capabilities| argument against a list of capabilities
 // formatted as a space-separated string.
 MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
-  if (!arg.has_capabilities())
+  if (!arg.has_capabilities()) {
     return false;
+  }
 
   std::vector<std::string> words_args =
       base::SplitString(arg.capabilities(), " ", base::KEEP_WHITESPACE,
@@ -225,8 +226,9 @@ void ClientSessionTest::SetUp() {
 
 void ClientSessionTest::TearDown() {
   if (client_session_) {
-    if (connection_->is_connected())
+    if (connection_->is_connected()) {
       client_session_->DisconnectSession(protocol::OK);
+    }
     client_session_.reset();
     desktop_environment_factory_.reset();
   }
@@ -318,14 +320,18 @@ void ClientSessionTest::NotifyVideoSizeAll() {
       y_max = disp_y_max;
       initialized = true;
     } else {
-      if (disp.x < x_min)
+      if (disp.x < x_min) {
         x_min = disp.x;
-      if (disp_x_max > x_max)
+      }
+      if (disp_x_max > x_max) {
         x_max = disp_x_max;
-      if (disp.y < y_min)
+      }
+      if (disp.y < y_min) {
         y_min = disp.y;
-      if (disp_y_max > y_max)
+      }
+      if (disp_y_max > y_max) {
         y_max = disp_y_max;
+      }
     }
   }
   int width = x_max - x_min;

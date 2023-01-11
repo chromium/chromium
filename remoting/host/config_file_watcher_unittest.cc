@@ -92,21 +92,22 @@ void ConfigFileWatcherTest::SetUp() {
 
 void ConfigFileWatcherTest::TearDown() {
   // Delete the test file.
-  if (!config_file_.empty())
+  if (!config_file_.empty()) {
     base::DeleteFile(config_file_);
+  }
 }
 
 // Verifies that the initial notification is delivered.
 TEST_F(ConfigFileWatcherTest, Basic) {
   std::string data("test");
   EXPECT_NE(base::WriteFile(config_file_, data.c_str(),
-                                 static_cast<int>(data.size())), -1);
+                            static_cast<int>(data.size())),
+            -1);
 
   EXPECT_CALL(delegate_, OnConfigUpdated(_))
       .Times(1)
       .WillOnce(InvokeWithoutArgs(this, &ConfigFileWatcherTest::StopWatcher));
-  EXPECT_CALL(delegate_, OnConfigWatcherError())
-      .Times(0);
+  EXPECT_CALL(delegate_, OnConfigWatcherError()).Times(0);
 
   watcher_->Watch(&delegate_);
   run_loop_.Run();
@@ -121,15 +122,15 @@ TEST_F(ConfigFileWatcherTest, Update) {
   EXPECT_CALL(delegate_, OnConfigUpdated(EqualsString("test")))
       .Times(1)
       .WillOnce(InvokeWithoutArgs(this, &ConfigFileWatcherTest::StopWatcher));
-  EXPECT_CALL(delegate_, OnConfigWatcherError())
-      .Times(0);
+  EXPECT_CALL(delegate_, OnConfigWatcherError()).Times(0);
 
   watcher_->Watch(&delegate_);
 
   // Modify the watched file.
   std::string data("test");
   EXPECT_NE(base::WriteFile(config_file_, data.c_str(),
-                                 static_cast<int>(data.size())), -1);
+                            static_cast<int>(data.size())),
+            -1);
 
   run_loop_.Run();
 }

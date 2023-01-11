@@ -75,23 +75,26 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
   mouse_cursor_monitor_.reset(webrtc::MouseCursorMonitor::CreateForScreen(
       options, webrtc::kFullDesktopScreenId));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!mouse_cursor_monitor_)
+  if (!mouse_cursor_monitor_) {
     LOG(ERROR) << "Failed to initialize MouseCursorMonitor.";
+  }
 }
 
 void MouseCursorMonitorProxy::Core::Init(
     webrtc::MouseCursorMonitor::Mode mode) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (mouse_cursor_monitor_)
+  if (mouse_cursor_monitor_) {
     mouse_cursor_monitor_->Init(this, mode);
+  }
 }
 
 void MouseCursorMonitorProxy::Core::Capture() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (mouse_cursor_monitor_)
+  if (mouse_cursor_monitor_) {
     mouse_cursor_monitor_->Capture();
+  }
 }
 
 void MouseCursorMonitorProxy::Core::SetMouseCursorMonitorForTests(

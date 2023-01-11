@@ -82,10 +82,12 @@ void X11CrtcResizer::FetchActiveCrtcs() {
   x11::Time config_timestamp = resources_->config_timestamp;
   for (const auto& crtc : resources_->crtcs) {
     auto response = randr_->GetCrtcInfo({crtc, config_timestamp}).Sync();
-    if (!response)
+    if (!response) {
       continue;
-    if (response->outputs.empty())
+    }
+    if (response->outputs.empty()) {
       continue;
+    }
 
     AddCrtcFromReply(crtc, *response.reply);
   }
@@ -319,8 +321,9 @@ void X11CrtcResizer::AddCrtcFromReply(
 }
 
 bool X11CrtcResizer::LayoutIsVertical() const {
-  if (active_crtcs_.size() <= 1)
+  if (active_crtcs_.size() <= 1) {
     return false;
+  }
 
   // For simplicity, just pick 2 CRTCs arbitrarily.
   auto iter1 = active_crtcs_.begin();

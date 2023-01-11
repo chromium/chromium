@@ -131,8 +131,9 @@ void ClientSession::NotifyClientResolution(
   VLOG(1) << "Received ClientResolution (dips_width=" << resolution.dips_width()
           << ", dips_height=" << resolution.dips_height() << ")";
 
-  if (!screen_controls_)
+  if (!screen_controls_) {
     return;
+  }
 
   webrtc::DesktopSize client_size(resolution.dips_width(),
                                   resolution.dips_height());
@@ -152,8 +153,9 @@ void ClientSession::NotifyClientResolution(
   ScreenResolution screen_resolution(
       client_size, webrtc::DesktopVector(kDefaultDpi, kDefaultDpi));
   absl::optional<webrtc::ScreenId> screen_id;
-  if (resolution.has_screen_id())
+  if (resolution.has_screen_id()) {
     screen_id = resolution.screen_id();
+  }
   screen_controls_->SetScreenResolution(screen_resolution, screen_id);
 }
 
@@ -209,8 +211,9 @@ void ClientSession::ControlAudio(const protocol::AudioControl& audio_control) {
   if (audio_control.has_enable()) {
     VLOG(1) << "Received AudioControl (enable=" << audio_control.enable()
             << ")";
-    if (audio_stream_)
+    if (audio_stream_) {
       audio_stream_->Pause(!audio_control.enable());
+    }
   }
 }
 
@@ -226,8 +229,9 @@ void ClientSession::SetCapabilities(
 
   // Compute the set of capabilities supported by both client and host.
   client_capabilities_ = std::make_unique<std::string>();
-  if (capabilities.has_capabilities())
+  if (capabilities.has_capabilities()) {
     *client_capabilities_ = capabilities.capabilities();
+  }
   capabilities_ =
       IntersectCapabilities(*client_capabilities_, host_capabilities_);
   extension_manager_->OnNegotiatedCapabilities(connection_->client_stub(),
@@ -267,10 +271,12 @@ void ClientSession::SetCapabilities(
   }
 
   std::vector<ActionRequest::Action> supported_actions;
-  if (HasCapability(capabilities_, protocol::kSendAttentionSequenceAction))
+  if (HasCapability(capabilities_, protocol::kSendAttentionSequenceAction)) {
     supported_actions.push_back(ActionRequest::SEND_ATTENTION_SEQUENCE);
-  if (HasCapability(capabilities_, protocol::kLockWorkstationAction))
+  }
+  if (HasCapability(capabilities_, protocol::kLockWorkstationAction)) {
     supported_actions.push_back(ActionRequest::LOCK_WORKSTATION);
+  }
 
   if (supported_actions.size() > 0) {
     // Register the action message handler.
@@ -330,8 +336,9 @@ void ClientSession::RequestPairing(
 void ClientSession::DeliverClientMessage(
     const protocol::ExtensionMessage& message) {
   if (message.has_type()) {
-    if (extension_manager_->OnExtensionMessage(message))
+    if (extension_manager_->OnExtensionMessage(message)) {
       return;
+    }
 
     DLOG(INFO) << "Unexpected message received: " << message.type() << ": "
                << message.data();
@@ -503,11 +510,13 @@ void ClientSession::OnConnectionAuthenticated() {
 
   // Collate the set of capabilities to offer the client, if it supports them.
   host_capabilities_ = desktop_environment_->GetCapabilities();
-  if (!host_capabilities_.empty())
+  if (!host_capabilities_.empty()) {
     host_capabilities_.append(" ");
+  }
   host_capabilities_.append(extension_manager_->GetCapabilities());
-  if (!host_capabilities_.empty())
+  if (!host_capabilities_.empty()) {
     host_capabilities_.append(" ");
+  }
   host_capabilities_.append(protocol::kRtcLogTransferCapability);
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
@@ -672,8 +681,9 @@ void ClientSession::OnConnectionClosed(protocol::ErrorCode error) {
   client_session_events_weak_factory_.InvalidateWeakPtrs();
 
   // If the client never authenticated then the session failed.
-  if (!is_authenticated_)
+  if (!is_authenticated_) {
     event_handler_->OnSessionAuthenticationFailed(this);
+  }
 
   // Ensure that any pressed keys or buttons are released.
   input_tracker_.ReleaseAll();
@@ -756,8 +766,9 @@ void ClientSession::OnLocalPointerMoved(const webrtc::DesktopVector& position,
 void ClientSession::SetDisableInputs(bool disable_inputs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (disable_inputs)
+  if (disable_inputs) {
     input_tracker_.ReleaseAll();
+  }
 
   disable_input_filter_.set_enabled(!disable_inputs);
   host_clipboard_filter_.set_enabled(!disable_inputs);
@@ -889,8 +900,9 @@ void ClientSession::SetMouseClampingFilter(const DisplaySize& size) {
 }
 
 void ClientSession::UpdateMouseClampingFilterOffset() {
-  if (selected_display_index_ == webrtc::kInvalidScreenId)
+  if (selected_display_index_ == webrtc::kInvalidScreenId) {
     return;
+  }
 
   webrtc::DesktopVector origin;
   origin = desktop_display_info_.CalcDisplayOffset(selected_display_index_);
@@ -976,10 +988,12 @@ void ClientSession::OnDesktopDisplayChanged(
               << track.position_y() << " " << track.width() << "x"
               << track.height() << " [" << track.x_dpi() << "," << track.y_dpi()
               << "], screen_id=" << track.screen_id();
-    if (dpi_x == 0)
+    if (dpi_x == 0) {
       dpi_x = track.x_dpi();
-    if (dpi_y == 0)
+    }
+    if (dpi_y == 0) {
       dpi_y = track.y_dpi();
+    }
 
     int x = track.position_x();
     int y = track.position_y();
@@ -990,10 +1004,12 @@ void ClientSession::OnDesktopDisplayChanged(
   }
 
   // TODO(garykac): Investigate why these DPI values are 0 for some users.
-  if (dpi_x == 0)
+  if (dpi_x == 0) {
     dpi_x = default_x_dpi_;
-  if (dpi_y == 0)
+  }
+  if (dpi_y == 0) {
     dpi_y = default_y_dpi_;
+  }
 
   // Calc desktop scaled geometry (in DIPs)
   // See comment in OnVideoSizeChanged() for details.
@@ -1160,8 +1176,9 @@ void ClientSession::CreateActionMessageHandler(
     std::unique_ptr<protocol::MessagePipe> pipe) {
   std::unique_ptr<ActionExecutor> action_executor =
       desktop_environment_->CreateActionExecutor();
-  if (!action_executor)
+  if (!action_executor) {
     return;
+  }
 
   // ActionMessageHandler manages its own lifetime and is tied to the lifetime
   // of |pipe|. Once |pipe| is closed, this instance will be cleaned up.

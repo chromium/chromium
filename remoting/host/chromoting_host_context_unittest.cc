@@ -23,8 +23,9 @@ TEST(ChromotingHostContextTest, StartAndStop) {
           task_environment.GetMainThreadTaskRunner(), run_loop.QuitClosure()));
 
   EXPECT_TRUE(context);
-  if (!context)
+  if (!context) {
     return;
+  }
   EXPECT_TRUE(context->audio_task_runner().get());
   EXPECT_TRUE(context->video_capture_task_runner().get());
   EXPECT_TRUE(context->video_encode_task_runner().get());

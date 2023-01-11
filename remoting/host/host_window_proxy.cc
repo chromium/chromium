@@ -19,9 +19,8 @@
 namespace remoting {
 
 // Runs an instance of |HostWindow| on the |ui_task_runner_| thread.
-class HostWindowProxy::Core
-    : public base::RefCountedThreadSafe<Core>,
-      public ClientSessionControl {
+class HostWindowProxy::Core : public base::RefCountedThreadSafe<Core>,
+                              public ClientSessionControl {
  public:
   Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
@@ -159,8 +158,9 @@ void HostWindowProxy::Core::DisconnectSession(protocol::ErrorCode error) {
     return;
   }
 
-  if (client_session_control_.get())
+  if (client_session_control_.get()) {
     client_session_control_->DisconnectSession(error);
+  }
 }
 
 void HostWindowProxy::Core::OnLocalKeyPressed(uint32_t usb_keycode) {
@@ -170,8 +170,9 @@ void HostWindowProxy::Core::OnLocalKeyPressed(uint32_t usb_keycode) {
     return;
   }
 
-  if (client_session_control_.get())
+  if (client_session_control_.get()) {
     client_session_control_->OnLocalKeyPressed(usb_keycode);
+  }
 }
 
 void HostWindowProxy::Core::OnLocalPointerMoved(
@@ -184,8 +185,9 @@ void HostWindowProxy::Core::OnLocalPointerMoved(
     return;
   }
 
-  if (client_session_control_.get())
+  if (client_session_control_.get()) {
     client_session_control_->OnLocalPointerMoved(position, type);
+  }
 }
 
 void HostWindowProxy::Core::SetDisableInputs(bool disable_inputs) {
@@ -196,8 +198,9 @@ void HostWindowProxy::Core::SetDisableInputs(bool disable_inputs) {
     return;
   }
 
-  if (client_session_control_.get())
+  if (client_session_control_.get()) {
     client_session_control_->SetDisableInputs(disable_inputs);
+  }
 }
 
 void HostWindowProxy::Core::OnDesktopDisplayChanged(

@@ -48,9 +48,10 @@ ChromotingHostContext::ChromotingHostContext(
       url_request_context_getter_(url_request_context_getter) {}
 
 ChromotingHostContext::~ChromotingHostContext() {
-  if (url_loader_factory_owner_)
+  if (url_loader_factory_owner_) {
     network_task_runner_->DeleteSoon(FROM_HERE,
                                      url_loader_factory_owner_.release());
+  }
 }
 
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Copy() {

@@ -24,8 +24,7 @@ class CurtainModeWin : public CurtainMode {
   bool Activate() override;
 };
 
-CurtainModeWin::CurtainModeWin() {
-}
+CurtainModeWin::CurtainModeWin() {}
 
 bool CurtainModeWin::Activate() {
   DWORD session_id;

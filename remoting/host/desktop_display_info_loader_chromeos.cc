@@ -56,8 +56,9 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderChromeOs::GetCurrentDisplayInfo() {
   const DisplayId primary_display_id = AshProxy::Get().GetPrimaryDisplayId();
 
   auto result = DesktopDisplayInfo();
-  for (auto& display : AshProxy::Get().GetActiveDisplays())
+  for (auto& display : AshProxy::Get().GetActiveDisplays()) {
     result.AddDisplay(ToDisplayGeometry(display, primary_display_id));
+  }
 
   return result;
 }

@@ -51,7 +51,7 @@ void AddHostFieldsToLogEntry(ServerLogEntry* entry) {
 }
 
 void AddConnectionTypeToLogEntry(ServerLogEntry* entry,
-    protocol::TransportRoute::RouteType type) {
+                                 protocol::TransportRoute::RouteType type) {
   entry->Set(kKeyConnectionType, protocol::TransportRoute::GetTypeString(type));
 }
 

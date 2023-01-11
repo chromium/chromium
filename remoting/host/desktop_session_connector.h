@@ -31,10 +31,9 @@ class DesktopSessionConnector : public mojom::DesktopSessionConnectionEvents {
   // |desktop_session_proxy| with it. |desktop_session_proxy| must be
   // disconnected from the desktop session (see DisconnectTerminal()) before it
   // can be deleted.
-  virtual void ConnectTerminal(
-      DesktopSessionProxy* desktop_session_proxy,
-      const ScreenResolution& resolution,
-      bool virtual_terminal) = 0;
+  virtual void ConnectTerminal(DesktopSessionProxy* desktop_session_proxy,
+                               const ScreenResolution& resolution,
+                               bool virtual_terminal) = 0;
 
   // Requests the daemon process disconnect |desktop_session_proxy| from
   // the associated desktop session.
@@ -42,9 +41,8 @@ class DesktopSessionConnector : public mojom::DesktopSessionConnectionEvents {
       DesktopSessionProxy* desktop_session_proxy) = 0;
 
   // Changes the screen resolution of the desktop session.
-  virtual void SetScreenResolution(
-      DesktopSessionProxy* desktop_session_proxy,
-      const ScreenResolution& resolution) = 0;
+  virtual void SetScreenResolution(DesktopSessionProxy* desktop_session_proxy,
+                                   const ScreenResolution& resolution) = 0;
 
   // Binds a receiver to allow the DesktopSessionConnector instance to receive
   // events related to changes in the desktop session. Returns True if |handle|

@@ -59,14 +59,14 @@ TEST(ServerLogEntryHostTest, AddHostFields) {
   keys.insert("os-version");
 #endif
 
-  // The check below will compile but fail if VERSION isn't defined (STRINGIZE
-  // silently converts undefined values).
-  #ifndef VERSION
-  #error VERSION must be defined
-  #endif
+// The check below will compile but fail if VERSION isn't defined (STRINGIZE
+// silently converts undefined values).
+#ifndef VERSION
+#error VERSION must be defined
+#endif
   key_value_pairs["host-version"] = STRINGIZE(VERSION);
-  ASSERT_TRUE(VerifyStanza(key_value_pairs, keys, stanza.get(), &error)) <<
-      error;
+  ASSERT_TRUE(VerifyStanza(key_value_pairs, keys, stanza.get(), &error))
+      << error;
 }
 
 TEST(ServerLogEntryHostTest, AddModeField1) {
@@ -81,8 +81,8 @@ TEST(ServerLogEntryHostTest, AddModeField1) {
   key_value_pairs["session-state"] = "connected";
   key_value_pairs["mode"] = "it2me";
   std::set<std::string> keys;
-  ASSERT_TRUE(VerifyStanza(key_value_pairs, keys, stanza.get(), &error)) <<
-      error;
+  ASSERT_TRUE(VerifyStanza(key_value_pairs, keys, stanza.get(), &error))
+      << error;
 }
 
 TEST(ServerLogEntryHostTest, AddModeField2) {
@@ -97,8 +97,8 @@ TEST(ServerLogEntryHostTest, AddModeField2) {
   key_value_pairs["session-state"] = "connected";
   key_value_pairs["mode"] = "me2me";
   std::set<std::string> keys;
-  ASSERT_TRUE(VerifyStanza(key_value_pairs, keys, stanza.get(), &error)) <<
-      error;
+  ASSERT_TRUE(VerifyStanza(key_value_pairs, keys, stanza.get(), &error))
+      << error;
 }
 
 }  // namespace remoting

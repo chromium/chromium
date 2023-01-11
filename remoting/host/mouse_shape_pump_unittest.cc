@@ -33,7 +33,7 @@ static const int kCursorHeight = 32;
 static const int kHotspotX = 11;
 static const int kHotspotY = 12;
 
-class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
+class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   TestMouseCursorMonitor() : callback_(nullptr) {}
 
@@ -96,9 +96,8 @@ void MouseShapePumpTest::SetCursorShape(
 TEST_F(MouseShapePumpTest, FirstCursor) {
   // Stop the |run_loop_| once it has captured the cursor.
   EXPECT_CALL(client_stub_, SetCursorShape(_))
-      .WillOnce(DoAll(
-          Invoke(this, &MouseShapePumpTest::SetCursorShape),
-          InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit)))
+      .WillOnce(DoAll(Invoke(this, &MouseShapePumpTest::SetCursorShape),
+                      InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit)))
       .RetiresOnSaturation();
 
   // Start the pump.

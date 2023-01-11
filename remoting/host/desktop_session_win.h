@@ -67,12 +67,11 @@ class DesktopSessionWin : public DesktopSession,
   // Passes the owning |daemon_process|, a unique identifier of the desktop
   // session |id| and the interface for monitoring session attach/detach events.
   // Both |daemon_process| and |monitor| must outlive |this|.
-  DesktopSessionWin(
-    scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    DaemonProcess* daemon_process,
-    int id,
-    WtsTerminalMonitor* monitor);
+  DesktopSessionWin(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
+                    scoped_refptr<AutoThreadTaskRunner> io_task_runner,
+                    DaemonProcess* daemon_process,
+                    int id,
+                    WtsTerminalMonitor* monitor);
   ~DesktopSessionWin() override;
 
   const scoped_refptr<AutoThreadTaskRunner>& caller_task_runner() const {

@@ -20,7 +20,7 @@ class HostExtensionSession;
 namespace protocol {
 class ClientStub;
 class ExtensionMessage;
-}
+}  // namespace protocol
 
 // Helper class used to create and manage a set of HostExtensionSession
 // instances depending upon the set of registered HostExtensions, and the

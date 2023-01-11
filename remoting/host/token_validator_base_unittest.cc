@@ -36,13 +36,15 @@ std::unique_ptr<net::FakeClientCertIdentity> CreateFakeCert(
   scoped_refptr<net::X509Certificate> cert =
       net::X509Certificate::CreateFromBytes(
           base::as_bytes(base::make_span(cert_der)));
-  if (!cert)
+  if (!cert) {
     return nullptr;
+  }
 
   scoped_refptr<net::SSLPrivateKey> ssl_private_key =
       net::WrapRSAPrivateKey(rsa_private_key.get());
-  if (!ssl_private_key)
+  if (!ssl_private_key) {
     return nullptr;
+  }
 
   return std::make_unique<net::FakeClientCertIdentity>(cert, ssl_private_key);
 }
@@ -73,9 +75,8 @@ class TestTokenValidator : TokenValidatorBase {
   raw_ptr<net::SSLPrivateKey> expected_private_key_ = nullptr;
 };
 
-TestTokenValidator::TestTokenValidator(const ThirdPartyAuthConfig& config) :
-    TokenValidatorBase(config, "", nullptr) {
-}
+TestTokenValidator::TestTokenValidator(const ThirdPartyAuthConfig& config)
+    : TokenValidatorBase(config, "", nullptr) {}
 
 TestTokenValidator::~TestTokenValidator() = default;
 
@@ -105,6 +106,7 @@ void TestTokenValidator::ContinueWithCertificate(
 class TokenValidatorBaseTest : public testing::Test {
  public:
   void SetUp() override;
+
  protected:
   std::unique_ptr<TestTokenValidator> token_validator_;
 };

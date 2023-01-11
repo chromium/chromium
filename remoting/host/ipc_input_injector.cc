@@ -12,8 +12,7 @@ namespace remoting {
 
 IpcInputInjector::IpcInputInjector(
     scoped_refptr<DesktopSessionProxy> desktop_session_proxy)
-    : desktop_session_proxy_(desktop_session_proxy) {
-}
+    : desktop_session_proxy_(desktop_session_proxy) {}
 
 IpcInputInjector::~IpcInputInjector() = default;
 

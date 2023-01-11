@@ -27,14 +27,12 @@ const unsigned int kNumRemoteKeyPresses = 20;
 // is received.
 const int64_t kRemoteBlockTimeoutMillis = 2000;
 
-} // namespace
+}  // namespace
 
 namespace remoting {
 
 RemoteInputFilter::RemoteInputFilter(protocol::InputEventTracker* event_tracker)
-    : event_tracker_(event_tracker),
-      expect_local_echo_(true) {
-}
+    : event_tracker_(event_tracker), expect_local_echo_(true) {}
 
 RemoteInputFilter::~RemoteInputFilter() = default;
 
@@ -91,13 +89,15 @@ void RemoteInputFilter::LocalInputDetected() {
 
 void RemoteInputFilter::SetExpectLocalEcho(bool expect_local_echo) {
   expect_local_echo_ = expect_local_echo;
-  if (!expect_local_echo_)
+  if (!expect_local_echo_) {
     injected_mouse_positions_.clear();
+  }
 }
 
 void RemoteInputFilter::InjectKeyEvent(const protocol::KeyEvent& event) {
-  if (ShouldIgnoreInput())
+  if (ShouldIgnoreInput()) {
     return;
+  }
   if (expect_local_echo_ && event.pressed() && event.has_usb_keycode()) {
     injected_key_presses_.push_back(event.usb_keycode());
     if (injected_key_presses_.size() > kNumRemoteKeyPresses) {
@@ -109,14 +109,16 @@ void RemoteInputFilter::InjectKeyEvent(const protocol::KeyEvent& event) {
 }
 
 void RemoteInputFilter::InjectTextEvent(const protocol::TextEvent& event) {
-  if (ShouldIgnoreInput())
+  if (ShouldIgnoreInput()) {
     return;
+  }
   event_tracker_->InjectTextEvent(event);
 }
 
 void RemoteInputFilter::InjectMouseEvent(const protocol::MouseEvent& event) {
-  if (ShouldIgnoreInput())
+  if (ShouldIgnoreInput()) {
     return;
+  }
   if (expect_local_echo_ && event.has_x() && event.has_y()) {
     injected_mouse_positions_.push_back(
         webrtc::DesktopVector(event.x(), event.y()));
@@ -129,8 +131,9 @@ void RemoteInputFilter::InjectMouseEvent(const protocol::MouseEvent& event) {
 }
 
 void RemoteInputFilter::InjectTouchEvent(const protocol::TouchEvent& event) {
-  if (ShouldIgnoreInput())
+  if (ShouldIgnoreInput()) {
     return;
+  }
   event_tracker_->InjectTouchEvent(event);
 }
 
@@ -138,8 +141,9 @@ bool RemoteInputFilter::ShouldIgnoreInput() const {
   // Ignore remote events if the local mouse moved recently.
   int64_t millis =
       (base::TimeTicks::Now() - latest_local_input_time_).InMilliseconds();
-  if (millis < kRemoteBlockTimeoutMillis)
+  if (millis < kRemoteBlockTimeoutMillis) {
     return true;
+  }
   return false;
 }
 

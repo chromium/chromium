@@ -115,14 +115,13 @@ class ClientSession : public protocol::HostStub,
 
   // |event_handler| and |desktop_environment_factory| must outlive |this|.
   // All |HostExtension|s in |extensions| must outlive |this|.
-  ClientSession(
-      EventHandler* event_handler,
-      std::unique_ptr<protocol::ConnectionToClient> connection,
-      DesktopEnvironmentFactory* desktop_environment_factory,
-      const DesktopEnvironmentOptions& desktop_environment_options,
-      const base::TimeDelta& max_duration,
-      scoped_refptr<protocol::PairingRegistry> pairing_registry,
-      const std::vector<HostExtension*>& extensions);
+  ClientSession(EventHandler* event_handler,
+                std::unique_ptr<protocol::ConnectionToClient> connection,
+                DesktopEnvironmentFactory* desktop_environment_factory,
+                const DesktopEnvironmentOptions& desktop_environment_options,
+                const base::TimeDelta& max_duration,
+                scoped_refptr<protocol::PairingRegistry> pairing_registry,
+                const std::vector<HostExtension*>& extensions);
 
   ClientSession(const ClientSession&) = delete;
   ClientSession& operator=(const ClientSession&) = delete;

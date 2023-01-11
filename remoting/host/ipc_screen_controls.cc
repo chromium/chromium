@@ -11,8 +11,7 @@ namespace remoting {
 
 IpcScreenControls::IpcScreenControls(
     scoped_refptr<DesktopSessionProxy> desktop_session_proxy)
-    : desktop_session_proxy_(desktop_session_proxy) {
-}
+    : desktop_session_proxy_(desktop_session_proxy) {}
 
 IpcScreenControls::~IpcScreenControls() = default;
 

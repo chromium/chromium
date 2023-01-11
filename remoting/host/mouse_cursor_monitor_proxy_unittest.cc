@@ -36,12 +36,11 @@ static const int kCursorHeight = 32;
 static const int kHotspotX = 11;
 static const int kHotspotY = 12;
 
-class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
+class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   ThreadCheckMouseCursorMonitor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner), callback_(nullptr) {
-  }
+      : task_runner_(task_runner), callback_(nullptr) {}
 
   ThreadCheckMouseCursorMonitor(const ThreadCheckMouseCursorMonitor&) = delete;
   ThreadCheckMouseCursorMonitor& operator=(

@@ -16,7 +16,7 @@ namespace remoting {
 
 namespace protocol {
 class CursorShapeStub;
-}  // namespace
+}  // namespace protocol
 
 // MouseShapePump is responsible for capturing mouse shape using
 // MouseCursorMonitor and sending it to a CursorShapeStub.

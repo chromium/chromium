@@ -29,8 +29,7 @@ class AudioCapturerLinux : public AudioCapturer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::FilePath& pipe_name);
 
-  explicit AudioCapturerLinux(
-      scoped_refptr<AudioPipeReader> pipe_reader);
+  explicit AudioCapturerLinux(scoped_refptr<AudioPipeReader> pipe_reader);
 
   AudioCapturerLinux(const AudioCapturerLinux&) = delete;
   AudioCapturerLinux& operator=(const AudioCapturerLinux&) = delete;

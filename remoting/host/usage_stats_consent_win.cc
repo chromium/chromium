@@ -25,9 +25,8 @@ const wchar_t kOmahaUsagestatsValue[] = L"usagestats";
 
 LONG ReadUsageStatsValue(const wchar_t* state_key, DWORD* usagestats_out) {
   // presubmit: allow wstring
-  std::wstring client_state = base::StringPrintf(kOmahaClientStateKeyFormat,
-                                                 state_key,
-                                                 remoting::kHostOmahaAppid);
+  std::wstring client_state = base::StringPrintf(
+      kOmahaClientStateKeyFormat, state_key, remoting::kHostOmahaAppid);
   base::win::RegKey key;
   LONG result = key.Open(HKEY_LOCAL_MACHINE, client_state.c_str(), KEY_READ);
   if (result != ERROR_SUCCESS) {
@@ -73,12 +72,11 @@ bool IsUsageStatsAllowed() {
 bool SetUsageStatsConsent(bool allowed) {
   DWORD value = allowed;
   // presubmit: allow wstring
-  std::wstring client_state = base::StringPrintf(kOmahaClientStateKeyFormat,
-                                                 kOmahaClientStateMedium,
-                                                 kHostOmahaAppid);
+  std::wstring client_state = base::StringPrintf(
+      kOmahaClientStateKeyFormat, kOmahaClientStateMedium, kHostOmahaAppid);
   base::win::RegKey key;
-  LONG result = key.Create(HKEY_LOCAL_MACHINE, client_state.c_str(),
-                           KEY_SET_VALUE);
+  LONG result =
+      key.Create(HKEY_LOCAL_MACHINE, client_state.c_str(), KEY_SET_VALUE);
   if (result == ERROR_SUCCESS) {
     result = key.WriteValue(kOmahaUsagestatsValue, value);
     if (result == ERROR_SUCCESS) {
