@@ -649,14 +649,7 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
   }
 
   // No interceptors wanted to handle this request.
-  uint32_t options = network::mojom::kURLLoadOptionNone;
-  scoped_refptr<network::SharedURLLoaderFactory> factory =
-      PrepareForNonInterceptedRequest(&options);
-  url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      std::move(factory), CreateURLLoaderThrottles(),
-      global_request_id_.request_id, options, resource_request_.get(),
-      /*client=*/this, kNavigationUrlLoaderTrafficAnnotation,
-      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+  FallbackToNonInterceptedRequest(false);
 }
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
