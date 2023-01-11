@@ -629,6 +629,30 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "win10-32-on-64-updater-tester-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    triggered_by = ["win32-updater-builder-rel"],
+    console_view_entry = consoles.console_view_entry(
+        category = "release|win (32)",
+        short_name = "10 (x64)",
+    ),
+)
+
+ci.thin_tester(
     name = "win10-updater-tester-dbg-uac",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
