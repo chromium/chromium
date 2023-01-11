@@ -25,15 +25,10 @@
 #include "url/gurl.h"
 
 constexpr char kRevokedKey[] = "revoked";
-constexpr char kUnusedTestSite[] = "https://example1.com";
-constexpr char kUsedTestSite[] = "https://example2.com";
 
 class SiteSettingsPermissionsHandlerTest : public testing::Test {
  public:
-  SiteSettingsPermissionsHandlerTest() {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kSafetyCheckUnusedSitePermissions);
-  }
+  SiteSettingsPermissionsHandlerTest() = default;
 
   void SetUp() override {
     // Fully initialize |profile_| in the constructor since some children
@@ -54,26 +49,6 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
     handler_ = std::make_unique<SiteSettingsPermissionsHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
-
-    // Create a revoked permission.
-    base::Value::Dict dict = base::Value::Dict();
-    base::Value::List permission_type_list = base::Value::List();
-    permission_type_list.Append(
-        static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
-    dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
-
-    hcsm()->SetWebsiteSettingDefaultScope(
-        GURL(kUnusedTestSite), GURL(kUnusedTestSite),
-        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-        base::Value(dict.Clone()));
-
-    // There should be only an unused URL in the revoked permissions list.
-    const auto& revoked_permissions =
-        handler()->PopulateUnusedSitePermissionsData();
-    EXPECT_EQ(revoked_permissions.size(), 1UL);
-    EXPECT_EQ(
-        GURL(kUnusedTestSite),
-        GURL(*revoked_permissions[0].FindStringKey(site_settings::kOrigin)));
   }
 
   void TearDown() override {
@@ -92,7 +67,6 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
   base::SimpleTestClock* clock() { return &clock_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SiteSettingsPermissionsHandler> handler_;
   std::unique_ptr<TestingProfile> profile_;
@@ -102,52 +76,80 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
 };
 
 TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
-  // Add GEOLOCATION setting for url but do not add to revoked list.
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const std::string url1 = "https://example1.com";
+  const std::string url2 = "https://example2.com";
+
+  base::Value::Dict dict = base::Value::Dict();
+  base::Value::List permission_type_list = base::Value::List();
+  permission_type_list.Append(
+      static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
+  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+
+  // Add url1 to rovoked permissions list.
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url1), GURL(url1),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(std::move(dict)));
+
+  // Add GEOLOCATION setting for url2 but do not add to revoked list.
   const content_settings::ContentSettingConstraints constraint{
       .track_last_visit_for_autoexpiration = true};
   hcsm()->SetContentSettingDefaultScope(
-      GURL(kUsedTestSite), GURL(kUsedTestSite),
-      ContentSettingsType::GEOLOCATION, ContentSetting::CONTENT_SETTING_ALLOW,
-      constraint);
+      GURL(url2), GURL(url2), ContentSettingsType::GEOLOCATION,
+      ContentSetting::CONTENT_SETTING_ALLOW, constraint);
 
-  // Revoked permissions list should still only contain the initial unused site.
+  // Only url1 should be in the revoked permissions list, as permissions of
+  // url2 is not revoked.
   const auto& revoked_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   EXPECT_EQ(revoked_permissions.size(), 1UL);
   EXPECT_EQ(
-      GURL(kUnusedTestSite),
+      GURL(url1),
       GURL(*revoked_permissions[0].FindStringKey(site_settings::kOrigin)));
 }
 
 TEST_F(SiteSettingsPermissionsHandlerTest,
        HandleAllowPermissionsAgainForUnusedSite) {
-  // Allow the revoked permission for the unused site again.
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const std::string url = "https://example1.com:443";
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+
+  base::Value::Dict dict = base::Value::Dict();
+  base::Value::List permission_type_list = base::Value::List();
+  permission_type_list.Append(static_cast<int32_t>(type));
+  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+
+  // Add url revoked permissions list.
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url), GURL(url),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()));
+
+  // Check there is 1 origin in revoked permissions list.
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
+  EXPECT_EQ(1U, revoked_permissions_list.size());
+
+  // Allow the permission for url again
   base::Value::List args;
-  args.Append(base::Value(kUnusedTestSite));
+  args.Append(base::Value(url));
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
   // Check there is no origin in revoked permissions list.
-  ContentSettingsForOneType revoked_permissions_list;
   hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       &revoked_permissions_list);
   EXPECT_EQ(0U, revoked_permissions_list.size());
   // Check if the permissions of url is regranted.
-  EXPECT_EQ(
-      ContentSetting::CONTENT_SETTING_ALLOW,
-      hcsm()->GetContentSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
-                                ContentSettingsType::GEOLOCATION));
-}
-
-TEST_F(SiteSettingsPermissionsHandlerTest,
-       HandleAcknowledgeRevokedUnusedSitePermissionsList) {
-  const auto& revoked_permissions_before =
-      handler()->PopulateUnusedSitePermissionsData();
-  EXPECT_GT(revoked_permissions_before.size(), 0U);
-  // Acknowledging revoked permissions from unused sites clears the list.
-  base::Value::List args;
-  handler()->HandleAcknowledgeRevokedUnusedSitePermissionsList(args);
-  const auto& revoked_permissions_after =
-      handler()->PopulateUnusedSitePermissionsData();
-  EXPECT_EQ(revoked_permissions_after.size(), 0U);
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
+            hcsm()->GetContentSetting(GURL(url), GURL(url), type));
 }

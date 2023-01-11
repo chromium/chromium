@@ -50,16 +50,6 @@ void SiteSettingsPermissionsHandler::HandleAllowPermissionsAgainForUnusedSite(
   SendUnusedSitePermissionsReviewList();
 }
 
-void SiteSettingsPermissionsHandler::
-    HandleAcknowledgeRevokedUnusedSitePermissionsList(
-        const base::Value::List& args) {
-  permissions::UnusedSitePermissionsService* service =
-      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
-  service->ClearRevokedPermissionsList();
-
-  SendUnusedSitePermissionsReviewList();
-}
-
 base::Value::List
 SiteSettingsPermissionsHandler::PopulateUnusedSitePermissionsData() {
   base::Value::List result;
@@ -115,11 +105,6 @@ void SiteSettingsPermissionsHandler::RegisterMessages() {
       "allowPermissionsAgainForUnusedSite",
       base::BindRepeating(&SiteSettingsPermissionsHandler::
                               HandleAllowPermissionsAgainForUnusedSite,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "acknowledgeRevokedUnusedSitePermissionsList",
-      base::BindRepeating(&SiteSettingsPermissionsHandler::
-                              HandleAcknowledgeRevokedUnusedSitePermissionsList,
                           base::Unretained(this)));
 }
 

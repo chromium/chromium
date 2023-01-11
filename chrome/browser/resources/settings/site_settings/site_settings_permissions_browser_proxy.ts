@@ -27,7 +27,8 @@ export interface SiteSettingsPermissionsBrowserProxy {
    * Mark revoked permissions of unused sites as reviewed by the user so they
    * will not be shown again.
    */
-  acknowledgeRevokedUnusedSitePermissionsList(): void;
+  acknowledgeRevokedUnusedSitePermissionsList(
+      unusedSitePermissionsList: UnusedSitePermissions[]): void;
 
   /**
    * Allow permissions again for an unused site where permissions were
@@ -59,8 +60,11 @@ export interface SiteSettingsPermissionsBrowserProxy {
 
 export class SiteSettingsPermissionsBrowserProxyImpl implements
     SiteSettingsPermissionsBrowserProxy {
-  acknowledgeRevokedUnusedSitePermissionsList() {
-    chrome.send('acknowledgeRevokedUnusedSitePermissionsList');
+  acknowledgeRevokedUnusedSitePermissionsList(unusedSitePermissionsList:
+                                                  UnusedSitePermissions[]) {
+    chrome.send(
+        'acknowledgeRevokedUnusedSitePermissionsList',
+        [unusedSitePermissionsList]);
   }
 
   allowPermissionsAgainForUnusedSite(origin: string) {

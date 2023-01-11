@@ -273,7 +273,7 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   permission_type_list.Append(static_cast<int32_t>(type));
   dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
 
-  // Add url1 and url2 to revoked permissions list.
+  // Add url1 and url2 to rovoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url1), GURL(url1),
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
@@ -326,60 +326,13 @@ TEST_F(UnusedSitePermissionsServiceTest, NotRevokeNotificationPermission) {
   // Travel through time for 70 days.
   clock()->Advance(base::Days(70));
 
-  // GEOLOCATION permission should be on the revoked permissions list, but
+  // GEOLOCATION permission should be on the revoked permissions list, but.
   // NOTIFICATION permissions should not be as notification permissions are out
   // of scope.
   service()->UpdateUnusedPermissionsForTesting();
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 1u);
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[0].GetInt(),
             static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
-
-  // Clearing revoked permissions list should delete unused GEOLOCATION from it
-  // but leave used NOTIFICATION permissions intact.
-  service()->ClearRevokedPermissionsList();
-  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 0u);
-  EXPECT_EQ(hcsm()->GetContentSetting(GURL(url), GURL(url),
-                                      ContentSettingsType::GEOLOCATION),
-            ContentSetting::CONTENT_SETTING_ASK);
-  EXPECT_EQ(hcsm()->GetContentSetting(GURL(url), GURL(url),
-                                      ContentSettingsType::NOTIFICATIONS),
-            ContentSetting::CONTENT_SETTING_ALLOW);
-}
-
-TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
-  const std::string url1 = "https://example1.com:443";
-  const std::string url2 = "https://example2.com:443";
-  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
-
-  base::Value::Dict dict = base::Value::Dict();
-  base::Value::List permission_type_list = base::Value::List();
-  permission_type_list.Append(static_cast<int32_t>(type));
-  dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
-
-  // Add url1 and url2 to revoked permissions list.
-  hcsm()->SetWebsiteSettingDefaultScope(
-      GURL(url1), GURL(url1),
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-      base::Value(dict.Clone()));
-  hcsm()->SetWebsiteSettingDefaultScope(
-      GURL(url2), GURL(url2),
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-      base::Value(dict.Clone()));
-
-  // Check there are 2 origins in the revoked permissions list.
-  ContentSettingsForOneType revoked_permissions_list;
-  hcsm()->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-      &revoked_permissions_list);
-  EXPECT_EQ(2U, revoked_permissions_list.size());
-
-  service()->ClearRevokedPermissionsList();
-
-  // Revoked permissions list should be empty.
-  hcsm()->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-      &revoked_permissions_list);
-  EXPECT_EQ(revoked_permissions_list.size(), 0U);
 }
 
 }  // namespace permissions
