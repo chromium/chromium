@@ -27,8 +27,9 @@ TestAXTreeManager::TestAXTreeManager(TestAXTreeManager&& manager)
 TestAXTreeManager& TestAXTreeManager::operator=(TestAXTreeManager&& manager) {
   if (this == &manager)
     return *this;
-  if (manager.ax_tree_)
+  if (manager.HasValidTreeID()) {
     GetMap().RemoveTreeManager(manager.GetTreeID());
+  }
   // std::move(nullptr) == nullptr, so no need to check if `manager.tree_` is
   // assigned.
   SetTree(std::move(manager.ax_tree_));
@@ -38,10 +39,9 @@ TestAXTreeManager& TestAXTreeManager::operator=(TestAXTreeManager&& manager) {
 TestAXTreeManager::~TestAXTreeManager() = default;
 
 void TestAXTreeManager::DestroyTree() {
-  if (!ax_tree_)
-    return;
-
-  GetMap().RemoveTreeManager(GetTreeID());
+  if (HasValidTreeID()) {
+    GetMap().RemoveTreeManager(GetTreeID());
+  }
   ax_tree_.reset();
 }
 
@@ -51,13 +51,14 @@ AXTree* TestAXTreeManager::GetTree() const {
 }
 
 void TestAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
-  if (ax_tree_)
+  if (HasValidTreeID()) {
     GetMap().RemoveTreeManager(GetTreeID());
+  }
 
   ax_tree_ = std::move(tree);
-  ax_tree_id_ = GetTreeID();
-  if (ax_tree_)
+  if (HasValidTreeID()) {
     GetMap().AddTreeManager(GetTreeID(), this);
+  }
 }
 
 AXTree* TestAXTreeManager::Init(AXTreeUpdate tree_update) {

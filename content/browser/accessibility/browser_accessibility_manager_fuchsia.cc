@@ -43,7 +43,7 @@ BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
 
       auto str = ax_tree()->ToString();
       auto str_capacity = str.capacity();
-      inspector.GetRoot().CreateString(ax_tree_id().ToString(), std::move(str),
+      inspector.GetRoot().CreateString(GetTreeID().ToString(), std::move(str),
                                        &inspector);
 
       // Test to check if the string fit in memory.

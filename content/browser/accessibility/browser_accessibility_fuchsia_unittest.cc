@@ -701,14 +701,14 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ChildTree) {
   node_4.child_ids = {5};
   ui::AXNodeData node_5;
   node_5.id = 5;
-  node_5.AddChildTreeId(child_manager->ax_tree_id());
+  node_5.AddChildTreeId(child_manager->GetTreeID());
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(node_4, node_5), nullptr));
 
   // Update the child tree's parent tree ID.
   ui::AXTreeData updated_data = child_manager->GetTreeData();
-  updated_data.parent_tree_id = parent_manager->ax_tree_id();
+  updated_data.parent_tree_id = parent_manager->GetTreeID();
   child_manager->ax_tree()->UpdateDataForTesting(updated_data);
 
   // Get the parent node that points to the child tree.

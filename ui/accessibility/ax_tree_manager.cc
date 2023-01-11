@@ -62,21 +62,19 @@ void AXTreeManager::SetFocusChangeCallbackForTesting(
 
 AXTreeManager::AXTreeManager()
     : connected_to_parent_tree_node_(false),
-      ax_tree_id_(AXTreeIDUnknown()),
       ax_tree_(nullptr),
       event_generator_(ax_tree()) {}
 
 AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
     : connected_to_parent_tree_node_(false),
-      ax_tree_id_(tree ? tree->data().tree_id : AXTreeIDUnknown()),
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
   DCHECK(ax_tree_);
 
   // Do not register the tree in the map if it has no ID. It will be registered
   // later in OnTreeDataChanged().
-  if (ax_tree_id_ != AXTreeIDUnknown()) {
-    GetMap().AddTreeManager(ax_tree_id_, this);
+  if (HasValidTreeID()) {
+    GetMap().AddTreeManager(GetTreeID(), this);
   }
 
   tree_observation_.Observe(ax_tree());
@@ -99,8 +97,9 @@ bool AXTreeManager::CanFireEvents() const {
   // be relative to that initial tree.
 
   // The current tree must have an AXTreeID.
-  if (GetTreeID() == AXTreeIDUnknown())
+  if (!HasValidTreeID()) {
     return false;
+  }
 
   // Fire events only when the root of the tree is reachable.
   AXTreeManager* root_manager = GetRootManager();
@@ -136,10 +135,6 @@ AXNode* AXTreeManager::GetNode(const AXNodeID node_id) const {
   return ax_tree_ ? ax_tree_->GetFromId(node_id) : nullptr;
 }
 
-AXTreeID AXTreeManager::GetTreeID() const {
-  return ax_tree_ ? ax_tree_->data().tree_id : AXTreeIDUnknown();
-}
-
 const AXTreeData& AXTreeManager::GetTreeData() const {
   return ax_tree_ ? ax_tree_->data() : AXTreeDataUnknown();
 }
@@ -153,9 +148,9 @@ AXNode* AXTreeManager::GetRoot() const {
 }
 
 void AXTreeManager::WillBeRemovedFromMap() {
-  if (!ax_tree_)
-    return;
-  ax_tree_->NotifyTreeManagerWillBeRemoved(ax_tree_id_);
+  if (HasValidTreeID()) {
+    ax_tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
+  }
 }
 
 // static
@@ -171,7 +166,7 @@ void AXTreeManager::SetLastFocusedNode(AXNode* node) {
     last_focused_node_id_ = node->id();
     last_focused_node_tree_id_ = node->GetManager()->GetTreeID();
     DCHECK(last_focused_node_tree_id_);
-    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
+    DCHECK(last_focused_node_tree_id_ != AXTreeIDUnknown());
   } else {
     last_focused_node_id_.reset();
     last_focused_node_tree_id_.reset();
@@ -182,7 +177,7 @@ void AXTreeManager::SetLastFocusedNode(AXNode* node) {
 AXNode* AXTreeManager::GetLastFocusedNode() {
   if (last_focused_node_id_) {
     DCHECK(last_focused_node_tree_id_);
-    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
+    DCHECK(last_focused_node_tree_id_ != AXTreeIDUnknown());
     if (AXTreeManager* last_focused_manager =
             FromID(last_focused_node_tree_id_.value())) {
       return last_focused_manager->GetNode(last_focused_node_id_.value());
@@ -205,10 +200,13 @@ AXTreeManager::~AXTreeManager() {
 
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.ReleaseTree();
-  if (ax_tree_)
-    GetMap().RemoveTreeManager(ax_tree_id_);
-  if (last_focused_node_tree_id_ && ax_tree_id_ == *last_focused_node_tree_id_)
-    SetLastFocusedNode(nullptr);
+  if (HasValidTreeID()) {
+    GetMap().RemoveTreeManager(GetTreeID());
+    if (last_focused_node_tree_id_ &&
+        GetTreeID() == *last_focused_node_tree_id_) {
+      SetLastFocusedNode(nullptr);
+    }
+  }
 
   ParentConnectionChanged(parent);
 }
@@ -216,10 +214,12 @@ AXTreeManager::~AXTreeManager() {
 void AXTreeManager::OnTreeDataChanged(AXTree* tree,
                                       const AXTreeData& old_data,
                                       const AXTreeData& new_data) {
+  DCHECK_NE(ax_tree(), nullptr);
   DCHECK_EQ(ax_tree(), tree);
-  if (new_data.tree_id == ui::AXTreeIDUnknown() ||
-      new_data.tree_id == ax_tree_id_) {
-    // Tree ID hasn't changed.
+  DCHECK_EQ(GetTreeID(), new_data.tree_id);
+
+  // Tree ID hasn't changed.
+  if (new_data.tree_id == old_data.tree_id) {
     return;
   }
 
@@ -230,14 +230,17 @@ void AXTreeManager::OnTreeDataChanged(AXTree* tree,
   // If the current focus is in the tree that has just been destroyed, then
   // reset the focus to nullptr. It will be set to the current focus again the
   // next time there is a focus event.
-  if (ax_tree_id_ != ui::AXTreeIDUnknown() &&
-      ax_tree_id_ == last_focused_node_tree_id_) {
+  if (last_focused_node_tree_id_ != AXTreeIDUnknown() &&
+      last_focused_node_tree_id_ == old_data.tree_id) {
     SetLastFocusedNode(nullptr);
   }
 
-  GetMap().RemoveTreeManager(ax_tree_id_);
-  ax_tree_id_ = new_data.tree_id;
-  GetMap().AddTreeManager(ax_tree_id_, this);
+  if (old_data.tree_id != AXTreeIDUnknown()) {
+    GetMap().RemoveTreeManager(old_data.tree_id);
+  }
+  if (new_data.tree_id != AXTreeIDUnknown()) {
+    GetMap().AddTreeManager(GetTreeID(), this);
+  }
 }
 
 void AXTreeManager::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
@@ -262,8 +265,9 @@ void AXTreeManager::OnAtomicUpdateFinished(
 
 AXTreeManager* AXTreeManager::GetParentManager() const {
   AXTreeID parent_tree_id = GetParentTreeID();
-  if (parent_tree_id == ui::AXTreeIDUnknown())
+  if (parent_tree_id == AXTreeIDUnknown()) {
     return nullptr;
+  }
 
   // There's no guarantee that we'll find an AXTreeManager for this AXTreeID, so
   // we might still return nullptr.
@@ -272,7 +276,7 @@ AXTreeManager* AXTreeManager::GetParentManager() const {
 }
 
 bool AXTreeManager::IsRoot() const {
-  return GetParentTreeID() == ui::AXTreeIDUnknown();
+  return GetParentTreeID() == AXTreeIDUnknown();
 }
 
 AXTreeManager* AXTreeManager::GetRootManager() const {
@@ -309,7 +313,7 @@ AXNode* AXTreeManager::GetParentNodeFromParentTree() const {
 
   AXNode* parent_node = parent_manager->GetNode(*(host_node_ids.begin()));
   DCHECK(parent_node);
-  DCHECK_EQ(ax_tree_id_, AXTreeID::FromString(parent_node->GetStringAttribute(
+  DCHECK_EQ(GetTreeID(), AXTreeID::FromString(parent_node->GetStringAttribute(
                              ax::mojom::StringAttribute::kChildTreeId)))
       << "A node that hosts a child tree should expose its tree ID in its "
          "`kChildTreeId` attribute.";

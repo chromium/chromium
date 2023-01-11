@@ -27,8 +27,9 @@ AXDummyTreeManager& AXDummyTreeManager::operator=(
     AXDummyTreeManager&& manager) {
   if (this == &manager)
     return *this;
-  if (manager.ax_tree_)
+  if (manager.HasValidTreeID()) {
     GetMap().RemoveTreeManager(manager.GetTreeID());
+  }
   // std::move(nullptr) == nullptr, so no need to check if `manager.tree_` is
   // assigned.
   SetTree(std::move(manager.ax_tree_));
@@ -38,10 +39,9 @@ AXDummyTreeManager& AXDummyTreeManager::operator=(
 AXDummyTreeManager::~AXDummyTreeManager() = default;
 
 void AXDummyTreeManager::DestroyTree() {
-  if (!ax_tree_)
-    return;
-
-  GetMap().RemoveTreeManager(GetTreeID());
+  if (HasValidTreeID()) {
+    GetMap().RemoveTreeManager(GetTreeID());
+  }
   ax_tree_.reset();
 }
 
@@ -51,13 +51,14 @@ AXTree* AXDummyTreeManager::GetTree() const {
 }
 
 void AXDummyTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
-  if (ax_tree_)
+  if (HasValidTreeID()) {
     GetMap().RemoveTreeManager(GetTreeID());
+  }
 
   ax_tree_ = std::move(tree);
-  ax_tree_id_ = GetTreeID();
-  if (ax_tree_)
+  if (HasValidTreeID()) {
     GetMap().AddTreeManager(GetTreeID(), this);
+  }
 }
 
 AXNode* AXDummyTreeManager::GetParentNodeFromParentTree() const {

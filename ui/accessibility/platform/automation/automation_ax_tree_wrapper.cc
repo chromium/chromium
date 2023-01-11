@@ -554,7 +554,7 @@ AXNode* AutomationAXTreeWrapper::GetNodeFromTree(const AXTreeID& tree_id,
 }
 
 AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {
-  AutomationAXTreeWrapper* parent_tree = GetParentOfTreeId(ax_tree_id_);
+  AutomationAXTreeWrapper* parent_tree = GetParentOfTreeId(GetTreeID());
   return parent_tree ? parent_tree->GetTreeID() : AXTreeIDUnknown();
 }
 

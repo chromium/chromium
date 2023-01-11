@@ -69,8 +69,15 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Returns nullptr if |node_id| is not found.
   virtual AXNode* GetNode(const AXNodeID node_id) const;
 
+  // Returns true if the manager has a tree with a valid (not unknown) ID.
+  bool HasValidTreeID() const {
+    return ax_tree_ && ax_tree_->GetAXTreeID() != ui::AXTreeIDUnknown();
+  }
+
   // Returns the tree id of the tree managed by this AXTreeManager.
-  AXTreeID GetTreeID() const;
+  AXTreeID GetTreeID() const {
+    return ax_tree_ ? ax_tree_->GetAXTreeID() : ui::AXTreeIDUnknown();
+  }
 
   // Returns the AXTreeData for the tree managed by this AXTreeManager.
   const AXTreeData& GetTreeData() const;
@@ -99,7 +106,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // `AXTreeManagerMap`.
   void WillBeRemovedFromMap();
 
-  const AXTreeID& ax_tree_id() const { return ax_tree_id_; }
   AXTree* ax_tree() const { return ax_tree_.get(); }
 
   const AXEventGenerator& event_generator() const { return event_generator_; }
@@ -156,7 +162,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // once when this subtree is first connected.
   bool connected_to_parent_tree_node_;
 
-  AXTreeID ax_tree_id_;
   std::unique_ptr<AXTree> ax_tree_;
 
   AXEventGenerator event_generator_;

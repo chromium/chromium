@@ -1760,7 +1760,7 @@ void BrowserAccessibilityManager::CacheHitTestResult(
   // return a node that's hidden from the tree.
   hit_test_result = hit_test_result->PlatformGetLowestPlatformAncestor();
 
-  last_hover_ax_tree_id_ = hit_test_result->manager()->ax_tree_id();
+  last_hover_ax_tree_id_ = hit_test_result->manager()->GetTreeID();
   last_hover_node_id_ = hit_test_result->GetId();
   last_hover_bounds_ = hit_test_result->GetClippedScreenBoundsRect();
 }
