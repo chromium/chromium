@@ -29,6 +29,7 @@ FeatureConfigConditionValidator::~FeatureConfigConditionValidator() = default;
 ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
     const base::Feature& feature,
     const FeatureConfig& config,
+    const std::vector<GroupConfig>& group_configs,
     const EventModel& event_model,
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
@@ -72,6 +73,30 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
       result.snooze_expiration_ok &&
       event_model.GetSnoozeCount(config.trigger.name, config.trigger.window,
                                  current_day) < config.snooze_params.max_limit;
+
+  // Add on group additions
+  for (const auto& group_config : group_configs) {
+    bool valid = group_config.valid;
+    result.config_ok &= valid;
+    result.groups_ok &= valid;
+
+    bool trigger_ok = EventConfigMeetsConditions(group_config.trigger,
+                                                 event_model, current_day);
+    result.trigger_ok &= trigger_ok;
+    result.groups_ok &= trigger_ok;
+
+    for (const auto& event_config : group_config.event_configs) {
+      bool precondition_ok =
+          EventConfigMeetsConditions(event_config, event_model, current_day);
+      result.preconditions_ok &= precondition_ok;
+      result.groups_ok &= precondition_ok;
+    }
+
+    bool session_rate_ok =
+        SessionRateMeetsConditions(group_config.session_rate, feature);
+    result.session_rate_ok &= session_rate_ok;
+    result.groups_ok &= session_rate_ok;
+  }
 
   return result;
 }

@@ -191,7 +191,7 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
 
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
-      feature, feature_config, *event_model_, *availability_model_,
+      feature, feature_config, {}, *event_model_, *availability_model_,
       *display_lock_controller_, configuration_.get(),
       time_provider_->GetCurrentDay());
   if (result.NoErrors()) {
@@ -239,7 +239,7 @@ bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
 
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
-      feature, feature_config, *event_model_, *availability_model_,
+      feature, feature_config, {}, *event_model_, *availability_model_,
       *display_lock_controller_, configuration_.get(),
       time_provider_->GetCurrentDay());
   DVLOG(2) << "Would trigger result for " << feature.name
@@ -273,7 +273,7 @@ Tracker::TriggerState TrackerImpl::GetTriggerState(
   }
 
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
-      feature, configuration_->GetFeatureConfig(feature), *event_model_,
+      feature, configuration_->GetFeatureConfig(feature), {}, *event_model_,
       *availability_model_, *display_lock_controller_, configuration_.get(),
       time_provider_->GetCurrentDay());
 

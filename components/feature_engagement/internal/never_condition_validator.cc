@@ -15,6 +15,7 @@ NeverConditionValidator::~NeverConditionValidator() = default;
 ConditionValidator::Result NeverConditionValidator::MeetsConditions(
     const base::Feature& feature,
     const FeatureConfig& config,
+    const std::vector<GroupConfig>& group_configs,
     const EventModel& event_model,
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,

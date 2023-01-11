@@ -22,6 +22,7 @@ ConditionValidator::Result::Result(bool initial_values)
       display_lock_ok(initial_values),
       snooze_expiration_ok(initial_values),
       priority_notification_ok(initial_values),
+      groups_ok(initial_values),
       should_show_snooze(initial_values) {}
 
 ConditionValidator::Result::Result(const Result& other) = default;
@@ -33,7 +34,8 @@ bool ConditionValidator::Result::NoErrors() const {
   return event_model_ready_ok && currently_showing_ok && feature_enabled_ok &&
          config_ok && used_ok && trigger_ok && preconditions_ok &&
          session_rate_ok && availability_model_ready_ok && availability_ok &&
-         display_lock_ok && snooze_expiration_ok && priority_notification_ok;
+         display_lock_ok && snooze_expiration_ok && priority_notification_ok &&
+         groups_ok;
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -52,6 +54,7 @@ std::ostream& operator<<(std::ostream& os,
             << ", display_lock_ok=" << result.display_lock_ok
             << ", snooze_expiration_ok=" << result.snooze_expiration_ok
             << ", priority_notification_ok=" << result.priority_notification_ok
+            << ", groups_ok=" << result.groups_ok
             << ", should_show_snooze=" << result.should_show_snooze << " }";
 }
 

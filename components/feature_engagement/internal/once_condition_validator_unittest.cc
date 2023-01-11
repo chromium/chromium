@@ -101,13 +101,13 @@ class OnceConditionValidatorTest : public ::testing::Test {
 TEST_F(OnceConditionValidatorTest, EnabledFeatureShouldTriggerOnce) {
   // Only the first call to MeetsConditions() should lead to enlightenment.
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
   validator_.NotifyIsShowing(kOnceTestFeatureFoo, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
-      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
       availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
@@ -121,12 +121,12 @@ TEST_F(OnceConditionValidatorTest,
   // this captures a different behavior than the
   // OnlyOneFeatureShouldTriggerPerSession test below.
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
@@ -135,12 +135,12 @@ TEST_F(OnceConditionValidatorTest,
 TEST_F(OnceConditionValidatorTest, StillTriggerWhenAllFeaturesDisabled) {
   // No features should get to show enlightenment.
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureBar, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
@@ -149,14 +149,14 @@ TEST_F(OnceConditionValidatorTest, StillTriggerWhenAllFeaturesDisabled) {
 TEST_F(OnceConditionValidatorTest, OnlyTriggerWhenModelIsReady) {
   event_model_.SetIsReady(false);
   ConditionValidator::Result result = validator_.MeetsConditions(
-      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
       availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.event_model_ready_ok);
 
   event_model_.SetIsReady(true);
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
@@ -165,14 +165,14 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerWhenModelIsReady) {
 TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
   validator_.NotifyIsShowing(kOnceTestFeatureBar, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
-      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
       availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.currently_showing_ok);
 
   validator_.NotifyDismissed(kOnceTestFeatureBar);
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
@@ -183,13 +183,13 @@ TEST_F(OnceConditionValidatorTest,
   validator_.AllowMultipleFeaturesForTesting(true);
   validator_.NotifyIsShowing(kOnceTestFeatureBar, FeatureConfig(), {""});
   ConditionValidator::Result result = validator_.MeetsConditions(
-      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
       availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_TRUE(result.NoErrors());
 
   validator_.NotifyDismissed(kOnceTestFeatureBar);
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
@@ -198,14 +198,14 @@ TEST_F(OnceConditionValidatorTest,
 TEST_F(OnceConditionValidatorTest, PriorityNotificationBlocksOtherIPHs) {
   validator_.SetPriorityNotification("test_bar");
   ConditionValidator::Result result = validator_.MeetsConditions(
-      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      kOnceTestFeatureFoo, kValidFeatureConfig, {}, event_model_,
       availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.priority_notification_ok);
 
   validator_.SetPriorityNotification(absl::nullopt);
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());
@@ -213,13 +213,13 @@ TEST_F(OnceConditionValidatorTest, PriorityNotificationBlocksOtherIPHs) {
 
 TEST_F(OnceConditionValidatorTest, DoNotTriggerForInvalidConfig) {
   ConditionValidator::Result result = validator_.MeetsConditions(
-      kOnceTestFeatureFoo, kInvalidFeatureConfig, event_model_,
+      kOnceTestFeatureFoo, kInvalidFeatureConfig, {}, event_model_,
       availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.config_ok);
 
   EXPECT_TRUE(validator_
-                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig, {},
                                    event_model_, availability_model_,
                                    display_lock_controller_, nullptr, 0u)
                   .NoErrors());

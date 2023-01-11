@@ -75,6 +75,9 @@ class ConditionValidator {
     // other priority notifications.
     bool priority_notification_ok;
 
+    // Whether the additional group-based preconditions were met.
+    bool groups_ok;
+
     // Whether the snooze option should be shown.
     // This value is excluded from the NoErrors() check.
     bool should_show_snooze;
@@ -93,6 +96,7 @@ class ConditionValidator {
   virtual Result MeetsConditions(
       const base::Feature& feature,
       const FeatureConfig& config,
+      const std::vector<GroupConfig>& group_configs,
       const EventModel& event_model,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
