@@ -242,7 +242,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
         return set([
             builder for builder in try_builders
-            if not self._tool.builders.is_wpt_builder(builder)
+            if not self._tool.builders.uses_wptrunner(builder)
         ])
 
     @property

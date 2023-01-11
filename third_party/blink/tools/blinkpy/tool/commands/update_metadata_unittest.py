@@ -24,9 +24,9 @@ from blinkpy.web_tests.builder_list import BuilderList
 
 path_finder.bootstrap_wpt_imports()
 from manifest.manifest import Manifest
+from wptrunner import metadata
 
 
-@patch('concurrent.futures.ThreadPoolExecutor.map', new=map)
 class BaseUpdateMetadataTest(LoggingTestCase):
     def setUp(self):
         super().setUp()
@@ -108,6 +108,7 @@ class BaseUpdateMetadataTest(LoggingTestCase):
             yield stack
 
 
+@patch('concurrent.futures.ThreadPoolExecutor.map', new=map)
 class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     """Verify the tool's frontend and build infrastructure interactions."""
 
@@ -118,11 +119,20 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'port_name': 'test-linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'wpt_tests_suite (with patch)': {},
+                    'wpt_tests_suite_highdpi (with patch)': {
+                        'flag_specific': 'highdpi',
+                    },
+                },
             },
             'test-mac-wpt-rel': {
-                'port_name': 'test-mac-mac12',
-                'specifiers': ['Mac12', 'Release'],
+                'port_name': 'test-mac-mac10.11',
+                'specifiers': ['Mac10.11', 'Debug'],
                 'is_try_builder': True,
+                'steps': {
+                    'wpt_tests_suite (with patch)': {},
+                },
             },
             'Test Linux Tests (wpt)': {
                 'port_name': 'test-linux-trusty',
@@ -341,7 +351,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             "INFO: Updated 'crash.html'\n",
         ])
         self.assertEqual(self.tool.filesystem.files, files_before)
-        self.assertEqual(self.tool.executive.calls, [['luci-auth', 'token']])
+        self.assertIn(['luci-auth', 'token'], self.tool.executive.calls)
         self.assertEqual(self.tool.git().added_paths, set())
 
     def test_execute_only_changed_tests(self):
@@ -488,6 +498,28 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                                                 'infrastructure', 'metadata',
                                                 'testdriver.html.ini')))
 
+    def test_generate_configs(self):
+        linux, linux_highdpi, mac = sorted(
+            self.command.generate_configs(),
+            key=lambda config: (config['os'], config['flag_specific']))
+
+        self.assertEqual(linux['os'], 'linux')
+        self.assertEqual(linux['version'], 'trusty')
+        self.assertEqual(linux['processor'], 'x86')
+        self.assertEqual(linux['bits'], 64)
+        self.assertFalse(linux['debug'])
+        self.assertEqual(linux['flag_specific'], '')
+
+        self.assertEqual(linux_highdpi['os'], 'linux')
+        self.assertEqual(linux_highdpi['flag_specific'], 'highdpi')
+
+        self.assertEqual(mac['os'], 'mac')
+        self.assertEqual(mac['version'], '10.11')
+        self.assertEqual(mac['processor'], 'arm')
+        self.assertEqual(mac['bits'], 64)
+        self.assertTrue(mac['debug'])
+        self.assertEqual(mac['flag_specific'], '')
+
 
 class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
     """Verify the metadata ASTs are manipulated and written correctly.
@@ -507,14 +539,13 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         }
         with self._patch_builtins():
             manifests = load_and_update_manifests(self.finder)
-            updater = MetadataUpdater.from_manifests(manifests, **options)
             for report in reports:
                 report['run_info'] = {
                     'os': 'mac',
                     'version': '12',
                     'processor': 'arm',
                     'bits': 64,
-                    'flag_specific': None,
+                    'flag_specific': '',
                     'product': 'chrome',
                     'debug': False,
                     **(report.get('run_info') or {}),
@@ -523,8 +554,13 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     **result_defaults,
                     **result
                 } for result in report['results']]
-                buf = io.StringIO(json.dumps(report))
-                updater.collect_results([buf])
+
+            configs = frozenset(
+                metadata.RunInfo(report['run_info']) for report in reports)
+            updater = MetadataUpdater.from_manifests(manifests, configs,
+                                                     **options)
+            updater.collect_results(
+                io.StringIO(json.dumps(report)) for report in reports)
             for test_file in updater.test_files_to_update():
                 updater.update(test_file)
 
@@ -939,6 +975,64 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     FAIL
                 """),
             })
+
+    def test_condition_keep(self):
+        """Updating one platform's results should preserve those of others.
+
+        This test exercises the `--overwrite-conditions=fill` option (the
+        default).
+        """
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              [subtest]
+                expected:
+                  if os == "win": PASS
+                  FAIL
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'os': 'win'
+                },
+                'results': [{
+                    'test':
+                    '/variant.html?foo=baz',
+                    'status':
+                    'TIMEOUT',
+                    'expected':
+                    'OK',
+                    'subtests': [{
+                        'name': 'subtest',
+                        'status': 'TIMEOUT',
+                        'expected': 'PASS',
+                    }],
+                }],
+            }, {
+                'run_info': {
+                    'os': 'mac'
+                },
+                'results': [],
+            })
+        # Without result replay, the `FAIL` expectation is erroneously deleted,
+        # which will give either:
+        #   expected: TIMEOUT
+        #
+        # with a full update alone (i.e., `--overwrite-conditions=yes`), or
+        #   expected:
+        #     if os == "win": TIMEOUT
+        #
+        # without a full update (i.e., `--overwrite-conditions=no`).
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              expected:
+                if os == "win": TIMEOUT
+              [subtest]
+                expected:
+                  if os == "win": TIMEOUT
+                  FAIL
+            """)
 
 
 class UpdateMetadataArgumentParsingTest(unittest.TestCase):

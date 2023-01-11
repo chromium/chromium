@@ -39,7 +39,10 @@ class BuilderListTest(unittest.TestCase):
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
                 'steps': {
-                    "wpt_tests_suite (with patch)": {},
+                    'wpt_tests_suite (with patch)': {},
+                    'wpt_tests_suite_chrome (with patch)': {
+                        'product': 'chrome',
+                    },
                 },
                 'is_try_builder': True,
             },
@@ -296,7 +299,18 @@ class BuilderListTest(unittest.TestCase):
                          builders.version_specifier_for_port_name('port-b'))
         self.assertIsNone(builders.version_specifier_for_port_name('port-x'))
 
-    def test_is_wpt_builder(self):
+    def test_uses_wptrunner(self):
         builders = self.sample_builder_list()
-        self.assertFalse(builders.is_wpt_builder('Blink A'))
-        self.assertTrue(builders.is_wpt_builder('some-wpt-bot'))
+        self.assertFalse(builders.uses_wptrunner('Blink A'))
+        self.assertTrue(builders.uses_wptrunner('some-wpt-bot'))
+
+    def test_product_for_build_step(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(
+            builders.product_for_build_step('some-wpt-bot',
+                                            'wpt_tests_suite (with patch)'),
+            'content_shell')
+        self.assertEqual(
+            builders.product_for_build_step(
+                'some-wpt-bot', 'wpt_tests_suite_chrome (with patch)'),
+            'chrome')

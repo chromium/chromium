@@ -156,7 +156,7 @@ class Port(object):
         ('mac12', 'x86_64'),
         ('mac12-arm64', 'arm64'),
         ('win10.20h2', 'x86'),
-        ('win11', 'x64'),
+        ('win11', 'x86_64'),
         ('trusty', 'x86_64'),
         ('fuchsia', 'x86_64'),
     )

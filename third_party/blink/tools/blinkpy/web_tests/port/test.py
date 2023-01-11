@@ -700,6 +700,8 @@ class TestPort(Port):
 
         if self._operating_system == 'linux':
             self._architecture = 'x86_64'
+        elif self._operating_system == 'mac':
+            self._architecture = 'arm64'
 
         self.all_systems = (('mac10.10', 'x86'), ('mac10.11', 'x86'),
                             ('win7', 'x86'), ('win10', 'x86'),

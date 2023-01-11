@@ -127,7 +127,7 @@ class Testprinter(unittest.TestCase):
         printer._options.seed = 1234
         printer.print_config(self._port)
         self.assertIn("Using port 'test-mac-mac10.10'", err.getvalue())
-        self.assertIn('Test configuration: <mac10.10, x86, release>',
+        self.assertIn('Test configuration: <mac10.10, arm64, release>',
                       err.getvalue())
         self.assertIn('View the test results at file:///tmp', err.getvalue())
         self.assertIn(

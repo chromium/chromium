@@ -14,8 +14,11 @@ import pathlib
 import optparse
 import re
 from typing import (
+    Any,
     ClassVar,
     Collection,
+    Dict,
+    FrozenSet,
     Iterable,
     Iterator,
     List,
@@ -23,6 +26,7 @@ from typing import (
     Mapping,
     Optional,
     Set,
+    Tuple,
     TypedDict,
 )
 
@@ -41,7 +45,7 @@ from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
 from manifest import manifest as wptmanifest
-from wptrunner import metadata, testloader, wpttest
+from wptrunner import manifestupdate, metadata, testloader, wpttest
 from wptrunner.wptmanifest.backends import conditional
 
 _log = logging.getLogger(__name__)
@@ -91,14 +95,12 @@ class UpdateMetadata(Command):
             optparse.make_option(
                 '--overwrite-conditions',
                 default='fill',
-                metavar='{yes,no,auto,fill}',
-                choices=['yes', 'no', 'auto', 'fill'],
-                help=(
-                    'Specify whether to reformat conditional statuses. '
-                    '"auto" will reformat conditions if every platform '
-                    'a test is enabled for has results. '
-                    '"fill" will reformat conditions using existing statuses '
-                    'for platforms without results. (default: "fill")')),
+                metavar='{fill,yes,no}',
+                choices=['fill', 'yes', 'no'],
+                help=('Specify whether to reformat conditional statuses. '
+                      '"fill" will reformat conditions using existing '
+                      'expectations for platforms without results. (default: '
+                      '"fill")')),
             # TODO(crbug.com/1299650): This reason should be optional, but
             # nargs='?' is only supported by argparse, which we should
             # eventually migrate to.
@@ -154,6 +156,7 @@ class UpdateMetadata(Command):
         manifests = load_and_update_manifests(self._path_finder)
         updater = MetadataUpdater.from_manifests(
             manifests,
+            self.generate_configs(),
             self._explicit_include_patterns(options, args),
             options.exclude,
             overwrite_conditions=options.overwrite_conditions,
@@ -350,7 +353,7 @@ class UpdateMetadata(Command):
         builders = self._tool.builders.all_try_builder_names()
         return [
             Build(builder) for builder in builders
-            if self._tool.builders.is_wpt_builder(builder)
+            if self._tool.builders.uses_wptrunner(builder)
         ]
 
     def _explicit_include_patterns(self, options: optparse.Values,
@@ -437,6 +440,56 @@ class UpdateMetadata(Command):
                 '%r is neither a regular file nor a directory' % value)
         setattr(parser.values, option.dest, reports)
 
+    def generate_configs(self) -> FrozenSet[metadata.RunInfo]:
+        """Construct run info representing all Chromium test environments.
+
+        Each property in a config represents a value that metadata keys can be
+        conditioned on (e.g., 'os').
+        """
+        configs = set()
+        wptrunner_builders = {
+            builder
+            for builder in self._tool.builders.all_builder_names()
+            if self._tool.builders.uses_wptrunner(builder)
+        }
+        # The version group matches anything like:
+        #   "<major>.<minor>.<patch><revision>"
+        version_pattern = re.compile(r'[a-z-_]*(?P<version>\d+(\.\d+){,2}\w*)')
+        cpu_pattern = re.compile(r'(?P<arch>x86|arm)[_-]?(?P<bits>\d+)?')
+
+        for builder in wptrunner_builders:
+            port_name = self._tool.builders.port_name_for_builder_name(builder)
+            _, build_config, *_ = self._tool.builders.specifiers_for_builder(
+                builder)
+            port = self._tool.port_factory.get(
+                port_name, optparse.Values({
+                    'configuration': build_config,
+                }))
+            config = port.test_configuration()
+
+            version = config.version
+            version_match = version_pattern.match(config.version)
+            if version_match:
+                version = version_match['version']
+            cpu_match = cpu_pattern.match(config.architecture)
+
+            for step in self._tool.builders.step_names_for_builder(builder):
+                flag_specific = self._tool.builders.flag_specific_option(
+                    builder, step)
+                product = self._tool.builders.product_for_build_step(
+                    builder, step)
+                configs.add(
+                    metadata.RunInfo({
+                        'os': port.operating_system(),
+                        'version': version,
+                        'processor': cpu_match['arch'],
+                        'bits': int(cpu_match['bits'] or 32),
+                        'debug': config.build_type != 'release',
+                        'product': product,
+                        'flag_specific': flag_specific or '',
+                    }))
+        return configs
+
 
 class UpdateAbortError(Exception):
     """Exception raised when the update should be aborted."""
@@ -454,16 +507,16 @@ class MetadataUpdater:
     def __init__(
             self,
             test_files: TestFileMap,
+            configs: FrozenSet[metadata.RunInfo],
             primary_properties: Optional[List[str]] = None,
             dependent_properties: Optional[Mapping[str, str]] = None,
-            overwrite_conditions: Literal['yes', 'no', 'fill',
-                                          'auto'] = 'fill',
+            overwrite_conditions: Literal['yes', 'no', 'fill'] = 'fill',
             disable_intermittent: Optional[str] = None,
             keep_statuses: bool = False,
             bug: Optional[int] = None,
             dry_run: bool = False,
     ):
-        self._test_files = test_files
+        self._configs = configs
         self._default_expected = _default_expected_by_type()
         self._primary_properties = primary_properties or [
             'debug',
@@ -481,10 +534,12 @@ class MetadataUpdater:
         self._keep_statuses = keep_statuses
         self._bug = bug
         self._dry_run = dry_run
+        self._updater = metadata.ExpectedUpdater(test_files)
 
     @classmethod
     def from_manifests(cls,
                        manifests: ManifestMap,
+                       configs: FrozenSet[metadata.RunInfo],
                        include: Optional[List[str]] = None,
                        exclude: Optional[List[str]] = None,
                        **options) -> 'MetadataUpdater':
@@ -517,23 +572,23 @@ class MetadataUpdater:
                                               manifest))
             finally:
                 manifest.itertypes = itertypes
-        return cls(test_files, **options)
+        return cls(test_files, configs, **options)
 
     def collect_results(self, reports: Iterable[io.TextIOBase]) -> Set[str]:
         """Parse and record test results."""
-        updater = metadata.ExpectedUpdater(self._test_files)
         test_ids = set()
         for report in reports:
             report = self._merge_retry_reports(map(json.loads, report))
             test_ids.update(result['test'] for result in report['results'])
-            updater.update_from_wptreport_log(report)
+            self._updater.update_from_wptreport_log(report)
         return test_ids
 
     def _merge_retry_reports(self, retry_reports):
         report, results_by_test = {}, collections.defaultdict(list)
         for retry_report in retry_reports:
-            run_info = report.get('run_info', retry_report['run_info'])
-            if run_info != retry_report['run_info']:
+            retry_report['run_info'] = config = self._reduce_config(
+                retry_report['run_info'])
+            if config != report.get('run_info', config):
                 raise ValueError('run info values should be identical '
                                  'across retries')
             report.update(retry_report)
@@ -545,26 +600,109 @@ class MetadataUpdater:
                 report['results'].extend(results)
         return report
 
+    def _reduce_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
+        properties = frozenset(self._primary_properties).union(
+            *self._dependent_properties.values())
+        return {
+            prop: value
+            for prop, value in config.items() if prop in properties
+        }
+
     def test_files_to_update(self) -> List[metadata.TestFileData]:
         test_files = {
             test_file
-            for test_file in self._test_files.values()
+            for test_file in self._updater.id_test_map.values()
             if not test_file.test_path.endswith('__dir__')
         }
         return sorted(test_files, key=lambda test_file: test_file.test_path)
 
-    def _determine_if_full_update(self,
-                                  test_file: metadata.TestFileData) -> bool:
-        if self._overwrite_conditions == 'fill':
-            # TODO(crbug.com/1299650): To be implemented.
-            return True
-        elif self._overwrite_conditions == 'auto':
-            # TODO(crbug.com/1299650): To be implemented.
-            return False
-        elif self._overwrite_conditions == 'yes':
-            return True
-        else:
-            return False
+    def _fill_missing(self, test_file: metadata.TestFileData):
+        """Fill in results for any missing port.
+
+        A filled-in status is derived by evaluating the expectation conditions
+        against each port's (i.e., "config's") properties. The statuses are
+        then "replayed" as if the results had been from a wptreport.
+
+        The purpose of result replay is to prevent the update backend from
+        clobbering expectations for ports without results.
+        """
+        for test_id, subtest_id, node in self._iterate_tests_and_subtests(
+                test_file):
+            updated_configs = self._updated_configs(test_file, test_id,
+                                                    subtest_id)
+            # Nothing to update. This commonly occurs when every port runs
+            # expectedly. As an optimization, skip this file's update entirely
+            # instead of replaying every result.
+            if not updated_configs:
+                continue
+            self._updater.test_start({'test': test_id})
+            missing_configs = self._enabled_configs(node) - updated_configs
+            for config in missing_configs:
+                try:
+                    statuses = node.get('expected', config)
+                except KeyError:
+                    statuses = self._default_expected[test_file.item_type,
+                                                      subtest_id is not None]
+                if isinstance(statuses, str):
+                    statuses = [statuses]
+                expected, *known_intermittent = statuses
+                self._updater.suite_start({'run_info': config.data})
+                if subtest_id:
+                    self._updater.test_status({
+                        'test':
+                        test_id,
+                        'subtest':
+                        subtest_id,
+                        'status':
+                        expected,
+                        'known_intermittent':
+                        known_intermittent,
+                    })
+                else:
+                    self._updater.test_end({
+                        'test':
+                        test_id,
+                        'status':
+                        expected,
+                        'known_intermittent':
+                        known_intermittent,
+                    })
+
+    def _iterate_tests_and_subtests(
+            self,
+            test_file: metadata.TestFileData,
+    ) -> Iterator[Tuple[str, Optional[str], manifestupdate.TestNode]]:
+        expectations = test_file.expected(
+            (self._primary_properties, self._dependent_properties),
+            update_intermittent=(not self._disable_intermittent),
+            remove_intermittent=(not self._keep_statuses))
+        for test in expectations.child_map.values():
+            yield test.id, None, test
+            for subtest_id, subtest in test.subtests.items():
+                yield test.id, subtest_id, subtest
+
+    def _updated_configs(
+            self,
+            test_file: metadata.TestFileData,
+            test_id: str,
+            subtest_id: Optional[str] = None,
+    ) -> FrozenSet[metadata.RunInfo]:
+        """Find configurations a (sub)test has results for so far."""
+        return frozenset(
+            run_info for _, run_info, _ in test_file.data[test_id][subtest_id])
+
+    def _enabled_configs(
+            self,
+            node: manifestupdate.TestNode,
+    ) -> FrozenSet[metadata.RunInfo]:
+        """Find which configurations a (sub)test is enabled for."""
+        configs = set()
+        for config in self._configs:
+            with contextlib.suppress(KeyError):
+                if node.disabled(config):
+                    continue
+            configs.add(config)
+        return configs
 
     def update(self, test_file: metadata.TestFileData) -> bool:
         """Update and serialize the AST of a metadata file.
@@ -572,10 +710,12 @@ class MetadataUpdater:
         Returns:
             Whether the test file's metadata was modified.
         """
+        if self._overwrite_conditions == 'fill':
+            self._fill_missing(test_file)
         expected = test_file.update(
             self._default_expected,
             (self._primary_properties, self._dependent_properties),
-            full_update=self._determine_if_full_update(test_file),
+            full_update=(self._overwrite_conditions != 'no'),
             disable_intermittent=self._disable_intermittent,
             # `disable_intermittent` becomes a no-op when `update_intermittent`
             # is set, so always force them to be opposites. See:

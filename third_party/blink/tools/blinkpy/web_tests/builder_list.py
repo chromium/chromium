@@ -203,8 +203,14 @@ class BuilderList(object):
     def is_try_server_builder(self, builder_name):
         return self._builders[builder_name].get('is_try_builder', False)
 
-    def is_wpt_builder(self, builder_name):
-        return 'wpt' in builder_name
+    def uses_wptrunner(self, builder_name: str) -> bool:
+        return any(
+            step.get('uses_wptrunner', 'wpt_tests_suite' in step_name)
+            for step_name, step in self._steps(builder_name).items())
+
+    def product_for_build_step(self, builder_name: str, step_name: str) -> str:
+        steps = self._steps(builder_name)
+        return steps[step_name].get('product', 'content_shell')
 
     def flag_specific_option(self, builder_name, step_name):
         steps = self._steps(builder_name)

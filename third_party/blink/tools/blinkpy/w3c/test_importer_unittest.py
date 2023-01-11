@@ -51,6 +51,11 @@ class TestImporterTest(LoggingTestCase):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'wpt_tests_suite (with patch)': {
+                        'uses_wptrunner': True,
+                    },
+                }
             },
             'CI Builder D': {
                 'port_name': 'linux-trusty',
