@@ -63,6 +63,11 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     const WTF::TextEncoding& encoding,
     ScriptElementBase* element,
     FetchParameters::DeferOption defer) {
+
+  // https://linear.app/replay/issue/RUN-820
+  recordreplay::Assert("[RUN-820] ClassicPendingScript::Fetch #1 url=%s",
+    url.GetString().Utf8().c_str());
+
   ExecutionContext* context = element_document.GetExecutionContext();
   FetchParameters params(options.CreateFetchParameters(
       url, context->GetSecurityOrigin(), context->GetCurrentWorld(),
