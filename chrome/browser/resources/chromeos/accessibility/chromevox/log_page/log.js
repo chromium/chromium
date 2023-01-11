@@ -54,6 +54,20 @@ export class LogPage {
   }
 
   /** @private */
+  getDownloadFileName_() {
+    const date = new Date();
+    return [
+      'chromevox_logpage',
+      date.getMonth() + 1,
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+    ].join('_') +
+        '.txt';
+  }
+
+  /** @private */
   initPage_() {
     const params = new URLSearchParams(location.search);
     for (const type of Object.values(LogType)) {
@@ -66,7 +80,7 @@ export class LogPage {
     clearLogButton.onclick = () => this.onClear_();
 
     const saveLogButton = document.getElementById('saveLog');
-    saveLogButton.onclick = event => this.onSaveLog_(event);
+    saveLogButton.onclick = event => this.onSave_(event);
   }
 
   /**
@@ -75,6 +89,18 @@ export class LogPage {
    */
   isEnabled_(type) {
     return document.getElementById(this.checkboxId_(type)).checked;
+  }
+
+  /**
+   * @param {Element} log
+   * @private
+   */
+  logToString_(log) {
+    const logText = [];
+    logText.push(log.querySelector('.log-type-tag').textContent);
+    logText.push(log.querySelector('.log-time-tag').textContent);
+    logText.push(log.querySelector('.log-text').textContent);
+    return logText.join(' ');
   }
 
   /** @private */
@@ -89,29 +115,15 @@ export class LogPage {
    * @param {Event} event
    * @private
    */
-  onSaveLog_(event) {
+  onSave_(event) {
     let outputText = '';
     const logs = document.querySelectorAll('#logList p');
-    for (let i = 0; i < logs.length; i++) {
-      const logText = [];
-      logText.push(logs[i].querySelector('.log-type-tag').textContent);
-      logText.push(logs[i].querySelector('.log-time-tag').textContent);
-      logText.push(logs[i].querySelector('.log-text').textContent);
-      outputText += logText.join(' ') + '\n';
+    for (const log of logs) {
+      outputText += this.logToString_(log) + '\n';
     }
 
     const a = document.createElement('a');
-    const date = new Date();
-    a.download =
-        [
-          'chromevox_logpage',
-          date.getMonth() + 1,
-          date.getDate(),
-          date.getHours(),
-          date.getMinutes(),
-          date.getSeconds(),
-        ].join('_') +
-        '.txt';
+    a.download = this.getDownloadFileName_();
     a.href = 'data:text/plain; charset=utf-8,' + encodeURI(outputText);
     a.click();
   }
