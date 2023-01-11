@@ -948,7 +948,7 @@
   {
     "name": "chrome-labs",
     "owners": ["elainechien", "robliao"],
-    "expiry_milestone": 112
+    "expiry_milestone": 122
   },
   {
     "name": "chrome-root-store-enabled",
