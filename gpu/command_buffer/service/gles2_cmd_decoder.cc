@@ -3479,20 +3479,6 @@ GLES2Decoder* GLES2Decoder::Create(
                               std::move(image_factory_for_nacl_swapchain));
 }
 
-GLES2Decoder* GLES2Decoder::CreateForTesting(
-    DecoderClient* client,
-    CommandBufferServiceBase* command_buffer_service,
-    Outputter* outputter,
-    ContextGroup* group,
-    std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain) {
-  if (group->use_passthrough_cmd_decoder()) {
-    return new GLES2DecoderPassthroughImpl(client, command_buffer_service,
-                                           outputter, group);
-  }
-  return new GLES2DecoderImpl(client, command_buffer_service, outputter, group,
-                              std::move(image_factory_for_nacl_swapchain));
-}
-
 GLES2DecoderImpl::GLES2DecoderImpl(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
