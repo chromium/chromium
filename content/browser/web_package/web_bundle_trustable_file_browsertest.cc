@@ -157,7 +157,14 @@ IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest, RangeRequest) {
   RunTestScript("test-range-request.js");
 }
 
-IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest, BasicNavigation) {
+// Flaky on Linux bots https://crbug.com/1406600.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BasicNavigation DISABLED_BasicNavigation
+#else
+#define MAYBE_BasicNavigation BasicNavigation
+#endif
+IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
+                       MAYBE_BasicNavigation) {
   RunSharedNavigationTest(
       &web_bundle_browsertest_utils::SetUpBasicNavigationTest,
       &web_bundle_browsertest_utils::RunBasicNavigationTest);
@@ -171,16 +178,30 @@ IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
                               RunBrowserInitiatedOutOfBundleNavigationTest);
 }
 
+// Flaky on Linux bots https://crbug.com/1406600.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RendererInitiatedOutOfBundleNavigation \
+  DISABLED_RendererInitiatedOutOfBundleNavigation
+#else
+#define MAYBE_RendererInitiatedOutOfBundleNavigation \
+  RendererInitiatedOutOfBundleNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
-                       RendererInitiatedOutOfBundleNavigation) {
+                       MAYBE_RendererInitiatedOutOfBundleNavigation) {
   RunSharedNavigationTest(&web_bundle_browsertest_utils::
                               SetUpRendererInitiatedOutOfBundleNavigationTest,
                           &web_bundle_browsertest_utils::
                               RunRendererInitiatedOutOfBundleNavigationTest);
 }
 
+// Flaky on Linux bots https://crbug.com/1406600.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SameDocumentNavigation DISABLED_SameDocumentNavigation
+#else
+#define MAYBE_SameDocumentNavigation SameDocumentNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
-                       SameDocumentNavigation) {
+                       MAYBE_SameDocumentNavigation) {
   RunSharedNavigationTest(
       &web_bundle_browsertest_utils::SetUpSameDocumentNavigationTest,
       &web_bundle_browsertest_utils::RunSameDocumentNavigationTest);
