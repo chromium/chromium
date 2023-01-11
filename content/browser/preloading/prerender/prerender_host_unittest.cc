@@ -213,7 +213,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
     navigation_2->Start();
     EXPECT_EQ(NavigationThrottle::CANCEL,
               navigation_2->GetLastThrottleCheckResult());
-    tno.WaitForNavigationFinished();
+    ASSERT_TRUE(tno.WaitForNavigationFinished());
     EXPECT_FALSE(tno.was_committed());
 
     // The cross-origin navigation cancels the activation.

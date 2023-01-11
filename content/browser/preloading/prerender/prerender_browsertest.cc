@@ -1114,13 +1114,14 @@ void PrerenderBrowserTest::TestPrerenderAllowedOnIframeWithStatusCode(
   switch (origin_type) {
     case OriginType::kSameOrigin:
       // Wait for the completion of the iframe navigation.
-      iframe_navigation_manager.WaitForNavigationFinished();
+      ASSERT_TRUE(iframe_navigation_manager.WaitForNavigationFinished());
       break;
     case OriginType::kSameSiteCrossOrigin:
     case OriginType::kCrossSite:
       // Cross-origin iframe navigation is deferred in WillStartRequest() before
       // checking the status code.
-      iframe_navigation_manager.WaitForFirstYieldAfterDidStartNavigation();
+      ASSERT_TRUE(
+          iframe_navigation_manager.WaitForFirstYieldAfterDidStartNavigation());
       auto* request = static_cast<NavigationRequest*>(
           iframe_navigation_manager.GetNavigationHandle());
       EXPECT_TRUE(request->IsDeferredForTesting());
@@ -2399,7 +2400,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
     TestNavigationManager prerender_manager(shell()->web_contents(),
                                             kPrerenderingUrl);
     AddPrerenderAsync(kPrerenderingUrl);
-    prerender_manager.WaitForFirstYieldAfterDidStartNavigation();
+    ASSERT_TRUE(prerender_manager.WaitForFirstYieldAfterDidStartNavigation());
     ASSERT_NE(throttle, nullptr);
 
     auto* request =
@@ -2409,7 +2410,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
     throttle = nullptr;
 
     request->GetNavigationThrottleRunnerForTesting()->CallResumeForTesting();
-    prerender_manager.WaitForNavigationFinished();
+    ASSERT_TRUE(prerender_manager.WaitForNavigationFinished());
 
     int host_id = GetHostForUrl(kPrerenderingUrl);
     EXPECT_EQ(GetPrerenderedMainFrameHost(host_id)->GetLastCommittedURL(),
@@ -3015,7 +3016,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
 
   // 3. Wait until the navigation to `cross_origin_iframe_url` is deferred by
   // NavigationThrottle.
-  subframe_navigation_manager.WaitForFirstYieldAfterDidStartNavigation();
+  ASSERT_TRUE(
+      subframe_navigation_manager.WaitForFirstYieldAfterDidStartNavigation());
   FrameTreeNode* child_ftn =
       FrameTreeNode::GloballyFindByID(host_id)->child_at(0);
   NavigationRequest* child_navigation = child_ftn->navigation_request();
@@ -5498,7 +5500,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
       kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*is_renderer_initiated=*/false));
-  iframe_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(iframe_observer.WaitForNavigationFinished());
   EXPECT_TRUE(iframe_observer.was_committed());
   EXPECT_TRUE(iframe_observer.was_successful());
   EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
@@ -5539,7 +5541,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
   // prerender disables the activation due to DidFailLoad.
   ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                      JsReplace("location = $1", kPrerenderingUrl)));
-  navigation_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
   EXPECT_FALSE(prerender_observer.was_activated());
 
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kDidFailLoad);
@@ -5640,7 +5642,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
         kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
         WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
         /*is_renderer_initiated=*/false));
-    iframe_observer.WaitForFirstYieldAfterDidStartNavigation();
+    ASSERT_TRUE(iframe_observer.WaitForFirstYieldAfterDidStartNavigation());
     NavigationRequest* request =
         static_cast<NavigationRequest*>(iframe_observer.GetNavigationHandle());
     EXPECT_EQ(request->state(), NavigationRequest::WILL_START_REQUEST);
@@ -5660,7 +5662,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Now that we're activated, the iframe navigation should be able to finish.
   // Ensure the navigation completes in the iframe.
   {
-    iframe_observer.WaitForNavigationFinished();
+    ASSERT_TRUE(iframe_observer.WaitForNavigationFinished());
     child_frame = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child_frame);
     EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
@@ -5706,7 +5708,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // be cancelled by PrerenderNavigationThrottle.
   TestNavigationManager bad_nav_observer(web_contents(), kPrerenderingUrl2);
   NavigatePrerenderedPage(prerender_host_id, kPrerenderingUrl2);
-  bad_nav_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(bad_nav_observer.WaitForNavigationFinished());
   EXPECT_FALSE(bad_nav_observer.was_successful());
 
   // PrerenderNavigationThrottle also cancels the activation and then starts
@@ -6096,7 +6098,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(ExecJs(prerender_main_frame,
                      JsReplace(kNavigateScript, kCrossOriginUrl)));
 
-  iframe_nav_observer.WaitForFirstYieldAfterDidStartNavigation();
+  ASSERT_TRUE(iframe_nav_observer.WaitForFirstYieldAfterDidStartNavigation());
 
   // The PrerenderSubframeNavigationThrottle should defer it until activation.
   auto* child_ftn =
@@ -6110,7 +6112,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_TRUE(activation_observer.was_activated());
 
   // The iframe navigation should finish.
-  iframe_nav_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(iframe_nav_observer.WaitForNavigationFinished());
   EXPECT_EQ(ChildFrameAt(prerender_main_frame, 0)->GetLastCommittedURL(),
             kCrossOriginUrl);
 }
@@ -6164,7 +6166,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
         kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
         WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
         /*is_renderer_initiated=*/false));
-    iframe_observer.WaitForNavigationFinished();
+    ASSERT_TRUE(iframe_observer.WaitForNavigationFinished());
     EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
   }
 
@@ -8416,7 +8418,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ExecJs(
       prerender_rfh,
       JsReplace("document.querySelector('iframe').src = $1", kSubframeUrl2)));
-  subframe_nav_manager.WaitForNavigationFinished();
+  ASSERT_TRUE(subframe_nav_manager.WaitForNavigationFinished());
 
   // We should not dismiss dialogs when the prerender's subframe navigates and
   // swaps its RFH.
