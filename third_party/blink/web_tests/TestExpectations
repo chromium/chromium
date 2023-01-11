@@ -6954,3 +6954,7 @@ crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.http
 crbug.com/1361956 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Failure Pass Timeout ]
 crbug.com/1354433 [ Win ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Failure Pass ]
 crbug.com/1404252 [ Mac11-arm64 Release ] external/wpt/resource-timing/response-status-code.html [ Failure Pass ]
+
+# Sheriff 2023-01-11
+crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.worker.html [ Failure Pass ]
+crbug.com/1406380 [ Win ] external/wpt/infrastructure/server/webtransport-h3.https.sub.any.sharedworker.html [ Failure Pass ]
