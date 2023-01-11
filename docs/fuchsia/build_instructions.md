@@ -262,11 +262,12 @@ support for the KVM hypervisor:
 A description of how our testing scripts work can be found
 [here](test_scripts.md).
 
-There are three types of tests available to run on Fuchsia:
+There are four types of tests available to run on Fuchsia:
 
 1.  [Gtests](gtests.md)
 2.  [GPU integration tests](gpu_testing.md)
 3.  [Blink tests](web_tests.md)
+4.  [Webpage tests](webpage_tests.md)
 
 Check the documentations to learn more about how to run these tests.
 
