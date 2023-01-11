@@ -118,8 +118,9 @@ suite('SidePanelPowerBookmarksListTest', () => {
         (bookmarkElement as PowerBookmarkRowElement).bookmark.url);
     assertNotEquals(
         undefined,
-        Array.from(bookmarkElement.shadowRoot!.querySelectorAll('div'))
-            .find(el => el.textContent === 'New title'));
+        Array.from(bookmarkElement.shadowRoot!.querySelectorAll('button'))
+            .find(
+                el => el.textContent && el.textContent.trim() === 'New title'));
   });
 
   test('AddsCreatedBookmark', async () => {

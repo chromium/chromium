@@ -7,10 +7,11 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './power_bookmark_row.html.js';
@@ -26,45 +27,33 @@ export class PowerBookmarkRowElement extends PolymerElement {
 
   static get properties() {
     return {
-      bookmark: {
-        type: Object,
-        observer: 'updateImages_',
-      },
-
+      bookmark: Object,
       checkboxDisabled: {
         type: Boolean,
         value: false,
       },
-
       compact: {
         type: Boolean,
-        reflectToAttribute: true,
         value: false,
-        observer: 'updateImages_',
       },
-
       description: {
         type: String,
         value: '',
       },
-
       hasCheckbox: {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
       },
-
       hasInput: {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
       },
-
       trailingIcon: {
         type: String,
         value: '',
       },
-
       trailingIconAriaLabel: {
         type: String,
         value: '',
@@ -86,48 +75,11 @@ export class PowerBookmarkRowElement extends PolymerElement {
     this.onInputDisplayChange_();
   }
 
-  /**
-   * Set content and styling for all images in the row.
-   */
-  private updateImages_() {
-    const bookmarkImage = this.shadowRoot!.querySelector('#bookmarkImage');
-    if (bookmarkImage) {
-      this.updateImage_(bookmarkImage as HTMLDivElement);
-    }
-    const inputBookmarkImage =
-        this.shadowRoot!.querySelector('#inputBookmarkImage');
-    if (inputBookmarkImage) {
-      this.updateImage_(inputBookmarkImage as HTMLDivElement);
-    }
-  }
-
-  /**
-   * Add the appropriate image for the given bookmark and compact/expanded
-   * state. If the bookmark should be displayed as compact, this image will be
-   * a favicon or folder icon, otherwise it will be a larger image.
-   */
-  private updateImage_(imageElement: HTMLDivElement) {
-    // Reset styling added in previous calls to this method.
-    imageElement.classList.remove('url-icon');
-    imageElement.classList.remove('icon-folder-open');
-    imageElement.style.backgroundImage = '';
-    imageElement.style.backgroundColor = '';
-    if (this.compact) {
-      if (this.bookmark.url) {
-        imageElement.classList.add('url-icon');
-        imageElement.style.backgroundImage =
-            getFaviconForPageURL(this.bookmark.url, false);
-      } else {
-        imageElement.classList.add('icon-folder-open');
-      }
-    } else {
-      // TODO(b/244627092): Add image once available
-      imageElement.style.backgroundColor = 'red';
-    }
+  private getItemSize_() {
+    return this.compact ? CrUrlListItemSize.COMPACT : CrUrlListItemSize.LARGE;
   }
 
   private onInputDisplayChange_() {
-    this.updateImages_();
     const input = this.shadowRoot!.querySelector('#input');
     if (input) {
       (input as CrInputElement).focus();

@@ -1,44 +1,7 @@
-<style include="mwb-element-shared-style cr-shared-style">
-  :host {
-    --power-bookmark-row-button-display: grid;
-    --power-bookmark-row-checkbox-width: 0;
-    --power-bookmark-row-end-padding: 18px;
-    --power-bookmark-row-height: 68px;
-    --power-bookmark-row-image-size: 56px;
-    --power-bookmark-row-input-display: none;
-    --power-bookmark-row-start-padding: 32px;
-    --power-bookmark-row-trailing-icon-size: 0px;
-    display: block;
-    user-select: none;
-    white-space: nowrap;
-  }
-
-  :host([has-checkbox]) {
-    --power-bookmark-row-checkbox-width: 32px;
-  }
-
-  :host([has-input]) {
-    --power-bookmark-row-input-display: grid;
-    --power-bookmark-row-button-display: none;
-  }
-
-  :host([compact]) {
-    --power-bookmark-row-image-size: 16px;
-    --power-bookmark-row-height: 32px;
-  }
-
-  :host ::slotted([slot=extra-content-container]) {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-  }
-
-  cr-checkbox {
-    grid-area: checkbox;
-    height: 32px;
-    margin-inline-start: 14px;
-    position: absolute;
-    width: 16px;
+<style>
+  cr-url-list-item[size=compact] {
+    padding-inline-end: 14px;
+    padding-inline-start: 14px;
   }
 
   /* Visually hide the label but allow the screen reader to pick it up. */
@@ -57,145 +20,58 @@
     width: 100%;
   }
 
-  .bookmark-image {
-    border-radius: 6px;
-    grid-area: image;
-    height: var(--power-bookmark-row-image-size);
-    justify-self: center;
-    width: var(--power-bookmark-row-image-size);
-  }
-
-  #container {
-    display: flex;
-  }
-
-  .content {
-    color: var(--cr-primary-text-color);
-    justify-self: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  :host(:not([compact])) .content {
-    width: 100%;
-  }
-
-  .icon-folder-open {
-    -webkit-mask-image: var(--cr-icon-image);
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: var(--power-bookmark-row-image-size);
-    background-color: var(--cr-primary-text-color);
-  }
-
-  .input-row {
-    align-items: center;
-    display: var(--power-bookmark-row-input-display);
-    grid-template-areas: 'image input';
-    grid-template-columns: calc(var(--power-bookmark-row-image-size) +
-                                var(--power-bookmark-row-start-padding)) auto;
-    height: var(--power-bookmark-row-height);
-    padding-inline-end: var(--power-bookmark-row-end-padding);
-    width: 100%;
-  }
-
-  .description {
-    color: var(--cr-secondary-text-color);
-    font-size: var(--mwb-secondary-text-font-size);
-  }
-
-  .row {
-    align-items: center;
+  #title {
     appearance: none;
     background: transparent;
-    border: none;
-    box-sizing: border-box;
-    color: currentColor;
-    display: var(--power-bookmark-row-button-display);
-    font-size: var(--mwb-primary-text-font-size);
-    grid-template-areas: 'checkbox image content trailing-icon';
-    grid-template-columns: var(--power-bookmark-row-checkbox-width)
-                           calc(var(--power-bookmark-row-image-size) +
-                                var(--power-bookmark-row-start-padding)) auto
-                           calc(var(--power-bookmark-row-trailing-icon-size) +
-                                var(--power-bookmark-row-end-padding));
-    height: var(--power-bookmark-row-height);
+    border: 0;
+    display: inline;
     padding: 0;
     text-align: start;
-    width: 100%;
   }
 
-  .row:hover {
-    --power-bookmark-row-trailing-icon-size: 24px;
-    background-color: var(--mwb-list-item-hover-background-color);
-  }
-
-  .row:hover > .trailing-icon {
-    display: block;
-  }
-
-  .text-container {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    grid-area: content;
-    overflow: hidden;
-  }
-
-  :host([compact]) .text-container {
-    align-items: baseline;
-    flex-direction: row;
-    gap: 4px;
-  }
-
-  .trailing-icon {
-    --cr-icon-button-margin-start: 8px;
-    --cr-icon-button-size: var(--power-bookmark-row-trailing-icon-size);
-    display: none;
-    grid-area: trailing-icon;
-  }
-
-  .url-icon {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: var(--power-bookmark-row-image-size);
+  #title:focus {
+    outline: none;
   }
 </style>
-<div id="container" role="listitem">
+
+<cr-url-list-item
+    role="listitem"
+    size="[[getItemSize_(compact)]]"
+    url="[[bookmark.url]]"
+    count="[[bookmark.children.length]]"
+    title="[[bookmark.title]]"
+    on-click="onRowClicked_"
+    on-contextmenu="onContextMenu_">
   <template is="dom-if" if="[[hasCheckbox]]" restamp>
-    <cr-checkbox hidden="[[!hasCheckbox]]" on-change="onCheckboxChange_"
+    <cr-checkbox slot="prefix" hidden="[[!hasCheckbox]]"
+        on-change="onCheckboxChange_"
         disabled="[[checkboxDisabled]]">
       TODO: hidden label text
     </cr-checkbox>
   </template>
+
   <template is="dom-if" if="[[hasInput]]" on-dom-change="onInputDisplayChange_">
-    <div class="input-row">
-      <div id="inputBookmarkImage" class="bookmark-image"></div>
-      <cr-input id="input" value="[[bookmark.title]]" on-change="onInputChange_"
-          on-blur="onInputChange_" on-keypress="onInputKeyPress_"
-          aria-label="$i18n{bookmarkNameA11yLabel}">
-      </cr-input>
-    </div>
+    <cr-input slot="title" id="input" value="[[bookmark.title]]"
+        on-change="onInputChange_" on-blur="onInputChange_"
+        on-keypress="onInputKeyPress_"
+        aria-label="$i18n{bookmarkNameA11yLabel}">
+    </cr-input>
   </template>
+
   <template is="dom-if" if="[[!hasInput]]"
       on-dom-change="onInputDisplayChange_">
-    <button id="rowButton" class="row"
-        title="[[bookmark.title]]"
-        data-bookmark="[[bookmark]]"
-        on-click="onRowClicked_"
-        on-contextmenu="onContextMenu_"
-        disabled="[[hasCheckbox]]">
-      <div id="bookmarkImage" class="bookmark-image"></div>
-      <div class="text-container">
-        <div class="content">[[bookmark.title]]</div>
-        <div class="content description">[[description]]</div>
-        <slot name="extra-content-container"></slot>
-      </div>
-      <cr-icon-button class="trailing-icon" iron-icon="[[trailingIcon]]"
-          hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
-          disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel_]]">
-      </cr-button>
+    <button slot="title" id="title" role="button" tabindex="0"
+        aria-labelledby="title description chips">
+      [[bookmark.title]]
     </button>
+
+    <div slot="description" id="description" hidden$="[[!description]]">
+      [[description]]
+    </div>
+2   <slot slot="chips" id="chips" name="chips"></slot>
+
+    <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
+        hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
+        disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel_]]">
   </template>
-</div>
+</cr-url-list-item>

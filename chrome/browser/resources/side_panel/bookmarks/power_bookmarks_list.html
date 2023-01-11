@@ -300,7 +300,7 @@
           on-trailing-icon-clicked="onShowContextMenuClicked_"
           on-checkbox-change="onRowSelectedChange_"
           on-input-change="onRename_">
-        <div slot="extra-content-container">
+        <div slot="chips">
           <template is="dom-if"
               if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
             <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
