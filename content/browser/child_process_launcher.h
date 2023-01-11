@@ -164,7 +164,7 @@ struct ChildProcessLauncherFileData {
       delete;
   ~ChildProcessLauncherFileData();
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Files opened by the browser and passed as corresponding file descriptors
   // in the child process. If a FilePath is provided, the file will be opened
   // and the descriptor cached for future process launches. If a ScopedFD is
@@ -177,13 +177,6 @@ struct ChildProcessLauncherFileData {
   // Currently only supported on Linux, ChromeOS and Android platforms.
   std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>>
       files_to_preload;
-
-  // Map of file descriptors to pass. This is used instead of
-  // `files_to_preload` when the data needs to be installed at an exact FD
-  // number in the new process.
-  //
-  // Currently only supported on POSIX platforms.
-  std::map<int, base::ScopedFD> additional_remapped_fds;
 #endif
 };
 
@@ -217,16 +210,6 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // If `process_error_callback` is provided, it will be called if a Mojo error
   // is encountered when processing messages from the child process. This
   // callback must be safe to call from any thread.
-  //
-  // `file_data` consists of 2 members:
-  // files_to_preload: a map of key names to file paths. These files will be
-  // opened by the browser process and corresponding file descriptors inherited
-  // by the new child process, accessible using the corresponding key via some
-  // platform-specific mechanism (such as base::FileDescriptorStore on POSIX).
-  // Currently only supported on Linux, ChromeOS and Android platforms.
-  // additional_remapped_fds: is a map of file descriptors to pass. This is
-  // used instead of files_to_preload when the data is already contained as a
-  // file descriptor. Currently only supported on POSIX platforms.
   ChildProcessLauncher(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       std::unique_ptr<base::CommandLine> cmd_line,

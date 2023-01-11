@@ -103,6 +103,10 @@ ChildProcessLauncherHelper::GetFilesToMap() {
       /*files_to_preload=*/{}, GetProcessType(), command_line());
 }
 
+bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
+  return true;
+}
+
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     FileMappedForLaunch& files_to_register,
     base::LaunchOptions* options) {
@@ -178,23 +182,18 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
         base::StringPrintf("%s%d", sandbox::switches::kSeatbeltClient, pipe));
   }
 
-  for (const auto& remapped_fd : file_data_->additional_remapped_fds) {
-    options->fds_to_remap.emplace_back(remapped_fd.second.get(),
-                                       remapped_fd.first);
-  }
-
   return true;
 }
 
 ChildProcessLauncherHelper::Process
 ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
-    const base::LaunchOptions& options,
+    const base::LaunchOptions* options,
     std::unique_ptr<PosixFileDescriptorInfo> files_to_register,
     bool* is_synchronous_launch,
     int* launch_result) {
   *is_synchronous_launch = true;
   ChildProcessLauncherHelper::Process process;
-  process.process = base::LaunchProcess(*command_line(), options);
+  process.process = base::LaunchProcess(*command_line(), *options);
   *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS
                                              : LAUNCH_RESULT_FAILURE;
   return process;
@@ -202,7 +201,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
-    const base::LaunchOptions& options) {
+    const base::LaunchOptions* options) {
   // Send the sandbox profile after launch so that the child will exist and be
   // waiting for the message on its side of the pipe.
   if (process.process.IsValid() && seatbelt_exec_client_.get() != nullptr) {
@@ -248,7 +247,6 @@ void ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread(
   }
 }
 
-// static
 base::File OpenFileToShare(const base::FilePath& path,
                            base::MemoryMappedFile::Region* region) {
   // Not used yet (until required files are described in the service manifest on

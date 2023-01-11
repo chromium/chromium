@@ -88,6 +88,10 @@ ChildProcessLauncherHelper::GetFilesToMap() {
   return nullptr;
 }
 
+bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
+  return true;
+}
+
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
@@ -109,7 +113,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
 
 ChildProcessLauncherHelper::Process
 ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
-    const base::LaunchOptions& options,
+    const base::LaunchOptions* options,
     std::unique_ptr<FileMappedForLaunch> files_to_register,
     bool* is_synchronous_launch,
     int* launch_result) {
@@ -122,14 +126,13 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   // Move `sandbox_policy_` into the child process object so that it doesn't get
   // destroyed before the child process.
   child_process.sandbox_policy = std::move(sandbox_policy_);
-  child_process.process = base::LaunchProcess(*command_line(), options);
+  child_process.process = base::LaunchProcess(*command_line(), *options);
   return child_process;
 }
 
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
-    const base::LaunchOptions& options) {
-}
+    const base::LaunchOptions* options) {}
 
 // static
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(

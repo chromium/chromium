@@ -44,6 +44,10 @@ ChildProcessLauncherHelper::GetFilesToMap() {
   return nullptr;
 }
 
+bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
+  return true;
+}
+
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     FileMappedForLaunch& files_to_register,
     base::LaunchOptions* options) {
@@ -59,14 +63,14 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
 
 ChildProcessLauncherHelper::Process
 ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
-    const base::LaunchOptions& options,
+    const base::LaunchOptions* options,
     std::unique_ptr<FileMappedForLaunch> files_to_register,
     bool* is_synchronous_launch,
     int* launch_result) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   *is_synchronous_launch = true;
   if (delegate_->ShouldLaunchElevated()) {
-    DCHECK(options.elevated);
+    DCHECK(options->elevated);
     // When establishing a Mojo connection, the pipe path has already been added
     // to the command line.
     base::LaunchOptions win_options;
@@ -81,13 +85,13 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   ChildProcessLauncherHelper::Process process;
   *launch_result =
       StartSandboxedProcess(delegate_.get(), *command_line(),
-                            options.handles_to_inherit, &process.process);
+                            options->handles_to_inherit, &process.process);
   return process;
 }
 
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
-    const base::LaunchOptions& options) {
+    const base::LaunchOptions* options) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
 }
 

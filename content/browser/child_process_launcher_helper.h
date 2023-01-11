@@ -141,6 +141,11 @@ class ChildProcessLauncherHelper
   // Platform specific.
   std::unique_ptr<FileMappedForLaunch> GetFilesToMap();
 
+  // Returns true if the process will be launched using base::LaunchOptions.
+  // If false, all of the base::LaunchOptions* below will be nullptr.
+  // Platform specific.
+  bool IsUsingLaunchOptions();
+
   // Platform specific, returns success or failure. If failure is returned,
   // LaunchOnLauncherThread will not call LaunchProcessOnLauncherThread and
   // AfterLaunchOnLauncherThread, and the launch_result will be reported as
@@ -149,13 +154,16 @@ class ChildProcessLauncherHelper
                                     base::LaunchOptions* options);
 
   // Does the actual starting of the process.
+  // If IsUsingLaunchOptions() returned false, |options| will be null. In this
+  // case base::LaunchProcess() will not be used, but another platform specific
+  // mechanism for process launching, like Linux's zygote or Android's app
+  // zygote.
   // |is_synchronous_launch| is set to false if the starting of the process is
   // asynchonous (this is the case on Android), in which case the returned
   // Process is not valid (and PostLaunchOnLauncherThread() will provide the
-  // process once it is available).
-  // Platform specific.
+  // process once it is available). Platform specific.
   ChildProcessLauncherHelper::Process LaunchProcessOnLauncherThread(
-      const base::LaunchOptions& options,
+      const base::LaunchOptions* options,
       std::unique_ptr<FileMappedForLaunch> files_to_register,
 #if BUILDFLAG(IS_ANDROID)
       bool is_pre_warmup_required,
@@ -168,7 +176,7 @@ class ChildProcessLauncherHelper
   // not yet be created. Platform specific.
   void AfterLaunchOnLauncherThread(
       const ChildProcessLauncherHelper::Process& process,
-      const base::LaunchOptions& options);
+      const base::LaunchOptions* options);
 
   // Called once the process has been created, successfully or not.
   void PostLaunchOnLauncherThread(ChildProcessLauncherHelper::Process process,
@@ -223,6 +231,11 @@ class ChildProcessLauncherHelper
   ~ChildProcessLauncherHelper();
 
   void LaunchOnLauncherThread();
+
+#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+  // Returns the zygote handle for this particular launch, if any.
+  ZygoteHandle GetZygoteHandle();
+#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
   base::CommandLine* command_line() { return command_line_.get(); }
   int child_process_id() const { return child_process_id_; }

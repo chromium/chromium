@@ -89,24 +89,25 @@ ChildProcessLauncherHelper::GetFilesToMap() {
   return files_to_register;
 }
 
+bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
+  return false;
+}
+
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
-  for (const auto& remapped_fd : file_data_->additional_remapped_fds) {
-    options->fds_to_remap.emplace_back(remapped_fd.second.get(),
-                                       remapped_fd.first);
-  }
-
+  DCHECK(!options);
   return true;
 }
 
 ChildProcessLauncherHelper::Process
 ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
-    const base::LaunchOptions& options,
+    const base::LaunchOptions* options,
     std::unique_ptr<PosixFileDescriptorInfo> files_to_register,
     bool can_use_warm_up_connection,
     bool* is_synchronous_launch,
     int* launch_result) {
+  DCHECK(!options);
   *is_synchronous_launch = false;
 
   JNIEnv* env = AttachCurrentThread();
@@ -158,7 +159,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
-    const base::LaunchOptions& options) {
+    const base::LaunchOptions* options) {
   // Reset any FDs still held open.
   file_data_.reset();
 }
@@ -234,7 +235,7 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
           << process.process.Handle();
   StopChildProcess(process.process.Handle());
 }
-// static
+
 base::File OpenFileToShare(const base::FilePath& path,
                            base::MemoryMappedFile::Region* region) {
   return base::File(base::android::OpenApkAsset(path.value(), region));

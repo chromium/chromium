@@ -751,7 +751,6 @@ void FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
     CommandLine* command_line,
     LaunchOptions* launch_options) {
   DCHECK(command_line);
-  DCHECK(launch_options);
 
   // Use shared memory to communicate field trial state to child processes.
   // The browser is the only process that has write access to the shared memory.
@@ -1060,8 +1059,6 @@ void FieldTrialList::RestoreInstanceForTesting(FieldTrialList* instance) {
 std::string FieldTrialList::SerializeSharedMemoryRegionMetadata(
     const ReadOnlySharedMemoryRegion& shm,
     LaunchOptions* launch_options) {
-  DCHECK(launch_options);
-
   std::stringstream ss;
 #if BUILDFLAG(IS_WIN)
   // Elevated process might not need this, although it is harmless.

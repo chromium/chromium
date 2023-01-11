@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +23,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/launcher_thread.h"
@@ -133,19 +135,24 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 
   bool is_synchronous_launch = true;
   int launch_result = LAUNCH_RESULT_FAILURE;
-  base::LaunchOptions options;
+  absl::optional<base::LaunchOptions> options;
+  base::LaunchOptions* options_ptr = nullptr;
+  if (IsUsingLaunchOptions()) {
+    options.emplace();
+    options_ptr = &*options;
+  }
 
   Process process;
-  if (BeforeLaunchOnLauncherThread(*files_to_register, &options)) {
+  if (BeforeLaunchOnLauncherThread(*files_to_register, options_ptr)) {
     base::FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
-        command_line(), &options);
+        command_line(), options_ptr);
     process =
-        LaunchProcessOnLauncherThread(options, std::move(files_to_register),
+        LaunchProcessOnLauncherThread(options_ptr, std::move(files_to_register),
 #if BUILDFLAG(IS_ANDROID)
                                       can_use_warm_up_connection_,
 #endif
                                       &is_synchronous_launch, &launch_result);
-    AfterLaunchOnLauncherThread(process, options);
+    AfterLaunchOnLauncherThread(process, options_ptr);
   }
 
   if (is_synchronous_launch) {

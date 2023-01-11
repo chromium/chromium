@@ -44,40 +44,44 @@ ChildProcessLauncherHelper::GetFilesToMap() {
       file_data_->files_to_preload, GetProcessType(), command_line());
 }
 
+bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
+  return !GetZygoteHandle();
+}
+
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
-  // Convert FD mapping to FileHandleMappingVector
-  options->fds_to_remap = files_to_register.GetMappingWithIDAdjustment(
-      base::GlobalDescriptors::kBaseDescriptor);
+  if (options) {
+    DCHECK(!GetZygoteHandle());
+    // Convert FD mapping to FileHandleMappingVector
+    options->fds_to_remap = files_to_register.GetMappingWithIDAdjustment(
+        base::GlobalDescriptors::kBaseDescriptor);
 
-  if (GetProcessType() == switches::kRendererProcess) {
-    const int sandbox_fd = SandboxHostLinux::GetInstance()->GetChildSocket();
-    options->fds_to_remap.emplace_back(sandbox_fd, GetSandboxFD());
+    if (GetProcessType() == switches::kRendererProcess) {
+      const int sandbox_fd = SandboxHostLinux::GetInstance()->GetChildSocket();
+      options->fds_to_remap.emplace_back(sandbox_fd, GetSandboxFD());
+    }
+
+    options->environment = delegate_->GetEnvironment();
+  } else {
+    DCHECK(GetZygoteHandle());
+    // Environment variables could be supported in the future, but are not
+    // currently supported when launching with the zygote.
+    DCHECK(delegate_->GetEnvironment().empty());
   }
-
-  for (const auto& remapped_fd : file_data_->additional_remapped_fds) {
-    options->fds_to_remap.emplace_back(remapped_fd.second.get(),
-                                       remapped_fd.first);
-  }
-
-  options->environment = delegate_->GetEnvironment();
 
   return true;
 }
 
 ChildProcessLauncherHelper::Process
 ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
-    const base::LaunchOptions& options,
+    const base::LaunchOptions* options,
     std::unique_ptr<FileMappedForLaunch> files_to_register,
     bool* is_synchronous_launch,
     int* launch_result) {
   *is_synchronous_launch = true;
   Process process;
-  ZygoteHandle zygote_handle =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote)
-          ? nullptr
-          : delegate_->GetZygote();
+  ZygoteHandle zygote_handle = GetZygoteHandle();
   if (zygote_handle) {
     // TODO(crbug.com/569191): If chrome supported multiple zygotes they could
     // be created lazily here, or in the delegate GetZygote() implementations.
@@ -101,7 +105,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     process.process = base::Process(handle);
     process.zygote = zygote_handle;
   } else {
-    process.process = base::LaunchProcess(*command_line(), options);
+    process.process = base::LaunchProcess(*command_line(), *options);
     *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS
                                                : LAUNCH_RESULT_FAILURE;
   }
@@ -117,7 +121,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
-    const base::LaunchOptions& options) {
+    const base::LaunchOptions* options) {
   // Reset any FDs still held open.
   file_data_.reset();
 }
@@ -170,7 +174,12 @@ void ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread(
     process.SetProcessBackgrounded(is_background);
 }
 
-// static
+ZygoteHandle ChildProcessLauncherHelper::GetZygoteHandle() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote)
+             ? nullptr
+             : delegate_->GetZygote();
+}
+
 base::File OpenFileToShare(const base::FilePath& path,
                            base::MemoryMappedFile::Region* region) {
   base::FilePath exe_dir;
