@@ -362,6 +362,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private getAriaSelected_(id: string): boolean {
     return this.selectedItems_.has(id);
   }
+
+  setDisplayedIdsForTesting(ids: string[]) {
+    this.displayedIds_ = ids;
+  }
 }
 
 declare global {

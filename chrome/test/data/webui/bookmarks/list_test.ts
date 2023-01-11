@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl, Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksAppElement, BookmarksItemElement, BookmarksListElement, BrowserProxyImpl, Command, MenuSource, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, customClick, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-list>', function() {
-  let list;
-  let store;
+  let list: BookmarksListElement;
+  let store: TestStore;
 
   setup(function() {
     const nodes = testTree(createFolder('10', [
@@ -38,61 +38,78 @@ suite('<bookmarks-list>', function() {
   });
 
   test('renders correct <bookmark-item> elements', function() {
-    const items = list.root.querySelectorAll('bookmarks-item');
+    const items = list.shadowRoot!.querySelectorAll('bookmarks-item');
     const ids = Array.from(items).map((item) => item.itemId);
 
     assertDeepEquals(['1', '3', '5', '7'], ids);
   });
 
   test('shift-selects multiple items', function() {
-    const items = list.root.querySelectorAll('bookmarks-item');
+    const items = list.shadowRoot!.querySelectorAll('bookmarks-item');
 
-    customClick(items[0]);
+    customClick(items[0]!);
 
-    assertEquals('select-items', store.lastAction.name);
-    assertTrue(store.lastAction.clear);
-    assertEquals('1', store.lastAction.anchor);
-    assertDeepEquals(['1'], store.lastAction.items);
+    let lastAction = store.lastAction as SelectItemsAction;
+
+    assertEquals('select-items', lastAction.name);
+    assertTrue(lastAction.clear);
+    assertEquals('1', lastAction.anchor);
+    assertDeepEquals(['1'], lastAction.items);
 
     store.data.selection.anchor = '1';
-    customClick(items[2], {shiftKey: true, ctrlKey: true});
+    customClick(items[2]!, {shiftKey: true, ctrlKey: true});
+    lastAction = store.lastAction as SelectItemsAction;
 
-    assertEquals('select-items', store.lastAction.name);
-    assertFalse(store.lastAction.clear);
-    assertEquals('1', store.lastAction.anchor);
-    assertDeepEquals(['1', '3', '5'], store.lastAction.items);
+    assertEquals('select-items', lastAction.name);
+    assertFalse(lastAction.clear);
+    assertEquals('1', lastAction.anchor);
+    assertDeepEquals(['1', '3', '5'], lastAction.items);
   });
 
   test('deselects items on click outside of card', function() {
     customClick(list);
-    assertEquals('deselect-items', store.lastAction.name);
+    const lastAction = store.lastAction as SelectItemsAction;
+    assertEquals('deselect-items', lastAction.name);
   });
 
   test('adds, deletes, and moves update displayedList_', function() {
-    list.displayedIds_ = ['1', '7', '3', '5'];
-    assertDeepEquals(list.displayedIds_, list.displayedList_.map(n => n.id));
+    list.setDisplayedIdsForTesting(['1', '7', '3', '5']);
+    flush();
+    let items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    assertDeepEquals(
+        ['1', '7', '3', '5'],
+        Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
-    list.displayedIds_ = ['1', '3', '5'];
-    assertDeepEquals(list.displayedIds_, list.displayedList_.map(n => n.id));
+    list.setDisplayedIdsForTesting(['1', '3', '5']);
+    flush();
+    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    assertDeepEquals(
+        ['1', '3', '5'],
+        Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
 
-    list.displayedIds_ = ['1', '3', '7', '5'];
-    assertDeepEquals(list.displayedIds_, list.displayedList_.map(n => n.id));
+    list.setDisplayedIdsForTesting(['1', '3', '7', '5']);
+    flush();
+    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
+    assertDeepEquals(
+        ['1', '3', '7', '5'],
+        Array.from(items).filter(i => !i.hidden).map(i => i.itemId));
   });
 
   test('selects all valid IDs on highlight-items', function() {
     list.dispatchEvent(new CustomEvent(
         'highlight-items',
         {bubbles: true, composed: true, detail: ['10', '1', '3', '9']}));
-    assertEquals('select-items', store.lastAction.name);
-    assertEquals('1', store.lastAction.anchor);
-    assertDeepEquals(['1', '3'], store.lastAction.items);
+    const lastAction = store.lastAction as SelectItemsAction;
+    assertEquals('select-items', lastAction.name);
+    assertEquals('1', lastAction.anchor);
+    assertDeepEquals(['1', '3'], lastAction.items);
   });
 });
 
 suite('<bookmarks-list> integration test', function() {
-  let list;
-  let store;
-  let items;
+  let list: BookmarksListElement;
+  let store: TestStore;
+  let items: NodeListOf<BookmarksItemElement>;
 
   setup(function() {
     store = new TestStore({
@@ -118,53 +135,53 @@ suite('<bookmarks-list> integration test', function() {
     replaceBody(list);
     flush();
 
-    items = list.root.querySelectorAll('bookmarks-item');
+    items = list.shadowRoot!.querySelectorAll('bookmarks-item');
   });
 
   test('shift-selects multiple items', function() {
-    customClick(items[1]);
+    customClick(items[1]!);
     assertDeepEquals(['3'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('3', store.data.selection.anchor);
 
-    customClick(items[3], {shiftKey: true});
+    customClick(items[3]!, {shiftKey: true});
     assertDeepEquals(
         ['3', '5', '7'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('3', store.data.selection.anchor);
 
-    customClick(items[0], {shiftKey: true});
+    customClick(items[0]!, {shiftKey: true});
     assertDeepEquals(['1', '3'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('3', store.data.selection.anchor);
   });
 
   test('ctrl toggles multiple items', function() {
-    customClick(items[1]);
+    customClick(items[1]!);
     assertDeepEquals(['3'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('3', store.data.selection.anchor);
 
-    customClick(items[3], {ctrlKey: true});
+    customClick(items[3]!, {ctrlKey: true});
     assertDeepEquals(['3', '7'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('7', store.data.selection.anchor);
 
-    customClick(items[1], {ctrlKey: true});
+    customClick(items[1]!, {ctrlKey: true});
     assertDeepEquals(['7'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('3', store.data.selection.anchor);
   });
 
   test('ctrl+shift adds ranges to selection', function() {
-    customClick(items[0]);
+    customClick(items[0]!);
     assertDeepEquals(['1'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('1', store.data.selection.anchor);
 
-    customClick(items[2], {ctrlKey: true});
+    customClick(items[2]!, {ctrlKey: true});
     assertDeepEquals(['1', '5'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('5', store.data.selection.anchor);
 
-    customClick(items[4], {ctrlKey: true, shiftKey: true});
+    customClick(items[4]!, {ctrlKey: true, shiftKey: true});
     assertDeepEquals(
         ['1', '5', '7', '9'], normalizeIterable(store.data.selection.items));
     assertDeepEquals('5', store.data.selection.anchor);
 
-    customClick(items[0], {ctrlKey: true, shiftKey: true});
+    customClick(items[0]!, {ctrlKey: true, shiftKey: true});
     assertDeepEquals(
         ['1', '3', '5', '7', '9'],
         normalizeIterable(store.data.selection.items));
@@ -173,9 +190,9 @@ suite('<bookmarks-list> integration test', function() {
 });
 
 suite('<bookmarks-list> command manager integration test', function() {
-  let app;
-  let store;
-  let proxy;
+  let app: BookmarksAppElement;
+  let store: TestStore;
+  let proxy: TestBookmarksBrowserProxy;
 
   setup(function() {
     store = new TestStore({
@@ -200,18 +217,20 @@ suite('<bookmarks-list> command manager integration test', function() {
 
   test('show context menu', async () => {
     const commandManager =
-        app.shadowRoot.querySelector('bookmarks-command-manager');
+        app.shadowRoot!.querySelector('bookmarks-command-manager')!;
     proxy.resetResolver('recordInHistogram');
-    const list = app.shadowRoot.querySelector('bookmarks-list');
+    const list = app.shadowRoot!.querySelector('bookmarks-list')!;
     list.dispatchEvent(new CustomEvent(
         'contextmenu',
         {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
 
     await proxy.whenCalled('recordInHistogram');
 
-    assertEquals(MenuSource.LIST, commandManager.menuSource_);
+    assertEquals(MenuSource.LIST, commandManager.getMenuSourceForTesting());
+    const menuCommands =
+        commandManager.shadowRoot!.querySelectorAll('.dropdown-item');
     assertDeepEquals(
-        [Command.ADD_BOOKMARK, Command.ADD_FOLDER],
-        commandManager.menuCommands_);
+        [Command.ADD_BOOKMARK.toString(), Command.ADD_FOLDER.toString()],
+        Array.from(menuCommands).map(el => el.getAttribute('command')));
   });
 });

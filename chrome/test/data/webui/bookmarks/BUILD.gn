@@ -21,7 +21,7 @@ build_webui_tests("build") {
     "folder_node_test.ts",
     "item_test.ts",
     "list_focus_test.js",
-    "list_test.js",
+    "list_test.ts",
     "policy_test.ts",
     "reducers_test.ts",
     "router_test.ts",

@@ -165,6 +165,10 @@ export class BookmarksCommandManagerElement extends
     return this.menuIds_;
   }
 
+  getMenuSourceForTesting(): MenuSource {
+    return this.menuSource_;
+  }
+
   /**
    * Display the command context menu at (|x|, |y|) in window coordinates.
    * Commands will execute on |items| if given, or on the currently selected
