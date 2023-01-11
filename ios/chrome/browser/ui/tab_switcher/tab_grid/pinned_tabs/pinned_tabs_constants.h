@@ -40,6 +40,9 @@ extern const CGFloat kPinnedCellFaviconContainerWidth;
 extern const CGFloat kPinnedCellFaviconBorderWidth;
 extern const CGFloat kPinnedCellFaviconContainerCornerRadius;
 extern const CGFloat kPinnedCellFaviconCornerRadius;
+extern const CGFloat kPinnedCellSelectionRingGapWidth;
+extern const CGFloat kPinnedCellSelectionRingTintWidth;
+extern const CGFloat kPinnedCellSelectionRingPadding;
 
 // Pinned cell collection view layout constraints.
 extern const CGFloat kPinnedCellVerticalLayoutInsets;

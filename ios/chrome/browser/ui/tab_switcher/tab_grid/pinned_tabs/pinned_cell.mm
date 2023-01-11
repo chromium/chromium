@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_cell.h"
 
+#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -37,6 +39,7 @@ NSString* const kDefaultFaviconImage = @"default_world_favicon";
     _faviconView = [[UIImageView alloc] initWithImage:favicon];
     [_faviconContainerView addSubview:_faviconView];
 
+    [self setupSelectedBackgroundView];
     [self setupFaviconContainerView];
     [self setupFaviconView];
     [self setupTitleLabel];
@@ -63,6 +66,43 @@ NSString* const kDefaultFaviconImage = @"default_world_favicon";
 }
 
 #pragma mark - Private
+
+// Sets up the selection border.
+- (void)setupSelectedBackgroundView {
+  UIView* selectedBackgroundBorderView = [[UIView alloc] init];
+  selectedBackgroundBorderView.translatesAutoresizingMaskIntoConstraints = NO;
+  selectedBackgroundBorderView.backgroundColor =
+      [UIColor colorNamed:kGridBackgroundColor];
+  selectedBackgroundBorderView.layer.cornerRadius =
+      kPinnedCellCornerRadius + kPinnedCellSelectionRingGapWidth +
+      kPinnedCellSelectionRingTintWidth;
+  selectedBackgroundBorderView.layer.borderWidth =
+      kPinnedCellSelectionRingTintWidth;
+  selectedBackgroundBorderView.layer.borderColor =
+      UseSymbols()
+          ? [UIColor colorNamed:kStaticBlue400Color].CGColor
+          : [UIColor colorNamed:@"grid_theme_selection_tint_color"].CGColor;
+
+  UIView* selectedBackgroundView = [[UIView alloc] init];
+  [selectedBackgroundView addSubview:selectedBackgroundBorderView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [selectedBackgroundBorderView.topAnchor
+        constraintEqualToAnchor:selectedBackgroundView.topAnchor
+                       constant:-kPinnedCellSelectionRingPadding],
+    [selectedBackgroundBorderView.leadingAnchor
+        constraintEqualToAnchor:selectedBackgroundView.leadingAnchor
+                       constant:-kPinnedCellSelectionRingPadding],
+    [selectedBackgroundBorderView.trailingAnchor
+        constraintEqualToAnchor:selectedBackgroundView.trailingAnchor
+                       constant:kPinnedCellSelectionRingPadding],
+    [selectedBackgroundBorderView.bottomAnchor
+        constraintEqualToAnchor:selectedBackgroundView.bottomAnchor
+                       constant:kPinnedCellSelectionRingPadding]
+  ]];
+
+  self.selectedBackgroundView = selectedBackgroundView;
+}
 
 // Sets up the `_faviconContainerView` view.
 - (void)setupFaviconContainerView {
