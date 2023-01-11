@@ -854,6 +854,10 @@ export class OobeApiProvider {
     this.showGaiaDialog = function() {
       chrome.send('OobeTestApi.showGaiaDialog');
     };
+
+    this.isGaiaDialogVisible = function() {
+      chrome.send('OobeTestApi.isGaiaDialogVisible');
+    };
   }
 }
 

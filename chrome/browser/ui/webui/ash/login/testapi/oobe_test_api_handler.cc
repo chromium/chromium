@@ -49,6 +49,8 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
   AddCallback("OobeTestApi.loginAsGuest", &OobeTestAPIHandler::LoginAsGuest);
   AddCallback("OobeTestApi.showGaiaDialog",
               &OobeTestAPIHandler::ShowGaiaDialog);
+  AddCallback("OobeTestApi.isGaiaDialogVisible",
+              &OobeTestAPIHandler::IsGaiaDialogVisible);
 
   // Keeping the code in case the test using this will be ported to tast. The
   // function used to be called getPrimaryDisplayNameForTesting. In order to use
@@ -169,6 +171,10 @@ void OobeTestAPIHandler::LoginAsGuest() {
 
 void OobeTestAPIHandler::ShowGaiaDialog() {
   LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
+}
+
+void OobeTestAPIHandler::IsGaiaDialogVisible() {
+  LoginDisplayHost::default_host()->IsGaiaDialogVisibleForTesting();  // IN-TEST
 }
 
 void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
