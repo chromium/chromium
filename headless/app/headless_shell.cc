@@ -11,11 +11,11 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main.h"
-#include "headless/app/headless_command_handler.h"
 #include "headless/app/headless_shell_command_line.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -44,7 +44,7 @@
 #endif
 
 #if defined(HEADLESS_ENABLE_COMMANDS)
-#include "headless/app/headless_command_handler.h"
+#include "components/headless/command_handler/headless_command_handler.h"
 #endif
 
 namespace headless {
@@ -199,8 +199,18 @@ int HeadlessShellMain(int argc, const char** argv) {
     return EXIT_FAILURE;
   }
 
-  if (!HandleCommandLineSwitches(command_line, builder))
+#if defined(HEADLESS_ENABLE_COMMANDS)
+  if ((command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
+       command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) &&
+      HeadlessCommandHandler::HasHeadlessCommandSwitches(command_line)) {
+    LOG(ERROR) << "Headless commands are not compatible with remote debugging.";
     return EXIT_FAILURE;
+  }
+#endif
+
+  if (!HandleCommandLineSwitches(command_line, builder)) {
+    return EXIT_FAILURE;
+  }
 
   HeadlessShell shell;
 

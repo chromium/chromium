@@ -65,10 +65,6 @@ const char kNoSystemProxyConfigService[] = "no-system-proxy-config-service";
 // so exposing it too widely can be a security risk.
 const char kRemoteDebuggingAddress[] = "remote-debugging-address";
 
-// Runs a read-eval-print loop that allows the user to evaluate Javascript
-// expressions.
-const char kRepl[] = "repl";
-
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 

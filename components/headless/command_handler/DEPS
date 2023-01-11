@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/devtools",
+  "+content/public/browser",
+  "+content/public/common",
+  "+ui/base/resource",
+]

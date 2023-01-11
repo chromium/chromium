@@ -765,6 +765,9 @@
   "components/components_strings.grd": {
     "messages": [3580],
   },
+  "components/headless/command_handler/headless_command.grd": {
+    "includes": [3590],
+  },
   "components/omnibox/resources/omnibox_pedal_synonyms.grd": {
     "messages": [3600],
   },
@@ -977,10 +980,6 @@
   },
   "extensions/strings/extensions_strings.grd": {
     "messages": [4380],
-  },
-
-  "headless/app/headless_command.grd": {
-    "includes": [4410],
   },
 
   "mojo/public/js/mojo_bindings_resources.grd": {

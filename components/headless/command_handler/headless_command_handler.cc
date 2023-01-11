@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/app/headless_command_handler.h"
+#include "components/headless/command_handler/headless_command_handler.h"
 
 #include <cstdint>
 #include <iostream>
@@ -17,7 +17,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -28,13 +27,13 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "content/public/app/content_main.h"
+#include "components/headless/command_handler/grit/headless_command_resources.h"
+#include "components/headless/command_handler/headless_command_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "headless/app/headless_command_switches.h"
-#include "headless/grit/headless_command_resources.h"
+#include "content/public/common/content_switches.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace headless {
@@ -253,6 +252,28 @@ GURL HeadlessCommandHandler::GetHandlerUrl() {
   const std::string url =
       base::StrCat({kChromeHeadlessURL, kHeadlessCommandHtml});
   return GURL(url);
+}
+
+// static
+bool HeadlessCommandHandler::HasHeadlessCommandSwitches(
+    const base::CommandLine& command_line) {
+  static const char* kCommandSwitches[] = {
+      switches::kDefaultBackgroundColor,
+      switches::kDumpDom,
+      switches::kPrintToPDF,
+      switches::kPrintToPDFNoHeader,
+      switches::kScreenshot,
+      switches::kTimeout,
+      switches::kVirtualTimeBudget,
+  };
+
+  for (const char* command_switch : kCommandSwitches) {
+    if (command_line.HasSwitch(command_switch)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // static

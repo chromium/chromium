@@ -26,15 +26,17 @@ class CDPClient {
   async dispatchMessage(message) {
     const messageObject = JSON.parse(message);
     const session = this._sessions.get(messageObject.sessionId || '');
-    if (session)
+    if (session) {
       session.dispatchMessage(messageObject);
+    }
   }
 
   reportError(message, error) {
-    if (error)
+    if (error) {
       console.error(`${message}: ${error}\n${error.stack}`);
-    else
+    } else {
       console.error(message);
+    }
   }
 }
 
@@ -70,8 +72,9 @@ class CDPSession {
   async sendCommand(method, params) {
     const requestId = cdpClient.nextRequestId();
     const messageObject = {'id': requestId, 'method': method, 'params': params};
-    if (this._sessionId)
+    if (this._sessionId) {
       messageObject.sessionId = this._sessionId;
+    }
     sendDevToolsMessage(JSON.stringify(messageObject));
     return new Promise(f => this._dispatchTable.set(requestId, f));
   }
@@ -89,12 +92,15 @@ class CDPSession {
         }
       } else {
         const eventName = message.method;
-        for (const handler of (this._eventHandlers.get(eventName) || []))
+        for (const handler of (this._eventHandlers.get(eventName) || [])) {
           handler(message);
+        }
       }
     } catch (e) {
-      cdpClient.reportError(`Exception when dispatching message\n' +
-        '${JSON.stringify(message)}`, e);
+      cdpClient.reportError(
+          `Exception when dispatching message\n' +
+        '${JSON.stringify(message)}`,
+          e);
     }
   }
 
@@ -120,16 +126,17 @@ class CDPSession {
           }
           return listener => this._addEventHandler(
                      `${domainName}.${eventName}`, listener);
-        }
-      })
+        },
+      }),
     });
   }
 
   _waitForEvent(eventName, eventMatcher) {
     return new Promise(callback => {
       const handler = result => {
-        if (eventMatcher && !eventMatcher(result))
+        if (eventMatcher && !eventMatcher(result)) {
           return;
+        }
         this._removeEventHandler(eventName, handler);
         callback(result);
       };
@@ -146,8 +153,9 @@ class CDPSession {
   _removeEventHandler(eventName, handler) {
     const handlers = this._eventHandlers.get(eventName) || [];
     const index = handlers.indexOf(handler);
-    if (index === -1)
+    if (index === -1) {
       return;
+    }
     handlers.splice(index, 1);
     this._eventHandlers.set(eventName, handlers);
   }
@@ -169,13 +177,16 @@ class TargetPage {
     const dp = browserSession.protocol();
     const params = {url: 'about:blank', width: 800, height: 600};
     const createContextOptions = {};
-    params.browserContextId = (await dp.Target.createBrowserContext(
-        createContextOptions)).result.browserContextId;
+    params.browserContextId =
+        (await dp.Target.createBrowserContext(createContextOptions))
+            .result.browserContextId;
     targetPage._targetId =
         (await dp.Target.createTarget(params)).result.targetId;
 
-    const sessionId = (await dp.Target.attachToTarget(
-      {targetId: targetPage._targetId, flatten: true})).result.sessionId;
+    const sessionId = (await dp.Target.attachToTarget({
+                        targetId: targetPage._targetId,
+                        flatten: true,
+                      })).result.sessionId;
     targetPage._session = browserSession.createSession(sessionId);
 
     await targetPage._navigate(url);
@@ -197,8 +208,8 @@ class TargetPage {
     await dp.Page.setLifecycleEventsEnabled({enabled: true});
     const frameId = (await dp.Page.navigate({url})).result.frameId;
     await dp.Page.onceLifecycleEvent(
-        event => event.params.name === 'load' &&
-        event.params.frameId === frameId);
+        event =>
+            event.params.name === 'load' && event.params.frameId === frameId);
   }
 }
 
@@ -206,10 +217,9 @@ class TargetPage {
 // Command handlers
 //
 async function dumpDOM(dp) {
-  const script =
-      "(document.doctype ? new " +
-      "XMLSerializer().serializeToString(document.doctype) + '\\n' : '')" +
-      " + document.documentElement.outerHTML";
+  const script = '(document.doctype ? new ' +
+      'XMLSerializer().serializeToString(document.doctype) + \'\\n\' : \'\')' +
+      ' + document.documentElement.outerHTML';
 
   const response = await dp.Runtime.evaluate({expression: script});
   return response.result.result.value;
@@ -239,14 +249,17 @@ async function screenshot(dp, params) {
 
 async function handleCommands(dp, commands) {
   const result = {};
-  if ('dumpDom' in commands)
+  if ('dumpDom' in commands) {
     result.dumpDomResult = await dumpDOM(dp);
+  }
 
-  if ('printToPDF' in commands)
+  if ('printToPDF' in commands) {
     result.printToPdfResult = await printToPDF(dp, commands.printToPDF);
+  }
 
-  if ('screenshot' in commands)
+  if ('screenshot' in commands) {
     result.screenshotResult = await screenshot(dp, commands.screenshot);
+  }
 
   return result;
 }
@@ -255,12 +268,12 @@ async function handleCommands(dp, commands) {
 // Target.exposeDevToolsProtocol() communication functions.
 //
 window.cdp.onmessage = json => {
-  //console.log('[recv] ' + json);
+  // console.log('[recv] ' + json);
   cdpClient.dispatchMessage(json);
-}
+};
 
 function sendDevToolsMessage(json) {
-  //console.log('[send] ' + json);
+  // console.log('[send] ' + json);
   window.cdp.send(json);
 }
 
@@ -269,8 +282,8 @@ function sendDevToolsMessage(json) {
 //
 async function executeCommands(commands) {
   const browserSession = new CDPSession();
-  const targetPage = await TargetPage.createAndNavigate(
-    browserSession, commands.targetUrl);
+  const targetPage =
+      await TargetPage.createAndNavigate(browserSession, commands.targetUrl);
   const dp = targetPage.session().protocol();
 
   if ('defaultBackgroundColor' in commands) {
@@ -278,7 +291,7 @@ async function executeCommands(commands) {
         {color: commands.defaultBackgroundColor});
   }
 
-  let promises = [];
+  const promises = [];
   if ('timeout' in commands) {
     const timeoutPromise = new Promise(resolve => {
       setTimeout(resolve, commands.timeout);
@@ -287,15 +300,17 @@ async function executeCommands(commands) {
   }
 
   if ('virtualTimeBudget' in commands) {
-    await dp.Emulation.setVirtualTimePolicy(
-      {budget: commands.virtualTimeBudget,
-       maxVirtualTimeTaskStarvationCount: 9999,
-       policy: 'pauseIfNetworkFetchesPending' });
+    await dp.Emulation.setVirtualTimePolicy({
+      budget: commands.virtualTimeBudget,
+      maxVirtualTimeTaskStarvationCount: 9999,
+      policy: 'pauseIfNetworkFetchesPending',
+    });
     promises.push(dp.Emulation.onceVirtualTimeBudgetExpired());
   }
 
-  if (promises.length > 0)
+  if (promises.length > 0) {
     await Promise.race(promises);
+  }
 
   return await handleCommands(dp, commands);
 }

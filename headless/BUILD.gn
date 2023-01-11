@@ -172,26 +172,6 @@ action("embedded_resource_pack_strings") {
   deps = [ ":resource_pack_strings" ]
 }
 
-if (headless_enable_commands) {
-  grit("headless_command_resources") {
-    source = "app/headless_command.grd"
-    outputs = [
-      "grit/headless_command_resources.h",
-      "$root_gen_dir/headless/headless_command_resources.pak",
-    ]
-
-    use_brotli = true
-  }
-
-  repack("headless_command_resources_pack") {
-    sources = [ "$root_gen_dir/headless/headless_command_resources.pak" ]
-
-    output = "$root_out_dir/headless_command_resources.pak"
-
-    deps = [ ":headless_command_resources" ]
-  }
-}
-
 devtools_domains = [
   "accessibility",
   "animation",
@@ -395,13 +375,6 @@ component("headless_non_renderer") {
       "lib/browser/headless_browser_main_parts_mac.mm",
       "lib/browser/headless_shell_application_mac.h",
       "lib/browser/headless_shell_application_mac.mm",
-    ]
-  }
-
-  if (headless_enable_commands) {
-    sources += [
-      "app/headless_command_switches.cc",
-      "app/headless_command_switches.h",
     ]
   }
 
@@ -778,11 +751,12 @@ test("headless_browsertests") {
     "//third_party/pywebsocket3/",
   ]
 
+  data_deps = []
+
   if (headless_enable_commands) {
     data += [ "$root_out_dir/headless_command_resources.pak" ]
+    data_deps += [ "//components/headless/command_handler" ]
   }
-
-  data_deps = []
 
   if (is_fuchsia) {
     # TODO(https://crbug.com/1185811): Investigate removing the requirement for
@@ -848,6 +822,10 @@ test("headless_browsertests") {
     deps += [ "//components/policy/core/common:test_support" ]
   }
 
+  if (headless_enable_commands) {
+    deps += [ "//components/headless/command_handler" ]
+  }
+
   configs += [ ":headless_defines_config" ]
 }
 
@@ -885,14 +863,7 @@ if (is_win) {
       deps += [ "//components/printing/browser/headless:headless" ]
     }
     if (headless_enable_commands) {
-      sources += [
-        "app/headless_command_handler.cc",
-        "app/headless_command_handler.h",
-      ]
-      deps += [
-        ":headless_command_resources",
-        ":headless_command_resources_pack",
-      ]
+      deps += [ "//components/headless/command_handler" ]
     }
 
     configs += [ ":headless_defines_config" ]
@@ -963,14 +934,7 @@ static_library("headless_shell_lib") {
   }
 
   if (headless_enable_commands) {
-    sources += [
-      "app/headless_command_handler.cc",
-      "app/headless_command_handler.h",
-    ]
-    deps += [
-      ":headless_command_resources",
-      ":headless_command_resources_pack",
-    ]
+    deps += [ "//components/headless/command_handler" ]
   }
 
   if (is_win) {

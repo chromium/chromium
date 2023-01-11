@@ -20,43 +20,12 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(HEADLESS_ENABLE_COMMANDS)
-#include "headless/app/headless_command_switches.h"
-#endif
-
 namespace headless {
 
 namespace {
 
 // By default listen to incoming DevTools connections on localhost.
 const char kLocalHost[] = "localhost";
-
-bool ValidateCommandLineSwitches(const base::CommandLine& command_line) {
-#if defined(HEADLESS_ENABLE_COMMANDS)
-  if (command_line.HasSwitch(switches::kRemoteDebuggingPort) ||
-      command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
-    static const char* kIncompatibleSwitches[] = {
-        switches::kDefaultBackgroundColor,
-        switches::kDumpDom,
-        switches::kPrintToPDF,
-        switches::kRepl,
-        switches::kScreenshot,
-        switches::kTimeout,
-        switches::kVirtualTimeBudget,
-    };
-
-    for (const char* incompatible_switch : kIncompatibleSwitches) {
-      if (command_line.HasSwitch(incompatible_switch)) {
-        LOG(ERROR) << "--" << incompatible_switch
-                   << " is not supported with remote debugging.";
-        return false;
-      }
-    }
-  }
-#endif  // defined(HEADLESS_ENABLE_COMMANDS)
-
-  return true;
-}
 
 void HandleDeterministicModeSwitch(base::CommandLine& command_line) {
   DCHECK(command_line.HasSwitch(switches::kDeterministicMode));
@@ -167,9 +136,6 @@ bool HandleFontRenderHinting(base::CommandLine& command_line,
 
 bool HandleCommandLineSwitches(base::CommandLine& command_line,
                                HeadlessBrowser::Options::Builder& builder) {
-  if (!ValidateCommandLineSwitches(command_line))
-    return false;
-
   if (command_line.HasSwitch(switches::kDeterministicMode))
     HandleDeterministicModeSwitch(command_line);
 

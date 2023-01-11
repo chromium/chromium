@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_APP_HEADLESS_COMMAND_HANDLER_H_
-#define HEADLESS_APP_HEADLESS_COMMAND_HANDLER_H_
+#ifndef COMPONENTS_HEADLESS_COMMAND_HANDLER_HEADLESS_COMMAND_HANDLER_H_
+#define COMPONENTS_HEADLESS_COMMAND_HANDLER_HEADLESS_COMMAND_HANDLER_H_
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -28,6 +29,8 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
   HeadlessCommandHandler& operator=(const HeadlessCommandHandler&) = delete;
 
   static GURL GetHandlerUrl();
+
+  static bool HasHeadlessCommandSwitches(const base::CommandLine& command_line);
 
   // The caller may override the TaskRunner used for file I/O by providing
   // a value for |io_task_runner|.
@@ -73,4 +76,4 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
 
 }  // namespace headless
 
-#endif  // HEADLESS_APP_HEADLESS_COMMAND_HANDLER_H_
+#endif  // COMPONENTS_HEADLESS_COMMAND_HANDLER_HEADLESS_COMMAND_HANDLER_H_

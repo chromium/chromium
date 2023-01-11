@@ -473,8 +473,8 @@ template("chrome_extra_paks") {
     }
 
     if (headless_enable_commands && !is_android) {
-      sources += [ "$root_gen_dir/headless/headless_command_resources.pak" ]
-      deps += [ "//headless:headless_command_resources" ]
+      sources += [ "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak" ]
+      deps += [ "//components/headless/command_handler" ]
     }
   }
 }
