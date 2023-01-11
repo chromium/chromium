@@ -40,6 +40,9 @@ class Time;
 // visible.
 - (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation;
 
+// Tracks time spent in a specific Feed for a Good Visit.
+- (void)recordFeedTypeChangedFromFeed:(FeedType)previousFeed;
+
 // Record when the NTP changes visibility.
 - (void)recordNTPDidChangeVisibility:(BOOL)visible;
 

@@ -42,7 +42,10 @@ using feed::FeedUserActionType;
 
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kGoodVisit.
-@property(nonatomic, assign) BOOL goodVisitReported;
+@property(nonatomic, assign) BOOL goodVisitReportedAllFeeds;
+@property(nonatomic, assign) BOOL goodVisitReportedDiscover;
+@property(nonatomic, assign) BOOL goodVisitReportedFollowing;
+
 // Tracking property to record a scroll for Good Visits.
 // TODO(crbug.com/1373650) separate the property below in two, one for each
 // feed.
@@ -51,6 +54,10 @@ using feed::FeedUserActionType;
 @property(nonatomic, assign) base::Time sessionStartTime;
 // The timestamp when the last interaction happens for Good Visits.
 @property(nonatomic, assign) base::Time lastInteractionTimeForGoodVisits;
+@property(nonatomic, assign)
+    base::Time lastInteractionTimeForDiscoverGoodVisits;
+@property(nonatomic, assign)
+    base::Time lastInteractionTimeForFollowingGoodVisits;
 // The timestamp when the feed becomes visible again for Good Visits. It
 // is reset when a new Good Visit session starts
 @property(nonatomic, assign)
@@ -60,6 +67,8 @@ using feed::FeedUserActionType;
 // Good Visit Session.
 @property(nonatomic, assign)
     NSTimeInterval previousTimeInFeedForGoodVisitSession;
+@property(nonatomic, assign) NSTimeInterval discoverPreviousTimeInFeedGV;
+@property(nonatomic, assign) NSTimeInterval followingPreviousTimeInFeedGV;
 
 @end
 
@@ -122,14 +131,47 @@ using feed::FeedUserActionType;
   }
 }
 
+- (void)recordFeedTypeChangedFromFeed:(FeedType)previousFeed {
+  // Recalculate time spent in previous surface.
+  [self timeSpentForCurrentGoodVisitSessionInFeed:previousFeed];
+}
+
 - (void)recordNTPDidChangeVisibility:(BOOL)visible {
   if (!IsGoodVisitsMetricEnabled()) {
     return;
   }
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   if (visible) {
+    NSDate* lastInteractionTimeForGoodVisitsDate = base::mac::ObjCCast<NSDate>(
+        [defaults objectForKey:kLastInteractionTimeForGoodVisits]);
+    if (lastInteractionTimeForGoodVisitsDate != nil) {
+      self.lastInteractionTimeForGoodVisits =
+          base::Time::FromNSDate(lastInteractionTimeForGoodVisitsDate);
+    }
+
+    NSDate* lastInteractionTimeForDiscoverGoodVisitsDate =
+        base::mac::ObjCCast<NSDate>(
+            [defaults objectForKey:kLastInteractionTimeForDiscoverGoodVisits]);
+    if (lastInteractionTimeForDiscoverGoodVisitsDate != nil) {
+      self.lastInteractionTimeForDiscoverGoodVisits =
+          base::Time::FromNSDate(lastInteractionTimeForDiscoverGoodVisitsDate);
+    }
+
+    NSDate* lastInteractionTimeForFollowingGoodVisitsDate =
+        base::mac::ObjCCast<NSDate>(
+            [defaults objectForKey:kLastInteractionTimeForFollowingGoodVisits]);
+    if (lastInteractionTimeForFollowingGoodVisitsDate != nil) {
+      self.lastInteractionTimeForFollowingGoodVisits =
+          base::Time::FromNSDate(lastInteractionTimeForFollowingGoodVisitsDate);
+    }
+
     self.previousTimeInFeedForGoodVisitSession =
         [defaults doubleForKey:kLongFeedVisitTimeAggregateKey];
+    self.discoverPreviousTimeInFeedGV =
+        [defaults doubleForKey:kLongDiscoverFeedVisitTimeAggregateKey];
+    self.followingPreviousTimeInFeedGV =
+        [defaults doubleForKey:kLongFollowingFeedVisitTimeAggregateKey];
+
     // Checks if there is a timestamp in defaults for when a user clicked
     // on an article in order to be able to trigger a non-short click
     // interaction.
@@ -142,7 +184,11 @@ using feed::FeedUserActionType;
       // kNonShortClickSeconds in a feed article.
       if (base::Time::FromNSDate(articleVisitStart) - base::Time::Now() >
           base::Seconds(kNonShortClickSeconds)) {
-        [self recordEngagedGoodVisits];
+        // Trigger a GV for a specific feed.
+        [self
+            recordEngagedGoodVisits:
+                (FeedType)[defaults integerForKey:kLastUsedFeedForGoodVisitsKey]
+                       allFeedsOnly:NO];
       }
       // Clear defaults for new session.
       [defaults setObject:nil forKey:kArticleVisitTimestampKey];
@@ -154,6 +200,10 @@ using feed::FeedUserActionType;
     [self checkEngagementGoodVisitWithInteraction:NO];
     [defaults setDouble:self.previousTimeInFeedForGoodVisitSession
                  forKey:kLongFeedVisitTimeAggregateKey];
+    [defaults setDouble:self.discoverPreviousTimeInFeedGV
+                 forKey:kLongDiscoverFeedVisitTimeAggregateKey];
+    [defaults setDouble:self.followingPreviousTimeInFeedGV
+                 forKey:kLongFollowingFeedVisitTimeAggregateKey];
   }
 }
 
@@ -807,12 +857,29 @@ using feed::FeedUserActionType;
   if ((now - self.lastInteractionTimeForGoodVisits) >
       base::Minutes(kMinutesBetweenSessions)) {
     [self resetGoodVisitSession];
+  } else {
+    // Check if Discover only session has expired.
+    if ((now - self.lastInteractionTimeForDiscoverGoodVisits) >
+        base::Minutes(kMinutesBetweenSessions)) {
+      [self resetGoodVisitSessionForFeed:FeedTypeDiscover];
+    }
+    // Check if Following only session has expired.
+    if ((now - self.lastInteractionTimeForFollowingGoodVisits) >
+        base::Minutes(kMinutesBetweenSessions)) {
+      [self resetGoodVisitSessionForFeed:FeedTypeFollowing];
+    }
   }
   self.lastInteractionTimeForGoodVisits = now;
-
-  // If the sessions hasn't been reseted and a GoodVisit has already been
-  // reported return early as an optimization
-  if (self.goodVisitReported) {
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeDiscover) {
+    self.lastInteractionTimeForDiscoverGoodVisits = now;
+  }
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeFollowing) {
+    self.lastInteractionTimeForFollowingGoodVisits = now;
+  }
+  // If the session hasn't been reset and a GoodVisit has already been
+  // reported for all possible surfaces return early as an optimization.
+  if (self.goodVisitReportedDiscover && self.goodVisitReportedFollowing &&
+      self.goodVisitReportedAllFeeds) {
     return;
   }
 
@@ -822,15 +889,28 @@ using feed::FeedUserActionType;
   // new incognito tab ...).
 
   if (interacted) {
-    [self recordEngagedGoodVisits];
+    [self recordEngagedGoodVisits:[self.feedControlDelegate selectedFeed]
+                     allFeedsOnly:NO];
     return;
   }
   // 2. Good time in feed (`kGoodVisitTimeInFeedSeconds` with >= 1 scroll in an
   // entire session).
-  if (([self timeSpentInFeedForCurrentGoodVisitSession] >
+  if (([self timeSpentForCurrentGoodVisitSessionInFeed:[self.feedControlDelegate
+                                                               selectedFeed]] >
        kGoodVisitTimeInFeedSeconds) &&
       self.goodVisitScroll) {
-    [self recordEngagedGoodVisits];
+    [self recordEngagedGoodVisits:[self.feedControlDelegate selectedFeed]
+                     allFeedsOnly:YES];
+
+    // Check if Good Visit should be triggered for Discover feed.
+    if (self.discoverPreviousTimeInFeedGV > kGoodVisitTimeInFeedSeconds) {
+      [self recordEngagedGoodVisits:FeedTypeDiscover allFeedsOnly:NO];
+    }
+
+    // Check if Good Visit should be triggered for Following feed.
+    if (self.followingPreviousTimeInFeedGV > kGoodVisitTimeInFeedSeconds) {
+      [self recordEngagedGoodVisits:FeedTypeFollowing allFeedsOnly:NO];
+    }
     return;
   }
 }
@@ -920,29 +1000,50 @@ using feed::FeedUserActionType;
     // `recordFollowCount` should be called here.
   }
 
-  // TODO(crbug.com/1322640): Separate user action for Following feed
+  // TODO(crbug.com/1322640): Separate user action for Following feed.
   base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
 }
 
 // Records Good Visits for both the Following and Discover feed.
-- (void)recordEngagedGoodVisits {
+// `allFeedsOnly` will be YES when no individual feed should report a Good
+// Visit, but a Good Visit should be triggered for all Feeds.
+- (void)recordEngagedGoodVisits:(FeedType)feedType
+                   allFeedsOnly:(BOOL)allFeedsOnly {
   // Check if the user has previously engaged with the feed in the same
   // session.
   // If neither feed has been engaged with, log "AllFeeds" engagement.
   DCHECK(IsGoodVisitsMetricEnabled());
-  if (!self.goodVisitReported) {
+  if (!self.goodVisitReportedAllFeeds) {
+    // Log for the all feeds aggregate.
     UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
                               FeedEngagementType::kGoodVisit);
-    self.goodVisitReported = YES;
+    self.goodVisitReportedAllFeeds = YES;
+  }
+  if (allFeedsOnly) {
+    return;
+  }
+  // A Good Visit for AllFeeds should have been reported in order to report feed
+  // specific Good Visits.
+  DCHECK(self.goodVisitReportedAllFeeds);
+  // Log interaction for Discover feed.
+  if (feedType == FeedTypeDiscover && !self.goodVisitReportedDiscover) {
+    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
+                              FeedEngagementType::kGoodVisit);
+    self.goodVisitReportedDiscover = YES;
   }
 
-  // TODO(crbug.com/1373650): Implement separate feed logging for
-  // Good Visits.
+  // Log interaction for Following feed.
+  if (feedType == FeedTypeFollowing && !self.goodVisitReportedFollowing) {
+    UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
+                              FeedEngagementType::kGoodVisit);
+    self.goodVisitReportedFollowing = YES;
+  }
 }
 
 // Calculates the time the user has spent in the feed during a good
 // visit session.
-- (NSTimeInterval)timeSpentInFeedForCurrentGoodVisitSession {
+- (NSTimeInterval)timeSpentForCurrentGoodVisitSessionInFeed:
+    (FeedType)currentFeed {
   // Add the time spent since last recording.
   base::Time now = base::Time::Now();
   base::TimeDelta additionalTimeInFeed =
@@ -950,6 +1051,21 @@ using feed::FeedUserActionType;
   self.previousTimeInFeedForGoodVisitSession =
       self.previousTimeInFeedForGoodVisitSession +
       additionalTimeInFeed.InSecondsF();
+
+  // Calculate for specific feed.
+  switch (currentFeed) {
+    case FeedTypeFollowing:
+      self.followingPreviousTimeInFeedGV += additionalTimeInFeed.InSecondsF();
+      break;
+    case FeedTypeDiscover:
+      self.discoverPreviousTimeInFeedGV += additionalTimeInFeed.InSecondsF();
+      break;
+  }
+
+  DCHECK(self.followingPreviousTimeInFeedGV <=
+         self.previousTimeInFeedForGoodVisitSession);
+  DCHECK(self.discoverPreviousTimeInFeedGV <=
+         self.previousTimeInFeedForGoodVisitSession);
 
   return self.previousTimeInFeedForGoodVisitSession;
 }
@@ -982,13 +1098,42 @@ using feed::FeedUserActionType;
   [defaults setObject:nil forKey:kArticleVisitTimestampKey];
   [defaults setDouble:0 forKey:kLongFeedVisitTimeAggregateKey];
 
-  self.lastInteractionTimeForGoodVisits = base::Time::Now();
-  self.feedBecameVisibleTimeForGoodVisitSession = base::Time::Now();
+  base::Time now = base::Time::Now();
 
-  self.previousTimeInFeedForGoodVisitSession = 0;
+  self.lastInteractionTimeForGoodVisits = now;
+  [defaults setObject:now.ToNSDate() forKey:kLastInteractionTimeForGoodVisits];
+
+  self.feedBecameVisibleTimeForGoodVisitSession = now;
 
   self.goodVisitScroll = NO;
-  self.goodVisitReported = NO;
+
+  self.goodVisitReportedAllFeeds = NO;
+  // Reset individual feeds.
+  [self resetGoodVisitSessionForFeed:FeedTypeFollowing];
+  [self resetGoodVisitSessionForFeed:FeedTypeDiscover];
+}
+
+// Resets a Good Visit session for an individual feed. Used to allow for
+// sessions to expire only for specific feeds.
+- (void)resetGoodVisitSessionForFeed:(FeedType)feedType {
+  base::Time now = base::Time::Now();
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  if (feedType == FeedTypeDiscover) {
+    [defaults setDouble:0 forKey:kLongDiscoverFeedVisitTimeAggregateKey];
+    self.lastInteractionTimeForDiscoverGoodVisits = now;
+    [defaults setObject:now.ToNSDate()
+                 forKey:kLastInteractionTimeForDiscoverGoodVisits];
+    self.discoverPreviousTimeInFeedGV = 0;
+    self.goodVisitReportedDiscover = NO;
+  }
+  if (feedType == FeedTypeFollowing) {
+    [defaults setDouble:0 forKey:kLongFollowingFeedVisitTimeAggregateKey];
+    self.lastInteractionTimeForFollowingGoodVisits = now;
+    [defaults setObject:now.ToNSDate()
+                 forKey:kLastInteractionTimeForFollowingGoodVisits];
+    self.followingPreviousTimeInFeedGV = 0;
+    self.goodVisitReportedFollowing = NO;
+  }
 }
 
 // Records the `duration` it took to Discover feed to perform any
@@ -998,12 +1143,14 @@ using feed::FeedUserActionType;
 }
 
 // Records that a URL was opened regardless of the target surface (e.g. New Tab,
-// Same Tab, Incognito Tab, etc.)
+// Same Tab, Incognito Tab, etc.).
 - (void)recordOpenURL {
   // Save the time of the open so we can then calculate how long the user spent
   // in that page.
-  [[NSUserDefaults standardUserDefaults] setObject:[[NSDate alloc] init]
-                                            forKey:kArticleVisitTimestampKey];
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setObject:[[NSDate alloc] init] forKey:kArticleVisitTimestampKey];
+  [defaults setInteger:[self.feedControlDelegate selectedFeed]
+                forKey:kLastUsedFeedForGoodVisitsKey];
 
   if (self.isShownOnStartSurface) {
     UMA_HISTOGRAM_ENUMERATION(kActionOnStartSurface,

@@ -17,6 +17,17 @@ const int kMaxCardsInFeed = 50;
 NSString* const kArticleVisitTimestampKey = @"ShortClickInteractionTimestamp";
 NSString* const kLongFeedVisitTimeAggregateKey =
     @"LongFeedInteractionTimeDelta";
+NSString* const kLongDiscoverFeedVisitTimeAggregateKey =
+    @"LongDiscoverFeedInteractionTimeDelta";
+NSString* const kLongFollowingFeedVisitTimeAggregateKey =
+    @"LongFollowingFeedInteractionTimeDelta";
+NSString* const kLastUsedFeedForGoodVisitsKey = @"LastUsedFeedForGoodVisits";
+NSString* const kLastInteractionTimeForGoodVisits =
+    @"LastInteractionTimeForGoodVisits";
+NSString* const kLastInteractionTimeForDiscoverGoodVisits =
+    @"LastInteractionTimeForGoodVisitsDiscover";
+NSString* const kLastInteractionTimeForFollowingGoodVisits =
+    @"LastInteractionTimeForGoodVisitsFollowing";
 
 #pragma mark - Histograms
 

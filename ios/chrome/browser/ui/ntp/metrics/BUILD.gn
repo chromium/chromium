@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/feed/core/v2/public:common",
+    "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

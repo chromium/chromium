@@ -354,15 +354,6 @@
 
 #pragma mark - Public
 
-- (void)setWebState:(web::WebState*)webState {
-  if (_webState == webState) {
-    return;
-  }
-  self.contentSuggestionsCoordinator.webState = webState;
-  self.ntpMediator.webState = webState;
-  _webState = webState;
-}
-
 - (void)stopScrolling {
   if (!self.contentSuggestionsCoordinator) {
     return;
@@ -471,6 +462,26 @@
 
   self.viewPresented = visible;
   [self updateVisible];
+}
+
+#pragma mark - Setters
+
+- (void)setSelectedFeed:(FeedType)selectedFeed {
+  if (_selectedFeed == selectedFeed) {
+    return;
+  }
+  // Tell Metrics Recorder the feed has changed.
+  [self.feedMetricsRecorder recordFeedTypeChangedFromFeed:_selectedFeed];
+  _selectedFeed = selectedFeed;
+}
+
+- (void)setWebState:(web::WebState*)webState {
+  if (_webState == webState) {
+    return;
+  }
+  self.contentSuggestionsCoordinator.webState = webState;
+  self.ntpMediator.webState = webState;
+  _webState = webState;
 }
 
 #pragma mark - Initializers
@@ -879,7 +890,6 @@
   if (self.selectedFeed == feedType) {
     return;
   }
-
   self.selectedFeed = feedType;
 
   // Saves scroll position before changing feed.
