@@ -1411,7 +1411,8 @@ xmlStringLenGetNodeList(const xmlDoc *doc, const xmlChar *value, int len) {
 			    if (val != NULL) xmlFree(val);
 			    goto out;
 			}
-			else if ((ent != NULL) && (ent->children == NULL)) {
+			else if ((ent != NULL) &&
+                                 ((ent->flags & XML_ENT_PARSED) == 0)) {
 			    xmlNodePtr temp;
 
                             /* Set to non-NULL value to avoid recursion. */
@@ -1419,6 +1420,7 @@ xmlStringLenGetNodeList(const xmlDoc *doc, const xmlChar *value, int len) {
 			    ent->children = xmlStringGetNodeList(doc,
 				    (const xmlChar*)node->content);
 			    ent->owner = 1;
+                            ent->flags |= XML_ENT_PARSED;
 			    temp = ent->children;
 			    while (temp) {
 				temp->parent = (xmlNodePtr)ent;
@@ -1607,7 +1609,8 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 			node = xmlNewReference(doc, val);
 			if (node == NULL)
 			    goto out;
-			if ((ent != NULL) && (ent->children == NULL)) {
+			if ((ent != NULL) &&
+                            ((ent->flags & XML_ENT_PARSED) == 0)) {
 			    xmlNodePtr temp;
 
                             /* Set to non-NULL value to avoid recursion. */
@@ -1615,6 +1618,7 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 			    ent->children = xmlStringGetNodeList(doc,
 				    (const xmlChar*)node->content);
 			    ent->owner = 1;
+                            ent->flags |= XML_ENT_PARSED;
 			    temp = ent->children;
 			    while (temp) {
 				temp->parent = (xmlNodePtr)ent;

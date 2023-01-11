@@ -1,5 +1,5 @@
 /*
- * xml.c: a libFuzzer target to test several XML parser interfaces.
+ * xinclude.c: a libFuzzer target to test the XInclude engine.
  *
  * See Copyright for the status of this software.
  */
@@ -8,6 +8,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlerror.h>
+#include <libxml/xinclude.h>
 #include <libxml/xmlreader.h>
 #include "fuzz.h"
 
@@ -26,18 +27,15 @@ LLVMFuzzerInitialize(int *argc ATTRIBUTE_UNUSED,
 
 int
 LLVMFuzzerTestOneInput(const char *data, size_t size) {
-    static const size_t maxChunkSize = 128;
     xmlDocPtr doc;
-    xmlParserCtxtPtr ctxt;
     xmlTextReaderPtr reader;
-    xmlChar *out;
     const char *docBuffer, *docUrl;
-    size_t docSize, consumed, chunkSize;
-    int opts, outSize;
+    size_t docSize;
+    int opts;
 
     xmlFuzzDataInit(data, size);
     opts = xmlFuzzReadInt();
-    opts &= ~XML_PARSE_XINCLUDE;
+    opts |= XML_PARSE_XINCLUDE;
 
     xmlFuzzReadEntities();
     docBuffer = xmlFuzzMainEntity(&docSize);
@@ -48,28 +46,8 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     /* Pull parser */
 
     doc = xmlReadMemory(docBuffer, docSize, docUrl, NULL, opts);
-    /* Also test the serializer. */
-    xmlDocDumpMemory(doc, &out, &outSize);
-    xmlFree(out);
+    xmlXIncludeProcessFlags(doc, opts);
     xmlFreeDoc(doc);
-
-    /* Push parser */
-
-    ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, docUrl);
-    if (ctxt == NULL)
-        goto exit;
-    xmlCtxtUseOptions(ctxt, opts);
-
-    for (consumed = 0; consumed < docSize; consumed += chunkSize) {
-        chunkSize = docSize - consumed;
-        if (chunkSize > maxChunkSize)
-            chunkSize = maxChunkSize;
-        xmlParseChunk(ctxt, docBuffer + consumed, chunkSize, 0);
-    }
-
-    xmlParseChunk(ctxt, NULL, 0, 1);
-    xmlFreeDoc(ctxt->myDoc);
-    xmlFreeParserCtxt(ctxt);
 
     /* Reader */
 

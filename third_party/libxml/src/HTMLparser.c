@@ -6790,6 +6790,11 @@ htmlCtxtReset(htmlParserCtxtPtr ctxt)
         xmlHashFree(ctxt->attsSpecial, NULL);
         ctxt->attsSpecial = NULL;
     }
+
+    ctxt->nbErrors = 0;
+    ctxt->nbWarnings = 0;
+    if (ctxt->lastError.code != XML_ERR_OK)
+        xmlResetError(&ctxt->lastError);
 }
 
 /**
