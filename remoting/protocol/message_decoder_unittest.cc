@@ -20,8 +20,7 @@ namespace remoting::protocol {
 
 static const unsigned int kTestKey = 142;
 
-static void AppendMessage(const EventMessage& msg,
-                          std::string* buffer) {
+static void AppendMessage(const EventMessage& msg, std::string* buffer) {
   // Contains one encoded message.
   scoped_refptr<net::IOBufferWithSize> encoded_msg;
   encoded_msg = SerializeAndFrameMessage(msg);
@@ -76,8 +75,9 @@ void SimulateReadSequence(const int read_sequence[], int sequence_size) {
     decoder.AddData(buffer, read);
     while (true) {
       std::unique_ptr<CompoundBuffer> message(decoder.GetNextMessage());
-      if (!message.get())
+      if (!message.get()) {
         break;
+      }
 
       std::unique_ptr<EventMessage> event = std::make_unique<EventMessage>();
       CompoundBufferInputStream stream(message.get());

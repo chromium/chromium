@@ -44,11 +44,10 @@ class V2AuthenticatorTest : public AuthenticatorTestBase {
  protected:
   void InitAuthenticators(const std::string& client_secret,
                           const std::string& host_secret) {
-    host_ = V2Authenticator::CreateForHost(
-        host_cert_, key_pair_, host_secret,
-        Authenticator::WAITING_MESSAGE);
-    client_ = V2Authenticator::CreateForClient(
-        client_secret, Authenticator::MESSAGE_READY);
+    host_ = V2Authenticator::CreateForHost(host_cert_, key_pair_, host_secret,
+                                           Authenticator::WAITING_MESSAGE);
+    client_ = V2Authenticator::CreateForClient(client_secret,
+                                               Authenticator::MESSAGE_READY);
   }
 };
 

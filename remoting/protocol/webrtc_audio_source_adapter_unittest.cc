@@ -28,7 +28,7 @@ const int kBytesPerSample = 2;
 const int kChannels = 2;
 constexpr auto kFrameDuration = base::Milliseconds(10);
 
-class FakeAudioSink : public webrtc::AudioTrackSinkInterface{
+class FakeAudioSink : public webrtc::AudioTrackSinkInterface {
  public:
   FakeAudioSink() = default;
   ~FakeAudioSink() override = default;

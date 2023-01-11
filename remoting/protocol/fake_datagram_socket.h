@@ -129,7 +129,7 @@ class FakeDatagramChannelFactory : public DatagramChannelFactory {
   void CancelChannelCreation(const std::string& name) override;
 
  private:
-  typedef std::map<std::string, base::WeakPtr<FakeDatagramSocket> > ChannelsMap;
+  typedef std::map<std::string, base::WeakPtr<FakeDatagramSocket>> ChannelsMap;
 
   void NotifyChannelCreated(std::unique_ptr<FakeDatagramSocket> owned_socket,
                             const std::string& name,

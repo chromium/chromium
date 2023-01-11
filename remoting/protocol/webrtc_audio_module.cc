@@ -364,8 +364,9 @@ void WebrtcAudioModule::PollFromSource() {
   DCHECK(audio_task_runner_->BelongsToCurrentThread());
 
   base::AutoLock lock(lock_);
-  if (!audio_transport_)
+  if (!audio_transport_) {
     return;
+  }
 
   for (int i = 0; i < kPollInterval.InMilliseconds() / kFrameLengthMs; i++) {
     int64_t elapsed_time_ms = -1;

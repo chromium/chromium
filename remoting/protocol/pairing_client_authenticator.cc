@@ -46,8 +46,9 @@ void PairingClientAuthenticator::StartPaired(State initial_state) {
 }
 
 Authenticator::State PairingClientAuthenticator::state() const {
-  if (waiting_for_pin_)
+  if (waiting_for_pin_) {
     return PROCESSING_MESSAGE;
+  }
   return PairingAuthenticatorBase::state();
 }
 

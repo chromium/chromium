@@ -20,13 +20,13 @@ class AudioStub {
   AudioStub(const AudioStub&) = delete;
   AudioStub& operator=(const AudioStub&) = delete;
 
-  virtual ~AudioStub() { }
+  virtual ~AudioStub() {}
 
   virtual void ProcessAudioPacket(std::unique_ptr<AudioPacket> audio_packet,
                                   base::OnceClosure done) = 0;
 
  protected:
-  AudioStub() { }
+  AudioStub() {}
 };
 
 }  // namespace protocol

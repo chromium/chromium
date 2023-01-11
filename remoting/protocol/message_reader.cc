@@ -53,8 +53,9 @@ void MessageReader::DoRead() {
         read_buffer_.get(), kReadBufferSize,
         base::BindOnce(&MessageReader::OnRead, weak_factory_.GetWeakPtr()));
 
-    if (!HandleReadResult(result))
+    if (!HandleReadResult(result)) {
       break;
+    }
   }
 }
 
@@ -99,8 +100,9 @@ void MessageReader::OnDataReceived(net::IOBuffer* data, int data_size) {
   // for all of them.
   while (true) {
     CompoundBuffer* buffer = message_decoder_.GetNextMessage();
-    if (!buffer)
+    if (!buffer) {
       break;
+    }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MessageReader::RunCallback, weak_factory_.GetWeakPtr(),

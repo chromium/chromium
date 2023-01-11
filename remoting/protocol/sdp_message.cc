@@ -15,13 +15,15 @@
 namespace remoting::protocol {
 
 SdpMessage::SdpMessage(const std::string& sdp) {
-  sdp_lines_ = base::SplitString(
-      sdp, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  sdp_lines_ = base::SplitString(sdp, "\n", base::TRIM_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : sdp_lines_) {
-    if (base::StartsWith(line, "m=audio", base::CompareCase::SENSITIVE))
+    if (base::StartsWith(line, "m=audio", base::CompareCase::SENSITIVE)) {
       has_audio_ = true;
-    if (base::StartsWith(line, "m=video", base::CompareCase::SENSITIVE))
+    }
+    if (base::StartsWith(line, "m=video", base::CompareCase::SENSITIVE)) {
       has_video_ = true;
+    }
   }
 }
 
@@ -60,8 +62,7 @@ bool SdpMessage::PreferVideoCodec(const std::string& codec) {
   }
 
   for (size_t i = 0; i < sdp_lines_.size(); i++) {
-    if (!base::StartsWith(sdp_lines_[i],
-                          "m=video",
+    if (!base::StartsWith(sdp_lines_[i], "m=video",
                           base::CompareCase::SENSITIVE)) {
       continue;
     }
@@ -79,8 +80,7 @@ bool SdpMessage::PreferVideoCodec(const std::string& codec) {
     const auto first_codec_pos = fields.begin() + kSkipFields;
 
     for (const auto& payload : payload_types) {
-      auto pos = std::find(first_codec_pos,
-                           fields.end(),
+      auto pos = std::find(first_codec_pos, fields.end(),
                            base::StringPiece(payload.second));
       // The codec has not been found in codec list.
       if (pos == fields.end()) {

@@ -62,8 +62,7 @@ const NameMapElement<ChannelConfig::Codec> kCodecs[] = {
 //    <video transport="stream" version="1" codec="vp8" />
 XmlElement* FormatChannelConfig(const ChannelConfig& config,
                                 const std::string& tag_name) {
-  XmlElement* result = new XmlElement(
-      QName(kChromotingXmlNamespace, tag_name));
+  XmlElement* result = new XmlElement(QName(kChromotingXmlNamespace, tag_name));
 
   result->AddAttr(QName(kDefaultNs, kTransportAttr),
                   ValueToName(kTransports, config.transport));
@@ -82,11 +81,12 @@ XmlElement* FormatChannelConfig(const ChannelConfig& config,
 }
 
 // Returns false if the element is invalid.
-bool ParseChannelConfig(const XmlElement* element, bool codec_required,
+bool ParseChannelConfig(const XmlElement* element,
+                        bool codec_required,
                         ChannelConfig* config) {
-  if (!NameToValue(
-          kTransports, element->Attr(QName(kDefaultNs, kTransportAttr)),
-          &config->transport)) {
+  if (!NameToValue(kTransports,
+                   element->Attr(QName(kDefaultNs, kTransportAttr)),
+                   &config->transport)) {
     return false;
   }
 
@@ -138,12 +138,12 @@ ContentDescription::~ContentDescription() = default;
 //   </description>
 //
 XmlElement* ContentDescription::ToXml() const {
-  XmlElement* root = new XmlElement(
-      QName(kChromotingXmlNamespace, kDescriptionTag), true);
+  XmlElement* root =
+      new XmlElement(QName(kChromotingXmlNamespace, kDescriptionTag), true);
 
   if (config()->ice_supported()) {
-    root->AddElement(
-        new jingle_xmpp::XmlElement(QName(kChromotingXmlNamespace, kStandardIceTag)));
+    root->AddElement(new jingle_xmpp::XmlElement(
+        QName(kChromotingXmlNamespace, kStandardIceTag)));
 
     for (const auto& channel_config : config()->control_configs()) {
       root->AddElement(FormatChannelConfig(channel_config, kControlTag));
@@ -189,8 +189,8 @@ bool ContentDescription::ParseChannelConfigs(
     child = child->NextNamed(tag);
   }
   if (optional && configs->empty()) {
-      // If there's no mention of the tag, implicitly assume disabled channel.
-      configs->push_back(ChannelConfig::None());
+    // If there's no mention of the tag, implicitly assume disabled channel.
+    configs->push_back(ChannelConfig::None());
   }
   return true;
 }
@@ -225,8 +225,9 @@ std::unique_ptr<ContentDescription> ContentDescription::ParseXml(
 
   std::unique_ptr<XmlElement> authenticator_message;
   const XmlElement* child = Authenticator::FindAuthenticatorMessage(element);
-  if (child)
+  if (child) {
     authenticator_message = std::make_unique<XmlElement>(*child);
+  }
 
   return base::WrapUnique(new ContentDescription(
       std::move(config), std::move(authenticator_message)));

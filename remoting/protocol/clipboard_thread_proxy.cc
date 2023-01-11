@@ -15,8 +15,7 @@ ClipboardThreadProxy::ClipboardThreadProxy(
     const base::WeakPtr<ClipboardStub>& clipboard_stub,
     scoped_refptr<base::TaskRunner> clipboard_stub_task_runner)
     : clipboard_stub_(clipboard_stub),
-      clipboard_stub_task_runner_(clipboard_stub_task_runner) {
-}
+      clipboard_stub_task_runner_(clipboard_stub_task_runner) {}
 
 void ClipboardThreadProxy::InjectClipboardEvent(const ClipboardEvent& event) {
   clipboard_stub_task_runner_->PostTask(

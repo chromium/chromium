@@ -148,25 +148,19 @@ class CandidateSessionConfig {
     return event_configs_;
   }
 
-  std::list<ChannelConfig>* mutable_event_configs() {
-    return &event_configs_;
-  }
+  std::list<ChannelConfig>* mutable_event_configs() { return &event_configs_; }
 
   const std::list<ChannelConfig>& video_configs() const {
     return video_configs_;
   }
 
-  std::list<ChannelConfig>* mutable_video_configs() {
-    return &video_configs_;
-  }
+  std::list<ChannelConfig>* mutable_video_configs() { return &video_configs_; }
 
   const std::list<ChannelConfig>& audio_configs() const {
     return audio_configs_;
   }
 
-  std::list<ChannelConfig>* mutable_audio_configs() {
-    return &audio_configs_;
-  }
+  std::list<ChannelConfig>* mutable_audio_configs() { return &audio_configs_; }
 
   // Returns true if |config| is supported.
   bool IsSupported(const SessionConfig& config) const;

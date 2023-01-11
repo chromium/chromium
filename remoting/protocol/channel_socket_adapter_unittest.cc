@@ -46,9 +46,7 @@ class TransportChannelSocketAdapterTest : public testing::Test {
     target_ = std::make_unique<TransportChannelSocketAdapter>(&channel_);
   }
 
-  void Callback(int result) {
-    callback_result_ = result;
-  }
+  void Callback(int result) { callback_result_ = result; }
 
   cricket::MockIceTransport channel_;
   std::unique_ptr<TransportChannelSocketAdapter> target_;
@@ -106,8 +104,7 @@ TEST_F(TransportChannelSocketAdapterTest, SendPending) {
       .Times(1)
       .WillOnce(Return(SOCKET_ERROR));
 
-  EXPECT_CALL(channel_, GetError())
-      .WillOnce(Return(EWOULDBLOCK));
+  EXPECT_CALL(channel_, GetError()).WillOnce(Return(EWOULDBLOCK));
 
   int result = target_->Send(buffer.get(), kTestDataSize, callback_);
   ASSERT_EQ(net::OK, result);

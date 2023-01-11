@@ -15,9 +15,9 @@
 namespace remoting::protocol {
 
 namespace {
-const jingle_xmpp::StaticQName kPairingFailedTag =
-    { kChromotingXmlNamespace, "pairing-failed" };
-const jingle_xmpp::StaticQName kPairingErrorAttribute = { "", "error" };
+const jingle_xmpp::StaticQName kPairingFailedTag = {kChromotingXmlNamespace,
+                                                    "pairing-failed"};
+const jingle_xmpp::StaticQName kPairingErrorAttribute = {"", "error"};
 }  // namespace
 
 PairingAuthenticatorBase::PairingAuthenticatorBase() {}
@@ -35,8 +35,8 @@ bool PairingAuthenticatorBase::started() const {
   return spake2_authenticator_->started();
 }
 
-Authenticator::RejectionReason
-PairingAuthenticatorBase::rejection_reason() const {
+Authenticator::RejectionReason PairingAuthenticatorBase::rejection_reason()
+    const {
   if (!spake2_authenticator_) {
     return RejectionReason::PROTOCOL_ERROR;
   }

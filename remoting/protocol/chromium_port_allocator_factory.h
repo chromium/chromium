@@ -23,7 +23,7 @@ class ChromiumPortAllocatorFactory : public PortAllocatorFactory {
 
   ~ChromiumPortAllocatorFactory() override;
 
-   // PortAllocatorFactory interface.
+  // PortAllocatorFactory interface.
   std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
       scoped_refptr<TransportContext> transport_context,
       base::WeakPtr<SessionOptionsProvider> session_options_provider) override;

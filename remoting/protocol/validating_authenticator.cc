@@ -67,7 +67,8 @@ void ValidatingAuthenticator::ProcessMessage(
                      weak_factory_.GetWeakPtr(), std::move(resume_callback)));
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement> ValidatingAuthenticator::GetNextMessage() {
+std::unique_ptr<jingle_xmpp::XmlElement>
+ValidatingAuthenticator::GetNextMessage() {
   if (pending_auth_message_) {
     DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
     return std::move(pending_auth_message_);

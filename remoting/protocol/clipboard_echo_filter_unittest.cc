@@ -49,20 +49,14 @@ TEST(ClipboardEchoFilterTest, FromClientBlocksIdenticalEventToClient) {
   filter.set_client_stub(&client_stub);
   filter.set_host_stub(&host_stub);
 
-  filter.host_filter()->InjectClipboardEvent(
-      MakeClipboardEvent("text", "a"));
+  filter.host_filter()->InjectClipboardEvent(MakeClipboardEvent("text", "a"));
   // The client has sent ("text", "a") to the host, so make sure the filter
   // will stop the host echoing that item back to the client.
-  filter.client_filter()->InjectClipboardEvent(
-      MakeClipboardEvent("text", "a"));
-  filter.host_filter()->InjectClipboardEvent(
-      MakeClipboardEvent("text", "b"));
-  filter.client_filter()->InjectClipboardEvent(
-      MakeClipboardEvent("text", "a"));
-  filter.host_filter()->InjectClipboardEvent(
-      MakeClipboardEvent("image", "a"));
-  filter.client_filter()->InjectClipboardEvent(
-      MakeClipboardEvent("text", "a"));
+  filter.client_filter()->InjectClipboardEvent(MakeClipboardEvent("text", "a"));
+  filter.host_filter()->InjectClipboardEvent(MakeClipboardEvent("text", "b"));
+  filter.client_filter()->InjectClipboardEvent(MakeClipboardEvent("text", "a"));
+  filter.host_filter()->InjectClipboardEvent(MakeClipboardEvent("image", "a"));
+  filter.client_filter()->InjectClipboardEvent(MakeClipboardEvent("text", "a"));
 }
 
 // Check that the filter will drop events sent to the host, if there is no host

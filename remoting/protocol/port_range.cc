@@ -23,8 +23,9 @@ bool PortRange::Parse(const std::string& port_range, PortRange* result) {
   }
 
   size_t separator_index = port_range.find('-');
-  if (separator_index == std::string::npos)
+  if (separator_index == std::string::npos) {
     return false;
+  }
 
   std::string min_port_string, max_port_string;
   base::TrimWhitespaceASCII(port_range.substr(0, separator_index),
@@ -38,8 +39,9 @@ bool PortRange::Parse(const std::string& port_range, PortRange* result) {
     return false;
   }
 
-  if (min_port == 0 || min_port > max_port || max_port > USHRT_MAX)
+  if (min_port == 0 || min_port > max_port || max_port > USHRT_MAX) {
     return false;
+  }
 
   result->min_port = static_cast<uint16_t>(min_port);
   result->max_port = static_cast<uint16_t>(max_port);

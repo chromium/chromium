@@ -84,7 +84,8 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   DCHECK_EQ(state(), WAITING_MESSAGE);
   state_ = PROCESSING_MESSAGE;
 
-  const jingle_xmpp::XmlElement* pairing_tag = message->FirstNamed(kPairingInfoTag);
+  const jingle_xmpp::XmlElement* pairing_tag =
+      message->FirstNamed(kPairingInfoTag);
   if (pairing_tag) {
     client_id_ = pairing_tag->Attr(kClientIdAttribute);
   }
@@ -118,10 +119,9 @@ void NegotiatingHostAuthenticator::ProcessMessage(
 
     // Find the first mutually-supported method in the client's list of
     // supported-methods.
-    for (const std::string& method_str :
-         base::SplitString(supported_methods_attr,
-                           std::string(1, kSupportedMethodsSeparator),
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    for (const std::string& method_str : base::SplitString(
+             supported_methods_attr, std::string(1, kSupportedMethodsSeparator),
+             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       Method list_value = ParseMethodString(method_str);
       if (list_value != Method::INVALID &&
           base::Contains(methods_, list_value)) {
@@ -176,7 +176,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
     base::OnceClosure resume_callback) {
   DCHECK(current_method_ != Method::INVALID);
 
-  switch(current_method_) {
+  switch (current_method_) {
     case Method::INVALID:
       NOTREACHED();
       break;

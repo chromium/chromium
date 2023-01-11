@@ -60,10 +60,12 @@ class FakeSession : public Session {
 
  private:
   // Callback provided to the |transport_|.
-  void SendTransportInfo(std::unique_ptr<jingle_xmpp::XmlElement> transport_info);
+  void SendTransportInfo(
+      std::unique_ptr<jingle_xmpp::XmlElement> transport_info);
 
   // Called by the |peer_| to deliver incoming |transport_info|.
-  void ProcessTransportInfo(std::unique_ptr<jingle_xmpp::XmlElement> transport_info);
+  void ProcessTransportInfo(
+      std::unique_ptr<jingle_xmpp::XmlElement> transport_info);
 
   raw_ptr<EventHandler> event_handler_ = nullptr;
   std::unique_ptr<SessionConfig> config_;

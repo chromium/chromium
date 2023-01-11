@@ -30,8 +30,9 @@ void ClientVideoStatsDispatcher::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> message) {
   std::unique_ptr<FrameStatsMessage> stats_proto =
       ParseMessage<FrameStatsMessage>(message.get());
-  if (!stats_proto)
+  if (!stats_proto) {
     return;
+  }
 
   if (!stats_proto->has_frame_id()) {
     LOG(ERROR) << "Received invalid FrameStatsMessage.";

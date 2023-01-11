@@ -21,8 +21,7 @@ HostControlDispatcher::HostControlDispatcher()
     : ChannelDispatcherBase(kControlChannelName) {}
 HostControlDispatcher::~HostControlDispatcher() = default;
 
-void HostControlDispatcher::SetCapabilities(
-    const Capabilities& capabilities) {
+void HostControlDispatcher::SetCapabilities(const Capabilities& capabilities) {
   ControlMessage message;
   message.mutable_capabilities()->CopyFrom(capabilities);
   message_pipe()->Send(&message, {});
@@ -97,8 +96,9 @@ void HostControlDispatcher::OnIncomingMessage(
 
   std::unique_ptr<ControlMessage> message =
       ParseMessage<ControlMessage>(buffer.get());
-  if (!message)
+  if (!message) {
     return;
+  }
 
   // TODO(sergeyu): Move message validation from the message handlers here.
   if (message->has_clipboard_event()) {

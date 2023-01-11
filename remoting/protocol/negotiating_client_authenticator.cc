@@ -104,7 +104,8 @@ NegotiatingClientAuthenticator::GetNextMessage() {
     if (is_paired()) {
       // If the client is paired with the host then attach pairing client_id to
       // the message.
-      jingle_xmpp::XmlElement* pairing_tag = new jingle_xmpp::XmlElement(kPairingInfoTag);
+      jingle_xmpp::XmlElement* pairing_tag =
+          new jingle_xmpp::XmlElement(kPairingInfoTag);
       result->AddElement(pairing_tag);
       pairing_tag->AddAttr(kClientIdAttribute, config_.pairing_client_id);
     }
@@ -112,8 +113,9 @@ NegotiatingClientAuthenticator::GetNextMessage() {
     // Include a list of supported methods.
     std::string supported_methods;
     for (Method method : methods_) {
-      if (!supported_methods.empty())
+      if (!supported_methods.empty()) {
         supported_methods += kSupportedMethodsSeparator;
+      }
       supported_methods += MethodToString(method);
     }
     result->AddAttr(kSupportedMethodsAttributeQName, supported_methods);

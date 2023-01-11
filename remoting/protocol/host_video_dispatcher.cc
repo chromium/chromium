@@ -30,10 +30,12 @@ void HostVideoDispatcher::ProcessVideoPacket(
 void HostVideoDispatcher::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> message) {
   std::unique_ptr<VideoAck> ack = ParseMessage<VideoAck>(message.get());
-  if (!ack)
+  if (!ack) {
     return;
-  if (video_feedback_stub_)
+  }
+  if (video_feedback_stub_) {
     video_feedback_stub_->ProcessVideoAck(std::move(ack));
+  }
 }
 
 }  // namespace remoting::protocol

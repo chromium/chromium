@@ -58,12 +58,12 @@ void ThirdPartyHostAuthenticator::AddTokenElements(
   DCHECK(token_validator_->token_url().is_valid());
   DCHECK(!token_validator_->token_scope().empty());
 
-  jingle_xmpp::XmlElement* token_url_tag = new jingle_xmpp::XmlElement(
-      kTokenUrlTag);
+  jingle_xmpp::XmlElement* token_url_tag =
+      new jingle_xmpp::XmlElement(kTokenUrlTag);
   token_url_tag->SetBodyText(token_validator_->token_url().spec());
   message->AddElement(token_url_tag);
-  jingle_xmpp::XmlElement* token_scope_tag = new jingle_xmpp::XmlElement(
-      kTokenScopeTag);
+  jingle_xmpp::XmlElement* token_scope_tag =
+      new jingle_xmpp::XmlElement(kTokenScopeTag);
   token_scope_tag->SetBodyText(token_validator_->token_scope());
   message->AddElement(token_scope_tag);
   token_state_ = WAITING_MESSAGE;

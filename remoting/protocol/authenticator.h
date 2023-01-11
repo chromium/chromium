@@ -103,7 +103,8 @@ class Authenticator {
   static bool IsAuthenticatorMessage(const jingle_xmpp::XmlElement* message);
 
   // Creates an empty Authenticator message, owned by the caller.
-  static std::unique_ptr<jingle_xmpp::XmlElement> CreateEmptyAuthenticatorMessage();
+  static std::unique_ptr<jingle_xmpp::XmlElement>
+  CreateEmptyAuthenticatorMessage();
 
   // Finds Authenticator message among child elements of |message|, or
   // returns nullptr otherwise.

@@ -59,11 +59,13 @@ MATCHER_P2(EqualsClipboardEvent, mime_type, data, "") {
 }
 
 MATCHER_P(EqualsTouchEvent, expected_event, "") {
-  if (arg.event_type() != expected_event.event_type())
+  if (arg.event_type() != expected_event.event_type()) {
     return false;
+  }
 
-  if (arg.touch_points().size() != expected_event.touch_points().size())
+  if (arg.touch_points().size() != expected_event.touch_points().size()) {
     return false;
+  }
 
   for (int i = 0; i < expected_event.touch_points().size(); ++i) {
     const TouchEventPoint& expected_point = expected_event.touch_points(i);
@@ -76,8 +78,9 @@ MATCHER_P(EqualsTouchEvent, expected_event, "") {
                        expected_point.radius_y() == actual_point.radius_y() &&
                        expected_point.angle() == actual_point.angle() &&
                        expected_point.pressure() == actual_point.pressure();
-    if (!equal)
+    if (!equal) {
       return false;
+    }
   }
 
   return true;
@@ -88,24 +91,30 @@ MATCHER_P(EqualsTouchEvent, expected_event, "") {
 const float kTestTouchErrorEpsilon = 1.0f;
 
 MATCHER_P(EqualsTouchPointCoordinates, expected_event, "") {
-  if (arg.touch_points().size() != expected_event.touch_points().size())
+  if (arg.touch_points().size() != expected_event.touch_points().size()) {
     return false;
+  }
 
   for (int i = 0; i < expected_event.touch_points().size(); ++i) {
     const TouchEventPoint& arg_point = arg.touch_points(i);
     const TouchEventPoint& expected_point = expected_event.touch_points(i);
-    if (std::abs(expected_point.x() - arg_point.x()) >= kTestTouchErrorEpsilon)
+    if (std::abs(expected_point.x() - arg_point.x()) >=
+        kTestTouchErrorEpsilon) {
       return false;
+    }
 
-    if (std::abs(expected_point.y() - arg_point.y()) >= kTestTouchErrorEpsilon)
+    if (std::abs(expected_point.y() - arg_point.y()) >=
+        kTestTouchErrorEpsilon) {
       return false;
+    }
   }
   return true;
 }
 
 MATCHER_P(EqualsTouchPointRadii, expected_event, "") {
-  if (arg.touch_points().size() != expected_event.touch_points().size())
+  if (arg.touch_points().size() != expected_event.touch_points().size()) {
     return false;
+  }
 
   for (int i = 0; i < expected_event.touch_points().size(); ++i) {
     const TouchEventPoint& arg_point = arg.touch_points(i);
@@ -124,11 +133,13 @@ MATCHER_P(EqualsTouchPointRadii, expected_event, "") {
 }
 
 MATCHER_P2(EqualsTouchEventTypeAndId, type, id, "") {
-  if (arg.event_type() != type)
+  if (arg.event_type() != type) {
     return false;
+  }
 
-  if (arg.touch_points().size() != 1)
+  if (arg.touch_points().size() != 1) {
     return false;
+  }
 
   return arg.touch_points(0).id() == id;
 }

@@ -177,8 +177,9 @@ JingleSession::OrderedMessageQueue::OnIncomingMessage(
 
 void JingleSession::OrderedMessageQueue::SetInitialId(const std::string& id) {
   int current = GetSequentialId(id);
-  if (current != kInvalid)
+  if (current != kInvalid) {
     next_incoming_ = current + 1;
+  }
 }
 
 JingleSession::PendingMessage::PendingMessage() = default;
@@ -302,8 +303,9 @@ void JingleSession::ContinueAcceptIncomingConnection() {
       peer_address_, JingleMessage::SESSION_ACCEPT, session_id_));
 
   std::unique_ptr<jingle_xmpp::XmlElement> auth_message;
-  if (authenticator_->state() == Authenticator::MESSAGE_READY)
+  if (authenticator_->state() == Authenticator::MESSAGE_READY) {
     auth_message = authenticator_->GetNextMessage();
+  }
 
   message->description = std::make_unique<ContentDescription>(
       CandidateSessionConfig::CreateFrom(*config_), std::move(auth_message));
@@ -451,10 +453,9 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
   }
 }
 
-void JingleSession::OnMessageResponse(
-    JingleMessage::ActionType request_type,
-    IqRequest* request,
-    const jingle_xmpp::XmlElement* response) {
+void JingleSession::OnMessageResponse(JingleMessage::ActionType request_type,
+                                      IqRequest* request,
+                                      const jingle_xmpp::XmlElement* response) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Delete the request from the list of pending requests.
@@ -462,8 +463,9 @@ void JingleSession::OnMessageResponse(
                                              &std::unique_ptr<IqRequest>::get));
 
   // Ignore all responses after session was closed.
-  if (state_ == CLOSED || state_ == FAILED)
+  if (state_ == CLOSED || state_ == FAILED) {
     return;
+  }
 
   std::string type_str = JingleMessage::GetActionName(request_type);
 
@@ -487,8 +489,9 @@ void JingleSession::OnMessageResponse(
   }
 }
 
-void JingleSession::OnTransportInfoResponse(IqRequest* request,
-                                            const jingle_xmpp::XmlElement* response) {
+void JingleSession::OnTransportInfoResponse(
+    IqRequest* request,
+    const jingle_xmpp::XmlElement* response) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!transport_info_requests_.empty());
 
@@ -506,7 +509,8 @@ void JingleSession::OnTransportInfoResponse(IqRequest* request,
     return;
   }
 
-  const std::string& type = response->Attr(jingle_xmpp::QName(std::string(), "type"));
+  const std::string& type =
+      response->Attr(jingle_xmpp::QName(std::string(), "type"));
   if (type != "result") {
     LOG(ERROR) << "Received error in response to transport-info message: \""
                << response->Str() << "\". Terminating the session.";
@@ -524,8 +528,9 @@ void JingleSession::OnIncomingMessage(const std::string& id,
   for (auto& pending_message : ordered) {
     ProcessIncomingMessage(std::move(pending_message.message),
                            std::move(pending_message.reply_callback));
-    if (!self)
+    if (!self) {
       return;
+    }
   }
 }
 
@@ -735,15 +740,15 @@ void JingleSession::ProcessAuthenticationStep() {
   if (authenticator_->started()) {
     base::WeakPtr<JingleSession> self = weak_factory_.GetWeakPtr();
     SetState(AUTHENTICATING);
-    if (!self)
+    if (!self) {
       return;
+    }
   }
 
   if (authenticator_->state() == Authenticator::ACCEPTED) {
     OnAuthenticated();
   } else if (authenticator_->state() == Authenticator::REJECTED) {
-    Close(AuthRejectionReasonToErrorCode(
-        authenticator_->rejection_reason()));
+    Close(AuthRejectionReasonToErrorCode(authenticator_->rejection_reason()));
   }
 }
 
@@ -761,8 +766,9 @@ void JingleSession::OnAuthenticated() {
                  message.message->transport_info.get())
                  ? JingleMessageReply::NONE
                  : JingleMessageReply::BAD_REQUEST);
-    if (!self)
+    if (!self) {
       return;
+    }
   }
 
   SetState(AUTHENTICATED);
@@ -776,18 +782,18 @@ void JingleSession::SetState(State new_state) {
     DCHECK_NE(state_, FAILED);
 
     state_ = new_state;
-    if (event_handler_)
+    if (event_handler_) {
       event_handler_->OnSessionStateChange(new_state);
+    }
   }
 }
 
 bool JingleSession::is_session_active() {
   return state_ == CONNECTING || state_ == ACCEPTING || state_ == ACCEPTED ||
-        state_ == AUTHENTICATING || state_ == AUTHENTICATED;
+         state_ == AUTHENTICATING || state_ == AUTHENTICATED;
 }
 
-void JingleSession::ProcessIncomingPluginMessage(
-    const JingleMessage& message) {
+void JingleSession::ProcessIncomingPluginMessage(const JingleMessage& message) {
   if (!message.attachments) {
     return;
   }

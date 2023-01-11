@@ -60,7 +60,8 @@ class Transport {
   virtual void Start(
       Authenticator* authenticator,
       SendTransportInfoCallback send_transport_info_callback) = 0;
-  virtual bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) = 0;
+  virtual bool ProcessTransportInfo(
+      jingle_xmpp::XmlElement* transport_info) = 0;
 };
 
 }  // namespace remoting::protocol

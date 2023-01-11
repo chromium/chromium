@@ -75,9 +75,10 @@ void StreamMessagePipeAdapter::Send(google::protobuf::MessageLite* message,
             "the request to all domains. Please refer to help desk for other "
             "approaches to manage this feature."
         })");
-  if (writer_)
+  if (writer_) {
     writer_->Write(SerializeAndFrameMessage(*message), std::move(done),
                    traffic_annotation);
+  }
 }
 
 void StreamMessagePipeAdapter::CloseOnError(int error) {

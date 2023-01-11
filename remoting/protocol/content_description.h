@@ -25,8 +25,9 @@ class ContentDescription {
  public:
   static const char kChromotingContentName[];
 
-  ContentDescription(std::unique_ptr<CandidateSessionConfig> config,
-                     std::unique_ptr<jingle_xmpp::XmlElement> authenticator_message);
+  ContentDescription(
+      std::unique_ptr<CandidateSessionConfig> config,
+      std::unique_ptr<jingle_xmpp::XmlElement> authenticator_message);
   ~ContentDescription();
 
   const CandidateSessionConfig* config() const {

@@ -38,8 +38,7 @@ PairingRegistry::Pairing::Pairing(const base::Time& created_time,
     : created_time_(created_time),
       client_name_(client_name),
       client_id_(client_id),
-      shared_secret_(shared_secret) {
-}
+      shared_secret_(shared_secret) {}
 
 PairingRegistry::Pairing::Pairing(const Pairing& other) = default;
 
@@ -80,15 +79,15 @@ base::Value::Dict PairingRegistry::Pairing::ToValue() const {
   pairing.Set(kCreatedTimeKey, static_cast<double>(created_time().ToJsTime()));
   pairing.Set(kClientNameKey, client_name());
   pairing.Set(kClientIdKey, client_id());
-  if (!shared_secret().empty())
+  if (!shared_secret().empty()) {
     pairing.Set(kSharedSecretKey, shared_secret());
+  }
   return pairing;
 }
 
 bool PairingRegistry::Pairing::operator==(const Pairing& other) const {
   return created_time_ == other.created_time_ &&
-         client_id_ == other.client_id_ &&
-         client_name_ == other.client_name_ &&
+         client_id_ == other.client_id_ && client_name_ == other.client_name_ &&
          shared_secret_ == other.shared_secret_;
 }
 
@@ -222,8 +221,9 @@ void PairingRegistry::DoDelete(const std::string& client_id,
 void PairingRegistry::InvokeDoneCallbackAndScheduleNext(DoneCallback callback,
                                                         bool success) {
   // CreatePairing doesn't have a callback, so the callback can be null.
-  if (callback)
+  if (callback) {
     std::move(callback).Run(success);
+  }
 
   pending_requests_.pop();
   ServiceNextRequest();
@@ -264,11 +264,8 @@ void PairingRegistry::SanitizePairings(GetAllPairingsCallback callback,
     }
 
     // Clear the shared secrect and append the pairing data to the list.
-    Pairing sanitized_pairing(
-        pairing.created_time(),
-        pairing.client_name(),
-        pairing.client_id(),
-        "");
+    Pairing sanitized_pairing(pairing.created_time(), pairing.client_name(),
+                              pairing.client_id(), "");
     sanitized_pairings.Append(sanitized_pairing.ToValue());
   }
 
@@ -284,8 +281,9 @@ void PairingRegistry::ServiceOrQueueRequest(base::OnceClosure request) {
 }
 
 void PairingRegistry::ServiceNextRequest() {
-  if (pending_requests_.empty())
+  if (pending_requests_.empty()) {
     return;
+  }
 
   PostTask(delegate_task_runner_, FROM_HERE,
            std::move(pending_requests_.front()));

@@ -61,10 +61,12 @@ IceTransportChannel::~IceTransportChannel() {
   delegate_->OnChannelDeleted(this);
 
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-  if (channel_)
+  if (channel_) {
     task_runner->DeleteSoon(FROM_HERE, channel_.release());
-  if (port_allocator_)
+  }
+  if (port_allocator_) {
     task_runner->DeleteSoon(FROM_HERE, port_allocator_.release());
+  }
 }
 
 void IceTransportChannel::Connect(const std::string& name,
@@ -98,10 +100,10 @@ void IceTransportChannel::Connect(const std::string& name,
   channel_->SetIceCredentials(ice_username_fragment_, ice_password);
   channel_->SignalCandidateGathered.connect(
       this, &IceTransportChannel::OnCandidateGathered);
-  channel_->SignalRouteChange.connect(
-      this, &IceTransportChannel::OnRouteChange);
-  channel_->SignalWritableState.connect(
-      this, &IceTransportChannel::OnWritableState);
+  channel_->SignalRouteChange.connect(this,
+                                      &IceTransportChannel::OnRouteChange);
+  channel_->SignalWritableState.connect(this,
+                                        &IceTransportChannel::OnWritableState);
   channel_->set_incoming_only(!(transport_context_->network_settings().flags &
                                 NetworkSettings::NAT_TRAVERSAL_OUTGOING));
 
@@ -147,8 +149,9 @@ void IceTransportChannel::SetRemoteCredentials(const std::string& ufrag,
   remote_ice_username_fragment_ = ufrag;
   remote_ice_password_ = password;
 
-  if (channel_)
+  if (channel_) {
     channel_->SetRemoteIceCredentials(ufrag, password);
+  }
 }
 
 void IceTransportChannel::AddRemoteCandidate(
@@ -159,8 +162,9 @@ void IceTransportChannel::AddRemoteCandidate(
   // candidates. It's also necessary to discard remote relay candidates.
   bool relay_allowed = (transport_context_->network_settings().flags &
                         NetworkSettings::NAT_TRAVERSAL_RELAY) != 0;
-  if (!relay_allowed && candidate.type() == cricket::RELAY_PORT_TYPE)
+  if (!relay_allowed && candidate.type() == cricket::RELAY_PORT_TYPE) {
     return;
+  }
 
   if (channel_) {
     channel_->AddRemoteCandidate(candidate);
@@ -190,8 +194,9 @@ void IceTransportChannel::OnRouteChange(
     cricket::IceTransportInternal* ice_transport,
     const cricket::Candidate& candidate) {
   // Ignore notifications if the channel is not writable.
-  if (channel_->writable())
+  if (channel_->writable()) {
     NotifyRouteChanged();
+  }
 }
 
 void IceTransportChannel::OnWritableState(
@@ -231,7 +236,7 @@ void IceTransportChannel::NotifyRouteChanged() {
   // candidate is "local". In this case, we still want to report a RELAY route
   // type.
   static_assert(TransportRoute::DIRECT < TransportRoute::STUN &&
-                TransportRoute::STUN < TransportRoute::RELAY,
+                    TransportRoute::STUN < TransportRoute::RELAY,
                 "Route type enum values are ordered by 'indirectness'");
   route.type = std::max(
       CandidateTypeToTransportRouteType(connection->local_candidate().type()),

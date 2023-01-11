@@ -9,11 +9,10 @@
 namespace remoting::protocol {
 
 ClipboardEchoFilter::ClipboardEchoFilter()
-  : host_stub_(nullptr),
-    client_stub_(nullptr),
-    client_filter_(this),
-    host_filter_(this) {
-}
+    : host_stub_(nullptr),
+      client_stub_(nullptr),
+      client_filter_(this),
+      host_filter_(this) {}
 
 ClipboardEchoFilter::~ClipboardEchoFilter() = default;
 
@@ -54,18 +53,16 @@ void ClipboardEchoFilter::InjectClipboardEventToHost(
   }
 }
 
-ClipboardEchoFilter::ClientFilter::ClientFilter(
-    ClipboardEchoFilter* filter) : filter_(filter) {
-}
+ClipboardEchoFilter::ClientFilter::ClientFilter(ClipboardEchoFilter* filter)
+    : filter_(filter) {}
 
 void ClipboardEchoFilter::ClientFilter::InjectClipboardEvent(
     const ClipboardEvent& event) {
   filter_->InjectClipboardEventToClient(event);
 }
 
-ClipboardEchoFilter::HostFilter::HostFilter(
-    ClipboardEchoFilter* filter) : filter_(filter) {
-}
+ClipboardEchoFilter::HostFilter::HostFilter(ClipboardEchoFilter* filter)
+    : filter_(filter) {}
 
 void ClipboardEchoFilter::HostFilter::InjectClipboardEvent(
     const ClipboardEvent& event) {

@@ -47,8 +47,9 @@ class MockChannelDoneCallback {
 ACTION_P(QuitThreadOnCounter, counter) {
   --(*counter);
   EXPECT_GE(*counter, 0);
-  if (*counter == 0)
+  if (*counter == 0) {
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  }
 }
 
 }  // namespace
@@ -160,16 +161,16 @@ class SslHmacChannelAuthenticatorTest : public testing::Test {
 TEST_F(SslHmacChannelAuthenticatorTest, SuccessfulAuth) {
   client_auth_ = SslHmacChannelAuthenticator::CreateForClient(
       host_cert_, kTestSharedSecret);
-  host_auth_ = SslHmacChannelAuthenticator::CreateForHost(
-      host_cert_, key_pair_, kTestSharedSecret);
+  host_auth_ = SslHmacChannelAuthenticator::CreateForHost(host_cert_, key_pair_,
+                                                          kTestSharedSecret);
 
   RunChannelAuth(net::OK, net::OK);
 
   ASSERT_TRUE(client_socket_.get() != nullptr);
   ASSERT_TRUE(host_socket_.get() != nullptr);
 
-  StreamConnectionTester tester(host_socket_.get(), client_socket_.get(),
-                                100, 2);
+  StreamConnectionTester tester(host_socket_.get(), client_socket_.get(), 100,
+                                2);
 
   base::RunLoop run_loop;
   tester.Start(run_loop.QuitClosure());
@@ -181,8 +182,8 @@ TEST_F(SslHmacChannelAuthenticatorTest, SuccessfulAuth) {
 TEST_F(SslHmacChannelAuthenticatorTest, InvalidChannelSecret) {
   client_auth_ = SslHmacChannelAuthenticator::CreateForClient(
       host_cert_, kTestSharedSecretBad);
-  host_auth_ = SslHmacChannelAuthenticator::CreateForHost(
-      host_cert_, key_pair_, kTestSharedSecret);
+  host_auth_ = SslHmacChannelAuthenticator::CreateForHost(host_cert_, key_pair_,
+                                                          kTestSharedSecret);
 
   RunChannelAuth(net::ERR_FAILED, net::ERR_FAILED);
 
@@ -199,8 +200,8 @@ TEST_F(SslHmacChannelAuthenticatorTest, InvalidCertificate) {
       std::string(
           net::x509_util::CryptoBufferAsStringPiece(host_cert2->cert_buffer())),
       kTestSharedSecret);
-  host_auth_ = SslHmacChannelAuthenticator::CreateForHost(
-      host_cert_, key_pair_, kTestSharedSecret);
+  host_auth_ = SslHmacChannelAuthenticator::CreateForHost(host_cert_, key_pair_,
+                                                          kTestSharedSecret);
 
   // TODO(https://crbug.com/912383): The server sees
   // ERR_BAD_SSL_CLIENT_AUTH_CERT because its peer (the client) alerts it with

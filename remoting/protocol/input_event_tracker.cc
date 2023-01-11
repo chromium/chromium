@@ -12,8 +12,7 @@ namespace remoting::protocol {
 InputEventTracker::InputEventTracker() = default;
 
 InputEventTracker::InputEventTracker(InputStub* input_stub)
-    : input_stub_(input_stub) {
-}
+    : input_stub_(input_stub) {}
 
 InputEventTracker::~InputEventTracker() = default;
 
@@ -38,8 +37,8 @@ void InputEventTracker::ReleaseAll() {
   pressed_keys_.clear();
 
   // Release all mouse buttons.
-  for (int i = MouseEvent::BUTTON_UNDEFINED + 1;
-       i < MouseEvent::BUTTON_MAX; ++i) {
+  for (int i = MouseEvent::BUTTON_UNDEFINED + 1; i < MouseEvent::BUTTON_MAX;
+       ++i) {
     if (mouse_button_state_ & (1 << (i - 1))) {
       MouseEvent mouse;
 

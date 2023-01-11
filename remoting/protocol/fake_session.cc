@@ -96,8 +96,9 @@ void FakeSession::Close(ErrorCode error) {
 
 void FakeSession::SendTransportInfo(
     std::unique_ptr<jingle_xmpp::XmlElement> transport_info) {
-  if (!peer_)
+  if (!peer_) {
     return;
+  }
 
   if (signaling_delay_.is_zero()) {
     peer_->ProcessTransportInfo(std::move(transport_info));
@@ -127,8 +128,9 @@ void FakeSession::AddPlugin(SessionPlugin* plugin) {
   }
 }
 
-void FakeSession::SetAttachment(size_t round,
-                                std::unique_ptr<jingle_xmpp::XmlElement> attachment) {
+void FakeSession::SetAttachment(
+    size_t round,
+    std::unique_ptr<jingle_xmpp::XmlElement> attachment) {
   while (attachments_.size() <= round) {
     attachments_.emplace_back();
   }

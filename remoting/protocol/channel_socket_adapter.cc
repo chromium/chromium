@@ -28,8 +28,9 @@ TransportChannelSocketAdapter::TransportChannelSocketAdapter(
 
 TransportChannelSocketAdapter::~TransportChannelSocketAdapter() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (destruction_callback_)
+  if (destruction_callback_) {
     std::move(destruction_callback_).Run();
+  }
 }
 
 void TransportChannelSocketAdapter::SetOnDestroyedCallback(
@@ -82,8 +83,9 @@ int TransportChannelSocketAdapter::Send(
       // If the underlying socket returns IO pending where it shouldn't we
       // pretend the packet is dropped and return as succeeded because no
       // writeable callback will happen.
-      if (result == net::ERR_IO_PENDING)
+      if (result == net::ERR_IO_PENDING) {
         result = net::OK;
+      }
     }
   } else {
     // Channel is not writable yet.
@@ -99,8 +101,9 @@ int TransportChannelSocketAdapter::Send(
 void TransportChannelSocketAdapter::Close(int error_code) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!channel_)  // Already closed.
+  if (!channel_) {  // Already closed.
     return;
+  }
 
   DCHECK(error_code != net::OK);
   closed_error_code_ = error_code;
@@ -159,11 +162,11 @@ void TransportChannelSocketAdapter::OnWritableState(
   // Try to send the packet if there is a pending write.
   if (!write_callback_.is_null()) {
     rtc::PacketOptions options;
-    int result = channel_->SendPacket(write_buffer_->data(),
-                                      write_buffer_size_,
+    int result = channel_->SendPacket(write_buffer_->data(), write_buffer_size_,
                                       options);
-    if (result < 0)
+    if (result < 0) {
       result = net::MapSystemError(channel_->GetError());
+    }
 
     if (result != net::ERR_IO_PENDING) {
       net::CompletionRepeatingCallback callback = write_callback_;

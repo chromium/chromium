@@ -29,10 +29,9 @@ class MonitoredVideoStub : public VideoStub {
 
   static const int kConnectivityCheckDelaySeconds = 2;
 
-  MonitoredVideoStub(
-      VideoStub* video_stub,
-      base::TimeDelta connectivity_check_delay,
-      const ChannelStateCallback& callback);
+  MonitoredVideoStub(VideoStub* video_stub,
+                     base::TimeDelta connectivity_check_delay,
+                     const ChannelStateCallback& callback);
 
   MonitoredVideoStub(const MonitoredVideoStub&) = delete;
   MonitoredVideoStub& operator=(const MonitoredVideoStub&) = delete;

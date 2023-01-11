@@ -18,8 +18,7 @@ MessageDecoder::MessageDecoder() = default;
 
 MessageDecoder::~MessageDecoder() = default;
 
-void MessageDecoder::AddData(scoped_refptr<net::IOBuffer> data,
-                             int data_size) {
+void MessageDecoder::AddData(scoped_refptr<net::IOBuffer> data, int data_size) {
   buffer_.Append(std::move(data), data_size);
 }
 
@@ -36,8 +35,9 @@ CompoundBuffer* MessageDecoder::GetNextMessage() {
 
   // If the next payload size is still not known or we don't have enough
   // data for parsing then exit.
-  if (!next_payload_known_ || buffer_.total_bytes() < next_payload_)
+  if (!next_payload_known_ || buffer_.total_bytes() < next_payload_) {
     return nullptr;
+  }
 
   CompoundBuffer* message_buffer = new CompoundBuffer();
   message_buffer->CopyFrom(buffer_, 0, next_payload_);
@@ -52,8 +52,9 @@ bool MessageDecoder::GetPayloadSize(int* size) {
   // The header has a size of 4 bytes.
   const int kHeaderSize = sizeof(int32_t);
 
-  if (buffer_.total_bytes() < kHeaderSize)
+  if (buffer_.total_bytes() < kHeaderSize) {
     return false;
+  }
 
   CompoundBuffer header_buffer;
   char header[kHeaderSize];

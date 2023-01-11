@@ -26,7 +26,8 @@ class SessionPlugin {
   virtual std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() = 0;
 
   // Handles messages in |attachments|.
-  virtual void OnIncomingMessage(const jingle_xmpp::XmlElement& attachments) = 0;
+  virtual void OnIncomingMessage(
+      const jingle_xmpp::XmlElement& attachments) = 0;
 };
 
 }  // namespace remoting::protocol

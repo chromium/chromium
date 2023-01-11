@@ -34,11 +34,11 @@ namespace {
 // where auth_key is the key produced by SPAKE2.
 
 const jingle_xmpp::StaticQName kSpakeMessageTag = {kChromotingXmlNamespace,
-                                            "spake-message"};
+                                                   "spake-message"};
 const jingle_xmpp::StaticQName kVerificationHashTag = {kChromotingXmlNamespace,
-                                                "verification-hash"};
+                                                       "verification-hash"};
 const jingle_xmpp::StaticQName kCertificateTag = {kChromotingXmlNamespace,
-                                           "certificate"};
+                                                  "certificate"};
 
 std::unique_ptr<jingle_xmpp::XmlElement> EncodeBinaryValueToXml(
     const jingle_xmpp::StaticQName& qname,
@@ -46,23 +46,25 @@ std::unique_ptr<jingle_xmpp::XmlElement> EncodeBinaryValueToXml(
   std::string content_base64;
   base::Base64Encode(content, &content_base64);
 
-  std::unique_ptr<jingle_xmpp::XmlElement> result(new jingle_xmpp::XmlElement(qname));
+  std::unique_ptr<jingle_xmpp::XmlElement> result(
+      new jingle_xmpp::XmlElement(qname));
   result->SetBodyText(content_base64);
   return result;
 }
 
 // Finds tag named |qname| in base_message and decodes it from base64 and stores
 // in |data|. If the element is not present then found is set to false otherwise
-// it's set to true. If the element is there and it's content couldn't be decoded
-// then false is returned.
+// it's set to true. If the element is there and it's content couldn't be
+// decoded then false is returned.
 bool DecodeBinaryValueFromXml(const jingle_xmpp::XmlElement* message,
                               const jingle_xmpp::QName& qname,
                               bool* found,
                               std::string* data) {
   const jingle_xmpp::XmlElement* element = message->FirstNamed(qname);
   *found = element != nullptr;
-  if (!*found)
+  if (!*found) {
     return true;
+  }
 
   if (!base::Base64Decode(element->BodyText(), data)) {
     LOG(WARNING) << "Failed to parse " << qname.LocalPart();
@@ -135,8 +137,9 @@ Spake2Authenticator::~Spake2Authenticator() {
 }
 
 Authenticator::State Spake2Authenticator::state() const {
-  if (state_ == ACCEPTED && !outgoing_verification_hash_.empty())
+  if (state_ == ACCEPTED && !outgoing_verification_hash_.empty()) {
     return MESSAGE_READY;
+  }
   return state_;
 }
 
@@ -250,7 +253,8 @@ void Spake2Authenticator::ProcessMessageInternal(
 std::unique_ptr<jingle_xmpp::XmlElement> Spake2Authenticator::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
 
-  std::unique_ptr<jingle_xmpp::XmlElement> message = CreateEmptyAuthenticatorMessage();
+  std::unique_ptr<jingle_xmpp::XmlElement> message =
+      CreateEmptyAuthenticatorMessage();
 
   if (!spake_message_sent_) {
     if (!local_cert_.empty()) {

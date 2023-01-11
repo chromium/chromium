@@ -37,11 +37,13 @@ PortAllocator::PortAllocator(
 
   NetworkSettings network_settings = transport_context_->network_settings();
 
-  if (!(network_settings.flags & NetworkSettings::NAT_TRAVERSAL_STUN))
+  if (!(network_settings.flags & NetworkSettings::NAT_TRAVERSAL_STUN)) {
     flags |= cricket::PORTALLOCATOR_DISABLE_STUN;
+  }
 
-  if (!(network_settings.flags & NetworkSettings::NAT_TRAVERSAL_RELAY))
+  if (!(network_settings.flags & NetworkSettings::NAT_TRAVERSAL_RELAY)) {
     flags |= cricket::PORTALLOCATOR_DISABLE_RELAY;
+  }
 
   set_flags(flags);
   SetPortRange(network_settings.port_range.min_port,

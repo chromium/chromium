@@ -38,5 +38,4 @@ SocketErrorAction GetSocketErrorAction(int error) {
   }
 }
 
-
 }  // namespace remoting

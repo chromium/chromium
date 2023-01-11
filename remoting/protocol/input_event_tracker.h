@@ -30,9 +30,7 @@ class InputEventTracker : public InputStub {
 
   ~InputEventTracker() override;
 
-  void set_input_stub(InputStub* input_stub) {
-    input_stub_ = input_stub;
-  }
+  void set_input_stub(InputStub* input_stub) { input_stub_ = input_stub; }
 
   // Returns true if the key with the specified USB code is currently pressed.
   bool IsKeyPressed(ui::DomCode usb_keycode) const;
@@ -47,8 +45,10 @@ class InputEventTracker : public InputStub {
   // Similar to ReleaseAll, but conditional on a modifier key tracked by this
   // class being pressed without the corresponding parameter indicating that it
   // should be.
-  void ReleaseAllIfModifiersStuck(bool alt_expected, bool ctrl_expected,
-                                  bool os_expected, bool shift_expected);
+  void ReleaseAllIfModifiersStuck(bool alt_expected,
+                                  bool ctrl_expected,
+                                  bool os_expected,
+                                  bool shift_expected);
 
   // InputStub interface.
   void InjectKeyEvent(const KeyEvent& event) override;

@@ -113,8 +113,9 @@ std::unique_ptr<AudioStream> IceConnectionToClient::StartAudioStream(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Audio channel is disabled.
-  if (!audio_writer_)
+  if (!audio_writer_) {
     return nullptr;
+  }
 
   std::unique_ptr<AudioEncoder> audio_encoder =
       CreateAudioEncoder(session_->config());
@@ -176,8 +177,9 @@ void IceConnectionToClient::OnSessionStateChange(Session::State state) {
       video_dispatcher_->Init(transport_.GetChannelFactory(), this);
 
       audio_writer_ = AudioWriter::Create(session_->config());
-      if (audio_writer_)
+      if (audio_writer_) {
         audio_writer_->Init(transport_.GetMultiplexedChannelFactory(), this);
+      }
 
       // Notify the handler after initializing the channels, so that
       // ClientSession can get a client clipboard stub.
@@ -192,7 +194,6 @@ void IceConnectionToClient::OnSessionStateChange(Session::State state) {
       break;
   }
 }
-
 
 void IceConnectionToClient::OnIceTransportRouteChange(
     const std::string& channel_name,
@@ -221,12 +222,15 @@ void IceConnectionToClient::OnChannelClosed(
 void IceConnectionToClient::NotifyIfChannelsReady() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!control_dispatcher_ || !control_dispatcher_->is_connected())
+  if (!control_dispatcher_ || !control_dispatcher_->is_connected()) {
     return;
-  if (!event_dispatcher_ || !event_dispatcher_->is_connected())
+  }
+  if (!event_dispatcher_ || !event_dispatcher_->is_connected()) {
     return;
-  if (!video_dispatcher_ || !video_dispatcher_->is_connected())
+  }
+  if (!video_dispatcher_ || !video_dispatcher_->is_connected()) {
     return;
+  }
   if ((!audio_writer_ || !audio_writer_->is_connected()) &&
       session_->config().is_audio_enabled()) {
     return;

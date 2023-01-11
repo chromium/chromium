@@ -156,8 +156,9 @@ void WebrtcVideoRendererAdapter::OnVideoFrameStats(
   frame_stats.host_stats = host_stats;
   FrameStatsConsumer* frame_stats_consumer =
       video_renderer_->GetFrameStatsConsumer();
-  if (frame_stats_consumer)
+  if (frame_stats_consumer) {
     frame_stats_consumer->OnVideoFrameStats(frame_stats);
+  }
 }
 
 void WebrtcVideoRendererAdapter::OnChannelInitialized(
@@ -210,8 +211,9 @@ void WebrtcVideoRendererAdapter::FrameRendered(
     std::unique_ptr<ClientFrameStats> client_stats) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (!video_stats_dispatcher_ || !video_stats_dispatcher_->is_connected())
+  if (!video_stats_dispatcher_ || !video_stats_dispatcher_->is_connected()) {
     return;
+  }
 
   client_stats->time_rendered = base::TimeTicks::Now();
 
@@ -249,8 +251,9 @@ void WebrtcVideoRendererAdapter::FrameRendered(
   host_stats_queue_.pop_front();
   FrameStatsConsumer* frame_stats_consumer =
       video_renderer_->GetFrameStatsConsumer();
-  if (frame_stats_consumer)
+  if (frame_stats_consumer) {
     frame_stats_consumer->OnVideoFrameStats(frame_stats);
+  }
 }
 
 }  // namespace remoting::protocol

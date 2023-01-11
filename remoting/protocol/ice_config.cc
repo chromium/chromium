@@ -55,32 +55,39 @@ bool AddServerToConfig(std::string url,
   }
 
   size_t colon_pos = url.find(':');
-  if (colon_pos == std::string::npos)
+  if (colon_pos == std::string::npos) {
     return false;
+  }
 
   std::string protocol = url.substr(0, colon_pos);
 
   std::string host;
   int port;
-  if (!net::ParseHostAndPort(url.substr(colon_pos + 1), &host, &port))
+  if (!net::ParseHostAndPort(url.substr(colon_pos + 1), &host, &port)) {
     return false;
+  }
 
   if (protocol == "stun") {
-    if (port == -1)
+    if (port == -1) {
       port = kDefaultStunTurnPort;
+    }
     config->stun_servers.push_back(rtc::SocketAddress(host, port));
   } else if (protocol == "turn") {
-    if (port == -1)
+    if (port == -1) {
       port = kDefaultStunTurnPort;
-    if (turn_transport_type == cricket::PROTO_LAST)
+    }
+    if (turn_transport_type == cricket::PROTO_LAST) {
       turn_transport_type = cricket::PROTO_UDP;
+    }
     config->turn_servers.push_back(cricket::RelayServerConfig(
         host, port, username, password, turn_transport_type, false));
   } else if (protocol == "turns") {
-    if (port == -1)
+    if (port == -1) {
       port = kDefaultTurnsPort;
-    if (turn_transport_type == cricket::PROTO_LAST)
+    }
+    if (turn_transport_type == cricket::PROTO_LAST) {
       turn_transport_type = cricket::PROTO_TCP;
+    }
     config->turn_servers.push_back(cricket::RelayServerConfig(
         host, port, username, password, turn_transport_type, true));
   } else {
@@ -151,13 +158,15 @@ IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
 
     std::string username;
     const std::string* maybe_username = server_dict->FindString("username");
-    if (maybe_username)
+    if (maybe_username) {
       username = *maybe_username;
+    }
 
     std::string password;
     const std::string* maybe_password = server_dict->FindString("credential");
-    if (maybe_password)
+    if (maybe_password) {
       password = *maybe_password;
+    }
 
     // Compute the lowest specified bitrate of all the ICE servers.
     // Ideally the bitrate would be stored per ICE server, but it is not
@@ -218,8 +227,9 @@ IceConfig IceConfig::Parse(const std::string& config_json) {
   // 'iceServers': {...} }}.
   if (!dictionary->Find("iceServers")) {
     base::Value::Dict* data_dictionary = dictionary->FindDict("data");
-    if (data_dictionary)
+    if (data_dictionary) {
       return Parse(*data_dictionary);
+    }
   }
 
   return Parse(*dictionary);

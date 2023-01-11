@@ -20,7 +20,7 @@
 
 namespace remoting::protocol {
 
-static const int kTestInputs[] = { 100, 50, 30, 20, 10, 30, 60, 80 };
+static const int kTestInputs[] = {100, 50, 30, 20, 10, 30, 60, 80};
 static const int kMinumumFrameIntervalMs = 50;
 
 class CaptureSchedulerTest : public testing::Test {
@@ -38,9 +38,7 @@ class CaptureSchedulerTest : public testing::Test {
     scheduler_->Start();
   }
 
-  void DoCapture() {
-    capture_called_ = true;
-  }
+  void DoCapture() { capture_called_ = true; }
 
   void CheckCaptureCalled() {
     EXPECT_TRUE(capture_called_);

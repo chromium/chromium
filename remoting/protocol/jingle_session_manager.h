@@ -56,7 +56,8 @@ class JingleSessionManager : public SessionManager,
 
   // SignalStrategy::Listener interface.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingStanza(const jingle_xmpp::XmlElement* stanza) override;
+  bool OnSignalStrategyIncomingStanza(
+      const jingle_xmpp::XmlElement* stanza) override;
 
   typedef std::map<std::string, JingleSession*> SessionsMap;
 

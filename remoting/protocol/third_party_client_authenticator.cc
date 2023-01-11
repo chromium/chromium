@@ -34,7 +34,7 @@ void ThirdPartyClientAuthenticator::ProcessTokenMessage(
 
   if (token_url.empty() || token_scope.empty()) {
     LOG(ERROR) << "Third-party authentication protocol error: "
-        "missing token verification URL or scope.";
+                  "missing token verification URL or scope.";
     token_state_ = REJECTED;
     rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
     std::move(resume_callback).Run();

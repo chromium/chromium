@@ -27,8 +27,9 @@ void HostEventDispatcher::OnIncomingMessage(
 
   std::unique_ptr<EventMessage> message =
       ParseMessage<EventMessage>(buffer.get());
-  if (!message)
+  if (!message) {
     return;
+  }
 
   event_timestamps_source_->OnEventReceived(InputEventTimestamps{
       base::TimeTicks::FromInternalValue(message->timestamp()),

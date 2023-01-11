@@ -196,14 +196,12 @@ TEST_F(PairingRegistryTest, SerializedRequests) {
       .InSequence(s);
   EXPECT_CALL(callbacks, GetPairingCallback(EqualsClientName("client2")))
       .InSequence(s);
-  EXPECT_CALL(callbacks, DoneCallback(true))
-      .InSequence(s);
+  EXPECT_CALL(callbacks, DoneCallback(true)).InSequence(s);
   EXPECT_CALL(callbacks, GetPairingCallback(EqualsClientName("client1")))
       .InSequence(s);
   EXPECT_CALL(callbacks, GetPairingCallback(EqualsClientName("")))
       .InSequence(s);
-  EXPECT_CALL(callbacks, DoneCallback(true))
-      .InSequence(s);
+  EXPECT_CALL(callbacks, DoneCallback(true)).InSequence(s);
   EXPECT_CALL(callbacks, GetAllPairingsCallback(NoPairings())).InSequence(s);
   EXPECT_CALL(callbacks, GetPairingCallback(EqualsClientName("client3")))
       .InSequence(s)

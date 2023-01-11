@@ -19,8 +19,8 @@ using ::testing::InSequence;
 namespace remoting::protocol {
 
 using test::EqualsKeyEventWithCapsLock;
-using test::EqualsMouseEvent;
 using test::EqualsKeyEventWithoutLockStates;
+using test::EqualsMouseEvent;
 
 namespace {
 
@@ -28,8 +28,9 @@ static const MouseEvent::MouseButton BUTTON_LEFT = MouseEvent::BUTTON_LEFT;
 static const MouseEvent::MouseButton BUTTON_RIGHT = MouseEvent::BUTTON_RIGHT;
 
 MATCHER_P2(TouchPointIdsAndTypeEqual, ids, type, "") {
-  if (arg.event_type() != type)
+  if (arg.event_type() != type) {
     return false;
+  }
 
   std::set<uint32_t> touch_ids;
   for (const TouchEventPoint& point : arg.touch_points()) {
@@ -130,10 +131,12 @@ TEST(InputEventTrackerTest, ReleaseAllKeys) {
   }
 
   // The key should be released but |lock_states| should not be set.
-  EXPECT_CALL(mock_stub, InjectKeyEvent(EqualsKeyEventWithoutLockStates(
-                             3, false))).After(injects);
-  EXPECT_CALL(mock_stub, InjectMouseEvent(EqualsMouseEvent(
-                             1, 1, BUTTON_RIGHT, false))).After(injects);
+  EXPECT_CALL(mock_stub,
+              InjectKeyEvent(EqualsKeyEventWithoutLockStates(3, false)))
+      .After(injects);
+  EXPECT_CALL(mock_stub,
+              InjectMouseEvent(EqualsMouseEvent(1, 1, BUTTON_RIGHT, false)))
+      .After(injects);
 
   input_tracker.InjectKeyEvent(NewUsbEvent(3, true));
   PressAndReleaseUsb(&input_tracker, 1);

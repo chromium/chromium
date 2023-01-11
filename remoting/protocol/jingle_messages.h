@@ -39,7 +39,6 @@ struct JingleMessage {
     INCOMPATIBLE_PARAMETERS,
   };
 
-
   JingleMessage();
   JingleMessage(const SignalingAddress& to,
                 ActionType action_value,

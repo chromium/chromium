@@ -53,8 +53,9 @@ class MouseInputFilterTest : public testing::Test {
 
   void InjectMouse(const Point& point, bool swap = false) {
     mouse_filter_.InjectMouseEvent(MouseMoveEvent(point.x, point.y));
-    if (swap)
+    if (swap) {
       mouse_filter_.InjectMouseEvent(MouseMoveEvent(point.y, point.x));
+    }
   }
 
   void ExpectNoMouse() {
@@ -78,12 +79,14 @@ class MouseInputFilterTest : public testing::Test {
                      bool swap = false) {
     {
       InSequence s;
-      for (unsigned int i = 0; i < len; ++i)
+      for (unsigned int i = 0; i < len; ++i) {
         ExpectMouse(expected[i], swap);
+      }
     }
 
-    for (unsigned int i = 0; i < len; ++i)
+    for (unsigned int i = 0; i < len; ++i) {
       InjectMouse(injected[i], swap);
+    }
   }
 
  protected:

@@ -68,7 +68,7 @@ class IceConnectionToHost : public ConnectionToHost,
 
   // IceTransport::EventHandler interface.
   void OnIceTransportRouteChange(const std::string& channel_name,
-                              const TransportRoute& route) override;
+                                 const TransportRoute& route) override;
   void OnIceTransportError(ErrorCode error) override;
 
   // ChannelDispatcherBase::EventHandler interface.

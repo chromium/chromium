@@ -45,8 +45,8 @@ const NameMapElement<NegotiatingAuthenticatorBase::Method>
 
 }  // namespace
 
-const jingle_xmpp::StaticQName NegotiatingAuthenticatorBase::kMethodAttributeQName = {
-    "", "method"};
+const jingle_xmpp::StaticQName
+    NegotiatingAuthenticatorBase::kMethodAttributeQName = {"", "method"};
 const jingle_xmpp::StaticQName
     NegotiatingAuthenticatorBase::kSupportedMethodsAttributeQName = {
         "", "supported-methods"};
@@ -54,8 +54,8 @@ const char NegotiatingAuthenticatorBase::kSupportedMethodsSeparator = ',';
 
 const jingle_xmpp::StaticQName NegotiatingAuthenticatorBase::kPairingInfoTag = {
     kChromotingXmlNamespace, "pairing-info"};
-const jingle_xmpp::StaticQName NegotiatingAuthenticatorBase::kClientIdAttribute = {
-    "", "client-id"};
+const jingle_xmpp::StaticQName
+    NegotiatingAuthenticatorBase::kClientIdAttribute = {"", "client-id"};
 
 NegotiatingAuthenticatorBase::NegotiatingAuthenticatorBase(
     Authenticator::State initial_state)
@@ -74,8 +74,8 @@ bool NegotiatingAuthenticatorBase::started() const {
   return current_authenticator_->started();
 }
 
-Authenticator::RejectionReason
-NegotiatingAuthenticatorBase::rejection_reason() const {
+Authenticator::RejectionReason NegotiatingAuthenticatorBase::rejection_reason()
+    const {
   return rejection_reason_;
 }
 
@@ -83,8 +83,9 @@ NegotiatingAuthenticatorBase::rejection_reason() const {
 NegotiatingAuthenticatorBase::Method
 NegotiatingAuthenticatorBase::ParseMethodString(const std::string& value) {
   Method result;
-  if (!NameToValue(kAuthenticationMethodStrings, value, &result))
+  if (!NameToValue(kAuthenticationMethodStrings, value, &result)) {
     return Method::INVALID;
+  }
   return result;
 }
 
@@ -125,8 +126,9 @@ void NegotiatingAuthenticatorBase::UpdateState(
   DCHECK(state_ == MESSAGE_READY || state_ == ACCEPTED || state_ == REJECTED)
       << "State: " << state_;
 
-  if (state_ == REJECTED)
+  if (state_ == REJECTED) {
     rejection_reason_ = current_authenticator_->rejection_reason();
+  }
 
   std::move(resume_callback).Run();
 }

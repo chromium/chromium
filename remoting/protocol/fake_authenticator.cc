@@ -60,8 +60,9 @@ void FakeChannelAuthenticator::SecureAndAuthenticate(
         socket_->Read(read_buf.get(), 1,
                       base::BindOnce(&FakeChannelAuthenticator::OnAuthBytesRead,
                                      weak_factory_.GetWeakPtr()));
-    if (result != net::ERR_IO_PENDING)
+    if (result != net::ERR_IO_PENDING) {
       OnAuthBytesRead(result);
+    }
   } else {
     CallDoneCallback();
   }
@@ -71,21 +72,24 @@ void FakeChannelAuthenticator::OnAuthBytesWritten(int result) {
   EXPECT_EQ(1, result);
   EXPECT_FALSE(did_write_bytes_);
   did_write_bytes_ = true;
-  if (did_read_bytes_)
+  if (did_read_bytes_) {
     CallDoneCallback();
+  }
 }
 
 void FakeChannelAuthenticator::OnAuthBytesRead(int result) {
   EXPECT_EQ(1, result);
   EXPECT_FALSE(did_read_bytes_);
   did_read_bytes_ = true;
-  if (did_write_bytes_)
+  if (did_write_bytes_) {
     CallDoneCallback();
+  }
 }
 
 void FakeChannelAuthenticator::CallDoneCallback() {
-  if (result_ != net::OK)
+  if (result_ != net::OK) {
     socket_.reset();
+  }
   std::move(done_callback_).Run(result_, std::move(socket_));
 }
 
@@ -122,8 +126,9 @@ void FakeAuthenticator::Resume() {
 Authenticator::State FakeAuthenticator::state() const {
   EXPECT_LE(messages_, config_.round_trips * 2);
 
-  if (messages_ == pause_message_index_ && !resume_closure_.is_null())
+  if (messages_ == pause_message_index_ && !resume_closure_.is_null()) {
     return PROCESSING_MESSAGE;
+  }
 
   if (messages_ >= config_.round_trips * 2) {
     if (config_.action == REJECT) {
@@ -203,7 +208,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> FakeAuthenticator::GetNextMessage() {
 
   // Add authentication key in the last message sent from host to client.
   if (type_ == HOST && messages_ == config_.round_trips * 2 - 1) {
-    auth_key_ =  base::RandBytesAsString(16);
+    auth_key_ = base::RandBytesAsString(16);
     jingle_xmpp::XmlElement* key = new jingle_xmpp::XmlElement(
         jingle_xmpp::QName(kChromotingXmlNamespace, "key"));
     std::string key_base64;

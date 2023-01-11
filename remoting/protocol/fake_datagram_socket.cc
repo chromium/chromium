@@ -116,8 +116,8 @@ int FakeDatagramSocket::DoSend(const scoped_refptr<net::IOBuffer>& buf,
 
 int FakeDatagramSocket::CopyReadData(const scoped_refptr<net::IOBuffer>& buf,
                                      int buf_len) {
-  int size = std::min(
-      buf_len, static_cast<int>(input_packets_[input_pos_].size()));
+  int size =
+      std::min(buf_len, static_cast<int>(input_packets_[input_pos_].size()));
   memcpy(buf->data(), &(*input_packets_[input_pos_].begin()), size);
   ++input_pos_;
   return size;
@@ -155,12 +155,14 @@ void FakeDatagramChannelFactory::CreateChannel(
 
   if (peer_factory_) {
     FakeDatagramSocket* peer_socket = peer_factory_->GetFakeChannel(name);
-    if (peer_socket)
+    if (peer_socket) {
       channel->PairWith(peer_socket);
+    }
   }
 
-  if (fail_create_)
+  if (fail_create_) {
     channel.reset();
+  }
 
   if (asynchronous_create_) {
     task_runner_->PostTask(
@@ -177,8 +179,9 @@ void FakeDatagramChannelFactory::NotifyChannelCreated(
     std::unique_ptr<FakeDatagramSocket> owned_socket,
     const std::string& name,
     ChannelCreatedCallback callback) {
-  if (channels_.find(name) != channels_.end())
+  if (channels_.find(name) != channels_.end()) {
     std::move(callback).Run(std::move(owned_socket));
+  }
 }
 
 void FakeDatagramChannelFactory::CancelChannelCreation(

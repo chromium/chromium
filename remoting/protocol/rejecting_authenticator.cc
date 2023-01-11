@@ -13,8 +13,7 @@
 namespace remoting::protocol {
 
 RejectingAuthenticator::RejectingAuthenticator(RejectionReason rejection_reason)
-    : rejection_reason_(rejection_reason) {
-}
+    : rejection_reason_(rejection_reason) {}
 
 RejectingAuthenticator::~RejectingAuthenticator() = default;
 
@@ -25,8 +24,8 @@ bool RejectingAuthenticator::started() const {
   return true;
 }
 
-Authenticator::RejectionReason
-RejectingAuthenticator::rejection_reason() const {
+Authenticator::RejectionReason RejectingAuthenticator::rejection_reason()
+    const {
   DCHECK_EQ(state_, REJECTED);
   return rejection_reason_;
 }
@@ -39,7 +38,8 @@ void RejectingAuthenticator::ProcessMessage(
   std::move(resume_callback).Run();
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement> RejectingAuthenticator::GetNextMessage() {
+std::unique_ptr<jingle_xmpp::XmlElement>
+RejectingAuthenticator::GetNextMessage() {
   NOTREACHED();
   return nullptr;
 }

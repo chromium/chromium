@@ -40,7 +40,6 @@ const char kMuxChannelName[] = "mux";
 const char kTestChannelName[] = "test";
 const char kTestChannelName2[] = "test2";
 
-
 void QuitCurrentThread() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
@@ -109,14 +108,15 @@ class ChannelMultiplexerTest : public testing::Test {
     *storage = std::move(socket);
     --(*counter);
     EXPECT_GE(*counter, 0);
-    if (*counter == 0)
+    if (*counter == 0) {
       QuitCurrentThread();
+    }
   }
 
   scoped_refptr<net::IOBufferWithSize> CreateTestBuffer(int size) {
     scoped_refptr<net::IOBufferWithSize> result =
         base::MakeRefCounted<net::IOBufferWithSize>(size);
-    for (int i = 0; i< size; ++i) {
+    for (int i = 0; i < size; ++i) {
       result->data()[i] = rand() % 256;
     }
     return result;
@@ -138,7 +138,6 @@ class ChannelMultiplexerTest : public testing::Test {
   std::unique_ptr<P2PStreamSocket> host_socket2_;
   std::unique_ptr<P2PStreamSocket> client_socket2_;
 };
-
 
 TEST_F(ChannelMultiplexerTest, OneChannel) {
   std::unique_ptr<P2PStreamSocket> host_socket;
@@ -166,7 +165,7 @@ TEST_F(ChannelMultiplexerTest, TwoChannels) {
       CreateChannel(kTestChannelName2, &host_socket2_, &client_socket2_));
 
   StreamConnectionTester tester1(host_socket1_.get(), client_socket1_.get(),
-                                kMessageSize, kMessages);
+                                 kMessageSize, kMessages);
   StreamConnectionTester tester2(host_socket2_.get(), client_socket2_.get(),
                                  kMessageSize, kMessages);
   base::RunLoop run_loop;
@@ -197,11 +196,10 @@ TEST_F(ChannelMultiplexerTest, FourChannels) {
 
   std::unique_ptr<P2PStreamSocket> host_socket4;
   std::unique_ptr<P2PStreamSocket> client_socket4;
-  ASSERT_NO_FATAL_FAILURE(
-      CreateChannel("ch4", &host_socket4, &client_socket4));
+  ASSERT_NO_FATAL_FAILURE(CreateChannel("ch4", &host_socket4, &client_socket4));
 
   StreamConnectionTester tester1(host_socket1_.get(), client_socket1_.get(),
-                                kMessageSize, kMessages);
+                                 kMessageSize, kMessages);
   StreamConnectionTester tester2(host_socket2_.get(), client_socket2_.get(),
                                  kMessageSize, kMessages);
   StreamConnectionTester tester3(client_socket3.get(), host_socket3.get(),
@@ -333,8 +331,7 @@ TEST_F(ChannelMultiplexerTest, SessionFail) {
       .Times(AtMost(1))
       .WillOnce(InvokeWithoutArgs(
           this, &ChannelMultiplexerTest::DeleteAfterSessionFail));
-  EXPECT_CALL(cb2, OnConnectedPtr(_))
-      .Times(0);
+  EXPECT_CALL(cb2, OnConnectedPtr(_)).Times(0);
 
   base::RunLoop().RunUntilIdle();
 }

@@ -54,15 +54,13 @@ ChannelConfig ChannelConfig::None() {
 }
 
 ChannelConfig::ChannelConfig(TransportType transport, int version, Codec codec)
-    : transport(transport),
-      version(version),
-      codec(codec) {
-}
+    : transport(transport), version(version), codec(codec) {}
 
 bool ChannelConfig::operator==(const ChannelConfig& b) const {
   // If the transport field is set to NONE then all other fields are irrelevant.
-  if (transport == ChannelConfig::TRANSPORT_NONE)
+  if (transport == ChannelConfig::TRANSPORT_NONE) {
     return transport == b.transport;
+  }
   return transport == b.transport && version == b.version && codec == b.codec;
 }
 
@@ -71,12 +69,14 @@ std::unique_ptr<SessionConfig> SessionConfig::SelectCommon(
     const CandidateSessionConfig* client_config,
     const CandidateSessionConfig* host_config) {
   // Use WebRTC if both host and client support it.
-  if (client_config->webrtc_supported() && host_config->webrtc_supported())
+  if (client_config->webrtc_supported() && host_config->webrtc_supported()) {
     return base::WrapUnique(new SessionConfig(Protocol::WEBRTC));
+  }
 
   // Reject connection if ICE is not supported by either of the peers.
-  if (!host_config->ice_supported() || !client_config->ice_supported())
+  if (!host_config->ice_supported() || !client_config->ice_supported()) {
     return nullptr;
+  }
 
   std::unique_ptr<SessionConfig> result(new SessionConfig(Protocol::ICE));
 
@@ -117,8 +117,9 @@ std::unique_ptr<SessionConfig> SessionConfig::GetFinalConfig(
     return base::WrapUnique(new SessionConfig(Protocol::WEBRTC));
   }
 
-  if (!candidate_config->ice_supported())
+  if (!candidate_config->ice_supported()) {
     return nullptr;
+  }
 
   if (candidate_config->control_configs().size() != 1 ||
       candidate_config->event_configs().size() != 1 ||
@@ -156,17 +157,17 @@ std::unique_ptr<SessionConfig> SessionConfig::ForTest() {
 
 std::unique_ptr<SessionConfig> SessionConfig::ForTestWithAudio() {
   std::unique_ptr<SessionConfig> result(ForTest());
-  result->audio_config_ = ChannelConfig(ChannelConfig::TRANSPORT_STREAM,
-                                        kDefaultStreamVersion,
-                                        ChannelConfig::CODEC_OPUS);
+  result->audio_config_ =
+      ChannelConfig(ChannelConfig::TRANSPORT_STREAM, kDefaultStreamVersion,
+                    ChannelConfig::CODEC_OPUS);
   return result;
 }
 
 std::unique_ptr<SessionConfig> SessionConfig::ForTestWithVerbatimVideo() {
   std::unique_ptr<SessionConfig> result = ForTest();
-  result->video_config_ = ChannelConfig(ChannelConfig::TRANSPORT_STREAM,
-                                        kDefaultStreamVersion,
-                                        ChannelConfig::CODEC_VERBATIM);
+  result->video_config_ =
+      ChannelConfig(ChannelConfig::TRANSPORT_STREAM, kDefaultStreamVersion,
+                    ChannelConfig::CODEC_VERBATIM);
   return result;
 }
 
@@ -257,30 +258,25 @@ CandidateSessionConfig::CreateDefault() {
 
   // Control channel.
   result->mutable_control_configs()->push_back(
-      ChannelConfig(ChannelConfig::TRANSPORT_MUX_STREAM,
-                    kControlStreamVersion,
+      ChannelConfig(ChannelConfig::TRANSPORT_MUX_STREAM, kControlStreamVersion,
                     ChannelConfig::CODEC_UNDEFINED));
 
   // Event channel.
   result->mutable_event_configs()->push_back(
-      ChannelConfig(ChannelConfig::TRANSPORT_MUX_STREAM,
-                    kDefaultStreamVersion,
+      ChannelConfig(ChannelConfig::TRANSPORT_MUX_STREAM, kDefaultStreamVersion,
                     ChannelConfig::CODEC_UNDEFINED));
 
   // Video channel.
   result->mutable_video_configs()->push_back(
-      ChannelConfig(ChannelConfig::TRANSPORT_STREAM,
-                    kDefaultStreamVersion,
+      ChannelConfig(ChannelConfig::TRANSPORT_STREAM, kDefaultStreamVersion,
                     ChannelConfig::CODEC_VP9));
   result->mutable_video_configs()->push_back(
-      ChannelConfig(ChannelConfig::TRANSPORT_STREAM,
-                    kDefaultStreamVersion,
+      ChannelConfig(ChannelConfig::TRANSPORT_STREAM, kDefaultStreamVersion,
                     ChannelConfig::CODEC_VP8));
 
   // Audio channel.
   result->mutable_audio_configs()->push_back(
-      ChannelConfig(ChannelConfig::TRANSPORT_MUX_STREAM,
-                    kDefaultStreamVersion,
+      ChannelConfig(ChannelConfig::TRANSPORT_MUX_STREAM, kDefaultStreamVersion,
                     ChannelConfig::CODEC_OPUS));
   result->mutable_audio_configs()->push_back(ChannelConfig::None());
 

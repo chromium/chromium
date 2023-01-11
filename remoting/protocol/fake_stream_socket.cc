@@ -38,8 +38,7 @@ void FakeStreamSocket::AppendInputData(const std::string& data) {
     int result = std::min(read_buffer_size_,
                           static_cast<int>(input_data_.size() - input_pos_));
     EXPECT_GT(result, 0);
-    memcpy(read_buffer_->data(),
-           &(*input_data_.begin()) + input_pos_, result);
+    memcpy(read_buffer_->data(), &(*input_data_.begin()) + input_pos_, result);
     input_pos_ += result;
     read_buffer_ = nullptr;
 
@@ -73,8 +72,8 @@ int FakeStreamSocket::Read(const scoped_refptr<net::IOBuffer>& buf,
   EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
 
   if (input_pos_ < static_cast<int>(input_data_.size())) {
-    int result = std::min(buf_len,
-                          static_cast<int>(input_data_.size()) - input_pos_);
+    int result =
+        std::min(buf_len, static_cast<int>(input_data_.size()) - input_pos_);
     memcpy(buf->data(), &(*input_data_.begin()) + input_pos_, result);
     input_pos_ += result;
     return result;
@@ -98,8 +97,9 @@ int FakeStreamSocket::Write(
   EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   EXPECT_FALSE(write_pending_);
 
-  if (write_limit_ > 0)
+  if (write_limit_ > 0) {
     buf_len = std::min(write_limit_, buf_len);
+  }
 
   if (async_write_) {
     task_runner_->PostTask(
@@ -139,8 +139,7 @@ void FakeStreamSocket::DoAsyncWrite(const scoped_refptr<net::IOBuffer>& buf,
 
 void FakeStreamSocket::DoWrite(const scoped_refptr<net::IOBuffer>& buf,
                                int buf_len) {
-  written_data_.insert(written_data_.end(),
-                       buf->data(), buf->data() + buf_len);
+  written_data_.insert(written_data_.end(), buf->data(), buf->data() + buf_len);
 
   if (peer_socket_) {
     task_runner_->PostTask(
@@ -174,12 +173,14 @@ void FakeStreamChannelFactory::CreateChannel(const std::string& name,
 
   if (peer_factory_) {
     FakeStreamSocket* peer_channel = peer_factory_->GetFakeChannel(name);
-    if (peer_channel)
+    if (peer_channel) {
       channel->PairWith(peer_channel);
+    }
   }
 
-  if (fail_create_)
+  if (fail_create_) {
     channel.reset();
+  }
 
   if (asynchronous_create_) {
     task_runner_->PostTask(
@@ -196,8 +197,9 @@ void FakeStreamChannelFactory::NotifyChannelCreated(
     std::unique_ptr<FakeStreamSocket> owned_channel,
     const std::string& name,
     ChannelCreatedCallback callback) {
-  if (channels_.find(name) != channels_.end())
+  if (channels_.find(name) != channels_.end()) {
     std::move(callback).Run(std::move(owned_channel));
+  }
 }
 
 void FakeStreamChannelFactory::CancelChannelCreation(const std::string& name) {

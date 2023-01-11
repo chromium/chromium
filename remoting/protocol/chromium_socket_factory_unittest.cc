@@ -48,8 +48,8 @@ class ChromiumSocketFactoryTest : public testing::Test,
         rtc::SocketAddress("127.0.0.1", 0), 0, 0));
     ASSERT_TRUE(socket_.get() != nullptr);
     EXPECT_EQ(socket_->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
-    socket_->SignalReadPacket.connect(
-        this, &ChromiumSocketFactoryTest::OnPacket);
+    socket_->SignalReadPacket.connect(this,
+                                      &ChromiumSocketFactoryTest::OnPacket);
   }
 
   void OnPacket(rtc::AsyncPacketSocket* socket,
@@ -110,8 +110,7 @@ TEST_F(ChromiumSocketFactoryTest, SendAndReceive) {
       socket_factory_->CreateUdpSocket(rtc::SocketAddress("127.0.0.1", 0), 0,
                                        0));
   ASSERT_TRUE(sending_socket.get() != nullptr);
-  EXPECT_EQ(sending_socket->GetState(),
-            rtc::AsyncPacketSocket::STATE_BOUND);
+  EXPECT_EQ(sending_socket->GetState(), rtc::AsyncPacketSocket::STATE_BOUND);
 
   VerifyCanSendAndReceive(sending_socket.get());
 }
@@ -170,8 +169,7 @@ TEST_F(ChromiumSocketFactoryTest, TransientError) {
   // IPv4 address. This send is expected to fail, but the socket should still be
   // functional.
   sending_socket->SendTo(test_packet.data(), test_packet.size(),
-                         rtc::SocketAddress("::1", 0),
-                         rtc::PacketOptions());
+                         rtc::SocketAddress("::1", 0), rtc::PacketOptions());
 
   // Verify that socket is still usable.
   VerifyCanSendAndReceive(sending_socket.get());

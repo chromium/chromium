@@ -50,11 +50,7 @@ class FakeAuthenticator : public Authenticator {
     CLIENT,
   };
 
-  enum Action {
-    ACCEPT,
-    REJECT,
-    REJECT_CHANNEL
-  };
+  enum Action { ACCEPT, REJECT, REJECT_CHANNEL };
 
   struct Config {
     Config();

@@ -10,12 +10,13 @@
 namespace remoting::protocol {
 
 namespace {
-const jingle_xmpp::StaticQName kAuthenticationQName = { kChromotingXmlNamespace,
-                                                 "authentication" };
+const jingle_xmpp::StaticQName kAuthenticationQName = {kChromotingXmlNamespace,
+                                                       "authentication"};
 }  // namespace
 
 // static
-bool Authenticator::IsAuthenticatorMessage(const jingle_xmpp::XmlElement* message) {
+bool Authenticator::IsAuthenticatorMessage(
+    const jingle_xmpp::XmlElement* message) {
   return message->Name() == kAuthenticationQName;
 }
 

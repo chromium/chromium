@@ -17,8 +17,7 @@ namespace remoting::protocol {
 
 class SessionConfig;
 
-class AudioWriter : public ChannelDispatcherBase,
-                    public AudioStub {
+class AudioWriter : public ChannelDispatcherBase, public AudioStub {
  public:
   // Once AudioWriter is created, the Init() method of ChannelDispatcherBase
   // should be used to initialize it for the session.

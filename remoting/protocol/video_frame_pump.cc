@@ -118,8 +118,9 @@ void VideoFramePump::OnCaptureResult(
     if (!frame_size_.equals(frame->size()) || !frame_dpi_.equals(dpi)) {
       frame_size_ = frame->size();
       frame_dpi_ = dpi;
-      if (observer_)
+      if (observer_) {
         observer_->OnVideoSizeChanged(this, frame_size_, frame_dpi_);
+      }
     }
   }
 
@@ -157,16 +158,19 @@ VideoFramePump::EncodeFrame(VideoEncoder* encoder,
 
   std::unique_ptr<VideoPacket> packet;
   // If |frame| is non-NULL then let the encoder process it.
-  if (frame)
+  if (frame) {
     packet = encoder->Encode(*frame);
+  }
 
   // If |frame| is NULL, or the encoder returned nothing, return an empty
   // packet.
-  if (!packet)
+  if (!packet) {
     packet = std::make_unique<VideoPacket>();
+  }
 
-  if (frame)
+  if (frame) {
     packet->set_capture_time_ms(frame->capture_time_ms());
+  }
 
   timestamps->encode_ended_time = base::TimeTicks::Now();
   packet->set_encode_time_ms(

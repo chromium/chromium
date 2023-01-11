@@ -16,8 +16,7 @@ namespace remoting::protocol {
 
 const char kClientAuthSslExporterLabel[] =
     "EXPORTER-remoting-channel-auth-client";
-const char kHostAuthSslExporterLabel[] =
-    "EXPORTER-remoting-channel-auth-host";
+const char kHostAuthSslExporterLabel[] = "EXPORTER-remoting-channel-auth-host";
 
 const char kSslFakeHostName[] = "chromoting";
 

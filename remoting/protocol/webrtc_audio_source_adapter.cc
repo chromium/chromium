@@ -95,8 +95,9 @@ void WebrtcAudioSourceAdapter::Core::OnAudioPacket(
     std::unique_ptr<AudioPacket> packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (paused_)
+  if (paused_) {
     return;
+  }
 
   DCHECK_EQ(packet->channels(), kChannels);
   DCHECK_EQ(packet->bytes_per_sample(), kBytesPerSample);
@@ -120,7 +121,7 @@ void WebrtcAudioSourceAdapter::Core::OnAudioPacket(
         std::min(bytes_per_frame - partial_frame_.size(), data.size());
     position += bytes_to_append;
     partial_frame_.insert(partial_frame_.end(), data.data(),
-                             data.data() + bytes_to_append);
+                          data.data() + bytes_to_append);
     if (partial_frame_.size() < bytes_per_frame) {
       // Still don't have full frame.
       return;

@@ -64,10 +64,12 @@ void JingleSessionManager::OnSignalStrategyStateChange(
 
 bool JingleSessionManager::OnSignalStrategyIncomingStanza(
     const jingle_xmpp::XmlElement* stanza) {
-  if (!JingleMessage::IsJingleMessage(stanza))
+  if (!JingleMessage::IsJingleMessage(stanza)) {
     return false;
+  }
 
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza_copy(new jingle_xmpp::XmlElement(*stanza));
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza_copy(
+      new jingle_xmpp::XmlElement(*stanza));
   std::unique_ptr<JingleMessage> message(new JingleMessage());
   std::string error_msg;
   if (!message->ParseXml(stanza, &error_msg)) {
@@ -98,8 +100,9 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
     }
 
     IncomingSessionResponse response = SessionManager::DECLINE;
-    if (!incoming_session_callback_.is_null())
+    if (!incoming_session_callback_.is_null()) {
       incoming_session_callback_.Run(session, &response);
+    }
 
     if (response == SessionManager::ACCEPT) {
       session->AcceptIncomingConnection(*message);

@@ -37,8 +37,9 @@ void PerformanceTracker::OnVideoFrameStats(const FrameStats& stats) {
   video_packet_rate_.Record(1);
 
   // Use only non-empty frames to estimate frame rate.
-  if (stats.host_stats.frame_size)
+  if (stats.host_stats.frame_size) {
     video_frame_rate_.Record(1);
+  }
 
   video_bandwidth_.Record(stats.host_stats.frame_size);
 
@@ -67,8 +68,9 @@ void PerformanceTracker::OnVideoFrameStats(const FrameStats& stats) {
 
   // |latest_event_timestamp| is set only for the first frame after an input
   // event.
-  if (stats.host_stats.latest_event_timestamp.is_null())
+  if (stats.host_stats.latest_event_timestamp.is_null()) {
     return;
+  }
 
   // For empty frames use time_received as time_rendered.
   base::TimeTicks time_rendered = (stats.host_stats.frame_size > 0)

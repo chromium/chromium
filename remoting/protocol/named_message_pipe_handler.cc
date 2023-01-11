@@ -15,8 +15,7 @@ namespace remoting::protocol {
 NamedMessagePipeHandler::NamedMessagePipeHandler(
     const std::string& name,
     std::unique_ptr<MessagePipe> pipe)
-    : name_(name),
-      pipe_(std::move(pipe)) {
+    : name_(name), pipe_(std::move(pipe)) {
   DCHECK(pipe_);
   pipe_->Start(this);
 }

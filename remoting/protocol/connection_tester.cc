@@ -47,8 +47,8 @@ void StreamConnectionTester::CheckResults() {
   output_buffer_->SetOffset(0);
   ASSERT_EQ(test_data_size_, output_buffer_->size());
 
-  EXPECT_EQ(0, memcmp(output_buffer_->data(),
-                      input_buffer_->StartOfBuffer(), test_data_size_));
+  EXPECT_EQ(0, memcmp(output_buffer_->data(), input_buffer_->StartOfBuffer(),
+                      test_data_size_));
 }
 
 void StreamConnectionTester::Done() {
@@ -68,11 +68,12 @@ void StreamConnectionTester::InitBuffers() {
 void StreamConnectionTester::DoWrite() {
   int result = 1;
   while (result > 0) {
-    if (output_buffer_->BytesRemaining() == 0)
+    if (output_buffer_->BytesRemaining() == 0) {
       break;
+    }
 
-    int bytes_to_write = std::min(output_buffer_->BytesRemaining(),
-                                  message_size_);
+    int bytes_to_write =
+        std::min(output_buffer_->BytesRemaining(), message_size_);
     result =
         client_socket_->Write(output_buffer_.get(), bytes_to_write,
                               base::BindOnce(&StreamConnectionTester::OnWritten,
@@ -110,8 +111,9 @@ void StreamConnectionTester::DoRead() {
 
 void StreamConnectionTester::OnRead(int result) {
   HandleReadResult(result);
-  if (!on_done_.is_null())
+  if (!on_done_.is_null()) {
     DoRead();  // Don't try to read again when we are done reading.
+  }
 }
 
 void StreamConnectionTester::HandleReadResult(int result) {
@@ -122,8 +124,9 @@ void StreamConnectionTester::HandleReadResult(int result) {
   } else if (result > 0) {
     // Allocate memory for the next read.
     input_buffer_->set_offset(input_buffer_->offset() + result);
-    if (input_buffer_->offset() == test_data_size_)
+    if (input_buffer_->offset() == test_data_size_) {
       Done();
+    }
   }
 }
 

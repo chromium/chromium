@@ -75,8 +75,7 @@ class ThreadCheckVideoEncoder : public VideoEncoderVerbatim {
  public:
   ThreadCheckVideoEncoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {
-  }
+      : task_runner_(task_runner) {}
 
   ThreadCheckVideoEncoder(const ThreadCheckVideoEncoder&) = delete;
   ThreadCheckVideoEncoder& operator=(const ThreadCheckVideoEncoder&) = delete;

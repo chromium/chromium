@@ -28,8 +28,9 @@ void AudioWriter::ProcessAudioPacket(std::unique_ptr<AudioPacket> packet,
 
 // static
 std::unique_ptr<AudioWriter> AudioWriter::Create(const SessionConfig& config) {
-  if (!config.is_audio_enabled())
+  if (!config.is_audio_enabled()) {
     return nullptr;
+  }
   return base::WrapUnique(new AudioWriter());
 }
 

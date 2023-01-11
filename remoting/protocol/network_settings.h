@@ -13,7 +13,6 @@
 namespace remoting::protocol {
 
 struct NetworkSettings {
-
   // When hosts are configured with NAT traversal disabled they will
   // typically also limit their P2P ports to this range, so that
   // sessions may be blocked or un-blocked via firewall rules.
@@ -37,8 +36,8 @@ struct NetworkSettings {
     NAT_TRAVERSAL_RELAY = 0x4,
 
     // Active NAT traversal using STUN and relay servers.
-    NAT_TRAVERSAL_FULL = NAT_TRAVERSAL_STUN | NAT_TRAVERSAL_RELAY |
-        NAT_TRAVERSAL_OUTGOING
+    NAT_TRAVERSAL_FULL =
+        NAT_TRAVERSAL_STUN | NAT_TRAVERSAL_RELAY | NAT_TRAVERSAL_OUTGOING
   };
 
   NetworkSettings() {}

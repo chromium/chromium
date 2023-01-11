@@ -141,8 +141,7 @@ UdpPacketSocket::UdpPacketSocket()
     : state_(STATE_CLOSED),
       error_(0),
       send_pending_(false),
-      send_queue_size_(0) {
-}
+      send_queue_size_(0) {}
 
 UdpPacketSocket::~UdpPacketSocket() {
   Close();
@@ -205,14 +204,16 @@ rtc::SocketAddress UdpPacketSocket::GetRemoteAddress() const {
   return rtc::SocketAddress();
 }
 
-int UdpPacketSocket::Send(const void* data, size_t data_size,
+int UdpPacketSocket::Send(const void* data,
+                          size_t data_size,
                           const rtc::PacketOptions& options) {
   // UDP sockets are not connected - this method should never be called.
   NOTREACHED();
   return EWOULDBLOCK;
 }
 
-int UdpPacketSocket::SendTo(const void* data, size_t data_size,
+int UdpPacketSocket::SendTo(const void* data,
+                            size_t data_size,
                             const rtc::SocketAddress& address,
                             const rtc::PacketOptions& options) {
   if (state_ != STATE_BOUND) {
@@ -309,8 +310,9 @@ void UdpPacketSocket::SetError(int error) {
 }
 
 void UdpPacketSocket::DoSend() {
-  if (send_pending_ || send_queue_.empty())
+  if (send_pending_ || send_queue_.empty()) {
     return;
+  }
 
   PendingPacket& packet = send_queue_.front();
   cricket::ApplyPacketOptions(
@@ -420,8 +422,9 @@ rtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateUdpSocket(
     return nullptr;
   }
   std::unique_ptr<UdpPacketSocket> result(new UdpPacketSocket());
-  if (!result->Init(local_address, min_port, max_port))
+  if (!result->Init(local_address, min_port, max_port)) {
     return nullptr;
+  }
   return result.release();
 }
 

@@ -20,10 +20,10 @@ namespace remoting::protocol {
 
 namespace {
 
-const jingle_xmpp::StaticQName kEkeTag = { kChromotingXmlNamespace,
-                                    "eke-message" };
-const jingle_xmpp::StaticQName kCertificateTag = { kChromotingXmlNamespace,
-                                            "certificate" };
+const jingle_xmpp::StaticQName kEkeTag = {kChromotingXmlNamespace,
+                                          "eke-message"};
+const jingle_xmpp::StaticQName kCertificateTag = {kChromotingXmlNamespace,
+                                                  "certificate"};
 
 }  // namespace
 
@@ -68,8 +68,9 @@ V2Authenticator::V2Authenticator(
 V2Authenticator::~V2Authenticator() = default;
 
 Authenticator::State V2Authenticator::state() const {
-  if (state_ == ACCEPTED && !pending_messages_.empty())
+  if (state_ == ACCEPTED && !pending_messages_.empty()) {
     return MESSAGE_READY;
+  }
   return state_;
 }
 
@@ -88,7 +89,8 @@ void V2Authenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
   std::move(resume_callback).Run();
 }
 
-void V2Authenticator::ProcessMessageInternal(const jingle_xmpp::XmlElement* message) {
+void V2Authenticator::ProcessMessageInternal(
+    const jingle_xmpp::XmlElement* message) {
   DCHECK_EQ(state(), WAITING_MESSAGE);
 
   // Parse the certificate.
@@ -152,7 +154,8 @@ void V2Authenticator::ProcessMessageInternal(const jingle_xmpp::XmlElement* mess
 std::unique_ptr<jingle_xmpp::XmlElement> V2Authenticator::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
 
-  std::unique_ptr<jingle_xmpp::XmlElement> message = CreateEmptyAuthenticatorMessage();
+  std::unique_ptr<jingle_xmpp::XmlElement> message =
+      CreateEmptyAuthenticatorMessage();
 
   DCHECK(!pending_messages_.empty());
   while (!pending_messages_.empty()) {
@@ -168,7 +171,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> V2Authenticator::GetNextMessage() {
   }
 
   if (!local_cert_.empty() && !certificate_sent_) {
-    jingle_xmpp::XmlElement* certificate_tag = new jingle_xmpp::XmlElement(kCertificateTag);
+    jingle_xmpp::XmlElement* certificate_tag =
+        new jingle_xmpp::XmlElement(kCertificateTag);
     std::string base64_cert;
     base::Base64Encode(local_cert_, &base64_cert);
     certificate_tag->SetBodyText(base64_cert);
@@ -195,8 +199,8 @@ V2Authenticator::CreateChannelAuthenticator() const {
     return SslHmacChannelAuthenticator::CreateForHost(
         local_cert_, local_key_pair_, auth_key_);
   } else {
-    return SslHmacChannelAuthenticator::CreateForClient(
-        remote_cert_, auth_key_);
+    return SslHmacChannelAuthenticator::CreateForClient(remote_cert_,
+                                                        auth_key_);
   }
 }
 

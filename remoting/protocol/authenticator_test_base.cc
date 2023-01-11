@@ -34,8 +34,9 @@ namespace {
 ACTION_P(QuitThreadOnCounter, counter) {
   --(*counter);
   EXPECT_GE(*counter, 0);
-  if (*counter == 0)
+  if (*counter == 0) {
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  }
 }
 
 }  // namespace
@@ -67,16 +68,12 @@ void AuthenticatorTestBase::SetUp() {
 }
 
 void AuthenticatorTestBase::RunAuthExchange() {
-  ContinueAuthExchangeWith(client_.get(),
-                           host_.get(),
-                           client_->started(),
+  ContinueAuthExchangeWith(client_.get(), host_.get(), client_->started(),
                            host_->started());
 }
 
 void AuthenticatorTestBase::RunHostInitiatedAuthExchange() {
-  ContinueAuthExchangeWith(host_.get(),
-                           client_.get(),
-                           host_->started(),
+  ContinueAuthExchangeWith(host_.get(), client_.get(), host_->started(),
                            client_->started());
 }
 
@@ -141,7 +138,7 @@ void AuthenticatorTestBase::RunChannelAuth(bool expected_fail) {
       .WillOnce(QuitThreadOnCounter(&callback_counter));
   if (expected_fail) {
     EXPECT_CALL(host_callback_, OnDone(net::ERR_FAILED))
-         .WillOnce(QuitThreadOnCounter(&callback_counter));
+        .WillOnce(QuitThreadOnCounter(&callback_counter));
   } else {
     EXPECT_CALL(host_callback_, OnDone(net::OK))
         .WillOnce(QuitThreadOnCounter(&callback_counter));

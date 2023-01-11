@@ -13,7 +13,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}  // namespace webrtc
+}  // namespace base
 
 namespace webrtc {
 class PeerConnectionInterface;

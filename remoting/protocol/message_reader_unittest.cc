@@ -122,8 +122,7 @@ TEST_F(MessageReaderTest, TwoMessages_Together) {
 TEST_F(MessageReaderTest, TwoMessages_Separately) {
   AddMessage(kTestMessage1);
 
-  EXPECT_CALL(callback_, OnMessage())
-      .Times(1);
+  EXPECT_CALL(callback_, OnMessage()).Times(1);
 
   InitReader();
   base::RunLoop().RunUntilIdle();
@@ -136,8 +135,7 @@ TEST_F(MessageReaderTest, TwoMessages_Separately) {
   EXPECT_TRUE(socket_.read_pending());
 
   // Write another message and verify that we receive it.
-  EXPECT_CALL(callback_, OnMessage())
-      .Times(1);
+  EXPECT_CALL(callback_, OnMessage()).Times(1);
   AddMessage(kTestMessage2);
   base::RunLoop().RunUntilIdle();
 

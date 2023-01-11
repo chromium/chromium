@@ -21,9 +21,7 @@
 namespace remoting::protocol {
 
 struct ClientVideoDispatcher::PendingFrame {
-  PendingFrame(int frame_id)
-      : frame_id(frame_id),
-        done(false) {}
+  PendingFrame(int frame_id) : frame_id(frame_id), done(false) {}
   int frame_id;
   bool done;
 };
@@ -40,8 +38,9 @@ void ClientVideoDispatcher::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> message) {
   std::unique_ptr<VideoPacket> video_packet =
       ParseMessage<VideoPacket>(message.get());
-  if (!video_packet)
+  if (!video_packet) {
     return;
+  }
 
   int frame_id = video_packet->frame_id();
 

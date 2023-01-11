@@ -181,8 +181,9 @@ int PseudoTcpAdapter::Core::Write(
     return result;
   }
 
-  if (result < 0)
+  if (result < 0) {
     return result;
+  }
 
   // Need to wait until the data is sent to the peer when
   // send-confirmation mode is enabled.
@@ -208,8 +209,9 @@ net::CompletionOnceCallback PseudoTcpAdapter::Core::Connect(
 
   // Start the connection attempt.
   int result = pseudo_tcp_.Connect();
-  if (result < 0)
+  if (result < 0) {
     return callback;
+  }
 
   AdjustClock();
 
@@ -222,8 +224,9 @@ net::CompletionOnceCallback PseudoTcpAdapter::Core::Connect(
 void PseudoTcpAdapter::Core::OnTcpOpen(PseudoTcp* tcp) {
   DCHECK(tcp == &pseudo_tcp_);
 
-  if (connect_callback_)
+  if (connect_callback_) {
     std::move(connect_callback_).Run(net::OK);
+  }
 
   OnTcpReadable(tcp);
   OnTcpWriteable(tcp);
@@ -231,15 +234,17 @@ void PseudoTcpAdapter::Core::OnTcpOpen(PseudoTcp* tcp) {
 
 void PseudoTcpAdapter::Core::OnTcpReadable(PseudoTcp* tcp) {
   DCHECK_EQ(tcp, &pseudo_tcp_);
-  if (read_callback_.is_null())
+  if (read_callback_.is_null()) {
     return;
+  }
 
   int result = pseudo_tcp_.Recv(read_buffer_->data(), read_buffer_size_);
   if (result < 0) {
     result = net::MapSystemError(pseudo_tcp_.GetError());
     DCHECK(result < 0);
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
   }
 
   AdjustClock();
@@ -250,8 +255,9 @@ void PseudoTcpAdapter::Core::OnTcpReadable(PseudoTcp* tcp) {
 
 void PseudoTcpAdapter::Core::OnTcpWriteable(PseudoTcp* tcp) {
   DCHECK_EQ(tcp, &pseudo_tcp_);
-  if (write_callback_.is_null())
+  if (write_callback_.is_null()) {
     return;
+  }
 
   if (waiting_write_position_) {
     CheckWriteComplete();
@@ -262,8 +268,9 @@ void PseudoTcpAdapter::Core::OnTcpWriteable(PseudoTcp* tcp) {
   if (result < 0) {
     result = net::MapSystemError(pseudo_tcp_.GetError());
     DCHECK(result < 0);
-    if (result == net::ERR_IO_PENDING)
+    if (result == net::ERR_IO_PENDING) {
       return;
+    }
   }
 
   AdjustClock();
@@ -335,8 +342,9 @@ cricket::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
   // If we already have a write pending, we behave like a congested network,
   // returning success for the write, but dropping the packet.  PseudoTcp will
   // back-off and retransmit, adjusting for the perceived congestion.
-  if (socket_write_pending_)
+  if (socket_write_pending_) {
     return IPseudoTcpNotify::WR_SUCCESS;
+  }
 
   scoped_refptr<net::IOBuffer> write_buffer =
       base::MakeRefCounted<net::IOBuffer>(len);
@@ -366,16 +374,18 @@ cricket::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
 }
 
 void PseudoTcpAdapter::Core::DoReadFromSocket() {
-  if (!socket_read_buffer_.get())
+  if (!socket_read_buffer_.get()) {
     socket_read_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReadBufferSize);
+  }
 
   int result = 1;
   while (socket_ && result > 0) {
     result = socket_->Recv(socket_read_buffer_.get(), kReadBufferSize,
                            base::BindRepeating(&PseudoTcpAdapter::Core::OnRead,
                                                base::Unretained(this)));
-    if (result != net::ERR_IO_PENDING)
+    if (result != net::ERR_IO_PENDING) {
       HandleReadResults(result);
+    }
   }
 }
 
@@ -397,8 +407,9 @@ void PseudoTcpAdapter::Core::OnRead(int result) {
   scoped_refptr<Core> core(this);
 
   HandleReadResults(result);
-  if (result >= 0)
+  if (result >= 0) {
     DoReadFromSocket();
+  }
 }
 
 void PseudoTcpAdapter::Core::OnWritten(int result) {

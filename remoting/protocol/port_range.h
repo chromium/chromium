@@ -10,7 +10,6 @@
 #include <ostream>
 #include <string>
 
-
 namespace remoting {
 
 // Wrapper for a value of UdpPortRange policy.

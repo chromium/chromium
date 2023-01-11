@@ -27,10 +27,12 @@ void FakeVideoStub::ProcessVideoPacket(
     base::OnceClosure done) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   received_packets_.push_back(std::move(video_packet));
-  if (!done.is_null())
+  if (!done.is_null()) {
     std::move(done).Run();
-  if (!on_frame_callback_.is_null())
+  }
+  if (!on_frame_callback_.is_null()) {
     on_frame_callback_.Run();
+  }
 }
 
 FakeFrameConsumer::FakeFrameConsumer() = default;
@@ -52,10 +54,12 @@ void FakeFrameConsumer::DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
                                   base::OnceClosure done) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   received_frames_.push_back(std::move(frame));
-  if (done)
+  if (done) {
     std::move(done).Run();
-  if (on_frame_callback_)
+  }
+  if (on_frame_callback_) {
     on_frame_callback_.Run();
+  }
 }
 
 FrameConsumer::PixelFormat FakeFrameConsumer::GetPixelFormat() {
@@ -74,8 +78,9 @@ void FakeFrameStatsConsumer::set_on_stats_callback(
 void FakeFrameStatsConsumer::OnVideoFrameStats(const FrameStats& stats) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   received_stats_.push_back(stats);
-  if (!on_stats_callback_.is_null())
+  if (!on_stats_callback_.is_null()) {
     on_stats_callback_.Run();
+  }
 }
 
 FakeVideoRenderer::FakeVideoRenderer() = default;

@@ -17,8 +17,9 @@ ChannelDispatcherBase::ChannelDispatcherBase(const std::string& channel_name)
     : channel_name_(channel_name) {}
 
 ChannelDispatcherBase::~ChannelDispatcherBase() {
-  if (channel_factory_)
+  if (channel_factory_) {
     channel_factory_->CancelChannelCreation(channel_name_);
+  }
 }
 
 void ChannelDispatcherBase::Init(MessageChannelFactory* channel_factory,

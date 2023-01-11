@@ -43,19 +43,19 @@ class IceTransportChannel : public sigslot::has_slots<> {
     // Called to pass ICE credentials to the session. Used only for STANDARD
     // version of ICE, see SetIceVersion().
     virtual void OnChannelIceCredentials(IceTransportChannel* transport,
-                                           const std::string& ufrag,
-                                           const std::string& password) = 0;
+                                         const std::string& ufrag,
+                                         const std::string& password) = 0;
 
     // Called when the transport generates a new candidate that needs
     // to be passed to the AddRemoteCandidate() method on the remote
     // end of the connection.
     virtual void OnChannelCandidate(IceTransportChannel* transport,
-                                      const cricket::Candidate& candidate) = 0;
+                                    const cricket::Candidate& candidate) = 0;
 
     // Called when transport route changes. Can be called even before
     // the transport is connected.
     virtual void OnChannelRouteChange(IceTransportChannel* transport,
-                                        const TransportRoute& route) = 0;
+                                      const TransportRoute& route) = 0;
 
     // Called when when the channel has failed to connect or reconnect.
     virtual void OnChannelFailed(IceTransportChannel* transport) = 0;

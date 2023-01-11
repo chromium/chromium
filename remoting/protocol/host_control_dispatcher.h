@@ -22,8 +22,7 @@ class PairingResponse;
 // HostControlDispatcher dispatches incoming messages on the control channel to
 // HostStub or ClipboardStub, and also implements ClientStub and CursorShapeStub
 // for outgoing messages.
-class HostControlDispatcher : public ChannelDispatcherBase,
-                              public ClientStub {
+class HostControlDispatcher : public ChannelDispatcherBase, public ClientStub {
  public:
   HostControlDispatcher();
 

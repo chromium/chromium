@@ -22,8 +22,7 @@ MonitoredVideoStub::MonitoredVideoStub(VideoStub* video_stub,
           FROM_HERE,
           connectivity_check_delay,
           this,
-          &MonitoredVideoStub::OnConnectivityCheckTimeout) {
-}
+          &MonitoredVideoStub::OnConnectivityCheckTimeout) {}
 
 MonitoredVideoStub::~MonitoredVideoStub() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
