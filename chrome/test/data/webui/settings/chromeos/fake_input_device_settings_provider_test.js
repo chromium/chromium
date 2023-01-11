@@ -46,4 +46,16 @@ suite('FakeInputDeviceSettings', function() {
     return provider.getFakeTouchpads().then(
         result => assertDeepEquals(fakeTouchpads, result));
   });
+
+  test('setFakeMice', () => {
+    const fakeMice = [{
+      id: 2,
+      name: 'fake-mouse',
+      isExternal: false,
+    }];
+
+    provider.setFakeMice(fakeMice);
+    return provider.getFakeMice().then(
+        result => assertDeepEquals(fakeMice, result));
+  });
 });
