@@ -4,14 +4,12 @@
 
 #include "ash/system/video_conference/bubble/set_value_effects_view.h"
 
+#include "ash/style/tab_slider.h"
+#include "ash/style/tab_slider_button.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace ash::video_conference {
@@ -29,7 +27,7 @@ class ValueButtonContainer : public views::View {
         SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kVertical);
     layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-    layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+    layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
     if (!effect->label_text().empty()) {
       AddChildView(std::make_unique<views::Label>(effect->label_text()));
@@ -40,32 +38,22 @@ class ValueButtonContainer : public views::View {
     absl::optional<int> current_state = effect->get_state_callback().Run();
     DCHECK(current_state.has_value());
 
-    // Add a button for each state.
+    auto tab_slider = std::make_unique<TabSlider>();
     for (int i = 0; i < effect->GetNumStates(); ++i) {
       const VcEffectState* state = effect->GetState(/*index=*/i);
-      std::unique_ptr<views::RadioButton> state_button =
-          std::make_unique<views::RadioButton>(state->label_text(),
-                                               /*group_id=*/effect->id());
-      state_button->SetCallback(state->button_callback());
+      auto* slider_button =
+          tab_slider->AddButton(std::make_unique<LabelSliderButton>(
+              state->button_callback(), state->label_text()));
+      slider_button->SetSelected(state->state().value() == current_state);
 
       // See comments above `kSetValueButton*` in `BubbleViewID` for details
       // on how the IDs of these buttons are set.
-      state_button->SetID(i <= BubbleViewID::kSetValueButtonMax -
-                                      BubbleViewID::kSetValueButtonMin
-                              ? BubbleViewID::kSetValueButtonMin + i
-                              : BubbleViewID::kSetValueButtonMax);
-
-      // Set-value effects require an actual integer state. Mark it checked
-      // (selected) if the current state of the effect is this state's value,
-      DCHECK(state->state().has_value());
-      state_button->SetChecked(state->state().value() == current_state.value());
-
-      AddChildView(std::move(state_button));
+      slider_button->SetID(i <= BubbleViewID::kSetValueButtonMax -
+                                       BubbleViewID::kSetValueButtonMin
+                               ? BubbleViewID::kSetValueButtonMin + i
+                               : BubbleViewID::kSetValueButtonMax);
     }
-
-    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(10, 10)));
-    SetBackground(views::CreateRoundedRectBackground(gfx::kGoogleGreen800,
-                                                     /*radius=*/10));
+    AddChildView(std::move(tab_slider));
   }
 
   ValueButtonContainer(const ValueButtonContainer&) = delete;

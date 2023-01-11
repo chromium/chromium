@@ -175,6 +175,7 @@ LabelSliderButton::LabelSliderButton(PressedCallback callback,
   SetBorder(views::CreateEmptyBorder(kLabelButtonBorderInsets));
   SetUseDefaultFillLayout(true);
   SetTooltipText(tooltip_text);
+  SetAccessibleName(text);
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
 }
