@@ -119,23 +119,12 @@ ui::ColorTransform PickGoogleColorTwoBackgrounds(
                              std::move(bg_b_transform), contrast_threshold);
 }
 
-// Flat version of dark mode colors used in bookmarks bar to fill
-// the buttons.
-constexpr SkColor kFlatGrey = SkColorSetRGB(0x5D, 0x5E, 0x62);
-constexpr SkColor kFlatBlue = SkColorSetRGB(0x49, 0x54, 0x68);
-constexpr SkColor kFlatRed = SkColorSetRGB(0x62, 0x4A, 0x4B);
-constexpr SkColor kFlatGreen = SkColorSetRGB(0x47, 0x59, 0x50);
-constexpr SkColor kFlatYellow = SkColorSetRGB(0x65, 0x5C, 0x44);
-constexpr SkColor kFlatCyan = SkColorSetRGB(0x45, 0x5D, 0x65);
-constexpr SkColor kFlatPurple = SkColorSetRGB(0x58, 0x4A, 0x68);
-constexpr SkColor kFlatPink = SkColorSetRGB(0x65, 0x4A, 0x5D);
-
 // Default toolbar colors.
 constexpr SkColor kDarkToolbarColor = SkColorSetRGB(0x35, 0x36, 0x3A);
 constexpr SkColor kLightToolbarColor = SK_ColorWHITE;
 
-// Alpha of 61 = 24%. From GetTabGroupColors() in theme_helper.cc.
-constexpr SkAlpha tab_group_chip_alpha = 61;
+// Alpha of 61 = 24% opacity. Opacity of tab group chips in the bookmarks bar.
+constexpr SkAlpha kTabGroupChipAlpha = 61;
 
 }  // namespace
 
@@ -539,28 +528,40 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleYellow600);
 
   mixer[kColorTabGroupBookmarkBarBlue] = SelectColorBasedOnDarkInputOrMode(
-      dark_mode, kColorBookmarkBarForeground, kFlatBlue, gfx::kGoogleBlue050);
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGoogleBlue300, kTabGroupChipAlpha),
+      gfx::kGoogleBlue050);
   mixer[kColorTabGroupBookmarkBarCyan] = SelectColorBasedOnDarkInputOrMode(
-      dark_mode, kColorBookmarkBarForeground, kFlatCyan, gfx::kGoogleCyan050);
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGoogleCyan300, kTabGroupChipAlpha),
+      gfx::kGoogleCyan050);
   mixer[kColorTabGroupBookmarkBarGreen] = SelectColorBasedOnDarkInputOrMode(
-      dark_mode, kColorBookmarkBarForeground, kFlatGreen, gfx::kGoogleGreen050);
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGoogleGreen300, kTabGroupChipAlpha),
+      gfx::kGoogleGreen050);
   mixer[kColorTabGroupBookmarkBarGrey] = SelectColorBasedOnDarkInputOrMode(
-      dark_mode, kColorBookmarkBarForeground, kFlatGrey, gfx::kGoogleGrey100);
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGoogleGrey300, kTabGroupChipAlpha),
+      gfx::kGoogleGrey100);
   mixer[kColorTabGroupBookmarkBarPink] = SelectColorBasedOnDarkInputOrMode(
-      dark_mode, kColorBookmarkBarForeground, kFlatPink, gfx::kGooglePink050);
-  mixer[kColorTabGroupBookmarkBarPurple] =
-      SelectColorBasedOnDarkInputOrMode(dark_mode, kColorBookmarkBarForeground,
-                                        kFlatPurple, gfx::kGooglePurple050);
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGooglePink300, kTabGroupChipAlpha),
+      gfx::kGooglePink050);
+  mixer[kColorTabGroupBookmarkBarPurple] = SelectColorBasedOnDarkInputOrMode(
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGooglePurple300, kTabGroupChipAlpha),
+      gfx::kGooglePurple050);
   mixer[kColorTabGroupBookmarkBarRed] = SelectColorBasedOnDarkInputOrMode(
-      dark_mode, kColorBookmarkBarForeground, kFlatRed, gfx::kGoogleRed050);
-  mixer[kColorTabGroupBookmarkBarYellow] =
-      SelectColorBasedOnDarkInputOrMode(dark_mode, kColorBookmarkBarForeground,
-                                        kFlatYellow, gfx::kGoogleYellow050);
-  auto flat_orange = ui::AlphaBlend(gfx::kGoogleOrange300, kDarkToolbarColor,
-                                    tab_group_chip_alpha);
-  mixer[kColorTabGroupBookmarkBarOrange] =
-      SelectColorBasedOnDarkInputOrMode(dark_mode, kColorBookmarkBarForeground,
-                                        flat_orange, gfx::kGoogleOrange050);
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGoogleRed300, kTabGroupChipAlpha), gfx::kGoogleRed050);
+  mixer[kColorTabGroupBookmarkBarYellow] = SelectColorBasedOnDarkInputOrMode(
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGoogleYellow300, kTabGroupChipAlpha),
+      gfx::kGoogleYellow050);
+  mixer[kColorTabGroupBookmarkBarOrange] = SelectColorBasedOnDarkInputOrMode(
+      dark_mode, kColorBookmarkBarForeground,
+      ui::SetAlpha(gfx::kGoogleOrange300, kTabGroupChipAlpha),
+      gfx::kGoogleOrange050);
 
   mixer[kColorTabHoverCardBackground] = {dark_mode ? gfx::kGoogleGrey900
                                                    : gfx::kGoogleGrey050};
