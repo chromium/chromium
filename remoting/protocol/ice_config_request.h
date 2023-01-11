@@ -5,7 +5,7 @@
 #ifndef REMOTING_PROTOCOL_ICE_CONFIG_REQUEST_H_
 #define REMOTING_PROTOCOL_ICE_CONFIG_REQUEST_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace remoting::protocol {
 

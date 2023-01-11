@@ -5,7 +5,7 @@
 #ifndef REMOTING_BASE_TASK_UTIL_H_
 #define REMOTING_BASE_TASK_UTIL_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 

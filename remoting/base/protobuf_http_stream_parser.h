@@ -5,7 +5,7 @@
 #ifndef REMOTING_BASE_PROTOBUF_HTTP_STREAM_PARSER_H_
 #define REMOTING_BASE_PROTOBUF_HTTP_STREAM_PARSER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"

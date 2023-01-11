@@ -4,7 +4,7 @@
 
 #include "remoting/host/ftl_host_change_notification_listener.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"

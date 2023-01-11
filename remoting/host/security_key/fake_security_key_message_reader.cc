@@ -4,7 +4,7 @@
 
 #include "remoting/host/security_key/fake_security_key_message_reader.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/security_key/security_key_message.h"
 

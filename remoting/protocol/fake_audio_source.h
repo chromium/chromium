@@ -5,7 +5,7 @@
 #ifndef REMOTING_PROTOCOL_FAKE_AUDIO_SOURCE_H_
 #define REMOTING_PROTOCOL_FAKE_AUDIO_SOURCE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/protocol/audio_source.h"
 
 namespace remoting::protocol {

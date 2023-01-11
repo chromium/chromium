@@ -10,9 +10,9 @@
 #include <list>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "remoting/base/logging.h"

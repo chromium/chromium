@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"

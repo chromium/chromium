@@ -11,10 +11,10 @@
 #include <set>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/containers/queue.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"

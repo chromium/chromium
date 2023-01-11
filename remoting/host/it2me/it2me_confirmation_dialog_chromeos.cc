@@ -8,8 +8,8 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"

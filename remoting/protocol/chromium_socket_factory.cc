@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"

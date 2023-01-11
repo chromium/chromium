@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/protocol/ice_config_request.h"

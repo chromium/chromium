@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/protocol/third_party_authenticator_base.h"
 #include "remoting/protocol/token_validator.h"
 

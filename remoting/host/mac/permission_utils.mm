@@ -7,7 +7,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Cocoa/Cocoa.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"

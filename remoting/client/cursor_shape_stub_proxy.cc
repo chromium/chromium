@@ -4,7 +4,7 @@
 
 #include "remoting/client/cursor_shape_stub_proxy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/proto/control.pb.h"

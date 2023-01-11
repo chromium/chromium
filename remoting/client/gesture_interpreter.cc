@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "remoting/client/chromoting_session.h"
 #include "remoting/client/display/renderer_proxy.h"

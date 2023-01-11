@@ -61,7 +61,7 @@ class InternetHandle {
 
 #else
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "net/base/load_flags.h"

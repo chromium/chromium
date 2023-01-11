@@ -8,7 +8,7 @@
 #include <list>
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "remoting/protocol/frame_stats.h"

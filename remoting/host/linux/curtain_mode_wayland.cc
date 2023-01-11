@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 

@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/chromeos/point_transformer.h"

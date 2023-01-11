@@ -4,8 +4,8 @@
 
 #include "remoting/host/remote_open_url/remote_open_url_client.h"
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

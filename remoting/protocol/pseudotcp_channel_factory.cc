@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/datagram_channel_factory.h"

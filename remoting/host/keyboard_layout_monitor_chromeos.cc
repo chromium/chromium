@@ -4,8 +4,8 @@
 
 #include "remoting/host/keyboard_layout_monitor.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversion_utils.h"

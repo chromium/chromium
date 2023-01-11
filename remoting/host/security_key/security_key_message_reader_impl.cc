@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"

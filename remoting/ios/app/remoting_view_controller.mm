@@ -14,7 +14,7 @@
 #import <MaterialComponents/MaterialShadowLayer.h>
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/oauth_token_getter.h"

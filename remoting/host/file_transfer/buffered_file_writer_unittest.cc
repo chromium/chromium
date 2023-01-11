@@ -4,7 +4,7 @@
 
 #include "remoting/host/file_transfer/buffered_file_writer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/file_transfer/fake_file_operations.h"
 #include "remoting/host/file_transfer/test_byte_vector_utils.h"

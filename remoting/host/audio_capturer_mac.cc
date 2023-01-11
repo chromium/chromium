@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"

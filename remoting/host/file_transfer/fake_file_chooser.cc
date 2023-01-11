@@ -4,7 +4,7 @@
 
 #include "remoting/host/file_transfer/fake_file_chooser.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "remoting/protocol/file_transfer_helpers.h"

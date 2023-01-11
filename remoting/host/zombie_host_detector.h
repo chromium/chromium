@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_ZOMBIE_HOST_DETECTOR_H_
 #define REMOTING_HOST_ZOMBIE_HOST_DETECTOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/host/heartbeat_sender.h"

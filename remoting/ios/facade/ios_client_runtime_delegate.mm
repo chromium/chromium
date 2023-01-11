@@ -11,8 +11,8 @@
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"

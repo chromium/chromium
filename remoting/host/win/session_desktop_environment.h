@@ -5,8 +5,8 @@
 #ifndef REMOTING_HOST_WIN_SESSION_DESKTOP_ENVIRONMENT_H_
 #define REMOTING_HOST_WIN_SESSION_DESKTOP_ENVIRONMENT_H_
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/me2me_desktop_environment.h"

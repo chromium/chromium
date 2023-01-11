@@ -9,9 +9,9 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/current_thread.h"

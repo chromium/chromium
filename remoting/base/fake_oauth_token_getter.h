@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/base/oauth_token_getter.h"
 
 namespace remoting {

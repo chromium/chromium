@@ -12,9 +12,9 @@
 
 #import <OpenGLES/ES2/gl.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 

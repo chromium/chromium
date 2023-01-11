@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_SETUP_HOST_STOPPER_H_
 #define REMOTING_HOST_SETUP_HOST_STOPPER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "remoting/host/setup/daemon_controller.h"

@@ -8,8 +8,8 @@
 #include <cstdlib>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"

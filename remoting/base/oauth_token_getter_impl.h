@@ -5,8 +5,8 @@
 #ifndef REMOTING_BASE_OAUTH_TOKEN_GETTER_IMPL_H_
 #define REMOTING_BASE_OAUTH_TOKEN_GETTER_IMPL_H_
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"

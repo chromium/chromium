@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace remoting {

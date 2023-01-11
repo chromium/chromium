@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"

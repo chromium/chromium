@@ -5,7 +5,7 @@
 #ifndef REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 #define REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

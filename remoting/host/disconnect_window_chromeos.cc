@@ -7,7 +7,7 @@
 
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
 

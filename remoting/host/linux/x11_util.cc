@@ -4,7 +4,7 @@
 
 #include "remoting/host/linux/x11_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"

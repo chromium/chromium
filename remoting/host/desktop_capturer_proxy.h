@@ -13,7 +13,7 @@
 #include "remoting/protocol/desktop_capturer.h"
 
 #if defined(WEBRTC_USE_GIO)
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #endif
 

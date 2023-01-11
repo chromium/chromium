@@ -4,7 +4,7 @@
 
 #include "remoting/client/ui/desktop_viewport.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"

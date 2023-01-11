@@ -8,7 +8,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/client/audio/audio_playback_stream.h"

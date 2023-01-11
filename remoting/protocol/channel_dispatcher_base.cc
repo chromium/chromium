@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/message_channel_factory.h"
 #include "remoting/protocol/message_pipe.h"

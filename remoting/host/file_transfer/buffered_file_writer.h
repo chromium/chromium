@@ -9,10 +9,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/proto/file_transfer.pb.h"
 

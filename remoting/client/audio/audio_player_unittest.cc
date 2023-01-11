@@ -7,8 +7,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

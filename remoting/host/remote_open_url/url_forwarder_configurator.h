@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 
 namespace remoting {

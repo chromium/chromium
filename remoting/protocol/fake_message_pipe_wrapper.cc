@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/fake_message_pipe.h"

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace remoting {

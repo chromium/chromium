@@ -4,7 +4,7 @@
 
 #include "remoting/ios/audio/audio_playback_sink_ios.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

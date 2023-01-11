@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_SECURITY_KEY_SECURITY_KEY_MESSAGE_READER_H_
 #define REMOTING_HOST_SECURITY_KEY_SECURITY_KEY_MESSAGE_READER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "remoting/host/security_key/security_key_message.h"
 
 namespace remoting {

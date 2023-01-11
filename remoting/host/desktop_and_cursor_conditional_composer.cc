@@ -4,7 +4,7 @@
 
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace remoting {
 

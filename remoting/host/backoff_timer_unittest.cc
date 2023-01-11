@@ -4,7 +4,7 @@
 
 #include "remoting/host/backoff_timer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"

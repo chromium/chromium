@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/host_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"

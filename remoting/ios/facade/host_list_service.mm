@@ -16,7 +16,7 @@
 #import "remoting/ios/facade/remoting_authentication.h"
 #import "remoting/ios/facade/remoting_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "remoting/base/directory_service_client.h"

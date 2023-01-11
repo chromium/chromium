@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "remoting/base/constants.h"
 #include "remoting/signaling/iq_sender.h"

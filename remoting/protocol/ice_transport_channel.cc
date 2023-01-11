@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/net_errors.h"

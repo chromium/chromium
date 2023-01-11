@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/atomicops.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"

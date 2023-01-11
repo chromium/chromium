@@ -8,9 +8,9 @@
 #include <sstream>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"

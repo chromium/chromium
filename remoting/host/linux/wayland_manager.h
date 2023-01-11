@@ -9,8 +9,8 @@
 
 #include <xkbcommon/xkbcommon.h>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/base/screen_resolution.h"

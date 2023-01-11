@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"

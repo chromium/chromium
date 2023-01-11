@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"

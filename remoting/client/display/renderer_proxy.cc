@@ -4,8 +4,8 @@
 
 #include "remoting/client/display/renderer_proxy.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/base/queued_task_poster.h"
 #include "remoting/client/display/gl_renderer.h"

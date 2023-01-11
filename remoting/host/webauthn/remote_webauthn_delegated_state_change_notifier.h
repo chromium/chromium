@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_DELEGATED_STATE_CHANGE_NOTIFIER_H_
 #define REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_DELEGATED_STATE_CHANGE_NOTIFIER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 
 namespace remoting {

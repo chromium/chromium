@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"

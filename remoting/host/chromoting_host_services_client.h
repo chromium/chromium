@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"

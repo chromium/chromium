@@ -6,7 +6,7 @@
 
 #include "remoting/protocol/webrtc_frame_scheduler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/session_options.h"
 #include "remoting/protocol/frame_stats.h"

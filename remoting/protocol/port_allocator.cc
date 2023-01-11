@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <map>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"

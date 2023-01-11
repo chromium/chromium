@@ -5,8 +5,8 @@
 #ifndef REMOTING_BASE_PROTOBUF_HTTP_STREAM_REQUEST_H_
 #define REMOTING_BASE_PROTOBUF_HTTP_STREAM_REQUEST_H_
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/base/protobuf_http_request_base.h"

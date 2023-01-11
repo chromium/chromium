@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"

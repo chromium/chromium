@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_IPC_KEYBOARD_LAYOUT_MONITOR_H_
 #define REMOTING_HOST_IPC_KEYBOARD_LAYOUT_MONITOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/keyboard_layout_monitor.h"

@@ -4,7 +4,7 @@
 
 #include "remoting/codec/webrtc_video_encoder_av1.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"

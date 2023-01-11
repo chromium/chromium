@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_MAC_PERMISSION_UTILS_H_
 #define REMOTING_HOST_MAC_PERMISSION_UTILS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace base {

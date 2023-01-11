@@ -20,12 +20,12 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"

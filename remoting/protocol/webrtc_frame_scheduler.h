@@ -5,7 +5,7 @@
 #ifndef REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_H_
 #define REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace webrtc {
 class DesktopFrame;

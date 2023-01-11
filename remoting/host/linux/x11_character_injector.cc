@@ -4,7 +4,7 @@
 
 #include "remoting/host/linux/x11_character_injector.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "remoting/host/linux/x11_keyboard.h"

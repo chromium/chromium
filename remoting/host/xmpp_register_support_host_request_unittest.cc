@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"

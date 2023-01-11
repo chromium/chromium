@@ -4,7 +4,7 @@
 
 #include "remoting/base/directory_service_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"

@@ -8,10 +8,10 @@
 #include <sys/types.h>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
 #include "base/mac/foundation_util.h"

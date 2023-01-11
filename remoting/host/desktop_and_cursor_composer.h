@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_DESKTOP_AND_CURSOR_COMPOSER_H_
 #define REMOTING_HOST_DESKTOP_AND_CURSOR_COMPOSER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_and_cursor_composer.h"
 
 namespace remoting {

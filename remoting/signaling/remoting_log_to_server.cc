@@ -6,7 +6,7 @@
 
 #include <sstream>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/protobuf_http_client.h"

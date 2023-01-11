@@ -14,7 +14,7 @@
 #import "remoting/ios/facade/remoting_service.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/http/http_status_code.h"

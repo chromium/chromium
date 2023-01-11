@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"

@@ -5,7 +5,7 @@
 #ifndef REMOTING_PROTOCOL_MONITORED_VIDEO_STUB_H_
 #define REMOTING_PROTOCOL_MONITORED_VIDEO_STUB_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"

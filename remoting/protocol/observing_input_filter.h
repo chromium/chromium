@@ -7,7 +7,7 @@
 
 #include <functional>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/input_filter.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

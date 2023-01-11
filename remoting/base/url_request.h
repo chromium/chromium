@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace remoting {

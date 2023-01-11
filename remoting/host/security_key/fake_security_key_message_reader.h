@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_SECURITY_KEY_FAKE_SECURITY_KEY_MESSAGE_READER_H_
 #define REMOTING_HOST_SECURITY_KEY_FAKE_SECURITY_KEY_MESSAGE_READER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/security_key/security_key_message_reader.h"

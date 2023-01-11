@@ -5,7 +5,7 @@
 #ifndef REMOTING_BASE_SCOPED_PROTOBUF_HTTP_REQUEST_H_
 #define REMOTING_BASE_SCOPED_PROTOBUF_HTTP_REQUEST_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace remoting {
 

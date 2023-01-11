@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/protocol/authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/qname.h"
 

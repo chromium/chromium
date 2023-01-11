@@ -9,8 +9,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"

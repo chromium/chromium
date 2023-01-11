@@ -9,9 +9,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "remoting/host/input_monitor/local_input_monitor_x11_common.h"

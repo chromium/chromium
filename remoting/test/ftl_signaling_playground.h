@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/timer/timer.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/protocol/client_authentication_config.h"

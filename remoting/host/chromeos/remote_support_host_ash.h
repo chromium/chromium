@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_CHROMEOS_REMOTE_SUPPORT_HOST_ASH_H_
 #define REMOTING_HOST_CHROMEOS_REMOTE_SUPPORT_HOST_ASH_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

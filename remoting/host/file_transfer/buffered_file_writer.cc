@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "remoting/host/file_transfer/buffered_file_writer.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 #include <utility>
 

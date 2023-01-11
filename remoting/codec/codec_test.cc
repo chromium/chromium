@@ -11,7 +11,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/util.h"

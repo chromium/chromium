@@ -5,9 +5,9 @@
 #include "remoting/protocol/third_party_authenticator_base.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/channel_authenticator.h"

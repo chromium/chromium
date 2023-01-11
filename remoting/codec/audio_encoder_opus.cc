@@ -4,7 +4,7 @@
 
 #include "remoting/codec/audio_encoder_opus.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"

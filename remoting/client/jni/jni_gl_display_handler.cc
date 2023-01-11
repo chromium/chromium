@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/android/jni_headers/GlDisplay_jni.h"
 #include "remoting/client/chromoting_client_runtime.h"

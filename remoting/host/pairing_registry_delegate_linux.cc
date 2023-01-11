@@ -7,10 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"

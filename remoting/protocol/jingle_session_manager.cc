@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/jingle_messages.h"

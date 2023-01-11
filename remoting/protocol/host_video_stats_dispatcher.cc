@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/socket/stream_socket.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/base/constants.h"

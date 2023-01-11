@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/channel_multiplexer.h"
 #include "remoting/protocol/pseudotcp_channel_factory.h"

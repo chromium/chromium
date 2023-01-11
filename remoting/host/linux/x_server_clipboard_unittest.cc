@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/linux/x_server_clipboard.h"

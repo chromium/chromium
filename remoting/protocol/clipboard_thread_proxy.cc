@@ -4,7 +4,7 @@
 
 #include "remoting/protocol/clipboard_thread_proxy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting::protocol {

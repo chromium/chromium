@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

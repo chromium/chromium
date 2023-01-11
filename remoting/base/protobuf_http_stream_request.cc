@@ -4,7 +4,7 @@
 
 #include "remoting/base/protobuf_http_stream_request.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "remoting/base/protobuf_http_client.h"

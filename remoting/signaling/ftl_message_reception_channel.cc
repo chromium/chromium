@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/scoped_protobuf_http_request.h"

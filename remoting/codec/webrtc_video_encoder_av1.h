@@ -5,7 +5,7 @@
 #ifndef REMOTING_CODEC_WEBRTC_VIDEO_ENCODER_AV1_H_
 #define REMOTING_CODEC_WEBRTC_VIDEO_ENCODER_AV1_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/video_encoder_active_map.h"
 #include "remoting/codec/webrtc_video_encoder.h"

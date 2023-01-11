@@ -5,7 +5,7 @@
 #ifndef REMOTING_CLIENT_UI_DESKTOP_VIEWPORT_H_
 #define REMOTING_CLIENT_UI_DESKTOP_VIEWPORT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/client/ui/view_matrix.h"
 
 namespace remoting {

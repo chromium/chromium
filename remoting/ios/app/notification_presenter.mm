@@ -6,8 +6,8 @@
 
 #import <MaterialComponents/MaterialDialogs.h>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/string_resources.h"

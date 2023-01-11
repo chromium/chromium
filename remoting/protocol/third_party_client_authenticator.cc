@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/rsa_key_pair.h"

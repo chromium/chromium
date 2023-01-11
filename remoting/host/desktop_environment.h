@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/protocol/desktop_capturer.h"

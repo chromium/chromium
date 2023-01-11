@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_REMOTING_REGISTER_SUPPORT_HOST_REQUEST_H_
 #define REMOTING_HOST_REMOTING_REGISTER_SUPPORT_HOST_REQUEST_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/host/register_support_host_request.h"

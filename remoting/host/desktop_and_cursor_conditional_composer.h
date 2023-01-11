@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_and_cursor_composer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"

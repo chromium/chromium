@@ -9,7 +9,7 @@
 #include <list>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"

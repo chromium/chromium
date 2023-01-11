@@ -4,7 +4,7 @@
 
 #include "remoting/host/native_messaging/log_message_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"

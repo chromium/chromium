@@ -5,7 +5,7 @@
 #ifndef REMOTING_BASE_AUTO_THREAD_TASK_RUNNER_H_
 #define REMOTING_BASE_AUTO_THREAD_TASK_RUNNER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
 

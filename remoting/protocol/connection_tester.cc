@@ -5,7 +5,7 @@
 #include "remoting/protocol/connection_tester.h"
 #include "base/memory/raw_ptr.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
