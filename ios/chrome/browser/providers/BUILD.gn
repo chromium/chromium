@@ -2,28 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("providers") {
-  sources = [
-    "chromium_browser_provider.h",
-    "chromium_browser_provider.mm",
-  ]
-  deps = [
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("chromium_provider_factory") {
-  sources = [ "chromium_browser_provider_factory.mm" ]
-  deps = [
-    ":providers",
-    "//base",
-    "//ios/public/provider/chrome/browser",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 group("chromium_providers") {
   deps = [
     # The individual API implementations.

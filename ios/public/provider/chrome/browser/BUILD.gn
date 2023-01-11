@@ -4,16 +4,6 @@
 
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
-source_set("browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "chrome_browser_provider.h",
-    "chrome_browser_provider.mm",
-  ]
-  deps = [ "//ios/public/provider/chrome/browser/signin" ]
-  public_deps = [ "//base" ]
-}
-
 group("provider_api") {
   deps = [
     # The individual APIs.
@@ -44,29 +34,5 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
-  ]
-}
-
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "test_chrome_browser_provider.h",
-    "test_chrome_browser_provider.mm",
-  ]
-  deps = [
-    ":browser",
-    "//base",
-    "//ios/public/provider/chrome/browser/signin:test_support",
-  ]
-}
-
-source_set("test_provider_factory") {
-  testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_chrome_browser_provider_factory.mm" ]
-  deps = [
-    ":browser",
-    ":test_support",
   ]
 }

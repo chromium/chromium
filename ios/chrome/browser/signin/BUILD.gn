@@ -244,10 +244,7 @@ source_set("fake_system_identity_manager") {
 
 source_set("fake_account_details_view_controller") {
   testonly = true
-  visibility = [
-    ":fake_system_identity_manager",
-    "//ios/public/provider/chrome/browser/signin:test_support",
-  ]
+  visibility = [ ":fake_system_identity_manager" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_account_details_view_controller.h",
