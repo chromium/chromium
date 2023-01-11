@@ -231,10 +231,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // space, the files to pin can be batch pinned.
   void StartPinning();
 
-  void OnSearchResultsForPinning(
-      drive::FileError error,
-      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
-
   // After a file has been pinned, this ensures the in progress map has the item
   // emplaced. Note the file being pinned is just an update in drivefs, not the
   // actually completion of the file being downloaded, that is monitored via
@@ -257,8 +253,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
                            drive::FileError error,
                            mojom::FileMetadataPtr metadata);
 
-  // If there are no remaining items left, get the next search query page.
-  void MaybeContinueSearch();
+  // Start or continue pinning some files.
+  void PinSomeFiles();
 
   // Report progress to all the observers.
   void NotifyProgress();
@@ -286,7 +282,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
 
   // Map that tracks the in-progress files indexed by their stable ID.
   using Files = std::map<StableId, Progress>;
-  Files files_ GUARDED_BY_CONTEXT(sequence_checker_);
+  Files files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
+  Files files_to_track_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 };

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
@@ -237,7 +238,7 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
   int64_t i = static_cast<int64_t>(size);
   if (i == 0) {
-    return out << '0';
+    return out << "zilch";
   }
 
   if (i < 0) {
@@ -249,7 +250,7 @@ std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
     static const base::NoDestructor<std::locale> with_separators(
         std::locale::classic(), new NumPunct);
     std::locale old_locale = out.imbue(*with_separators);
-    out << i;
+    out << i << " bytes";
     out.imbue(std::move(old_locale));
   }
 
@@ -301,8 +302,8 @@ void DriveFsPinManager::Add(const StableId id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Emplace an item with no progress (yet). The progress values will get
   // updated in the `OnSyncingStatusUpdate`.
-  const auto [it, ok] =
-      files_.try_emplace(id, Progress{.path = path, .total = expected_size});
+  const auto [it, ok] = files_to_track_.try_emplace(
+      id, Progress{.path = path, .total = expected_size});
   DCHECK_EQ(id, it->first);
   if (ok) {
     VLOG(3) << "Added " << id << " " << Quote(path) << " to the tracked files";
@@ -320,7 +321,7 @@ bool DriveFsPinManager::Remove(const StableId id,
                                int64_t bytes_transferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const Files::node_type node = files_.extract(id);
+  const Files::node_type node = files_to_track_.extract(id);
   if (!node) {
     return false;
   }
@@ -366,8 +367,8 @@ bool DriveFsPinManager::Update(const StableId id,
     return false;
   }
 
-  const Files::iterator it = files_.find(id);
-  if (it == files_.end()) {
+  const Files::iterator it = files_to_track_.find(id);
+  if (it == files_to_track_.end()) {
     VLOG(3) << "Not tracked: " << id << " " << path;
     return false;
   }
@@ -409,8 +410,8 @@ bool DriveFsPinManager::MarkInProgress(const StableId id,
                                        const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const Files::iterator it = files_.find(id);
-  if (it == files_.end()) {
+  const Files::iterator it = files_to_track_.find(id);
+  if (it == files_to_track_.end()) {
     VLOG(3) << "Not tracked: " << id << " " << path;
     return false;
   }
@@ -465,7 +466,8 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
   should_pin_ = should_pin;
   timer_ = base::ElapsedTimer();
   complete_callback_ = std::move(complete_callback);
-  files_.clear();
+  files_to_pin_.clear();
+  files_to_track_.clear();
   progress_ = {.stage = SetupStage::kCalculatingFreeSpace};
   NotifyProgress();
 
@@ -505,17 +507,33 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FILE_ERROR_OK || !items) {
-    LOG(ERROR) << "Cannot list files for space calculation: " << error;
+    LOG(ERROR) << "Cannot list files: " << error;
     return Complete(SetupStage::kCannotRetrieveSearchResults);
   }
 
   if (items->empty()) {
+    search_query_.reset();
     VLOG(1) << "Calculated required space in "
             << timer_.Elapsed().InMilliseconds() << " ms";
     VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
     VLOG(1) << "Required space: "
             << HumanReadableSize(progress_.required_space);
     VLOG(1) << "To download: " << HumanReadableSize(progress_.total_bytes);
+    VLOG(1) << "To pin: " << files_to_pin_.size() << " files";
+
+    // The free space should not go below this limit.
+    const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
+    const int64_t required_with_margin = progress_.required_space + margin;
+
+    if (progress_.free_space < required_with_margin) {
+      LOG(ERROR) << "Not enough space: Required: "
+                 << HumanReadableSize(progress_.required_space)
+                 << ", Required plus margin: "
+                 << HumanReadableSize(required_with_margin)
+                 << ", Free: " << HumanReadableSize(progress_.free_space);
+      return Complete(SetupStage::kNotEnoughSpace);
+    }
+
     return StartPinning();
   }
 
@@ -541,19 +559,12 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     const int64_t block_size = 4096;
     const int64_t block_count = (size + (block_size - 1)) / block_size;
     progress_.required_space += block_count * block_size;
-  }
 
-  // The free space should not go below this limit.
-  const int64_t storage_floor = cryptohome::kMinFreeSpaceInBytes;
-  const int64_t required_with_margin = progress_.required_space + storage_floor;
-
-  if (progress_.free_space < required_with_margin) {
-    LOG(ERROR) << "Not enough space: Required: "
-               << HumanReadableSize(progress_.required_space)
-               << ", Required plus margin: "
-               << HumanReadableSize(required_with_margin)
-               << ", Free: " << HumanReadableSize(progress_.free_space);
-    return Complete(SetupStage::kNotEnoughSpace);
+    const auto [it, ok] = files_to_pin_.try_emplace(
+        id, Progress{.path = path.value(), .total = size});
+    LOG_IF(ERROR, !ok) << "Cannot add " << id << " " << Quote(path)
+                       << " to the files to pin: Conflicting entry "
+                       << it->second;
   }
 
   NotifyProgress();
@@ -568,17 +579,17 @@ void DriveFsPinManager::Complete(const SetupStage stage) {
   DCHECK(!InProgress(stage));
   progress_.stage = stage;
   if (stage == SetupStage::kSuccess) {
+    LOG_IF(ERROR, progress_.errors > 0)
+        << "Failed to pin " << progress_.errors << " files";
+    VLOG(1) << "Pinned " << progress_.pinned_files << " files and downloaded "
+            << HumanReadableSize(progress_.transferred_bytes) << " in "
+            << timer_.Elapsed().InMilliseconds() << " ms";
+    VLOG(2) << "Useful events: " << progress_.useful_events;
+    VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
     VLOG(1) << "Finished with success";
   } else {
     LOG(ERROR) << "Finished with error: " << stage;
   }
-
-  LOG_IF(ERROR, progress_.errors > 0)
-      << "Failed to pin " << progress_.errors << " files";
-  VLOG(1) << "Pinned " << progress_.pinned_files << " files in "
-          << timer_.Elapsed().InMilliseconds() << " ms";
-  VLOG(2) << "Useful events: " << progress_.useful_events;
-  VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
 
   NotifyProgress();
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -595,68 +606,51 @@ void DriveFsPinManager::StartPinning() {
     return Complete(SetupStage::kSuccess);
   }
 
-  // Restart the search query.
-  search_query_.reset();
-
   progress_.stage = SetupStage::kSyncing;
   NotifyProgress();
 
-  drivefs_interface_->StartSearchQuery(
-      search_query_.BindNewPipeAndPassReceiver(), CreateMyDriveQuery());
-  search_query_->GetNextPage(
-      base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   // Start a periodic task that removes any files that are already available
-  // offline from the `in_progress_items_` map.
+  // offline from the `files_to_track_` map.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles,
                      weak_ptr_factory_.GetWeakPtr()),
       kPeriodicRemovalInterval);
+
+  PinSomeFiles();
 }
 
-void DriveFsPinManager::OnSearchResultsForPinning(
-    const drive::FileError error,
-    const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
+void DriveFsPinManager::PinSomeFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (error != drive::FILE_ERROR_OK || !items) {
-    LOG(ERROR) << "Cannot list files to pin: " << error;
-    return Complete(SetupStage::kCannotRetrieveSearchResults);
-  }
-
-  if (items->empty()) {
+  if (files_to_track_.empty() && files_to_pin_.empty()) {
     return Complete(SetupStage::kSuccess);
   }
 
-  // TODO(b/259454320): Free disk space should be retrieved here and after the
-  // batch of pinning operations has completed to identify if any other
-  // operations writing to disk might cause cause the free space to get used
-  // faster than anticipated.
-  for (const mojom::QueryItemPtr& item : *items) {
-    DCHECK(item);
-    const base::FilePath& path = item->path;
-    DCHECK(item->metadata);
-    const mojom::FileMetadata& md = *item->metadata;
-    const StableId id = StableId(md.stable_id);
-    VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
-
-    if (!CanPinItem(md, item->path)) {
-      continue;
-    }
-
-    VLOG(2) << "Pinning " << id << " " << Quote(path);
-    Add(id, path.value(), GetSize(md));
+  while (files_to_track_.size() < 50 && !files_to_pin_.empty()) {
+    Files::node_type node = files_to_pin_.extract(files_to_pin_.begin());
+    DCHECK(node);
+    const StableId id = node.key();
+    const Progress& progress = node.mapped();
+    const std::string& path = progress.path;
 
     // TODO(b/264932437) Use stable ID instead of path.
+    VLOG(2) << "Pinning " << id << " " << Quote(path);
     drivefs_interface_->SetPinned(
-        path, true,
+        base::FilePath(path), true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
-                       weak_ptr_factory_.GetWeakPtr(), id, path.value()));
+                       weak_ptr_factory_.GetWeakPtr(), id, path));
+
+    const Files::insert_return_type ir =
+        files_to_track_.insert(std::move(node));
+    DCHECK(ir.inserted) << " for " << id << " " << path;
   }
 
-  MaybeContinueSearch();
+  VLOG(1) << "Progress "
+          << (100 * progress_.transferred_bytes / progress_.total_bytes)
+          << "%: synced " << HumanReadableSize(progress_.transferred_bytes)
+          << " and " << progress_.pinned_files << " files, syncing "
+          << files_to_track_.size() << " files";
 }
 
 void DriveFsPinManager::OnFilePinned(const StableId id,
@@ -669,6 +663,7 @@ void DriveFsPinManager::OnFilePinned(const StableId id,
     if (Remove(id, path, 0)) {
       progress_.errors++;
       NotifyProgress();
+      PinSomeFiles();
     }
     return;
   }
@@ -749,22 +744,7 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
     LOG(ERROR) << "Unexpected event type: " << Quote(*event);
   }
 
-  MaybeContinueSearch();
-}
-
-void DriveFsPinManager::MaybeContinueSearch() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!files_.empty()) {
-    VLOG(1) << "Syncing " << files_.size() << " files";
-    return;
-  }
-
-  VLOG(1) << "Getting next batch of items";
-  DCHECK(search_query_);
-  search_query_->GetNextPage(
-      base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
-                     weak_ptr_factory_.GetWeakPtr()));
+  PinSomeFiles();
 }
 
 void DriveFsPinManager::OnUnmounted() {}
@@ -805,7 +785,7 @@ void DriveFsPinManager::RemoveObserver(DriveFsBulkPinObserver* observer) {
 void DriveFsPinManager::CheckUnstartedFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const auto& [id, progress] : files_) {
+  for (const auto& [id, progress] : files_to_track_) {
     if (!progress.in_progress) {
       const std::string& path = progress.path;
       VLOG(2) << "Checking unstarted " << id << " " << Quote(path);
@@ -817,13 +797,13 @@ void DriveFsPinManager::CheckUnstartedFiles() {
     }
   }
 
-  MaybeContinueSearch();
-
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DriveFsPinManager::CheckUnstartedFiles,
                      weak_ptr_factory_.GetWeakPtr()),
       kPeriodicRemovalInterval);
+
+  PinSomeFiles();
 }
 
 void DriveFsPinManager::OnMetadataRetrieved(
@@ -844,6 +824,7 @@ void DriveFsPinManager::OnMetadataRetrieved(
     VLOG(1) << "Stopped tracking " << id << " " << Quote(path);
     progress_.errors++;
     NotifyProgress();
+    PinSomeFiles();
     return;
   }
 
@@ -868,6 +849,7 @@ void DriveFsPinManager::OnMetadataRetrieved(
 
   progress_.pinned_files++;
   NotifyProgress();
+  PinSomeFiles();
 }
 
 }  // namespace drivefs::pinning
