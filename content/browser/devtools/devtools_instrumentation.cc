@@ -1673,6 +1673,9 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
           CrossOriginPortalPostMessageError;
     case blink::mojom::GenericIssueErrorType::kFormLabelForNameError:
       return protocol::Audits::GenericIssueErrorTypeEnum::FormLabelForNameError;
+    case blink::mojom::GenericIssueErrorType::kFormInputWithNoLabelError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormInputWithNoLabelError;
   }
 }
 

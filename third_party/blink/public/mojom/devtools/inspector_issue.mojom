@@ -222,6 +222,7 @@ struct FederatedAuthRequestIssueDetails {
 enum GenericIssueErrorType {
   kCrossOriginPortalPostMessageError,
   kFormLabelForNameError,
+  kFormInputWithNoLabelError,
 };
 
 struct GenericIssueDetails {
