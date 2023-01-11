@@ -5,18 +5,29 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_KEYWORD_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_KEYWORD_UTIL_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ash/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/types.h"
+
 namespace app_list {
 
-// Given a user query, processes the query into tokens separated by ' '.
-std::vector<std::string> TokenizeQuery(const std::string& query);
+using KeywordToProvidersMap =
+    base::flat_map<std::u16string, std::vector<ProviderType>>;
 
-// Provided the list of tokens produced from the user query, returns
-// a list of keywords and its associated SearchProvider.
-std::vector<std::string> ExtractKeyword(
-    const std::vector<std::string>& query_tokens);
+using KeywordToProvidersPair =
+    std::pair<std::u16string, std::vector<ProviderType>>;
+
+// Given a user query, processes the query into tokens separated by ' '.
+std::vector<std::string> TokenizeQuery(const std::u16string& query);
+
+// Provided the list of tokens produced from the user query, returns a list of
+// keywords and its associated SearchProviders.
+//   - A given keyword can be associated with 1 or more SearchProviders.
+//   - Multiple keywords may map to the same SearchProvider.
+KeywordToProvidersPair ExtractKeyword(const std::u16string& query);
 
 }  // namespace app_list
 
