@@ -1,0 +1,20 @@
+# Filter out failing infobar tests from Chrome for Testing trybots
+
+# Chrome for Testing (CfT) adds a global info bar.
+# As a side effect, this fails tests that explicitly assert:
+#   - the infobar count
+#   - the number of ax::mojom::Role::kAlert fired events
+#   - height of DOM elements and viewport size
+#   - fullscreen mode and desktop web app custom title bar styling
+#   - default focused elements or focusable elements count
+
+# Since those tests are already covered by non-cft trybots, we just disable
+# them for cft trybots.
+
+# https://ci.chromium.org/ui/p/chromium/builders/ci/win-rel-cft/1726
+-BrowserFocusTest.AppLocationBar
+-BrowserFocusTest.PopupLocationBar
+-ChromeMimeHandlerViewInteractiveUITest.Fullscreen
+-PopupBlockerBrowserTest.WindowFeatures
+-SitePerProcessInteractiveBrowserTest.FullscreenElementInABAAndExitViaEscapeKey
+-SitePerProcessInteractiveBrowserTest.FullscreenElementInSubframe

@@ -1078,7 +1078,7 @@
       },
       'linux-rel-cft': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter;../../testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter',
         ],
       },
       'mac-code-coverage': {
@@ -1093,7 +1093,7 @@
       },
       'mac-rel-cft': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter;../../testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter',
         ],
       },
       'mac11-arm64-rel-tests': {
@@ -1129,7 +1129,7 @@
       },
       'win-rel-cft': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter;../../testing/buildbot/filters/win.win-rel-cft.interactive_ui_tests.filter',
         ],
       },
       'win10-rel-no-external-ip': {
