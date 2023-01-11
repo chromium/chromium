@@ -72,6 +72,7 @@ android_apk("weblayer_support_apk") {
     "//weblayer:locale_pak_assets",
     "//weblayer/browser/java",
     "//weblayer/browser/java:test_java",
+    "//weblayer/test:weblayer_test_assets",
   ]
 
   # Transitive dependencies
