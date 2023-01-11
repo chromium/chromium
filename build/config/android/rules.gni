@@ -1238,6 +1238,14 @@ if (enable_java_templates && is_android) {
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
+    _sources = []
+    if (defined(invoker.sources)) {
+      _sources = invoker.sources
+    }
+    _renaming_sources = []
+    if (defined(invoker.renaming_sources)) {
+      _renaming_sources = invoker.renaming_sources
+    }
     write_build_config(_build_config_target_name) {
       type = "android_assets"
       build_config = _build_config
@@ -1252,13 +1260,13 @@ if (enable_java_templates && is_android) {
         possible_config_deps = invoker.deps
       }
 
-      if (defined(invoker.sources)) {
-        asset_sources = invoker.sources
+      if (_sources != []) {
+        asset_sources = _sources
       }
-      if (defined(invoker.renaming_sources)) {
+      if (_renaming_sources != []) {
         assert(defined(invoker.renaming_destinations))
         _source_count = 0
-        foreach(_, invoker.renaming_sources) {
+        foreach(_, _renaming_sources) {
           _source_count += 1
         }
         _dest_count = 0
@@ -1268,22 +1276,30 @@ if (enable_java_templates && is_android) {
         assert(
             _source_count == _dest_count,
             "android_assets() renaming_sources.length != renaming_destinations.length")
-        asset_renaming_sources = invoker.renaming_sources
+        asset_renaming_sources = _renaming_sources
         asset_renaming_destinations = invoker.renaming_destinations
       }
     }
-    if (defined(invoker.renaming_sources)) {
+
+    # Use an action in order to mark sources as "inputs" to a GN target so that
+    # GN will fail if the appropriate deps do not exist, and so that "gn refs"
+    # will know about the sources. We do not add these inputs & deps to the
+    # __build_config target because we want building .build_config.json files
+    # to be fast (and because write_build_config.py does not need the files to
+    # exist).
+    _all_sources = _sources + _renaming_sources
+    if (_all_sources != []) {
       action(target_name) {
         forward_variables_from(invoker, [ "deps" ])
         public_deps = [ ":$_build_config_target_name" ]
 
         script = "//build/android/gyp/validate_inputs.py"
-        inputs = invoker.renaming_sources
+        inputs = _all_sources
         outputs = [ "$target_gen_dir/$target_name.stamp" ]
         args = [
                  "--stamp",
                  rebase_path(outputs[0], root_build_dir),
-               ] + rebase_path(inputs, root_build_dir)
+               ] + rebase_path(_all_sources, root_build_dir)
       }
     } else {
       group(target_name) {
