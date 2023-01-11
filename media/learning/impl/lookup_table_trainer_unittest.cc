@@ -4,7 +4,7 @@
 
 #include "media/learning/impl/lookup_table_trainer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

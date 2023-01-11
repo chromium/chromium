@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_VIDEO_RENDERER_H_
 #define MEDIA_BASE_VIDEO_RENDERER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/time_source.h"

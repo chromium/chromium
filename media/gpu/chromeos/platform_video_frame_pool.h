@@ -10,9 +10,9 @@
 #include <map>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"

@@ -5,7 +5,7 @@
 #ifndef MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_RENDERER_EXTENSION_H_
 #define MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_RENDERER_EXTENSION_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/win/scoped_handle.h"
 #include "media/base/media_export.h"
 #include "media/renderers/win/media_foundation_rendering_mode.h"

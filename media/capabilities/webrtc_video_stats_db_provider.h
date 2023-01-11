@@ -5,7 +5,7 @@
 #ifndef MEDIA_CAPABILITIES_WEBRTC_VIDEO_STATS_DB_PROVIDER_H_
 #define MEDIA_CAPABILITIES_WEBRTC_VIDEO_STATS_DB_PROVIDER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "media/base/media_export.h"
 
 namespace media {

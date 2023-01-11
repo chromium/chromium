@@ -5,8 +5,8 @@
 #ifndef MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_SERVICE_H_
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_SERVICE_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "gpu/config/gpu_info.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"

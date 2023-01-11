@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/learning/common/learning_task_controller.h"
 
 namespace media {

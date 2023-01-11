@@ -4,7 +4,7 @@
 
 #include "media/base/android/test_destruction_observable.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

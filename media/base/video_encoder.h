@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_VIDEO_ENCODER_H_
 #define MEDIA_BASE_VIDEO_ENCODER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"

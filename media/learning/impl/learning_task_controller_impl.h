@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/impl/distribution_reporter.h"

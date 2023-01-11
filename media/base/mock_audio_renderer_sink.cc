@@ -4,7 +4,7 @@
 
 #include "media/base/mock_audio_renderer_sink.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace media {

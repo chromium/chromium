@@ -4,7 +4,7 @@
 
 #include "media/mojo/services/mojo_provision_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace media {
 

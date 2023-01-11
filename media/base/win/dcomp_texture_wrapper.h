@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_WIN_DCOMP_TEXTURE_WRAPPER_H_
 #define MEDIA_BASE_WIN_DCOMP_TEXTURE_WRAPPER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 

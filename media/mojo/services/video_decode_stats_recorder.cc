@@ -4,7 +4,7 @@
 
 #include "media/mojo/services/video_decode_stats_recorder.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 
 #include "base/logging.h"

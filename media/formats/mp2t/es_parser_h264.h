@@ -10,8 +10,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_decoder_config.h"

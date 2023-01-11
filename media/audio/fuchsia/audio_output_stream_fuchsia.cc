@@ -8,9 +8,9 @@
 #include <lib/sys/cpp/component_context.h>
 #include <zircon/syscalls.h>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "media/audio/fuchsia/audio_manager_fuchsia.h"

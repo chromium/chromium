@@ -5,8 +5,8 @@
 #ifndef MEDIA_LEARNING_COMMON_MEDIA_LEARNING_TASKS_H_
 #define MEDIA_LEARNING_COMMON_MEDIA_LEARNING_TASKS_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "media/learning/common/learning_task.h"
 
 namespace media {

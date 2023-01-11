@@ -8,9 +8,9 @@
 #include <cmath>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"

@@ -4,8 +4,8 @@
 
 #include "media/gpu/test/video_encoder/bitstream_file_writer.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"

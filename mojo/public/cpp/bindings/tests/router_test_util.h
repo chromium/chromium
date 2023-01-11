@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"
 

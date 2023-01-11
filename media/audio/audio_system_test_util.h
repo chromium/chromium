@@ -5,7 +5,7 @@
 #ifndef MEDIA_AUDIO_AUDIO_SYSTEM_TEST_UTIL_H_
 #define MEDIA_AUDIO_AUDIO_SYSTEM_TEST_UTIL_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"

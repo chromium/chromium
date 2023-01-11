@@ -5,8 +5,8 @@
 #ifndef MEDIA_LEARNING_IMPL_FEATURE_PROVIDER_H_
 #define MEDIA_LEARNING_IMPL_FEATURE_PROVIDER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/threading/sequence_bound.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"

@@ -4,7 +4,7 @@
 
 #include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace media {
 

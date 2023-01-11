@@ -12,9 +12,9 @@
 #include <memory>
 #include <tuple>
 
-#include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/debug/activity_tracker.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

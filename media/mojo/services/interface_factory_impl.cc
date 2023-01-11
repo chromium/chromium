@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,7 +29,7 @@
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
     BUILDFLAG(IS_WIN)
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "media/base/renderer.h"
 #include "media/mojo/services/mojo_renderer_service.h"
 #endif

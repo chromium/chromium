@@ -5,7 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_VIDEO_FRAME_RECEIVER_H_
 #define MEDIA_CAPTURE_VIDEO_VIDEO_FRAME_RECEIVER_H_
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"

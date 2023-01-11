@@ -5,8 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_VALIDATION_ERRORS_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_VALIDATION_ERRORS_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 
 namespace mojo {

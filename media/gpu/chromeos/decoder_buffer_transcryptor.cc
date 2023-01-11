@@ -4,7 +4,7 @@
 
 #include "media/gpu/chromeos/decoder_buffer_transcryptor.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "media/base/bind_to_current_loop.h"
 

@@ -4,7 +4,7 @@
 
 #include "media/capture/video/gpu_memory_buffer_utils.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 

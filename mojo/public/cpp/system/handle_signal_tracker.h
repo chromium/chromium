@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_HANDLE_SIGNAL_TRACKER_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_HANDLE_SIGNAL_TRACKER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/handle.h"

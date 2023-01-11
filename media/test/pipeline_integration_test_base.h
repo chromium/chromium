@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/hash/md5.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_run_loop_timeout.h"

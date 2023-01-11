@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_ANDROID_TEST_DESTRUCTION_OBSERVABLE_H_
 #define MEDIA_BASE_ANDROID_TEST_DESTRUCTION_OBSERVABLE_H_
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

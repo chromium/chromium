@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"

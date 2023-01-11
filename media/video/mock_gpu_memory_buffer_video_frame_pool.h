@@ -5,7 +5,7 @@
 #ifndef MEDIA_VIDEO_MOCK_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 #define MEDIA_VIDEO_MOCK_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "testing/gmock/include/gmock/gmock.h"

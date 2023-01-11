@@ -4,7 +4,7 @@
 
 #include "media/gpu/ipc/client/gpu_video_decode_accelerator_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

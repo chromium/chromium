@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_AUDIO_DECODER_H_
 #define MEDIA_BASE_AUDIO_DECODER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"

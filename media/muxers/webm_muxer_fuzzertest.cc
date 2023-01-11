@@ -8,7 +8,7 @@
 #include <memory>
 #include <random>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"

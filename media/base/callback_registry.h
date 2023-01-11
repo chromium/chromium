@@ -10,7 +10,7 @@
 #include <map>
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"

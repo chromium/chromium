@@ -6,9 +6,9 @@
 
 #include <sys/mman.h>
 
-#include "base/bind.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"

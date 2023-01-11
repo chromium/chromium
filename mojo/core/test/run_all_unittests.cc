@@ -4,7 +4,7 @@
 
 #include <signal.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "build/build_config.h"
 #include "mojo/core/test/mojo_test_suite_base.h"

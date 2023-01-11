@@ -12,10 +12,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"

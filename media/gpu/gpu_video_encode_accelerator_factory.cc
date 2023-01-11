@@ -4,10 +4,10 @@
 
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"

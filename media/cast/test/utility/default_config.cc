@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/cast_transport_config.h"

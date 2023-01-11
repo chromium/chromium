@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "media/base/sinc_resampler.h"
 
 namespace media {

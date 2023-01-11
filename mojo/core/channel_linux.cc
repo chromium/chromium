@@ -19,10 +19,10 @@
 #include <limits>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/bits.h"
-#include "base/callback.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"

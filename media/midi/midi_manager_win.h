@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/system/system_monitor.h"
 #include "media/midi/midi_export.h"

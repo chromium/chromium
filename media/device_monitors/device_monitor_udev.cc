@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "base/system/system_monitor.h"
 #include "base/task/thread_pool.h"

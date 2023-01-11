@@ -4,7 +4,7 @@
 
 #include "media/capture/video/mac/pixel_buffer_pool_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/mac/scoped_nsobject.h"
 #import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -4,7 +4,7 @@
 
 #include "media/mojo/services/mojo_cdm_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"

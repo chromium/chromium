@@ -6,7 +6,7 @@
 #define MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_DECODER_DELEGATE_H_
 
 #include "base/atomic_sequence_num.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"

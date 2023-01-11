@@ -5,7 +5,7 @@
 #ifndef MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 #define MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

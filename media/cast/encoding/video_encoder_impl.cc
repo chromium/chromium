@@ -7,10 +7,10 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "media/base/video_frame.h"
 #if BUILDFLAG(ENABLE_LIBAOM)
 #include "media/cast/encoding/av1_encoder.h"

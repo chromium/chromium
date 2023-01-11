@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_AUDIO_PROCESSOR_CONTROLS_H_
 #define MEDIA_BASE_AUDIO_PROCESSOR_CONTROLS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "media/base/media_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

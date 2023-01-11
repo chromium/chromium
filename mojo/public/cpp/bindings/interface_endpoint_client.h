@@ -11,10 +11,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

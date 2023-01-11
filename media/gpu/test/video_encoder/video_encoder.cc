@@ -4,7 +4,7 @@
 
 #include "media/gpu/test/video_encoder/video_encoder.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/macros.h"

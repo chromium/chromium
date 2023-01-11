@@ -4,8 +4,8 @@
 
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"

@@ -5,8 +5,8 @@
 #ifndef MEDIA_REMOTING_STREAM_PROVIDER_H_
 #define MEDIA_REMOTING_STREAM_PROVIDER_H_
 
-#include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

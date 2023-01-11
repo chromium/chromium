@@ -14,12 +14,12 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/bits.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/stack_container.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

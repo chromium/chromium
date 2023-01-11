@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/base/video_codecs.h"
 #include "media/learning/common/value.h"

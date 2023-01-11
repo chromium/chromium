@@ -4,7 +4,7 @@
 
 #include "media/gpu/chromeos/image_processor_with_pool.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/media_serializers.h"

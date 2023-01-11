@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "media/base/bind_to_current_loop.h"

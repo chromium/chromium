@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "media/base/byte_queue.h"

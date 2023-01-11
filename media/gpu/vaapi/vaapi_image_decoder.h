@@ -10,8 +10,8 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"

@@ -4,7 +4,7 @@
 
 #include "media/base/silent_sink_suspender.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_glitch_info.h"
 

@@ -11,8 +11,8 @@
 
 #include <queue>
 
-#include "base/bind.h"
 #include "base/bits.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"

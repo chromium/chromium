@@ -5,7 +5,7 @@
 #ifndef MEDIA_RENDERERS_DECRYPTING_RENDERER_FACTORY_H_
 #define MEDIA_RENDERERS_DECRYPTING_RENDERER_FACTORY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/media_export.h"

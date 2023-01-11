@@ -5,8 +5,8 @@
 #ifndef MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_GPU_INFO_MONITOR_H_
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_GPU_INFO_MONITOR_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/win/windows_types.h"
 #include "gpu/config/gpu_info.h"
 #include "media/mojo/services/media_mojo_export.h"

@@ -5,7 +5,7 @@
 #ifndef MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_FACTORY_SERVICE_H_
 #define MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_FACTORY_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"

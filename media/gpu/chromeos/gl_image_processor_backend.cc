@@ -4,7 +4,7 @@
 
 #include "media/gpu/chromeos/gl_image_processor_backend.h"
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"

@@ -5,8 +5,8 @@
 #ifndef MEDIA_GPU_BUFFER_VALIDATION_H_
 #define MEDIA_GPU_BUFFER_VALIDATION_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "media/base/video_types.h"
 
 namespace gfx {

@@ -4,10 +4,10 @@
 
 #include "media/fuchsia/cdm/service/provisioning_fetcher_impl.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 
 namespace media {

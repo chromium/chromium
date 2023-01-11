@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/impl/model.h"
 

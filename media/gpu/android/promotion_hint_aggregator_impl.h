@@ -5,7 +5,7 @@
 #ifndef MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_IMPL_H_
 #define MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_IMPL_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"

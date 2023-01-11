@@ -9,8 +9,8 @@
 #include <tuple>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"

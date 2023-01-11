@@ -11,7 +11,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_log.h"
 #include "media/gpu/av1_decoder.h"

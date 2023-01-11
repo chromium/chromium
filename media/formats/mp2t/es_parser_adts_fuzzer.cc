@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/formats/mp2t/es_parser_adts.h"
 

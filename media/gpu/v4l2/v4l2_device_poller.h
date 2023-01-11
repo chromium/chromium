@@ -6,7 +6,7 @@
 #define MEDIA_GPU_V4L2_V4L2_DEVICE_POLLER_H_
 
 #include <atomic>
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"

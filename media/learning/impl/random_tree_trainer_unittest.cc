@@ -4,7 +4,7 @@
 
 #include "media/learning/impl/random_tree_trainer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/learning/impl/test_random_number_generator.h"

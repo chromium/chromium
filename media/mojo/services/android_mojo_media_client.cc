@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/android/android_cdm_factory.h"
 #include "media/base/audio_decoder.h"

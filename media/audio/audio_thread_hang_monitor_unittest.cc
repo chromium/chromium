@@ -4,7 +4,7 @@
 
 #include "media/audio/audio_thread_hang_monitor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"

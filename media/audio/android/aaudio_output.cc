@@ -5,7 +5,7 @@
 #include "media/audio/android/aaudio_output.h"
 
 #include "base/android/build_info.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"

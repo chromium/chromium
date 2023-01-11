@@ -5,10 +5,10 @@
 #include "media/remoting/stream_provider.h"
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"

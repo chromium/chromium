@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/system/simple_watcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"

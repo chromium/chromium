@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"

@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_debug_recording_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"

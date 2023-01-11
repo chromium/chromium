@@ -8,9 +8,9 @@
 #include <string>
 #include <tuple>
 
-#include "base/bind.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"

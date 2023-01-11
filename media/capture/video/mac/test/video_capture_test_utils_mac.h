@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 
 namespace media {

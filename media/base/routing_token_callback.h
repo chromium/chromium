@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_ROUTING_TOKEN_CALLBACK_H_
 #define MEDIA_BASE_ROUTING_TOKEN_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 
 namespace media {

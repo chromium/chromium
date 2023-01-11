@@ -5,8 +5,8 @@
 #ifndef MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_H_
 #define MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_H_
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
 

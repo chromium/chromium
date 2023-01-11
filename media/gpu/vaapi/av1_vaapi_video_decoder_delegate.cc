@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"

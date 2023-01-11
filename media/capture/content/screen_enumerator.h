@@ -5,7 +5,7 @@
 #ifndef MEDIA_CAPTURE_CONTENT_SCREEN_ENUMERATOR_H_
 #define MEDIA_CAPTURE_CONTENT_SCREEN_ENUMERATOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace blink::mojom {
 class StreamDevicesSet;

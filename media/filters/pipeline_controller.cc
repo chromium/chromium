@@ -4,7 +4,7 @@
 
 #include "media/filters/pipeline_controller.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/base/demuxer.h"
 
 namespace media {

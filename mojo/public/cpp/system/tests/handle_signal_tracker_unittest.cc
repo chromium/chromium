@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/system/handle_signal_tracker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/core/embedder/embedder.h"

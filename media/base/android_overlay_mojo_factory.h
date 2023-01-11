@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_H_
 #define MEDIA_BASE_ANDROID_OVERLAY_MOJO_FACTORY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "media/base/android_overlay_config.h"
 

@@ -8,12 +8,12 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scheduler.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/audio/fuchsia/audio_input_stream_fuchsia.h"
 #include "media/audio/fuchsia/audio_output_stream_fuchsia.h"

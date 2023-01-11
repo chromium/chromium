@@ -9,9 +9,9 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "media/fuchsia/common/vmo_buffer.h"
 

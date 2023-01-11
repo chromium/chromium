@@ -4,7 +4,7 @@
 
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"

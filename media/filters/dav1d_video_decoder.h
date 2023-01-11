@@ -5,7 +5,7 @@
 #ifndef MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 #define MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"

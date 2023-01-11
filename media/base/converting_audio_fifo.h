@@ -5,8 +5,8 @@
 #ifndef MEDIA_BASE_CONVERTING_AUDIO_FIFO_H_
 #define MEDIA_BASE_CONVERTING_AUDIO_FIFO_H_
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_parameters.h"

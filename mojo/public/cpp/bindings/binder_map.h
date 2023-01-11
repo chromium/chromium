@@ -9,8 +9,8 @@
 #include <string>
 #include <type_traits>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

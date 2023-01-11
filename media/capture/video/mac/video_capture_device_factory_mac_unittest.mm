@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

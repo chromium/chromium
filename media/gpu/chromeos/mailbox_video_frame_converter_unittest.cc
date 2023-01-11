@@ -4,7 +4,7 @@
 
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"

@@ -4,8 +4,8 @@
 
 #include "media/learning/impl/distribution_reporter.h"
 
-#include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"

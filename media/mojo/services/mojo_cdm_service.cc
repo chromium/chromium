@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"

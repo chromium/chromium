@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"

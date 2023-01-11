@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/system/message_pipe.h"

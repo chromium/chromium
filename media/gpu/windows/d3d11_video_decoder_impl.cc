@@ -4,7 +4,7 @@
 
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/service/gpu_channel.h"

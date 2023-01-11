@@ -14,10 +14,10 @@
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"

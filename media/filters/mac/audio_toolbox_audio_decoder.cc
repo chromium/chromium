@@ -5,7 +5,7 @@
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/ranges/algorithm.h"

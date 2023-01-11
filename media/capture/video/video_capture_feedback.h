@@ -8,7 +8,7 @@
 #include <limits>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "media/capture/capture_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"

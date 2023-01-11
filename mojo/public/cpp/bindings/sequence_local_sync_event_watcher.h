@@ -5,8 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_SEQUENCE_LOCAL_SYNC_EVENT_WATCHER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_SEQUENCE_LOCAL_SYNC_EVENT_WATCHER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 namespace mojo {

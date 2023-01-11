@@ -14,9 +14,9 @@
 #include <utility>
 
 #include "base/big_endian.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"

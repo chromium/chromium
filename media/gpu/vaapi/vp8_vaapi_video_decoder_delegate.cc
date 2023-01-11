@@ -4,7 +4,7 @@
 
 #include "media/gpu/vaapi/vp8_vaapi_video_decoder_delegate.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/va_surface.h"

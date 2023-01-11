@@ -6,8 +6,8 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/sequence_token.h"
 #include "base/task/sequenced_task_runner.h"

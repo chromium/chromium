@@ -8,8 +8,6 @@
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/fpromise/promise.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_enumerator.h"
@@ -17,6 +15,8 @@
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"

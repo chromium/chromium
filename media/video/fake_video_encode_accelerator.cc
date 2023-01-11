@@ -4,8 +4,8 @@
 
 #include "media/video/fake_video_encode_accelerator.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"

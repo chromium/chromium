@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/system/functions.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "mojo/public/c/system/invitation.h"
 

@@ -5,7 +5,7 @@
 #ifndef MEDIA_GPU_WINDOWS_OUTPUT_WITH_RELEASE_MAILBOX_CB_H_
 #define MEDIA_GPU_WINDOWS_OUTPUT_WITH_RELEASE_MAILBOX_CB_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 

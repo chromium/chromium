@@ -4,7 +4,7 @@
 
 #include "media/fuchsia/cdm/fuchsia_cdm_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_systems.h"

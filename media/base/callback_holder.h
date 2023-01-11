@@ -5,9 +5,9 @@
 #ifndef MEDIA_BASE_CALLBACK_HOLDER_H_
 #define MEDIA_BASE_CALLBACK_HOLDER_H_
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 
 namespace media {
 

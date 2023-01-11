@@ -5,7 +5,7 @@
 #ifndef MEDIA_AUDIO_POWER_OBSERVER_HELPER_H_
 #define MEDIA_AUDIO_POWER_OBSERVER_HELPER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"

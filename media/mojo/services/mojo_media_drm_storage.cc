@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/unguessable_token.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

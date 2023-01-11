@@ -4,11 +4,11 @@
 
 #include "media/gpu/vaapi/vaapi_image_decoder_test_common.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"

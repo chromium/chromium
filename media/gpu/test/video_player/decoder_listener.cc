@@ -4,7 +4,7 @@
 
 #include "media/gpu/test/video_player/decoder_listener.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video.h"

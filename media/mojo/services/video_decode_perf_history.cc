@@ -4,9 +4,9 @@
 
 #include "media/mojo/services/video_decode_perf_history.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"

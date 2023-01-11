@@ -4,7 +4,7 @@
 
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"

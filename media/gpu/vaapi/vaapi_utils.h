@@ -7,8 +7,8 @@
 
 #include <va/va.h>
 
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
 #include "ui/gfx/geometry/size.h"

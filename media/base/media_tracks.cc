@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"

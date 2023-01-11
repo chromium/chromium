@@ -5,8 +5,8 @@
 #ifndef MEDIA_LEARNING_COMMON_LEARNING_TASK_CONTROLLER_H_
 #define MEDIA_LEARNING_COMMON_LEARNING_TASK_CONTROLLER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"

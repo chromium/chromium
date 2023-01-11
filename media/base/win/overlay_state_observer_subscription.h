@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_WIN_OVERLAY_STATE_OBSERVER_SUBSCRIPTION_H_
 #define MEDIA_BASE_WIN_OVERLAY_STATE_OBSERVER_SUBSCRIPTION_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace gpu {
 struct Mailbox;

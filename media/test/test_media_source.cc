@@ -4,8 +4,8 @@
 
 #include "media/test/test_media_source.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/stream_parser.h"
 #include "media/base/test_data_util.h"

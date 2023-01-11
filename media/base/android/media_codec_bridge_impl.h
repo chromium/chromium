@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_direction.h"

@@ -4,8 +4,8 @@
 
 #include "media/base/android/media_drm_bridge_factory.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"

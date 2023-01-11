@@ -5,7 +5,7 @@
 #include "media/filters/android/video_frame_extractor.h"
 
 #include "base/android/build_info.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/thread.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/data_source.h"

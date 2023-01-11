@@ -6,7 +6,7 @@
 
 #include <atomic>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
