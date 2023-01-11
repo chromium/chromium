@@ -12,8 +12,8 @@ h2 {
 
 table {
   border-collapse: collapse;
+  min-width: 100%;
   table-layout: fixed;
-  width: 100%;
 }
 
 th,
@@ -48,7 +48,7 @@ div[slot='panel'] > div > div {
 
 #tabpanel-prefs ul {
   list-style-type: none;
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 #tabpanel-prefs ul li {
@@ -62,7 +62,7 @@ div[slot='panel'] > div > div {
   color: #666;
   cursor: pointer;
   font-size: 110%;
-  margin-left: 1em;
+  margin-inline-start: 1em;
 }
 
 .detection-logs-time {
@@ -74,6 +74,7 @@ div[slot='panel'] > div > div {
 }
 
 td.detection-logs-url {
+  max-width: 25em;
   word-wrap: break-word;
 }
 
@@ -98,7 +99,7 @@ td.detection-logs-url {
 }
 
 .detection-logs-has-notranslate {
-  width: 5%;
+  width: 10%;
 }
 
 .detection-logs-html-root-language {
