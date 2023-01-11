@@ -179,6 +179,14 @@ def main(argv):
         if os.path.exists(to_check):
           os.remove(to_check)
 
+        # Delete any obsolete .ts files (from previous builds) corresponding to
+        # .ts |in_files| in |out_dir| folder, only done when |root_dir| and
+        # |out_dir| are different folders.
+        if args.root_dir != args.out_dir:
+          to_check = os.path.join(args.out_dir, f)
+          if os.path.exists(to_check):
+            os.remove(to_check)
+
   try:
     node.RunNode([
         node_modules.PathToTypescript(), '--project',

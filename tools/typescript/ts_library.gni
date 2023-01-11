@@ -114,22 +114,6 @@ template("ts_library") {
     }
 
     path_mappings = [
-      # TODO(dpapad): Temporary cr_components/ mappings necessary for the build
-      # to not pick up obsolete .ts files in the gen/ folder. Delete after
-      # crrev.com/c/4117952 has landed and stuck.
-      "chrome://resources/cr_components/managed_footnote/managed_footnote.js|" + rebase_path(
-              "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/managed_footnote/managed_footnote.d.ts",
-              target_gen_dir),
-      "chrome://resources/cr_components/managed_dialog/managed_dialog.js|" + rebase_path(
-              "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/managed_dialog/managed_dialog.d.ts",
-              target_gen_dir),
-      "chrome://resources/cr_components/localized_link/localized_link.js|" + rebase_path(
-              "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/localized_link/localized_link.d.ts",
-              target_gen_dir),
-      "//resources/cr_components/localized_link/localized_link.js|" + rebase_path(
-              "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/localized_link/localized_link.d.ts",
-              target_gen_dir),
-
       "chrome://resources/*|" +
           rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",
                       target_gen_dir),
