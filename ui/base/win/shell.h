@@ -15,8 +15,7 @@ namespace base {
 class FilePath;
 }
 
-namespace ui {
-namespace win {
+namespace ui::win {
 
 // Open the folder at |full_path| via the Windows shell. It is an error if
 // |full_path| does not refer to a folder.
@@ -81,11 +80,6 @@ COMPONENT_EXPORT(UI_BASE) void ClearWindowPropertyStore(HWND hwnd);
 // This method supports a command-line override for testing.
 COMPONENT_EXPORT(UI_BASE) bool IsAeroGlassEnabled();
 
-// Returns true if dwm composition is available and turned on on the current
-// platform.
-COMPONENT_EXPORT(UI_BASE) bool IsDwmCompositionEnabled();
-
-}  // namespace win
-}  // namespace ui
+}  // namespace ui::win
 
 #endif  // UI_BASE_WIN_SHELL_H_

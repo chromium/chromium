@@ -368,9 +368,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
     CR_MESSAGE_HANDLER_EX(WM_NCUAHDRAWCAPTION, OnNCUAHDrawCaption)
     CR_MESSAGE_HANDLER_EX(WM_NCUAHDRAWFRAME, OnNCUAHDrawFrame)
 
-    // Vista and newer
-    CR_MESSAGE_HANDLER_EX(WM_DWMCOMPOSITIONCHANGED, OnDwmCompositionChanged)
-
     // Win 8.1 and newer
     CR_MESSAGE_HANDLER_EX(WM_DPICHANGED, OnDpiChanged)
 
@@ -480,7 +477,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void OnDestroy();
   void OnDisplayChange(UINT bits_per_pixel, const gfx::Size& screen_size);
   LRESULT OnDpiChanged(UINT msg, WPARAM w_param, LPARAM l_param);
-  LRESULT OnDwmCompositionChanged(UINT msg, WPARAM w_param, LPARAM l_param);
   void OnEnterMenuLoop(BOOL from_track_popup_menu);
   void OnEnterSizeMove();
   LRESULT OnEraseBkgnd(HDC dc);
@@ -742,11 +738,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // This member variable is set to true if the window is transitioning to
   // glass. Defaults to false.
   bool dwm_transition_desired_;
-
-  // Is DWM composition currently enabled?
-  // Note: According to MSDN docs for DwmIsCompositionEnabled(), this is always
-  // true starting in Windows 8.
-  bool dwm_composition_enabled_;
 
   // True if HandleWindowSizeChanging has been called in the delegate, but not
   // HandleClientSizeChanged.

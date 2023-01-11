@@ -21,11 +21,9 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "ui/base/ui_base_switches.h"
 
-namespace ui {
-namespace win {
+namespace ui::win {
 
 namespace {
 
@@ -180,27 +178,14 @@ void ClearWindowPropertyStore(HWND hwnd) {
 }
 
 bool IsAeroGlassEnabled() {
-  // For testing in Win8 (where it is not possible to disable composition) the
+  // For testing in Win8+ (where it is not possible to disable composition) the
   // user can specify this command line switch to mimic the behavior.  In this
   // mode, cross-HWND transparency is not supported and various types of
   // widgets fallback to more simplified rendering behavior.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableDwmComposition))
-    return false;
-
-  // If composition is not enabled, we behave like on XP.
-  return IsDwmCompositionEnabled();
+  // TODO(https://crbug.com/1385856): See if this switch and the code to support
+  // it can be removed.
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisableDwmComposition);
 }
 
-bool IsDwmCompositionEnabled() {
-  // As of Windows 8, DWM composition is always enabled.
-  // In Windows 7 this can change at runtime.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    return true;
-  }
-  BOOL is_enabled;
-  return SUCCEEDED(DwmIsCompositionEnabled(&is_enabled)) && is_enabled;
-}
-
-}  // namespace win
-}  // namespace ui
+}  // namespace ui::win

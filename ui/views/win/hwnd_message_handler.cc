@@ -232,13 +232,6 @@ void EnableMenuItemByCommand(HMENU menu, UINT command, bool enabled) {
   EnableMenuItem(menu, command, flags);
 }
 
-// Callback used to notify child windows that the top level window received a
-// DWMCompositionChanged message.
-BOOL CALLBACK SendDwmCompositionChanged(HWND window, LPARAM param) {
-  SendMessage(window, WM_DWMCOMPOSITIONCHANGED, 0, 0);
-  return TRUE;
-}
-
 // The thickness of an auto-hide taskbar in pixels.
 constexpr int kAutoHideTaskbarThicknessPx = 2;
 
@@ -431,7 +424,6 @@ HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
       touch_down_contexts_(0),
       last_mouse_hwheel_time_(0),
       dwm_transition_desired_(false),
-      dwm_composition_enabled_(ui::win::IsDwmCompositionEnabled()),
       sent_window_size_changing_(false),
       did_return_uia_object_(false),
       left_button_down_on_caption_(false),
@@ -1803,29 +1795,6 @@ void HWNDMessageHandler::OnDisplayChange(UINT bits_per_pixel,
   // Force a WM_NCCALCSIZE to occur to ensure that we handle auto hide
   // taskbars correctly.
   SendFrameChanged();
-}
-
-LRESULT HWNDMessageHandler::OnDwmCompositionChanged(UINT msg,
-                                                    WPARAM /* w_param */,
-                                                    LPARAM /* l_param */) {
-  TRACE_EVENT0("ui", "HWNDMessageHandler::OnDwmCompositionChanged");
-
-  if (!delegate_->HasNonClientView()) {
-    SetMsgHandled(FALSE);
-    return 0;
-  }
-
-  bool dwm_composition_enabled = ui::win::IsDwmCompositionEnabled();
-  if (dwm_composition_enabled_ != dwm_composition_enabled) {
-    // Do not cause the Window to be hidden and shown unless there was
-    // an actual change in the theme. This filter is necessary because
-    // Windows sends redundant WM_DWMCOMPOSITIONCHANGED messages when
-    // a laptop is reopened, and our theme change code causes wonky
-    // focus issues. See http://crbug.com/895855 for more information.
-    dwm_composition_enabled_ = dwm_composition_enabled;
-    FrameTypeChanged();
-  }
-  return 0;
 }
 
 LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
@@ -3512,10 +3481,6 @@ void HWNDMessageHandler::PerformDwmTransition() {
     SetWindowPos(hwnd(), nullptr, 0, 0, 0, 0, flags | SWP_HIDEWINDOW);
     SetWindowPos(hwnd(), nullptr, 0, 0, 0, 0, flags | SWP_SHOWWINDOW);
   }
-  // WM_DWMCOMPOSITIONCHANGED is only sent to top level windows, however we want
-  // to notify our children too, since we can have MDI child windows who need to
-  // update their appearance.
-  EnumChildWindows(hwnd(), &SendDwmCompositionChanged, NULL);
 }
 
 void HWNDMessageHandler::UpdateDwmFrame() {
