@@ -211,6 +211,7 @@ struct ShellInitParams;
 class ShellObserver;
 class ShutdownControllerImpl;
 class SmsObserver;
+class SnapGroupController;
 class SnoopingProtectionController;
 class StickyKeysController;
 class SystemGestureEventFilter;
@@ -625,6 +626,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   SessionControllerImpl* session_controller() {
     return session_controller_.get();
   }
+  SnapGroupController* snap_group_controller() {
+    return snap_group_controller_.get();
+  }
   FeatureDiscoveryDurationReporterImpl* feature_discover_reporter() {
     return feature_discover_reporter_.get();
   }
@@ -888,6 +892,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<GlanceablesController> glanceables_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<PowerPrefs> power_prefs_;
+  std::unique_ptr<SnapGroupController> snap_group_controller_;
   std::unique_ptr<SnoopingProtectionController> snooping_protection_controller_;
   std::unique_ptr<HumanPresenceOrientationController>
       human_presence_orientation_controller_;

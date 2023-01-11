@@ -185,6 +185,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/system_gesture_event_filter.h"
 #include "ash/wm/system_modal_container_event_filter.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
@@ -788,6 +789,8 @@ Shell::~Shell() {
   snooping_protection_controller_.reset();
   human_presence_orientation_controller_.reset();
 
+  snap_group_controller_.reset();
+
   // Shutdown tablet mode controller early on since it has some observers which
   // need to be removed. It will be destroyed later after all windows are closed
   // since it might be accessed during this process.
@@ -1232,6 +1235,10 @@ void Shell::Init(
 
   env_filter_ = std::make_unique<::wm::CompoundEventFilter>();
   AddPreTargetHandler(env_filter_.get());
+
+  if (features::IsSnapGroupEnabled()) {
+    snap_group_controller_ = std::make_unique<SnapGroupController>();
+  }
 
   // FocusController takes ownership of AshFocusRules.
   focus_rules_ = new AshFocusRules();
