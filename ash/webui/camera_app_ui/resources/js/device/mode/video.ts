@@ -512,17 +512,9 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING, true);
       this.gifRecordTime.start({resume: false});
 
+      let gifSaver = null;
       try {
-        const gifSaver = await this.captureGif();
-        const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
-        // TODO(b/191950622): Close capture stream before onGifCaptureDone()
-        // opening preview page when multi-stream recording enabled.
-        return [this.handler.onGifCaptureDone({
-          name: gifName,
-          gifSaver,
-          resolution: this.captureResolution,
-          duration: this.gifRecordTime.inMilliseconds(),
-        })];
+        gifSaver = await this.captureGif();
       } catch (e) {
         if (e instanceof NoFrameError) {
           toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
@@ -533,6 +525,16 @@ export class Video extends ModeBase {
         state.set(state.State.RECORDING, false);
         this.gifRecordTime.stop({pause: false});
       }
+
+      const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
+      // TODO(b/191950622): Close capture stream before onGifCaptureDone()
+      // opening preview page when multi-stream recording enabled.
+      return [this.handler.onGifCaptureDone({
+        name: gifName,
+        gifSaver,
+        resolution: this.captureResolution,
+        duration: this.gifRecordTime.inMilliseconds(),
+      })];
     } else {
       this.recordTime.start({resume: false});
       let videoSaver: VideoSaver|null = null;
