@@ -4812,7 +4812,7 @@ TEST_P(QuicStreamFactoryTest, SuccessfullyMigratedToServerPreferredAddress) {
   IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   FLAGS_quic_enable_chaos_protection = false;
-  quic_params_->client_connection_options.push_back(quic::kSPAD);
+  quic_params_->connection_options.push_back(quic::kSPAD);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -4902,7 +4902,7 @@ TEST_P(QuicStreamFactoryTest, FailedToValidateServerPreferredAddress) {
   IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   FLAGS_quic_enable_chaos_protection = false;
-  quic_params_->client_connection_options.push_back(quic::kSPAD);
+  quic_params_->connection_options.push_back(quic::kSPAD);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
