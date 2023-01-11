@@ -1327,8 +1327,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
   if (!node)
     return nullptr;
 
-  if (AXObject* obj = Get(node))
+  if (AXObject* obj = Get(node)) {
     return obj;
+  }
 
   return CreateAndInit(node, node->GetLayoutObject(), parent_if_known);
 }
@@ -1432,8 +1433,10 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
   if (!layout_object)
     return nullptr;
 
-  if (AXObject* obj = Get(layout_object))
+  if (AXObject* obj = Get(layout_object)) {
+    DCHECK(!parent_if_known || parent_if_known == obj->CachedParentObject());
     return obj;
+  }
 
   return CreateAndInit(layout_object->GetNode(), layout_object,
                        parent_if_known);

@@ -4053,22 +4053,6 @@ void AXNodeObject::AddPopupChildren() {
   }
 }
 
-#if DCHECK_IS_ON()
-#define CHECK_NO_OTHER_PARENT_FOR(child)                                \
-  AXObject* ax_preexisting = AXObjectCache().Get(child);                \
-  DCHECK(!ax_preexisting || !ax_preexisting->CachedParentObject() ||    \
-         ax_preexisting->CachedParentObject() == this)                  \
-      << "Newly added child can't have a different preexisting parent:" \
-      << "\nChild = " << ax_preexisting->ToString(true, true)           \
-      << "\nChild DOM node: " << ax_preexisting->GetNode()              \
-      << "\nChild layout object: " << ax_preexisting->GetLayoutObject() \
-      << "\nNew parent = " << ToString(true, true)                      \
-      << "\nPreexisting parent = "                                      \
-      << ax_preexisting->CachedParentObject()->ToString(true, true);
-#else
-#define CHECK_NO_OTHER_PARENT_FOR(child) (void(0))
-#endif
-
 void AXNodeObject::AddPseudoElementChildrenFromLayoutTree() {
   // Children are added this way only for pseudo-element subtrees.
   // See AXObject::ShouldUseLayoutObjectTraversalForChildren().
@@ -4079,7 +4063,6 @@ void AXNodeObject::AddPseudoElementChildrenFromLayoutTree() {
   }
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
-    CHECK_NO_OTHER_PARENT_FOR(child);
     // All added pseudo element descendants are included in the tree.
     if (AXObject* ax_child = AXObjectCache().GetOrCreate(child, this)) {
       DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(*child));
@@ -4114,7 +4097,6 @@ void AXNodeObject::AddAccessibleNodeChildren() {
     return;
 
   for (const auto& child : accessible_node->GetChildren()) {
-    CHECK_NO_OTHER_PARENT_FOR(child);
     AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
   }
 }
