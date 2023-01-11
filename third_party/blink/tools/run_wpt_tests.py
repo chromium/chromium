@@ -292,6 +292,9 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--metadata=%s' % self.wpt_root_dir,
             '--mojojs-path=%s' % self.mojo_js_directory,
         ])
+
+        if self.options.enable_leak_detection:
+            rest_args.append('--binary-arg=--enable-leak-detection')
         if self.options.use_upstream_wpt:
             # when running with upstream, the goal is to get wpt report that can
             # be uploaded to wpt.fyi. We do not really cares if tests failed or
@@ -495,6 +498,9 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             action='store_true',
             help=('Only run the tests explicitly given in arguments '
                   '(can run no tests, which will exit with code 0)'))
+        parser.add_argument('--enable-leak-detection',
+                            action="store_true",
+                            help='Enable the leak detection of DOM objects.')
 
     def add_binary_arguments(self, parser):
         group = parser.add_argument_group(
