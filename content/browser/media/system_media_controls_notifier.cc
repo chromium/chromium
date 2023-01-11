@@ -17,7 +17,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "ui/base/idle/idle.h"
 #endif  // BUILDFLAG(IS_WIN)

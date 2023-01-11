@@ -4,8 +4,8 @@
 
 #include "content/browser/field_trial_synchronizer.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/threading/thread.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/variations/variations_client.h"

@@ -4,8 +4,8 @@
 
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/renderer_host/pepper/pepper_file_io_host.h"

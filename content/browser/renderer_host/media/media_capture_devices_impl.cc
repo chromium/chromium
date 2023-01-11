@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/media/media_capture_devices_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/public/browser/browser_task_traits.h"

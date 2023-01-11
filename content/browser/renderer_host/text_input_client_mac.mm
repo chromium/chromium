@@ -4,7 +4,7 @@
 
 #import "content/browser/renderer_host/text_input_client_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_restrictions.h"

@@ -4,9 +4,9 @@
 
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"

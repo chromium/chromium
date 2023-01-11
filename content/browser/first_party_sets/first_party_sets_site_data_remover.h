@@ -8,7 +8,7 @@
 #include <inttypes.h>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_remover.h"
 

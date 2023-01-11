@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/common/frame.mojom.h"

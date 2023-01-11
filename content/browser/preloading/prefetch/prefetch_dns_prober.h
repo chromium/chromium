@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/public/host_resolver_results.h"

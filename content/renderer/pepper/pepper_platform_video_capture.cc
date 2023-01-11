@@ -4,8 +4,8 @@
 
 #include "content/renderer/pepper/pepper_platform_video_capture.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"

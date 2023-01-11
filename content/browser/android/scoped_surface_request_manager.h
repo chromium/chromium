@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"

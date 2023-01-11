@@ -4,8 +4,8 @@
 
 #include "content/browser/browsing_topics/browsing_topics_site_data_manager_impl.h"
 
-#include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"

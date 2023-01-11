@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/signed_exchange_utils.h"

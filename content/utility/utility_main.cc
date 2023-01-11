@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_alloc_support.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
+#include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/run_loop.h"

@@ -4,8 +4,8 @@
 
 #include "content/public/browser/download_manager_delegate.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents_delegate.h"

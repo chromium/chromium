@@ -5,7 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_MEDIA_INTERFACE_FACTORY_H_
 #define CONTENT_RENDERER_MEDIA_MEDIA_INTERFACE_FACTORY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"

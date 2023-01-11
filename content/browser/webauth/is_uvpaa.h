@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_IS_UVPAA_H_
 #define CONTENT_BROWSER_WEBAUTH_IS_UVPAA_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"

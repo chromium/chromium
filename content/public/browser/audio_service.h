@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_AUDIO_SERVICE_H_
 #define CONTENT_PUBLIC_BROWSER_AUDIO_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

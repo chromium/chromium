@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

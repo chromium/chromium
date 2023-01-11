@@ -4,7 +4,7 @@
 
 #include "content/browser/media/media_power_experiment_manager.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/version.h"

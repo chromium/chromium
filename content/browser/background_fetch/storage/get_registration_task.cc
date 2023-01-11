@@ -4,7 +4,7 @@
 
 #include "content/browser/background_fetch/storage/get_registration_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/background_fetch/storage/get_metadata_task.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

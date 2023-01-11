@@ -4,8 +4,8 @@
 
 #include "content/services/isolated_xr_device/xr_runtime_provider.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_switches.h"

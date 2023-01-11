@@ -4,7 +4,7 @@
 
 #include "content/public/browser/provision_fetcher_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

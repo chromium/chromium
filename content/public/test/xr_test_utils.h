@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_XR_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_XR_TEST_UTILS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

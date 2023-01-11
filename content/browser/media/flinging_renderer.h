@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_FLINGING_RENDERER_H_
 #define CONTENT_BROWSER_MEDIA_FLINGING_RENDERER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "media/base/flinging_controller.h"

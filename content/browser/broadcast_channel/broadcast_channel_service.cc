@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

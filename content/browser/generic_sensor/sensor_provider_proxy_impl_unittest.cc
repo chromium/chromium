@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/public/test/mock_permission_manager.h"

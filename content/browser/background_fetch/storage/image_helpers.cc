@@ -4,7 +4,7 @@
 
 #include "content/browser/background_fetch/storage/image_helpers.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

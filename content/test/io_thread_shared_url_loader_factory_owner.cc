@@ -4,7 +4,7 @@
 
 #include "content/test/io_thread_shared_url_loader_factory_owner.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/browser/browser_task_traits.h"

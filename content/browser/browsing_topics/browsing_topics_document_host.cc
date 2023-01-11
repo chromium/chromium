@@ -4,7 +4,7 @@
 
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"

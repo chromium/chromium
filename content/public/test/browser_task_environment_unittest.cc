@@ -7,9 +7,9 @@
 #include <string>
 
 #include "base/atomicops.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"

@@ -12,7 +12,7 @@
 #include <memory>
 #include <tuple>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_permissions_cache.h"

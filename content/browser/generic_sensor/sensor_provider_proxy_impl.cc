@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

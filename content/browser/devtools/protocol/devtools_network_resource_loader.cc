@@ -5,7 +5,7 @@
 #include "content/browser/devtools/protocol/devtools_network_resource_loader.h"
 #include <cstddef>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "net/base/load_flags.h"

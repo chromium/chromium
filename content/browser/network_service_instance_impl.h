@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_NETWORK_SERVICE_INSTANCE_IMPL_H_
 #define CONTENT_BROWSER_NETWORK_SERVICE_INSTANCE_IMPL_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 
 namespace base {

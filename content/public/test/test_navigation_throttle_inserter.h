@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {

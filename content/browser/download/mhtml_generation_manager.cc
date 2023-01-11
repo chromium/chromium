@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"

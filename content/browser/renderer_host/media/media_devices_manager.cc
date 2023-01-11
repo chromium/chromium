@@ -11,10 +11,10 @@
 #include <map>
 #include <string>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -42,7 +42,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/browser_main_loop.h"
 #include "media/device_monitors/device_monitor_mac.h"

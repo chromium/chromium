@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace content {
 

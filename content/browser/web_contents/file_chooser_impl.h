@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_FILE_CHOOSER_IMPL_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_FILE_CHOOSER_IMPL_H_
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_select_listener.h"

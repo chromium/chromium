@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/pending_beacon_service.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/pending_beacon_host.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

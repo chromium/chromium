@@ -4,8 +4,8 @@
 
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_consts.h"

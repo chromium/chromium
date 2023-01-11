@@ -4,7 +4,7 @@
 
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"

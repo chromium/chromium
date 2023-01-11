@@ -4,7 +4,7 @@
 
 #include "content/renderer/media/media_permission_dispatcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/bind_to_current_loop.h"

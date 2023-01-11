@@ -5,7 +5,7 @@
 #ifndef CONTENT_TEST_TEST_BACKGROUND_SYNC_PROXY_H_
 #define CONTENT_TEST_TEST_BACKGROUND_SYNC_PROXY_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 

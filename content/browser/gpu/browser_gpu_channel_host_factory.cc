@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/android/orderfile/orderfile_buildflags.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/waitable_event.h"

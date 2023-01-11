@@ -4,7 +4,7 @@
 
 #include "content/browser/sms/sms_fetcher_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/sms/sms_parser.h"
 #include "content/public/browser/browser_context.h"

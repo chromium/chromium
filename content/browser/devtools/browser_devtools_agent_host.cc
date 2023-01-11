@@ -4,8 +4,8 @@
 
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 
-#include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"

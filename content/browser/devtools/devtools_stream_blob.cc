@@ -5,7 +5,7 @@
 #include "content/browser/devtools/devtools_stream_blob.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/public/browser/browser_task_traits.h"

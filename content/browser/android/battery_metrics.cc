@@ -6,8 +6,8 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/android/radio_utils.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"

@@ -4,8 +4,8 @@
 
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/host/gpu_host_impl.h"

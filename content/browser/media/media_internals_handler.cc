@@ -4,8 +4,8 @@
 
 #include "content/browser/media/media_internals_handler.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_proxy.h"
 #include "content/public/browser/browser_thread.h"

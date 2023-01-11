@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/renderer/agent_scheduling_group.h"

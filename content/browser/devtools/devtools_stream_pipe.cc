@@ -5,7 +5,7 @@
 #include "content/browser/devtools/devtools_stream_pipe.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace content {

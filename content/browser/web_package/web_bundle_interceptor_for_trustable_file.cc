@@ -4,7 +4,7 @@
 
 #include "content/browser/web_package/web_bundle_interceptor_for_trustable_file.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_redirect_url_loader.h"
 #include "content/browser/web_package/web_bundle_source.h"

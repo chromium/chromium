@@ -5,8 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BROWSING_TOPICS_SITE_DATA_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_BROWSING_TOPICS_SITE_DATA_MANAGER_H_
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "content/common/content_export.h"
 

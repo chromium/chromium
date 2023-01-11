@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/browser/document_service_internal.h"

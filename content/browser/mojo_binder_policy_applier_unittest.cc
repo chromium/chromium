@@ -4,7 +4,7 @@
 
 #include "content/browser/mojo_binder_policy_applier.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

@@ -24,7 +24,7 @@
 
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #endif
 

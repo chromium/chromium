@@ -4,7 +4,7 @@
 
 #include "content/browser/media/android/browser_gpu_video_accelerator_factories.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/public/browser/android/gpu_video_accelerator_factories_provider.h"

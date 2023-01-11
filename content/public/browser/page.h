@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PAGE_H_
 #define CONTENT_PUBLIC_BROWSER_PAGE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"

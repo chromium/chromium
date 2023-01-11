@@ -7,7 +7,7 @@
 
 #include "content/public/browser/preloading_data.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

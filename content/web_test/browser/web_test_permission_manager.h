@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/callback_forward.h"
 #include "base/containers/id_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"

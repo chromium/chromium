@@ -4,8 +4,8 @@
 
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_context.h"

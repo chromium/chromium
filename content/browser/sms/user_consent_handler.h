@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_SMS_USER_CONSENT_HANDLER_H_
 #define CONTENT_BROWSER_SMS_USER_CONSENT_HANDLER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"

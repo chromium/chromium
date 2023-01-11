@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/common/javascript_dialog_type.h"
 #include "ui/gfx/native_widget_types.h"

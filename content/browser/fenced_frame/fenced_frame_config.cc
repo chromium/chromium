@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/fenced_frame/fenced_frame_config.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/guid.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"

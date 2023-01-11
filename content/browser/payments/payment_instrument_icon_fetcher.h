@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 

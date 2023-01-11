@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_STORAGE_NOTIFICATION_SERVICE_H_
 #define CONTENT_PUBLIC_BROWSER_STORAGE_NOTIFICATION_SERVICE_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "url/origin.h"
 
 namespace blink {

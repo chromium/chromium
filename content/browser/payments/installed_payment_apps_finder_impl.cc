@@ -4,7 +4,7 @@
 
 #include "content/browser/payments/installed_payment_apps_finder_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #include "content/browser/payments/payment_app_context_impl.h"

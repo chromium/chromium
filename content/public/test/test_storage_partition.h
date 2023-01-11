@@ -5,8 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_STORAGE_PARTITION_H_
 #define CONTENT_PUBLIC_TEST_TEST_STORAGE_PARTITION_H_
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"

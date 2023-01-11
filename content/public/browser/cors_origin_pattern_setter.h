@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"

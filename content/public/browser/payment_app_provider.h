@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PAYMENT_APP_PROVIDER_H_
 #define CONTENT_PUBLIC_BROWSER_PAYMENT_APP_PROVIDER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 

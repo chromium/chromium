@@ -4,7 +4,7 @@
 
 #include "content/browser/media/media_internals_proxy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_internals.h"

@@ -12,11 +12,11 @@
 #include <unistd.h>
 #include <utility>
 #include "base/android/child_process_binding_types.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"

@@ -4,11 +4,11 @@
 
 #include "content/public/browser/network_context_client_base.h"
 
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"

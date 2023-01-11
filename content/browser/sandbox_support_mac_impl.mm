@@ -4,7 +4,7 @@
 
 #import "content/browser/sandbox_support_mac_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #import "content/browser/theme_helper_mac.h"
 #include "content/common/mac/font_loader.h"
 #include "content/public/browser/browser_task_traits.h"

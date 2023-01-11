@@ -5,7 +5,7 @@
 #ifndef CONTENT_TEST_PORTAL_PORTAL_CREATED_OBSERVER_H_
 #define CONTENT_TEST_PORTAL_PORTAL_CREATED_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

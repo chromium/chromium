@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"

@@ -4,7 +4,7 @@
 
 #include "content/common/font_list.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"

@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SERIAL_CHOOSER_H_
 #define CONTENT_PUBLIC_BROWSER_SERIAL_CHOOSER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "services/device/public/mojom/serial.mojom-forward.h"
 

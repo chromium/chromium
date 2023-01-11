@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/pepper/pepper_gamepad_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "device/gamepad/gamepad_service.h"
 #include "device/gamepad/gamepad_shared_buffer.h"

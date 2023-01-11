@@ -4,8 +4,8 @@
 
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/task_runner.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"

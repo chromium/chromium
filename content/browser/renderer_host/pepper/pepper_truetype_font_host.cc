@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/pepper/pepper_truetype_font_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/pepper/pepper_truetype_font.h"
 #include "content/public/browser/browser_ppapi_host.h"

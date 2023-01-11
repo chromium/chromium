@@ -4,8 +4,8 @@
 
 #include "content/renderer/pepper/pepper_file_system_host.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "content/common/pepper_file_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/renderer_ppapi_host.h"

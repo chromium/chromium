@@ -4,7 +4,7 @@
 
 #include "content/browser/media/url_provision_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/bind_to_current_loop.h"

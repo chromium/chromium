@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_TEST_SHARED_WORKER_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_TEST_SHARED_WORKER_SERVICE_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "mojo/public/cpp/bindings/remote_set.h"

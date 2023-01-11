@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PROFILING_UTILS_H_
 #define CONTENT_PUBLIC_BROWSER_PROFILING_UTILS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 
 namespace content {

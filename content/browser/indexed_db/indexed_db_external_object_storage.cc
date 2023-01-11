@@ -4,7 +4,7 @@
 
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace content {
 

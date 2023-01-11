@@ -4,8 +4,8 @@
 
 #include "content/browser/loader/shared_cors_origin_access_list_impl.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

@@ -4,7 +4,7 @@
 
 #include "content/public/test/fake_speech_recognition_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

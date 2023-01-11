@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 #include "content/common/content_export.h"

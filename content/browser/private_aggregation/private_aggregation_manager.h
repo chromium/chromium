@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/private_aggregation_host.mojom-forward.h"
 #include "content/public/browser/storage_partition.h"

@@ -4,7 +4,7 @@
 
 #include "content/browser/background_sync/background_sync_base_browsertest.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"

@@ -4,7 +4,7 @@
 
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/pending_task.h"
 #include "build/build_config.h"
 #include "content/browser/scheduler/responsiveness/message_loop_observer.h"

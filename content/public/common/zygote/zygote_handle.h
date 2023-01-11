@@ -5,9 +5,9 @@
 #ifndef CONTENT_PUBLIC_COMMON_ZYGOTE_ZYGOTE_HANDLE_H_
 #define CONTENT_PUBLIC_COMMON_ZYGOTE_ZYGOTE_HANDLE_H_
 
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/zygote/zygote_buildflags.h"

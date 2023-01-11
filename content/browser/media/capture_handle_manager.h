@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "media/mojo/mojom/capture_handle.mojom.h"

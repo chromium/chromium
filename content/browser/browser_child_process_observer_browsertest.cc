@@ -4,7 +4,7 @@
 
 #include "content/public/browser/browser_child_process_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"

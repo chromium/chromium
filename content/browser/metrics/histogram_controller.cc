@@ -4,7 +4,6 @@
 
 #include "content/browser/metrics/histogram_controller.h"
 
-#include "base/bind.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"

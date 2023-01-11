@@ -4,7 +4,7 @@
 
 #include "content/renderer/renderer_thread_type_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/renderer/render_thread_impl.h"
 

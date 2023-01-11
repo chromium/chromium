@@ -4,7 +4,7 @@
 
 #include "content/renderer/media/android/stream_texture_wrapper_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

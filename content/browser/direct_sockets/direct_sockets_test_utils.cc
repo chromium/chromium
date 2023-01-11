@@ -4,7 +4,7 @@
 
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"

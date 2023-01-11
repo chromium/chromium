@@ -5,7 +5,7 @@
 #ifndef CONTENT_SHELL_BROWSER_SHELL_PERMISSION_MANAGER_H_
 #define CONTENT_SHELL_BROWSER_SHELL_PERMISSION_MANAGER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
 

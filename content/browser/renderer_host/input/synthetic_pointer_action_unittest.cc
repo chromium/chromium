@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"

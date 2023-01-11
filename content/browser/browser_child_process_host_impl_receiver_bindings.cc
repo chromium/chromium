@@ -6,7 +6,7 @@
 
 #include "content/browser/browser_child_process_host_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"

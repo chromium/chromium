@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ppapi/c/dev/pp_print_settings_dev.h"
 
 namespace content {

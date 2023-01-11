@@ -8,9 +8,9 @@
 #include <map>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"

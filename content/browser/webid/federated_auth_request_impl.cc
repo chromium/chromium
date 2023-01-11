@@ -4,8 +4,8 @@
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 
-#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"

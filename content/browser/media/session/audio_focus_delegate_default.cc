@@ -5,7 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"

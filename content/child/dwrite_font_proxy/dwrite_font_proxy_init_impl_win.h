@@ -5,7 +5,7 @@
 #ifndef CONTENT_CHILD_DWRITE_FONT_PROXY_DWRITE_FONT_PROXY_INIT_IMPL_WIN_H_
 #define CONTENT_CHILD_DWRITE_FONT_PROXY_DWRITE_FONT_PROXY_INIT_IMPL_WIN_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/child/dwrite_font_proxy_init_win.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

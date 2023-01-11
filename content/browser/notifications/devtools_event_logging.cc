@@ -4,7 +4,7 @@
 
 #include "content/browser/notifications/devtools_event_logging.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time_to_iso8601.h"

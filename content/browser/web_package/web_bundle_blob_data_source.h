@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"

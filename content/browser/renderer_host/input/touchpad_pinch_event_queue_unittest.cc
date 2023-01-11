@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/public/common/content_features.h"

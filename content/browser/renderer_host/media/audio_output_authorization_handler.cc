@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/media/media_devices_permission_checker.h"

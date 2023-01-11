@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"

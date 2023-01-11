@@ -4,7 +4,7 @@
 
 #include "content/public/test/private_network_access_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace content {
 

@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 

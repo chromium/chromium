@@ -4,7 +4,7 @@
 
 #include "content/public/test/browsing_data_remover_test_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 

@@ -4,9 +4,9 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"

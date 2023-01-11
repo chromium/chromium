@@ -4,7 +4,7 @@
 
 #include "content/browser/xr/service/xr_device_service.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/public/browser/gpu_client.h"

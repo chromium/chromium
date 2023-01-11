@@ -4,7 +4,7 @@
 
 #include "content/browser/browsing_topics/browsing_topics_url_loader.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"

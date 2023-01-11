@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_EMBEDDED_FRAME_SINK_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_EMBEDDED_FRAME_SINK_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"

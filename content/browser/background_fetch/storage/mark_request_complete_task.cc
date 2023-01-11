@@ -5,7 +5,7 @@
 #include "content/browser/background_fetch/storage/mark_request_complete_task.h"
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"

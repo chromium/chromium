@@ -14,7 +14,7 @@
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/mojo/services/media_service_factory.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 

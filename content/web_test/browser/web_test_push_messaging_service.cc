@@ -4,8 +4,8 @@
 
 #include "content/web_test/browser/web_test_push_messaging_service.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_process_host.h"

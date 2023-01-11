@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_RENDERER_WORKER_THREAD_H_
 #define CONTENT_PUBLIC_RENDERER_WORKER_THREAD_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
 
 namespace content {

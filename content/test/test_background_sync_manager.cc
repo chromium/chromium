@@ -4,7 +4,7 @@
 
 #include "content/test/test_background_sync_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"

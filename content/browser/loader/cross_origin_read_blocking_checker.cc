@@ -4,7 +4,7 @@
 
 #include "content/browser/loader/cross_origin_read_blocking_checker.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"

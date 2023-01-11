@@ -4,9 +4,9 @@
 
 #include "content/web_test/browser/web_test_download_manager_delegate.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_item_utils.h"

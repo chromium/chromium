@@ -14,9 +14,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/stack.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "content/public/renderer/renderer_ppapi_host.h"

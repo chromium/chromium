@@ -4,7 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_dns_prober.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "net/base/address_list.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

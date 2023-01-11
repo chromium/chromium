@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_throttle.h"

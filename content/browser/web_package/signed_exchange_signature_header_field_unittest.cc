@@ -4,7 +4,7 @@
 
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {

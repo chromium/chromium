@@ -4,7 +4,7 @@
 
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/layers/video_frame_provider.h"

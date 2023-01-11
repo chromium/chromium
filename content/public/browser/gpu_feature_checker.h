@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_GPU_FEATURE_CHECKER_H_
 #define CONTENT_PUBLIC_BROWSER_GPU_FEATURE_CHECKER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "gpu/config/gpu_feature_type.h"

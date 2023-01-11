@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"

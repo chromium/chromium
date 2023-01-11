@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "content/public/browser/tts_controller.h"

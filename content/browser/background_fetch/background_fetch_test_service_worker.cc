@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"

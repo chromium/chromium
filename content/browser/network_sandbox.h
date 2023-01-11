@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_NETWORK_SANDBOX_H_
 #define CONTENT_BROWSER_NETWORK_SANDBOX_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 // As of 2022-03 there is no plan to sandbox the network service in any special

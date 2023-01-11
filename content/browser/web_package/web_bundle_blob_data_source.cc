@@ -5,7 +5,7 @@
 #include "content/browser/web_package/web_bundle_blob_data_source.h"
 
 #include "base/bit_cast.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"

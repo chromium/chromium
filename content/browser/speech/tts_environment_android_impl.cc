@@ -4,8 +4,8 @@
 
 #include "content/browser/speech/tts_environment_android_impl.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 
 using base::android::ApplicationStatusListener;
 

@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_PIPE_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_PIPE_H_
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "mojo/public/cpp/system/data_pipe.h"

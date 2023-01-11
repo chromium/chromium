@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "build/chromeos_buildflags.h"

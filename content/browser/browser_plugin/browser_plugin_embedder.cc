@@ -4,7 +4,7 @@
 
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/browser/browser_plugin/browser_plugin_guest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"

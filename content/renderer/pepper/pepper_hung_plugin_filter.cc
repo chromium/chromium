@@ -4,7 +4,7 @@
 
 #include "content/renderer/pepper/pepper_hung_plugin_filter.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/child/child_process.h"
 
 namespace content {

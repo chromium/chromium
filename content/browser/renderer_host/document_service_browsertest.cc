@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/browser/renderer_host/document_service_echo_impl.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"

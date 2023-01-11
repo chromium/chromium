@@ -4,7 +4,7 @@
 
 #include "content/child/browser_exposed_child_interfaces.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/child/child_histogram_fetcher_impl.h"
 #include "content/public/common/content_client.h"

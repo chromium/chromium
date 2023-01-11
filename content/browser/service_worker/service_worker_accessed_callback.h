@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_ACCESSED_CALLBACK_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_ACCESSED_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "url/gurl.h"
 

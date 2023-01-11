@@ -4,8 +4,8 @@
 
 #include "content/public/test/test_web_ui_listener_observer.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "content/public/test/test_web_ui.h"
 
 namespace content {

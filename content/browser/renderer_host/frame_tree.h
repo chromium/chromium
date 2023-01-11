@@ -12,9 +12,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"

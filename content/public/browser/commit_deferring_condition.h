@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_COMMIT_DEFERRING_CONDITION_H_
 #define CONTENT_PUBLIC_BROWSER_COMMIT_DEFERRING_CONDITION_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 #include "base/memory/safe_ref.h"
 #include "content/common/content_export.h"

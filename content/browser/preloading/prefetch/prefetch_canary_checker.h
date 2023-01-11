@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_CANARY_CHECKER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_CANARY_CHECKER_H_
 
-#include "base/callback.h"
 #include "base/containers/lru_cache.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

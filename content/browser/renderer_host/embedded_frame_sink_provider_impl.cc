@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/renderer_host/embedded_frame_sink_impl.h"
 

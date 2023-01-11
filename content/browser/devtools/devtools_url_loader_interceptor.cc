@@ -8,7 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_piece.h"

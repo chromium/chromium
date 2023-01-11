@@ -5,7 +5,7 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_SET_BID_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_SET_BID_BINDINGS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"

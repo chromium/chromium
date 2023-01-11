@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/speech/audio_buffer.h"

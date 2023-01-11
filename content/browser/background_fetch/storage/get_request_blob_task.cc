@@ -4,7 +4,7 @@
 
 #include "content/browser/background_fetch/storage/get_request_blob_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"

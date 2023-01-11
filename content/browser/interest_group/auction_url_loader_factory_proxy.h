@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/common/content_export.h"

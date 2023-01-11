@@ -4,7 +4,7 @@
 
 #include "content/test/task_runner_deferring_throttle.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 
 namespace content {

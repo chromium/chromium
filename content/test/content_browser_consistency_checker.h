@@ -5,8 +5,8 @@
 #ifndef CONTENT_TEST_CONTENT_BROWSER_CONSISTENCY_CHECKER_H_
 #define CONTENT_TEST_CONTENT_BROWSER_CONSISTENCY_CHECKER_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 
 namespace content {
 

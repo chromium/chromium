@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"

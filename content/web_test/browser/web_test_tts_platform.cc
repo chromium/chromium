@@ -4,8 +4,8 @@
 
 #include "content/web_test/browser/web_test_tts_platform.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/tts_controller.h"
 

@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_INSTALLED_PAYMENT_APPS_FINDER_H_
 #define CONTENT_PUBLIC_BROWSER_INSTALLED_PAYMENT_APPS_FINDER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/stored_payment_app.h"
 

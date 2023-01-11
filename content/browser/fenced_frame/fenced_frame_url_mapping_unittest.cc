@@ -4,7 +4,7 @@
 
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

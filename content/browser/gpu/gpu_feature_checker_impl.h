@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_GPU_GPU_FEATURE_CHECKER_IMPL_H_
 #define CONTENT_BROWSER_GPU_GPU_FEATURE_CHECKER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "gpu/config/gpu_feature_type.h"

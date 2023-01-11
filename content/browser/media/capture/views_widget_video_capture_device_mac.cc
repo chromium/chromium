@@ -4,7 +4,7 @@
 
 #include "content/browser/media/capture/views_widget_video_capture_device_mac.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/remote_cocoa/browser/scoped_cg_window_id.h"

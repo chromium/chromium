@@ -4,7 +4,7 @@
 
 #include "content/browser/notifications/notification_storage.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"

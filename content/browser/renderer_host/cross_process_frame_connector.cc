@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "components/viz/common/features.h"

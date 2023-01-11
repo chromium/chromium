@@ -4,7 +4,7 @@
 
 #include "content/browser/media/media_devices_permission_checker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

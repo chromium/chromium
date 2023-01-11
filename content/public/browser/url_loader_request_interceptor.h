@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_URL_LOADER_REQUEST_INTERCEPTOR_H_
 #define CONTENT_PUBLIC_BROWSER_URL_LOADER_REQUEST_INTERCEPTOR_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"

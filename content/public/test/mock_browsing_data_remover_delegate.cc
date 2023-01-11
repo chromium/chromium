@@ -4,7 +4,7 @@
 
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -4,7 +4,7 @@
 
 #include "content/browser/buckets/bucket_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "content/browser/buckets/bucket_context.h"

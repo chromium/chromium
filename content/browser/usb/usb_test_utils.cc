@@ -4,7 +4,7 @@
 
 #include "content/browser/usb/usb_test_utils.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 

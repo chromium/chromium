@@ -4,8 +4,8 @@
 
 #include "content/browser/gpu/peak_gpu_memory_tracker_impl.h"
 
-#include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"

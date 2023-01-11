@@ -12,9 +12,9 @@
 #include <set>
 #include <tuple>
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

@@ -4,7 +4,7 @@
 
 #include "content/renderer/java/gin_java_bridge_object.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/common/gin_java_bridge_messages.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/java/gin_java_function_invocation_helper.h"

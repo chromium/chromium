@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/accessibility_browsertest.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"

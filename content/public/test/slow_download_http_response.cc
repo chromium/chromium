@@ -4,7 +4,7 @@
 
 #include "content/public/test/slow_download_http_response.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"

@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_WEB_BUNDLE_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_WEB_BUNDLE_URL_LOADER_FACTORY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

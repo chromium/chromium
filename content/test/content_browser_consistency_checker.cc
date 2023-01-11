@@ -4,7 +4,7 @@
 
 #include "content/test/content_browser_consistency_checker.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/test/web_contents_observer_consistency_checker.h"

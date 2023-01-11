@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FONT_LIST_ASYNC_H_
 #define CONTENT_PUBLIC_BROWSER_FONT_LIST_ASYNC_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 

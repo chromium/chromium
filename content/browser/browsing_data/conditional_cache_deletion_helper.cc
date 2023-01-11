@@ -4,8 +4,8 @@
 
 #include "content/browser/browsing_data/conditional_cache_deletion_helper.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
