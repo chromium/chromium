@@ -110,20 +110,19 @@ BreakpadWin::BreakpadWin() : handling_exception_(0) {
   // Get the alternate dump directory. We use the temp path.
   // N.B. We don't use base::GetTempDir() here to avoid running more code then
   //      necessary before crashes can be properly reported.
-  wchar_t temp_directory[MAX_PATH + 1] = { 0 };
+  wchar_t temp_directory[MAX_PATH + 1] = {0};
   DWORD length = GetTempPath(MAX_PATH, temp_directory);
-  if (length == 0)
+  if (length == 0) {
     return;
+  }
 
   // Minidump with stacks, PEB, TEBs and unloaded module list.
   MINIDUMP_TYPE dump_type = static_cast<MINIDUMP_TYPE>(
-      MiniDumpWithProcessThreadData |
-      MiniDumpWithUnloadedModules);
-  breakpad_.reset(
-      new google_breakpad::ExceptionHandler(
-          temp_directory, &OnExceptionCallback, NULL, NULL,
-          google_breakpad::ExceptionHandler::HANDLER_ALL, dump_type,
-          pipe_name_, GetCustomInfo()));
+      MiniDumpWithProcessThreadData | MiniDumpWithUnloadedModules);
+  breakpad_.reset(new google_breakpad::ExceptionHandler(
+      temp_directory, &OnExceptionCallback, NULL, NULL,
+      google_breakpad::ExceptionHandler::HANDLER_ALL, dump_type, pipe_name_,
+      GetCustomInfo()));
 
   if (breakpad_->IsOutOfProcess()) {
     // Tells breakpad to handle breakpoint and single step exceptions.
@@ -159,14 +158,14 @@ google_breakpad::CustomClientInfo* BreakpadWin::GetCustomInfo() {
     wcscpy_s(version, kBreakpadVersionDefault);
   }
 
-  static google_breakpad::CustomInfoEntry ver_entry(
-      kBreakpadVersionEntry, version);
-  static google_breakpad::CustomInfoEntry prod_entry(
-      kBreakpadProdEntry, kBreakpadProductName);
-  static google_breakpad::CustomInfoEntry plat_entry(
-      kBreakpadPlatformEntry, kBreakpadPlatformWin32);
-  static google_breakpad::CustomInfoEntry entries[] = {
-      ver_entry, prod_entry, plat_entry  };
+  static google_breakpad::CustomInfoEntry ver_entry(kBreakpadVersionEntry,
+                                                    version);
+  static google_breakpad::CustomInfoEntry prod_entry(kBreakpadProdEntry,
+                                                     kBreakpadProductName);
+  static google_breakpad::CustomInfoEntry plat_entry(kBreakpadPlatformEntry,
+                                                     kBreakpadPlatformWin32);
+  static google_breakpad::CustomInfoEntry entries[] = {ver_entry, prod_entry,
+                                                       plat_entry};
   static google_breakpad::CustomClientInfo custom_info = {entries,
                                                           std::size(entries)};
   return &custom_info;

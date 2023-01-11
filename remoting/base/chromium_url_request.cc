@@ -61,8 +61,9 @@ void ChromiumUrlRequest::Start(OnResultCallback on_result_callback) {
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request_),
                                                  traffic_annotation_);
-  if (method == "POST")
+  if (method == "POST") {
     url_loader_->AttachStringForUpload(post_data_, post_data_content_type_);
+  }
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),

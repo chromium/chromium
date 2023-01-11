@@ -12,7 +12,7 @@
 
 namespace remoting {
 
-static const int64_t kTestValues[] = { 10, 20, 30, 10, 25, 16, 15 };
+static const int64_t kTestValues[] = {10, 20, 30, 10, 25, 16, 15};
 
 // One second window and one sample per second, so rate equals each sample.
 TEST(RateCounterTest, OneSecondWindow) {
@@ -60,8 +60,9 @@ TEST(RateCounterTest, TwoSecondWindow) {
     tick_clock.Advance(base::Seconds(1));
     rate_counter.Record(kTestValues[i]);
     double expected = kTestValues[i];
-    if (i > 0)
-      expected += kTestValues[i-1];
+    if (i > 0) {
+      expected += kTestValues[i - 1];
+    }
     expected /= 2;
     EXPECT_EQ(expected, rate_counter.Rate());
   }
@@ -82,8 +83,9 @@ TEST(RateCounterTest, LongWindow) {
   for (size_t i = 0; i < std::size(kTestValues); ++i) {
     tick_clock.Advance(base::Seconds(1));
     rate_counter.Record(kTestValues[i]);
-    if (i != 0)
+    if (i != 0) {
       expected += kTestValues[i];
+    }
   }
   expected /= kWindowSeconds;
 

@@ -22,8 +22,9 @@ struct NameMapElement {
 template <typename T, size_t N>
 const char* ValueToNameUnchecked(const NameMapElement<T> (&map)[N], T value) {
   for (size_t i = 0; i < N; ++i) {
-    if (map[i].value == value)
+    if (map[i].value == value) {
       return map[i].name;
+    }
   }
   return nullptr;
 }

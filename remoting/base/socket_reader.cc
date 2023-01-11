@@ -39,21 +39,24 @@ void SocketReader::DoRead() {
         read_buffer_.get(), kReadBufferSize,
         base::BindOnce(&SocketReader::OnRead, weak_factory_.GetWeakPtr()));
     HandleReadResult(result);
-    if (result <= 0)
+    if (result <= 0) {
       break;
+    }
   }
 }
 
 void SocketReader::OnRead(int result) {
   HandleReadResult(result);
-  if (result > 0)
+  if (result > 0) {
     DoRead();
+  }
 }
 
 void SocketReader::HandleReadResult(int result) {
   if (result != net::ERR_IO_PENDING) {
-    if (result < 0)
+    if (result < 0) {
       read_buffer_.reset();
+    }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SocketReader::CallCallback, weak_factory_.GetWeakPtr(),

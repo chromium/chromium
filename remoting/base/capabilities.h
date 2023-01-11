@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 namespace remoting {
 
 // Returns true if |capabilities| contain capability |key|.

@@ -586,10 +586,10 @@ class Result : public internal::DefaultConstructible<
   // state of the result, passing the value of the corresponding state.
   template <
       typename Visitor,
-      typename SuccessReturn = decltype(
-          std::declval<Visitor>().success(std::declval<const SuccessType&>())),
-      typename ErrorReturn = decltype(
-          std::declval<Visitor>().error(std::declval<const ErrorType&>())),
+      typename SuccessReturn = decltype(std::declval<Visitor>().success(
+          std::declval<const SuccessType&>())),
+      typename ErrorReturn = decltype(std::declval<Visitor>().error(
+          std::declval<const ErrorType&>())),
       typename std::enable_if<std::is_same<SuccessReturn, ErrorReturn>::value,
                               int>::type = 0>
   SuccessReturn Visit(Visitor&& visitor) const& {
@@ -602,8 +602,8 @@ class Result : public internal::DefaultConstructible<
 
   template <
       typename Visitor,
-      typename SuccessReturn = decltype(
-          std::declval<Visitor>().success(std::declval<SuccessType&>())),
+      typename SuccessReturn = decltype(std::declval<Visitor>().success(
+          std::declval<SuccessType&>())),
       typename ErrorReturn =
           decltype(std::declval<Visitor>().error(std::declval<ErrorType&>())),
       typename std::enable_if<std::is_same<SuccessReturn, ErrorReturn>::value,
@@ -618,8 +618,8 @@ class Result : public internal::DefaultConstructible<
 
   template <
       typename Visitor,
-      typename SuccessReturn = decltype(
-          std::declval<Visitor>().success(std::declval<SuccessType&&>())),
+      typename SuccessReturn = decltype(std::declval<Visitor>().success(
+          std::declval<SuccessType&&>())),
       typename ErrorReturn =
           decltype(std::declval<Visitor>().error(std::declval<ErrorType&&>())),
       typename std::enable_if<std::is_same<SuccessReturn, ErrorReturn>::value,

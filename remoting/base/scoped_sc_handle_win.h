@@ -25,18 +25,15 @@ class ScHandleTraits {
   }
 
   // Returns true if the handle value is valid.
-  static bool IsHandleValid(SC_HANDLE handle) {
-    return handle != NULL;
-  }
+  static bool IsHandleValid(SC_HANDLE handle) { return handle != NULL; }
 
   // Returns NULL handle value.
-  static SC_HANDLE NullHandle() {
-    return NULL;
-  }
+  static SC_HANDLE NullHandle() { return NULL; }
 };
 
-typedef base::win::GenericScopedHandle<
-    ScHandleTraits, base::win::DummyVerifierTraits> ScopedScHandle;
+typedef base::win::GenericScopedHandle<ScHandleTraits,
+                                       base::win::DummyVerifierTraits>
+    ScopedScHandle;
 
 }  // namespace remoting
 

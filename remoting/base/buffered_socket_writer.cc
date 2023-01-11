@@ -73,8 +73,9 @@ void BufferedSocketWriter::Write(
   DCHECK(data.get());
 
   // Don't write after error.
-  if (closed_)
+  if (closed_) {
     return;
+  }
 
   int data_size = data->size();
   queue_.push_back(std::make_unique<PendingPacket>(
@@ -106,8 +107,9 @@ void BufferedSocketWriter::HandleWriteResult(int result) {
     } else {
       closed_ = true;
       write_callback_.Reset();
-      if (!write_failed_callback_.is_null())
+      if (!write_failed_callback_.is_null()) {
         std::move(write_failed_callback_).Run(result);
+      }
     }
     return;
   }
@@ -120,8 +122,9 @@ void BufferedSocketWriter::HandleWriteResult(int result) {
     base::OnceClosure done_task = std::move(queue_.front()->done_task);
     queue_.pop_front();
 
-    if (!done_task.is_null())
+    if (!done_task.is_null()) {
       std::move(done_task).Run();
+    }
   }
 }
 
@@ -132,8 +135,9 @@ void BufferedSocketWriter::OnWritten(int result) {
 
   base::WeakPtr<BufferedSocketWriter> self = weak_factory_.GetWeakPtr();
   HandleWriteResult(result);
-  if (self)
+  if (self) {
     DoWrite();
+  }
 }
 
 }  // namespace remoting

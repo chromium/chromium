@@ -37,7 +37,7 @@ int WriteNetSocket(net::Socket* socket,
                        traffic_annotation);
 }
 
-class SocketDataProvider: public net::SocketDataProvider {
+class SocketDataProvider : public net::SocketDataProvider {
  public:
   SocketDataProvider()
       : write_limit_(-1), async_write_(false), next_write_error_(net::OK) {}
@@ -54,20 +54,17 @@ class SocketDataProvider: public net::SocketDataProvider {
                                   r);
     }
     int size = data.size();
-    if (write_limit_ > 0)
+    if (write_limit_ > 0) {
       size = std::min(write_limit_, size);
+    }
     written_data_.append(data, 0, size);
     return net::MockWriteResult(async_write_ ? net::ASYNC : net::SYNCHRONOUS,
                                 size);
   }
 
-  bool AllReadDataConsumed() const override {
-    return true;
-  }
+  bool AllReadDataConsumed() const override { return true; }
 
-  bool AllWriteDataConsumed() const override {
-    return true;
-  }
+  bool AllWriteDataConsumed() const override { return true; }
 
   void Reset() override {}
 
@@ -88,18 +85,14 @@ class SocketDataProvider: public net::SocketDataProvider {
 
 class BufferedSocketWriterTest : public testing::Test {
  public:
-  BufferedSocketWriterTest()
-      : write_error_(0) {
-  }
+  BufferedSocketWriterTest() : write_error_(0) {}
 
   void DestroyWriter() {
     writer_.reset();
     socket_.reset();
   }
 
-  void Unexpected() {
-    EXPECT_TRUE(false);
-  }
+  void Unexpected() { EXPECT_TRUE(false); }
 
  protected:
   void SetUp() override {
@@ -125,14 +118,12 @@ class BufferedSocketWriterTest : public testing::Test {
                                   base::Unretained(this)));
   }
 
-  void OnWriteFailed(int error) {
-    write_error_ = error;
-  }
+  void OnWriteFailed(int error) { write_error_ = error; }
 
   void VerifyWrittenData() {
-    ASSERT_EQ(static_cast<size_t>(test_buffer_->size() +
-                                  test_buffer_2_->size()),
-              socket_data_provider_.written_data().size());
+    ASSERT_EQ(
+        static_cast<size_t>(test_buffer_->size() + test_buffer_2_->size()),
+        socket_data_provider_.written_data().size());
     EXPECT_EQ(0, memcmp(test_buffer_->data(),
                         socket_data_provider_.written_data().data(),
                         test_buffer_->size()));

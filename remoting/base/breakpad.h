@@ -18,6 +18,6 @@ namespace remoting {
 // rare.
 void InitializeCrashReporting();
 
-}  // remoting
+}  // namespace remoting
 
 #endif  // REMOTING_BASE_BREAKPAD_H_

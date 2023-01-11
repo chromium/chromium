@@ -4,7 +4,6 @@
 
 #include "remoting/base/leaky_bucket.h"
 
-
 namespace remoting {
 
 LeakyBucket::LeakyBucket(int depth, int rate)
@@ -19,8 +18,9 @@ bool LeakyBucket::RefillOrSpill(int drops, base::TimeTicks now) {
   UpdateLevel(now);
 
   int new_level = current_level_ + drops;
-  if (depth_ >= 0 && new_level > depth_)
+  if (depth_ >= 0 && new_level > depth_) {
     return false;
+  }
   current_level_ = new_level;
   return true;
 }

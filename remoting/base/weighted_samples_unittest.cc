@@ -11,10 +11,10 @@ namespace remoting {
 TEST(WeightedSamplesTest, CalculateWeightedAverage) {
   static constexpr double kWeightFactor = 0.9;
   static constexpr double kExpected[] = {
-    1,
-    1.5263157894736843,
-    2.0701107011070110,
-    2.6312881651642916,
+      1,
+      1.5263157894736843,
+      2.0701107011070110,
+      2.6312881651642916,
   };
   WeightedSamples samples(kWeightFactor);
   for (size_t i = 0; i < std::size(kExpected); i++) {

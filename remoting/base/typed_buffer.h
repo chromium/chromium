@@ -25,8 +25,9 @@ class TypedBuffer {
 
   // Creates an instance of the object allocating a buffer of the given size.
   explicit TypedBuffer(uint32_t length) : buffer_(nullptr), length_(length) {
-    if (length_ > 0)
+    if (length_ > 0) {
       buffer_ = reinterpret_cast<T*>(new uint8_t[length_]);
+    }
   }
 
   TypedBuffer(TypedBuffer&& rvalue) : TypedBuffer() { Swap(rvalue); }
@@ -52,7 +53,7 @@ class TypedBuffer {
     assert(buffer_);
     return *buffer_;
   }
-  T* operator->() const  {
+  T* operator->() const {
     assert(buffer_);
     return buffer_;
   }

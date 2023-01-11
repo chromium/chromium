@@ -42,8 +42,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       /*message_callback=*/base::DoNothing(),
       /*stream_closed_callback=*/base::BindLambdaForTesting(on_stream_closed));
 
-  while (parser && provider.remaining_bytes() > 0)
+  while (parser && provider.remaining_bytes() > 0) {
     parser->Append(provider.ConsumeRandomLengthString());
+  }
 
   return 0;
 }

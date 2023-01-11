@@ -42,12 +42,11 @@ SessionOptions::SessionOptions(const std::string& parameter) {
 
 SessionOptions::~SessionOptions() = default;
 
-SessionOptions& SessionOptions::operator=(
-    const SessionOptions& other) = default;
+SessionOptions& SessionOptions::operator=(const SessionOptions& other) =
+    default;
 SessionOptions& SessionOptions::operator=(SessionOptions&& other) = default;
 
-void SessionOptions::Append(const std::string& key,
-                                const std::string& value) {
+void SessionOptions::Append(const std::string& key, const std::string& value) {
   DCHECK(KeyIsValid(key));
   DCHECK(ValueIsValid(value));
   options_[key] = value;
@@ -68,8 +67,7 @@ absl::optional<bool> SessionOptions::GetBool(const std::string& key) const {
   }
 
   const std::string lowercase_value = base::ToLowerASCII(*value);
-  if (lowercase_value.empty() ||
-      lowercase_value == "true" ||
+  if (lowercase_value.empty() || lowercase_value == "true" ||
       lowercase_value == "1") {
     return true;
   }
@@ -118,9 +116,7 @@ std::string SessionOptions::Export() const {
 void SessionOptions::Import(const std::string& parameter) {
   options_.clear();
   std::vector<std::pair<std::string, std::string>> result;
-  base::SplitStringIntoKeyValuePairs(parameter,
-                                     kKeyValueSeparator,
-                                     kSeparator,
+  base::SplitStringIntoKeyValuePairs(parameter, kKeyValueSeparator, kSeparator,
                                      &result);
   for (const auto& pair : result) {
     if (KeyIsValid(pair.first) && ValueIsValid(pair.second)) {

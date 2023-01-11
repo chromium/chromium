@@ -39,8 +39,9 @@ void RateCounter::EvictOldDataPoints(base::TimeTicks now) {
   base::TimeTicks window_start = now - time_window_;
 
   while (!data_points_.empty()) {
-    if (data_points_.front().first > window_start)
+    if (data_points_.front().first > window_start) {
       break;
+    }
 
     sum_ -= data_points_.front().second;
     data_points_.pop();

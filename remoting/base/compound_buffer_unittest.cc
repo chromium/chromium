@@ -36,7 +36,6 @@ const int kCropSizes[] = {1, -1};
 
 class CompoundBufferTest : public testing::Test {
  public:
-
   // Following 5 methods are used with IterateOverPieces().
   void Append(int pos, int size) {
     target_.Append(data_, data_->data() + pos, size);
@@ -64,16 +63,16 @@ class CompoundBufferTest : public testing::Test {
     CompoundBuffer cropped;
     cropped.CopyFrom(target_, 0, target_.total_bytes());
     cropped.CropFront(pos);
-    EXPECT_TRUE(CompareData(cropped, data_->data() + pos,
-                            target_.total_bytes() - pos));
+    EXPECT_TRUE(
+        CompareData(cropped, data_->data() + pos, target_.total_bytes() - pos));
   }
 
   void TestCropBack(int pos, int size) {
     CompoundBuffer cropped;
     cropped.CopyFrom(target_, 0, target_.total_bytes());
     cropped.CropBack(pos);
-    EXPECT_TRUE(CompareData(cropped, data_->data(),
-                            target_.total_bytes() - pos));
+    EXPECT_TRUE(
+        CompareData(cropped, data_->data(), target_.total_bytes() - pos));
   }
 
  protected:
@@ -96,8 +95,9 @@ class CompoundBufferTest : public testing::Test {
     while (pos < kDataSize) {
       int size = std::min(sizes[index], kDataSize - pos);
       ++index;
-      if (sizes[index] <= 0)
+      if (sizes[index] <= 0) {
         index = 0;
+      }
 
       function.Run(pos, size);
 
@@ -108,11 +108,12 @@ class CompoundBufferTest : public testing::Test {
   bool CompareData(const CompoundBuffer& buffer, char* data, int size) {
     scoped_refptr<IOBuffer> buffer_data = buffer.ToIOBufferWithSize();
     return buffer.total_bytes() == size &&
-        memcmp(buffer_data->data(), data, size) == 0;
+           memcmp(buffer_data->data(), data, size) == 0;
   }
 
   static size_t ReadFromInput(CompoundBufferInputStream* input,
-                              void* data, size_t size) {
+                              void* data,
+                              size_t size) {
     uint8_t* out = reinterpret_cast<uint8_t*>(data);
     int out_size = size;
 
@@ -161,10 +162,11 @@ class CompoundBufferTest : public testing::Test {
     int segments = (kTestData.length() / 3) * 2;
     int remaining_chars = kTestData.length() % 3;
     if (remaining_chars) {
-      if (remaining_chars == 1)
+      if (remaining_chars == 1) {
         ++segments;
-      else
+      } else {
         segments += 2;
+      }
     }
 
     CompoundBuffer* result = new CompoundBuffer();

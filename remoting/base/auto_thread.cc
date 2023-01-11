@@ -45,7 +45,7 @@ std::unique_ptr<base::win::ScopedCOMInitializer> CreateComInitializer(
 }
 #endif
 
-}
+}  // namespace
 
 // Used to pass data to ThreadMain.  This structure is allocated on the stack
 // from within StartWithType.
@@ -72,14 +72,16 @@ scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithType(
     base::MessagePumpType type) {
   AutoThread* thread = new AutoThread(name, joiner.get());
   scoped_refptr<AutoThreadTaskRunner> task_runner = thread->StartWithType(type);
-  if (!task_runner.get())
+  if (!task_runner.get()) {
     delete thread;
+  }
   return task_runner;
 }
 
 // static
 scoped_refptr<AutoThreadTaskRunner> AutoThread::Create(
-    const char* name, scoped_refptr<AutoThreadTaskRunner> joiner) {
+    const char* name,
+    scoped_refptr<AutoThreadTaskRunner> joiner) {
   return CreateWithType(name, joiner, base::MessagePumpType::DEFAULT);
 }
 
@@ -94,8 +96,9 @@ scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithLoopAndComInitTypes(
   thread->SetComInitType(com_init_type);
   scoped_refptr<AutoThreadTaskRunner> task_runner =
       thread->StartWithType(pump_type);
-  if (!task_runner.get())
+  if (!task_runner.get()) {
     delete thread;
+  }
   return task_runner;
 }
 #endif
@@ -232,4 +235,4 @@ void AutoThread::ThreadMain() {
   DCHECK(was_quit_properly_);
 }
 
-}  // namespace base
+}  // namespace remoting

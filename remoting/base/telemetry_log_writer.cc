@@ -77,7 +77,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 constexpr char kCreateEventPath[] = "/v1/telemetry:createevent";
-}
+}  // namespace
 
 const int kMaxSendAttempts = 5;
 

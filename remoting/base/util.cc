@@ -28,9 +28,8 @@ std::string GetTimestampString() {
   base::Time t = base::Time::NowFromSystemTime();
   base::Time::Exploded tex;
   t.LocalExplode(&tex);
-  return base::StringPrintf("%02d%02d/%02d%02d%02d:",
-                            tex.month, tex.day_of_month,
-                            tex.hour, tex.minute, tex.second);
+  return base::StringPrintf("%02d%02d/%02d%02d%02d:", tex.month,
+                            tex.day_of_month, tex.hour, tex.minute, tex.second);
 }
 
 int RoundToTwosMultiple(int x) {
@@ -68,16 +67,14 @@ void CopyRGB32Rect(const uint8_t* source_buffer,
   // Get the address of the starting point.
   source_buffer += CalculateRGBOffset(
       dest_rect.left() - source_buffer_rect.left(),
-      dest_rect.top() - source_buffer_rect.top(),
-      source_stride);
-  dest_buffer += CalculateRGBOffset(
-      dest_rect.left() - dest_buffer_rect.left(),
-      dest_rect.top() - dest_buffer_rect.top(),
-      source_stride);
+      dest_rect.top() - source_buffer_rect.top(), source_stride);
+  dest_buffer += CalculateRGBOffset(dest_rect.left() - dest_buffer_rect.left(),
+                                    dest_rect.top() - dest_buffer_rect.top(),
+                                    source_stride);
 
   // Copy pixels in the rectangle line by line.
   const int bytes_per_line = kBytesPerPixelRGB32 * dest_rect.width();
-  for (int i = 0 ; i < dest_rect.height(); ++i) {
+  for (int i = 0; i < dest_rect.height(); ++i) {
     memcpy(dest_buffer, source_buffer, bytes_per_line);
     source_buffer += source_stride;
     dest_buffer += dest_stride;

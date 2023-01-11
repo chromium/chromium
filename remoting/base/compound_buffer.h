@@ -106,7 +106,7 @@ class CompoundBuffer {
 };
 
 class CompoundBufferInputStream
-    : public google::protobuf::io::ZeroCopyInputStream  {
+    : public google::protobuf::io::ZeroCopyInputStream {
  public:
   // Caller keeps ownership of |buffer|. |buffer| must be locked.
   explicit CompoundBufferInputStream(const CompoundBuffer* buffer);
