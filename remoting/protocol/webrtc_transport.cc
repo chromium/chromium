@@ -336,9 +336,7 @@ class WebrtcTransport::PeerConnectionWrapper
     audio_module_ = nullptr;
   }
 
-  WebrtcAudioModule* audio_module() {
-    return audio_module_.get();
-  }
+  WebrtcAudioModule* audio_module() { return audio_module_.get(); }
 
   webrtc::PeerConnectionInterface* peer_connection() {
     return peer_connection_.get();
@@ -351,46 +349,55 @@ class WebrtcTransport::PeerConnectionWrapper
   // webrtc::PeerConnectionObserver interface.
   void OnSignalingChange(
       webrtc::PeerConnectionInterface::SignalingState new_state) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnSignalingChange(new_state);
+    }
   }
   void OnAddStream(
       rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnAddStream(stream);
+    }
   }
   void OnRemoveStream(
       rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnRemoveStream(stream);
+    }
   }
   void OnDataChannel(
       rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnDataChannel(data_channel);
+    }
   }
   void OnRenegotiationNeeded() override {
-    if (transport_)
+    if (transport_) {
       transport_->OnRenegotiationNeeded();
+    }
   }
   void OnIceConnectionChange(
       webrtc::PeerConnectionInterface::IceConnectionState new_state) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnIceConnectionChange(new_state);
+    }
   }
   void OnIceGatheringChange(
       webrtc::PeerConnectionInterface::IceGatheringState new_state) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnIceGatheringChange(new_state);
+    }
   }
   void OnIceCandidate(const webrtc::IceCandidateInterface* candidate) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnIceCandidate(candidate);
+    }
   }
   void OnIceSelectedCandidatePairChanged(
       const cricket::CandidatePairChangeEvent& event) override {
-    if (transport_)
+    if (transport_) {
       transport_->OnIceSelectedCandidatePairChanged(event);
+    }
   }
 
  private:
@@ -439,9 +446,8 @@ WebrtcTransport::peer_connection_factory() {
 }
 
 WebrtcAudioModule* WebrtcTransport::audio_module() {
-  return peer_connection_wrapper_
-             ? peer_connection_wrapper_->audio_module()
-             : nullptr;
+  return peer_connection_wrapper_ ? peer_connection_wrapper_->audio_module()
+                                  : nullptr;
 }
 
 std::unique_ptr<MessagePipe> WebrtcTransport::CreateOutgoingChannel(
@@ -484,18 +490,21 @@ void WebrtcTransport::Start(
 
   event_handler_->OnWebrtcTransportConnecting();
 
-  if (transport_context_->role() == TransportRole::SERVER)
+  if (transport_context_->role() == TransportRole::SERVER) {
     RequestNegotiation();
+  }
 }
 
 bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (transport_info->Name() != QName(kTransportNamespace, "transport"))
+  if (transport_info->Name() != QName(kTransportNamespace, "transport")) {
     return false;
+  }
 
-  if (!peer_connection())
+  if (!peer_connection()) {
     return false;
+  }
 
   XmlElement* session_description = transport_info->FirstNamed(
       QName(kTransportNamespace, "session-description"));
@@ -710,8 +719,9 @@ void WebrtcTransport::ClosePeerConnection(
 
 void WebrtcTransport::Close(ErrorCode error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!peer_connection_wrapper_)
+  if (!peer_connection_wrapper_) {
     return;
+  }
 
   weak_factory_.InvalidateWeakPtrs();
 
@@ -723,8 +733,9 @@ void WebrtcTransport::Close(ErrorCode error) {
                       std::move(event_data_channel_),
                       std::move(peer_connection_wrapper_));
 
-  if (error != OK)
+  if (error != OK) {
     event_handler_->OnWebrtcTransportError(error);
+  }
 }
 
 void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
@@ -754,8 +765,9 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
     const std::string& error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!peer_connection())
+  if (!peer_connection()) {
     return;
+  }
 
   if (!description) {
     LOG(ERROR) << "PeerConnection offer creation failed: " << error;
@@ -818,8 +830,9 @@ void WebrtcTransport::OnLocalDescriptionSet(bool success,
                                             const std::string& error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!peer_connection())
+  if (!peer_connection()) {
     return;
+  }
 
   if (!success) {
     LOG(ERROR) << "Failed to set local description: " << error;
@@ -843,8 +856,9 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
                                              const std::string& error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!peer_connection())
+  if (!peer_connection()) {
     return;
+  }
 
   if (!success) {
     LOG(ERROR) << "Failed to set remote description: " << error;
@@ -1194,8 +1208,9 @@ void WebrtcTransport::AddPendingCandidatesIfPossible() {
 
 void WebrtcTransport::StartRtcEventLogging() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!peer_connection())
+  if (!peer_connection()) {
     return;
+  }
 
   // Start recording into |rtc_event_log_|. This is safe because, when |this| is
   // destroyed, it calls Close() which stops recording the RTC event log.
