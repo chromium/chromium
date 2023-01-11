@@ -48,7 +48,6 @@ if (optimize_webui) {
     ]
     excludes = [
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
-      "chrome://resources/cr_components/app_management/types.mojom-webui.js",
       "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",
       "chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js",
       "chrome://resources/ash/common/hotspot/cros_hotspot_config.js",

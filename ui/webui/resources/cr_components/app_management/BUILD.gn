@@ -106,13 +106,6 @@ css_to_wrapper("css_wrapper_files") {
   minify = optimize_webui
 }
 
-copy("copy_mojo") {
-  deps =
-      [ "//components/services/app_service/public/mojom:types_js__generator" ]
-  sources = [ "$root_gen_dir/mojom-webui/components/services/app_service/public/mojom/types.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = preprocess_folder
@@ -128,7 +121,6 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
-    ":copy_mojo",
     ":css_wrapper_files",
     ":html_wrapper_files",
     ":mojo_bindings_ts__generator",

@@ -34,12 +34,7 @@ _non_web_component_files = [
   "util.ts",
 ]
 
-mojo_files = [
-  "app_management.mojom-webui.ts",
-
-  # This file is stuck in JS due to dependencies on ChromeOS Ash.
-  "types.mojom-webui.js",
-]
+mojo_files = [ "app_management.mojom-webui.ts" ]
 
 # Files that are passed as input to css_to_wrapper().
 css_files = [

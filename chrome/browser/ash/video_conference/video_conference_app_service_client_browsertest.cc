@@ -44,11 +44,6 @@ apps::AppPtr MakeApp(const AppIdString& app_id, const std::string& name) {
   return app;
 }
 
-apps::mojom::OptionalBool MojomOptionalBool(bool value) {
-  return value ? apps::mojom::OptionalBool::kTrue
-               : apps::mojom::OptionalBool::kFalse;
-}
-
 // This fake instance class simulates the creation, destruction, hiding and
 // showing an app instance.
 class FakeAppInstance {

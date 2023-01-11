@@ -27,41 +27,6 @@ enum AppType {
   kBruschetta,            // Bruschetta app, see go/bruschetta.
 };
 
-// How the app was installed.
-// This should be kept in sync with histogram.xml, and InstallSource in
-// enums.xml.
-// Note the enumeration is used in UMA histogram so entries should not be
-// re-ordered or removed. New entries should be added at the bottom.
-enum InstallReason {
-  kUnknown = 0,
-  kSystem,     // Installed with the system and is considered a part of the OS.
-  kPolicy,     // Installed by policy.
-  kOem,        // Installed by an OEM.
-  kDefault,    // Preinstalled by default, but is not considered a system app.
-  kSync,       // Installed by sync.
-  kUser,       // Installed by user action.
-  kSubApp,     // Installed by the SubApp API call.
-  kKiosk,      // Installed by Kiosk on Chrome OS.
-  kCommandLine,  // Installed by the command line argument.
-};
-
-// Where the app was installed from.
-enum InstallSource {
-  kUnknown = 0,
-  kSystem,          // Installed as part of Chrome OS.
-  kSync,            // Installed from sync.
-  kPlayStore,       // Installed from Play store.
-  kChromeWebStore,  // Installed from Chrome web store.
-  kBrowser,         // Installed from browser.
-};
-
-// Augments a bool to include an 'unknown' value.
-enum OptionalBool {
-  kUnknown = 0,
-  kFalse,
-  kTrue,
-};
-
 // The intent filter matching condition types.
 enum ConditionType {
   kScheme,         // Matches the URL scheme (e.g. https, tel).

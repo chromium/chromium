@@ -156,13 +156,6 @@ struct EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason> {
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::OptionalBool, apps::mojom::OptionalBool> {
-  static crosapi::mojom::OptionalBool ToMojom(apps::mojom::OptionalBool input);
-  static bool FromMojom(crosapi::mojom::OptionalBool input,
-                        apps::mojom::OptionalBool* output);
-};
-
-template <>
 struct StructTraits<crosapi::mojom::IntentFilterDataView,
                     apps::IntentFilterPtr> {
   static const std::vector<apps::ConditionPtr>& conditions(

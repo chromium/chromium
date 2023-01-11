@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App, PageCallbackRouter, PageHandlerInterface, PageRemote, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, OptionalBool, PageCallbackRouter, PageHandlerInterface, PageRemote, Permission, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {OptionalBool, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/types.mojom-webui.js';
 
 export class FakePageHandler implements PageHandlerInterface {
   private app_: App;

@@ -500,40 +500,6 @@ bool EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason>::FromMojom(
   return false;
 }
 
-crosapi::mojom::OptionalBool
-EnumTraits<crosapi::mojom::OptionalBool, apps::mojom::OptionalBool>::ToMojom(
-    apps::mojom::OptionalBool input) {
-  switch (input) {
-    case apps::mojom::OptionalBool::kUnknown:
-      return crosapi::mojom::OptionalBool::kUnknown;
-    case apps::mojom::OptionalBool::kFalse:
-      return crosapi::mojom::OptionalBool::kFalse;
-    case apps::mojom::OptionalBool::kTrue:
-      return crosapi::mojom::OptionalBool::kTrue;
-  }
-
-  NOTREACHED();
-}
-
-bool EnumTraits<crosapi::mojom::OptionalBool, apps::mojom::OptionalBool>::
-    FromMojom(crosapi::mojom::OptionalBool input,
-              apps::mojom::OptionalBool* output) {
-  switch (input) {
-    case crosapi::mojom::OptionalBool::kUnknown:
-      *output = apps::mojom::OptionalBool::kUnknown;
-      return true;
-    case crosapi::mojom::OptionalBool::kFalse:
-      *output = apps::mojom::OptionalBool::kFalse;
-      return true;
-    case crosapi::mojom::OptionalBool::kTrue:
-      *output = apps::mojom::OptionalBool::kTrue;
-      return true;
-  }
-
-  NOTREACHED();
-  return false;
-}
-
 bool StructTraits<crosapi::mojom::IntentFilterDataView, apps::IntentFilterPtr>::
     Read(crosapi::mojom::IntentFilterDataView data,
          apps::IntentFilterPtr* out) {
