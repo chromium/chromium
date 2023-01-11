@@ -9,6 +9,7 @@
 
 // Experiment IDs defined for the above field trial groups.
 extern const variations::VariationID kControlTrialID;
+extern const variations::VariationID kTangibleSyncAFRETrialID;
 extern const variations::VariationID kTangibleSyncDFRETrialID;
 extern const variations::VariationID kTangibleSyncEFRETrialID;
 extern const variations::VariationID kTangibleSyncFFRETrialID;
