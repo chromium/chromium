@@ -13,7 +13,7 @@ export class MenuManager {
   constructor() {
     /**
      * The array of top-level menus.
-     * @private {!Array<PanelMenu>}
+     * @private {!Array<!PanelMenu>}
      */
     this.menus_ = [];
 
@@ -31,6 +31,16 @@ export class MenuManager {
         }
       }
     }
+  }
+
+  /**
+   * @param {string|undefined} opt_menuTitle
+   * @return {!PanelMenu}
+   */
+  getSelectedMenu(opt_menuTitle) {
+    const specifiedMenu =
+        this.menus_.find(menu => menu.menuMsg === opt_menuTitle);
+    return specifiedMenu || this.searchMenu_ || this.menus_[0];
   }
 
   /**

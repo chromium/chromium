@@ -223,7 +223,7 @@ export class Panel extends PanelInterface {
         this.onUpdateBraille_(command.data);
         break;
       case PanelCommandType.OPEN_MENUS:
-        this.onOpenMenus_(undefined, command.data);
+        this.onOpenMenus_(undefined, String(command.data));
         break;
       case PanelCommandType.OPEN_MENUS_MOST_RECENT:
         this.onOpenMenus_(undefined, this.lastMenu_);
@@ -294,7 +294,7 @@ export class Panel extends PanelInterface {
   /**
    * Open / show the ChromeVox Menus.
    * @param {Event=} opt_event An optional event that triggered this.
-   * @param {*=} opt_activateMenuTitle Title msg id of menu to open.
+   * @param {string=} opt_activateMenuTitle Title msg id of menu to open.
    * @private
    */
   async onOpenMenus_(opt_event, opt_activateMenuTitle) {
@@ -514,14 +514,8 @@ export class Panel extends PanelInterface {
       }
 
       // Activate either the specified menu or the search menu.
-      // Search menu can be null, since it is hidden behind a flag.
-      let selectedMenu =
-          this.menuManager_.searchMenu || this.menuManager_.menus[0];
-      for (let i = 0; i < this.menuManager_.menus.length; i++) {
-        if (this.menuManager_.menus[i].menuMsg === opt_activateMenuTitle) {
-          selectedMenu = this.menuManager_.menus[i];
-        }
-      }
+      const selectedMenu =
+          this.menuManager_.getSelectedMenu(opt_activateMenuTitle);
 
       const activateFirstItem = (selectedMenu !== this.menuManager_.searchMenu);
       this.activateMenu_(selectedMenu, activateFirstItem);
