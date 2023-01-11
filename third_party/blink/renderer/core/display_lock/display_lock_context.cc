@@ -576,6 +576,13 @@ void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
 void DisplayLockContext::DispatchStateChangeEventIfNeeded() {
   DCHECK(state_change_task_pending_);
   state_change_task_pending_ = false;
+  // If we're not connected to view, reset the state that we reported so that we
+  // can report it again on insertion.
+  if (!ConnectedToView()) {
+    last_notified_skipped_state_.reset();
+    return;
+  }
+
   if (!last_notified_skipped_state_ ||
       *last_notified_skipped_state_ != is_locked_) {
     last_notified_skipped_state_ = is_locked_;
