@@ -5964,21 +5964,6 @@
             ]
         }
     ],
-    "IOSThirdPartyIntentsInIncognito": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOS3pIntentsInIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [
