@@ -16,5 +16,6 @@
 -BrowserFocusTest.PopupLocationBar
 -ChromeMimeHandlerViewInteractiveUITest.Fullscreen
 -PopupBlockerBrowserTest.WindowFeatures
+-SadTabViewInteractiveUITest.SadTabKeyboardAccessibility
 -SitePerProcessInteractiveBrowserTest.FullscreenElementInABAAndExitViaEscapeKey
 -SitePerProcessInteractiveBrowserTest.FullscreenElementInSubframe
