@@ -2116,8 +2116,6 @@ source_set("browser") {
     "utility_process_host_receiver_bindings.cc",
     "utility_sandbox_delegate.cc",
     "utility_sandbox_delegate.h",
-    "v8_snapshot_files.cc",
-    "v8_snapshot_files.h",
     "video_capture_service.cc",
     "wake_lock/wake_lock_context_host.cc",
     "wake_lock/wake_lock_context_host.h",
@@ -2334,6 +2332,13 @@ source_set("browser") {
   }
   if (toolkit_views) {
     deps += [ "//ui/events" ]
+  }
+
+  if (is_posix && !is_mac) {
+    sources += [
+      "v8_snapshot_files.cc",
+      "v8_snapshot_files.h",
+    ]
   }
 
   if (is_linux || is_chromeos) {

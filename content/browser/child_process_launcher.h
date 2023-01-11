@@ -23,6 +23,7 @@
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -165,13 +166,22 @@ struct ChildProcessLauncherFileData {
 
 #if BUILDFLAG(IS_POSIX)
   // Files opened by the browser and passed as corresponding file descriptors
-  // in the child process.
+  // in the child process. If a FilePath is provided, the file will be opened
+  // and the descriptor cached for future process launches. If a ScopedFD is
+  // provided, it will be passed to the new process and closed in the current
+  // one.
+  //
+  // The files will be stored in base::FileDescriptorStore in the new process,
+  // with the corresponding key.
+  //
   // Currently only supported on Linux, ChromeOS and Android platforms.
-  std::map<std::string, base::FilePath> files_to_preload;
+  std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>>
+      files_to_preload;
 
   // Map of file descriptors to pass. This is used instead of
-  // `files_to_preload` when the data is already contained as a file
-  // descriptor.
+  // `files_to_preload` when the data needs to be installed at an exact FD
+  // number in the new process.
+  //
   // Currently only supported on POSIX platforms.
   std::map<int, base::ScopedFD> additional_remapped_fds;
 #endif

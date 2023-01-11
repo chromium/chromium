@@ -53,7 +53,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
 
   if (GetProcessType() == switches::kRendererProcess) {
     const int sandbox_fd = SandboxHostLinux::GetInstance()->GetChildSocket();
-    options->fds_to_remap.push_back(std::make_pair(sandbox_fd, GetSandboxFD()));
+    options->fds_to_remap.emplace_back(sandbox_fd, GetSandboxFD());
   }
 
   for (const auto& remapped_fd : file_data_->additional_remapped_fds) {
@@ -118,6 +118,8 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
     const base::LaunchOptions& options) {
+  // Reset any FDs still held open.
+  file_data_.reset();
 }
 
 ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(

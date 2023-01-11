@@ -23,7 +23,6 @@
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/utility_sandbox_delegate.h"
-#include "content/browser/v8_snapshot_files.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,6 +49,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "components/os_crypt/os_crypt_switches.h"
+#endif
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#include "content/browser/v8_snapshot_files.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -332,7 +335,7 @@ bool UtilityProcessHost::StartProcess() {
 #endif
 
     auto file_data = std::make_unique<ChildProcessLauncherFileData>();
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     file_data->files_to_preload = GetV8SnapshotFilesToPreload();
 #endif  // BUILDFLAG(IS_POSIX)
 
