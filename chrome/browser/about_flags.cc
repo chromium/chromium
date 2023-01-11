@@ -6702,6 +6702,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRgbKeyboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kRgbKeyboard)},
 
+    {"enable-accessibility-accelerators-notifications-timeout",
+     flag_descriptions::kAccessibilityAcceleratorNotificationsTimeoutName,
+     flag_descriptions::
+         kAccessibilityAcceleratorNotificationsTimeoutDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kAccessibilityAcceleratorNotificationsTimeout)},
+
     {"enable-accessibility-service",
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,

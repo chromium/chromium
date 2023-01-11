@@ -566,6 +566,9 @@ extern const char kEnablePreinstalledWebAppDuplicationFixerDescription[];
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 
+extern const char kAccessibilityAcceleratorNotificationsTimeoutName[];
+extern const char kAccessibilityAcceleratorNotificationsTimeoutDescription[];
+
 extern const char kAccessibilityServiceName[];
 extern const char kAccessibilityServiceDescription[];
 

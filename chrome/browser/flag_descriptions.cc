@@ -992,6 +992,13 @@ const char kEnableTLS13EarlyDataDescription[] =
     "during the handshake when resuming a connection to a compatible TLS 1.3 "
     "server.";
 
+const char kAccessibilityAcceleratorNotificationsTimeoutName[] =
+    "Allows accelerator notifications for accessibility features to time out";
+const char kAccessibilityAcceleratorNotificationsTimeoutDescription[] =
+    "Enables notifications for accessibility features turned on by keyboard "
+    "shortcut (docked magnifier, screen magnifier and high contrast) to time "
+    "out instead of remaining pinned.";
+
 const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
 const char kAccessibilityServiceDescription[] =
     "This option enables the experimental Accessibility Service and runs some "

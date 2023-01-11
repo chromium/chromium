@@ -58811,6 +58811,8 @@ from previous Chrome versions.
   <int value="-1218063855" label="MediaAppAnnotation:disabled"/>
   <int value="-1217623062"
       label="AutofillAlwaysReturnCloudTokenizedCard:disabled"/>
+  <int value="-1217600112"
+      label="AccessibilityAcceleratorNotificationsTimeout:disabled"/>
   <int value="-1217462552"
       label="OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains:disabled"/>
   <int value="-1217425153" label="ChromeHomeClearUrlOnOpen:enabled"/>
@@ -59809,6 +59811,8 @@ from previous Chrome versions.
   <int value="-645455405" label="MacViewsNativeDialogs:enabled"/>
   <int value="-644550997"
       label="AutofillPreventOverridingPrefilledValues:disabled"/>
+  <int value="-644402170"
+      label="AccessibilityAcceleratorNotificationsTimeout:enabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>

@@ -1655,6 +1655,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "enable-accessibility-accelerators-notifications-timeout",
+    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-accessibility-live-caption",
     "owners": [ "abigailbklein@google.com", "evliu@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 120

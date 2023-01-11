@@ -68,6 +68,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -88,6 +89,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/accelerator_filter.h"
 
@@ -329,6 +331,13 @@ class AcceleratorControllerTest : public AshTestBase {
   bool ContainsFullscreenMagnifierNotification() const {
     return nullptr != message_center()->FindVisibleNotificationById(
                           kFullscreenMagnifierToggleAccelNotificationId);
+  }
+
+  bool IsNotificationPinned(const std::string& id) const {
+    auto* notification = message_center()->FindVisibleNotificationById(id);
+    DCHECK(notification);
+    return notification->pinned() ||
+           notification->priority() == message_center::SYSTEM_PRIORITY;
   }
 
   AccessibilityConfirmationDialog* GetConfirmationDialog() {
@@ -2131,6 +2140,10 @@ TEST_F(AcceleratorControllerTest, TestDialogCancel) {
 }
 
 TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kAccessibilityAcceleratorNotificationsTimeout);
+
   ui::Accelerator accelerator(ui::VKEY_H,
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
   // High Contrast Mode Enabled dialog and notification should be shown.
@@ -2143,6 +2156,7 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
   AcceptConfirmationDialog();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(ContainsHighContrastNotification());
+  EXPECT_FALSE(IsNotificationPinned(kHighContrastToggleAccelNotificationId));
   EXPECT_TRUE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
@@ -2158,6 +2172,16 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
   EXPECT_FALSE(IsConfirmationDialogOpen());
   EXPECT_TRUE(ContainsHighContrastNotification());
   RemoveAllNotifications();
+}
+
+TEST_F(AcceleratorControllerTest, TestToggleHighContrastPinned) {
+  ui::Accelerator accelerator(ui::VKEY_H,
+                              ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(ProcessInController(accelerator));
+  AcceptConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ContainsHighContrastNotification());
+  EXPECT_TRUE(IsNotificationPinned(kHighContrastToggleAccelNotificationId));
 }
 
 TEST_F(AcceleratorControllerTest, CalculatorKey) {
@@ -2535,6 +2559,10 @@ class FakeMagnificationManager {
 };
 
 TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kAccessibilityAcceleratorNotificationsTimeout);
+
   FakeMagnificationManager manager;
   manager.SetPrefs(user_pref_service());
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
@@ -2557,6 +2585,8 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
   EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_TRUE(ContainsFullscreenMagnifierNotification());
+  EXPECT_FALSE(
+      IsNotificationPinned(kFullscreenMagnifierToggleAccelNotificationId));
 
   EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
@@ -2579,6 +2609,10 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
 }
 
 TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kAccessibilityAcceleratorNotificationsTimeout);
+
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_FALSE(IsConfirmationDialogOpen());
@@ -2597,6 +2631,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_TRUE(docked_magnifier_controller()->GetEnabled());
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_TRUE(ContainsDockedMagnifierNotification());
+  EXPECT_FALSE(IsNotificationPinned(kDockedMagnifierToggleAccelNotificationId));
 
   EXPECT_TRUE(ProcessInController(docked_magnifier_accelerator));
   EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
@@ -2611,6 +2646,30 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_TRUE(docked_magnifier_controller()->GetEnabled());
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_TRUE(ContainsDockedMagnifierNotification());
+
+  RemoveAllNotifications();
+}
+
+TEST_F(MagnifiersAcceleratorsTester, TestToggleMagnifiersPinned) {
+  FakeMagnificationManager manager;
+  manager.SetPrefs(user_pref_service());
+
+  const ui::Accelerator fullscreen_magnifier_accelerator(
+      ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
+  AcceptConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ContainsFullscreenMagnifierNotification());
+  EXPECT_TRUE(
+      IsNotificationPinned(kFullscreenMagnifierToggleAccelNotificationId));
+
+  const ui::Accelerator docked_magnifier_accelerator(
+      ui::VKEY_D, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(ProcessInController(docked_magnifier_accelerator));
+  AcceptConfirmationDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(ContainsDockedMagnifierNotification());
+  EXPECT_TRUE(IsNotificationPinned(kDockedMagnifierToggleAccelNotificationId));
 
   RemoveAllNotifications();
 }

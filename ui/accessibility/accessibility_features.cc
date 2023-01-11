@@ -210,6 +210,15 @@ bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
 }
+
+BASE_FEATURE(kAccessibilityAcceleratorNotificationsTimeout,
+             "AccessibilityAcceleratorNotificationsTimeout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityAcceleratorNotificationsTimeout);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kAugmentExistingImageLabels,

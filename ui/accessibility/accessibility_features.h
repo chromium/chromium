@@ -160,6 +160,13 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 // Returns true if AccessibilitySelectToSpeakHoverTextImprovements is enabled.
 AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled();
 
+// Enables accessibility accelerator notifications to timeout.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityAcceleratorNotificationsTimeout);
+
+// Returns true if kAccessibilityAcceleratorNotificationsTimeout is enabled.
+AX_BASE_EXPORT bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,
