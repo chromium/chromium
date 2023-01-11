@@ -9,8 +9,8 @@ import './ip_config_info_drawer.js';
 import './network_info.js';
 import './routine_section.js';
 
-import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -27,7 +27,7 @@ import {RoutineSectionElement} from './routine_section.js';
  * 'connectivity-card' runs network routines and displays network health data.
  */
 
-const ConnectivityCardElementBase = StrictQueryMixin(I18nMixin(PolymerElement));
+const ConnectivityCardElementBase = I18nMixin(PolymerElement);
 
 export class ConnectivityCardElement extends ConnectivityCardElementBase {
   static get is(): string {
@@ -98,7 +98,9 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
       null;
 
   private getRoutineSectionElem(): RoutineSectionElement {
-    return this.strictQuery('routine-section', RoutineSectionElement);
+    const routineSection = this.shadowRoot!.querySelector('routine-section');
+    assert(routineSection);
+    return routineSection;
   }
 
   override disconnectedCallback(): void {

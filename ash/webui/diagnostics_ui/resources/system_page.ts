@@ -14,9 +14,9 @@ import './memory_card.js';
 import './overview_card.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -39,7 +39,7 @@ export interface SystemPageElement {
  * and running diagnostic tests.
  */
 
-const SystemPageElementBase = StrictQueryMixin(I18nMixin(PolymerElement));
+const SystemPageElementBase = I18nMixin(PolymerElement);
 
 export class SystemPageElement extends SystemPageElementBase {
   static get is(): string {
@@ -155,10 +155,12 @@ export class SystemPageElement extends SystemPageElementBase {
     this.isActive = isActive;
     if (isActive) {
       // Focus the topmost system page element.
-      const overviewCard =
-          this.strictQuery(OverviewCardElement.is, OverviewCardElement);
-      const overviewCardContainer =
-          overviewCard.strictQueryDiv('#overviewCardContainer');
+      const overviewCard: OverviewCardElement|null =
+          this.shadowRoot!.querySelector('#overviewCard');
+      assert(overviewCard);
+      const overviewCardContainer: HTMLDivElement|null =
+          overviewCard.shadowRoot!.querySelector('#overviewCardContainer');
+      assert(overviewCardContainer);
       overviewCardContainer.focus();
       // TODO(ashleydp): Remove when a call can be made at a higher component
       // to avoid duplicate code in all navigatable pages.

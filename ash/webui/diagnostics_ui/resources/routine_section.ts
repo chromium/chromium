@@ -13,7 +13,6 @@ import './text_badge.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -45,7 +44,7 @@ export interface RoutineSectionElement {
  * which routines this instance will run.
  */
 
-const RoutineSectionElementBase = StrictQueryMixin(I18nMixin(PolymerElement));
+const RoutineSectionElementBase = I18nMixin(PolymerElement);
 
 export class RoutineSectionElement extends RoutineSectionElementBase {
   static get is(): string {
@@ -254,8 +253,10 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   }
 
   private getResultListElem(): RoutineResultListElement {
-    return this.strictQuery(
-        RoutineResultListElement.is, RoutineResultListElement);
+    const routineResultList: RoutineResultListElement|null =
+        this.shadowRoot!.querySelector('routine-result-list');
+    assert(routineResultList);
+    return routineResultList;
   }
 
   private async getSupportedRoutines(): Promise<RoutineType[]> {

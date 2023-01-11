@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -43,8 +42,7 @@ interface Point {
   y: number;
 }
 
-const TouchscreenTesterElementBase =
-    StrictQueryMixin(I18nMixin(PolymerElement));
+const TouchscreenTesterElementBase = I18nMixin(PolymerElement);
 
 export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   static get is(): string {
@@ -201,7 +199,9 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * Set up canvas width, height and drawing context.
    */
   private setupCanvas(): void {
-    const canvas = this.strictQuery('canvas', HTMLCanvasElement);
+    const canvas =
+        this.shadowRoot!.querySelector('canvas') as HTMLCanvasElement;
+    assert(canvas);
 
     canvas.width = SCREEN_MAX_LENGTH;
     canvas.height = SCREEN_MAX_LENGTH;

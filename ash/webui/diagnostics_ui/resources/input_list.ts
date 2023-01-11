@@ -8,13 +8,13 @@ import './keyboard_tester.js';
 import './touchscreen_tester.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {StrictQueryMixin} from 'chrome://resources/ash/common/typescript_utils/strict_query_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
+import {InputCardElement} from './input_card.js';
 import {ConnectedDevicesObserverReceiver, ConnectionType, InputDataProviderInterface, InternalDisplayPowerStateObserverReceiver, KeyboardInfo, LidStateObserverReceiver, TabletModeObserverReceiver, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './input_list.html.js';
 import {KeyboardTesterElement} from './keyboard_tester.js';
@@ -28,7 +28,7 @@ import {TouchscreenTesterElement} from './touchscreen_tester.js';
  * touchscreen cards.
  */
 
-const InputListElementBase = StrictQueryMixin(I18nMixin(PolymerElement));
+const InputListElementBase = I18nMixin(PolymerElement);
 
 export interface HostDeviceStatus {
   isLidOpen: boolean;
@@ -127,8 +127,9 @@ export class InputListElement extends InputListElementBase {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.keyboardTester =
-        this.strictQuery(KeyboardTesterElement.is, KeyboardTesterElement);
+    const keyboardTester = this.shadowRoot!.querySelector('keyboard-tester');
+    assert(keyboardTester);
+    this.keyboardTester = keyboardTester;
   }
 
   private loadInitialDevices(): void {
@@ -286,11 +287,12 @@ export class InputListElement extends InputListElementBase {
    * device is clicked.
    */
   protected handleTouchpadTestButtonClick(e: CustomEvent): void {
+    this.touchpadTester =
+        this.shadowRoot!.querySelector(TouchpadTesterElement.is);
+    assert(this.touchpadTester);
     const touchpad: TouchDeviceInfo|undefined = this.touchpads.find(
         (touchpad: TouchDeviceInfo) => touchpad.id === e.detail.evdevId);
     assert(touchpad);
-    this.touchpadTester =
-        this.strictQuery(TouchpadTesterElement.is, TouchpadTesterElement);
     this.touchpadTester.show(touchpad);
   }
 
@@ -299,7 +301,8 @@ export class InputListElement extends InputListElementBase {
    */
   private handleTouchscreenTestButtonClick(e: CustomEvent): void {
     this.touchscreenTester =
-        this.strictQuery(TouchscreenTesterElement.is, TouchscreenTesterElement);
+        this.shadowRoot!.querySelector('touchscreen-tester');
+    assert(this.touchscreenTester);
     this.touchscreenIdUnderTesting = e.detail.evdevId;
     this.touchscreenTester.showTester(e.detail.evdevId);
   }
@@ -314,10 +317,17 @@ export class InputListElement extends InputListElementBase {
       // fallback to focusing the element's main container.
       afterNextRender(this, () => {
         if (this.keyboards) {
-          const keyboardTitle = this.strictQueryDiv('#keyboardTitle');
+          const keyboard: InputCardElement|null =
+              this.shadowRoot!.querySelector('#keyboardInputCard');
+          assert(keyboard);
+          const keyboardTitle: HTMLDivElement|null =
+              keyboard.querySelector('#keyboardTitle');
+          assert(keyboardTitle);
           keyboardTitle.focus();
         } else {
-          const inputListContainer = this.strictQueryDiv('#inputListContainer');
+          const inputListContainer: HTMLDivElement|null =
+              this.shadowRoot!.querySelector('#inputListContainer');
+          assert(inputListContainer);
           inputListContainer.focus();
         }
       });
