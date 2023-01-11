@@ -168,9 +168,7 @@ constexpr unsigned char Cord::InlineRep::kMaxInline;
 
 inline void Cord::InlineRep::set_data(const char* data, size_t n) {
   static_assert(kMaxInline == 15, "set_data is hard-coded for a length of 15");
-
-  cord_internal::SmallMemmove<true>(data_.as_chars(), data, n);
-  set_inline_size(n);
+  data_.set_inline_data(data, n);
 }
 
 inline char* Cord::InlineRep::set_data(size_t n) {
@@ -439,8 +437,8 @@ void Cord::InlineRep::AppendArray(absl::string_view src,
     size_t inline_length = inline_size();
     if (src.size() <= kMaxInline - inline_length) {
       // Append new data to embedded array
-      memcpy(data_.as_chars() + inline_length, src.data(), src.size());
       set_inline_size(inline_length + src.size());
+      memcpy(data_.as_chars() + inline_length, src.data(), src.size());
       return;
     }
 
@@ -622,9 +620,9 @@ void Cord::PrependArray(absl::string_view src, MethodIdentifier method) {
     if (cur_size + src.size() <= InlineRep::kMaxInline) {
       // Use embedded storage.
       InlineData data;
+      data.set_inline_size(cur_size + src.size());
       memcpy(data.as_chars(), src.data(), src.size());
       memcpy(data.as_chars() + src.size(), contents_.data(), cur_size);
-      data.set_inline_size(cur_size + src.size());
       contents_.data_ = data;
       return;
     }
@@ -638,8 +636,8 @@ void Cord::AppendPrecise(absl::string_view src, MethodIdentifier method) {
   assert(src.size() <= cord_internal::kMaxFlatLength);
   if (contents_.remaining_inline_capacity() >= src.size()) {
     const size_t inline_length = contents_.inline_size();
-    memcpy(contents_.data_.as_chars() + inline_length, src.data(), src.size());
     contents_.set_inline_size(inline_length + src.size());
+    memcpy(contents_.data_.as_chars() + inline_length, src.data(), src.size());
   } else {
     contents_.AppendTree(CordRepFlat::Create(src), method);
   }
@@ -651,9 +649,9 @@ void Cord::PrependPrecise(absl::string_view src, MethodIdentifier method) {
   if (contents_.remaining_inline_capacity() >= src.size()) {
     const size_t cur_size = contents_.inline_size();
     InlineData data;
+    data.set_inline_size(cur_size + src.size());
     memcpy(data.as_chars(), src.data(), src.size());
     memcpy(data.as_chars() + src.size(), contents_.data(), cur_size);
-    data.set_inline_size(cur_size + src.size());
     contents_.data_ = data;
   } else {
     contents_.PrependTree(CordRepFlat::Create(src), method);
@@ -746,6 +744,7 @@ Cord Cord::Subcord(size_t pos, size_t new_size) const {
   }
 
   if (new_size <= InlineRep::kMaxInline) {
+    sub_cord.contents_.set_inline_size(new_size);
     char* dest = sub_cord.contents_.data_.as_chars();
     Cord::ChunkIterator it = chunk_begin();
     it.AdvanceBytes(pos);
@@ -757,7 +756,6 @@ Cord Cord::Subcord(size_t pos, size_t new_size) const {
       ++it;
     }
     cord_internal::SmallMemmove(dest, it->data(), remaining_size);
-    sub_cord.contents_.set_inline_size(new_size);
     return sub_cord;
   }
 

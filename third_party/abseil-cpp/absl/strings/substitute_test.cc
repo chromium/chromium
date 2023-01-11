@@ -265,7 +265,7 @@ TEST(SubstituteTest, AbslStringifyWithEnum) {
   EXPECT_EQ(absl::Substitute("$0", e), "Choices");
 }
 
-#ifdef GTEST_HAS_DEATH_TEST
+#if GTEST_HAS_DEATH_TEST
 
 TEST(SubstituteDeathTest, SubstituteDeath) {
   EXPECT_DEBUG_DEATH(

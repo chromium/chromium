@@ -279,6 +279,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::algorithm_container
     absl::config
     absl::core_headers
     absl::flags_config

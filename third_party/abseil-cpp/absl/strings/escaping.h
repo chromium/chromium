@@ -135,20 +135,21 @@ std::string WebSafeBase64Escape(absl::string_view src);
 
 // Base64Unescape()
 //
-// Converts a `src` string encoded in Base64 to its binary equivalent, writing
-// it to a `dest` buffer, returning `true` on success. If `src` contains invalid
-// characters, `dest` is cleared and returns `false`.
-// Padding is optional. If padding is included, it must be correct. In the
-// padding, '=' and '.' are treated identically.
+// Converts a `src` string encoded in Base64 (RFC 4648 section 4) to its binary
+// equivalent, writing it to a `dest` buffer, returning `true` on success. If
+// `src` contains invalid characters, `dest` is cleared and returns `false`.
+// Padding is optional, and note that `Base64Escape()` does not produce it. If
+// padding is included, it must be correct. In the padding, '=' and '.' are
+// treated identically.
 bool Base64Unescape(absl::string_view src, std::string* dest);
 
 // WebSafeBase64Unescape()
 //
-// Converts a `src` string encoded in Base64 to its binary equivalent, writing
-// it to a `dest` buffer, but using '-' instead of '+', and '_' instead of '/'.
-// If `src` contains invalid characters, `dest` is cleared and returns `false`.
-// Padding is optional. If padding is included, it must be correct. In the
-// padding, '=' and '.' are treated identically.
+// Converts a `src` string encoded in "web safe" Base64 (RFC 4648 section 5) to
+// its binary equivalent, writing it to a `dest` buffer. If `src` contains
+// invalid characters, `dest` is cleared and returns `false`. If padding is
+// included, it must be correct. In the padding, '=' and '.' are treated
+// identically.
 bool WebSafeBase64Unescape(absl::string_view src, std::string* dest);
 
 // HexStringToBytes()

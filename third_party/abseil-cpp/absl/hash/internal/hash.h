@@ -49,6 +49,7 @@
 #include "absl/hash/internal/city.h"
 #include "absl/hash/internal/low_level_hash.h"
 #include "absl/meta/type_traits.h"
+#include "absl/numeric/bits.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
@@ -1052,7 +1053,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
     uint64_t most_significant = low_mem;
     uint64_t least_significant = high_mem;
 #endif
-    return {least_significant, most_significant >> (128 - len * 8)};
+    return {least_significant, most_significant};
   }
 
   // Reads 4 to 8 bytes from p. Zero pads to fill uint64_t.
@@ -1183,9 +1184,22 @@ inline uint64_t MixingHashState::CombineContiguousImpl(
     }
     v = Hash64(first, len);
   } else if (len > 8) {
+    // This hash function was constructed by the ML-driven algorithm discovery
+    // using reinforcement learning. We fed the agent lots of inputs from
+    // microbenchmarks, SMHasher, low hamming distance from generated inputs and
+    // picked up the one that was good on micro and macrobenchmarks.
     auto p = Read9To16(first, len);
-    state = Mix(state, p.first);
-    v = p.second;
+    uint64_t lo = p.first;
+    uint64_t hi = p.second;
+    // Rotation by 53 was found to be most often useful when discovering these
+    // hashing algorithms with ML techniques.
+    lo = absl::rotr(lo, 53);
+    state += kMul;
+    lo += state;
+    state ^= hi;
+    uint128 m = state;
+    m *= lo;
+    return static_cast<uint64_t>(m ^ (m >> 64));
   } else if (len >= 4) {
     v = Read4To8(first, len);
   } else if (len > 0) {

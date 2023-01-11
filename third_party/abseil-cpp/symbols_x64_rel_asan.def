@@ -1252,6 +1252,7 @@ EXPORTS
     ?safe_strtou32_base@numbers_internal@absl@@YA_NVstring_view@2@PEAIH@Z
     ?safe_strtou64_base@numbers_internal@absl@@YA_NVstring_view@2@PEA_KH@Z
     ?set_cordz_mean_interval@cord_internal@absl@@YAXH@Z
+    ?set_inline_data@InlineData@cord_internal@absl@@QEAAXPEBD_K@Z
     ?shallow_subcords_enabled@cord_internal@absl@@3U?$atomic@_N@Cr@std@@A
     ?shrink_to_fit@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAXXZ
     ?size@?$BigUnsigned@$03@strings_internal@absl@@QEBAHXZ

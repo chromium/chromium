@@ -43,6 +43,7 @@ cc_library(
         "//absl/container:fixed_array",
         "//absl/functional:function_ref",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
         "//absl/strings",
         "//absl/types:optional",
