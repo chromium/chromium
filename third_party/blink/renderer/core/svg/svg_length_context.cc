@@ -41,8 +41,10 @@
 
 namespace blink {
 
-static inline float DimensionForLengthMode(SVGLengthMode mode,
-                                           const gfx::SizeF& viewport_size) {
+namespace {
+
+inline float DimensionForLengthMode(SVGLengthMode mode,
+                                    const gfx::SizeF& viewport_size) {
   switch (mode) {
     case SVGLengthMode::kWidth:
       return viewport_size.width();
@@ -60,7 +62,7 @@ static inline float DimensionForLengthMode(SVGLengthMode mode,
   return 0;
 }
 
-static const ComputedStyle* ComputedStyleForLengthResolving(
+const ComputedStyle* ComputedStyleForLengthResolving(
     const SVGElement* context) {
   if (!context) {
     return nullptr;
@@ -79,7 +81,7 @@ static const ComputedStyle* ComputedStyleForLengthResolving(
   return nullptr;
 }
 
-static const ComputedStyle* RootElementStyle(const Node* context) {
+const ComputedStyle* RootElementStyle(const Node* context) {
   if (!context) {
     return nullptr;
   }
@@ -95,8 +97,6 @@ static const ComputedStyle* RootElementStyle(const Node* context) {
   }
   return style;
 }
-
-namespace {
 
 class CSSToLengthConversionDataContext {
   STACK_ALLOCATED();
@@ -146,10 +146,7 @@ float ObjectBoundingBoxUnitToUserUnits(const Length& length,
   return FloatValueForLength(length, unit_dimension, nullptr) * ref_dimension;
 }
 
-}  // namespace
-
-static float ConvertValueFromUserUnitsToEMS(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromUserUnitsToEMS(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
@@ -160,16 +157,14 @@ static float ConvertValueFromUserUnitsToEMS(const ComputedStyle* style,
   return value / font_size;
 }
 
-static float ConvertValueFromEMSToUserUnits(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromEMSToUserUnits(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
   return value * style->SpecifiedFontSize();
 }
 
-static float ConvertValueFromUserUnitsToEXS(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromUserUnitsToEXS(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
@@ -188,8 +183,7 @@ static float ConvertValueFromUserUnitsToEXS(const ComputedStyle* style,
   return value / x_height;
 }
 
-static float ConvertValueFromEXSToUserUnits(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromEXSToUserUnits(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
@@ -204,8 +198,7 @@ static float ConvertValueFromEXSToUserUnits(const ComputedStyle* style,
          ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
 }
 
-static float ConvertValueFromUserUnitsToCHS(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromUserUnitsToCHS(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
@@ -221,8 +214,7 @@ static float ConvertValueFromUserUnitsToCHS(const ComputedStyle* style,
   return value / zero_width;
 }
 
-static float ConvertValueFromCHSToUserUnits(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromCHSToUserUnits(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
@@ -234,8 +226,7 @@ static float ConvertValueFromCHSToUserUnits(const ComputedStyle* style,
          style->EffectiveZoom();
 }
 
-static float ConvertValueFromUserUnitsToICS(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromUserUnitsToICS(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
@@ -253,8 +244,7 @@ static float ConvertValueFromUserUnitsToICS(const ComputedStyle* style,
   return value / ideographic_full_width;
 }
 
-static float ConvertValueFromICSToUserUnits(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromICSToUserUnits(const ComputedStyle* style, float value) {
   if (!style) {
     return 0;
   }
@@ -273,26 +263,25 @@ float ConvertValueFromUserUnitsToLHS(const ComputedStyle* style, float value) {
                                                     *style);
 }
 
-static float ConvertValueFromLHSToUserUnits(const ComputedStyle* style,
-                                            float value) {
+float ConvertValueFromLHSToUserUnits(const ComputedStyle* style, float value) {
   return value * AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
                                                     *style);
 }
 
-static inline float ViewportLengthPercent(const float width_or_height) {
+inline float ViewportLengthPercent(const float width_or_height) {
   return width_or_height / 100;
 }
 
-static inline float ViewportMinPercent(const gfx::SizeF& viewport_size) {
+inline float ViewportMinPercent(const gfx::SizeF& viewport_size) {
   return std::min(viewport_size.width(), viewport_size.height()) / 100;
 }
 
-static inline float ViewportMaxPercent(const gfx::SizeF& viewport_size) {
+inline float ViewportMaxPercent(const gfx::SizeF& viewport_size) {
   return std::max(viewport_size.width(), viewport_size.height()) / 100;
 }
 
-static inline float DimensionForViewportUnit(const SVGElement* context,
-                                             CSSPrimitiveValue::UnitType unit) {
+inline float DimensionForViewportUnit(const SVGElement* context,
+                                      CSSPrimitiveValue::UnitType unit) {
   if (!context) {
     return 0;
   }
@@ -331,6 +320,8 @@ static inline float DimensionForViewportUnit(const SVGElement* context,
   NOTREACHED();
   return 0;
 }
+
+}  // namespace
 
 SVGLengthContext::SVGLengthContext(const SVGElement* context)
     : context_(context) {}
