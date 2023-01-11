@@ -193,7 +193,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresPurposeAny) {
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 }
 
-TEST_F(InstallableManagerUnitTest, ManifestRequiresMinimalSize) {
+TEST_F(InstallableManagerUnitTest, ManifestRequiresIconSize) {
   blink::mojom::ManifestPtr manifest = GetValidManifest();
 
   // The icon MUST be 144x144 size at least.
@@ -214,6 +214,22 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresMinimalSize) {
   manifest->icons[0].sizes[1] = gfx::Size(200, 200);
   EXPECT_TRUE(IsManifestValid(*manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+
+  // Icon size matching the maximum size requirement is correct.
+  manifest->icons[0].sizes[1] = gfx::Size(1024, 1024);
+  EXPECT_TRUE(IsManifestValid(*manifest));
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+
+  // Icon size larger than maximum size 1024x1024 should not
+  // be accepted on desktop.
+  manifest->icons[0].sizes[1] = gfx::Size(1025, 1025);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(IsManifestValid(*manifest));
+  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+#else
+  EXPECT_FALSE(IsManifestValid(*manifest));
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Non-square is okay.
   manifest->icons[0].sizes[1] = gfx::Size(144, 200);

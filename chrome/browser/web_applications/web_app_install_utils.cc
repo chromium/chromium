@@ -84,7 +84,8 @@ namespace {
 // We restrict the number of icons to limit disk usage per installed PWA. This
 // value can change overtime as new features are added.
 constexpr int kMaxIcons = 20;
-constexpr SquareSizePx kMaxIconSize = 1024;
+constexpr SquareSizePx kMaxIconSize =
+    webapps::InstallableManager::kMaximumIconSizeInPx;
 
 // Returns whether the home tab icons exist.
 bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo* web_app_info) {
@@ -831,7 +832,6 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
         break;
     }
   }
-
   std::vector<SkBitmap> square_icons_any;
   std::vector<SkBitmap> square_icons_maskable;
   std::vector<SkBitmap> square_icons_monochrome;

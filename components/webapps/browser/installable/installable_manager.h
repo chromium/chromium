@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_MANAGER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_MANAGER_H_
 
+#include <limits>
 #include <map>
 #include <memory>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
@@ -36,6 +38,14 @@ class InstallableManager
       public content::WebContentsObserver,
       public content::WebContentsUserData<InstallableManager> {
  public:
+  // Maximum dimension size in pixels for icons.
+  static const int kMaximumIconSizeInPx =
+#if BUILDFLAG(IS_ANDROID)
+      std::numeric_limits<int>::max();
+#else
+      1024;
+#endif
+
   explicit InstallableManager(content::WebContents* web_contents);
 
   InstallableManager(const InstallableManager&) = delete;

@@ -5,7 +5,6 @@
 #include "components/webapps/browser/installable/installable_manager.h"
 
 #include <algorithm>
-#include <limits>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -14,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/build_config.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -53,9 +51,6 @@ const int kMinimumScreenshotSizeInPx = 320;
 
 // Maximum dimension size in pixels for screenshots.
 const int kMaximumScreenshotSizeInPx = 3840;
-
-// Maximum dimension size in pixels for icons.
-const int kMaximumIconSizeInPx = std::numeric_limits<int>::max();
 
 // This constant is the icon size on Android (48dp) multiplied by the scale
 // factor of a Nexus 5 device (3x). It is the currently advertised minimum icon
@@ -168,7 +163,9 @@ bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
       if (size.IsEmpty())  // "any"
         return true;
       if (size.width() >= kMinimumPrimaryIconSizeInPx &&
-          size.height() >= kMinimumPrimaryIconSizeInPx) {
+          size.height() >= kMinimumPrimaryIconSizeInPx &&
+          size.width() <= InstallableManager::kMaximumIconSizeInPx &&
+          size.height() <= InstallableManager::kMaximumIconSizeInPx) {
         return true;
       }
     }
@@ -864,7 +861,7 @@ void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
   } else {
     bool can_download_icon = content::ManifestIconDownloader::Download(
         GetWebContents(), icon_url, ideal_icon_size_in_px,
-        minimum_icon_size_in_px, kMaximumIconSizeInPx,
+        minimum_icon_size_in_px, InstallableManager::kMaximumIconSizeInPx,
         base::BindOnce(&InstallableManager::OnIconFetched,
                        weak_factory_.GetWeakPtr(), icon_url, usage));
     if (can_download_icon)
