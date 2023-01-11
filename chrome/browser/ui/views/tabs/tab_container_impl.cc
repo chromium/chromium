@@ -794,25 +794,25 @@ void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
 }
 
 gfx::Size TabContainerImpl::GetMinimumSize() const {
-  int minimum_width = layout_helper_->CalculateMinimumWidth();
+  // During animations, our minimum width tightly hugs the current bounds of our
+  // children.
+  absl::optional<int> minimum_width = GetMidAnimationTrailingX();
+  if (!minimum_width.has_value()) {
+    // Otherwise, the tabstrip is in a steady state, so we want to use the width
+    // that would be spanned by our children after animations complete. This
+    // allows tabs to resize directly with window resizes instead of mediating
+    // that through animation.
+    minimum_width = layout_helper_->CalculateMinimumWidth();
+  }
 
-  return gfx::Size(minimum_width, GetLayoutConstant(TAB_HEIGHT));
+  return gfx::Size(minimum_width.value(), GetLayoutConstant(TAB_HEIGHT));
 }
 
 gfx::Size TabContainerImpl::CalculatePreferredSize() const {
-  int preferred_width = 0;
-  // Our preferred size is different in different contexts to enable UI polish.
-  if (controller_->IsAnimatingInTabStrip() && !IsDragSessionActive() &&
-      !IsDragSessionEnding()) {
-    // During animations not related to a drag session, we want to tightly hug
-    // our tabs. This allows the NTB to slide smoothly as tabs are opened and
-    // closed.
-
-    // The visual order of the tabs can be out of sync with the logical order,
-    // so we have to check all of them to find the visually trailing-most one.
-    for (views::View* child : children())
-      preferred_width = std::max(preferred_width, child->bounds().right());
-  } else {
+  // During animations, our preferred width tightly hugs the current bounds of
+  // our children.
+  absl::optional<int> preferred_width = GetMidAnimationTrailingX();
+  if (!preferred_width.has_value()) {
     // Otherwise, the tabstrip is in a steady state, so we want to use the width
     // that would be spanned by our children after animations complete. This
     // allows tabs to resize directly with window resizes instead of mediating
@@ -821,7 +821,7 @@ gfx::Size TabContainerImpl::CalculatePreferredSize() const {
         layout_helper_->CalculatePreferredWidth());
   }
 
-  return gfx::Size(preferred_width, GetLayoutConstant(TAB_HEIGHT));
+  return gfx::Size(preferred_width.value(), GetLayoutConstant(TAB_HEIGHT));
 }
 
 views::View* TabContainerImpl::GetTooltipHandlerForPoint(
@@ -1214,6 +1214,26 @@ int TabContainerImpl::GetIdealTrailingX() const {
   return GetTabCount() > 0
              ? tabs_view_model_.ideal_bounds(GetTabCount() - 1).right()
              : 0;
+}
+
+absl::optional<int> TabContainerImpl::GetMidAnimationTrailingX() const {
+  if (!controller_->IsAnimatingInTabStrip() || IsDragSessionActive() ||
+      IsDragSessionEnding()) {
+    return absl::nullopt;
+  }
+
+  // During animations not related to a drag session, we want to tightly hug
+  // our tabs. This allows the NTB to slide smoothly as tabs are opened and
+  // closed.
+
+  int trailing_x = 0;
+  // The visual order of the tabs can be out of sync with the logical order,
+  // so we have to check all of them to find the visually trailing-most one.
+  for (views::View* child : children()) {
+    trailing_x = std::max(trailing_x, child->bounds().right());
+  }
+
+  return trailing_x;
 }
 
 void TabContainerImpl::RemoveTabFromViewModel(int index) {

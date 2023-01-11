@@ -956,6 +956,10 @@ TEST_F(TabContainerTest, PreferredWidthDuringAnimation) {
   // During animations, container preferred size should animate smoothly.
   EXPECT_EQ(initial_pref_width, tab_container_->GetPreferredSize().width());
 
+  // Minimum size should match preferred width during animations.
+  EXPECT_EQ(tab_container_->GetPreferredSize().width(),
+            tab_container_->GetMinimumSize().width());
+
   // Complete the animation and the preferred width should match ideal bounds of
   // the trailingmost tab.
   tab_container_->CompleteAnimationAndLayout();
@@ -977,6 +981,9 @@ TEST_F(TabContainerTest, PreferredWidthNotAffectedByTransferOut) {
   // Preferred width should be unchanged, even though `owned_tab` is no longer
   // part of `tab_container_`.
   EXPECT_EQ(initial_pref_width, tab_container_->GetPreferredSize().width());
+  // Minimum size should match preferred width during animations.
+  EXPECT_EQ(tab_container_->GetPreferredSize().width(),
+            tab_container_->GetMinimumSize().width());
 
   // Complete the animation and stop pretending.
   tab_container_->CompleteAnimationAndLayout();
@@ -997,6 +1004,9 @@ TEST_F(TabContainerTest, PreferredWidthAddTabToViewModel) {
   tab_container_controller_->set_is_animating_outside_container(true);
   // Preferred width should be unchanged.
   EXPECT_EQ(initial_pref_width, tab_container_->GetPreferredSize().width());
+  // Minimum size should match preferred width during animations.
+  EXPECT_EQ(tab_container_->GetPreferredSize().width(),
+            tab_container_->GetMinimumSize().width());
 
   // Complete animation and stop pretending.
   tab_container_->CompleteAnimationAndLayout();

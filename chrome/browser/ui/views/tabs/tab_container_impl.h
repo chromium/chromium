@@ -245,6 +245,8 @@ class TabContainerImpl : public TabContainer,
   // ideal (i.e. post-animation) bounds of its contents.
   int GetIdealTrailingX() const;
 
+  absl::optional<int> GetMidAnimationTrailingX() const;
+
   // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
   // so it can be animated closed.
   void RemoveTabFromViewModel(int index);
