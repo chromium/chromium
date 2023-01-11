@@ -4805,6 +4805,193 @@ TEST_P(QuicStreamFactoryTest, MultiPortSession) {
   EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
 
+TEST_P(QuicStreamFactoryTest, SuccessfullyMigratedToServerPreferredAddress) {
+  if (!version_.HasIetfQuicFrames()) {
+    return;
+  }
+  IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
+  FLAGS_quic_enable_chaos_protection = false;
+  quic_params_->client_connection_options.push_back(quic::kSPAD);
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  quic::QuicConfig config;
+  config.SetIPv4AlternateServerAddressToSend(
+      ToQuicSocketAddress(server_preferred_address));
+  quic::test::QuicConfigPeer::SetPreferredAddressConnectionIdAndToken(
+      &config, kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+  crypto_client_stream_factory_.SetConfig(config);
+  // Use cold start mode to send crypto message for handshake.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data1.AddWrite(ASYNC,
+                      client_maker_.MakeDummyCHLOPacket(packet_number++));
+  // Change the encryption level after handshake is confirmed.
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_number++));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Set up the second socket data provider that is used to validate server
+  // preferred address.
+  MockQuicData quic_data2(version_);
+  client_maker_.set_connection_id(kNewCID);
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
+                                       packet_number++, true));
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data2.AddRead(ASYNC,
+                     server_maker_.MakeConnectivityProbingPacket(1, false));
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_FALSE(HasActiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  base::RunLoop().RunUntilIdle();
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(HasActiveSession(scheme_host_port_));
+  EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_FALSE(
+      session->connection()->GetStats().server_preferred_address_validated);
+  EXPECT_FALSE(session->connection()
+                   ->GetStats()
+                   .failed_to_validate_server_preferred_address);
+  const quic::QuicSocketAddress peer_address = session->peer_address();
+
+  quic_data2.Resume();
+  EXPECT_FALSE(session->connection()->HasPendingPathValidation());
+  EXPECT_TRUE(
+      session->connection()->GetStats().server_preferred_address_validated);
+  EXPECT_FALSE(session->connection()
+                   ->GetStats()
+                   .failed_to_validate_server_preferred_address);
+  EXPECT_NE(session->peer_address(), peer_address);
+  EXPECT_EQ(session->peer_address(),
+            ToQuicSocketAddress(server_preferred_address));
+
+  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest, FailedToValidateServerPreferredAddress) {
+  if (!version_.HasIetfQuicFrames()) {
+    return;
+  }
+  IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
+  FLAGS_quic_enable_chaos_protection = false;
+  quic_params_->client_connection_options.push_back(quic::kSPAD);
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  quic::QuicConfig config;
+  config.SetIPv4AlternateServerAddressToSend(
+      ToQuicSocketAddress(server_preferred_address));
+  quic::test::QuicConfigPeer::SetPreferredAddressConnectionIdAndToken(
+      &config, kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+  crypto_client_stream_factory_.SetConfig(config);
+  // Use cold start mode to send crypto message for handshake.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data1.AddWrite(ASYNC,
+                      client_maker_.MakeDummyCHLOPacket(packet_number++));
+  // Change the encryption level after handshake is confirmed.
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_number++));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Set up the second socket data provider that is used to validate server
+  // preferred address.
+  MockQuicData quic_data2(version_);
+  client_maker_.set_connection_id(kNewCID);
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  // One PATH_CHALLENGE + 2 retires.
+  for (size_t i = 0; i < quic::QuicPathValidator::kMaxRetryTimes + 1; ++i) {
+    quic_data2.AddWrite(
+        SYNCHRONOUS,
+        client_maker_.MakeConnectivityProbingPacket(packet_number++, true));
+  }
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_FALSE(HasActiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  base::RunLoop().RunUntilIdle();
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(HasActiveSession(scheme_host_port_));
+  EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_FALSE(
+      session->connection()->GetStats().server_preferred_address_validated);
+  EXPECT_FALSE(session->connection()
+                   ->GetStats()
+                   .failed_to_validate_server_preferred_address);
+  const quic::QuicSocketAddress peer_address = session->peer_address();
+
+  auto* path_validator =
+      quic::test::QuicConnectionPeer::path_validator(session->connection());
+  for (size_t i = 0; i < quic::QuicPathValidator::kMaxRetryTimes + 1; ++i) {
+    quic::test::QuicPathValidatorPeer::retry_timer(path_validator)->Cancel();
+    path_validator->OnRetryTimeout();
+  }
+
+  EXPECT_FALSE(session->connection()->HasPendingPathValidation());
+  EXPECT_FALSE(
+      session->connection()->GetStats().server_preferred_address_validated);
+  EXPECT_TRUE(session->connection()
+                  ->GetStats()
+                  .failed_to_validate_server_preferred_address);
+  EXPECT_EQ(session->peer_address(), peer_address);
+  EXPECT_NE(session->peer_address(),
+            ToQuicSocketAddress(server_preferred_address));
+
+  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+}
+
 TEST_P(QuicStreamFactoryTest,
        MigratePortOnPathDegrading_WithoutNetworkHandle_PathValidator) {
   if (!version_.HasIetfQuicFrames()) {

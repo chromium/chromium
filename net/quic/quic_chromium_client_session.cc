@@ -280,6 +280,8 @@ std::string MigrationCauseToString(MigrationCause cause) {
       return "ChangePortOnPathDegrading";
     case NEW_NETWORK_CONNECTED_POST_PATH_DEGRADING:
       return "NewNetworkConnectedPostPathDegrading";
+    case ON_SERVER_PREFERRED_ADDRESS_AVAILABLE:
+      return "OnServerPreferredAddressAvailable";
     default:
       QUICHE_NOTREACHED();
       break;
@@ -862,6 +864,36 @@ void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
 }
 
 void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
+    OnPathValidationFailure(
+        std::unique_ptr<quic::QuicPathValidationContext> context) {
+  session_->connection()->OnPathValidationFailureAtClient(
+      /*is_multi_port=*/false, *context);
+  // Note that socket, packet writer, and packet reader in |context| will be
+  // discarded.
+  auto* chrome_context =
+      static_cast<QuicChromiumPathValidationContext*>(context.get());
+  session_->OnProbeFailed(chrome_context->network(),
+                          chrome_context->peer_address());
+}
+
+QuicChromiumClientSession::ServerPreferredAddressValidationResultDelegate::
+    ServerPreferredAddressValidationResultDelegate(
+        QuicChromiumClientSession* session)
+    : session_(session) {}
+
+void QuicChromiumClientSession::ServerPreferredAddressValidationResultDelegate::
+    OnPathValidationSuccess(
+        std::unique_ptr<quic::QuicPathValidationContext> context,
+        quic::QuicTime start_time) {
+  auto* chrome_context =
+      static_cast<QuicChromiumPathValidationContext*>(context.get());
+  session_->OnServerPreferredAddressProbeSucceeded(
+      chrome_context->network(), chrome_context->peer_address(),
+      chrome_context->self_address(), chrome_context->ReleaseSocket(),
+      chrome_context->ReleaseWriter(), chrome_context->ReleaseReader());
+}
+
+void QuicChromiumClientSession::ServerPreferredAddressValidationResultDelegate::
     OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) {
   session_->connection()->OnPathValidationFailureAtClient(
@@ -1694,15 +1726,16 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
 void QuicChromiumClientSession::OnConfigNegotiated() {
   quic::QuicSpdyClientSessionBase::OnConfigNegotiated();
   if (!stream_factory_ || !stream_factory_->allow_server_migration()) {
-    if (connection()->connection_migration_use_new_cid()) {
-      if (!config()->HasReceivedPreferredAddressConnectionIdAndToken()) {
-        return;
-      }
-    } else {
-      if (!config()->HasReceivedIPv6AlternateServerAddress() &&
-          !config()->HasReceivedIPv4AlternateServerAddress()) {
-        return;
-      }
+    return;
+  }
+  if (connection()->connection_migration_use_new_cid()) {
+    if (!config()->HasReceivedPreferredAddressConnectionIdAndToken()) {
+      return;
+    }
+  } else {
+    if (!config()->HasReceivedIPv6AlternateServerAddress() &&
+        !config()->HasReceivedIPv4AlternateServerAddress()) {
+      return;
     }
   }
 
@@ -2483,6 +2516,46 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
   }
 }
 
+void QuicChromiumClientSession::OnServerPreferredAddressProbeSucceeded(
+    handles::NetworkHandle network,
+    const quic::QuicSocketAddress& peer_address,
+    const quic::QuicSocketAddress& self_address,
+    std::unique_ptr<DatagramClientSocket> socket,
+    std::unique_ptr<QuicChromiumPacketWriter> writer,
+    std::unique_ptr<QuicChromiumPacketReader> reader) {
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CONNECTIVITY_PROBING_FINISHED,
+                    [&] {
+                      return NetLogProbingResultParams(network, &peer_address,
+                                                       /*is_success=*/true);
+                    });
+
+  LogProbeResultToHistogram(current_migration_cause_, true);
+  connection()->mutable_stats().server_preferred_address_validated = true;
+
+  // Remove |this| as the old packet writer's delegate. Write error on old
+  // writers will be ignored.
+  // Set |this| to listen on socket write events on the packet writer
+  // that was used for probing.
+  static_cast<QuicChromiumPacketWriter*>(connection()->writer())
+      ->set_delegate(nullptr);
+  writer->set_delegate(this);
+
+  // Migrate to the probed socket immediately: socket, writer and reader will
+  // be acquired by connection and used as default on success.
+  if (!MigrateToSocket(self_address, peer_address, std::move(socket),
+                       std::move(reader), std::move(writer))) {
+    LogMigrateToSocketStatus(false);
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING);
+    return;
+  }
+
+  LogMigrateToSocketStatus(true);
+
+  num_migrations_++;
+  HistogramAndLogMigrationSuccess(connection_id());
+}
+
 void QuicChromiumClientSession::OnProbeFailed(
     handles::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {
@@ -3166,13 +3239,23 @@ void QuicChromiumClientSession::FinishStartProbing(
       ToQuicSocketAddress(local_address), peer_address, network,
       std::move(probing_socket), std::move(probing_writer),
       std::move(probing_reader));
-  if (current_migration_cause_ != CHANGE_PORT_ON_PATH_DEGRADING) {
-    ValidatePath(
-        std::move(context),
-        std::make_unique<ConnectionMigrationValidationResultDelegate>(this));
-  } else {
-    ValidatePath(std::move(context),
-                 std::make_unique<PortMigrationValidationResultDelegate>(this));
+  switch (current_migration_cause_) {
+    case CHANGE_PORT_ON_PATH_DEGRADING:
+      ValidatePath(
+          std::move(context),
+          std::make_unique<PortMigrationValidationResultDelegate>(this));
+      break;
+    case ON_SERVER_PREFERRED_ADDRESS_AVAILABLE:
+      ValidatePath(
+          std::move(context),
+          std::make_unique<ServerPreferredAddressValidationResultDelegate>(
+              this));
+      break;
+    default:
+      ValidatePath(
+          std::move(context),
+          std::make_unique<ConnectionMigrationValidationResultDelegate>(this));
+      break;
   }
 
   task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(probing_callback),
@@ -3354,6 +3437,14 @@ void QuicChromiumClientSession::LogMigrationResultToHistogram(
     return;
   }
 
+  if (current_migration_cause_ == ON_SERVER_PREFERRED_ADDRESS_AVAILABLE) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Net.QuicSession.OnServerPreferredAddressAvailable", status,
+        MIGRATION_STATUS_MAX);
+    current_migration_cause_ = UNKNOWN_CAUSE;
+    return;
+  }
+
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ConnectionMigration", status,
                             MIGRATION_STATUS_MAX);
 
@@ -3369,6 +3460,13 @@ void QuicChromiumClientSession::LogHandshakeStatusOnMigrationSignal() const {
   if (current_migration_cause_ == CHANGE_PORT_ON_PATH_DEGRADING) {
     UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.HandshakeStatusOnPortMigration",
                           OneRttKeysAvailable());
+    return;
+  }
+
+  if (current_migration_cause_ == ON_SERVER_PREFERRED_ADDRESS_AVAILABLE) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Net.QuicSession.HandshakeStatusOnMigratingToServerPreferredAddress",
+        OneRttKeysAvailable());
     return;
   }
 
@@ -3390,9 +3488,14 @@ void QuicChromiumClientSession::HistogramAndLogMigrationFailure(
     quic::QuicConnectionId connection_id,
     const char* reason) {
   NetLogEventType event_type =
-      current_migration_cause_ == CHANGE_PORT_ON_PATH_DEGRADING
-          ? NetLogEventType::QUIC_PORT_MIGRATION_FAILURE
-          : NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE;
+      NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE;
+  if (current_migration_cause_ == CHANGE_PORT_ON_PATH_DEGRADING) {
+    event_type = NetLogEventType::QUIC_PORT_MIGRATION_FAILURE;
+  } else if (current_migration_cause_ ==
+             ON_SERVER_PREFERRED_ADDRESS_AVAILABLE) {
+    event_type =
+        NetLogEventType::QUIC_FAILED_TO_VALIDATE_SERVER_PREFERRED_ADDRESS;
+  }
 
   net_log_.AddEvent(event_type, [&] {
     return NetLogQuicMigrationFailureParams(connection_id, reason);
@@ -3405,9 +3508,14 @@ void QuicChromiumClientSession::HistogramAndLogMigrationFailure(
 void QuicChromiumClientSession::HistogramAndLogMigrationSuccess(
     quic::QuicConnectionId connection_id) {
   NetLogEventType event_type =
-      current_migration_cause_ == CHANGE_PORT_ON_PATH_DEGRADING
-          ? NetLogEventType::QUIC_PORT_MIGRATION_SUCCESS
-          : NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS;
+      NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS;
+  if (current_migration_cause_ == CHANGE_PORT_ON_PATH_DEGRADING) {
+    event_type = NetLogEventType::QUIC_PORT_MIGRATION_SUCCESS;
+  } else if (current_migration_cause_ ==
+             ON_SERVER_PREFERRED_ADDRESS_AVAILABLE) {
+    event_type =
+        NetLogEventType::QUIC_SUCCESSFULLY_MIGRATED_TO_SERVER_PREFERRED_ADDRESS;
+  }
 
   net_log_.AddEvent(event_type, [&] {
     return NetLogQuicMigrationSuccessParams(connection_id);
@@ -3835,6 +3943,24 @@ void QuicChromiumClientSession::OnPushStreamTimedOut(
   quic::QuicSpdyStream* stream = GetPromisedStream(stream_id);
   if (stream != nullptr)
     bytes_pushed_and_unclaimed_count_ += stream->stream_bytes_read();
+}
+
+void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
+    const quic::QuicSocketAddress& server_preferred_address) {
+  DCHECK(connection()->connection_migration_use_new_cid());
+  current_migration_cause_ = ON_SERVER_PREFERRED_ADDRESS_AVAILABLE;
+
+  net_log_.BeginEvent(
+      NetLogEventType::QUIC_ON_SERVER_PREFERRED_ADDRESS_AVAILABLE);
+
+  if (!stream_factory_) {
+    return;
+  }
+
+  StartProbing(base::DoNothingAs<void(ProbingResult)>(), default_network_,
+               server_preferred_address);
+  net_log_.EndEvent(
+      NetLogEventType::QUIC_START_VALIDATING_SERVER_PREFERRED_ADDRESS);
 }
 
 void QuicChromiumClientSession::CancelPush(const GURL& url) {

@@ -2565,6 +2565,31 @@ EVENT_TYPE(QUIC_PORT_MIGRATION_FAILURE)
 //  }
 EVENT_TYPE(QUIC_PORT_MIGRATION_SUCCESS)
 
+// ------------------------------------------------------------------------
+// QuicServerPreferredAddress
+// ------------------------------------------------------------------------
+
+// Records that client has received server preferred address.
+EVENT_TYPE(QUIC_ON_SERVER_PREFERRED_ADDRESS_AVAILABLE)
+
+// Records that client starts to validate received server preferred address.
+EVENT_TYPE(QUIC_START_VALIDATING_SERVER_PREFERRED_ADDRESS)
+
+// Records client fails to migrate to server preferred address of the session
+// identified by connection_id.
+//  {
+//     "connection_id": <Connection ID of the session>
+//     "reason": <String of the failure reason>
+//  }
+EVENT_TYPE(QUIC_FAILED_TO_VALIDATE_SERVER_PREFERRED_ADDRESS)
+
+// Records client successfully migrates to server preferred address of the
+// session identified by connection_id.
+//  {
+//     "connection_id": <Connection ID of the session>
+//  }
+EVENT_TYPE(QUIC_SUCCESSFULLY_MIGRATED_TO_SERVER_PREFERRED_ADDRESS)
+
 // A UDP socket error occurred while trying to read a QUIC packet.
 // The following parameters are attached to the event:
 //   {

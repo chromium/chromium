@@ -109,6 +109,7 @@ enum MigrationCause {
   CHANGE_NETWORK_ON_PATH_DEGRADING,           // With probing.
   CHANGE_PORT_ON_PATH_DEGRADING,              // With probing.
   NEW_NETWORK_CONNECTED_POST_PATH_DEGRADING,  // With probing.
+  ON_SERVER_PREFERRED_ADDRESS_AVAILABLE,      // With probing.
   MIGRATION_CAUSE_MAX
 };
 
@@ -509,6 +510,26 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     raw_ptr<QuicChromiumClientSession> session_;
   };
 
+  // This class implements Chrome logic for path validation events associated
+  // with migrating to server preferred address.
+  class NET_EXPORT_PRIVATE ServerPreferredAddressValidationResultDelegate
+      : public quic::QuicPathValidator::ResultDelegate {
+   public:
+    explicit ServerPreferredAddressValidationResultDelegate(
+        QuicChromiumClientSession* session);
+
+    void OnPathValidationSuccess(
+        std::unique_ptr<quic::QuicPathValidationContext> context,
+        quic::QuicTime start_time) override;
+
+    void OnPathValidationFailure(
+        std::unique_ptr<quic::QuicPathValidationContext> context) override;
+
+   private:
+    // |session_| owns |this| and should out live |this|.
+    raw_ptr<QuicChromiumClientSession> session_;
+  };
+
   // This class is used to handle writer events that occur on the probing path.
   class NET_EXPORT_PRIVATE QuicChromiumPathValidationWriterDelegate
       : public QuicChromiumPacketWriter::Delegate {
@@ -651,6 +672,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicChromiumPacketReader> reader);
 
   void OnPortMigrationProbeSucceeded(
+      handles::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
+      const quic::QuicSocketAddress& self_address,
+      std::unique_ptr<DatagramClientSocket> socket,
+      std::unique_ptr<QuicChromiumPacketWriter> writer,
+      std::unique_ptr<QuicChromiumPacketReader> reader);
+
+  void OnServerPreferredAddressProbeSucceeded(
       handles::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
@@ -867,6 +896,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void DeletePromised(quic::QuicClientPromisedInfo* promised) override;
 
   void OnPushStreamTimedOut(quic::QuicStreamId stream_id) override;
+
+  // Override to validate |server_preferred_address| on a different socket.
+  // Migrates to this address on validation succeeds.
+  void OnServerPreferredAddressAvailable(
+      const quic::QuicSocketAddress& server_preferred_address) override;
 
   // Cancels the push if the push stream for |url| has not been claimed and is
   // still active. Otherwise, no-op.
