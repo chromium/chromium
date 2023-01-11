@@ -30,7 +30,6 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -744,7 +743,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleCustomWallpaperInfoSyncedIn(const AccountId& account_id,
                                          const WallpaperInfo& info);
 
-  void DriveFsWallpaperChanged(const base::FilePath& path, bool error);
+  void OnDriveFsWallpaperChange(const AccountId& account_id, bool success);
 
   void OnGetDriveFsWallpaperModificationTime(
       const AccountId& account_id,
@@ -864,8 +863,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // size change). Non-empty if and only if |is_always_on_top_wallpaper_| is
   // true.
   base::RepeatingClosure reload_always_on_top_wallpaper_callback_;
-
-  base::FilePathWatcher drive_fs_wallpaper_watcher_;
 
   // Transient storage for the wallpaper variant (out of the N total variants
   // that may exist for a given "unit") that was requested by the client. The

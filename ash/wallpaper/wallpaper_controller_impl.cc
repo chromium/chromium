@@ -3276,9 +3276,13 @@ void WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime(
     // If the drivefs image modification time is null, watch DriveFS for the
     // file being created. If the file exists but is older than synced wallpaper
     // info, watch for the file being updated by the other device.
-    // TODO(b/245987972) listen for file changed events from DriveFS.
-    VLOG(1) << "Skip syncing custom wallpaper from DriveFS because it is not "
-               "found or out of date";
+    DVLOG(1) << "Skip syncing custom wallpaper from DriveFS. Wallpaper "
+                "modification_time: "
+             << modification_time;
+    drivefs_delegate_->WaitForWallpaperChange(
+        account_id,
+        base::BindOnce(&WallpaperControllerImpl::OnDriveFsWallpaperChange,
+                       weak_factory_.GetWeakPtr(), account_id));
     return;
   }
   base::FilePath path_in_prefs = base::FilePath(wallpaper_info.location);
@@ -3294,10 +3298,12 @@ void WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime(
                      /*show_wallpaper=*/true));
 }
 
-void WallpaperControllerImpl::DriveFsWallpaperChanged(
-    const base::FilePath& path,
-    bool error) {
-  SyncLocalAndRemotePrefs(GetActiveAccountId());
+void WallpaperControllerImpl::OnDriveFsWallpaperChange(
+    const AccountId& account_id,
+    bool success) {
+  if (success) {
+    SyncLocalAndRemotePrefs(account_id);
+  }
 }
 
 PrefService* WallpaperControllerImpl::GetUserPrefServiceSyncable(

@@ -7,15 +7,20 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 
+#include <map>
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/image_downloader.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/file_errors.h"
@@ -23,6 +28,34 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+// Observes DriveFs file updates and calls `callback` when the wallpaper file
+// changes. `callback` is called immediately if unable to set up an observer on
+// DriveFs file changes.
+class WallpaperChangeWaiter : public drivefs::DriveFsHostObserver {
+ public:
+  WallpaperChangeWaiter(
+      const AccountId& account_id,
+      WallpaperDriveFsDelegate::WaitForWallpaperChangeCallback callback);
+
+  WallpaperChangeWaiter(const WallpaperChangeWaiter&) = delete;
+  WallpaperChangeWaiter& operator=(const WallpaperChangeWaiter&) = delete;
+
+  ~WallpaperChangeWaiter() override;
+
+  // drivefs::DriveFsHostObserver:
+  void OnUnmounted() override;
+  void OnError(const drivefs::mojom::DriveError& error) override;
+  void OnFilesChanged(
+      const std::vector<drivefs::mojom::FileChange>& changes) override;
+
+ private:
+  const AccountId account_id_;
+  const base::FilePath path_to_watch_;
+  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
+      drivefs_host_observation_{this};
+  WallpaperDriveFsDelegate::WaitForWallpaperChangeCallback callback_;
+};
 
 class WallpaperDriveFsDelegateImpl : public WallpaperDriveFsDelegate {
  public:
@@ -42,6 +75,8 @@ class WallpaperDriveFsDelegateImpl : public WallpaperDriveFsDelegate {
   void GetWallpaperModificationTime(
       const AccountId& account_id,
       base::OnceCallback<void(base::Time modification_time)> callback) override;
+  void WaitForWallpaperChange(const AccountId& account_id,
+                              WaitForWallpaperChangeCallback callback) override;
   void DownloadAndDecodeWallpaper(
       const AccountId& account_id,
       ImageDownloader::DownloadCallback callback) override;
@@ -63,6 +98,12 @@ class WallpaperDriveFsDelegateImpl : public WallpaperDriveFsDelegate {
       const GURL& download_url,
       google_apis::ApiErrorCode error_code,
       const std::string& authentication_token);
+
+  void OnDriveFsWallpaperChanged(const AccountId& account_id,
+                                 WaitForWallpaperChangeCallback callback,
+                                 bool success);
+
+  std::map<AccountId, WallpaperChangeWaiter> wallpaper_change_waiters_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   base::WeakPtrFactory<WallpaperDriveFsDelegateImpl> weak_ptr_factory_{this};

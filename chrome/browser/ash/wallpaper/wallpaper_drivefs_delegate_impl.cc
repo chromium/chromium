@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
 
+#include <map>
+
 #include "ash/public/cpp/image_downloader.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -12,13 +14,17 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/file_errors.h"
+#include "components/drive/file_system_core_util.h"
 #include "google_apis/common/api_error_codes.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -92,6 +98,13 @@ drive::DriveIntegrationService* GetDriveIntegrationService(
   return drive_integration_service;
 }
 
+// Gets a relative path from the DriveFS mount point to the wallpaper file.
+base::FilePath GetWallpaperRelativePath() {
+  return base::FilePath(drive::util::kDriveMyDriveRootDirName)
+      .Append(kDriveFsWallpaperDirName)
+      .Append(kDriveFsWallpaperFileName);
+}
+
 base::Time GetModificationTimeFromDriveMetadata(
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
@@ -141,6 +154,53 @@ bool CopyFileToDriveFsBlocking(const base::FilePath& source,
 
 }  // namespace
 
+WallpaperChangeWaiter::WallpaperChangeWaiter(
+    const AccountId& account_id,
+    base::OnceCallback<void(bool success)> callback)
+    : account_id_(account_id),
+      path_to_watch_(base::FilePath(base::FilePath::kSeparators)
+                         .Append(GetWallpaperRelativePath())),
+      callback_(std::move(callback)) {
+  DCHECK(callback_);
+  auto* drive_integration_service = GetDriveIntegrationService(account_id);
+  if (!drive_integration_service) {
+    std::move(callback_).Run(/*success=*/false);
+    return;
+  }
+  auto* drivefs_host = drive_integration_service->GetDriveFsHost();
+  DCHECK(drivefs_host);
+  drivefs_host_observation_.Observe(drivefs_host);
+}
+
+WallpaperChangeWaiter::~WallpaperChangeWaiter() {
+  if (callback_) {
+    std::move(callback_).Run(/*success=*/false);
+  }
+}
+
+void WallpaperChangeWaiter::OnUnmounted() {
+  if (callback_) {
+    std::move(callback_).Run(/*success=*/false);
+  }
+}
+
+void WallpaperChangeWaiter::OnError(const drivefs::mojom::DriveError& error) {
+  if (error.path == path_to_watch_ && callback_) {
+    LOG(WARNING) << "DriveFS wallpaper error: " << error.type;
+    std::move(callback_).Run(/*success=*/false);
+  }
+}
+
+void WallpaperChangeWaiter::OnFilesChanged(
+    const std::vector<drivefs::mojom::FileChange>& changes) {
+  for (const auto& change : changes) {
+    if (change.path == path_to_watch_ && callback_) {
+      std::move(callback_).Run(/*success=*/true);
+      return;
+    }
+  }
+}
+
 WallpaperDriveFsDelegateImpl::WallpaperDriveFsDelegateImpl()
     : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -158,9 +218,7 @@ base::FilePath WallpaperDriveFsDelegateImpl::GetWallpaperPath(
   }
   auto mount_path = drive_integration_service->GetMountPointPath();
   DCHECK(!mount_path.empty());
-  return mount_path.Append(drive::util::kDriveMyDriveRootDirName)
-      .Append(kDriveFsWallpaperDirName)
-      .Append(kDriveFsWallpaperFileName);
+  return mount_path.Append(GetWallpaperRelativePath());
 }
 
 void WallpaperDriveFsDelegateImpl::SaveWallpaper(
@@ -179,6 +237,19 @@ void WallpaperDriveFsDelegateImpl::SaveWallpaper(
       base::BindOnce(&CopyFileToDriveFsBlocking, source,
                      GetWallpaperPath(account_id)),
       std::move(callback));
+}
+
+void WallpaperDriveFsDelegateImpl::WaitForWallpaperChange(
+    const AccountId& account_id,
+    WaitForWallpaperChangeCallback callback) {
+  // Remove any old `WallpaperChangeWaiter` and create a new one. The old one
+  // will run any pending callbacks on deletion.
+  wallpaper_change_waiters_.erase(account_id);
+  wallpaper_change_waiters_.try_emplace(
+      account_id, account_id,
+      base::BindOnce(&WallpaperDriveFsDelegateImpl::OnDriveFsWallpaperChanged,
+                     weak_ptr_factory_.GetWeakPtr(), account_id,
+                     std::move(callback)));
 }
 
 void WallpaperDriveFsDelegateImpl::GetWallpaperModificationTime(
@@ -256,6 +327,14 @@ void WallpaperDriveFsDelegateImpl::OnGetDownloadUrlAndAuthentication(
   ImageDownloader::Get()->Download(download_url, kDriveFsDownloadWallpaperTag,
                                    std::move(headers), absl::nullopt,
                                    std::move(callback));
+}
+
+void WallpaperDriveFsDelegateImpl::OnDriveFsWallpaperChanged(
+    const AccountId& account_id,
+    WaitForWallpaperChangeCallback callback,
+    bool success) {
+  std::move(callback).Run(success);
+  wallpaper_change_waiters_.erase(account_id);
 }
 
 }  // namespace ash

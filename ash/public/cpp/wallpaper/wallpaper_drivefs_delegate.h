@@ -42,6 +42,16 @@ class ASH_PUBLIC_EXPORT WallpaperDriveFsDelegate {
       const AccountId& account_id,
       GetWallpaperModificationTimeCallback callback) = 0;
 
+  using WaitForWallpaperChangeCallback = base::OnceCallback<void(bool success)>;
+  // Waits for the DriveFS wallpaper file to change. Does not distinguish
+  // between types of changes, so the caller must be aware that the file could
+  // have been added, deleted, or modified. Runs `callback` with success=false
+  // if unable to observe for DriveFS changes for any reason, like DriveFS being
+  // or becoming unavailable for `account_id`.
+  virtual void WaitForWallpaperChange(
+      const AccountId& account_id,
+      WaitForWallpaperChangeCallback callback) = 0;
+
   // Downloads and decodes DriveFS wallpaper file. Replies with default
   // constructed `gfx::ImageSkia` in case of failure, such as the file not
   // existing or DriveFS error.

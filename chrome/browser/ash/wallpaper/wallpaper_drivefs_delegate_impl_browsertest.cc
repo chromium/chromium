@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/barrier_closure.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,9 +26,12 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chromeos/ash/components/drivefs/fake_drivefs.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -118,6 +123,28 @@ class WallpaperDriveFsDelegateImplBrowserTest
     loop.Run();
     return out;
   }
+
+  std::vector<drivefs::mojom::FileChangePtr> CreateWallpaperFileChange() {
+    std::vector<drivefs::mojom::FileChangePtr> file_changes;
+    drive::DriveIntegrationService* drive_integration_service =
+        drive::util::GetIntegrationServiceByProfile(browser()->profile());
+
+    base::FilePath fake_wallpaper_notification_path(
+        &base::FilePath::kSeparators[0]);
+
+    EXPECT_TRUE(
+        drive_integration_service->GetMountPointPath().AppendRelativePath(
+            GetWallpaperDriveFsDelegate()->GetWallpaperPath(GetAccountId()),
+            &fake_wallpaper_notification_path));
+
+    drivefs::mojom::FileChangePtr wallpaper_change =
+        drivefs::mojom::FileChange::New(
+            fake_wallpaper_notification_path,
+            drivefs::mojom::FileChange::Type::kModify);
+
+    file_changes.push_back(std::move(wallpaper_change));
+    return file_changes;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
@@ -200,6 +227,79 @@ IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
   drive_integration_service->SetEnabled(false);
   EXPECT_FALSE(SaveWallpaperSync(GetAccountId(), source_jpg));
   EXPECT_FALSE(base::PathExists(drivefs_wallpaper_path));
+}
+
+IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
+                       WaitForWallpaperChange) {
+  InitTestFileMountRoot(browser()->profile());
+
+  base::RunLoop loop;
+
+  GetWallpaperDriveFsDelegate()->WaitForWallpaperChange(
+      GetAccountId(), base::BindLambdaForTesting([&loop](bool success) {
+        EXPECT_TRUE(success);
+        loop.Quit();
+      }));
+
+  // Send the fake wallpaper file change notification.
+  drivefs::FakeDriveFs* fake_drivefs =
+      GetFakeDriveFsForProfile(browser()->profile());
+  fake_drivefs->delegate()->OnFilesChanged(CreateWallpaperFileChange());
+
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
+                       WaitForWallpaperChangeWithDriveFsDisabled) {
+  drive::DriveIntegrationService* drive_integration_service =
+      drive::util::GetIntegrationServiceByProfile(browser()->profile());
+  drive_integration_service->SetEnabled(false);
+
+  base::RunLoop loop;
+
+  // Responds immediately with `success=false` even without receiving any file
+  // change notifications because DriveFS is disabled.
+  GetWallpaperDriveFsDelegate()->WaitForWallpaperChange(
+      GetAccountId(), base::BindLambdaForTesting([&loop](bool success) {
+        EXPECT_FALSE(success);
+        loop.Quit();
+      }));
+
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(WallpaperDriveFsDelegateImplBrowserTest,
+                       WaitForWallpaperChangeMultipleTimes) {
+  InitTestFileMountRoot(browser()->profile());
+
+  base::RunLoop loop;
+  // Make sure that closure is called twice before `loop` quits.
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(/*num_closures=*/2, loop.QuitClosure());
+
+  // The first `WaitForWallpaperChange` call should respond with false when
+  // `WaitForWallpaperChange` is called a second time before receiving a file
+  // change notification.
+  GetWallpaperDriveFsDelegate()->WaitForWallpaperChange(
+      GetAccountId(), base::BindLambdaForTesting([&barrier](bool success) {
+        EXPECT_FALSE(success);
+        barrier.Run();
+      }));
+
+  // This call to `WaitForWallpaperChange` should succeed upon receiving the
+  // file change notification.
+  GetWallpaperDriveFsDelegate()->WaitForWallpaperChange(
+      GetAccountId(), base::BindLambdaForTesting([&barrier](bool success) {
+        EXPECT_TRUE(success);
+        barrier.Run();
+      }));
+
+  // Send the fake wallpaper file change notification.
+  drivefs::FakeDriveFs* fake_drivefs =
+      GetFakeDriveFsForProfile(browser()->profile());
+  fake_drivefs->delegate()->OnFilesChanged(CreateWallpaperFileChange());
+
+  loop.Run();
 }
 
 }  // namespace ash

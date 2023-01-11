@@ -41,6 +41,8 @@ class TestWallpaperDriveFsDelegate : public WallpaperDriveFsDelegate {
   void GetWallpaperModificationTime(
       const AccountId& account_id,
       GetWallpaperModificationTimeCallback callback) override;
+  void WaitForWallpaperChange(const AccountId& account_id,
+                              WaitForWallpaperChangeCallback callback) override;
   void DownloadAndDecodeWallpaper(
       const AccountId& account_id,
       ImageDownloader::DownloadCallback callback) override;

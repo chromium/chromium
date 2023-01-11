@@ -43,6 +43,13 @@ void TestWallpaperDriveFsDelegate::GetWallpaperModificationTime(
   std::move(callback).Run(base::Time());
 }
 
+void TestWallpaperDriveFsDelegate::WaitForWallpaperChange(
+    const AccountId& account_id,
+    WaitForWallpaperChangeCallback callback) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  std::move(callback).Run(/*success=*/false);
+}
+
 void TestWallpaperDriveFsDelegate::DownloadAndDecodeWallpaper(
     const AccountId& account_id,
     ImageDownloader::DownloadCallback callback) {
