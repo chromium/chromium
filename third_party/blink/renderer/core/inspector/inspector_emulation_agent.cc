@@ -182,7 +182,9 @@ Response InspectorEmulationAgent::disable() {
   // features overridden to the same value by two different clients
   // (e.g. if we allowed two different front-ends with the same
   // settings to attach to the same page). TODO: support this use case.
-  setEmulatedMedia(String(), {});
+  setEmulatedMedia(
+      String(),
+      std::make_unique<protocol::Array<protocol::Emulation::MediaFeature>>());
   if (!emulated_vision_deficiency_.Get().IsNull())
     setEmulatedVisionDeficiency(String("none"));
   setCPUThrottlingRate(1);

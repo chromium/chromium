@@ -1,0 +1,23 @@
+Tests that disconnecting from the session clears the media query emulations
+Computed values before setting emulated media:
+    --prefers-color-scheme: nomatch;
+    --prefers-reduced-motion: nomatch;
+    --prefers-reduced-data: nomatch;
+    --prefers-contrast: nomatch;
+    --color-gamut: nomatch;
+    --forced-colors: nomatch
+Computed values after setting emulated media:
+    --prefers-color-scheme: dark;
+    --prefers-reduced-motion: reduce;
+    --prefers-reduced-data: reduce;
+    --prefers-contrast: more;
+    --color-gamut: p3;
+    --forced-colors: active
+Computed values after disconnect:
+    --prefers-color-scheme: nomatch;
+    --prefers-reduced-motion: nomatch;
+    --prefers-reduced-data: nomatch;
+    --prefers-contrast: nomatch;
+    --color-gamut: nomatch;
+    --forced-colors: nomatch
+
