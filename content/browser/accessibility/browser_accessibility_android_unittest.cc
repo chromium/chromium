@@ -351,48 +351,24 @@ TEST_F(BrowserAccessibilityAndroidTest, TestGetTextContent) {
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdateForTesting(root, container_para, text1, text2, text3),
           test_browser_accessibility_delegate_.get()));
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(features::kOptimizeAccessibilityUiThreadWork);
+  BrowserAccessibility* container_obj = manager->GetFromID(11);
+  // Default caller gets full text.
+  EXPECT_EQ(u"1Foo2Bar3Baz", container_obj->GetTextContentUTF16());
 
-    BrowserAccessibility* container_obj = manager->GetFromID(11);
-    // Default caller gets full text.
-    EXPECT_EQ(u"1Foo2Bar3Baz", container_obj->GetTextContentUTF16());
-
-    BrowserAccessibilityAndroid* node =
-        static_cast<BrowserAccessibilityAndroid*>(container_obj);
-    // No predicate returns all text.
-    EXPECT_EQ(u"1Foo2Bar3Baz",
-              node->GetSubstringTextContentUTF16(absl::nullopt));
-    // Non-empty predicate terminates after one text node.
-    EXPECT_EQ(u"1Foo", node->GetSubstringTextContentUTF16(
-                           BrowserAccessibilityAndroid::NonEmptyPredicate()));
-    // Length of 5 not satisfied by one node.
-    EXPECT_EQ(u"1Foo2Bar", node->GetSubstringTextContentUTF16(
-                               BrowserAccessibilityAndroid::LengthAtLeast(5)));
-    // Length of 10 not satisfied by two nodes.
-    EXPECT_EQ(u"1Foo2Bar3Baz",
-              node->GetSubstringTextContentUTF16(
-                  BrowserAccessibilityAndroid::LengthAtLeast(10)));
-  }
-  {
-    // With experiment disabled, predicate checks are disabled.
-    BrowserAccessibility* container_obj = manager->GetFromID(11);
-    // Default caller gets full text.
-    EXPECT_EQ(u"1Foo2Bar3Baz", container_obj->GetTextContentUTF16());
-
-    BrowserAccessibilityAndroid* node =
-        static_cast<BrowserAccessibilityAndroid*>(container_obj);
-    EXPECT_EQ(u"1Foo2Bar3Baz",
-              node->GetSubstringTextContentUTF16(absl::nullopt));
-    EXPECT_EQ(u"1Foo2Bar3Baz",
-              node->GetSubstringTextContentUTF16(
-                  BrowserAccessibilityAndroid::NonEmptyPredicate()));
-    EXPECT_EQ(u"1Foo2Bar3Baz",
-              node->GetSubstringTextContentUTF16(
-                  BrowserAccessibilityAndroid::LengthAtLeast(5)));
-  }
-
+  BrowserAccessibilityAndroid* node =
+      static_cast<BrowserAccessibilityAndroid*>(container_obj);
+  // No predicate returns all text.
+  EXPECT_EQ(u"1Foo2Bar3Baz", node->GetSubstringTextContentUTF16(absl::nullopt));
+  // Non-empty predicate terminates after one text node.
+  EXPECT_EQ(u"1Foo", node->GetSubstringTextContentUTF16(
+                         BrowserAccessibilityAndroid::NonEmptyPredicate()));
+  // Length of 5 not satisfied by one node.
+  EXPECT_EQ(u"1Foo2Bar", node->GetSubstringTextContentUTF16(
+                             BrowserAccessibilityAndroid::LengthAtLeast(5)));
+  // Length of 10 not satisfied by two nodes.
+  EXPECT_EQ(u"1Foo2Bar3Baz",
+            node->GetSubstringTextContentUTF16(
+                BrowserAccessibilityAndroid::LengthAtLeast(10)));
   manager.reset();
 }
 
