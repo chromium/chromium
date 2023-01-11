@@ -978,7 +978,11 @@ size_t Value::List::EraseValue(const Value& value) {
 }
 
 size_t Value::List::EstimateMemoryUsage() const {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   return base::trace_event::EstimateMemoryUsage(storage_);
+#else   // BUILDFLAG(ENABLE_BASE_TRACING)
+  return 0;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 std::string Value::List::DebugString() const {
