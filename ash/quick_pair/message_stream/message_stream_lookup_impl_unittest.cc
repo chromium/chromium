@@ -643,5 +643,22 @@ TEST_F(MessageStreamLookupImplTest,
   EXPECT_EQ(GetMessageStream(), nullptr);
 }
 
+TEST_F(MessageStreamLookupImplTest,
+       ConnectFailInitial_NoCrashIfDeviceLostBetweenRetries) {
+  device_->AddUUID(kMessageStreamUuid);
+  SetConnectToServiceError(kMessageStreamConnectToServiceError);
+  DeviceAdded();
+
+  // Simulate the device being removed from adapter immediately following
+  // pairing.
+  adapter_->RemoveMockDevice(kTestDeviceAddress);
+
+  // Expect the retries to not crash.
+  UnsuccessfulAttemptCreateMessageStream(/*num_unsuccessful_attempts=*/5);
+  task_environment_.FastForwardBy(base::Seconds(33));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetMessageStream(), nullptr);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

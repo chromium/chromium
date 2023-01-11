@@ -72,7 +72,7 @@ class MessageStreamLookupImpl : public MessageStreamLookup,
   // Helper functions to create and remove message stream objects and open and
   // close RFCOMM channels based on whether the device is connected or
   // disconnected from  the adapter.
-  void AttemptCreateMessageStream(device::BluetoothDevice* device,
+  void AttemptCreateMessageStream(const std::string& device_address,
                                   const CreateMessageStreamAttemptType& type);
   void AttemptRemoveMessageStream(const std::string& device_address);
 

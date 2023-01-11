@@ -102,7 +102,8 @@ void MessageStreamLookupImpl::DevicePairedChanged(
                   << device->GetAddress() << "] "
                   << device->GetNameForDisplay();
   AttemptCreateMessageStream(
-      device, CreateMessageStreamAttemptType::kDevicePairedChanged);
+      device->GetAddress(),
+      CreateMessageStreamAttemptType::kDevicePairedChanged);
 }
 
 void MessageStreamLookupImpl::DeviceConnectedStateChanged(
@@ -126,7 +127,8 @@ void MessageStreamLookupImpl::DeviceConnectedStateChanged(
                   << device->GetAddress() << "] "
                   << device->GetNameForDisplay();
   AttemptCreateMessageStream(
-      device, CreateMessageStreamAttemptType::kDeviceConnectedStateChanged);
+      device->GetAddress(),
+      CreateMessageStreamAttemptType::kDeviceConnectedStateChanged);
 }
 
 void MessageStreamLookupImpl::DeviceChanged(device::BluetoothAdapter* adapter,
@@ -145,7 +147,7 @@ void MessageStreamLookupImpl::DeviceChanged(device::BluetoothAdapter* adapter,
                      "MessageStream for device = ["
                   << device->GetAddress() << "] "
                   << device->GetNameForDisplay();
-  AttemptCreateMessageStream(device,
+  AttemptCreateMessageStream(device->GetAddress(),
                              CreateMessageStreamAttemptType::kDeviceChanged);
 }
 
@@ -165,7 +167,7 @@ void MessageStreamLookupImpl::DeviceAdded(device::BluetoothAdapter* adapter,
                      "MessageStream for device = ["
                   << device->GetAddress() << "] "
                   << device->GetNameForDisplay();
-  AttemptCreateMessageStream(device,
+  AttemptCreateMessageStream(device->GetAddress(),
                              CreateMessageStreamAttemptType::kDeviceAdded);
 }
 
@@ -208,9 +210,16 @@ void MessageStreamLookupImpl::OnSocketDisconnected(
 }
 
 void MessageStreamLookupImpl::AttemptCreateMessageStream(
-    device::BluetoothDevice* device,
+    const std::string& device_address,
     const CreateMessageStreamAttemptType& type) {
-  QP_LOG(VERBOSE) << __func__ << ": device address = " << device->GetAddress()
+  device::BluetoothDevice* device = adapter_->GetDevice(device_address);
+  if (!device) {
+    QP_LOG(INFO) << __func__ << ": lost device for Message Stream creation";
+    AttemptRemoveMessageStream(device_address);
+    return;
+  }
+
+  QP_LOG(VERBOSE) << __func__ << ": device address = " << device_address
                   << " type = " << CreateMessageStreamAttemptTypeToString(type);
 
   // Only open MessageStreams for new devices that don't already have a
@@ -218,18 +227,17 @@ void MessageStreamLookupImpl::AttemptCreateMessageStream(
   // multiple BluetoothAdapter events fire for a device connected event, but
   // we need all of these BluetoothAdapter observation events to handle
   // different connection scenarios, and have coverage for different devices.
-  const std::string& device_address = device->GetAddress();
-  if (base::Contains(message_streams_, device->GetAddress())) {
+  if (base::Contains(message_streams_, device_address)) {
     QP_LOG(INFO) << __func__ << ": Message Stream exists already for device";
     return;
   }
 
-  if (base::Contains(pending_connect_requests_, device->GetAddress())) {
+  if (base::Contains(pending_connect_requests_, device_address)) {
     QP_LOG(INFO) << __func__ << ": Ignoring due to matching pending request";
     return;
   }
 
-  pending_connect_requests_.insert(device->GetAddress());
+  pending_connect_requests_.insert(device_address);
 
   device->ConnectToService(
       /*uuid=*/kMessageStreamUuid, /*callback=*/
@@ -327,7 +335,7 @@ void MessageStreamLookupImpl::OnConnectError(
         kCreateMessageStreamRetryCooldowns[create_message_stream_attempt_num++ -
                                            1],
         base::BindOnce(&MessageStreamLookupImpl::AttemptCreateMessageStream,
-                       weak_ptr_factory_.GetWeakPtr(), device, type));
+                       weak_ptr_factory_.GetWeakPtr(), device_address, type));
   } else {
     QP_LOG(INFO) << __func__
                  << ": attempting to retry message stream creation with "
