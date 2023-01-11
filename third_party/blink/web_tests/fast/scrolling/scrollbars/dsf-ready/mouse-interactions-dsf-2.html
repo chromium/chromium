@@ -60,13 +60,8 @@ window.onload = () => {
     // Click on the track part just above the down arrow.
     await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y - 10);
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-      assert_approx_equals(standardDivFast.scrollTop, 74, 1/window.devicePixelRatio,
-        "Pressing the down trackpart didn't scroll.");
-    } else {
-      assert_equals(standardDivFast.scrollTop, 74,
-        "Pressing the down trackpart didn't scroll.");
-    }
+    assert_approx_equals(standardDivFast.scrollTop, 74, 1/window.devicePixelRatio,
+      "Pressing the down trackpart didn't scroll.");
   }, "Test mouse click on non-custom composited div scrollbar empty trackparts.");
 
   promise_test (async () => {
@@ -83,13 +78,8 @@ window.onload = () => {
     else
       expected_offset = window.devicePixelRatio == 1 ? 71 : 73;
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-      assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
-        "Vertical thumb drag downwards did not scroll as expected.");
-    } else {
-      assert_equals(standardDivFast.scrollTop, expected_offset,
-        "Vertical thumb drag downwards did not scroll as expected.");
-    }
+    assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
+      "Vertical thumb drag downwards did not scroll as expected.");
   }, "Test mouse drags on non-custom composited div scrollbar thumb.");
 
   promise_test (async () => {
@@ -104,13 +94,8 @@ window.onload = () => {
     await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
 
     const EXPECTED_SCROLL = getScrollbarButtonScrollDelta(standardDivFast).y;
-    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-      assert_approx_equals(standardDivFast.scrollTop, EXPECTED_SCROLL, 1/window.devicePixelRatio,
-        "Pressing the down arrow didn't scroll.");
-    } else {
-      assert_equals(standardDivFast.scrollTop, EXPECTED_SCROLL,
-        "Pressing the down arrow didn't scroll.");
-    }
+    assert_approx_equals(standardDivFast.scrollTop, EXPECTED_SCROLL, 1/window.devicePixelRatio,
+      "Pressing the down arrow didn't scroll.");
   }, "Test mouse click on non-custom composited div scrollbar arrows.");
 
   promise_test (async () => {
@@ -128,13 +113,8 @@ window.onload = () => {
     else
       expected_offset = 82;
 
-    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-      assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
-        modifier + " + click forward didn't scroll.");
-    } else {
-      assert_equals(standardDivFast.scrollTop, expected_offset,
-        modifier + " + click forward didn't scroll.");
-    }
+    assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
+      modifier + " + click forward didn't scroll.");
     await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top +
     ((onMacPlatform ? 0 : BUTTON_WIDTH) + 2), /*left_click*/0, modifier);
     assert_equals(standardDivFast.scrollTop, 0, modifier + " + click backward didn't scroll.");

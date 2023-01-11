@@ -1277,7 +1277,7 @@ bool InputHandler::IsMainThreadScrolling(
 }
 
 float InputHandler::LineStep() const {
-  return kPixelsPerLineStep;
+  return kPixelsPerLineStep * ActiveTree().painted_device_scale_factor();
 }
 
 // TODO(mehdika): There is some redundancy between this function and
