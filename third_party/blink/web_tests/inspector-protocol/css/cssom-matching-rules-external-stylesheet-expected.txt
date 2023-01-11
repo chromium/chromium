@@ -1,0 +1,265 @@
+The test verifies CSS.getMatchedStylesForNode when used concurrently with the CSSOM modifications for external stylesheets.
+
+Running test: testModifyRule
+--------------
+Original rule:
+*#modifyRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    height: 100%; @[5:4-5:17]
+    height: 100%; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    width: 100%; @[9:4-9:16]
+    width: 100%; @[undefined-undefined]
+}
+--------------
+Modified rule 1:
+*#modifyRule* {    regular    readonly
+    box-sizing: border-box; @[undefined-undefined]
+    color: red; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    height: 100%; @[5:4-5:17]
+    height: 100%; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    width: 100%; @[9:4-9:16]
+    width: 100%; @[undefined-undefined]
+}
+---------------
+Modified rule 3:
+*#modifyRule* {    regular    readonly
+    box-sizing: border-box; @[undefined-undefined]
+    color: red; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    height: 100%; @[5:4-5:17]
+    height: 100%; @[undefined-undefined]
+}
+*#modifyRule* {    regular    readonly
+    width: 100%; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+}
+---------------
+Modified rule 2:
+*#modifyRule* {    regular    readonly
+    box-sizing: border-box; @[undefined-undefined]
+    color: red; @[undefined-undefined]
+}
+*#modifyRule* {    regular    readonly
+    height: 100%; @[undefined-undefined]
+    color: green; @[undefined-undefined]
+}
+*#modifyRule* {    regular    readonly
+    width: 100%; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+}
+---------------
+Restored rule 2:
+*#modifyRule* {    regular    readonly
+    box-sizing: border-box; @[undefined-undefined]
+    color: red; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    height: 100%; @[5:4-5:17]
+    height: 100%; @[undefined-undefined]
+}
+*#modifyRule* {    regular    readonly
+    width: 100%; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+}
+-----------------
+Restored rule 1,3:
+*#modifyRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    height: 100%; @[5:4-5:17]
+    height: 100%; @[undefined-undefined]
+}
+*#modifyRule* {    regular
+    width: 100%; @[9:4-9:16]
+    width: 100%; @[undefined-undefined]
+}
+
+Running test: testInsertFirstRule
+Original rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+--------------
+After inserted rule:
+*#insertRule* {    regular    readonly
+    color: red; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+--------------
+Restored rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+
+Running test: testInsertMiddleRule
+Original rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+--------------
+After inserted rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular    readonly
+    color: red; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+--------------
+Restored rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+
+Running test: testInsertLastRule
+Original rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+--------------
+After inserted rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+*#insertRule* {    regular    readonly
+    color: red; @[undefined-undefined]
+}
+--------------
+Restored rule:
+*#insertRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#insertRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+
+Running test: testRemoveRule
+Original rule:
+*#removeRule* {    regular
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
+}
+*#removeRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+-------------------
+After remove rule 1:
+*#removeRule* {    regular
+    width: 100%; @[5:4-5:16]
+    width: 100%; @[undefined-undefined]
+}
+-------------------
+After remove rule 2:
+
+Running test: testMatchingPrefix
+Original rule:
+*#matchingPrefix* {    regular
+    color: red; @[1:4-1:15]
+    color: red; @[undefined-undefined]
+}
+*#matchingPrefix* {    regular
+    color: blue; @[5:4-5:16]
+    color: blue; @[undefined-undefined]
+}
+*#matchingPrefix* {    regular
+    color: green; @[9:4-9:17]
+    color: green; @[undefined-undefined]
+}
+--------------
+Modified rule 3:
+*#matchingPrefix* {    regular
+    color: red; @[1:4-1:15]
+    color: red; @[undefined-undefined]
+}
+*#matchingPrefix* {    regular
+    color: blue; @[5:4-5:16]
+    color: blue; @[undefined-undefined]
+}
+*#matchingPrefix* {    regular    readonly
+    color: purple; @[undefined-undefined]
+}
+
+Running test: testMatchingSuffix
+Original rule:
+*#matchingSuffix* {    regular
+    color: red; @[1:4-1:15]
+    color: red; @[undefined-undefined]
+}
+*#matchingSuffix* {    regular
+    color: blue; @[5:4-5:16]
+    color: blue; @[undefined-undefined]
+}
+*#matchingSuffix* {    regular
+    color: green; @[9:4-9:17]
+    color: green; @[undefined-undefined]
+}
+--------------
+Modified rule 0:
+*#matchingSuffix* {    regular    readonly
+    color: purple; @[undefined-undefined]
+}
+*#matchingSuffix* {    regular
+    color: blue; @[5:4-5:16]
+    color: blue; @[undefined-undefined]
+}
+*#matchingSuffix* {    regular
+    color: green; @[9:4-9:17]
+    color: green; @[undefined-undefined]
+}
+

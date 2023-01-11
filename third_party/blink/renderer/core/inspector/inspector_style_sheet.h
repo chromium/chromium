@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/inspector/inspector_diff.h"
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -268,13 +269,8 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   String text_;
   CSSRuleVector cssom_flat_rules_;
   CSSRuleVector parsed_flat_rules_;
-  typedef HashMap<unsigned,
-                  unsigned,
-                  IntHash<unsigned>,
-                  IntWithZeroKeyHashTraits<unsigned>>
-      IndexMap;
-  IndexMap rule_to_source_data_;
-  IndexMap source_data_to_rule_;
+  InspectorIndexMap rule_to_source_data_;
+  InspectorIndexMap source_data_to_rule_;
   String source_url_;
   // True means that CSSOM rules are to be synced with the original source text.
   bool marked_for_sync_;

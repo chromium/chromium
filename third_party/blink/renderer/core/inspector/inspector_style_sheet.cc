@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
-#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -67,6 +66,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 using blink::protocol::Array;
 
@@ -693,111 +693,6 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
         break;
     }
   }
-}
-
-typedef HashMap<unsigned,
-                unsigned,
-                IntHash<unsigned>,
-                IntWithZeroKeyHashTraits<unsigned>>
-    IndexMap;
-
-void Diff(const Vector<String>& list_a,
-          const Vector<String>& list_b,
-          IndexMap* a_to_b,
-          IndexMap* b_to_a) {
-  // Cut of common prefix.
-  wtf_size_t start_offset = 0;
-  while (start_offset < list_a.size() && start_offset < list_b.size()) {
-    if (list_a.at(start_offset) != list_b.at(start_offset))
-      break;
-    a_to_b->Set(start_offset, start_offset);
-    b_to_a->Set(start_offset, start_offset);
-    ++start_offset;
-  }
-
-  // Cut of common suffix.
-  wtf_size_t end_offset = 0;
-  while (end_offset < list_a.size() - start_offset &&
-         end_offset < list_b.size() - start_offset) {
-    wtf_size_t index_a = list_a.size() - end_offset - 1;
-    wtf_size_t index_b = list_b.size() - end_offset - 1;
-    if (list_a.at(index_a) != list_b.at(index_b))
-      break;
-    a_to_b->Set(index_a, index_b);
-    b_to_a->Set(index_b, index_a);
-    ++end_offset;
-  }
-
-  wtf_size_t n = list_a.size() - start_offset - end_offset;
-  wtf_size_t m = list_b.size() - start_offset - end_offset;
-
-  // If we mapped either of arrays, we have no more work to do.
-  if (n == 0 || m == 0)
-    return;
-
-  int** diff = new int*[n];
-  int** backtrack = new int*[n];
-  for (wtf_size_t i = 0; i < n; ++i) {
-    diff[i] = new int[m];
-    backtrack[i] = new int[m];
-  }
-
-  // Compute longest common subsequence of two cssom models.
-  for (wtf_size_t i = 0; i < n; ++i) {
-    for (wtf_size_t j = 0; j < m; ++j) {
-      int max = 0;
-      int track = 0;
-
-      if (i > 0 && diff[i - 1][j] > max) {
-        max = diff[i - 1][j];
-        track = 1;
-      }
-
-      if (j > 0 && diff[i][j - 1] > max) {
-        max = diff[i][j - 1];
-        track = 2;
-      }
-
-      if (list_a.at(i + start_offset) == list_b.at(j + start_offset)) {
-        int value = i > 0 && j > 0 ? diff[i - 1][j - 1] + 1 : 1;
-        if (value > max) {
-          max = value;
-          track = 3;
-        }
-      }
-
-      diff[i][j] = max;
-      backtrack[i][j] = track;
-    }
-  }
-
-  // Backtrack and add missing mapping.
-  int i = n - 1, j = m - 1;
-  while (i >= 0 && j >= 0 && backtrack[i][j]) {
-    switch (backtrack[i][j]) {
-      case 1:
-        i -= 1;
-        break;
-      case 2:
-        j -= 1;
-        break;
-      case 3:
-        a_to_b->Set(i + start_offset, j + start_offset);
-        b_to_a->Set(j + start_offset, i + start_offset);
-        i -= 1;
-        j -= 1;
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  for (wtf_size_t idx = 0; idx < n; ++idx) {
-    delete[] diff[idx];
-    delete[] backtrack[idx];
-  }
-  delete[] diff;
-  delete[] backtrack;
 }
 
 // Warning: it does not always produce valid CSS.
@@ -2159,7 +2054,7 @@ CSSRule* InspectorStyleSheet::RuleForSourceData(
   wtf_size_t index = source_data_->Find(source_data);
   if (index == kNotFound)
     return nullptr;
-  IndexMap::iterator it = source_data_to_rule_.find(index);
+  InspectorIndexMap::iterator it = source_data_to_rule_.find(index);
   if (it == source_data_to_rule_.end())
     return nullptr;
 
@@ -2182,7 +2077,7 @@ CSSRuleSourceData* InspectorStyleSheet::SourceDataForRule(CSSRule* rule) {
   wtf_size_t index = cssom_flat_rules_.Find(rule);
   if (index == kNotFound)
     return nullptr;
-  IndexMap::iterator it = rule_to_source_data_.find(index);
+  InspectorIndexMap::iterator it = rule_to_source_data_.find(index);
   if (it == rule_to_source_data_.end())
     return nullptr;
 
@@ -2250,8 +2145,8 @@ void InspectorStyleSheet::MapSourceDataToCSSOM() {
   for (wtf_size_t j = 0; j < parsed_rules.size(); ++j)
     parsed_rules_text.push_back(CanonicalCSSText(parsed_rules.at(j)));
 
-  Diff(cssom_rules_text, parsed_rules_text, &rule_to_source_data_,
-       &source_data_to_rule_);
+  InspectorDiff::FindLCSMapping(cssom_rules_text, parsed_rules_text,
+                                &rule_to_source_data_, &source_data_to_rule_);
 }
 
 const CSSRuleVector& InspectorStyleSheet::FlatRules() {

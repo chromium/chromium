@@ -35,7 +35,7 @@
 </style>
 <article id='modifyRule'></article>
 <article id='insertRule'></article>
-<article id='removeRule'></article>`, 'The test verifies CSS.getMatchedStylesForNode when used concurrently with the CSSOM modifications.');
+<article id='removeRule'></article>`, 'The test verifies CSS.getMatchedStylesForNode when used concurrently with the CSSOM modifications for internal stylesheets.');
 
   var CSSHelper = await testRunner.loadScript('../resources/css-helper.js');
   var cssHelper = new CSSHelper(testRunner, dp);
