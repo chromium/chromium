@@ -46,10 +46,8 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
     connection_ = ArcAppListPrefs::Get(profile)->app_connection_holder();
     auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(connection_, GetTaskInfo);
     if (!app_instance) {
-      LOG(ERROR) << "GetTaskInfo method for ARC is not available";
       return;
     }
-
     VLOG(2) << "Getting package name for ARC task: " << task_id;
     app_instance->GetTaskInfo(
         task_id, base::BindOnce(&ArcGameModeCriteria::OnReceiveTaskInfo,
@@ -76,6 +74,11 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
 
   void OnReceiveTaskInfo(const std::string& pkg_name,
                          const std::string& activity) {
+    if (pkg_name.empty()) {
+      LOG(ERROR) << "Failed to find package name for the requested task";
+      return;
+    }
+
     if (IsKnownGame(pkg_name)) {
       VLOG(2) << "ARC task package " << pkg_name << " is known game";
       Enable();

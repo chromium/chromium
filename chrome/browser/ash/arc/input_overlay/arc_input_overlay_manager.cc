@@ -191,7 +191,6 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
     auto* app_instance =
         ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
     if (!app_instance) {
-      LOG(ERROR) << "GetTaskInfo method for ARC is not available";
       return;
     }
 
