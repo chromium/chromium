@@ -85,6 +85,7 @@ class ExecutableTestRunner(TestRunner):
         self._code_coverage_dir = code_coverage_dir
         self._custom_artifact_directory = None
         self._isolated_script_test_output = None
+        self._isolated_script_test_perf_output = None
         self._logs_dir = logs_dir
         self._test_launcher_summary_output = None
         self._test_server = None
@@ -94,9 +95,9 @@ class ExecutableTestRunner(TestRunner):
         parser.add_argument(
             '--isolated-script-test-output',
             help='If present, store test results on this path.')
-        # This argument has been deprecated.
         parser.add_argument('--isolated-script-test-perf-output',
-                            help=argparse.SUPPRESS)
+                            help='If present, store chartjson results on this '
+                            'path.')
         parser.add_argument(
             '--test-launcher-shard-index',
             type=int,
@@ -135,6 +136,12 @@ class ExecutableTestRunner(TestRunner):
             child_args.append(
                 '--isolated-script-test-output=/custom_artifacts/%s' %
                 os.path.basename(self._isolated_script_test_output))
+        if args.isolated_script_test_perf_output:
+            self._isolated_script_test_perf_output = \
+                args.isolated_script_test_perf_output
+            child_args.append(
+                '--isolated-script-test-perf-output=/custom_artifacts/%s' %
+                os.path.basename(self._isolated_script_test_perf_output))
         if args.test_launcher_shard_index is not None:
             child_args.append('--test-launcher-shard-index=%d' %
                               args.test_launcher_shard_index)
@@ -180,6 +187,11 @@ class ExecutableTestRunner(TestRunner):
                 test_runner,
                 os.path.basename(self._isolated_script_test_output),
                 self._isolated_script_test_output)
+        if self._isolated_script_test_perf_output:
+            _copy_custom_output_file(
+                test_runner,
+                os.path.basename(self._isolated_script_test_perf_output),
+                self._isolated_script_test_perf_output)
         if self._code_coverage_dir:
             _copy_coverage_files(test_runner,
                                  os.path.basename(self._code_coverage_dir))
