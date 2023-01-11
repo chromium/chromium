@@ -340,7 +340,7 @@ TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
-  value2.Append("barValue");
+  value2.GetList().Append("barValue");
 
   ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
   ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
@@ -391,7 +391,7 @@ TEST_F(ExtensionSettingsSyncTest, LocalDataWithNoSyncDataIsPushedToSync) {
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
-  value2.Append("barValue");
+  value2.GetList().Append("barValue");
 
   ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
   ValueStore* storage2 = AddExtensionAndGetStorage("s2", type);
@@ -425,7 +425,7 @@ TEST_F(ExtensionSettingsSyncTest, AnySyncDataOverwritesLocalData) {
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
-  value2.Append("barValue");
+  value2.GetList().Append("barValue");
 
   // Maintain dictionaries mirrored to the expected values of the settings in
   // each storage area.
@@ -470,7 +470,7 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
-  value2.Append("barValue");
+  value2.GetList().Append("barValue");
 
   // Make storage1 initialised from local data, storage2 initialised from sync.
   ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
@@ -545,7 +545,7 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
-  value2.Append("barValue");
+  value2.GetList().Append("barValue");
 
   // Make storage1/2 initialised from local data, storage3/4 initialised from
   // sync.
@@ -674,7 +674,7 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 TEST_F(ExtensionSettingsSyncTest, ExtensionAndAppSettingsSyncSeparately) {
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
-  value2.Append("barValue");
+  value2.GetList().Append("barValue");
 
   // storage1 is an extension, storage2 is an app.
   ValueStore* storage1 = AddExtensionAndGetStorage(

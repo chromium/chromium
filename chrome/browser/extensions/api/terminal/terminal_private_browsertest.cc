@@ -79,9 +79,9 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenCroshProcessChecks) {
     })
     }))";
 
-  base::Value system_features(base::Value::Type::LIST);
+  base::Value::List system_features;
   system_features.Append(static_cast<int>(policy::SystemFeature::kCrosh));
-  g_browser_process->local_state()->Set(
+  g_browser_process->local_state()->SetList(
       policy::policy_prefs::kSystemFeaturesDisableList,
       std::move(system_features));
   // 'crosh not allowed' when crosh is not allowed.

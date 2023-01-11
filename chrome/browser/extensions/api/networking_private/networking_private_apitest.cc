@@ -161,11 +161,11 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   }
 
   void GetEnabledNetworkTypes(EnabledNetworkTypesCallback callback) override {
-    base::Value result(base::Value::Type::LIST);
+    base::Value::List result;
     if (!fail_) {
       result.Append(::onc::network_config::kEthernet);
     }
-    std::move(callback).Run(base::Value::ToUniquePtrValue(std::move(result)));
+    std::move(callback).Run(std::make_unique<base::Value>(std::move(result)));
   }
 
   void GetDeviceStateList(DeviceStateListCallback callback) override {

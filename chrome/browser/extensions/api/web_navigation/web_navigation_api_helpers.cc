@@ -150,7 +150,7 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
     transition_type_string = "start_page";
   dict.Set(web_navigation_api_constants::kTransitionTypeKey,
            transition_type_string);
-  base::Value qualifiers(base::Value::Type::LIST);
+  base::Value::List qualifiers;
   if (transition_type & ui::PAGE_TRANSITION_CLIENT_REDIRECT)
     qualifiers.Append("client_redirect");
   if (transition_type & ui::PAGE_TRANSITION_SERVER_REDIRECT)

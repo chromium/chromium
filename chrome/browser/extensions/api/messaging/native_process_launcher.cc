@@ -271,7 +271,7 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
     reconnect_command_line.AppendArg(
         ::switches::kPrefetchArgumentBrowserBackground);
 #endif
-    base::Value args(base::Value::Type::LIST);
+    base::Value::List args;
     for (const auto& arg : reconnect_command_line.argv()) {
 #if BUILDFLAG(IS_WIN)
       args.Append(base::WideToUTF8(arg));

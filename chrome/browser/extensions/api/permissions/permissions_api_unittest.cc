@@ -252,10 +252,11 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
       return origins;
     }
 
-    const base::Value* origins_value =
-        (*results)[0].FindKeyOfType("origins", base::Value::Type::LIST);
-    for (const auto& value : origins_value->GetList())
+    const base::Value::List* origins_value =
+        (*results)[0].GetDict().FindList("origins");
+    for (const auto& value : *origins_value) {
       origins.push_back(value.GetString());
+    }
 
     return origins;
   };

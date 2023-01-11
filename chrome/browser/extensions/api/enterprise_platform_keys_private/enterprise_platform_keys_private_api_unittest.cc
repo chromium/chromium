@@ -92,8 +92,9 @@ class EPKPChallengeMachineKeyTest : public EPKPChallengeKeyTestBase {
 const char EPKPChallengeMachineKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\"]";
 
 TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
-  base::Value empty_allowlist(base::Value::Type::LIST);
-  prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
+  base::Value::List empty_allowlist;
+  prefs_->SetList(prefs::kAttestationExtensionAllowlist,
+                  std::move(empty_allowlist));
 
   EXPECT_EQ(
       ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
@@ -103,9 +104,9 @@ TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
 TEST_F(EPKPChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::Value allowlist(base::Value::Type::LIST);
-  allowlist.GetList().Append(extension_->id());
-  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
+  base::Value::List allowlist;
+  allowlist.Append(extension_->id());
+  prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
@@ -131,8 +132,9 @@ class EPKPChallengeUserKeyTest : public EPKPChallengeKeyTestBase {
 const char EPKPChallengeUserKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\", true]";
 
 TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
-  base::Value empty_allowlist(base::Value::Type::LIST);
-  prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
+  base::Value::List empty_allowlist;
+  prefs_->SetList(prefs::kAttestationExtensionAllowlist,
+                  std::move(empty_allowlist));
 
   EXPECT_EQ(
       ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
@@ -142,9 +144,9 @@ TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
 TEST_F(EPKPChallengeUserKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::Value allowlist(base::Value::Type::LIST);
-  allowlist.GetList().Append(extension_->id());
-  prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
+  base::Value::List allowlist;
+  allowlist.Append(extension_->id());
+  prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));

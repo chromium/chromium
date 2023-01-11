@@ -366,9 +366,9 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     testing_profile_ =
         profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
 
-    base::Value extensions_list(base::Value::Type::LIST);
-    extensions_list.Append(base::Value(kExtensionId));
-    testing_profile_->GetTestingPrefService()->Set(
+    base::Value::List extensions_list;
+    extensions_list.Append(kExtensionId);
+    testing_profile_->GetTestingPrefService()->SetList(
         prefs::kPrintingAPIExtensionsAllowlist, std::move(extensions_list));
 
     const char kExtensionName[] = "Printing extension";

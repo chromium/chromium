@@ -624,13 +624,14 @@ class EnterpriseReportingPrivateGetCertificateTest : public policy::PolicyTest {
     EXPECT_FALSE(chrome::enterprise_util::IsMachinePolicyPref(
         prefs::kManagedAutoSelectCertificateForUrls));
 
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(policy_value);
 
     policy::PolicyMap policies;
     policies.Set(policy::key::kAutoSelectCertificateForUrls,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                 policy::POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value(std::move(list)),
+                 nullptr);
     UpdateProviderPolicy(policies);
 
     EXPECT_TRUE(chrome::enterprise_util::IsMachinePolicyPref(

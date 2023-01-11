@@ -844,18 +844,18 @@ class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
       public testing::WithParamInterface<const char*> {
  public:
   void SetURLBlockedPolicy(const std::string& url) {
-    base::Value blockList(base::Value::Type::LIST);
-    blockList.Append(base::Value(url));
+    base::Value::List blocklist;
+    blocklist.Append(url);
 
-    profile()->GetPrefs()->Set(policy::policy_prefs::kUrlBlocklist,
-                               std::move(blockList));
+    profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
+                                   std::move(blocklist));
   }
   void SetURLAllowedPolicy(const std::string& url) {
-    base::Value allowList(base::Value::Type::LIST);
-    allowList.Append(base::Value(url));
+    base::Value::List allowlist;
+    allowlist.Append(url);
 
-    profile()->GetPrefs()->Set(policy::policy_prefs::kUrlAllowlist,
-                               std::move(allowList));
+    profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
+                                   std::move(allowlist));
   }
 
   void ExpectDefaultPolicies(enterprise_reporting_private::ContextInfo& info) {
