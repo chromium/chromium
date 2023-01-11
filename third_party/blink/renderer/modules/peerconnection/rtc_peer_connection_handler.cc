@@ -2008,6 +2008,9 @@ void RTCPeerConnectionHandler::Close() {
   native_peer_connection_->Close();
 
   // This object may no longer forward call backs to blink.
+  // Clear the pointer to client_ so that it no longer prevents
+  // garbage collection.
+  client_ = nullptr;
   is_closed_ = true;
 }
 

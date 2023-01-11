@@ -670,7 +670,7 @@ void RTCPeerConnection::Dispose() {
   // Promptly clears the handler's pointer to |this|
   // so that content/ doesn't access it in a lazy sweeping phase.
   if (peer_handler_) {
-    peer_handler_->CloseAndUnregister();
+    peer_handler_.reset();
   }
 }
 

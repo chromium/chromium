@@ -18,7 +18,8 @@
 namespace blink {
 
 class MockRTCPeerConnectionHandlerClient
-    : public RTCPeerConnectionHandlerClient {
+    : public GarbageCollected<MockRTCPeerConnectionHandlerClient>,
+      public RTCPeerConnectionHandlerClient {
  public:
   MockRTCPeerConnectionHandlerClient();
 

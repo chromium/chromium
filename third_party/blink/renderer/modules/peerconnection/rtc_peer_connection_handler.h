@@ -421,7 +421,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // It is valid for the lifetime of this object, but is cleared when
   // CloseAndUnregister() is called, in order to make sure it doesn't
   // interfere with garbage collection of the owner object.
-  RTCPeerConnectionHandlerClient* client_ = nullptr;
+  Persistent<RTCPeerConnectionHandlerClient> client_;
   // True if this PeerConnection has been closed.
   // After the PeerConnection has been closed, this object may no longer
   // forward callbacks to blink.
