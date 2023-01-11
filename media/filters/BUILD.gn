@@ -247,6 +247,8 @@ source_set("filters") {
 
   if (enable_hls_demuxer) {
     sources += [
+      "hls_data_source_provider.cc",
+      "hls_data_source_provider.h",
       "hls_demuxer.cc",
       "hls_demuxer.h",
     ]

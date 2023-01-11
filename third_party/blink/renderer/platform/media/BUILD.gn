@@ -105,6 +105,13 @@ component("media") {
       "//third_party/blink/public/strings:strings_grit",
     ]
   }
+
+  if (enable_hls_demuxer) {
+    sources += [
+      "hls_data_source_provider_impl.cc",
+      "hls_data_source_provider_impl.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {

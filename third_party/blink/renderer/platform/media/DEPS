@@ -21,6 +21,7 @@ include_rules = [
   "+media/capabilities/bucket_utility.h",
   "+media/cdm",
   "+media/filters",
+  "+media/formats",
   "+media/learning/common",
   "+media/learning/mojo/public/cpp",
   "+media/media_buildflags.h",
