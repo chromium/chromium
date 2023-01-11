@@ -33,12 +33,7 @@ namespace net {
 class CanonicalCookie;
 }
 
-// LocalDataContainer ---------------------------------------------------------
-// This class is a wrapper around all the BrowsingData*Helper classes. Because
-// isolated applications have separate storage, we need different helper
-// instances. As such, this class contains the app name and id, along with the
-// helpers for all of the data types we need. The browser-wide "app id" will be
-// the empty string, as no app can have an empty id.
+// This class is a wrapper around all the browsing_data::*Helper classes.
 class LocalDataContainer {
  public:
   // Friendly typedefs for the multiple types of lists used in the model.
