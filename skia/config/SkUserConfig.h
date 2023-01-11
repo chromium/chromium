@@ -216,9 +216,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_MIPMAP_BUILDER
 
-// Temporary until web tests can be rebaselined (skbug.com/13752)
-#define SK_DISABLE_RASTER_PIPELINE_SAMPLING_FIXES
-
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
