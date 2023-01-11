@@ -457,6 +457,8 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Contains common data needed to keep track of requests.
   class DeviceRequest;
+  // Contains common data between GenerateStreams and GetOpenDevice requests
+  class CreateDeviceRequest;
   // Contains data specific for GenerateStreams requests
   class GenerateStreamsRequest;
   // Contains data specific for GetOpenDevice requests
@@ -491,7 +493,7 @@ class CONTENT_EXPORT MediaStreamManager
   void StopMediaStreamFromBrowser(const std::string& label);
   void ChangeMediaStreamSourceFromBrowser(const std::string& label,
                                           const DesktopMediaID& media_id);
-  void RequestStateChangeFromBrowser(
+  void OnRequestStateChangeFromBrowser(
       const std::string& label,
       const DesktopMediaID& media_id,
       blink::mojom::MediaStreamStateChange new_state);
