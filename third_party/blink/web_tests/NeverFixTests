@@ -1740,3 +1740,10 @@ crbug.com/1293679 virtual/origin-trials-runtimeflags-disabled/http/tests/origin_
 # explicitly be marked Pass in order to bypass the expected Skip of the default
 # version.
 crbug.com/1393294 printing/webgl-oversized-printing.html [ Skip ]
+# SwiftShader for WebGL is not available for ARM Macs
+crbug.com/1378476 [ Mac11-arm64 ] virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Skip ]
+crbug.com/1378476 [ Mac12-arm64 ] virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Skip ]
+# The test causes a 1 GB allocation in the GPU process on Windows
+# which often fails, so skip it on this configuration.
+# Use the same reason as the Mac suppressions to avoid an incorrect presubmit check.
+crbug.com/1378476 [ Win ] virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Skip ]
