@@ -12,7 +12,7 @@
 namespace webrtc {
 class DesktopFrame;
 class DesktopRegion;
-}
+}  // namespace webrtc
 
 namespace remoting {
 

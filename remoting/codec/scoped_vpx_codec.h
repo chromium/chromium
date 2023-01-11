@@ -19,6 +19,6 @@ struct VpxCodecDeleter {
 
 typedef std::unique_ptr<vpx_codec_ctx_t, VpxCodecDeleter> ScopedVpxCodec;
 
-} // namespace remoting
+}  // namespace remoting
 
 #endif  // REMOTING_CODEC_SCOPED_VPX_CODEC_H_

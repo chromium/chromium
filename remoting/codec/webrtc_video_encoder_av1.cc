@@ -325,8 +325,9 @@ void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
     changed = true;
   }
 
-  if (!changed)
+  if (!changed) {
     return;
+  }
 
   // Update encoder context.
   if (aom_codec_enc_config_set(codec_.get(), &config_)) {
@@ -373,11 +374,13 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   aom_active_map_t act_map;
   if (use_active_map_) {
-    if (params.clear_active_map)
+    if (params.clear_active_map) {
       active_map_.Clear();
+    }
 
-    if (params.key_frame)
+    if (params.key_frame) {
       updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
+    }
 
     active_map_.Update(updated_region);
 
@@ -434,8 +437,9 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   while (!got_data) {
     const aom_codec_cx_pkt_t* aom_packet =
         aom_codec_get_cx_data(codec_.get(), &iter);
-    if (!aom_packet)
+    if (!aom_packet) {
       continue;
+    }
 
     switch (aom_packet->kind) {
       case AOM_CODEC_CX_FRAME_PKT: {

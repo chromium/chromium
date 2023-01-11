@@ -10,7 +10,7 @@
 namespace webrtc {
 class DesktopFrame;
 class DesktopSize;
-}
+}  // namespace webrtc
 
 namespace remoting {
 

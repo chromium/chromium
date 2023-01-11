@@ -54,8 +54,9 @@ void VideoEncoderActiveMap::Update(
 
     uint8_t* map = active_map_.get() + top * active_map_size_.width();
     for (int y = top; y <= bottom; ++y) {
-      for (int x = left; x <= right; ++x)
+      for (int x = left; x <= right; ++x) {
         map[x] = 1;
+      }
       map += active_map_size_.width();
     }
   }

@@ -30,8 +30,9 @@ std::unique_ptr<VideoPacket> VideoEncoderVerbatim::Encode(
 
   // If nothing has changed in the frame then return NULL to indicate that
   // we don't need to actually send anything (e.g. nothing to top-off).
-  if (frame.updated_region().is_empty())
+  if (frame.updated_region().is_empty()) {
     return nullptr;
+  }
 
   // Create a VideoPacket with common fields (e.g. DPI, rects, shape) set.
   std::unique_ptr<VideoPacket> packet(helper_.CreateVideoPacket(frame));
@@ -42,8 +43,8 @@ std::unique_ptr<VideoPacket> VideoEncoderVerbatim::Encode(
   for (webrtc::DesktopRegion::Iterator iter(frame.updated_region());
        !iter.IsAtEnd(); iter.Advance()) {
     const webrtc::DesktopRect& rect = iter.rect();
-    output_size += rect.width() * rect.height() *
-        webrtc::DesktopFrame::kBytesPerPixel;
+    output_size +=
+        rect.width() * rect.height() * webrtc::DesktopFrame::kBytesPerPixel;
   }
 
   uint8_t* out = GetPacketOutputBuffer(packet.get(), output_size);

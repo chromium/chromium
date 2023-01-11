@@ -46,8 +46,7 @@ AudioEncoderOpus::AudioEncoderOpus()
       frame_size_(0),
       resampling_data_(nullptr),
       resampling_data_size_(0),
-      resampling_data_pos_(0) {
-}
+      resampling_data_pos_(0) {}
 
 AudioEncoderOpus::~AudioEncoderOpus() {
   DestroyEncoder();
@@ -65,8 +64,8 @@ void AudioEncoderOpus::InitEncoder() {
 
   opus_encoder_ctl(encoder_.get(), OPUS_SET_BITRATE(kOutputBitrateBps));
 
-  frame_size_ = sampling_rate_ * kFrameSizeMs /
-      base::Time::kMillisecondsPerSecond;
+  frame_size_ =
+      sampling_rate_ * kFrameSizeMs / base::Time::kMillisecondsPerSecond;
 
   if (sampling_rate_ != kOpusSamplingRate) {
     resample_buffer_.reset(
@@ -107,9 +106,9 @@ bool AudioEncoderOpus::ResetForPacket(AudioPacket* packet) {
 
     if (channels_ <= 0 || channels_ > 2 ||
         !IsSupportedSampleRate(sampling_rate_)) {
-      LOG(WARNING) << "Unsupported OPUS parameters: "
-                   << channels_ << " channels with "
-                   << sampling_rate_ << " samples per second.";
+      LOG(WARNING) << "Unsupported OPUS parameters: " << channels_
+                   << " channels with " << sampling_rate_
+                   << " samples per second.";
       return false;
     }
 
@@ -123,7 +122,7 @@ void AudioEncoderOpus::FetchBytesToResample(int resampler_frame_delay,
                                             media::AudioBus* audio_bus) {
   DCHECK(resampling_data_);
   int samples_left = (resampling_data_size_ - resampling_data_pos_) /
-      kBytesPerSample / channels_;
+                     kBytesPerSample / channels_;
   DCHECK_LE(audio_bus->frames(), samples_left);
   static_assert(kBytesPerSample == 2, "FromInterleaved expects 2 bytes.");
   audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
@@ -199,8 +198,8 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
 
     // Encode.
     unsigned char* buffer = reinterpret_cast<unsigned char*>(std::data(*data));
-    int result = opus_encode(encoder_, pcm_buffer, kFrameSamples,
-                             buffer, data->length());
+    int result = opus_encode(encoder_, pcm_buffer, kFrameSamples, buffer,
+                             data->length());
     if (result < 0) {
       LOG(ERROR) << "opus_encode() failed with error code: " << result;
       return nullptr;
@@ -226,14 +225,15 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
   // Store the leftover samples.
   if (samples_in_packet > 0) {
     DCHECK_LE(leftover_samples_ + samples_in_packet, leftover_buffer_size_);
-    memmove(leftover_buffer_.get() + leftover_samples_ * channels_,
-            next_sample, samples_in_packet * kBytesPerSample * channels_);
+    memmove(leftover_buffer_.get() + leftover_samples_ * channels_, next_sample,
+            samples_in_packet * kBytesPerSample * channels_);
     leftover_samples_ += samples_in_packet;
   }
 
   // Return nullptr if there's nothing in the packet.
-  if (encoded_packet->data_size() == 0)
+  if (encoded_packet->data_size() == 0) {
     return nullptr;
+  }
 
   return encoded_packet;
 }

@@ -82,21 +82,18 @@ class VideoDecoderTester {
     ASSERT_TRUE(decoder_->DecodePacket(*packet, frame_.get()));
   }
 
-  void set_strict(bool strict) {
-    strict_ = strict;
-  }
+  void set_strict(bool strict) { strict_ = strict; }
 
-  void set_expected_frame(DesktopFrame* frame) {
-    expected_frame_ = frame;
-  }
+  void set_expected_frame(DesktopFrame* frame) { expected_frame_ = frame; }
 
   void AddRegion(const DesktopRegion& region) {
     expected_region_.AddRegion(region);
   }
 
   void VerifyResults() {
-    if (!strict_)
+    if (!strict_) {
       return;
+    }
 
     ASSERT_TRUE(expected_frame_);
 
@@ -107,8 +104,7 @@ class VideoDecoderTester {
          i.Advance()) {
       const uint8_t* original =
           expected_frame_->GetFrameDataAtPos(i.rect().top_left());
-      const uint8_t* decoded =
-          frame_->GetFrameDataAtPos(i.rect().top_left());
+      const uint8_t* decoded = frame_->GetFrameDataAtPos(i.rect().top_left());
       const int row_size = kBytesPerPixel * i.rect().width();
       for (int y = 0; y < i.rect().height(); ++y) {
         EXPECT_EQ(0, memcmp(original, decoded, row_size))
@@ -130,8 +126,7 @@ class VideoDecoderTester {
          i.Advance()) {
       const uint8_t* expected =
           expected_frame_->GetFrameDataAtPos(i.rect().top_left());
-      const uint8_t* actual =
-          frame_->GetFrameDataAtPos(i.rect().top_left());
+      const uint8_t* actual = frame_->GetFrameDataAtPos(i.rect().top_left());
       for (int y = 0; y < i.rect().height(); ++y) {
         for (int x = 0; x < i.rect().width(); ++x) {
           double error = CalculateError(expected + x * kBytesPerPixel,
@@ -154,8 +149,8 @@ class VideoDecoderTester {
   double CalculateError(const uint8_t* original, const uint8_t* decoded) {
     double error_sum_squares = 0.0;
     for (int i = 0; i < 3; i++) {
-      double error = static_cast<double>(*original++) -
-                     static_cast<double>(*decoded++);
+      double error =
+          static_cast<double>(*original++) - static_cast<double>(*decoded++);
       error /= 255.0;
       error_sum_squares += error * error;
     }
@@ -181,9 +176,7 @@ class VideoEncoderTester {
   VideoEncoderTester(const VideoEncoderTester&) = delete;
   VideoEncoderTester& operator=(const VideoEncoderTester&) = delete;
 
-  ~VideoEncoderTester() {
-    EXPECT_GT(data_available_, 0);
-  }
+  ~VideoEncoderTester() { EXPECT_GT(data_available_, 0); }
 
   void DataAvailable(std::unique_ptr<VideoPacket> packet) {
     ++data_available_;
@@ -243,8 +236,7 @@ void TestVideoEncoder(VideoEncoder* encoder, bool strict) {
   }
 }
 
-void TestVideoEncoderEmptyFrames(VideoEncoder* encoder,
-                                 int max_topoff_frames) {
+void TestVideoEncoderEmptyFrames(VideoEncoder* encoder, int max_topoff_frames) {
   const DesktopSize kSize(100, 100);
   std::unique_ptr<DesktopFrame> frame(PrepareFrame(kSize));
 
@@ -255,8 +247,9 @@ void TestVideoEncoderEmptyFrames(VideoEncoder* encoder,
   int topoff_frames = 0;
   frame->mutable_updated_region()->Clear();
   for (int i = 0; i < max_topoff_frames + 1; ++i) {
-    if (!encoder->Encode(*frame))
+    if (!encoder->Encode(*frame)) {
       break;
+    }
     topoff_frames++;
   }
 
@@ -280,10 +273,11 @@ static void TestEncodeDecodeRects(VideoEncoder* encoder,
   for (DesktopRegion::Iterator i(region); !i.IsAtEnd(); i.Advance()) {
     const int row_size = DesktopFrame::kBytesPerPixel * i.rect().width();
     uint8_t* memory = frame->data() + frame->stride() * i.rect().top() +
-                    DesktopFrame::kBytesPerPixel * i.rect().left();
+                      DesktopFrame::kBytesPerPixel * i.rect().left();
     for (int y = 0; y < i.rect().height(); ++y) {
-      for (int x = 0; x < row_size; ++x)
+      for (int x = 0; x < row_size; ++x) {
         memory[x] = rand() % 256;
+      }
       memory += frame->stride();
     }
   }
@@ -319,8 +313,8 @@ static void FillWithGradient(DesktopFrame* frame) {
     for (int i = 0; i < frame->size().width(); ++i) {
       *p++ = (255.0 * i) / frame->size().width();
       *p++ = (164.0 * j) / frame->size().height();
-      *p++ = (82.0 * (i + j)) /
-          (frame->size().width() + frame->size().height());
+      *p++ =
+          (82.0 * (i + j)) / (frame->size().width() + frame->size().height());
       *p++ = 0;
     }
   }

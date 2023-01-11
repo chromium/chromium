@@ -67,7 +67,8 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
                            const webrtc::DesktopSize& size) {
   // Adjust default target bit-rate to account for actual desktop size.
   config->rc_target_bitrate = size.width() * size.height() *
-      config->rc_target_bitrate / config->g_w / config->g_h;
+                              config->rc_target_bitrate / config->g_w /
+                              config->g_h;
 
   SetCommonCodecParameters(config, size);
 
@@ -123,8 +124,7 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec) {
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set noise sensitivity";
 
   // Configure the codec to tune it for screen media.
-  ret = vpx_codec_control(
-      codec, VP9E_SET_TUNE_CONTENT, VP9E_CONTENT_SCREEN);
+  ret = vpx_codec_control(codec, VP9E_SET_TUNE_CONTENT, VP9E_CONTENT_SCREEN);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set screen content mode";
 
   // Set cyclic refresh (aka "top-off") for lossy encoding.
@@ -188,11 +188,12 @@ void CreateImage(bool use_i444,
   // Assuming macroblocks are 16x16, aligning the planes' strides above also
   // macroblock aligned them.
   static_assert(kMacroBlockSize == 16, "macroblock_size_not_16");
-  const int y_rows = ((image->h - 1) & ~(kMacroBlockSize-1)) + kMacroBlockSize;
+  const int y_rows =
+      ((image->h - 1) & ~(kMacroBlockSize - 1)) + kMacroBlockSize;
   const int uv_rows = y_rows >> image->y_chroma_shift;
 
   // Allocate a YUV buffer large enough for the aligned data & padding.
-  const int buffer_size = y_stride * y_rows + 2*uv_stride * uv_rows;
+  const int buffer_size = y_stride * y_rows + 2 * uv_stride * uv_rows;
   std::unique_ptr<uint8_t[]> image_buffer(new uint8_t[buffer_size]);
 
   // Reset image value to 128 so we just need to fill in the y plane.
@@ -248,13 +249,13 @@ std::unique_ptr<VideoPacket> VideoEncoderVpx::Encode(
   DCHECK_LE(32, frame.size().height());
 
   // If there is nothing to encode, and nothing to top-off, then return nothing.
-  if (frame.updated_region().is_empty() && !encode_unchanged_frame_)
+  if (frame.updated_region().is_empty() && !encode_unchanged_frame_) {
     return nullptr;
+  }
 
   // Create or reconfigure the codec to match the size of |frame|.
-  if (!codec_ ||
-      (image_ &&
-       !frame.size().equals(webrtc::DesktopSize(image_->w, image_->h)))) {
+  if (!codec_ || (image_ && !frame.size().equals(
+                                webrtc::DesktopSize(image_->w, image_->h)))) {
     Configure(frame.size());
   }
 
@@ -276,8 +277,8 @@ std::unique_ptr<VideoPacket> VideoEncoderVpx::Encode(
 
   // Do the actual encoding.
   int timestamp = (clock_->NowTicks() - timestamp_base_).InMilliseconds();
-  vpx_codec_err_t ret = vpx_codec_encode(
-      codec_.get(), image_.get(), timestamp, 1, 0, VPX_DL_REALTIME);
+  vpx_codec_err_t ret = vpx_codec_encode(codec_.get(), image_.get(), timestamp,
+                                         1, 0, VPX_DL_REALTIME);
   DCHECK_EQ(ret, VPX_CODEC_OK)
       << "Encoding error: " << vpx_codec_err_to_string(ret) << "\n"
       << "Details: " << vpx_codec_error(codec_.get()) << "\n"
@@ -286,8 +287,8 @@ std::unique_ptr<VideoPacket> VideoEncoderVpx::Encode(
   if (use_vp9_) {
     ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
     DCHECK_EQ(ret, VPX_CODEC_OK)
-        << "Failed to fetch active map: "
-        << vpx_codec_err_to_string(ret) << "\n";
+        << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
+        << "\n";
     UpdateRegionFromActiveMap(&updated_region);
 
     // If the encoder output no changes then there's nothing left to top-off.
@@ -307,8 +308,9 @@ std::unique_ptr<VideoPacket> VideoEncoderVpx::Encode(
   while (!got_data) {
     const vpx_codec_cx_pkt_t* vpx_packet =
         vpx_codec_get_cx_data(codec_.get(), &iter);
-    if (!vpx_packet)
+    if (!vpx_packet) {
       continue;
+    }
 
     switch (vpx_packet->kind) {
       case VPX_CODEC_CX_FRAME_PKT:
@@ -442,13 +444,12 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
       for (webrtc::DesktopRegion::Iterator r(*updated_region); !r.IsAtEnd();
            r.Advance()) {
         const webrtc::DesktopRect& rect = r.rect();
-        int rgb_offset = rgb_stride * rect.top() +
-                         rect.left() * kBytesPerRgbPixel;
+        int rgb_offset =
+            rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int yuv_offset = uv_stride * rect.top() + rect.left();
         libyuv::ARGBToI444(rgb_data + rgb_offset, rgb_stride,
-                           y_data + yuv_offset, y_stride,
-                           u_data + yuv_offset, uv_stride,
-                           v_data + yuv_offset, uv_stride,
+                           y_data + yuv_offset, y_stride, u_data + yuv_offset,
+                           uv_stride, v_data + yuv_offset, uv_stride,
                            rect.width(), rect.height());
       }
       break;
@@ -456,15 +457,14 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
       for (webrtc::DesktopRegion::Iterator r(*updated_region); !r.IsAtEnd();
            r.Advance()) {
         const webrtc::DesktopRect& rect = r.rect();
-        int rgb_offset = rgb_stride * rect.top() +
-                         rect.left() * kBytesPerRgbPixel;
+        int rgb_offset =
+            rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int y_offset = y_stride * rect.top() + rect.left();
         int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-        libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride,
-                           y_data + y_offset, y_stride,
-                           u_data + uv_offset, uv_stride,
-                           v_data + uv_offset, uv_stride,
-                           rect.width(), rect.height());
+        libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride, y_data + y_offset,
+                           y_stride, u_data + uv_offset, uv_stride,
+                           v_data + uv_offset, uv_stride, rect.width(),
+                           rect.height());
       }
       break;
     default:
@@ -492,8 +492,9 @@ void VideoEncoderVpx::SetActiveMapFromRegion(
 
     uint8_t* map = active_map_.get() + top * active_map_size_.width();
     for (int y = top; y <= bottom; ++y) {
-      for (int x = left; x <= right; ++x)
+      for (int x = left; x <= right; ++x) {
         map[x] = 1;
+      }
       map += active_map_size_.width();
     }
   }
@@ -506,8 +507,9 @@ void VideoEncoderVpx::UpdateRegionFromActiveMap(
     for (int x0 = 0; x0 < active_map_size_.width();) {
       int x1 = x0;
       for (; x1 < active_map_size_.width(); ++x1) {
-        if (map[y * active_map_size_.width() + x1] == 0)
+        if (map[y * active_map_size_.width() + x1] == 0) {
           break;
+        }
       }
       if (x1 > x0) {
         updated_region->AddRect(webrtc::DesktopRect::MakeLTRB(

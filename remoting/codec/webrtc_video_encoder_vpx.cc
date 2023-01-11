@@ -186,8 +186,9 @@ void WebrtcVideoEncoderVpx::SetTickClockForTests(
 }
 
 void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
-  if (!use_vp9_)
+  if (!use_vp9_) {
     return;
+  }
 
   if (want_lossless != lossless_color_) {
     lossless_color_ = want_lossless;
@@ -201,8 +202,9 @@ void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
 }
 
 void WebrtcVideoEncoderVpx::SetEncoderSpeed(int encoder_speed) {
-  if (!use_vp9_)
+  if (!use_vp9_) {
     return;
+  }
 
   vp9_encoder_speed_ = base::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
                                         kVp9MaxEncoderSpeed);
@@ -244,11 +246,13 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   vpx_active_map_t act_map;
   if (use_active_map_) {
-    if (params.clear_active_map)
+    if (params.clear_active_map) {
       active_map_.Clear();
+    }
 
-    if (params.key_frame)
+    if (params.key_frame) {
       updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
+    }
 
     active_map_.Update(updated_region);
 
@@ -308,8 +312,9 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   while (!got_data) {
     const vpx_codec_cx_pkt_t* vpx_packet =
         vpx_codec_get_cx_data(codec_.get(), &iter);
-    if (!vpx_packet)
+    if (!vpx_packet) {
       continue;
+    }
 
     switch (vpx_packet->kind) {
       case VPX_CODEC_CX_FRAME_PKT: {
@@ -404,8 +409,9 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
 
 void WebrtcVideoEncoderVpx::UpdateConfig(const FrameParams& params) {
   // Configuration not initialized.
-  if (config_.g_timebase.den == 0)
+  if (config_.g_timebase.den == 0) {
     return;
+  }
 
   bool changed = false;
 
@@ -432,13 +438,14 @@ void WebrtcVideoEncoderVpx::UpdateConfig(const FrameParams& params) {
     changed = true;
   }
 
-  if (!changed)
+  if (!changed) {
     return;
+  }
 
   // Update encoder context.
-  if (vpx_codec_enc_config_set(codec_.get(), &config_))
+  if (vpx_codec_enc_config_set(codec_.get(), &config_)) {
     NOTREACHED() << "Unable to set encoder config";
-
+  }
 }
 
 void WebrtcVideoEncoderVpx::PrepareImage(
