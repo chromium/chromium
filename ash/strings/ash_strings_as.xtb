@@ -314,7 +314,6 @@
 <translation id="2673968385134502798">গে’ম</translation>
 <translation id="2678852583403169292">কথা ক’বলৈ বাছনি কৰক সুবিধাটোৰ মেনু</translation>
 <translation id="2689613560355655046">ডেস্ক ৮</translation>
-<translation id="2695132445805301912">কী আৰু ক্লিকসমূহ দেখুৱাওক</translation>
 <translation id="2695305337569143674">ৱেব</translation>
 <translation id="2697697418792422688">কীব’ৰ্ডৰ ছেটিং দেখুৱাওক। <ph name="KEYBOARD_NAME" /> বাছনি কৰা হৈছে।</translation>
 <translation id="2700493154570097719">আপোনাৰ কীব’র্ড ছেট কৰক</translation>
@@ -486,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ম’বাইল ডেটা সক্ষম কৰিলে ব্লুটুথ সক্ষম হ’ব</translation>
+<translation id="3616113530831147358">অডিঅ’</translation>
 <translation id="3616883743181209306">স্ক্ৰীনখনৰ ওপৰৰ সোঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="3619536907358025872">স্ক্ৰীন কেপচাৰৰ ছেটিং</translation>
 <translation id="3621202678540785336">ইনপুট</translation>
@@ -697,6 +697,7 @@
 <translation id="4740516757091333363">ছেভ কৰি থোৱা ডেস্ক মচিবনে?</translation>
 <translation id="4752784485658729358">কেৱল ৬ খন ছেভ কৰি ৰখা ডেস্কক অনুমতি দিয়া হয়। এখন নতুন ডেস্ক ছেভ কৰিবলৈ অন্য এখন আঁতৰাওক।</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
+<translation id="4762573482154983647">এপ্‌ লুকুৱাওক</translation>
 <translation id="4774338217796918551">কাইলৈ <ph name="COME_BACK_TIME" /> বজাত আকৌ চাব৷</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ৰ পাছৱর্ড</translation>
 <translation id="4777825441726637019">Play Store</translation>

@@ -859,6 +859,7 @@
 <translation id="317878711435188021">了解您何时在主动使用此设备</translation>
 <translation id="3180358318770512945">育儿</translation>
 <translation id="3187306450550410410">弹性工作安排</translation>
+<translation id="3187472288455401631">广告衡量</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
 <translation id="319282854780294203">社交网络</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 想在您的设备上永久存储数据</translation>
@@ -1999,6 +2000,7 @@
 <translation id="6039846035001940113">如果问题仍然存在，请与网站所有者联系。</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6041777658117377052">室内温度</translation>
+<translation id="6042308850641462728">展开</translation>
 <translation id="6044573915096792553">大小：12</translation>
 <translation id="6045164183059402045">拼版模板</translation>
 <translation id="6047233362582046994">如果您了解自己将面临的安全风险，则可在有害应用被移除之前<ph name="BEGIN_LINK" />访问此网站<ph name="END_LINK" />。</translation>
@@ -2089,6 +2091,7 @@
 <translation id="6290238015253830360">为您推荐的文章会显示在此处</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC：</translation>
+<translation id="6295855836753816081">正在保存…</translation>
 <translation id="6300452962057769623">{0,plural, =0{您的设备将立即重启}=1{您的设备将在 1 秒后重启}other{您的设备将在 # 秒后重启}}</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>

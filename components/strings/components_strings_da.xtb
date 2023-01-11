@@ -861,6 +861,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="317878711435188021">Vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="3180358318770512945">Børn og forældre</translation>
 <translation id="3187306450550410410">Fleksibelt arbejde</translation>
+<translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3190736958609431397">Hold ikke længere øje</translation>
 <translation id="319282854780294203">Sociale netværk</translation>
 <translation id="3194737229810486521"><ph name="URL" /> anmoder om at gemme data permanent på din enhed</translation>
@@ -2003,6 +2004,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6039846035001940113">Kontakt ejeren af websitet, hvis problemet fortsætter.</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6041777658117377052">Kabinettemperatur</translation>
+<translation id="6042308850641462728">Mere</translation>
 <translation id="6044573915096792553">Størrelse 12</translation>
 <translation id="6045164183059402045">Skabelon for indførelse</translation>
 <translation id="6047233362582046994">Hvis du er indforstået med de forbundne sikkerhedsrisici, kan du <ph name="BEGIN_LINK" />besøge dette website<ph name="END_LINK" />, inden de skadelige apps fjernes.</translation>
@@ -2094,6 +2096,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6290238015253830360">Forslag til artikler til dig vises her</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Gemmer...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Din enhed genstarter nu}=1{Din enhed genstarter om 1 sekund}one{Din enhed genstarter om # sekund}other{Din enhed genstarter om # sekunder}}</translation>
 <translation id="6301104306974789820">Få notifikationer om prisovervågning</translation>
 <translation id="6305205051461490394"><ph name="URL" /> kan ikke nås.</translation>

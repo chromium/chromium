@@ -2064,9 +2064,6 @@
 <translation id="2960999045613902792">允许用户添加/配置非企业打印机并用于打印</translation>
 <translation id="2962972237615992440">停用 <ph name="CLOUD_PRINT_NAME" />代理</translation>
 <translation id="2963292398266537394">禁止输入语音</translation>
-<translation id="2964056138564883247">控制该用户能否使用 <ph name="BOREALIS_NAME" />。
-
-      如果此政策设为 false，<ph name="BOREALIS_NAME" /> 会处于不可用状态。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="2968177167006045252">允许网站使用 SharedArrayBuffers</translation>
 <translation id="2969489219271682844">检测到 USB 设备时不显示通知</translation>
@@ -5331,7 +5328,6 @@
       如果此政策未设置，系统将使用音频沙盒的默认配置（此配置可能会因平台而异）。
       借助此政策，当企业使用的安全软件设置会干扰音频沙盒时，他们就能够灵活地停用沙盒。</translation>
 <translation id="624818583115864448">端口 554（可在 2021 年 10 月 15 日之前解禁）</translation>
-<translation id="6252773211180267325">允许用户运行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="6254498834449523938">不允许用户绕过安全浏览警告</translation>
 <translation id="625580680776945310">将启用高效模式。</translation>
 <translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>

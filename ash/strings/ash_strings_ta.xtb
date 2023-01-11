@@ -28,6 +28,7 @@
 <translation id="1104621072296271835">இணைத்தால், உங்கள் சாதனங்கள் இன்னும் சிறப்பாக வேலை செய்யும்</translation>
 <translation id="1111021433905331574">அமைப்புகள் &gt; <ph name="APP_TITLE" /> என்பதற்குச் சென்று கீபோர்டு பேக்லைட்டின் வண்ணத்தை மாற்றலாம்</translation>
 <translation id="112308213915226829">அடுக்கைத் தானாக மறை</translation>
+<translation id="1135788167815124787">போர்ட்ரெய்ட் ரீலைட்டிங்</translation>
 <translation id="1142002900084379065">சமீபத்திய படங்கள்</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="1150989369772528668">கேலெண்டர்</translation>
@@ -313,7 +314,6 @@
 <translation id="2673968385134502798">கேம்கள்</translation>
 <translation id="2678852583403169292">பேசும் திரையின் மெனு</translation>
 <translation id="2689613560355655046">டெஸ்க் 8</translation>
-<translation id="2695132445805301912">கீபோர்டு ஷார்ட்கட்களையும் கிளிக்குகளையும் காட்டு</translation>
 <translation id="2695305337569143674">இணையம்</translation>
 <translation id="2697697418792422688">கீபோர்டு அமைப்புகளைக் காட்டும். <ph name="KEYBOARD_NAME" /> தேர்ந்தெடுக்கப்பட்டது.</translation>
 <translation id="2700493154570097719">எனது கீபோர்டை அமை</translation>
@@ -485,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">மொபைல் டேட்டாவை இயக்கினால் புளூடூத் இயக்கப்படும்</translation>
+<translation id="3616113530831147358">ஆடியோ</translation>
 <translation id="3616883743181209306">திரையின் மேல் வலது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="3619536907358025872">ஸ்கிரீன் கேப்சர் அமைப்புகள்</translation>
 <translation id="3621202678540785336">உள்ளீடு</translation>
@@ -696,6 +697,7 @@
 <translation id="4740516757091333363">சேமிக்கப்பட்ட டெஸ்க்கை நீக்கவா?</translation>
 <translation id="4752784485658729358">6 டெஸ்க்குகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க ஒரு டெஸ்கை அகற்றவும்.</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
+<translation id="4762573482154983647">ஆப்ஸை மறைக்கும்</translation>
 <translation id="4774338217796918551">நாளை <ph name="COME_BACK_TIME" />க்கு சாதனத்தை மீண்டும் பயன்படுத்தலாம்.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> க்கான கடவுச்சொல்</translation>
 <translation id="4777825441726637019">Play Store</translation>

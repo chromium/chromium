@@ -145,6 +145,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3533694711092285624">Aucun mot de passe enregistré. Chrome ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="3541482654983822893">Chrome ne peut pas vérifier vos mots de passe. Réessayez dans 24 heures.</translation>
 <translation id="3576528680708590453">Votre administrateur système a configuré Google Chrome pour qu'il ouvre un autre navigateur afin d'accéder à la page <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3579965087968408543">Toujours effacer les données relatives aux sites sur votre appareil lorsque vous fermez Chrome</translation>
 <translation id="3582972582564653026">Synchroniser et personnaliser Chrome sur vos appareils</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour}=1{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3622797965165704966">Il est maintenant plus facile d'utiliser Google Chrome avec votre compte Google et sur des ordinateurs partagés.</translation>
@@ -350,6 +351,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7917876797003313048">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Vos comptes Google sont utilisés par le navigateur Chrome, par Play Store, par Gmail et autres. Si vous voulez ajouter un compte pour quelqu'un d'autre, comme un membre de votre famille, ajoutez plutôt une nouvelle personne à votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome essaie de copier des mots de passe.</translation>
 <translation id="7951272445806340501">Chrome OS Flex doit être redémarré pour appliquer la mise à jour.</translation>
+<translation id="7962368738413920945">Il est probable que les sites fonctionneront comme prévu, mais vos données de navigation ne seront peut-être pas enregistrées lorsque vous fermerez toutes les fenêtres de Chromium</translation>
 <translation id="7962410387636238736">Cet ordinateur ne recevra plus de mises à jour de Google Chrome, car Windows XP et Windows Vista ne sont plus pris en charge</translation>
 <translation id="8005666035647241369">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="8008534537613507642">Réinstaller Chrome</translation>

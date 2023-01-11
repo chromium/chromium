@@ -3204,6 +3204,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3898233949376129212">Sprache des Geräts</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> möchte: <ph name="FIRST_PERMISSION" /> und <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Dein Passwort für <ph name="WEBSITE" /> ist auf diesem Gerät und in deinem Google-Konto gespeichert. Von wo möchtest du es löschen?</translation>
+<translation id="3898768766145818464">Video abspielen oder pausieren</translation>
 <translation id="389901847090970821">Tastatur auswählen</translation>
 <translation id="3900966090527141178">Passwörter exportieren</translation>
 <translation id="3902789559055749153">Wähle aus, wie der Passkey für <ph name="APP_NAME" /> erstellt werden soll</translation>

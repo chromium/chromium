@@ -858,6 +858,7 @@
 <translation id="317878711435188021">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्छ भन्ने कुराको जानकारी</translation>
 <translation id="3180358318770512945">लालनपालन</translation>
 <translation id="3187306450550410410">पायक पर्ने समयमा काम गर्ने सुविधा</translation>
+<translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा</translation>
 <translation id="3190736958609431397">ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="319282854780294203">सामाजिक सञ्जालहरू</translation>
 <translation id="3194737229810486521"><ph name="URL" /> तपाईंको डिभाइसमा स्थायी रूपमा डेटा भण्डारण गर्न चाहन्छ</translation>
@@ -2000,6 +2001,7 @@
 <translation id="6039846035001940113">समस्या जारी रहेको खण्डमा साइटको मालिकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6041777658117377052">कक्षको तापक्रम</translation>
+<translation id="6042308850641462728">थप</translation>
 <translation id="6044573915096792553">आकार १२</translation>
 <translation id="6045164183059402045">इम्पोजिसन टेम्प्लेट</translation>
 <translation id="6047233362582046994">तपाईं आफ्नो सुरक्षासम्बन्धी जोखिमहरूको बारेमा बुझ्नुहुन्छ भने, तपाईं हानिकारक एपहरू हटाउनुअघि <ph name="BEGIN_LINK" />यो साइट<ph name="END_LINK" /> मा जान सक्नुहुन्छ।</translation>
@@ -2091,6 +2093,7 @@
 <translation id="6290238015253830360">तपाईंका सुझाव गरिएका लेखहरू यहाँ देखिन्छन्</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">सुरक्षित गर्दै...</translation>
 <translation id="6300452962057769623">{0,plural, =0{तपाईंको डिभाइस अब रिस्टार्ट हुने छ}=1{तपाईंको डिभाइस १ सेकेन्डमा रिस्टार्ट हुने छ}other{तपाईंको डिभाइस # सेकेन्डमा रिस्टार्ट हुने छ}}</translation>
 <translation id="6301104306974789820">तपाईंले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा सूचना प्राप्त गर्नुहोस्</translation>
 <translation id="6305205051461490394"><ph name="URL" /> पहुँच गर्न सकिँदैन।</translation>

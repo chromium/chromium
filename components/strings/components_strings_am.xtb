@@ -860,6 +860,7 @@
 <translation id="317878711435188021">እርስዎ ይህን መሣሪያ መቼ በንቃት እየተጠቀሙ እንደሆነ ማወቅ</translation>
 <translation id="3180358318770512945">ወላጅነት</translation>
 <translation id="3187306450550410410">ተለዋዋጭ የሥራ ዝግጅቶች</translation>
+<translation id="3187472288455401631">የማስታወቂያ ልኬት</translation>
 <translation id="3190736958609431397">ክትትል ማድረግ አቁም</translation>
 <translation id="319282854780294203">ማህበራዊ አውታረ መረቦች</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ውሂብ እስከ መጨረሻው በእርስዎ መሣሪያ ላይ ማከማቸት ይፈልጋል</translation>
@@ -2002,6 +2003,7 @@
 <translation id="6039846035001940113">ችግሩ ከቀጠለ የጣቢያ ባለቤቱን ያነጋግሩ።</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6041777658117377052">የክፍል ሙቀት መጠን</translation>
+<translation id="6042308850641462728">ተጨማሪ</translation>
 <translation id="6044573915096792553">መጠን 12</translation>
 <translation id="6045164183059402045">የማስፈጸሚያ ቅንብር ደንብ</translation>
 <translation id="6047233362582046994">በእርስዎ ደህንነት ላይ የሚያመጣቸውን ስጋቶች ከተረዱ አደገኛ መተግበሪያዎቹ ከመወገዳቸው በፊት <ph name="BEGIN_LINK" />ይህን ጣቢያ መጎብኘት<ph name="END_LINK" /> ይችላሉ።</translation>
@@ -2093,6 +2095,7 @@
 <translation id="6290238015253830360">የእርስዎ የተጠቆሙ ዘገባዎች እዚህ ይመጣሉ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">ካርድ ማረጋገጫ ኮድ፦</translation>
+<translation id="6295855836753816081">በማስቀመጥ ላይ...</translation>
 <translation id="6300452962057769623">{0,plural, =0{መሣሪያዎ አሁን ዳግም ይነሳል}=1{መሣሪያዎ በ1 ሰከንድ ውስጥ ዳግም ይነሳል}one{መሣሪያዎ በ# ሰከንዶች ውስጥ ዳግም ይነሳል}other{መሣሪያዎ በ# ሰከንዶች ውስጥ ዳግም ይነሳል}}</translation>
 <translation id="6301104306974789820">የዋጋ ክትትል ማሳወቂያዎችን ያግኙ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ሊደረስበት አይችልም።</translation>

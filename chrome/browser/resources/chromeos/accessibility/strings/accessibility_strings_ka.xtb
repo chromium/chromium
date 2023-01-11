@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">შემდეგი ღილაკი არ არის</translation>
 <translation id="2911433807131383493">ChromeVox-ის სახელმძღვანელოს გახსნა</translation>
 <translation id="2912405967290226587">სამი თითით გადაფურცვლა მარჯვნივ</translation>
+<translation id="2919107550468490321">გონიერი ფიქსირებული რეჟიმი ჩართულია</translation>
 <translation id="2937799153569150791">შემდეგი მე-3 დონის სათაური არ არის</translation>
 <translation id="2942710183375260152">მუქი ასპიდისფერი ლურჯი</translation>
 <translation id="2943596527105977722">მუქი ოქროწკეპლისფერი</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">სიმაღლის შემცირება</translation>
 <translation id="3009352964623081324">Search + O, შემდეგ S. გამოიყენეთ ხმების ინსტალაციისთვის, მართვისთვის და მორგებისთვის.</translation>
 <translation id="3014130421870723208">@შეცვლ 8წერტ</translation>
+<translation id="3018210433491759145">ChromeVox იტვირთება</translation>
 <translation id="3030432017085518523">მენიუს ელემენტის რადიო ღილაკი</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{აპოსტროფი}other{# აპოსტროფები}}</translation>
 <translation id="3040901448410802366">პროგრესის ინდიკატორი</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">ვიდეო</translation>
 <translation id="3813387282697781382">ღია მარჯნისფერი</translation>
 <translation id="3816633764618089385">შემდეგი მედია</translation>
+<translation id="3821689185319271077">მიმთითებლის ღუზა არ არის</translation>
 <translation id="3840823741487267909">აბრევიატურა</translation>
 <translation id="3841319830220785495">ნაგულისხმევი ბუნებრივი ხმა</translation>
 <translation id="385383972552776628">გახსენით პარამეტრების გვერდი</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ფორმა</translation>
 <translation id="4601367666219428522">ცხრილი <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">შემდეგ კლავიშზე დაჭერის იგნორირება</translation>
+<translation id="4617384941327705512">გონიერი ფიქსირებული რეჟიმი გამორთულია</translation>
 <translation id="4623097797855662355">კოლოფონი</translation>
 <translation id="4624970070706497034">TalkBack აღარ უზრუნველყოფს მორგებულ ფუნქციებს Chromebook-ისთვის. TalkBack-ის გამოყენება კვლავ შეგიძლიათ, თუმცა კლავიატურის ნაგულისხმევი მალსახმობებით. ხელმისაწვდომი მალსახმობების გასაცნობად დააჭირეთ კლავიშთა კომბინაციას Search+A, შემდეგ კი კლავიშს K. თუ TalkBack-ით სარგებლობის გაგრძელებას გადაწყვეტთ, ხელახლა დააჭირეთ ბრძანებას.</translation>
 <translation id="463135993322337640">სიახლეების გასაცნობად დააჭირეთ კლავიშთა კომბინაციას ChromeVox o, n</translation>

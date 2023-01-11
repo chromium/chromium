@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">അടുത്ത ബട്ടൺ ഒന്നുമില്ല</translation>
 <translation id="2911433807131383493">ChromeVox ട്യൂട്ടോറിയൽ തുറക്കുക</translation>
 <translation id="2912405967290226587">മൂന്ന് വിരലുകൾ ഉപയോഗിച്ച് വലത്തോട്ട് സ്വൈ‌പ്പ് ചെയ്യുക</translation>
+<translation id="2919107550468490321">സ്‌മാർട്ട് സ്‌റ്റിക്കി മോഡ് ഓണാണ്</translation>
 <translation id="2937799153569150791">അടുത്ത നില 3 ശീർഷകം ഒന്നുമില്ല</translation>
 <translation id="2942710183375260152">കടും സ്ലേറ്റ് ബ്ലൂ</translation>
 <translation id="2943596527105977722">കടും ഗോൾഡൻ റോഡ്</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">പിച്ച് കുറയ്ക്കുക</translation>
 <translation id="3009352964623081324">Search + O, തുടർന്ന് S. ശബ്‌ദങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും മാനേജ് ചെയ്യാനും ഇഷ്ടാനുസൃതമാക്കാനും ഉപയോഗിക്കുക.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="3030432017085518523">മെനു ഇനം റേഡിയോ ബട്ടൺ</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{വിശ്ലേഷം}other{# വിശ്ലേഷങ്ങൾ}}</translation>
 <translation id="3040901448410802366">പ്രോഗ്രസ്സ് ഇൻഡിക്കേറ്റർ</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">വീഡിയോ</translation>
 <translation id="3813387282697781382">ഇളം കോറൽ</translation>
 <translation id="3816633764618089385">അടുത്ത മീഡിയ</translation>
+<translation id="3821689185319271077">പോയിന്റർ ആങ്കർ കാണുന്നില്ല</translation>
 <translation id="3840823741487267909">ചുരുക്കെഴുത്ത്</translation>
 <translation id="3841319830220785495">ഡിഫോൾട്ടായ സ്വാഭാവിക ശബ്ദം</translation>
 <translation id="385383972552776628">ഓപ്ഷനുകളുടെ പേജ് തുറക്കുക</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ഫോം</translation>
 <translation id="4601367666219428522">പട്ടിക <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">അടുത്ത കീ അമർത്തുന്നത് ഒഴിവാക്കുന്നു</translation>
+<translation id="4617384941327705512">സ്‌മാർട്ട് സ്‌റ്റിക്കി മോഡ് ഓഫാണ്</translation>
 <translation id="4623097797855662355">അച്ചടിമുദ്ര</translation>
 <translation id="4624970070706497034">Chromebook-കൾക്കായി TalkBack ഇനി ഇഷ്ടാനുസൃതമാക്കൽ ലഭ്യമാക്കില്ല. നിങ്ങൾക്ക് ഇത് ഇപ്പോഴും ഉപയോഗിക്കാം, എന്നാൽ TalkBack ഡിഫോൾട്ട് കീബോഡ് കുറുക്കുവഴികൾ ഉപയോഗിക്കുക. ലഭ്യമായ കുറുക്കുവഴികൾ കാണാൻ Search+A അമർത്തിയ ശേഷം K അമർത്തുക. നിങ്ങൾക്ക് ഇപ്പോഴും TalkBack ഉപയോഗിക്കണമെന്നുണ്ടെങ്കിൽ, കമാൻഡ് വീണ്ടും അമർത്തുക.</translation>
 <translation id="463135993322337640">പുതിയതെന്തെന്ന് അറിയാൻ ChromeVox o, n എന്നിവ അമർത്തുക</translation>

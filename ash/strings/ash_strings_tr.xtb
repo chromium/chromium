@@ -28,6 +28,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikte daha da iyi çalışır</translation>
 <translation id="1111021433905331574">Ayarlar &gt; <ph name="APP_TITLE" /> bölümüne giderek klavye arka ışığınızın rengini değiştirebilirsiniz</translation>
 <translation id="112308213915226829">Rafı otomatik gizle</translation>
+<translation id="1135788167815124787">Portrait Relighting</translation>
 <translation id="1142002900084379065">Yeni eklenen fotoğraflar</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="1150989369772528668">Takvim</translation>
@@ -313,7 +314,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2673968385134502798">Oyunlar</translation>
 <translation id="2678852583403169292">Seç ve Dinle menüsü</translation>
 <translation id="2689613560355655046">Masa 8</translation>
-<translation id="2695132445805301912">Tuşları ve tıklamaları göster</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Klavye ayarlarını göster. <ph name="KEYBOARD_NAME" /> seçildi.</translation>
 <translation id="2700493154570097719">Klavyenizi ayarlayın</translation>
@@ -485,6 +485,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Mobil veri etkinleştirildiğinde Bluetooth açılır</translation>
+<translation id="3616113530831147358">Ses</translation>
 <translation id="3616883743181209306">Menü, ekranın sağ üst köşesine taşındı.</translation>
 <translation id="3619536907358025872">Ekran görüntüsü ayarları</translation>
 <translation id="3621202678540785336">Giriş</translation>

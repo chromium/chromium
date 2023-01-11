@@ -2103,9 +2103,6 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar 
 <translation id="2960999045613902792">Permitir que los usuarios agreguen impresoras no empresariales, las configuren y hagan impresiones en ellas</translation>
 <translation id="2962972237615992440">Inhabilitar el proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Inhabilitar el dictado</translation>
-<translation id="2964056138564883247">Controla la disponibilidad de <ph name="BOREALIS_NAME" /> para este usuario.
-
-      Si estableces la política como falsa, <ph name="BOREALIS_NAME" /> no estará disponible. De lo contrario, si no estableces la política o la estableces como verdadera, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no hay otra política o configuración que la inhabilite.</translation>
 <translation id="2964373560810620158">Evitar que los usuarios utilicen el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Permitir que los sitios utilicen la política SharedArrayBuffers</translation>
 <translation id="2969489219271682844">No mostrar notificaciones cuando se detecten dispositivos USB</translation>
@@ -5455,7 +5452,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no se establece esta política, se utilizará la configuración predeterminada para la zona de pruebas de audio, que puede diferir según la plataforma.
       Esta política permite que las empresas inhabiliten la zona de pruebas de audio si utilizan configuraciones de software de seguridad que interfieran con la zona de pruebas.</translation>
 <translation id="624818583115864448">puerto 554 (puede desbloquearse hasta el 15/10/2021)</translation>
-<translation id="6252773211180267325">No impide que se ejecute <ph name="BOREALIS_NAME" /> para un usuario</translation>
 <translation id="6254498834449523938">No permitir que el usuario omita la advertencia de Navegación segura</translation>
 <translation id="625580680776945310">Se habilitará el modo de alta eficiencia</translation>
 <translation id="6258658183356534534">Controlar la función de actualización de GREASE de optimización del cliente de usuario-cliente</translation>

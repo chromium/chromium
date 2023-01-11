@@ -314,7 +314,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2673968385134502798">Oyunlar</translation>
 <translation id="2678852583403169292">Seç və danış menyusu</translation>
 <translation id="2689613560355655046">Masa 8</translation>
-<translation id="2695132445805301912">Düymələri və klikləri göstərin</translation>
 <translation id="2695305337569143674">veb</translation>
 <translation id="2697697418792422688">Klaviatura ayarlarını göstərin. <ph name="KEYBOARD_NAME" /> seçilib.</translation>
 <translation id="2700493154570097719">Klaviaturanı ayarlayın</translation>
@@ -486,6 +485,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Mobil datanın aktiv edilməsi ilə Bluetooh da aktiv ediləcək</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menyu ekranın yuxarı sağ küncünə köçürülüb.</translation>
 <translation id="3619536907358025872">Ekran çəkilişi ayarları</translation>
 <translation id="3621202678540785336">Daxiletmə</translation>
@@ -697,6 +697,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4740516757091333363">Yadda saxlanmış masa silinsin?</translation>
 <translation id="4752784485658729358">Yalnız 6 saxlanmış masaya icazə verilir. Yenisini yaddaşda saxlamaq üçün masalardan birini silin.</translation>
 <translation id="4759238208242260848">Endirmələr</translation>
+<translation id="4762573482154983647">Tətbiqləri gizlədin</translation>
 <translation id="4774338217796918551">Sabah <ph name="COME_BACK_TIME" /> olduqda yenidən davam edin.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> üçün parol</translation>
 <translation id="4777825441726637019">Play Mağaza</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1006017844123154345">在線上開啟</translation>
+<translation id="1036348656032585052">停用</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1124090076051167250">此操作會清除 <ph name="DATASIZE" /> 主畫面上各個網站或應用程式儲存的資料和 Cookie。</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
 <translation id="3797520601150691162">不要為特定網站套用深色主題背景</translation>
+<translation id="3803367742635802571">你造訪的網站可能無法正常運作</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
 <translation id="381841723434055211">電話號碼</translation>
 <translation id="3826050100957962900">第三方登入</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">清除所有資料</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有網站</translation>
 <translation id="4402755511846832236">禁止網站取得此裝置的使用狀態</translation>
+<translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4428065317363009941">廣告個人化</translation>
 <translation id="4434045419905280838">彈出式視窗和重新導向</translation>
 <translation id="4440642537584213025">展開「<ph name="TARGET_DESCRIPTION" />」</translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">如要讓 <ph name="APP_NAME" /> 存取您的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
+<translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">網站將無法要求向您傳送通知</translation>
 <translation id="5516455585884385570">開通知設定</translation>
 <translation id="5527111080432883924">允許網站讀取剪貼簿的文字和圖片前詢問您 (建議)</translation>
+<translation id="5545693483061321551">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗和重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>
+<translation id="7188508872042490670">網站在裝置端的資料</translation>
 <translation id="7203150201908454328">已展開</translation>
 <translation id="723171743924126238">選取圖片</translation>
 <translation id="7243308994586599757">您可在畫面底部附近找到選項</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">由應用程式管理</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
-<translation id="834785183489258869">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
 <translation id="8372893542064058268">允許特定網站執行背景同步功能。</translation>
 <translation id="8376384591331888629">包括在此網站上的第三方 Cookie</translation>
 <translation id="83792324527827022">有網站正在使用您的相機和麥克風</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="848952951823693243">一律要求流動網站</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
+<translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
 <translation id="851751545965956758">禁止網站連接裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>

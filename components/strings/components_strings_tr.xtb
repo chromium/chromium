@@ -129,7 +129,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1270502636509132238">Alma Yöntemi</translation>
 <translation id="1273592791152866347">Fiyat takibi devre dışı</translation>
 <translation id="1281476433249504884">Yığınlayıcı 1</translation>
-<translation id="1285320974508926690">Bu siteyi hiçbir zaman çevirme</translation>
+<translation id="1285320974508926690">Bu siteyi asla çevirme</translation>
 <translation id="1288548991597756084">Kartı güvenli bir şekilde kaydedin</translation>
 <translation id="1292571435393770077">Tepsi 16</translation>
 <translation id="1292701964462482250">"Bilgisayarınızdaki yazılım, Chrome'un web'e güvenli bir şekilde bağlanmasını engelliyor" (yalnızca Windows bilgisayarlar)</translation>
@@ -861,6 +861,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="317878711435188021">Bu cihazı etkin olarak kullandığınızda bilgilendirilmek istiyor</translation>
 <translation id="3180358318770512945">Ebeveynlik</translation>
 <translation id="3187306450550410410">Esnek çalışma düzenlemeleri</translation>
+<translation id="3187472288455401631">Reklam ölçümü</translation>
 <translation id="3190736958609431397">Takibi bırak</translation>
 <translation id="319282854780294203">Sosyal ağlar</translation>
 <translation id="3194737229810486521"><ph name="URL" />, cihazınıza kalıcı olarak veri depolamak istiyor</translation>
@@ -2003,6 +2004,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6039846035001940113">Sorun devam ederse site sahibiyle iletişime geçin.</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6041777658117377052">Oda sıcaklığı</translation>
+<translation id="6042308850641462728">Daha fazla</translation>
 <translation id="6044573915096792553">Boyut 12</translation>
 <translation id="6045164183059402045">Tanzim şablonu</translation>
 <translation id="6047233362582046994">Güvenliğinize ilişkin riskleri anladıysanız zararlı programlar kaldırılmadan önce <ph name="BEGIN_LINK" />bu siteyi ziyaret edebilirsiniz<ph name="END_LINK" />.</translation>
@@ -2094,6 +2096,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6290238015253830360">Önerilen makaleler burada görünür</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Kaydediliyor...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız şimdi yeniden başlatılacak}=1{Cihazınız 1 saniye içinde yeniden başlatılacak}other{Cihazınız # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="6301104306974789820">Fiyat takibi bildirimleri al</translation>
 <translation id="6305205051461490394"><ph name="URL" /> adresine ulaşılamıyor.</translation>

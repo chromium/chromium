@@ -801,6 +801,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2986368408720340940">Tento způsob vyzvednutí není k dispozici. Zkuste použít jiný způsob.</translation>
 <translation id="2987034854559945715">Žádné funkce neodpovídají</translation>
 <translation id="2989742184762224133">Dvě sponky nahoře</translation>
+<translation id="2990882401221831923">Seznam platebních karet je zavřený.</translation>
 <translation id="2991174974383378012">Sdílení s weby</translation>
 <translation id="299122504639061328">Spravovat výchozí vyhledávač a vyhledávání na webu</translation>
 <translation id="2991571918955627853">Web <ph name="SITE" /> teď nemůžete navštívit, protože používá zabezpečení HSTS. Síťové chyby a útoky jsou obvykle dočasné, tato stránka pravděpodobně později bude fungovat.</translation>
@@ -858,6 +859,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="317878711435188021">Zjišťovat, kdy aktivně používáte toto zařízení</translation>
 <translation id="3180358318770512945">Rodičovství</translation>
 <translation id="3187306450550410410">Pružné uspořádání práce</translation>
+<translation id="3187472288455401631">Měření reklam</translation>
 <translation id="3190736958609431397">Zrušit sledování</translation>
 <translation id="319282854780294203">Sociální sítě</translation>
 <translation id="3194737229810486521">Stránka <ph name="URL" /> chce trvale ukládat data v zařízení</translation>
@@ -1581,6 +1583,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
 <translation id="498323057460789381">Chyba ověření schématu: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Použít mikrofon?</translation>
+<translation id="4988822846878841743">Seznam platebních karet k vyplnění při dotyku je otevřený na polovinu výšky.</translation>
 <translation id="4989163558385430922">Zobrazit vše</translation>
 <translation id="4989542687859782284">Nedostupné</translation>
 <translation id="4989809363548539747">Tento plugin není podporován</translation>
@@ -1929,6 +1932,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5863847714970149516">Následující stránka se vám může pokusit naúčtovat poplatky</translation>
 <translation id="5866257070973731571">Přidání telefonního čísla</translation>
 <translation id="5866898949289125849">Prohlížíte si stránku nástrojů pro vývojáře</translation>
+<translation id="5868548454963263350">Seznam platebních karet k vyplnění při dotyku je otevřený na celou výšku.</translation>
 <translation id="5869405914158311789">Tento web není dostupný</translation>
 <translation id="5869522115854928033">Uložená hesla</translation>
 <translation id="5873013647450402046">Banka chce potvrdit vaši totožnost.</translation>
@@ -1999,6 +2003,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6039846035001940113">Pokud problém přetrvává, kontaktujte vlastníka webu.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6041777658117377052">Teplota komory</translation>
+<translation id="6042308850641462728">Více</translation>
 <translation id="6044573915096792553">Velikost 12</translation>
 <translation id="6045164183059402045">Šablona zavedení</translation>
 <translation id="6047233362582046994">Pokud bezpečnostní rizika chápete, můžete <ph name="BEGIN_LINK" />tento web navštívit<ph name="END_LINK" /> před tím, než budou nebezpečné aplikace odstraněny.</translation>
@@ -2089,6 +2094,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6290238015253830360">Zde se zobrazí navrhované články</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Bezpečnostní kód kreditní karty (CVC):</translation>
+<translation id="6295855836753816081">Ukládání...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Zařízení se teď restartuje}=1{Zařízení se za 1 sekundu restartuje}few{Zařízení se za # sekundy restartuje}many{Zařízení se za # sekundy restartuje}other{Zařízení se za # sekund restartuje}}</translation>
 <translation id="6301104306974789820">Dostávat oznámení o sledování cen</translation>
 <translation id="6305205051461490394">Web <ph name="URL" /> není dostupný.</translation>
@@ -2637,6 +2643,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7653957176542370971">List obslužného nástroje pro platby je zavřený</translation>
 <translation id="7654909834015434372">Když upravíte poznámky, obnoví se původní orientace tohoto dokumentu</translation>
 <translation id="765676359832457558">Skrýt rozšířená nastavení...</translation>
+<translation id="7656935528854393684">Seznam platebních karet k vyplnění při dotyku.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7659327900411729175">Obálka Kaku 8</translation>
 <translation id="7659878911471462949">Slzy štěstí</translation>

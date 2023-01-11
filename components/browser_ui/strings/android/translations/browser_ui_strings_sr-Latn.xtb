@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="1006017844123154345">Otvori onlajn</translation>
+<translation id="1036348656032585052">Isključi</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
 <translation id="1124090076051167250">Ovim brišete <ph name="DATASIZE" /> podataka i kolačića koje čuvaju sajtovi ili aplikacije na početnom ekranu.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite video levo ili desno da biste preskočili 10 sek</translation>
 <translation id="3797520601150691162">Ne primenjujte tamnu temu za određeni sajt</translation>
+<translation id="3803367742635802571">Sajtovi koje posećujete mogu da prestanu sa radom kako je zamišljeno</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Brojevi telefona</translation>
 <translation id="3826050100957962900">Prijavljivanje treće strane</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Obriši sve podatke</translation>
 <translation id="4338831206024587507">Svi sajtovi u okviru domena <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Ne dozvolite sajtovima da znaju kada aktivno koristite ovaj uređaj</translation>
+<translation id="4412992751769744546">Dozvoli kolačiće treće strane</translation>
 <translation id="4428065317363009941">Personalizacija oglasa</translation>
 <translation id="4434045419905280838">Iskačući prozori i preusmeravanja</translation>
 <translation id="4440642537584213025">Proširite <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Da biste dozvolili da <ph name="APP_NAME" /> pristupa mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi zvuk mikrofona</translation>
 <translation id="4570913071927164677">Detalji</translation>
+<translation id="4598549027014564149">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na svim sajtovima, čak i na srodnim sajtovima. Aktivnosti pregledanja se ne koriste za stvari kao što je personalizovanje oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
 <translation id="4751476147751820511">Senzori za pokret ili svetlo</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Sajtovi ne mogu da traže da šalju obaveštenja</translation>
 <translation id="5516455585884385570">Otvorite podešavanja obaveštenja</translation>
 <translation id="5527111080432883924">Pitaj pre nego što dozvoliš sajtovima da čitaju tekst i slike iz privremene memorije (preporučeno)</translation>
+<translation id="5545693483061321551">Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="5553374991681107062">Najnovije</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5596627076506792578">Još opcija</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Blokiraj prikazivanje iskačućih prozora i preusmeravanja na sajtovima (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="7188508872042490670">Podaci o sajtovima na uređaju</translation>
 <translation id="7203150201908454328">Prošireno</translation>
 <translation id="723171743924126238">Izaberite slike</translation>
 <translation id="7243308994586599757">Opcije su dostupne u dnu ekrana</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Titl</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8324158725704657629">Ne pitaj ponovo</translation>
-<translation id="834785183489258869">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="8372893542064058268">Dozvolite Sinhronizaciju u pozadini za određeni sajt.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće trećih strana na ovom sajtu</translation>
 <translation id="83792324527827022">Sajt koristi kameru i mikrofon</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="848952951823693243">Uvek se zahteva mobilni sajt</translation>
 <translation id="8499083585497694743">Uključi zvuk mikrofona</translation>
+<translation id="8514955299594277296">Ne dozvoljavajte sajtovima da čuvaju podatke na uređaju (ne preporučuje se)</translation>
 <translation id="851751545965956758">Onemogući sajtovima da se povezuju sa uređajima</translation>
 <translation id="8525306231823319788">Ceo ekran</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajt}one{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajt}few{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajta}other{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajtova}}</translation>

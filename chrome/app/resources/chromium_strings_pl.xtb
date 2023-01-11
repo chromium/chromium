@@ -249,6 +249,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6598877126913850652">Otwórz ustawienia powiadomień Chromium</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>
 <translation id="665732753414869868">Aby utworzyć mapę 3D Twojego otoczenia, Chromium potrzebuje dostępu do aparatu</translation>
+<translation id="6663852025006259149">Strony będą prawdopodobnie działać zgodnie z oczekiwaniami, ale nie będą Cię pamiętać po zamknięciu wszystkich okien Chromium</translation>
 <translation id="6676384891291319759">Skorzystaj z internetu</translation>
 <translation id="668175097507315160">System operacyjny Chromium nie może zsynchronizować danych z powodu błędu podczas logowania.</translation>
 <translation id="6709350901466051922">Ta strona musi mieć w Chromium dostęp do mikrofonu</translation>
@@ -378,5 +379,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="945990405696787151">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system macOS 10.13 lub nowszy. Na komputerze jest zainstalowany system OS X 10.11.</translation>
 <translation id="965162752251293939">Kto używa Chromium?</translation>
 <translation id="967427899662692980">Korzystaj z najlepszych zabezpieczeń Chromium</translation>
+<translation id="9792300276217204">Zawsze usuwaj dane witryn z urządzenia po zamknięciu Chromium</translation>
 <translation id="985602178874221306">Autorzy Chromium</translation>
 </translationbundle>

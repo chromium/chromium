@@ -2064,9 +2064,6 @@
 <translation id="2960999045613902792">允許使用者新增、設定非企業印表機，以及使用這類印表機列印</translation>
 <translation id="2962972237615992440">停用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
 <translation id="2963292398266537394">停用語音輸入功能</translation>
-<translation id="2964056138564883247">這項政策可控管 <ph name="BOREALIS_NAME" /> 是否適用於這位使用者。
-
-      如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於該使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這位使用者。</translation>
 <translation id="2964373560810620158">禁止使用者使用 <ph name="LACROS_NAME" /> 瀏覽器</translation>
 <translation id="2968177167006045252">允許網站使用 SharedArrayBuffers</translation>
 <translation id="2969489219271682844">偵測到 USB 裝置時不顯示通知</translation>
@@ -5300,7 +5297,6 @@
       如果不設定這項政策，系統會使用音訊沙箱的預設設定 (視不同平台而定)。
      這項政策的用途是讓企業能彈性停用音訊沙箱，避免安全性軟體的設定干擾沙箱運作。</translation>
 <translation id="624818583115864448">通訊埠 554 (2021 年 10 月 15 日前可解除封鎖)</translation>
-<translation id="6252773211180267325">允許使用者執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="6254498834449523938">不允許使用者略過安全瀏覽警告</translation>
 <translation id="625580680776945310">系統將啟用高效率模式。</translation>
 <translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>

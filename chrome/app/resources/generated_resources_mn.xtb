@@ -924,6 +924,7 @@
 <translation id="1819721979226826163">Аппын мэдэгдэл &gt; Google Play үйлчилгээг товшино уу.</translation>
 <translation id="1820028137326691631">Админы өгсөн нууц үгийг оруулах</translation>
 <translation id="1822140782238030981">Chrome-н хэрэглэгч үү? Нэвтэрнэ үү</translation>
+<translation id="1823781806707127806">Удирддаг профайлд одоо байгаа интернэтээр үзсэн өгөгдөл нэмэх</translation>
 <translation id="18245044880483936">Нөөцлөлтийн өгөгдөл нь таны хүүхдийн Драйв сангийн багтаамжид нөлөөлөхгүй.</translation>
 <translation id="1825565032302550710">Порт нь 1024 болон 65535-ын хооронд байх ёстой</translation>
 <translation id="182577151972096764">саяхан харсан жорууд</translation>
@@ -1085,6 +1086,7 @@
 <translation id="1963976881984600709">Стандарт хамгаалалт</translation>
 <translation id="1965624977906726414">Ямар ч тусгай зөвшөөрөл байхгүй.</translation>
 <translation id="1966649499058910679">Үг бүрийг хэлэх үед нь тодруулах</translation>
+<translation id="1967970931040389207">Сүлжээний цэгийг асаах</translation>
 <translation id="1969654639948595766">WebRTC текст лог (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Контентыг таны одоогийн веб хуудасны зочилсон байдалд тулгуурлан идэвхтэй ачаалсан тул та илүү хурдан үзнэ</translation>
 <translation id="197288927597451399">Хадгал</translation>
@@ -1173,6 +1175,7 @@
 <translation id="2048554637254265991">Контейнерын менежерийг эхлүүлэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="2048653237708779538">Үйлдэл боломжгүй байна</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
+<translation id="2051555741181591333">Сүлжээний цэгийг автоматаар идэвхгүй болгох</translation>
 <translation id="2052572566310583903">Таны бусад төхөөрөмж дээр суулгасан</translation>
 <translation id="2053105195397337973">Бид сайтуудад зарын спам болон залиланг зогсоох боломжийг олгохын зэрэгцээ хяналтыг хязгаарлах аргуудыг судалж байна.</translation>
 <translation id="2053312383184521053">Идэвхгүй хэлбэрийн өгөгдөл</translation>
@@ -1281,6 +1284,7 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" />-н мэдэгдлийг бүү зөвшөөр</translation>
 <translation id="2139919072249842737">Тохируулах товчлуур</translation>
 <translation id="2140788884185208305">Батарейн барилт</translation>
+<translation id="2140902257485550046">Энэ сайтад бүх өргөтгөлийг блоклохын тулд сонгоно уу</translation>
 <translation id="2142328300403846845">Холбоосыг нээх</translation>
 <translation id="2142582065325732898">Chrome-н саяхны табуудыг үзэхийн тулд <ph name="LINK1_BEGIN" />Chrome Синк<ph name="LINK1_END" />-ийг асаана уу. <ph name="LINK2_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Самбарыг үргэлж бүтэн дэлгэцэд харуулах</translation>
@@ -2015,6 +2019,7 @@
 <translation id="2778471504622896352">ChromeOS эхлүүлэгч рүү алсын удирдлагын аппуудыг нэмнэ үү</translation>
 <translation id="2781120507965857989">Энэ төхөөрөмж дээр болон синк хийж байгаа аливаа газраа хавчуурга, нууц үг, түүх болон бусад зүйлийг авахын тулд синк хийхийг асаана уу. Хайлт болон Google-н бусад үйлчилгээг хувийн болгохын тулд Google таны түүхийг ашиглаж магадгүй.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Энэ сайтад өргөтгөлүүдийг зөвшөөрсөн</translation>
 <translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
 <translation id="2783298271312924866">Татаж авсан</translation>
 <translation id="2783321960289401138">Богино холболт үүсгэх</translation>
@@ -3839,6 +3844,7 @@
 <translation id="449126573531210296">Google Бүртгэлээрээ синк хийсэн нууц үгнүүдийг шифрлэх</translation>
 <translation id="449232563137139956">Сайтууд ихэвчлэн онлайн дэлгүүрийн эсвэл мэдээний нийтлэлийн зураг зэрэг зурагт тайлбар өгөхийн тулд зураг харуулдаг</translation>
 <translation id="4492698018379445570">Та худалдан авалтын сагсандаа юу нэмснээ харж, бэлэн болсон үедээ тооцоо хийнэ үү</translation>
+<translation id="4493167769966437077">Хэзээ ч орчуулга санал болгохгүй хэлнүүдээс <ph name="LANGUAGE_NAME" />-г хасах</translation>
 <translation id="4493468155686877504">Санал болгосон (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Энэ өргөтгөлийг <ph name="SITE" /> дээр зөвшөөрөх үү?</translation>
 <translation id="4495419450179050807">Энэ хуудсан дээр бүү харуул</translation>
@@ -4410,6 +4416,7 @@
 <translation id="5026874946691314267">Үүнийг дахиж бүү харуул</translation>
 <translation id="5027550639139316293">И-мэйлийн гэрчилгээ</translation>
 <translation id="5027562294707732951">Өргөтгөл нэмэх</translation>
+<translation id="5028445315206872221">Энэ сайтад өргөтгөлүүдийг блоклосон</translation>
 <translation id="5029568752722684782">Хуулбарыг арилгах</translation>
 <translation id="5029873138381728058">VM-г шалгаж чадсангүй</translation>
 <translation id="503155457707535043">Аппуyдыг татаж байна</translation>
@@ -4973,6 +4980,7 @@
 <translation id="5554866693883022680">Энэ холбоосыг нээхийн тулд <ph name="DEVICE_TYPE" /> дээрээ апп сонгоно уу</translation>
 <translation id="5555363196923735206">Камерыг хөнтрөх</translation>
 <translation id="5555525474779371165">Аюулгүй үзэх хамгаалалтаа сонгоно уу</translation>
+<translation id="5555639311269196631">Сүлжээний цэгийг унтраах</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5558129378926964177">Томруул</translation>
 <translation id="55601339223879446">Компьютерийн хилийг дэлгэцэд тохируулах</translation>
@@ -6633,6 +6641,7 @@
 <translation id="7088960765736518739">Хандалтыг сэлгэх</translation>
 <translation id="7089253021944603172">Таб дахин идэвхэжсэн</translation>
 <translation id="7090160970140261931">Та өөрийн <ph name="DEVICE_TYPE" />-д вебсайтууд болон Android аппуудтай ашиглах нэмэлт бүртгэлүүд нэмэх боломжтой. Та мөн аль бүртгэлийг Android аппуудтай ашиглахыг хянах боломжтой.</translation>
+<translation id="7090714929377281710">Сүлжээний цэгийг автоматаар унтраах</translation>
 <translation id="7093220653036489319">Шуурхай хариулт</translation>
 <translation id="7093416310351037609">Өгөгдлийн аюулгүй байдал болон хамгаалалтын үүднээс танай байгууллага эрх бүхий бүх таталтыг танай байгуулагын <ph name="WEB_DRIVE" /> бүртгэлд хадгалахыг шаардана.</translation>
 <translation id="7093866338626856921">: <ph name="HOSTNAMES" /> нэртэй төхөөрөмжүүдийг ашиглан мэдээлэл солилцоорой</translation>
@@ -7253,6 +7262,7 @@
 <translation id="7684718995427157417">Апликейшн үүсгэж, шалгахын тулд Android Debug Bridge (ADB)-г идэвхжүүлнэ үү. Энэ үйлдэл нь Google-н баталгаажуулаагүй Андройд аппыг суулгахыг зөвшөөрөх бөгөөд идэвхгүй болгоход үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай.</translation>
 <translation id="7685049629764448582">JavaScript санах ой</translation>
 <translation id="7685087414635069102">ПИН шаардлагатай</translation>
+<translation id="7686581688229391955">Энэ сайтад өргөтгөлүүдийг зөвшөөрөхийн тулд сонгоно уу</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7690378713476594306">Жагсаалтаас сонгох</translation>
@@ -8063,6 +8073,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Гэр)</translation>
 <translation id="8417548266957501132">Эцэг эхийн нууц үг</translation>
 <translation id="8418445294933751433">&amp; Цонх болгож харуул</translation>
+<translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> нэмэх</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />'-н хайлтын үр дүн</translation>
 <translation id="8420308167132684745">Толь бичгийн оролтыг засах</translation>
 <translation id="8421361468937925547">Шууд тайлбар (Зөвхөн Англи хэл)</translation>
@@ -8831,6 +8842,7 @@
 <translation id="9121814364785106365">Тусгайлан сонгосон цонх хэлбэрээр нээх</translation>
 <translation id="9123287046453017203">Таны төхөөрөмжийг шинэчлээгүй байна</translation>
 <translation id="9124003689441359348">Хадгалсан нууц үг энд харагдана</translation>
+<translation id="9125910124977405374">Автоматаар орчуулсан хэлнүүдээс <ph name="LANGUAGE_NAME" />-г хасах</translation>
 <translation id="9126149354162942022">Курсорын өнгө</translation>
 <translation id="9128317794749765148">Тохируулгыг дуусгаж чадсангүй</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" />-н тохиргооны хуудсыг нээнэ үү</translation>

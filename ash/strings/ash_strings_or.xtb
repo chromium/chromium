@@ -314,7 +314,6 @@
 <translation id="2673968385134502798">ଗେମଗୁଡ଼ିକ</translation>
 <translation id="2678852583403169292">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍ ମେନୁ</translation>
 <translation id="2689613560355655046">ଡେସ୍କ 8</translation>
-<translation id="2695132445805301912">କୀ ଏବଂ କ୍ଲିକଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="2695305337569143674">ୱେବ</translation>
 <translation id="2697697418792422688">କୀବୋର୍ଡ ସେଟିଂସ ଦେଖାନ୍ତୁ। <ph name="KEYBOARD_NAME" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="2700493154570097719">ନିଜର କୀ'ବୋର୍ଡକୁ ସେଟ୍ କରନ୍ତୁ</translation>
@@ -486,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ମୋବାଇଲ ଡାଟା ସକ୍ଷମ କରିବା ଫଳରେ ବ୍ଲୁଟୁଥ୍ ସକ୍ଷମ ହେବ</translation>
+<translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3616883743181209306">ସ୍କ୍ରିନର ଶୀର୍ଷ ଡାହାଣ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="3619536907358025872">ସ୍କ୍ରିନ କ୍ୟାପଚର ସେଟିଂସ</translation>
 <translation id="3621202678540785336">ଇନ୍‌ପୁଟ୍</translation>
@@ -697,6 +697,7 @@
 <translation id="4740516757091333363">ସେଭ ହୋଇଥିବା ଡେସ୍କକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="4752784485658729358">କେବଳ 6ଟି ସେଭ କରାଯାଇଥିବା ଡେସ୍କକୁ ଅନୁମତି ଦିଆଯାଇଛି। ଏକ ନୂଆ ଡେସ୍କ ସେଭ କରିବା ପାଇଁ ଗୋଟିଏ ଡେସ୍କ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
+<translation id="4762573482154983647">ଆପ୍ସ ଲୁଚାନ୍ତୁ</translation>
 <translation id="4774338217796918551">ଆସନ୍ତାକାଲି <ph name="COME_BACK_TIME" />ରେ ପୁଣି ଆସନ୍ତୁ।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ଙ୍କ ପାଇଁ ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="4777825441726637019">Play ଷ୍ଟୋର୍</translation>

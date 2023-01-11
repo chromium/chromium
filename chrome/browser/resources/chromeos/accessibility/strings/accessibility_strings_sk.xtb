@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Žiadne ďalšie tlačidlo</translation>
 <translation id="2911433807131383493">Otvoriť príručku rozšírenia ChromeVox</translation>
 <translation id="2912405967290226587">Potiahnite troma prstami doprava</translation>
+<translation id="2919107550468490321">Inteligentný režim uzamknutia klávesa je zapnutý</translation>
 <translation id="2937799153569150791">Žiadny ďalší nadpis tretej úrovne</translation>
 <translation id="2942710183375260152">Tmavobridlicovomodrá</translation>
 <translation id="2943596527105977722">Tmavobéžová</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Znížiť výšku hlasu</translation>
 <translation id="3009352964623081324">Tlačidlo vyhľadávania + O, potom S. Používa sa na inštaláciu, správu a prispôsobenie hlasov.</translation>
 <translation id="3014130421870723208">@upr osembodové</translation>
+<translation id="3018210433491759145">ChromeVox sa načítava</translation>
 <translation id="3030432017085518523">Prepínač položky ponuky</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}few{# apostrofy}many{# apostrophes}other{# apostrofov}}</translation>
 <translation id="3040901448410802366">Indikátor priebehu</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Svetlokoralová</translation>
 <translation id="3816633764618089385">Ďalšie médiá</translation>
+<translation id="3821689185319271077">Bez ukotvenia ukazovateľa</translation>
 <translation id="3840823741487267909">Skratka</translation>
 <translation id="3841319830220785495">Predvolený prirodzený hlas</translation>
 <translation id="385383972552776628">Otvoriť stránku možností</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulár</translation>
 <translation id="4601367666219428522">tabl. <ph name="TABLENAME" /> <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ďalšie stlačenie klávesa bude ignorované</translation>
+<translation id="4617384941327705512">Inteligentný režim uzamknutia klávesa je vypnutý</translation>
 <translation id="4623097797855662355">Kolofón</translation>
 <translation id="4624970070706497034">TalkBack už neposkytuje prispôsobenie Chromebookov. Môžete ho stále používať, ale pomocou predvolených klávesových skratiek aplikácie TalkBack. Ak si chcete zobraziť dostupné skratky, stlačte kláves vyhľadávania + A, potom K. Ak chcete stále použiť TalkBack, znova stlačte kláves Command.</translation>
 <translation id="463135993322337640">Ak chcete získať ďalšie informácie o novinkách, stlačte tlačidlá ChromeVox + O + N</translation>

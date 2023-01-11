@@ -861,6 +861,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="317878711435188021">Saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="3180358318770512945">Crianza dos fillos</translation>
 <translation id="3187306450550410410">Traballo flexible</translation>
+<translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3190736958609431397">Deixar de facer seguimento</translation>
 <translation id="319282854780294203">Redes sociais</translation>
 <translation id="3194737229810486521">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu dispositivo</translation>
@@ -2003,6 +2004,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6039846035001940113">Se o problema continúa, contacta co propietario do sitio.</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6041777658117377052">Temperatura da cámara</translation>
+<translation id="6042308850641462728">Máis</translation>
 <translation id="6044573915096792553">Tamaño 12</translation>
 <translation id="6045164183059402045">Modelo de imposición</translation>
 <translation id="6047233362582046994">Se aceptas os riscos para a túa seguranza, podes <ph name="BEGIN_LINK" />acceder a este sitio<ph name="END_LINK" /> antes de que se eliminen as aplicacións prexudiciais.</translation>
@@ -2094,6 +2096,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6290238015253830360">Os teus artigos suxeridos aparecerán aquí</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Gardando...</translation>
 <translation id="6300452962057769623">{0,plural, =0{O dispositivo reiniciarase agora}=1{O dispositivo reiniciarase en 1 segundo}other{O dispositivo reiniciarase en # segundos}}</translation>
 <translation id="6301104306974789820">Obter notificacións de seguimento do prezo</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>

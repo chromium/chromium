@@ -314,7 +314,6 @@
 <translation id="2673968385134502798">ગેમ</translation>
 <translation id="2678852583403169292">સાંભળવા માટે પસંદ કરો મેનૂ</translation>
 <translation id="2689613560355655046">ડેસ્ક 8</translation>
-<translation id="2695132445805301912">કી અને ક્લિક બતાવો</translation>
 <translation id="2695305337569143674">વેબ</translation>
 <translation id="2697697418792422688">કીબોર્ડ સેટિંગ બતાવો. <ph name="KEYBOARD_NAME" /> પસંદ કર્યું.</translation>
 <translation id="2700493154570097719">તમારું કીબોર્ડ સેટ કરો</translation>
@@ -486,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">મોબાઇલ ડેટા ચાલુ કરવાથી બ્લૂટૂથ ચાલુ થશે</translation>
+<translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3616883743181209306">મેનૂને સ્ક્રીનની ઉપરના જમણા ખૂણામાં ખસેડ્યું.</translation>
 <translation id="3619536907358025872">સ્ક્રીન કૅપ્ચરના સેટિંગ</translation>
 <translation id="3621202678540785336">ઇનપુટ</translation>
@@ -697,6 +697,7 @@
 <translation id="4740516757091333363">શું સાચવેલી ડેસ્ક ડિલીટ કરીએ?</translation>
 <translation id="4752784485658729358">માત્ર 6 ડેસ્ક સાચવવાની મંજૂરી છે. કોઈ નવી ડેસ્ક સાચવવા માટે, કોઈ એક ડેસ્ક કાઢી નાખો.</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
+<translation id="4762573482154983647">ઍપ છુપાવો</translation>
 <translation id="4774338217796918551">આવતી કાલે <ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવજો.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
 <translation id="4777825441726637019">Play Store</translation>

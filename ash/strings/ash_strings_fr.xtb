@@ -314,7 +314,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour prononcer</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
-<translation id="2695132445805301912">Afficher les touches et clics</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afficher les paramètres du clavier. <ph name="KEYBOARD_NAME" /> sélectionné.</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -485,6 +484,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3606978283550408104">La plage braille est connectée.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />, <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">L'activation des données mobiles active aussi le Bluetooth</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Le menu a été déplacé dans l'angle supérieur droit de l'écran.</translation>
 <translation id="3619536907358025872">Paramètres de capture d'écran</translation>
 <translation id="3621202678540785336">Entrée</translation>
@@ -696,6 +696,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4740516757091333363">Supprimer le bureau enregistré ?</translation>
 <translation id="4752784485658729358">Seuls six bureaux enregistrés sont autorisés. Supprimez un bureau pour en enregistrer un nouveau.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
+<translation id="4762573482154983647">Masquer les applis</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>

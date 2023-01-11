@@ -28,6 +28,7 @@
 <translation id="1104621072296271835">ඔබේ උපාංග එක්ව වඩා හොඳින් වැඩ කරයි</translation>
 <translation id="1111021433905331574">ඔබට සැකසීම් &gt; <ph name="APP_TITLE" /> තුළ ඔබගේ යතුරු පුවරුවේ පසුබිම් ආලෝකයේ වර්ණය වෙනස් කළ හැකිය</translation>
 <translation id="112308213915226829">ස්වයං සැඟවුම් රාක්කය</translation>
+<translation id="1135788167815124787">ප්‍රතිමූර්ති ප්‍රතිජ්වලනය</translation>
 <translation id="1142002900084379065">මෑත ඡායාරූප</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="1150989369772528668">දින දර්ශනය</translation>
@@ -313,7 +314,6 @@
 <translation id="2673968385134502798">ක්‍රීඩා</translation>
 <translation id="2678852583403169292">කථා කිරීමට තෝරන්න මෙනුව</translation>
 <translation id="2689613560355655046">මේසය 8</translation>
-<translation id="2695132445805301912">යතුරු සහ ක්ලික් කිරීම් පෙන්වන්න</translation>
 <translation id="2695305337569143674">වෙබය</translation>
 <translation id="2697697418792422688">යතුරු පුවරු සැකසීම් පෙන්වන්න. <ph name="KEYBOARD_NAME" /> තෝරා ඇත.</translation>
 <translation id="2700493154570097719">ඔබගේ යතුරු පුවරුව සකසන්න</translation>
@@ -485,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ජංගම දත්ත සබල කිරීම බ්ලූටූත් සබල කරනු ඇත</translation>
+<translation id="3616113530831147358">ශබ්ද</translation>
 <translation id="3616883743181209306">මෙනුව තිරයේ ඉහළ දකුණු කොණට ගෙන ගියා.</translation>
 <translation id="3619536907358025872">තිර ග්‍රහණ සැකසීම්</translation>
 <translation id="3621202678540785336">ආදානය</translation>

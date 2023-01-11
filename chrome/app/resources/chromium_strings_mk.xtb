@@ -253,6 +253,7 @@
 <translation id="6598877126913850652">Одете во поставките за известувања на Chromium</translation>
 <translation id="6613594504749178791">Промените ќе стапат на сила следниот пат кога ќе го стартувате Chromium повторно.</translation>
 <translation id="665732753414869868">На Chromium му треба дозвола за камерата за да создаде 3D-карта на опкружувањето</translation>
+<translation id="6663852025006259149">Сајтовите веројатно ќе функционираат според вашите очекувања, но нема да ве паметат по затворање на сите прозорци на Chromium</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
 <translation id="668175097507315160">Chromium OS не може да ги синхронизира податоците поради грешка при најавување.</translation>
 <translation id="6709350901466051922">На Chromium му треба дозвола за микрофонот за сајтов</translation>
@@ -383,5 +384,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="945990405696787151">За да добивате идни ажурирања на Chromium, потребен ви е macOS 10.13 или понова верзија. Компјутеров користи OS X 10.11.</translation>
 <translation id="965162752251293939">Кој користи Chromium?</translation>
 <translation id="967427899662692980">Добијте ја најсилната безбедност на Chromium</translation>
+<translation id="9792300276217204">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chromium</translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
 </translationbundle>

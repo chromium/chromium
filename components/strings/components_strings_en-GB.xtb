@@ -801,6 +801,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2986368408720340940">This pickup method isn’t available. Try a different method.</translation>
 <translation id="2987034854559945715">No matching features</translation>
 <translation id="2989742184762224133">Dual staple top</translation>
+<translation id="2990882401221831923">List of credit cards is closed.</translation>
 <translation id="2991174974383378012">Sharing with Websites</translation>
 <translation id="299122504639061328">Manage your default search engine and site search</translation>
 <translation id="2991571918955627853">You cannot visit <ph name="SITE" /> right now because the website uses HSTS. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
@@ -861,6 +862,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="317878711435188021">Know when you're actively using this device</translation>
 <translation id="3180358318770512945">Parenting</translation>
 <translation id="3187306450550410410">Flexible work arrangements</translation>
+<translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="319282854780294203">Social networks</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
@@ -1585,6 +1587,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4976702386844183910">Last visited <ph name="DATE" /></translation>
 <translation id="498323057460789381">Schema validation error: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Use microphone?</translation>
+<translation id="4988822846878841743">List of credit cards to be filled on touch opened at half height.</translation>
 <translation id="4989163558385430922">See all</translation>
 <translation id="4989542687859782284">Unavailable</translation>
 <translation id="4989809363548539747">This plug-in is not supported</translation>
@@ -1933,6 +1936,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5863847714970149516">The page ahead may try to charge you money</translation>
 <translation id="5866257070973731571">Add Phone Number</translation>
 <translation id="5866898949289125849">You're viewing a developer tools page</translation>
+<translation id="5868548454963263350">List of credit cards to be filled on touch opened at full height.</translation>
 <translation id="5869405914158311789">This site can’t be reached</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5873013647450402046">Your bank wants to confirm that it's you.</translation>
@@ -2003,6 +2007,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6039846035001940113">If the problem continues, contact the site owner.</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6041777658117377052">Chamber temperature</translation>
+<translation id="6042308850641462728">More</translation>
 <translation id="6044573915096792553">Size 12</translation>
 <translation id="6045164183059402045">Imposition template</translation>
 <translation id="6047233362582046994">If you understand the risks to your security, you may <ph name="BEGIN_LINK" />visit this site<ph name="END_LINK" /> before the harmful apps have been removed.</translation>
@@ -2094,6 +2099,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6290238015253830360">Your suggested articles appear here</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Saving...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{Your device will restart in 1 second}other{Your device will restart in # seconds}}</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is unreachable.</translation>
@@ -2643,6 +2649,7 @@ Additional details:
 <translation id="7653957176542370971">Payment handler sheet is closed</translation>
 <translation id="7654909834015434372">When you edit annotations, this document will return to its original rotation</translation>
 <translation id="765676359832457558">Hide advanced settings ...</translation>
+<translation id="7656935528854393684">List of credit cards to be filled on touch.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">Tears of joy</translation>

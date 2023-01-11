@@ -1441,6 +1441,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2280486287150724112">Høyremarg</translation>
 <translation id="2281863813036651454">Venstre museknapp</translation>
 <translation id="2282146716419988068">GPU-prosess</translation>
+<translation id="228293613124499805">De fleste nettsteder du besøker, lagrer sannsynligvis data på enheten din. Ofte gjøres dette for å gi deg en bedre opplevelse, ved at preferansene dine eller informasjonen du deler med nettstedet, blir lagret. Vi anbefaler at du lar denne innstillingen være på.</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Åpne alle i &amp;ny fanegruppe}=1{Åpne i &amp;ny fanegruppe}other{Åpne alle ({COUNT}) i &amp;ny fanegruppe}}</translation>
 <translation id="2285942871162473373">Gjenkjente ikke fingeravtrykket ditt. Prøv på nytt.</translation>
 <translation id="2287944065963043964">Påloggingsskjerm</translation>
@@ -2883,6 +2884,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3603622770190368340">Hent nettverkssertifikat</translation>
 <translation id="3605780360466892872">Businessmann</translation>
 <translation id="3609277884604412258">Hurtigsøk</translation>
+<translation id="3610241585790874201">Nettsteder som ikke har lov til å lagre data på enheten din</translation>
 <translation id="3610369246614755442">Dokkviften må på service</translation>
 <translation id="361106536627977100">Flash-data</translation>
 <translation id="3611655097742243705">Gå til Play-butikken for å finne flere apper</translation>
@@ -3106,6 +3108,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3802486193901166966">Denne utvidelsen krever ingen spesielle tillatelser og har ingen ytterligere nettstedstilgang</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
+<translation id="3803367742635802571">Nettsteder du besøker, kan slutte å fungere som de skal</translation>
 <translation id="380408572480438692">Aktivering av innsamling av ytelsesdata hjelper Google med å bekrefte systemet over tid, Data sendes ikke inn før du fyller ut en tilbakemeldingsrapport (Alt-Shift-I) og legger ved ytelsesdata. Du kan deaktivere innsamlingen når som helst via denne skjermen.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») tillates ikke på påloggingsskjermer.</translation>
 <translation id="3807747707162121253">&amp;Avbryt</translation>
@@ -3221,6 +3224,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3898233949376129212">Enhetsspråk</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> vil <ph name="FIRST_PERMISSION" /> og <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Passordet for <ph name="WEBSITE" /> er lagret på denne enheten og i Google-kontoen din. Hvilket vil du slette?</translation>
+<translation id="3898768766145818464">Spill av videoen eller sett den på pause</translation>
 <translation id="389901847090970821">Velg tastatur</translation>
 <translation id="3900966090527141178">Eksportér passord</translation>
 <translation id="3902789559055749153">Velg hvordan du vil opprette en tilgangsnøkkel for <ph name="APP_NAME" /></translation>
@@ -3962,6 +3966,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4595560905247879544">Apper og utvidelser kan bare endres av administratoren (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Du har registrerte sertifikater som identifiserer disse tjenerne</translation>
 <translation id="4598345735110653698">Administrer tilgangsnøkler</translation>
+<translation id="4598549027014564149">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder – heller ikke relaterte nettsteder. Nettleseraktiviteten din brukes ikke til ting som personlig tilpasning av annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
 <translation id="4598556348158889687">Lagringsbehandling</translation>
 <translation id="4598776695426288251">Wifi er tilgjengelig via flere enheter</translation>
 <translation id="4600071396330666617">Antall forslag</translation>
@@ -4127,6 +4132,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4750185073185658673">Gå til telefonen din for å gå gjennom noen flere tillatelser. Sørg for at Bluetooth og wifi er påslått på telefonen.</translation>
 <translation id="4750394297954878236">Forslag</translation>
 <translation id="475088594373173692">Første bruker</translation>
+<translation id="4756302371612574303">Et nettsted du besøker, kan lagre informasjon om hva du gjør, slik at det fungerer som forventet – for eksempel for å holde deg pålogget på et nettsted eller for å lagre varer i handlekurven din. Ofte lagrer nettsteder denne informasjonen midlertidig på enheten din.</translation>
 <translation id="4756378406049221019">Stopp / last inn på nytt</translation>
 <translation id="4756388243121344051">&amp;Logg</translation>
 <translation id="4756671452988984333">Tekst for lyd</translation>
@@ -4467,6 +4473,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="508059534790499809">Oppdater en Kerberos-sak</translation>
 <translation id="5081960376148623587">Velg om du vil at sider skal forhåndslastes</translation>
 <translation id="5084328598860513926">Identitetshåndteringen ble avbrutt. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="5084622689760736648">Nettsteder har større sannsynlighet for å fungere som forventet</translation>
 <translation id="5085162214018721575">Ser etter oppdateringer</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Merknaden inneholder over 1000 tegn</translation>
@@ -5872,6 +5879,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6406303162637086258">Simuler omstart av nettleseren</translation>
 <translation id="6406506848690869874">Synkroniser</translation>
 <translation id="6406708970972405507">Innstillinger – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">Nettsteder som har lov til å lagre data på enheten din</translation>
 <translation id="6408118934673775994">lese og endre opplysningene dine på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Bildefiler</translation>
 <translation id="6410328738210026208">Bytt kanal og bruk Powerwash</translation>
@@ -6685,6 +6693,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7141105143012495934">Påloggingen mislyktes fordi kontoopplysningene dine ikke kunne hentes ut. Kontakt administratoren din, eller prøv på nytt.</translation>
 <translation id="7141844554192012199">Sjekk</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
+<translation id="7148426638542880639">Noen nettsteder fungerer kanskje ikke som forventet. Velg dette alternativet hvis du ikke vil etterlate deg informasjon om nettstedene du besøker, på denne enheten.</translation>
 <translation id="7149839598364933473">Konverter denne enheten til en <ph name="DEVICE_OS" />-enhet.</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
 <translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
@@ -6717,6 +6726,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7186088072322679094">Behold i verktøyraden</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan ikke åpne denne mappen, fordi den inneholder systemfiler</translation>
 <translation id="7187428571767585875">Registeroppføringer som skal fjernes eller endres:</translation>
+<translation id="7188508872042490670">Nettstedsdata på enheten</translation>
 <translation id="7189234443051076392">Sørg for at det er nok plass på enheten</translation>
 <translation id="7189451821249468368">Du har ikke tilstrekkelige oppgraderinger for å registrere denne enheten. Ta kontakt med salgsavdelingen for å kjøpe flere. Hvis du tror dette er en feil, kan du ta kontakt med brukerstøtten.</translation>
 <translation id="7189965711416741966">Fingeravtrykket er lagt til.</translation>
@@ -6990,6 +7000,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7444970023873202833">Utforsk mer av minnene dine i Google Foto</translation>
 <translation id="7444983668544353857">Deaktiver <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">installere apper automatisk</translation>
+<translation id="7448664748118305024">Slett data som nettsteder har lagret på enheten din, når du lukker alle vinduer</translation>
 <translation id="7449381494541372002">starter opp …</translation>
 <translation id="7449752890690775568">Vil du fjerne passordet?</translation>
 <translation id="7450761244949417357">Åpnes i <ph name="ALTERNATIVE_BROWSER_NAME" /> nå</translation>
@@ -8168,6 +8179,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="851263357009351303">Tillat alltid <ph name="HOST" /> å vise bilder</translation>
 <translation id="8513108775083588393">Autorotasjon</translation>
 <translation id="8514746246728959655">Prøv en annen sikkerhetsnøkkel</translation>
+<translation id="8514955299594277296">Ikke la nettsteder lagre data på enheten din (anbefales ikke)</translation>
 <translation id="8519895319663397036">Kan ikke importere passordene. Filstørrelsen må være under 150 kB.</translation>
 <translation id="8523493869875972733">Behold endringene</translation>
 <translation id="8523849605371521713">Lagt til som følge av retningslinjer</translation>
@@ -8612,6 +8624,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8925458182817574960">&amp;Innstillinger</translation>
 <translation id="8926389886865778422">Ikke spør igjen</translation>
 <translation id="892706138619340876">Tilbakestilte noen innstillinger</translation>
+<translation id="8927438609932588163">La nettsteder lagre data på enheten din</translation>
 <translation id="8929696694736010839">Bare denne inkognitoøkten</translation>
 <translation id="8930351635855238750">Nye innstillinger for informasjonskapsler trer i kraft når du laster inn siden på nytt</translation>
 <translation id="8930622219860340959">Trådløs</translation>

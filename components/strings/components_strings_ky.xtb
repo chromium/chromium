@@ -861,6 +861,7 @@
 <translation id="317878711435188021">Түзмөк активдүү колдонулуп жаткан учур</translation>
 <translation id="3180358318770512945">Балдарды тарбиялоо</translation>
 <translation id="3187306450550410410">Ийкемдүү иш тартиби</translation>
+<translation id="3187472288455401631">Жарнамаларды талдоо</translation>
 <translation id="3190736958609431397">Көз салууну токтотуу</translation>
 <translation id="319282854780294203">Социалдык тармактар</translation>
 <translation id="3194737229810486521"><ph name="URL" /> түзмөгүңүзгө дайындарды биротоло сактаганы жатат</translation>
@@ -2002,6 +2003,7 @@
 <translation id="6039846035001940113">Эгер маселе чечилбесе, сайттын ээсине кайрылыңыз.</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6041777658117377052">Камеранын температурасы</translation>
+<translation id="6042308850641462728">Дагы</translation>
 <translation id="6044573915096792553">Өлчөмү: 12</translation>
 <translation id="6045164183059402045">Вёрстканын үлгүсү</translation>
 <translation id="6047233362582046994">Эгер коопсуздугуңузга кандай коркунуч келтирилип жаткандыгын жакшы түшүнсөңүз, зыянкеч колдонмолор алынып салынаардан мурун, <ph name="BEGIN_LINK" />бул сайтка кирип көрсөңүз<ph name="END_LINK" /> болот.</translation>
@@ -2093,6 +2095,7 @@
 <translation id="6290238015253830360">Сунушталган макалалар ушул жерде көрүнөт</translation>
 <translation id="6293309776179964942">JIS B5 (182mm x 257mm)</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Сакталууда…</translation>
 <translation id="6300452962057769623">{0,plural, =0{Түзмөгүңүз азыр өчүрүлүп күйгүзүлөт}=1{Түзмөгүңүз 1 секунддан кийин өчүрүлүп күйгүзүлөт}other{Түзмөгүңүз # секунддан кийин өчүрүлүп күйгүзүлөт}}</translation>
 <translation id="6301104306974789820">Баасы тууралуу билдирмелерди алуу</translation>
 <translation id="6305205051461490394"><ph name="URL" /> сайты жеткиликсиз.</translation>

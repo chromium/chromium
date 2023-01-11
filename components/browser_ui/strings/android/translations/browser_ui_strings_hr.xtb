@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1006017844123154345">Otvori online</translation>
+<translation id="1036348656032585052">Isključi</translation>
 <translation id="1044891598689252897">Web-lokacije će normalno raditi</translation>
 <translation id="1124090076051167250">Izbrisat će se <ph name="DATASIZE" /> podataka i kolačića koje su spremile web-lokacije ili aplikacije na vašem početnom zaslonu.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Sinkronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da biste preskočili 10 s</translation>
 <translation id="3797520601150691162">Ne primjenjuj tamnu temu za određenu web-lokaciju</translation>
+<translation id="3803367742635802571">Web-lokacije koje posjećujete mogu prestati funkcionirati kao što je predviđeno</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Telefonski brojevi</translation>
 <translation id="3826050100957962900">Prijava za treće strane</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Izbriši sve podatke</translation>
 <translation id="4338831206024587507">Sve web-lokacije na domeni <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Onemogućivanje web-lokacijama da znaju kad aktivno upotrebljavate ovaj uređaj</translation>
+<translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
 <translation id="4428065317363009941">Prilagodba oglasa</translation>
 <translation id="4434045419905280838">Skočni prozori i preusmjeravanja</translation>
 <translation id="4440642537584213025">Proširi odjeljak <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašem mikrofonu, uključite mikrofon i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
 <translation id="4570913071927164677">Pojedinosti</translation>
+<translation id="4598549027014564149">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na web-lokacijama, čak ni na povezanim web-lokacijama. Vaša aktivnost pregledavanja ne koristi se za stvari kao što je personaliziranje oglasa. Značajke na nekim web-lokacijama možda neće funkcionirati.</translation>
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtualna stvarnost</translation>
 <translation id="4751476147751820511">Senzori pokreta ili osvjetljenja</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Web-lokacije ne mogu postavljati pitanja o slanju obavijesti</translation>
 <translation id="5516455585884385570">Otvori postavke obavijesti</translation>
 <translation id="5527111080432883924">Traži dopuštenje prije nego što se web-lokacijama dopusti čitanje teksta i slika iz međuspremnika (preporučeno)</translation>
+<translation id="5545693483061321551">Web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama možda neće funkcionirati.</translation>
 <translation id="5553374991681107062">Najnovije</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Web-lokacijama nije dopušteno prikazivanje skočnih prozora i preusmjeravanja (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Osvježi</translation>
+<translation id="7188508872042490670">Podaci web-lokacije na uređaju</translation>
 <translation id="7203150201908454328">Proširen</translation>
 <translation id="723171743924126238">Odaberite slike</translation>
 <translation id="7243308994586599757">Opcije dostupne pri dnu zaslona</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8324158725704657629">Više me ne pitaj</translation>
-<translation id="834785183489258869">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama možda neće funkcionirati.</translation>
 <translation id="8372893542064058268">Omogućuje sinkronizaciju u pozadini za određenu web-lokaciju.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće treće strane na ovoj web-lokaciji</translation>
 <translation id="83792324527827022">Web-lokacija upotrebljava vašu kameru i mikrofon</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>
 <translation id="848952951823693243">Uvijek zahtijevaj web-lokaciju za mobilne uređaje</translation>
 <translation id="8499083585497694743">Uključi mikrofon</translation>
+<translation id="8514955299594277296">Web-lokacijama nije dopušteno spremati podatke na vaš uređaj (ne preporučuje se)</translation>
 <translation id="851751545965956758">Blokiraj povezivanje web-lokacija s uređajima</translation>
 <translation id="8525306231823319788">Cijeli zaslon</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Kolačići dopušteni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> web-lokaciju}one{Kolačići dopušteni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> web-lokaciju}few{Kolačići dopušteni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> web-lokacije}other{Kolačići dopušteni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> web-lokacija}}</translation>

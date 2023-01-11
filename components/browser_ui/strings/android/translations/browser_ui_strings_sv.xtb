@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1006017844123154345">Öppna onlineversionen</translation>
+<translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
 <translation id="1124090076051167250"><ph name="DATASIZE" /> data och cookies som har sparats av webbplatser eller appar på startskärmen rensas.</translation>
 <translation id="1178581264944972037">Paus</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Rensa all data</translation>
 <translation id="4338831206024587507">Alla webbplatser under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blockera webbplatser från att veta när du använder enheten aktivt</translation>
+<translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
 <translation id="4428065317363009941">Personliga annonspreferenser</translation>
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
 <translation id="4440642537584213025">Utöka <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Webbplatser får inte be om tillåtelse att skicka aviseringar</translation>
 <translation id="5516455585884385570">Öppna aviseringsinställningar</translation>
 <translation id="5527111080432883924">Fråga innan en webbplats ges läsbehörighet till text och bilder i Urklipp (rekommenderas)</translation>
+<translation id="5545693483061321551">Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="5553374991681107062">Senaste</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Textning</translation>
 <translation id="8300705686683892304">Hanteras av app</translation>
 <translation id="8324158725704657629">Fråga inte igen</translation>
-<translation id="834785183489258869">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="8372893542064058268">Tillåt bakgrundssynkronisering för en specifik webbplats.</translation>
 <translation id="8376384591331888629">Inkludera cookies från tredje part på den här webbplatsen</translation>
 <translation id="83792324527827022">En webbplats använder kameran och mikrofonen</translation>

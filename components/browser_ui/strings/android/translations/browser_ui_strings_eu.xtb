@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1006017844123154345">Ireki sarean</translation>
+<translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1044891598689252897">Webguneek ohiko moduan funtzionatuko dute</translation>
 <translation id="1124090076051167250">Webguneek edo hasierako pantailako aplikazioek gorde dituzten datu eta cookieen <ph name="DATASIZE" /> garbituko dira.</translation>
 <translation id="1178581264944972037">Pausatu</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Garbitu datu guztiak</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
+<translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
 <translation id="4428065317363009941">Iragarkien pertsonalizazioa</translation>
 <translation id="4434045419905280838">Leiho gainerak. / Birbideratzeak</translation>
 <translation id="4440642537584213025">Zabaldu <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Webguneek ezin dute eskatu jakinarazpenak bidaltzea</translation>
 <translation id="5516455585884385570">Ireki jakinarazpen-ezarpenak</translation>
 <translation id="5527111080432883924">Eskatu berrespena webguneei arbeleko testua eta irudiak ikustea baimendu baino lehen (gomendatua)</translation>
+<translation id="5545693483061321551">Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="5553374991681107062">Azkenak</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Azpitituluak</translation>
 <translation id="8300705686683892304">Aplikazio batek kudeatzen du</translation>
 <translation id="8324158725704657629">Ez galdetu berriro</translation>
-<translation id="834785183489258869">Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="8372893542064058268">Baimendu atzeko planoko sinkronizazioa webgune zehatz batean.</translation>
 <translation id="8376384591331888629">Webgune honetako hirugarrenen cookieak barne</translation>
 <translation id="83792324527827022">Webgune bat kamera eta mikrofonoa erabiltzen ari da</translation>

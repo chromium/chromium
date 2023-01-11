@@ -251,6 +251,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="6598877126913850652">Aceder às definições de notificação do Chromium</translation>
 <translation id="6613594504749178791">As alterações serão aplicadas da próxima vez que reiniciar o Chromium.</translation>
 <translation id="665732753414869868">O Chromium necessita da autorização da câmara para criar um mapa 3D do ambiente à sua volta</translation>
+<translation id="6663852025006259149">É provável que os sites funcionem como esperado, mas não se vão lembrar de si depois de fechar todas as janelas do Chromium</translation>
 <translation id="6676384891291319759">Aceder à Internet</translation>
 <translation id="668175097507315160">O ChromiumOS não conseguiu sincronizar os dados devido a um erro no início de sessão.</translation>
 <translation id="6709350901466051922">O Chromium necessita da autorização do microfone para este site</translation>
@@ -381,5 +382,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="945990405696787151">Para obter atualizações futuras do Chromium, precisa do macOS 10.13 ou posterior. Este computador está a utilizar o OS X 10.11.</translation>
 <translation id="965162752251293939">Quem está a utilizar o Chromium?</translation>
 <translation id="967427899662692980">Obtenha a segurança mais avançada do Chromium</translation>
+<translation id="9792300276217204">Limpar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
 <translation id="985602178874221306">Os Autores do Chromium</translation>
 </translationbundle>

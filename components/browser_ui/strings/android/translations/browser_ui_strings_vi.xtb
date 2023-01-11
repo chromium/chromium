@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1006017844123154345">Mở trực tuyến</translation>
+<translation id="1036348656032585052">Tắt</translation>
 <translation id="1044891598689252897">Các trang web vẫn hoạt động bình thường</translation>
 <translation id="1124090076051167250">Thao tác này sẽ xóa <ph name="DATASIZE" /> dữ liệu và cookie lưu trữ trong các trang web hoặc ứng dụng trên Màn hình chính.</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Xóa tất cả dữ liệu</translation>
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
+<translation id="4412992751769744546">Cho phép cookie của bên thứ ba</translation>
 <translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="4440642537584213025">Mở rộng <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Các trang web không thể xin phép gửi thông báo</translation>
 <translation id="5516455585884385570">Mở mục cài đặt thông báo</translation>
 <translation id="5527111080432883924">Hỏi trước khi cho phép các trang web đọc văn bản và hình ảnh từ bảng nhớ tạm (khuyên dùng)</translation>
+<translation id="5545693483061321551">Các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để điều chỉnh quảng cáo cho phù hợp với bạn. Các tính năng trên một số trang web có thể không hoạt động.</translation>
 <translation id="5553374991681107062">Mới nhất</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Phụ đề</translation>
 <translation id="8300705686683892304">Do ứng dụng quản lý</translation>
 <translation id="8324158725704657629">Không hỏi lại</translation>
-<translation id="834785183489258869">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như để điều chỉnh quảng cáo cho phù hợp với bạn. Các tính năng trên một số trang web có thể không hoạt động.</translation>
 <translation id="8372893542064058268">Cho phép Đồng bộ hóa dưới nền cho trang web cụ thể.</translation>
 <translation id="8376384591331888629">Bao gồm cả cookie của bên thứ ba trên trang web này</translation>
 <translation id="83792324527827022">Một trang web đang sử dụng máy ảnh và micrô của bạn</translation>

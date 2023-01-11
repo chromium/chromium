@@ -931,6 +931,7 @@
 <translation id="1819721979226826163">Торкніться меню "Сповіщення додатків" &gt; "Сервіси Google Play".</translation>
 <translation id="1820028137326691631">Введіть наданий адміністратором пароль</translation>
 <translation id="1822140782238030981">Уже користуєтеся Chrome? Увійдіть в обліковий запис</translation>
+<translation id="1823781806707127806">Додати наявні дані веб-перегляду в керований профіль</translation>
 <translation id="18245044880483936">Резервні копії даних не займають простір на Диску вашої дитини.</translation>
 <translation id="1825565032302550710">Укажіть порт зі значенням від 1024 до 65535</translation>
 <translation id="182577151972096764">нещодавно переглянуті рецепти</translation>
@@ -1092,6 +1093,7 @@
 <translation id="1963976881984600709">Стандартний захист</translation>
 <translation id="1965624977906726414">Спеціальні дозволи не потрібні.</translation>
 <translation id="1966649499058910679">Виділяти кожне слово, яке озвучується</translation>
+<translation id="1967970931040389207">Увімкнути точку доступу</translation>
 <translation id="1969654639948595766">Текстові журнали WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
 <translation id="197288927597451399">Зберегти</translation>
@@ -1180,6 +1182,7 @@
 <translation id="2048554637254265991">Не вдалося запустити менеджер контейнера. Повторіть спробу.</translation>
 <translation id="2048653237708779538">Дія недоступна</translation>
 <translation id="2050339315714019657">Портретна</translation>
+<translation id="2051555741181591333">Автоматично вимикати точку доступу</translation>
 <translation id="2052572566310583903">Установлено на інших ваших пристроях</translation>
 <translation id="2053105195397337973">Ми досліджуємо способи обмежити відстеження, водночас допомагаючи сайтам протидіяти рекламному спаму та шахрайству.</translation>
 <translation id="2053312383184521053">Дані про неактивний стан</translation>
@@ -1288,6 +1291,7 @@
 <translation id="2137128126782078222">Не отримувати сповіщення від сайту <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Кнопка налаштування</translation>
 <translation id="2140788884185208305">Стан акумулятора</translation>
+<translation id="2140902257485550046">Натисніть, щоб заблокувати всі розширення на цьому сайті</translation>
 <translation id="2142328300403846845">Відкрити посилання як</translation>
 <translation id="2142582065325732898">Увімкніть <ph name="LINK1_BEGIN" />Синхронізацію Chrome<ph name="LINK1_END" />, щоб переглядати вкладки, які ви нещодавно відкривали в Chrome. <ph name="LINK2_BEGIN" />Докладніше<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Завжди показувати Панель інструментів у повноекранному режимі</translation>
@@ -2022,6 +2026,7 @@
 <translation id="2778471504622896352">Додайте віддалені додатки на панель запуску ОС Chrome</translation>
 <translation id="2781120507965857989">Увімкніть синхронізацію, щоб мати доступ до закладок, паролів, історії й решти даних на цьому та інших ваших пристроях. Google може використовувати вашу історію для персоналізації Пошуку й інших сервісів Google.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">На цьому сайті дозволено розширення</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2783298271312924866">Завантажено</translation>
 <translation id="2783321960289401138">Створити ярлик…</translation>
@@ -3225,6 +3230,7 @@
 <translation id="3898233949376129212">Мова пристрою</translation>
 <translation id="3898327728850887246">Сайту <ph name="SITE_NAME" /> потрібен дозвіл, щоб <ph name="FIRST_PERMISSION" /> та <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Ваш пароль для веб-сайту <ph name="WEBSITE" /> збережено на цьому пристрої та в обліковому записі Google. Звідки його видалити?</translation>
+<translation id="3898768766145818464">Відтворити або призупинити відео</translation>
 <translation id="389901847090970821">Виберіть клавіатуру</translation>
 <translation id="3900966090527141178">Експортувати паролі</translation>
 <translation id="3902789559055749153">Виберіть спосіб, у який ви хочете створити ключ доступу для додатка <ph name="APP_NAME" /></translation>
@@ -3846,6 +3852,7 @@
 <translation id="449126573531210296">Шифрувати синхронізовані паролі за допомогою облікових даних Google</translation>
 <translation id="449232563137139956">Сайти зазвичай показують зображення, щоб ілюструвати дані (наприклад, фотографії для онлайн-магазинів або статей новин)</translation>
 <translation id="4492698018379445570">Перегляньте товари, які ви додали в кошики для покупок, і оплатіть, коли будете готові</translation>
+<translation id="4493167769966437077">Вилучити мову (<ph name="LANGUAGE_NAME" />) зі списку мов, з яких ніколи не потрібно пропонувати переклад</translation>
 <translation id="4493468155686877504">Рекомендовано (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Дозволити цьому розширенню працювати на сайті <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Не показувати на цій сторінці</translation>
@@ -4417,6 +4424,7 @@
 <translation id="5026874946691314267">Більше не показувати це</translation>
 <translation id="5027550639139316293">Сертифікат електронної пошти</translation>
 <translation id="5027562294707732951">Додати розширення</translation>
+<translation id="5028445315206872221">На цьому сайті заблоковано розширення</translation>
 <translation id="5029568752722684782">Видалити копію</translation>
 <translation id="5029873138381728058">Не вдалося перевірити віртуальні машини</translation>
 <translation id="503155457707535043">Завантаження додатків</translation>
@@ -4980,6 +4988,7 @@
 <translation id="5554866693883022680">Щоб відкрити це посилання, виберіть додаток на своєму пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="5555363196923735206">Змінити камеру</translation>
 <translation id="5555525474779371165">Виберіть вид захисту в Безпечному перегляді</translation>
+<translation id="5555639311269196631">Вимкнути точку доступу</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5558129378926964177">Збільшити &amp;масштаб</translation>
 <translation id="55601339223879446">Налаштуйте межі робочого столу на дисплеї</translation>
@@ -6643,6 +6652,7 @@
 <translation id="7088960765736518739">Кнопковий доступ</translation>
 <translation id="7089253021944603172">Вкладка знову активна</translation>
 <translation id="7090160970140261931">Ви можете додати інші облікові записи, через які <ph name="DEVICE_TYPE" /> матиме доступ до веб-сайтів і додатків для Android. Також можна визначати, які облікові записи використовуються в додатках для Android.</translation>
+<translation id="7090714929377281710">Автоматично вимикати точку доступу</translation>
 <translation id="7093220653036489319">Швидкі відповіді</translation>
 <translation id="7093416310351037609">З міркувань захисту даних адміністратор вашої організації вимагає, щоб дозволені завантажені файли зберігалися в обліковому записі організації в сервісі <ph name="WEB_DRIVE" />.</translation>
 <translation id="7093866338626856921">Обмінюватися даними з пристроями з назвами: <ph name="HOSTNAMES" /></translation>
@@ -7263,6 +7273,7 @@
 <translation id="7684718995427157417">Щоб створювати й перевіряти додатки, увімкніть Android Debug Bridge (ADB). Зауважте, що цією дією ви дозволяєте встановлювати додатки для Android, які не були перевірені Google. Щоб вимкнути інструмент, доведеться відновити заводські налаштування.</translation>
 <translation id="7685049629764448582">Пам'ять JavaScript</translation>
 <translation id="7685087414635069102">Потрібен PIN-код</translation>
+<translation id="7686581688229391955">Натисніть, щоб дозволити розширення на цьому сайті</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
 <translation id="7690378713476594306">Вибрати зі списку</translation>
@@ -8076,6 +8087,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Футляр)</translation>
 <translation id="8417548266957501132">Пароль батьків</translation>
 <translation id="8418445294933751433">&amp;Показати як вкладку</translation>
+<translation id="8418675848396538775">Додати мову (<ph name="LANGUAGE_NAME" />)</translation>
 <translation id="8419098111404128271">Результати пошуку для запиту "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Редагувати словник</translation>
 <translation id="8421361468937925547">Живі субтитри (лише англійською)</translation>
@@ -8849,6 +8861,7 @@
 <translation id="9121814364785106365">Відкрити як закріплену вкладку</translation>
 <translation id="9123287046453017203">На вашому пристрої встановлено застарілу ОС</translation>
 <translation id="9124003689441359348">Тут відображатимуться збережені паролі</translation>
+<translation id="9125910124977405374">Вилучити мову (<ph name="LANGUAGE_NAME" />) зі списку мов, з яких потрібно виконувати автоматичний переклад</translation>
 <translation id="9126149354162942022">Колір курсора</translation>
 <translation id="9128317794749765148">Не вдалося завершити встановлення</translation>
 <translation id="9128335130883257666">Відкрити сторінку налаштувань методу введення "<ph name="INPUT_METHOD_NAME" />"</translation>

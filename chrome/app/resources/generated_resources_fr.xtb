@@ -918,6 +918,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1819721979226826163">Appuyez sur Notifications des applications &gt; Services Google Play.</translation>
 <translation id="1820028137326691631">Saisissez le mot de passe fourni par l'administrateur</translation>
 <translation id="1822140782238030981">Vous utilisez déjà Chrome ? Connexion</translation>
+<translation id="1823781806707127806">Ajouter des données de navigation existantes au profil géré</translation>
 <translation id="18245044880483936">Les données sauvegardées ne sont pas comptabilisées dans le quota de stockage Drive de votre enfant.</translation>
 <translation id="1825565032302550710">Vous devez saisir un numéro de port compris entre 1024 et 65535</translation>
 <translation id="182577151972096764">recettes consultées récemment</translation>
@@ -1078,6 +1079,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="1965624977906726414">Ne dispose d'aucune autorisation spéciale.</translation>
 <translation id="1966649499058910679">Mettre en évidence les mots à mesure qu'ils sont énoncés</translation>
+<translation id="1967970931040389207">Activer le point d'accès</translation>
 <translation id="1969654639948595766">Journaux texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="197288927597451399">Enregistrer</translation>
@@ -1166,6 +1168,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2048554637254265991">Erreur lors du démarrage du gestionnaire de conteneurs. Veuillez réessayer.</translation>
 <translation id="2048653237708779538">Action non disponible</translation>
 <translation id="2050339315714019657">Portrait</translation>
+<translation id="2051555741181591333">Désactiver automatiquement le point d'accès</translation>
 <translation id="2052572566310583903">Installée sur vos autres appareils</translation>
 <translation id="2053105195397337973">Nous étudions différents moyens de limiter le suivi tout en permettant aux sites de lutter contre le spam publicitaire et la fraude.</translation>
 <translation id="2053312383184521053">Données sur l'état de veille</translation>
@@ -1274,6 +1277,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2137128126782078222">Ne pas autoriser les notifications de <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Bouton de configuration</translation>
 <translation id="2140788884185208305">État de la batterie</translation>
+<translation id="2140902257485550046">Sélectionner pour bloquer toutes les extensions de ce site</translation>
 <translation id="2142328300403846845">Ouvrir le lien avec le compte</translation>
 <translation id="2142582065325732898">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Toujours afficher la barre d'outils en plein écran</translation>
@@ -2005,6 +2009,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2778471504622896352">Ajouter des applications distantes au lanceur d'applications ChromeOS</translation>
 <translation id="2781120507965857989">Activez la synchronisation pour retrouver vos favoris, vos mots de passe, votre historique et plus encore, sur cet appareil et tous ceux que vous synchroniserez. Google pourra utiliser votre historique pour personnaliser la recherche et d'autres de ses services.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Les extensions sont autorisées sur ce site</translation>
 <translation id="2782104745158847185">Erreur pendant l'installation de l'application Linux</translation>
 <translation id="2783298271312924866">Téléchargé</translation>
 <translation id="2783321960289401138">Créer un raccourci…</translation>
@@ -3208,6 +3213,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3898233949376129212">Langue de l'appareil</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> souhaite obtenir les autorisations suivantes : <ph name="FIRST_PERMISSION" /> et <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Votre mot de passe pour <ph name="WEBSITE" /> est enregistré sur cet appareil et dans votre compte Google. Lequel voulez-vous supprimer ?</translation>
+<translation id="3898768766145818464">Lecture ou pause de la vidéo</translation>
 <translation id="389901847090970821">Sélectionner un clavier</translation>
 <translation id="3900966090527141178">Exporter des mots de passe</translation>
 <translation id="3902789559055749153">Choisissez comment vous voulez la créer pour <ph name="APP_NAME" /></translation>
@@ -3829,6 +3835,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="449232563137139956">Les sites affichent généralement des images à des fins d'illustration, par exemple des photos dans les boutiques en ligne ou les articles d'actualités</translation>
 <translation id="4492698018379445570">Retrouvez les articles ajoutés à vos paniers et passez commande quand vous le souhaitez</translation>
+<translation id="4493167769966437077">Supprimer "<ph name="LANGUAGE_NAME" />" des langues pour lesquelles ne jamais proposer de traduction</translation>
 <translation id="4493468155686877504">Recommandée (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Autoriser cette extension sur <ph name="SITE" /> ?</translation>
 <translation id="4495419450179050807">Ne pas afficher sur cette page</translation>
@@ -4399,6 +4406,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5026874946691314267">Ne plus afficher ce message</translation>
 <translation id="5027550639139316293">Certificat de courrier électronique</translation>
 <translation id="5027562294707732951">Ajouter l'extension</translation>
+<translation id="5028445315206872221">Les extensions sont bloquées sur ce site</translation>
 <translation id="5029568752722684782">Effacer la copie</translation>
 <translation id="5029873138381728058">Échec de la vérification des VM</translation>
 <translation id="503155457707535043">Téléchargement des applications</translation>
@@ -4962,6 +4970,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5554866693883022680">Sélectionnez une appli sur votre <ph name="DEVICE_TYPE" /> pour ouvrir ce lien</translation>
 <translation id="5555363196923735206">Activer le mode selfie</translation>
 <translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>
+<translation id="5555639311269196631">Désactiver le point d'accès</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
 <translation id="55601339223879446">Adaptez les dimensions de votre Bureau à l'écran</translation>
@@ -6625,6 +6634,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Onglet de nouveau actif</translation>
 <translation id="7090160970140261931">Pour accéder à des sites Web et des applis Android avec votre <ph name="DEVICE_TYPE" />, ajoutez-y des comptes supplémentaires. Vous pouvez aussi contrôler les comptes qui sont utilisés avec les applis Android.</translation>
+<translation id="7090714929377281710">Désactiver le point d'accès automatiquement</translation>
 <translation id="7093220653036489319">Réponses rapides</translation>
 <translation id="7093416310351037609">Pour la protection et la sécurité des données, votre organisation exige que tous les téléchargements éligibles soient enregistrés sur le compte <ph name="WEB_DRIVE" /> de votre organisation.</translation>
 <translation id="7093866338626856921">Échanger des données avec les appareils suivants : "<ph name="HOSTNAMES" />"</translation>
@@ -7245,6 +7255,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez Android Debug Bridge (ADB). Notez que cette action autorise l'installation d'applications Android non vérifiées par Google et ne pourra être désactivée qu'en rétablissant la configuration d'usine.</translation>
 <translation id="7685049629764448582">Mémoire JavaScript </translation>
 <translation id="7685087414635069102">Veuillez saisir un code</translation>
+<translation id="7686581688229391955">Sélectionner pour autoriser les extensions sur ce site</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7690378713476594306">Choisir dans la liste</translation>
@@ -8058,6 +8069,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
 <translation id="8417548266957501132">Mot de passe du parent</translation>
 <translation id="8418445294933751433">Afficher dan&amp;s un onglet</translation>
+<translation id="8418675848396538775">Ajouter "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="8419098111404128271">Résultats de recherche pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Modifier des entrées du dictionnaire</translation>
 <translation id="8421361468937925547">Sous-titres instantanés (anglais uniquement)</translation>
@@ -8829,6 +8841,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9121814364785106365">Ouvrir dans un onglet épinglé</translation>
 <translation id="9123287046453017203">Votre appareil n'est pas à jour</translation>
 <translation id="9124003689441359348">Les mots de passe enregistrés s'afficheront ici</translation>
+<translation id="9125910124977405374">Supprimer "<ph name="LANGUAGE_NAME" />" des langues traduites automatiquement</translation>
 <translation id="9126149354162942022">Couleur du curseur</translation>
 <translation id="9128317794749765148">Impossible de terminer la configuration</translation>
 <translation id="9128335130883257666">Accéder aux paramètres pour "<ph name="INPUT_METHOD_NAME" />"</translation>

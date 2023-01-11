@@ -861,6 +861,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="317878711435188021">Gwybod pan fyddwch wrthi'n defnyddio'r ddyfais hon</translation>
 <translation id="3180358318770512945">Bod yn rhiant</translation>
 <translation id="3187306450550410410">Trefniadau gwaith hyblyg</translation>
+<translation id="3187472288455401631">Mesur hysbysebion</translation>
 <translation id="3190736958609431397">Dadolrhain</translation>
 <translation id="319282854780294203">Rhwydweithiau cymdeithasol</translation>
 <translation id="3194737229810486521">Mae <ph name="URL" /> am storio data ar eich dyfais yn barhaol</translation>
@@ -2003,6 +2004,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6039846035001940113">Os yw'r broblem yn parhau, cysylltwch â pherchennog y wefan.</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="6041777658117377052">Tymheredd y siambr</translation>
+<translation id="6042308850641462728">Mwy</translation>
 <translation id="6044573915096792553">Maint 12</translation>
 <translation id="6045164183059402045">Templed gosod</translation>
 <translation id="6047233362582046994">Os ydych yn deall y risgiau i'ch diogelwch, gallwch <ph name="BEGIN_LINK" />fynd i'r wefan hon<ph name="END_LINK" /> cyn i'r apiau niweidiol gael eu tynnu.</translation>
@@ -2094,6 +2096,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6290238015253830360">Mae'r erthyglau a awgrymir gennych yn ymddangos yma</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Wrthi'n cadw...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Bydd eich dyfais yn ailgychwyn nawr}=1{Bydd eich dyfais yn ailgychwyn mewn 1 eiliad}two{Bydd eich dyfais yn ailgychwyn mewn # eiliad}few{Bydd eich dyfais yn ailgychwyn mewn # eiliad}many{Bydd eich dyfais yn ailgychwyn mewn # eiliad}other{Bydd eich dyfais yn ailgychwyn mewn # eiliad}}</translation>
 <translation id="6301104306974789820">Cael hysbysiadau olrhain prisiau</translation>
 <translation id="6305205051461490394">Ni ellir cyrraedd <ph name="URL" />.</translation>

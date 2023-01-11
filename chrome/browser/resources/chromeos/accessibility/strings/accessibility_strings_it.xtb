@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Nessun pulsante successivo</translation>
 <translation id="2911433807131383493">Apri il tutorial di ChromeVox</translation>
 <translation id="2912405967290226587">Scorri verso destra con tre dita</translation>
+<translation id="2919107550468490321">Modalità persistente intelligente attiva</translation>
 <translation id="2937799153569150791">Nessuna intestazione di livello 3 successiva</translation>
 <translation id="2942710183375260152">Blu ardesia scuro</translation>
 <translation id="2943596527105977722">Ocra dorato scuro</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Abbassa tono</translation>
 <translation id="3009352964623081324">Tasto per la ricerca + O, poi S. Usa questa scorciatoia per installare, gestire e personalizzare voci.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">Caricamento di ChromeVox in corso…</translation>
 <translation id="3030432017085518523">Pulsante di opzione voce di menu</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrofo}other{# apostrofi}}</translation>
 <translation id="3040901448410802366">Indicatore avanzamento</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Corallo chiaro</translation>
 <translation id="3816633764618089385">Elemento multimediale successivo</translation>
+<translation id="3821689185319271077">Nessun ancoraggio del puntatore</translation>
 <translation id="3840823741487267909">Abbreviazione</translation>
 <translation id="3841319830220785495">Voce naturale predefinita</translation>
 <translation id="385383972552776628">Apri pagina di opzioni</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">modulo</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">La prossima pressione di tasti verrà ignorata</translation>
+<translation id="4617384941327705512">Modalità persistente intelligente non attiva</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="4624970070706497034">TalkBack non offre più la personalizzazione per i Chromebook. Puoi comunque utilizzarla, ma usa le scorciatoie da tastiera predefinite di TalkBack. Premi il tasto per la ricerca + A, quindi K per vedere le scorciatoie disponibili. Se vuoi ancora utilizzare TalkBack, premi nuovamente il comando.</translation>
 <translation id="463135993322337640">Premi i tasti O e N con ChromeVox per scoprire le novità</translation>

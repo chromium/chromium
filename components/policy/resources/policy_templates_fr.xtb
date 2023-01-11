@@ -413,6 +413,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
       Sur <ph name="PRODUCT_OS_NAME" />, cette règle ne s'applique qu'aux utilisateurs affiliés.
 
       Elle remplace <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> et les préférences de l'utilisateur.</translation>
+<translation id="1413768951234456918">Effacer l'historique de navigation</translation>
 <translation id="1413936351612032792">Transmettre des informations sur l'utilisation des applications Linux</translation>
 <translation id="1417888712677507140">Bloquer les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
 <translation id="1418387035898607074">Ignorer les vérifications de la navigation sécurisée visant à autoriser ou non le téléchargement de fichiers provenant d'une source fiable</translation>
@@ -2093,9 +2094,6 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> peut sélec
 <translation id="2960999045613902792">Autoriser les utilisateurs à ajouter et configurer des imprimantes n'appartenant pas à l'entreprise, et à y lancer des impressions</translation>
 <translation id="2962972237615992440">Désactivez le proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Désactiver la dictée</translation>
-<translation id="2964056138564883247">Contrôle la disponibilité de <ph name="BOREALIS_NAME" /> pour cet utilisateur.
-
-      Si cette règle est définie sur "False", <ph name="BOREALIS_NAME" /> ne sera pas disponible. Si la règle est définie sur "True" ou n'est pas définie, <ph name="BOREALIS_NAME" /> sera disponible si et seulement si aucune autre règle ni aucun autre paramètre ne le désactivent.</translation>
 <translation id="2964373560810620158">Empêcher les utilisateurs de se servir du navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Autoriser les sites à utiliser SharedArrayBuffers</translation>
 <translation id="2969489219271682844">Ne pas afficher de notifications lorsque des périphériques USB sont détectés</translation>
@@ -2758,6 +2756,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 
       Si la règle n'est pas configurée, aucune restriction ne sera appliquée.</translation>
 <translation id="3531084733660068324">Paramètres de supervision parentale</translation>
+<translation id="3532827558833318911">Effacer la connexion par mot de passe</translation>
 <translation id="353611922042274900">Toujours afficher les informations système sur l'écran de connexion</translation>
 <translation id="3536263244905016305">Désactiver l'optimisation WPAD (Web Proxy Auto-Discovery, découverte automatique du proxy)</translation>
 <translation id="3538869107794555625">Activer le clavier à l'écran en mode tablette</translation>
@@ -4209,6 +4208,7 @@ Si cette règle est désactivée ou n'est pas configurée, l'API window.webkitSt
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cesse d'envoyer ces requêtes.</translation>
 <translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
+<translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
 <translation id="5055474681190962362">Jour du mois [1-31] (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "MONTHLY". Si le nombre maximal de jours dans un mois donné est dépassé, le dernier jour de ce mois est sélectionné.</translation>
@@ -4361,6 +4361,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> est une règle associée pouvant également désactiver les contrôles d'interception des requêtes DNS. Elle est plus flexible, peut contrôler séparément les barres d'infos de redirection vers un intranet et pourrait être développée à l'avenir.
       Si <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> ou cette règle l'exige, les contrôles d'interception seront désactivés.</translation>
+<translation id="5210133032276211845">Effacer les images et les fichiers mis en cache</translation>
 <translation id="5212118847531454979">Permet de définir la période, en millisecondes, pendant laquelle les utilisateurs sont avertis que <ph name="PRODUCT_NAME" /> doit être relancé ou qu'un appareil <ph name="PRODUCT_OS_NAME" /> doit être redémarré pour l'application d'une mise à jour en attente.
 
       Au cours de cette période, l'utilisateur est régulièrement informé de la nécessité d'appliquer la mise à jour. Pour les appareils <ph name="PRODUCT_OS_NAME" />, une notification de redémarrage s'affiche dans la barre d'état système conformément à la règle <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Pour les navigateurs <ph name="PRODUCT_NAME" />, lorsqu'un tiers de la période de notification s'est écoulé, le menu d'application change pour indiquer qu'il est nécessaire de redémarrer le navigateur. La notification change de couleur une première fois lorsque les deux tiers de la période de notification se sont écoulés, et une deuxième fois à l'issue de cette période. Les notifications supplémentaires activées par la règle <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> pour les navigateurs suivent le même calendrier.
@@ -4722,6 +4723,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette liste est vide, il n'y a pas de déploiement par étapes et les mises à jour sont appliquées en fonction des autres règles des appareils.
 
       Cette règle ne concerne pas les changements de version.</translation>
+<translation id="5517825566262498086">Effacer les données d'application hébergée</translation>
 <translation id="5519331583722582543">Flag booléen spécifiant si une entrée via la reconnaissance de l'écriture manuscrite est disponible ou non avec le clavier à l'écran.</translation>
 <translation id="5519619299971727565">Désactiver les rapports d'utilisation des applis Linux</translation>
 <translation id="5521035900165046997">Activer les rapports Bluetooth de l'appareil</translation>
@@ -4996,6 +4998,7 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
 
       Ce comportement ne se déclenchera pas si la navigation sécurisée est désactivée (soit par la règle, soit par l'utilisateur). Pour forcer l'activation de la navigation sécurisée, utilisez la règle <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Paramètres de capture d'écran</translation>
+<translation id="5835674781974810379">Effacer les cookies et autres données de sites</translation>
 <translation id="5836064773277134605">Restreindre la plage de ports UDP utilisés par l'hôte d'accès à distance</translation>
 <translation id="583627479140113555">Activer l'importation des mots de passe enregistrés à la première exécution</translation>
 <translation id="5837898601525273156">Si la règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />" est activée et que la règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />" est configurée, le mode avancé de recharge de la batterie pour la gestion de l'alimentation est activé (si l'appareil le permet). Ce mode permet aux utilisateurs de maximiser les performances de la batterie grâce à un algorithme de recharge standard conjugué à d'autres techniques en dehors des heures de travail. Pendant les heures de travail, le système utilise une option de recharge rapide afin d'atteindre plus vite le niveau de charge complète. Indiquez l'heure à laquelle le système est le plus sollicité chaque jour en précisant l'heure de début et la durée.
@@ -5146,6 +5149,7 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
 <translation id="5997543603646547632">Utiliser le format d'horloge 24 h par défaut</translation>
 <translation id="5997846976342452720">Indiquer si l'outil de recherche de plug-ins doit être désactivé (obsolète)</translation>
 <translation id="5998198091336830580">Cette règle fait partie du groupe atomique suivant (seules les règles issues de la source ayant la plus haute priorité dans le groupe sont appliquées) :</translation>
+<translation id="6001621991816939414">Effacer l'historique des téléchargements</translation>
 <translation id="600402562436559989">Autoriser la synchronisation des configurations du réseau Wi-Fi entre les appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté</translation>
 <translation id="6004575267180297869">
       Indique si les modules WebAssembly peuvent être envoyés vers une autre fenêtre ou un autre nœud de calcul en multi-origine. Le partage de modules WebAssembly en multi-origine deviendra obsolète lors de l'abandon de document.domain. Consultez https://github.com/mikewest/deprecating-document-domain. Cette règle permet de réactiver le partage de modules WebAssembly en multi-origine pour prolonger la période de transition du processus d'abandon.
@@ -5385,7 +5389,6 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
       Si cette règle n'est pas configurée, la valeur par défaut du bac à sable est appliquée pour le processus audio (laquelle peut varier en fonction des plates-formes).
       Cette règle vise à donner aux entreprises la possibilité de désactiver le bac à sable audio si la configuration des logiciels de sécurité qu'elles utilisent interfère avec le bac à sable.</translation>
 <translation id="624818583115864448">port 554 (peut être débloqué jusqu'au 15/10/2021)</translation>
-<translation id="6252773211180267325">Ne pas empêcher <ph name="BOREALIS_NAME" /> de fonctionner pour un utilisateur</translation>
 <translation id="6254498834449523938">Interdire à l'utilisateur de contourner l'avertissement de navigation sécurisée</translation>
 <translation id="625580680776945310">Le mode Haute efficacité sera activé.</translation>
 <translation id="6258658183356534534">Contrôlez la fonctionnalité de mise à jour GREASE des indications du client user-agent.</translation>
@@ -6759,6 +6762,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7519218194072744342">URL du gestionnaire de protocoles.</translation>
 <translation id="7519251620064708155">Autoriser la génération de clé sur ces sites</translation>
 <translation id="7521864460386999758">Empêcher l'injection de code tiers dans Chrome</translation>
+<translation id="7524983116584990314">Effacer la saisie automatique</translation>
 <translation id="7529144158022474049">Facteur de dispersion des mises à jour automatiques</translation>
 <translation id="7529332889403151669">Cette règle permet de déterminer si l'alerte plein écran doit être affichée lorsque l'appareil est réactivé après avoir été en mode veille ou que l'écran n'est plus sombre.
 
@@ -7928,6 +7932,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="8657543427358173663">Autoriser la collecte des journaux des événements WebRTC à partir des services Google</translation>
 <translation id="8659843732895043951">Autoriser le presse-papiers sur ces sites</translation>
 <translation id="8661297125441579970">Interdire la migration de données et ARC.</translation>
+<translation id="8661538142776716004">Effacer les paramètres des sites</translation>
 <translation id="8661980316738569557">Activer le mode Contraste élevé</translation>
 <translation id="8664285601317301180">Cette règle contrôle la valeur de l'<ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) dans les tâches d'impression.
 
@@ -8174,6 +8179,21 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
 <translation id="8882307005437314052">Activer le clavier à l'écran sur l'écran de connexion et permettre à l'utilisateur de le désactiver temporairement</translation>
 <translation id="8883577480680089760">Désactive le service <ph name="PRODUCT_NAME" /> V2 et ne lance pas le bureau à distance lors de la connexion</translation>
 <translation id="8887709920496070892">Délai d'inactivité, en millisecondes, au terme duquel un message d'avertissement s'affiche.</translation>
+<translation id="8887847586787956456">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
+
+      Cette règle n'a aucune incidence si la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'est pas configurée.
+
+      Lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint, <ph name="PRODUCT_NAME" /> exécute les actions configurées dans celle-ci.
+
+      La règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'a aucune incidence si elle est vide ou si elle n'est pas configurée.
+
+      Actions acceptées :
+
+      <ph name="CLOSE_BROWSERS_ACTION" /> : ferme toutes les fenêtres du navigateur et les PWA pour ce profil.
+
+      <ph name="SHOW_PROFILE_PICKER_ACTION" /> : affiche la fenêtre de l'outil de sélection des profils.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> : efface les données de navigation correspondantes. Pour en savoir plus, consultez la règle <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8890438048579188548">Masquer les avertissements liés à l'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Désactiver les rapports sur les informations système de l'appareil</translation>
 <translation id="8892286064305622118">Espace disque libre requis pour <ph name="PLUGIN_VM_NAME" /></translation>

@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">冇下一個按鈕</translation>
 <translation id="2911433807131383493">開啟 ChromeVox 教學課程</translation>
 <translation id="2912405967290226587">以三隻手指向右滑動</translation>
+<translation id="2919107550468490321">智慧型固定模式已開啟</translation>
 <translation id="2937799153569150791">冇下一個第 3 級標題</translation>
 <translation id="2942710183375260152">深岩藍色</translation>
 <translation id="2943596527105977722">深金菊色</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">降低音調</translation>
 <translation id="3009352964623081324">搜尋 + O，然後按 S。此操作用於安裝、管理和自訂語音。</translation>
 <translation id="3014130421870723208">@編輯 8 點欄位</translation>
+<translation id="3018210433491759145">正在載入 ChromeVox</translation>
 <translation id="3030432017085518523">選單選項圓形按鈕</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{1 個單引號}other{# 個單引號}}</translation>
 <translation id="3040901448410802366">進度指標</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">影片</translation>
 <translation id="3813387282697781382">淺珊瑚紅色</translation>
 <translation id="3816633764618089385">下一個媒體</translation>
+<translation id="3821689185319271077">沒有指標錨定標記</translation>
 <translation id="3840823741487267909">縮寫</translation>
 <translation id="3841319830220785495">預設自然語音</translation>
 <translation id="385383972552776628">開啟選項頁面</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">表格</translation>
 <translation id="4601367666219428522">表格「<ph name="TABLENAME" />」<ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">忽略下一個按鍵</translation>
+<translation id="4617384941327705512">智慧型固定模式已關閉</translation>
 <translation id="4623097797855662355">版權頁</translation>
 <translation id="4624970070706497034">TalkBack 唔再為 Chromebook 提供自訂項目。你仍然可以用自訂功能，不過用唔到 TalkBack 預設嘅鍵盤快速鍵。先㩒搜尋鍵 + A 鍵，然後㩒 K 鍵就睇到可以用嘅快速鍵。如果您仍然想用 TalkBack，請㩒多次指令鍵。</translation>
 <translation id="463135993322337640">按下 ChromeVox 的 O 鍵、N 鍵，即可瞭解最新功能</translation>

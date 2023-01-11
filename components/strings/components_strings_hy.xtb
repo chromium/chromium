@@ -861,6 +861,7 @@
 <translation id="317878711435188021">Տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="3180358318770512945">Ծնողավարություն</translation>
 <translation id="3187306450550410410">Աշխատանքի ճկուն կազմակերպում</translation>
+<translation id="3187472288455401631">Գովազդի արդյունավետության գնահատում</translation>
 <translation id="3190736958609431397">Այլևս չհետագծել</translation>
 <translation id="319282854780294203">Սոցիալական ցանցեր</translation>
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
@@ -2004,6 +2005,7 @@
 <translation id="6039846035001940113">Եթե խնդիրը չվերանա, կապվեք կայքի սեփականատիրոջ հետ։</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6041777658117377052">Խցիկի ջերմաստիճանը</translation>
+<translation id="6042308850641462728">Ավելին</translation>
 <translation id="6044573915096792553">Չափ 12</translation>
 <translation id="6045164183059402045">Էջքի ձևանմուշ</translation>
 <translation id="6047233362582046994">Եթե դուք գիտակցում եք անվտանգության հետ կապված ռիսկերը, ապա կարող եք <ph name="BEGIN_LINK" />այցելել այս կայքը<ph name="END_LINK" /> նախքան վնասարար հավելվածները հեռացնելը:</translation>
@@ -2095,6 +2097,7 @@
 <translation id="6290238015253830360">Այստեղ կցուցադրվեն առաջարկվող հոդվածները</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC կոդ՝</translation>
+<translation id="6295855836753816081">Պահում...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Սարքը հիմա կվերագործարկվի}=1{Սարքը կվերագործարկվի 1 վայրկյանից}one{Սարքը կվերագործարկվի # վայրկյանից}other{Սարքը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6301104306974789820">Ստանալ ծանուցումներ գների հետագծման մասին</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>

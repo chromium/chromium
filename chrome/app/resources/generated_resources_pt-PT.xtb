@@ -1432,6 +1432,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2280486287150724112">Margem direita</translation>
 <translation id="2281863813036651454">Clique com o botão esquerdo do rato</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
+<translation id="228293613124499805">É provável que a maioria dos sites que visita guarde dados no seu dispositivo, muitas vezes para melhorar a sua experiência ao guardar as suas preferências ou informações que partilha com o site. Recomendamos que mantenha esta definição ativada.</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Abrir todos num &amp;novo grupo de separadores}=1{Abrir num &amp;novo grupo de separadores}other{Abrir todos ({COUNT}) num &amp;novo grupo de separadores}}</translation>
 <translation id="2285942871162473373">Não foi possível reconhecer a sua impressão digital. Tente novamente.</translation>
 <translation id="2287944065963043964">Ecrã de início de sessão</translation>
@@ -2875,6 +2876,7 @@ Pretende pará-lo?</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
 <translation id="3605780360466892872">Empresário</translation>
 <translation id="3609277884604412258">Pesquisa rápida</translation>
+<translation id="3610241585790874201">Sem autorização para guardar dados no seu dispositivo</translation>
 <translation id="3610369246614755442">A ventoinha da estação de ancoragem necessita de manutenção</translation>
 <translation id="361106536627977100">Dados do Flash</translation>
 <translation id="3611655097742243705">Visite a Play Store para encontrar mais apps</translation>
@@ -3098,6 +3100,7 @@ Pretende pará-lo?</translation>
 <translation id="3802486193901166966">Esta extensão não requer autorizações especiais e não tem acesso adicional a sites</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803345858388753269">Qualidade de vídeo</translation>
+<translation id="3803367742635802571">Os sites que visita podem deixar de funcionar como previsto</translation>
 <translation id="380408572480438692">A ativação da recolha de dados de desempenho ajudará a Google a melhorar o sistema ao longo do tempo. Não serão enviados quaisquer dados enquanto não apresentar um relatório de comentários (Alt-Shift-I) e incluir os dados de desempenho. É possível regressar a este ecrã para desativar a recolha em qualquer altura.</translation>
 <translation id="3807249107536149332">O <ph name="EXTENSION_NAME" /> (ID de extensão "<ph name="EXTENSION_ID" />") não é permitido num ecrã de início de sessão.</translation>
 <translation id="3807747707162121253">&amp;Cancelar</translation>
@@ -3213,6 +3216,7 @@ Pretende pará-lo?</translation>
 <translation id="3898233949376129212">Idioma do dispositivo</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> pretende: <ph name="FIRST_PERMISSION" /> e <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">A sua palavra-passe para <ph name="WEBSITE" /> é guardada neste dispositivo e na sua Conta Google. Qual quer eliminar?</translation>
+<translation id="3898768766145818464">Reproduzir ou pausar vídeo</translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
 <translation id="3900966090527141178">Exportar palavras-passe</translation>
 <translation id="3902789559055749153">Escolha como quer criar uma chave de acesso para a app <ph name="APP_NAME" /></translation>
@@ -3956,6 +3960,7 @@ Pretende pará-lo?</translation>
 <translation id="4595560905247879544">Apenas o gestor (<ph name="CUSTODIAN_NAME" />) pode modificar as aplicações e as extensões.</translation>
 <translation id="4596295440756783523">Tem certificados em arquivo que identificam estes servidores</translation>
 <translation id="4598345735110653698">Gerir chaves de acesso</translation>
+<translation id="4598549027014564149">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em sites, mesmo em sites relacionados. A sua atividade de navegação não é usada para, por exemplo, personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
 <translation id="4598776695426288251">Wi-Fi disponível através de vários dispositivos</translation>
 <translation id="4600071396330666617">Número de sugestões</translation>
@@ -4121,6 +4126,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4750185073185658673">Aceda ao telemóvel para analisar mais algumas autorizações. Certifique-se de que o Bluetooth e o Wi-Fi do telemóvel estão ativados.</translation>
 <translation id="4750394297954878236">Sugestões</translation>
 <translation id="475088594373173692">Primeiro utilizador</translation>
+<translation id="4756302371612574303">Um site que visita pode guardar informações sobre o que está a fazer para que funcione conforme esperado, por exemplo, para manter a sua sessão iniciada num site ou guardar itens no seu carrinho de compras. Muitas vezes, os sites guardam estas informações temporariamente no seu dispositivo.</translation>
 <translation id="4756378406049221019">Parar/atualizar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4756671452988984333">Texto para áudio</translation>
@@ -4461,6 +4467,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="508059534790499809">Atualize uma permissão Kerberos</translation>
 <translation id="5081960376148623587">Escolha se quer pré-carregar páginas</translation>
 <translation id="5084328598860513926">O fluxo de Administração de contas foi interrompido. Tente novamente ou contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
+<translation id="5084622689760736648">É mais provável que os sites funcionem como esperado</translation>
 <translation id="5085162214018721575">A verificar existência de atualizações</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">A nota tem mais de 1000 carateres</translation>
@@ -5868,6 +5875,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6406303162637086258">Simular reinício do navegador</translation>
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6406708970972405507">Definições - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">Com autorização para guardar dados no seu dispositivo</translation>
 <translation id="6408118934673775994">Ler e alterar os seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="6410328738210026208">Alterar canal e Powerwash</translation>
@@ -6681,6 +6689,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7141105143012495934">O início de sessão falhou porque não foi possível obter os detalhes da sua conta. Contacte o gestor ou tente novamente.</translation>
 <translation id="7141844554192012199">Verificação</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
+<translation id="7148426638542880639">Os sites podem não funcionar como esperado. Escolha esta opção se não quiser deixar informações no seu dispositivo sobre os sites que visita.</translation>
 <translation id="7149839598364933473">Converta este dispositivo num dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
@@ -6713,6 +6722,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7186088072322679094">Manter na Barra de ferramentas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> não consegue abrir esta pasta porque contém ficheiros de sistema.</translation>
 <translation id="7187428571767585875">Entradas de registo a remover ou a alterar:</translation>
+<translation id="7188508872042490670">Dados de sites no dispositivo</translation>
 <translation id="7189234443051076392">Certifique-se de que existe espaço suficiente no seu dispositivo.</translation>
 <translation id="7189451821249468368">Não tem atualizações suficientes para inscrever este dispositivo. Entre em contacto com as vendas para comprar mais. Se considera que recebeu esta mensagem por engano, contacte o apoio técnico.</translation>
 <translation id="7189965711416741966">Impressão digital adicionada.</translation>
@@ -6986,6 +6996,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7444970023873202833">Explore mais das suas memórias no Google Fotos</translation>
 <translation id="7444983668544353857">Desactivar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instalar aplicações automaticamente</translation>
+<translation id="7448664748118305024">Apagar dados que os sites guardaram no seu dispositivo quando fecha todas as janelas</translation>
 <translation id="7449381494541372002">a iniciar…</translation>
 <translation id="7449752890690775568">Remover a palavra-passe?</translation>
 <translation id="7450761244949417357">A abrir no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
@@ -8164,6 +8175,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="851263357009351303">Permitir sempre que o site <ph name="HOST" /> mostre imagens</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>
 <translation id="8514746246728959655">Experimente uma chave de segurança diferente</translation>
+<translation id="8514955299594277296">Não permitir que os sites guardem dados no seu dispositivo (não recomendado)</translation>
 <translation id="8519895319663397036">Não é possível importar palavras-passe. O tamanho do ficheiro deve ser inferior a 150 KB.</translation>
 <translation id="8523493869875972733">Manter alterações</translation>
 <translation id="8523849605371521713">Adicionada pela política</translation>
@@ -8608,6 +8620,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8925458182817574960">&amp;Definições</translation>
 <translation id="8926389886865778422">Não voltar a perguntar</translation>
 <translation id="892706138619340876">Algumas definições foram repostas</translation>
+<translation id="8927438609932588163">Permitir que os sites guardem dados no seu dispositivo</translation>
 <translation id="8929696694736010839">Apenas para a sessão de Navegação anónima atual</translation>
 <translation id="8930351635855238750">As novas definições de cookies terão efeito depois de atualizar a página.</translation>
 <translation id="8930622219860340959">Sem fios</translation>

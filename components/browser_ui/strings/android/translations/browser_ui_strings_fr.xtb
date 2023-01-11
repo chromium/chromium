@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1006017844123154345">Ouvrir la version en ligne</translation>
+<translation id="1036348656032585052">Désactiver</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1124090076051167250">Cette action entraînera la suppression de <ph name="DATASIZE" /> de données et de cookies stockés par des sites ou des applications installées sur votre écran d'accueil.</translation>
 <translation id="1178581264944972037">Suspendre</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Effacer toutes les données</translation>
 <translation id="4338831206024587507">Tous les sites du domaine <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
+<translation id="4412992751769744546">Autoriser les cookies tiers</translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="4434045419905280838">Pop-up et redirections</translation>
 <translation id="4440642537584213025">Développer "<ph name="TARGET_DESCRIPTION" />"</translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5516455585884385570">Ouvrir les paramètres de notification</translation>
 <translation id="5527111080432883924">Demander avant d'autoriser les sites à accéder en lecture au texte et aux images du presse-papiers (recommandé)</translation>
+<translation id="5545693483061321551">Les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>
 <translation id="5553374991681107062">Les plus récents</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8300705686683892304">Gérés par l'application</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
-<translation id="834785183489258869">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>
 <translation id="8372893542064058268">Autorisez la synchronisation en arrière-plan pour un site spécifique.</translation>
 <translation id="8376384591331888629">Inclure les cookies tiers de ce site</translation>
 <translation id="83792324527827022">Un site utilise votre appareil photo et votre micro</translation>

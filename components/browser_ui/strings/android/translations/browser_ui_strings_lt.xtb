@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1006017844123154345">Atidaryti prisijungus</translation>
+<translation id="1036348656032585052">Išjungti</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1124090076051167250">Tai atlikus bus išvalyta <ph name="DATASIZE" /> svetainių ar programų jūsų pagrindiniame ekrane saugomų duomenų ir slapukų.</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Išvalyti visus duomenis</translation>
 <translation id="4338831206024587507">Visos svetainės su domenu <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Neleisti svetainėms žinoti, kada aktyviai naudojate šį įrenginį</translation>
+<translation id="4412992751769744546">Leisti trečiųjų šalių slapukus</translation>
 <translation id="4428065317363009941">Skelbimų suasmeninimas</translation>
 <translation id="4434045419905280838">Iššok. langai ir peradresavimai</translation>
 <translation id="4440642537584213025">Išskleisti „<ph name="TARGET_DESCRIPTION" />“</translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Svetainės negali prašyti siųsti pranešimus</translation>
 <translation id="5516455585884385570">Atidaryti pranešimų nustatymus</translation>
 <translation id="5527111080432883924">Klausti, prieš leidžiant svetainėms skaityti tekstą ir vaizdus iš iškarpinės (rekomenduojama)</translation>
+<translation id="5545693483061321551">Svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="5553374991681107062">Naujausi</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Subtitrai</translation>
 <translation id="8300705686683892304">Valdo programa</translation>
 <translation id="8324158725704657629">Daugiau neklausti</translation>
-<translation id="834785183489258869">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="8372893542064058268">Leisti fono sinchronizavimą konkrečioje svetainėje.</translation>
 <translation id="8376384591331888629">Įskaitant trečiosios šalies slapukus jūsų svetainėje</translation>
 <translation id="83792324527827022">Svetainėje naudojamas jūsų fotoaparatas ir mikrofonas</translation>

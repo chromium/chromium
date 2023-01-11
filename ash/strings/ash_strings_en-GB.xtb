@@ -314,7 +314,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2673968385134502798">Games</translation>
 <translation id="2678852583403169292">Select to Speak menu</translation>
 <translation id="2689613560355655046">Desk 8</translation>
-<translation id="2695132445805301912">Show keys and clicks</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected.</translation>
 <translation id="2700493154570097719">Set your keyboard</translation>
@@ -486,6 +485,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Enabling mobile data will enable Bluetooth</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu moved to the top-right corner of the screen.</translation>
 <translation id="3619536907358025872">Screen capture settings</translation>
 <translation id="3621202678540785336">Input</translation>

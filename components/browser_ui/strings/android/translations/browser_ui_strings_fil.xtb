@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1006017844123154345">Buksan Online</translation>
+<translation id="1036348656032585052">I-off</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
 <translation id="1124090076051167250">Iki-clear nito ang <ph name="DATASIZE" /> ng data at cookies na na-store ng mga site o ng mga app sa iyong Home screen.</translation>
 <translation id="1178581264944972037">I-pause</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
 <translation id="3797520601150691162">Huwag ilapat ang madilim na tema para sa isang partikular na site</translation>
+<translation id="3803367742635802571">Posibleng hindi na gumana ayon sa disenyo ang mga site na binibisita mo</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Mga numero ng telepono</translation>
 <translation id="3826050100957962900">Third-party na pag-sign in</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">I-clear ang lahat ng data</translation>
 <translation id="4338831206024587507">Lahat ng site sa ilalim ng <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Pigilan ang mga site na malaman kung kailan mo aktibong ginagamit ang device na ito</translation>
+<translation id="4412992751769744546">Payagan ang third-party na cookies</translation>
 <translation id="4428065317363009941">Pag-personalize ng ad</translation>
 <translation id="4434045419905280838">Mga pop-up at pag-redirect</translation>
 <translation id="4440642537584213025">I-expand ang <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong mikropono, i-on din ang mikropono sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
 <translation id="4570913071927164677">Mga Detalye</translation>
+<translation id="4598549027014564149">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site, kahit sa mga nauugnay na site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Mga motion o light sensor</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Hindi puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="5516455585884385570">Buksan ang mga setting ng notification</translation>
 <translation id="5527111080432883924">Magtanong bago payagan ang mga site na i-read ang text at mga larawan mula sa clipboard (inirerekomenda)</translation>
+<translation id="5545693483061321551">Hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="5553374991681107062">Pinakabago</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">I-block ang pagpapakita ng mga site ng mga pop-up at pag-redirect (inirerekomenda)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">I-refresh</translation>
+<translation id="7188508872042490670">On-device na data ng site</translation>
 <translation id="7203150201908454328">Pinalawak</translation>
 <translation id="723171743924126238">Pumili ng mga larawan</translation>
 <translation id="7243308994586599757">May mga opsyon malapit sa ibaba ng screen</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Mga Caption</translation>
 <translation id="8300705686683892304">Pinapamahalaan ng app</translation>
 <translation id="8324158725704657629">Huwag nang itanong ulit</translation>
-<translation id="834785183489258869">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="8372893542064058268">Payagan ang Pag-sync sa Background para sa isang partikular na site.</translation>
 <translation id="8376384591331888629">Kasama ang third-party na cookies sa site na ito</translation>
 <translation id="83792324527827022">Ginagamit ng isang site ang iyong camera at mikropono</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="848952951823693243">Palaging hilingin ang pang-mobile na site</translation>
 <translation id="8499083585497694743">I-unmute ang mikropono</translation>
+<translation id="8514955299594277296">Huwag payagan ang mga site na mag-save ng data sa iyong device (hindi inirerekomenda)</translation>
 <translation id="851751545965956758">I-block ang mga site sa pagkonekta sa mga device</translation>
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> site ng<ph name="FPS_OWNER" />}one{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> site ng <ph name="FPS_OWNER" />}other{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> na site ng <ph name="FPS_OWNER" />}}</translation>

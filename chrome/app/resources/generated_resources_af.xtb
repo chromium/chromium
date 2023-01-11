@@ -1447,6 +1447,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2280486287150724112">Regterkantlyn</translation>
 <translation id="2281863813036651454">Linkermuisklik</translation>
 <translation id="2282146716419988068">GPU-proses</translation>
+<translation id="228293613124499805">Die meeste werwe wat jy besoek, stoor waarskynlik data op jou toestel – dikwels om jou ervaring te verbeter deur jou voorkeure of inligting wat jy met die werf deel, te stoor. Ons beveel aan dat hierdie instelling aan bly.</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Maak almal in &amp;nuwe oortjiegroep oop}=1{Maak in &amp;nuwe oortjiegroep oop}other{Maak almal ({COUNT}) in &amp;nuwe oortjiegroep oop}}</translation>
 <translation id="2285942871162473373">Kon nie jou vingerafdruk herken nie. Probeer weer.</translation>
 <translation id="2287944065963043964">Aanmeldskerm</translation>
@@ -2889,6 +2890,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3603622770190368340">Kry netwerksertifikaat</translation>
 <translation id="3605780360466892872">Toegeknoop</translation>
 <translation id="3609277884604412258">Kitssoektog</translation>
+<translation id="3610241585790874201">Mag nie data op jou toestel stoor nie</translation>
 <translation id="3610369246614755442">Dokwaaier moet gediens word</translation>
 <translation id="361106536627977100">Flitsdata</translation>
 <translation id="3611655097742243705">Besoek die Play Winkel om meer programme te kry</translation>
@@ -3112,6 +3114,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3802486193901166966">Hierdie uitbreiding vereis geen spesiale toestemmings nie, en dit het geen bykomende werftoegang nie</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803345858388753269">Videogehalte</translation>
+<translation id="3803367742635802571">Werwe wat jy besoek, sal dalk nie meer werk soos ontwerp nie</translation>
 <translation id="380408572480438692">As die insameling van prestasiedata geaktiveer word, sal dit Google help om die stelsel oor tyd te verbeter. Geen data word gestuur totdat jy 'n terugvoeringverslag (Alt-Shift-I) indien en prestasiedata insluit nie. Jy kan te eniger tyd na hierdie skerm terugkeer om insameling te deaktiveer.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (uitbreiding-ID "<ph name="EXTENSION_ID" />") word nie op 'n aanmeldskerm toegelaat nie.</translation>
 <translation id="3807747707162121253">Kanselleer</translation>
@@ -3972,6 +3975,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4595560905247879544">Programme en uitbreidings kan slegs deur die bestuurder (<ph name="CUSTODIAN_NAME" />) gewysig word.</translation>
 <translation id="4596295440756783523">Jy het sertifikate op lêer wat hierdie bedieners identifiseer</translation>
 <translation id="4598345735110653698">Bestuur wagwoordsleutels</translation>
+<translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="4598556348158889687">Bergingbestuur</translation>
 <translation id="4598776695426288251">Wi-Fi beskikbaar via veelvuldige toestelle</translation>
 <translation id="4600071396330666617">Aantal voorstelle</translation>
@@ -4137,6 +4141,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4750185073185658673">Gaan na jou foon om nog ’n paar toestemmings na te gaan. Maak seker dat jou foon se Bluetooth en wi-fi aangeskakel is.</translation>
 <translation id="4750394297954878236">Voorstelle</translation>
 <translation id="475088594373173692">Eerste gebruiker</translation>
+<translation id="4756302371612574303">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos jy sou verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
 <translation id="4756378406049221019">Stop/Herlaai</translation>
 <translation id="4756388243121344051">Geskiedenis</translation>
 <translation id="4756671452988984333">Teks vir oudio</translation>
@@ -4477,6 +4482,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="508059534790499809">Herlaai 'n Kerberos-kaartjie</translation>
 <translation id="5081960376148623587">Kies of bladsye vooraf gelaai moet word</translation>
 <translation id="5084328598860513926">Voorsieningvloei is onderbreek. Probeer weer of kontak jou toesteleienaar of administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="5084622689760736648">Werwe sal meer waarskynlik werk soos jy sou verwag</translation>
 <translation id="5085162214018721575">Gaan tans na vir opdaterings …</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Nota is langer as 1 000 karakters</translation>
@@ -5884,6 +5890,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6406303162637086258">Simuleer blaaierherbegin</translation>
 <translation id="6406506848690869874">Sinkronisering</translation>
 <translation id="6406708970972405507">Instellings – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">Mag data op jou toestel stoor</translation>
 <translation id="6408118934673775994">Lees en verander jou data op <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Prentlêers</translation>
 <translation id="6410328738210026208">Verander kanaal en Kragwas</translation>
@@ -6697,6 +6704,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7141105143012495934">Kon nie aanmeld nie omdat jou rekeningbesonderhede nie gehaal kon word nie. Kontak jou administrateur of probeer weer.</translation>
 <translation id="7141844554192012199">Kontrole</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
+<translation id="7148426638542880639">Werwe sal dalk nie werk soos jy sou verwag nie. Kies hierdie opsie as jy nie inligting op jou toestel wil agterlaat oor werwe wat jy besoek nie.</translation>
 <translation id="7149839598364933473">Skakel hierdie toestel om in 'n <ph name="DEVICE_OS" />-toestel.</translation>
 <translation id="7149893636342594995">Afgelope 24 uur</translation>
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
@@ -6729,6 +6737,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7186088072322679094">Hou in nutsbalk</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan nie hierdie vouer oopmaak nie omdat dit stelsellêers bevat</translation>
 <translation id="7187428571767585875">Registerinskrywings wat verwyder of verander moet word:</translation>
+<translation id="7188508872042490670">Werfdata op toestel</translation>
 <translation id="7189234443051076392">Maak seker dat daar genoeg spasie op jou toestel is</translation>
 <translation id="7189451821249468368">Jy het nie genoeg opgraderings om hierdie toestel in te skryf nie. Kontak asseblief die verkoopsafdeling om meer te koop. As jy meen dis 'n fout dat jy hierdie boodskap sien, moet jy asseblief steundienste kontak.</translation>
 <translation id="7189965711416741966">Vingerafdruk is bygevoeg.</translation>
@@ -7002,6 +7011,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7444970023873202833">Verken meer van jou herinneringe met Google Foto's</translation>
 <translation id="7444983668544353857">Deaktiveer <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installeer programme outomaties</translation>
+<translation id="7448664748118305024">Vee datawerwe wat jy op jou toestel gestoor het uit wanneer jy alle vensters toemaak</translation>
 <translation id="7449381494541372002">begin tans …</translation>
 <translation id="7449752890690775568">Verwyder wagwoord?</translation>
 <translation id="7450761244949417357">Maak tans <ph name="ALTERNATIVE_BROWSER_NAME" /> oop</translation>
@@ -8179,6 +8189,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="851263357009351303">Laat <ph name="HOST" /> altyd toe om prente te wys</translation>
 <translation id="8513108775083588393">Outodraai</translation>
 <translation id="8514746246728959655">Probeer 'n ander sekuriteitsleutel</translation>
+<translation id="8514955299594277296">Moenie werwe toelaat om data op jou toestel te stoor nie (nie aanbeveel nie)</translation>
 <translation id="8519895319663397036">Kan nie wagwoorde invoer nie. Die lêer moet minder as 150 KB groot wees.</translation>
 <translation id="8523493869875972733">Hou veranderings</translation>
 <translation id="8523849605371521713">Bygevoeg volgens beleid</translation>
@@ -8623,6 +8634,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8925458182817574960">Instellings</translation>
 <translation id="8926389886865778422">Moenie weer vra nie</translation>
 <translation id="892706138619340876">Sommige instellings is teruggestel</translation>
+<translation id="8927438609932588163">Laat werwe toe om data op jou toestel te stoor</translation>
 <translation id="8929696694736010839">Net huidige Incognito-sessie</translation>
 <translation id="8930351635855238750">Nuwe webkoekie-instellings sal in werking tree nadat die bladsy herlaai is</translation>
 <translation id="8930622219860340959">Draadloos</translation>

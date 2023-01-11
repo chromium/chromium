@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1006017844123154345">オンライン版を開く</translation>
+<translation id="1036348656032585052">オフにする</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1124090076051167250">サイトまたはホーム画面のアプリにより保存された <ph name="DATASIZE" /> のデータおよび Cookie が削除されます。</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">データをすべて消去</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
+<translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
 <translation id="4428065317363009941">広告のカスタマイズ</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> を開く</translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">通知を送信するかどうかの確認をサイトに許可しない</translation>
 <translation id="5516455585884385570">通知設定を開く</translation>
 <translation id="5527111080432883924">サイトがクリップボードのテキストや画像を読み取る前に確認する（推奨）</translation>
+<translation id="5545693483061321551">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">アプリによる管理</translation>
 <translation id="8324158725704657629">次回から表示しない</translation>
-<translation id="834785183489258869">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="8372893542064058268">特定のサイトに対してバックグラウンド同期を許可します。</translation>
 <translation id="8376384591331888629">このサイトでサードパーティの Cookie を許可する</translation>
 <translation id="83792324527827022">サイトでカメラとマイクが使用されています</translation>

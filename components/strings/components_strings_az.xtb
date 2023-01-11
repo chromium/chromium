@@ -859,6 +859,7 @@
 <translation id="317878711435188021">Bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək</translation>
 <translation id="3180358318770512945">Valideynlik</translation>
 <translation id="3187306450550410410">Çevik iş mühiti</translation>
+<translation id="3187472288455401631">Reklam ölçülməsi</translation>
 <translation id="3190736958609431397">İzləməyin</translation>
 <translation id="319282854780294203">Sosial şəbəkələr</translation>
 <translation id="3194737229810486521"><ph name="URL" /> datanı həmişəlik cihazınızda saxlamaq istəyir</translation>
@@ -1999,6 +2000,7 @@
 <translation id="6039846035001940113">Problem davam edərsə, sayt sahibi ilə əlaqə saxlayın.</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6041777658117377052">Kameranın temperaturu</translation>
+<translation id="6042308850641462728">Daha çox</translation>
 <translation id="6044573915096792553">Ölçü 12</translation>
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
 <translation id="6047233362582046994">Təhlükəsizliklə bağlı riskləri başa düşürsünüzsə, zərərli tətbiqlər silinmədən əvvəl <ph name="BEGIN_LINK" />bu sayta daxil ola<ph name="END_LINK" /> bilərsiniz.</translation>
@@ -2090,6 +2092,7 @@
 <translation id="6290238015253830360">Təklif edilən məqalələriniz burada görünür</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Yadda saxlanılır...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız indi yenidən başladılacaq}=1{Cihazınız 1 saniyə ərzində yenidən başladılacaq}other{Cihazınız # saniyə ərzində yenidən başladılacaq}}</translation>
 <translation id="6301104306974789820">Qiymət izləmə bildirişləri alın</translation>
 <translation id="6305205051461490394"><ph name="URL" /> əlçatmazdır.</translation>

@@ -861,6 +861,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="317878711435188021">Vita hvenær þú notar þetta tæki</translation>
 <translation id="3180358318770512945">Uppeldi</translation>
 <translation id="3187306450550410410">Sveigjanlegur vinnutími</translation>
+<translation id="3187472288455401631">Auglýsingamælingar</translation>
 <translation id="3190736958609431397">Hætta að vakta</translation>
 <translation id="319282854780294203">Netsamfélög</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill fá að geyma gögn varanlega í tækinu þínu</translation>
@@ -2003,6 +2004,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6039846035001940113">Hafðu samband við eiganda vefsvæðisins ef vandamálið er viðvarandi.</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6041777658117377052">Hitastig í hólfi</translation>
+<translation id="6042308850641462728">Meira</translation>
 <translation id="6044573915096792553">Stærð 12</translation>
 <translation id="6045164183059402045">Ásetningarsniðmát</translation>
 <translation id="6047233362582046994">Ef þú skilur öryggisáhættuna sem það hefur í för með sér geturðu <ph name="BEGIN_LINK" />heimsótt þetta vefsvæði<ph name="END_LINK" /> áður en skaðlegu forritin hafa verið fjarlægð.</translation>
@@ -2094,6 +2096,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6290238015253830360">Tillögur að greinum birtast hér</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Vistar...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Tækið verður endurræst núna}=1{Tækið verður endurræst eftir 1 sekúndu}one{Tækið verður endurræst eftir # sekúndu}other{Tækið verður endurræst eftir # sekúndur}}</translation>
 <translation id="6301104306974789820">Fá tilkynningar fyrir verðvöktun</translation>
 <translation id="6305205051461490394">Ekki næst í <ph name="URL" />.</translation>

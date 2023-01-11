@@ -28,6 +28,7 @@
 <translation id="1104621072296271835">ನಿಮ್ಮ ಸಾಧನಗಳು ಜೊತೆಯಲ್ಲಿ ಇನ್ನೂ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
 <translation id="1111021433905331574">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್‌ನ ಬಣ್ಣವನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; <ph name="APP_TITLE" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="112308213915226829">ಶೆಲ್ಫ್ ಅನ್ನು ಸ್ವಯಂಮರೆಮಾಡು</translation>
+<translation id="1135788167815124787">ಪೋರ್ಟ್ರೇಟ್ ರಿಲೈಟಿಂಗ್</translation>
 <translation id="1142002900084379065">ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1150989369772528668">ಕ್ಯಾಲೆಂಡರ್</translation>
@@ -313,7 +314,6 @@
 <translation id="2673968385134502798">ಗೇಮ್‌ಗಳು</translation>
 <translation id="2678852583403169292">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಮೆನು</translation>
 <translation id="2689613560355655046">ಡೆಸ್ಕ್ 8</translation>
-<translation id="2695132445805301912">ಕೀಗಳು ಹಾಗೂ ಕ್ಲಿಕ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2695305337569143674">ವೆಬ್</translation>
 <translation id="2697697418792422688">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. <ph name="KEYBOARD_NAME" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2700493154570097719">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಹೊಂದಿಸಿ</translation>
@@ -485,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುವುದರಿಂದ ಬ್ಲೂಟೂತ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ</translation>
+<translation id="3616113530831147358">ಆಡಿಯೋ</translation>
 <translation id="3616883743181209306">ಮೆನುವನ್ನು ಪರದೆಯ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಬಲತುದಿಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="3619536907358025872">ಸ್ಕ್ರಿನ್ ಕ್ಯಾಪ್ಚರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3621202678540785336">ಇನ್‌ಪುಟ್</translation>
@@ -696,6 +697,7 @@
 <translation id="4740516757091333363">ಉಳಿಸಿದ ಡೆಸ್ಕ್ ಅನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="4752784485658729358">6 ಉಳಿಸಿದ ಡೆಸ್ಕ್‌ಗಳನ್ನು ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ. ಹೊಸದನ್ನು ಉಳಿಸಲು ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
+<translation id="4762573482154983647">ಆ್ಯಪ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4774338217796918551">ನಾಳೆ <ph name="COME_BACK_TIME" /> ಸಮಯಕ್ಕೆ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="4777825441726637019">Play Store</translation>

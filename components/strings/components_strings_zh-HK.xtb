@@ -801,6 +801,7 @@
 <translation id="2986368408720340940">不支援此取貨方式，請選擇其他方式。</translation>
 <translation id="2987034854559945715">沒有相符的功能</translation>
 <translation id="2989742184762224133">雙釘 (頂端)</translation>
+<translation id="2990882401221831923">信用卡清單閂咗。</translation>
 <translation id="2991174974383378012">與其他網站分享</translation>
 <translation id="299122504639061328">管理預設搜尋引擎和站內搜尋</translation>
 <translation id="2991571918955627853">您目前無法瀏覽 <ph name="SITE" />，因為此網站使用 HSTS。網絡錯誤和攻擊行為通常是暫時性問題，所以此網頁應會在稍後回復正常。</translation>
@@ -861,6 +862,7 @@
 <translation id="317878711435188021">知道您是否正在使用此裝置</translation>
 <translation id="3180358318770512945">育兒</translation>
 <translation id="3187306450550410410">彈性工作安排</translation>
+<translation id="3187472288455401631">廣告評估</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="319282854780294203">社交網絡</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在您的裝置上永久儲存數據</translation>
@@ -1584,6 +1586,7 @@
 <translation id="4976702386844183910">上次瀏覽日期：<ph name="DATE" /></translation>
 <translation id="498323057460789381">綱要驗證錯誤：<ph name="ERROR" /></translation>
 <translation id="4984088539114770594">要使用麥克風嗎？</translation>
+<translation id="4988822846878841743">㩒一下先可以填嘅信用卡清單，宜家顯示喺畫面下半部。</translation>
 <translation id="4989163558385430922">查看全部</translation>
 <translation id="4989542687859782284">不受支援的實驗</translation>
 <translation id="4989809363548539747">系統不支援此外掛程式</translation>
@@ -1932,6 +1935,7 @@
 <translation id="5863847714970149516">接下來的頁面可能會向您收取費用</translation>
 <translation id="5866257070973731571">新增電話號碼</translation>
 <translation id="5866898949289125849">您正在查看 Developer Tools 頁面</translation>
+<translation id="5868548454963263350">㩒一下先可以填嘅信用卡清單，宜家顯示喺成個畫面。</translation>
 <translation id="5869405914158311789">無法連線至此網站</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5873013647450402046">銀行要確認您的身分。</translation>
@@ -2002,6 +2006,7 @@
 <translation id="6039846035001940113">如果問題持續，請聯絡網站擁有者。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6041777658117377052">室內溫度</translation>
+<translation id="6042308850641462728">更多選項</translation>
 <translation id="6044573915096792553">粗幼：12</translation>
 <translation id="6045164183059402045">拼版範本</translation>
 <translation id="6047233362582046994">如果您瞭解安全性風險，也可以選擇在有害應用程式尚未移除的狀態下<ph name="BEGIN_LINK" />瀏覽這個網站<ph name="END_LINK" />。</translation>
@@ -2093,6 +2098,7 @@
 <translation id="6290238015253830360">為您推薦的文章會在這裡顯示</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC：</translation>
+<translation id="6295855836753816081">正在儲存...</translation>
 <translation id="6300452962057769623">{0,plural, =0{裝置會立即重新啟動}=1{裝置將於 1 秒後重新啟動}other{裝置將於 # 秒後重新啟動}}</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
 <translation id="6305205051461490394">無法存取 <ph name="URL" />。</translation>
@@ -2642,6 +2648,7 @@
 <translation id="7653957176542370971">付款處理常式工作表閂咗</translation>
 <translation id="7654909834015434372">在您編輯註解時，此文件將會轉回原本的方向</translation>
 <translation id="765676359832457558">隱藏進階設定…</translation>
+<translation id="7656935528854393684">㩒一下先可以填嘅信用卡清單。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659327900411729175">Kaku 8 信封</translation>
 <translation id="7659878911471462949">喜極而泣</translation>

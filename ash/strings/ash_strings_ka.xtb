@@ -314,7 +314,6 @@
 <translation id="2673968385134502798">თამაშები</translation>
 <translation id="2678852583403169292">წარმოსათქმელად მონიშვნის მენიუ</translation>
 <translation id="2689613560355655046">სამუშაო მაგიდა 8</translation>
-<translation id="2695132445805301912">კლავიშებისა და დაწკაპუნებების ჩვენება</translation>
 <translation id="2695305337569143674">ვები</translation>
 <translation id="2697697418792422688">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">დააყენეთ კლავიატურა</translation>
@@ -486,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">მობილური ინტერნეტის ჩართვის შემთხვევაში, ჩაირთვება Bluetooth</translation>
+<translation id="3616113530831147358">აუდიო</translation>
 <translation id="3616883743181209306">მენიუ გადატანილია ეკრანის ზედა მარჯვენა კუთხეში.</translation>
 <translation id="3619536907358025872">ეკრანის აღბეჭდვის პარამეტრები</translation>
 <translation id="3621202678540785336">შეყვანა</translation>
@@ -697,6 +697,7 @@
 <translation id="4740516757091333363">გსურთ, წაშალოთ შენახული სამუშაო მაგიდა?</translation>
 <translation id="4752784485658729358">დაშვებულია მხოლოდ 6 შენახული სამუშაო მაგიდა. ახლის შესანახად წაშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
+<translation id="4762573482154983647">აპების დამალვა</translation>
 <translation id="4774338217796918551">დაბრუნდით ხვალ, <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
 <translation id="4777825441726637019">Play Store</translation>

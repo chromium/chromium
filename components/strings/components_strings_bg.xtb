@@ -861,6 +861,7 @@
 <translation id="317878711435188021">Информация за това дали устройството се използва активно</translation>
 <translation id="3180358318770512945">Отглеждане на деца</translation>
 <translation id="3187306450550410410">Гъвкави режими на работа</translation>
+<translation id="3187472288455401631">Измерване на рекламите</translation>
 <translation id="3190736958609431397">Спиране на проследяването</translation>
 <translation id="319282854780294203">Социални мрежи</translation>
 <translation id="3194737229810486521"><ph name="URL" /> иска да съхранява за постоянно данни на устройството ви</translation>
@@ -2003,6 +2004,7 @@
 <translation id="6039846035001940113">Ако проблемът не бъде отстранен, свържете се със собственика на сайта.</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6041777658117377052">Температура на камерата</translation>
+<translation id="6042308850641462728">Още</translation>
 <translation id="6044573915096792553">Размер 12</translation>
 <translation id="6045164183059402045">Шаблон за налагане</translation>
 <translation id="6047233362582046994">Ако разбирате рисковете за сигурността си, може <ph name="BEGIN_LINK" />да посетите този сайт<ph name="END_LINK" /> преди премахването на опасните приложения.</translation>
@@ -2094,6 +2096,7 @@
 <translation id="6290238015253830360">Предложените ви статии ще се показват тук</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Код за сигурност:</translation>
+<translation id="6295855836753816081">Запазва се...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Устройството ви ще се рестартира сега}=1{Устройството ви ще се рестартира след 1 секунда}other{Устройството ви ще се рестартира след # секунди}}</translation>
 <translation id="6301104306974789820">Получаване на известия за проследяване на цените</translation>
 <translation id="6305205051461490394">Няма достъп до <ph name="URL" />.</translation>

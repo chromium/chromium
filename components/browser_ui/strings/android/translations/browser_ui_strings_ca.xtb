@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1006017844123154345">Obre en línia</translation>
+<translation id="1036348656032585052">Desactiva</translation>
 <translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
 <translation id="1124090076051167250">Amb aquesta acció s'esborraran dades i galetes emmagatzemades pels llocs web o les aplicacions de la pantalla d'inici (<ph name="DATASIZE" />).</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3763247130972274048">Fes doble toc a l'esquerra o a la dreta del vídeo per saltar 10 s</translation>
 <translation id="3797520601150691162">No apliquis el tema fosc a un lloc web concret</translation>
+<translation id="3803367742635802571">És possible que els llocs web que visites deixin de funcionar de la manera prevista</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" /> i <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Números de telèfon</translation>
 <translation id="3826050100957962900">Inici de sessió de tercers</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Esborra totes les dades</translation>
 <translation id="4338831206024587507">Tots els llocs web de <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Bloqueja els llocs web perquè no sàpiguen quan estàs utilitzant aquest dispositiu de manera activa</translation>
+<translation id="4412992751769744546">Permet les galetes de tercers</translation>
 <translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="4434045419905280838">Finestres emergents i redireccions</translation>
 <translation id="4440642537584213025">Desplega <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
+<translation id="4598549027014564149">En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en llocs web, ni tan sols en llocs web relacionats. La teva activitat de navegació no s'utilitza per a coses com ara personalitzar anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
 <translation id="4751476147751820511">Sensors de moviment o de llum</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Els llocs web no poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="5516455585884385570">Obre la configuració de notificacions</translation>
 <translation id="5527111080432883924">Pregunta abans de permetre que els llocs web llegeixin el text i les imatges del porta-retalls (opció recomanada)</translation>
+<translation id="5545693483061321551">Els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="5553374991681107062">Més recents</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5596627076506792578">Més opcions</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Bloqueja les finestres emergents i les redireccions als llocs web (opció recomanada)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualitza</translation>
+<translation id="7188508872042490670">Dades dels llocs web al dispositiu</translation>
 <translation id="7203150201908454328">Ampliat</translation>
 <translation id="723171743924126238">Selecciona imatges</translation>
 <translation id="7243308994586599757">Opcions disponibles a la part inferior de la pantalla</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="8300705686683892304">Gestionats per aplicacions</translation>
 <translation id="8324158725704657629">No m'ho tornis a preguntar</translation>
-<translation id="834785183489258869">En mode d'incògnit, els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="8372893542064058268">Permet la sincronització en segon pla en un lloc concret.</translation>
 <translation id="8376384591331888629">Incloses les galetes de tercers en aquest lloc web</translation>
 <translation id="83792324527827022">Un lloc web està utilitzant la càmera i el micròfon</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="848952951823693243">Sol·licita sempre el lloc web per a mòbils</translation>
 <translation id="8499083585497694743">Deixa de silenciar el micròfon</translation>
+<translation id="8514955299594277296">No permetis que els llocs web desin dades al teu dispositiu (opció no recomanada)</translation>
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> lloc web de <ph name="FPS_OWNER" />}other{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> llocs web de <ph name="FPS_OWNER" />}}</translation>

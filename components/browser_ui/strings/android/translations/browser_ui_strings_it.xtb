@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1006017844123154345">Apri online</translation>
+<translation id="1036348656032585052">Disattiva</translation>
 <translation id="1044891598689252897">I siti funzioneranno normalmente</translation>
 <translation id="1124090076051167250">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati da siti e app nella schermata Home.</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3763247130972274048">Tocca due volte il video a sinistra o a destra per saltare di 10 secondi</translation>
 <translation id="3797520601150691162">Non applicare il tema scuro a un sito specifico</translation>
+<translation id="3803367742635802571">I siti che visiti potrebbero non funzionare più come previsto</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Numeri di telefono</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Cancella tutti i dati</translation>
 <translation id="4338831206024587507">Tutti i siti in <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impedisci ai siti di sapere quando usi attivamente questo dispositivo</translation>
+<translation id="4412992751769744546">Consenti cookie di terze parti</translation>
 <translation id="4428065317363009941">Personalizzazione degli annunci</translation>
 <translation id="4434045419905280838">Popup e reindirizzamenti</translation>
 <translation id="4440642537584213025">Espandi <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Per consentire all'app <ph name="APP_NAME" /> di accedere al tuo microfono, devi attivare il microfono anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Disattiva microfono</translation>
 <translation id="4570913071927164677">Dettagli</translation>
+<translation id="4598549027014564149">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione sui siti, inclusi quelli correlati. La tua attività di navigazione non viene usata, ad esempio, per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">I siti non possono chiedere di inviare notifiche</translation>
 <translation id="5516455585884385570">Apri le impostazioni di notifica</translation>
 <translation id="5527111080432883924">Chiedi conferma prima di consentire ai siti di leggere testo e immagini negli appunti (opzione consigliata)</translation>
+<translation id="5545693483061321551">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti web, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="5553374991681107062">Più recenti</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Impedisci ai siti di mostrare popup e reindirizzamenti (opzione consigliata)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
+<translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7203150201908454328">Espanso</translation>
 <translation id="723171743924126238">Seleziona immagini</translation>
 <translation id="7243308994586599757">Opzioni disponibili nella parte inferiore dello schermo</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Sottotitoli</translation>
 <translation id="8300705686683892304">Gestiti dall'app</translation>
 <translation id="8324158725704657629">Non chiedermelo più</translation>
-<translation id="834785183489258869">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="8372893542064058268">Consenti la sincronizzazione in background per un sito specifico.</translation>
 <translation id="8376384591331888629">Inclusi i cookie di terze parti su questo sito</translation>
 <translation id="83792324527827022">Un sito sta utilizzando la fotocamera e il microfono</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="848952951823693243">Richiedi sempre sito mobile</translation>
 <translation id="8499083585497694743">Riattiva microfono</translation>
+<translation id="8514955299594277296">Non consentire ai siti di salvare dati sul dispositivo (opzione non consigliata)</translation>
 <translation id="851751545965956758">Impedisci ai siti di connettersi ai dispositivi</translation>
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> sito <ph name="FPS_OWNER" />}other{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> siti <ph name="FPS_OWNER" />}}</translation>

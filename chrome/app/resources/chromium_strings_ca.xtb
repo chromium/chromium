@@ -251,6 +251,7 @@
 <translation id="6598877126913850652">Ves a la configuració de notificacions de Chromium</translation>
 <translation id="6613594504749178791">Els canvis s'aplicaran la propera vegada que reinicieu Chromium.</translation>
 <translation id="665732753414869868">Chromium necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
+<translation id="6663852025006259149">És probable que els llocs web funcionin de la manera prevista, però no et recordaran després de tancar totes les finestres de Chromium</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>
 <translation id="668175097507315160">Chromium OS no ha pogut sincronitzar les teves dades a causa d'un error en iniciar la sessió.</translation>
 <translation id="6709350901466051922">Chromium necessita permís d'accés al micròfon per a aquest lloc web</translation>
@@ -381,5 +382,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="945990405696787151">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 10.13 o una versió posterior. Aquest ordinador utilitza OS X 10.11.</translation>
 <translation id="965162752251293939">Qui està utilitzant Chromium?</translation>
 <translation id="967427899662692980">Obtén la seguretat més efectiva de Chromium</translation>
+<translation id="9792300276217204">Esborra sempre les dades dels llocs web del dispositiu quan tanquis Chromium</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 </translationbundle>

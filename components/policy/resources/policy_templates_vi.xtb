@@ -2096,9 +2096,6 @@ Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> có t
 <translation id="2960999045613902792">Cho phép người dùng thêm, định cấu hình và in bằng máy in không thuộc sở hữu của doanh nghiệp</translation>
 <translation id="2962972237615992440">Tắt proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Tắt tính năng nhập bằng giọng nói</translation>
-<translation id="2964056138564883247">Kiểm soát khả năng sử dụng <ph name="BOREALIS_NAME" /> đối với người dùng này.
-
-      Nếu bạn tắt chính sách này, <ph name="BOREALIS_NAME" /> sẽ không sử dụng được. Khi bạn bật hoặc không đặt chính sách này, <ph name="BOREALIS_NAME" /> sẽ chỉ sử dụng được nếu không bị chế độ cài đặt hoặc chính sách khác vô hiệu hóa.</translation>
 <translation id="2964373560810620158">Ngăn người dùng sử dụng trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Cho phép các trang web sử dụng SharedArrayBuffers</translation>
 <translation id="2969489219271682844">Không hiện thông báo khi phát hiện thiết bị USB</translation>
@@ -5409,7 +5406,6 @@ Nếu bạn không đặt chính sách, thì tất cả miền sẽ không thể
       Nếu bạn không đặt chính sách này, thì cấu hình mặc định cho hộp cát âm thanh sẽ được sử dụng. Cấu hình này có thể khác nhau tùy theo nền tảng.
       Chính sách này nhằm cho phép doanh nghiệp có thể tắt hộp cát âm thanh một cách linh hoạt nếu họ sử dụng các tùy chọn thiết lập phần mềm bảo mật gây cản trở hộp cát.</translation>
 <translation id="624818583115864448">cổng 554 (có thể được bỏ chặn cho đến ngày 15/10/2021)</translation>
-<translation id="6252773211180267325">Cho phép một người dùng chạy <ph name="BOREALIS_NAME" /></translation>
 <translation id="6254498834449523938">Không cho phép người dùng bỏ qua cảnh báo Duyệt web an toàn</translation>
 <translation id="625580680776945310">Chế độ hiệu quả cao sẽ được bật.</translation>
 <translation id="6258658183356534534">Kiểm soát tính năng Cập nhật thuật toán GREASE trong User-Agent Client Hints.</translation>

@@ -858,6 +858,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="317878711435188021">Gailua noiz erabiltzen ari zaren jakin.</translation>
 <translation id="3180358318770512945">Gurasotasuna</translation>
 <translation id="3187306450550410410">Lan-hitzarmen malguak</translation>
+<translation id="3187472288455401631">Iragarkien neurketa</translation>
 <translation id="3190736958609431397">Utzi jarraipena egiteari</translation>
 <translation id="319282854780294203">Sare sozialak</translation>
 <translation id="3194737229810486521"><ph name="URL" /> webguneak datuak gorde nahi ditu gailuan modu iraunkorrean</translation>
@@ -1999,6 +2000,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6039846035001940113">Arazoak badirau, jarri webgunearen jabearekin harremanetan.</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6041777658117377052">Gelako tenperatura</translation>
+<translation id="6042308850641462728">Gehiago</translation>
 <translation id="6044573915096792553">Tamaina: 12</translation>
 <translation id="6045164183059402045">Ezarritako txantiloia</translation>
 <translation id="6047233362582046994">Eragiten dituen segurtasun-arriskuak ulertzen badituzu, <ph name="BEGIN_LINK" />webgune hau ikusi beharko zenuke<ph name="END_LINK" /> aplikazio kaltegarriak kendu aurretik.</translation>
@@ -2089,6 +2091,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6290238015253830360">Iradokitako artikuluak agertuko zaizkizu hemen</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Gordetzen…</translation>
 <translation id="6300452962057769623">{0,plural, =0{Orain berrabiaraziko da gailua}=1{1 segundo barru berrabiaraziko da gailua}other{# segundo barru berrabiaraziko da gailua}}</translation>
 <translation id="6301104306974789820">Jaso prezio-jaitsieren jakinarazpenak</translation>
 <translation id="6305205051461490394">Ezin da konektatu <ph name="URL" /> webgunera.</translation>

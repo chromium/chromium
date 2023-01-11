@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">अर्को कुनै पनि बटन छैन</translation>
 <translation id="2911433807131383493">खुला ChromeVox ट्यूटोरियल</translation>
 <translation id="2912405967290226587">तीन औँलाले दायाँ स्वाइप गर्नुहोस्</translation>
+<translation id="2919107550468490321">स्मार्ट स्टिकी मोड अन छ</translation>
 <translation id="2937799153569150791">अर्को कुनै लेभल ३ शीर्षक छैन</translation>
 <translation id="2942710183375260152">गाढा स्लेट मिश्रित निलो</translation>
 <translation id="2943596527105977722">गाढा सुनौलो रडको रङ्ग</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">पिच घटाउनुहोस्</translation>
 <translation id="3009352964623081324">Search + O, त्यसपछि S आवाजहरू इन्स्टल गर्न, व्यवस्थापन गर्न र आफ्नो रोजाइ अनुकूल बनाउन यो किबोर्ड सर्टकट प्रयोग गरिन्छ।</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox लोड हुँदै छ</translation>
 <translation id="3030432017085518523">मेनु वस्तु रेडियो बटन</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ एपोस्ट्रोफी}other{# एपोस्ट्रोफीहरू}}</translation>
 <translation id="3040901448410802366">प्रगति सूचक</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3813387282697781382">हल्का कोरल</translation>
 <translation id="3816633764618089385">अर्को मिडिया</translation>
+<translation id="3821689185319271077">पोइन्टर एङ्कर छैन</translation>
 <translation id="3840823741487267909">संक्षिप्त रूप</translation>
 <translation id="3841319830220785495">डिफल्ट प्राकृतिक आवाज</translation>
 <translation id="385383972552776628">विकल्प पाना खोल्नुहोस्</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">फाराम</translation>
 <translation id="4601367666219428522">तालिका <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">अर्को कुञ्जीलाई थिच्दा बरवास्ता गर्ने</translation>
+<translation id="4617384941327705512">स्मार्ट स्टिकी मोड अफ छ</translation>
 <translation id="4623097797855662355">कोलोफन</translation>
 <translation id="4624970070706497034">TalkBack ले अब Chromebooks मा कस्टमाइज गर्ने सुविधा प्रदान गर्दैन। तपाईं अझै पनि TalkBack प्रयोग गर्न सक्नुहुन्छ तर तपाईंले TalkBack का डिफल्ट किबोर्ड सर्टकटहरू प्रयोग गर्नु पर्ने हुन्छ। उपलब्ध सर्टकटहरू हेर्न Search+A थिच्नुहोस्, त्यसपछि K थिच्नुहोस्। तपाईं अझै पनि TalkBack प्रयोग गर्न चाहनुहुन्छ भने फेरि कमान्ड की थिच्नुहोस्।</translation>
 <translation id="463135993322337640">यसमा नयाँ के छ भन्ने कुरा थाहा पाउन ChromeVox o, n थिच्नुहोस्</translation>

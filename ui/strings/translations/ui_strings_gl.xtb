@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 mes}other{# meses}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{Unha hora e }other{# horas e }}</translation>
+<translation id="185013357618350178">&amp;Seleccionar</translation>
 <translation id="1859234291848436338">Dirección de escritura</translation>
 <translation id="1860796786778352021">Peche da notificación</translation>
 <translation id="186476001994626254">Contido da función de pegado intelixente da Web</translation>

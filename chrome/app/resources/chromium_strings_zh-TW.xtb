@@ -251,6 +251,7 @@
 <translation id="6598877126913850652">前往 Chromium 通知設定</translation>
 <translation id="6613594504749178791">你的變更將於下次重新啟動 Chromium 時生效。</translation>
 <translation id="665732753414869868">Chromium 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
+<translation id="6663852025006259149">網站可能會正常運作，但不會在所有 Chromium 視窗關閉後記住你的偏好設定和與你有關的資訊</translation>
 <translation id="6676384891291319759">連線到網際網路</translation>
 <translation id="668175097507315160">登入時發生錯誤，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="6709350901466051922">Chromium 需要麥克風權限，才能執行這個網站要求的功能</translation>
@@ -381,5 +382,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="945990405696787151">如要取得日後的 Chromium 更新，必須使用 macOS 10.13 以上版本。這部電腦目前版本為 OS X 10.11。</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="967427899662692980">獲得 Chromium 最強大的安全防護</translation>
+<translation id="9792300276217204">在 Chromium 關閉後一律清除裝置上的網站資料</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

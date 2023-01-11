@@ -801,6 +801,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2986368408720340940">Este método de recolha não está disponível. Experimente um método diferente.</translation>
 <translation id="2987034854559945715">Nenhuma funcionalidade correspondente</translation>
 <translation id="2989742184762224133">Agrafo duplo na parte superior</translation>
+<translation id="2990882401221831923">A lista de cartões de crédito está fechada.</translation>
 <translation id="2991174974383378012">Partilha com Sites</translation>
 <translation id="299122504639061328">Gerir o motor de pesquisa e a pesquisa de sites predefinidos</translation>
 <translation id="2991571918955627853">Não pode visitar <ph name="SITE" /> neste momento, porque o Website utiliza HSTS. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
@@ -861,6 +862,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="317878711435188021">Saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="3180358318770512945">Parentalidade</translation>
 <translation id="3187306450550410410">Condições de trabalho flexíveis</translation>
+<translation id="3187472288455401631">Medição de anúncios</translation>
 <translation id="3190736958609431397">Desativar monitorização</translation>
 <translation id="319282854780294203">Redes sociais</translation>
 <translation id="3194737229810486521"><ph name="URL" /> pretende armazenar permanentemente dados no seu dispositivo.</translation>
@@ -1585,6 +1587,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4976702386844183910">Última visita a <ph name="DATE" /></translation>
 <translation id="498323057460789381">Erro de validação do esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Pretende utilizar o microfone?</translation>
+<translation id="4988822846878841743">Lista de cartões de crédito a preencher com o toque aberta a meia altura.</translation>
 <translation id="4989163558385430922">Ver tudo</translation>
 <translation id="4989542687859782284">Indisponível</translation>
 <translation id="4989809363548539747">Este plug-in não é compatível</translation>
@@ -1933,6 +1936,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5863847714970149516">A próxima página pode tentar cobrar-lhe dinheiro</translation>
 <translation id="5866257070973731571">Adicionar número de telefone</translation>
 <translation id="5866898949289125849">Está a visualizar uma página de ferramentas para programadores</translation>
+<translation id="5868548454963263350">Lista de cartões de crédito a preencher com o toque aberta à altura total.</translation>
 <translation id="5869405914158311789">Não é possível aceder a este site</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5873013647450402046">O banco quer confirmar a sua identidade.</translation>
@@ -2003,6 +2007,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6039846035001940113">Se o problema persistir, contacte o proprietário do site.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6041777658117377052">Temperatura na câmara</translation>
+<translation id="6042308850641462728">Mais</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
 <translation id="6047233362582046994">Se compreende os riscos para a sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de as aplicações prejudiciais terem sido removidas.</translation>
@@ -2094,6 +2099,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6290238015253830360">Os seus artigos sugeridos são apresentados aqui</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Código de segurança:</translation>
+<translation id="6295855836753816081">A guardar...</translation>
 <translation id="6300452962057769623">{0,plural, =0{O seu dispositivo será reiniciado agora}=1{O seu dispositivo será reiniciado dentro de 1 segundo}other{O seu dispositivo será reiniciado dentro de # segundos}}</translation>
 <translation id="6301104306974789820">Receba notificações de monitorização de preços</translation>
 <translation id="6305205051461490394"><ph name="URL" /> está inacessível.</translation>
@@ -2642,6 +2648,7 @@ Detalhes adicionais:
 <translation id="7653957176542370971">A página do controlador do pagamento está fechada.</translation>
 <translation id="7654909834015434372">Quando edita anotações, este documento volta à respetiva rotação original.</translation>
 <translation id="765676359832457558">Ocultar definições avançadas...</translation>
+<translation id="7656935528854393684">Lista de cartões de crédito a preencher com o toque.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">Lágrimas de alegria</translation>

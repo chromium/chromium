@@ -801,6 +801,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2986368408720340940">Ta metoda odbioru jest niedostępna. Wybierz inną.</translation>
 <translation id="2987034854559945715">Brak pasujących funkcji</translation>
 <translation id="2989742184762224133">Dwie zszywki u góry</translation>
+<translation id="2990882401221831923">Lista kart kredytowych jest zamknięta.</translation>
 <translation id="2991174974383378012">Udostępnianie stronom internetowym</translation>
 <translation id="299122504639061328">Zarządzaj domyślną wyszukiwarką i wyszukiwaniem w witrynie</translation>
 <translation id="2991571918955627853">Nie możesz teraz wejść na stronę <ph name="SITE" />, ponieważ używa ona HSTS. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
@@ -861,6 +862,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="317878711435188021">Wiedzieć, kiedy używasz urządzenia</translation>
 <translation id="3180358318770512945">Rodzicielstwo</translation>
 <translation id="3187306450550410410">Elastyczne zarządzanie pracą</translation>
+<translation id="3187472288455401631">Pomiar skuteczności reklam</translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="319282854780294203">Sieci społecznościowe</translation>
 <translation id="3194737229810486521"><ph name="URL" /> chce na stałe przechowywać dane na Twoim urządzeniu</translation>
@@ -1585,6 +1587,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
 <translation id="498323057460789381">Błąd weryfikacji schematu: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Korzystać z mikrofonu?</translation>
+<translation id="4988822846878841743">Lista kart kredytowych, których dane możesz wypełnić kliknięciem, jest otwarta na połowę wysokości.</translation>
 <translation id="4989163558385430922">Pokaż wszystko</translation>
 <translation id="4989542687859782284">Niedostępne</translation>
 <translation id="4989809363548539747">Ta wtyczka nie jest obsługiwana</translation>
@@ -1933,6 +1936,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5863847714970149516">Otwierana strona może próbować obciążyć Cię płatnością</translation>
 <translation id="5866257070973731571">Dodaj numer telefonu</translation>
 <translation id="5866898949289125849">To jest strona z narzędziami dla programistów</translation>
+<translation id="5868548454963263350">Lista kart kredytowych, których dane możesz wypełnić kliknięciem, jest otwarta na całą wysokość.</translation>
 <translation id="5869405914158311789">Ta witryna jest nieosiągalna</translation>
 <translation id="5869522115854928033">Zapisane hasła</translation>
 <translation id="5873013647450402046">Bank chce potwierdzić Twoją tożsamość.</translation>
@@ -2003,6 +2007,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6039846035001940113">Jeśli problem nie ustąpi, skontaktuj się z właścicielem strony.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6041777658117377052">Temperatura w komorze</translation>
+<translation id="6042308850641462728">Więcej</translation>
 <translation id="6044573915096792553">Rozmiar 12</translation>
 <translation id="6045164183059402045">Szablon impozycji</translation>
 <translation id="6047233362582046994">Jeśli rozumiesz zagrożenie, możesz <ph name="BEGIN_LINK" />wejść na tę stronę<ph name="END_LINK" />, zanim szkodliwe aplikacje zostaną usunięte.</translation>
@@ -2094,6 +2099,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6290238015253830360">Tutaj wyświetlą się proponowane artykuły</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Kod CVC:</translation>
+<translation id="6295855836753816081">Zapisuję…</translation>
 <translation id="6300452962057769623">{0,plural, =0{Twoje urządzenie uruchomi się ponownie teraz}=1{Twoje urządzenie uruchomi się ponownie za 1 sekundę}few{Twoje urządzenie uruchomi się ponownie za # sekundy}many{Twoje urządzenie uruchomi się ponownie za # sekund}other{Twoje urządzenie uruchomi się ponownie za # sekundy}}</translation>
 <translation id="6301104306974789820">Otrzymuj powiadomienia ze śledzenia cen</translation>
 <translation id="6305205051461490394">Strona <ph name="URL" /> jest nieosiągalna.</translation>
@@ -2643,6 +2649,7 @@ Dodatkowe informacje:
 <translation id="7653957176542370971">Arkusz modułu do obsługi płatności jest zamknięty</translation>
 <translation id="7654909834015434372">Gdy zmodyfikujesz adnotacje, dokument wróci do pierwotnej orientacji</translation>
 <translation id="765676359832457558">Ukryj ustawienia zaawansowane...</translation>
+<translation id="7656935528854393684">Lista kart kredytowych, których dane możesz wypełnić kliknięciem.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7659327900411729175">Koperta Kaku 8</translation>
 <translation id="7659878911471462949">Płacz ze szczęścia</translation>

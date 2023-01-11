@@ -28,6 +28,7 @@
 <translation id="1104621072296271835">ਰਲ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਹੋਰ ਵੀ ਬਿਹਤਰ ਕੰਮ ਕਰਦੇ ਹਨ</translation>
 <translation id="1111021433905331574">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; <ph name="APP_TITLE" /> 'ਤੇ ਜਾ ਕੇ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਦਾ ਰੰਗ ਬਦਲ ਸਕਦੇ ਹੋ</translation>
 <translation id="112308213915226829">ਸ਼ੈਲਫ ਆਟੋਲੁਕਾਓ</translation>
+<translation id="1135788167815124787">ਪੋਰਟਰੇਟ ਰੀਲਾਈਟਿੰਗ</translation>
 <translation id="1142002900084379065">ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ਲਈ ਜਾਣਕਾਰੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="1150989369772528668">Calendar</translation>
@@ -313,7 +314,6 @@
 <translation id="2673968385134502798">ਗੇਮਾਂ</translation>
 <translation id="2678852583403169292">ਚੁਣੋ ਅਤੇ ਸੁਣੋ ਮੀਨੂ</translation>
 <translation id="2689613560355655046">ਡੈਸਕ 8</translation>
-<translation id="2695132445805301912">ਕੁੰਜੀਆਂ ਅਤੇ ਕਲਿੱਕਾਂ ਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="2695305337569143674">ਵੈੱਬ</translation>
 <translation id="2697697418792422688">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਨੂੰ ਦਿਖਾਓ। <ph name="KEYBOARD_NAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="2700493154570097719">ਆਪਣਾ ਕੀ-ਬੋਰਡ ਸੈੱਟ ਕਰੋ</translation>
@@ -485,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ ਕਰਨ ਨਾਲ ਬਲੂਟੁੱਥ ਵੀ ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ</translation>
+<translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3616883743181209306">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="3619536907358025872">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3621202678540785336">ਇਨਪੁਟ</translation>
@@ -696,6 +697,7 @@
 <translation id="4740516757091333363">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4752784485658729358">ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਸਿਰਫ਼ 6 ਡੈਸਕਾਂ ਦੀ ਆਗਿਆ ਹੈ। ਨਵਾਂ ਡੈਸਕ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਡੈਸਕ ਹਟਾਓ।</translation>
 <translation id="4759238208242260848">ਡਾਊਨਲੋਡਸ</translation>
+<translation id="4762573482154983647">ਐਪਾਂ ਲੁਕਾਓ</translation>
 <translation id="4774338217796918551">ਕੱਲ੍ਹ <ph name="COME_BACK_TIME" /> ਡੀਵਾਈਸ ਦੁਬਾਰਾ ਵਰਤੋ।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਪਾਸਵਰਡ</translation>
 <translation id="4777825441726637019">Play Store</translation>

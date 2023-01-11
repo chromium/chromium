@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1006017844123154345">Abrir on-line</translation>
+<translation id="1036348656032585052">Desativar</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="1124090076051167250">Essa ação vai apagar <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps na sua tela inicial.</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Limpar todos os dados</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impedir que sites saibam quando você está usando este dispositivo</translation>
+<translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="4440642537584213025">Abrir <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Os sites não podem pedir para enviar notificações</translation>
 <translation id="5516455585884385570">Abrir configurações de notificação</translation>
 <translation id="5527111080432883924">Perguntar antes de permitir que sites leiam textos e imagens da área de transferência (recomendado)</translation>
+<translation id="5545693483061321551">Os sites não podem usar seus cookies para ver sua atividade de navegação em diferentes páginas, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8300705686683892304">Gerenciados por app</translation>
 <translation id="8324158725704657629">Não perguntar novamente</translation>
-<translation id="834785183489258869">Na navegação anônima, os sites não podem usar seus cookies para ver suas atividades de navegação em outras páginas, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="8372893542064058268">Permitir a sincronização em segundo plano para um site específico.</translation>
 <translation id="8376384591331888629">Incluir também os cookies de terceiros desse site</translation>
 <translation id="83792324527827022">Um site está usando sua câmera e seu microfone</translation>

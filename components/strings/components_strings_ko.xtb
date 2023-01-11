@@ -861,6 +861,7 @@
 <translation id="317878711435188021">사용자가 현재 기기를 사용 중인지 확인합니다.</translation>
 <translation id="3180358318770512945">육아</translation>
 <translation id="3187306450550410410">유연 근무</translation>
+<translation id="3187472288455401631">광고 측정</translation>
 <translation id="3190736958609431397">추적 취소</translation>
 <translation id="319282854780294203">사회 연결망</translation>
 <translation id="3194737229810486521"><ph name="URL" />에서 내 기기에 데이터를 영구 저장하려고 합니다</translation>
@@ -2003,6 +2004,7 @@
 <translation id="6039846035001940113">문제가 계속되면 사이트 소유자에게 문의하세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6041777658117377052">챔버 온도</translation>
+<translation id="6042308850641462728">자세히</translation>
 <translation id="6044573915096792553">크기 12</translation>
 <translation id="6045164183059402045">적용 템플릿</translation>
 <translation id="6047233362582046994">유해한 앱이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />하는 경우 보안상 위험을 반드시 이해하시기 바랍니다.</translation>
@@ -2094,6 +2096,7 @@
 <translation id="6290238015253830360">추천 콘텐츠가 여기에 표시됩니다.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">저장 중...</translation>
 <translation id="6300452962057769623">{0,plural, =0{지금 기기가 다시 시작됩니다}=1{1초 후에 기기가 다시 시작됩니다}other{#초 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="6301104306974789820">가격 추적 알림 받기</translation>
 <translation id="6305205051461490394"><ph name="URL" />에 연결할 수 없습니다.</translation>

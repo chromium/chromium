@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Sonrakı düymə yoxdur</translation>
 <translation id="2911433807131383493">ChromeVox dərsliyini açın</translation>
 <translation id="2912405967290226587">Üç barmağınızla sağa çəkin</translation>
+<translation id="2919107550468490321">Ağıllı yapışqan rejim aktivdir</translation>
 <translation id="2937799153569150791">Sonrakı 3-cü səviyyə başlığı yoxdur</translation>
 <translation id="2942710183375260152">Tünd-barıt Mavisi</translation>
 <translation id="2943596527105977722">Tünd Qızıl Sarısı</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Səs tonunu azaldın</translation>
 <translation id="3009352964623081324">Axtarış + O, sonra S. Səsləri quraşdırmaq, idarə etmək və fərdiləşdirmək üçün istifadə edin.</translation>
 <translation id="3014130421870723208">@8 nöqtəli sahəyə düzəliş edin</translation>
+<translation id="3018210433491759145">ChromeVox yüklənir</translation>
 <translation id="3030432017085518523">Menyu elementi radio düyməsi</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}other{# apostrof}}</translation>
 <translation id="3040901448410802366">Gedişat göstəricisi</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Açıq Mərcan Qırmızısı</translation>
 <translation id="3816633764618089385">Növbəti media</translation>
+<translation id="3821689185319271077">Göstərici anker yoxdur</translation>
 <translation id="3840823741487267909">Abreviatura</translation>
 <translation id="3841319830220785495">Defolt təbii səs</translation>
 <translation id="385383972552776628">Seçənəklər səhifəsini açın</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">forma</translation>
 <translation id="4601367666219428522"><ph name="TABLEROWS" />x<ph name="TABLECOLS" /> <ph name="TABLENAME" /></translation>
 <translation id="4615592953348396470">Növbəti düymə basımı ləğv edilir</translation>
+<translation id="4617384941327705512">Ağıllı yapışqan rejim deaktivdir</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack artıq Chromebook'lar üçün fərdiləşdirmə təmin etmir. Hələ də ondan istifadə edə bilərsiniz, lakin TalkBack defolt klaviatura qısayollarından istifadə edin. Əlçatan qısayolları görmək üçün Search+A, sonra K düymələrini basın. Hələ də TalkBack-dən istifadə etmək istəyirsinizsə, əmri yenidən basın.</translation>
 <translation id="463135993322337640">Yeniliklərə baxmaq üçün ChromeVox o, n düymələrinə basın</translation>

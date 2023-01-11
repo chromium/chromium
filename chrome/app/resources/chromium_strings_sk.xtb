@@ -253,6 +253,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6598877126913850652">Prejsť do nastavení upozornení prehliadača Chromium</translation>
 <translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
 <translation id="665732753414869868">Chromium vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
+<translation id="6663852025006259149">Weby budú pravdepodobne fungovať podľa vašich očakávaní, ale po zavretí všetkých okien prehliadača Chromium si vás nebudú pamätať</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>
 <translation id="668175097507315160">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože sa pri prihlasovaní vyskytla chyba.</translation>
 <translation id="6709350901466051922">Chromium vyžaduje pre tento web povolený prístup k mikrofónu</translation>
@@ -383,5 +384,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="945990405696787151">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 10.13 alebo novší. V tomto počítači používate OS X 10.11.</translation>
 <translation id="965162752251293939">Kto používa Chromium?</translation>
 <translation id="967427899662692980">Získajte najsilnejšie zabezpečenie prehliadača Chromium</translation>
+<translation id="9792300276217204">Vždy vymazať dáta webov zo zariadenia po zavretí prehliadača Chromium</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
 </translationbundle>

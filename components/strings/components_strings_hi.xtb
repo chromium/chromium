@@ -861,6 +861,7 @@
 <translation id="317878711435188021">जानना चाहती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="3180358318770512945">बच्चे की परवरिश से जुड़ी जानकारी</translation>
 <translation id="3187306450550410410">कर्मचारी के हिसाब से काम करने की व्यवस्था</translation>
+<translation id="3187472288455401631">विज्ञापनों की परफ़ॉर्मेंस का पता लगाना</translation>
 <translation id="3190736958609431397">ट्रैक न करें</translation>
 <translation id="319282854780294203">सोशल नेटवर्क</translation>
 <translation id="3194737229810486521"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए डेटा संग्रहीत करना चाहता है</translation>
@@ -2003,6 +2004,7 @@
 <translation id="6039846035001940113">अगर समस्या बनी रहती है, तो साइट के मालिक से संपर्क करें.</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6041777658117377052">चेंबर का तापमान</translation>
+<translation id="6042308850641462728">और ज़्यादा</translation>
 <translation id="6044573915096792553">आकार 12</translation>
 <translation id="6045164183059402045">इम्पोज़िशन टेम्प्लेट</translation>
 <translation id="6047233362582046994">अगर आप अपनी सुरक्षा को होने वाले खतरों के बारे में जानते हैं तो, खतरनाक ऐप्लिकेशन हटाए जाने से पहले आप <ph name="BEGIN_LINK" />इस साइट पर जा<ph name="END_LINK" /> सकते हैं.</translation>
@@ -2094,6 +2096,7 @@
 <translation id="6290238015253830360">आपके सुझाए हुए लेख यहां दिखाई देते हैं</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">सहेज रहा है...</translation>
 <translation id="6300452962057769623">{0,plural, =0{आपका डिवाइस अभी रीस्टार्ट होगा}=1{आपका डिवाइस 1 सेकंड में रीस्टार्ट होगा}one{आपका डिवाइस # सेकंड में रीस्टार्ट होगा}other{आपका डिवाइस # सेकंड में रीस्टार्ट होगा}}</translation>
 <translation id="6301104306974789820">आइटम की कीमत ट्रैक करने से जुड़ी सूचनाएं पाएं</translation>
 <translation id="6305205051461490394"><ph name="URL" /> तक नहीं पहुंचा जा सकता.</translation>

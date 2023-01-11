@@ -929,6 +929,7 @@
 <translation id="1819721979226826163">ऐप्लिकेशन सूचनाएं &gt; Google Play सेवाएं पर टैप करें.</translation>
 <translation id="1820028137326691631">एडमिन का दिया हुआ पासवर्ड डालें</translation>
 <translation id="1822140782238030981">पहले से Chrome इस्तेमाल कर रहे हैं? तो साइन इन करें</translation>
+<translation id="1823781806707127806">मौजूदा ब्राउज़िंग डेटा को मैनेज की जा रही प्रोफ़ाइल में जोड़ें</translation>
 <translation id="18245044880483936">बैकअप लिया गया डेटा, आपके बच्चे की डिस्क मेमोरी में नहीं गिना जाएगा.</translation>
 <translation id="1825565032302550710">पोर्ट, 1024 और 65535 के बीच का ही हो</translation>
 <translation id="182577151972096764">हाल में देखी गई रेसिपी</translation>
@@ -1090,6 +1091,7 @@
 <translation id="1963976881984600709">मानक सुरक्षा मोड</translation>
 <translation id="1965624977906726414">कोई विशेष अनुमति नहीं है.</translation>
 <translation id="1966649499058910679">जैसे-जैसे हर शब्द बोला जाए, उसे हाइलाइट करें</translation>
+<translation id="1967970931040389207">हॉटस्पॉट चालू करें</translation>
 <translation id="1969654639948595766">WebRTC लेख लॉग (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए वेब पेज के हिसाब से लोड होता है</translation>
 <translation id="197288927597451399">रखें</translation>
@@ -1178,6 +1180,7 @@
 <translation id="2048554637254265991">कंटेनर मैनेजर शुरू होने के दौरान कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="2048653237708779538">कार्रवाई उपलब्ध नहीं है</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
+<translation id="2051555741181591333">हॉटस्पॉट के अपने-आप बंद होने की सेटिंग चालू करें</translation>
 <translation id="2052572566310583903">आपके दूसरे डिवाइसों पर इंस्टॉल किया गया है</translation>
 <translation id="2053105195397337973">हम ऐसे तरीके खोज रहे हैं जिनसे ट्रैकिंग को कम किया जा सके. साथ ही, जिनसे स्पैम वाले विज्ञापन और धोखाधड़ी पर रोक लगाने में, साइटों की मदद की जा सके.</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिति डेटा</translation>
@@ -1286,6 +1289,7 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> को सूचनाएं भेजने की अनुमति न दें</translation>
 <translation id="2139919072249842737">'सेट अप करें' बटन</translation>
 <translation id="2140788884185208305">बैटरी की स्थिति</translation>
+<translation id="2140902257485550046">इस साइट पर सभी एक्सटेंशन को ब्लॉक करने के लिए चुनें</translation>
 <translation id="2142328300403846845">लिंक को इस रूप में खोलें</translation>
 <translation id="2142582065325732898">Chrome पर हाल ही में खोले गए टैब देखने के लिए, <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> की सुविधा चालू करें. <ph name="LINK2_BEGIN" />ज़्यादा जानें<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">टूलबार को हमेशा फ़ुल स्क्रीन में दिखाएं</translation>
@@ -2020,6 +2024,7 @@
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2781120507965857989">अपने बुकमार्क, पासवर्ड, इतिहास वगैरह को इस डिवाइस और दूसरे डिवाइसों पर पाने के लिए, सिंक करने की सुविधा चालू करें. Search और Google की अन्य सेवाओं को आपके हिसाब से बनाने के लिए, Google आपका ब्राउज़िंग इतिहास इस्तेमाल कर सकता है.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">इस साइट पर एक्सटेंशन को अनुमति दी गई है</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
 <translation id="2783298271312924866">डाउनलोड किए गए</translation>
 <translation id="2783321960289401138">शॉर्टकट बनाएं...</translation>
@@ -3844,6 +3849,7 @@
 <translation id="449126573531210296">अपने Google खाते के क्रेडेंशियल का इस्तेमाल कर, सिंक किए गए पासवर्ड को सुरक्षित करें.</translation>
 <translation id="449232563137139956">आम तौर पर, साइटें उदाहरण देने के लिए इमेज दिखाती हैं. जैसे कि ऑनलाइन स्टोर या समाचार लेखों के लिए फ़ोटो</translation>
 <translation id="4492698018379445570">देखें कि आपने शॉपिंग कार्ट में किन चीज़ों को जोड़ा है और सभी चीज़ें जांचने के बाद पैसे चुकाएं</translation>
+<translation id="4493167769966437077"><ph name="LANGUAGE_NAME" /> के लिए अनुवाद करने की सुविधा कभी भी न दें</translation>
 <translation id="4493468155686877504">(<ph name="INSTALL_SIZE" />) सुझाया गया</translation>
 <translation id="4495002167047709180">क्या <ph name="SITE" /> पर इस एक्सटेंशन को चलाने की अनुमति देनी है?</translation>
 <translation id="4495419450179050807">इस पेज पर न दिखाएं</translation>
@@ -4415,6 +4421,7 @@
 <translation id="5026874946691314267">इसे दोबारा न दिखाएं</translation>
 <translation id="5027550639139316293">ईमेल प्रमाणपत्र</translation>
 <translation id="5027562294707732951">एक्‍सटेंशन जोड़ें</translation>
+<translation id="5028445315206872221">इस साइट पर एक्सटेंशन को ब्लॉक कर दिया गया है</translation>
 <translation id="5029568752722684782">स्‍पष्‍ट कॉपी</translation>
 <translation id="5029873138381728058">यह पता नहीं चला कि कितने वीएम मौजूद हैं</translation>
 <translation id="503155457707535043">ऐप्लिकेशन डाउनलोड हो रहे हैं</translation>
@@ -4978,6 +4985,7 @@
 <translation id="5554866693883022680">यह लिंक खोलने के लिए, अपने <ph name="DEVICE_TYPE" /> पर कोई ऐप्लिकेशन चुनें</translation>
 <translation id="5555363196923735206">दूसरी तरफ़ का कैमरा चालू करें</translation>
 <translation id="5555525474779371165">सुरक्षित ब्राउज़िंग से मिलने वाली सुरक्षा योजना का कोई विकल्प चुनें</translation>
+<translation id="5555639311269196631">हॉटस्पॉट बंद करें</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5558129378926964177">ज़ूम &amp;इन करें</translation>
 <translation id="55601339223879446">डिसप्ले के भीतर अपने डेस्कटॉप की सीमाएं समायोजित करें</translation>
@@ -6640,6 +6648,7 @@
 <translation id="7088960765736518739">ऐक्सेस का तरीका बदलें</translation>
 <translation id="7089253021944603172">टैब फिर से चालू हो गया है</translation>
 <translation id="7090160970140261931">वेबसाइटों और Android ऐप्लिकेशन के साथ इस्तेमाल करने के लिए, <ph name="DEVICE_TYPE" /> में अतिरिक्त खाते जोड़े जा सकते हैं. साथ ही, यह भी कंट्रोल किया जा सकता है कि Android ऐप्लिकेशन के साथ किन खातों का इस्तेमाल किया जाए.</translation>
+<translation id="7090714929377281710">हॉटस्पॉट के अपने-आप बंद होने की सेटिंग चालू करें</translation>
 <translation id="7093220653036489319">हाज़िर जवाब</translation>
 <translation id="7093416310351037609">आपके डेटा की सुरक्षा के लिए, यह ज़रूरी है कि शर्तें पूरी करने वाले सभी डाउनलोड, संगठन के <ph name="WEB_DRIVE" /> खाते में सेव किए जाएं.</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> नामक डिवाइस से डेटा का लेन-देन करें</translation>
@@ -7260,6 +7269,7 @@
 <translation id="7684718995427157417">ऐप्लिकेशन बनाने और उसकी जांच करने के लिए, Android डीबग ब्रिज (ADB) चालू करें. ध्यान दें कि इस कार्रवाई के लिए ऐसे Android ऐप्लिकेशन इंस्टॉल करने की अनुमति दी जाती है जिनकी पुष्टि Google ने नहीं की है. साथ ही, फ़ैक्ट्री रीसेट को बंद करना ज़रूरी है.</translation>
 <translation id="7685049629764448582">JavaScript मेमोरी</translation>
 <translation id="7685087414635069102">पिन की ज़रूरत है</translation>
+<translation id="7686581688229391955">इस साइट पर एक्सटेंशन को अनुमति देने के लिए चुनें</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
 <translation id="7690378713476594306">सूची में से चुनें</translation>
@@ -8072,6 +8082,7 @@
 <translation id="8416730306157376817">केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="8417548266957501132">पैरंट का पासवर्ड</translation>
 <translation id="8418445294933751433">टैब के रूप में &amp;दिखाएं</translation>
+<translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> जोड़ें</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' के खोज नतीजे</translation>
 <translation id="8420308167132684745">शब्दकोश के लिए लिखी गई चीज़ों में बदलाव करें</translation>
 <translation id="8421361468937925547">लाइव कैप्शन की सुविधा (सिर्फ़ अंग्रेज़ी में उपलब्ध)</translation>
@@ -8843,6 +8854,7 @@
 <translation id="9121814364785106365">छोटे टैब के रूप में खोलें</translation>
 <translation id="9123287046453017203">आपका डिवाइस अप-टू-डेट नहीं है</translation>
 <translation id="9124003689441359348">सहेजे गए पासवर्ड यहां दिखाई देंगे</translation>
+<translation id="9125910124977405374">अपने-आप अनुवाद करने की सुविधा में से <ph name="LANGUAGE_NAME" /> को हटाएं</translation>
 <translation id="9126149354162942022">कर्सर का रंग</translation>
 <translation id="9128317794749765148">सेटअप पूरा नहीं हो सका</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> की सेटिंग वाला पेज खोलें</translation>

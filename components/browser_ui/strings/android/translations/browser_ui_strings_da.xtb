@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1006017844123154345">Åbn på nettet</translation>
+<translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="1124090076051167250">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startskærm.</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
 <translation id="3797520601150691162">Anvend ikke Mørkt tema på et bestemt website</translation>
+<translation id="3803367742635802571">Websites, du besøger, holder muligvis op med at fungere som forventet</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />, <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Telefonnumre</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Ryd alle data</translation>
 <translation id="4338831206024587507">Alle websites på <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Bloker websites fra at vide, hvornår du aktivt bruger denne enhed</translation>
+<translation id="4412992751769744546">Tillad tredjepartscookies</translation>
 <translation id="4428065317363009941">Annoncetilpasning</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="4440642537584213025">Udvid <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Aktivér også din mikrofon i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til mikrofonen.</translation>
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
 <translation id="4570913071927164677">Info</translation>
+<translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Bevægelses- eller lyssensorer</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Websites kan ikke spørge dig, om de må sende dig notifikationer</translation>
 <translation id="5516455585884385570">Åbn indstillinger for notifikationer</translation>
 <translation id="5527111080432883924">Spørg, før websites får adgang til at læse tekst og billeder fra udklipsholderen (anbefales)</translation>
+<translation id="5545693483061321551">Websites kan ikke bruge dine cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="5553374991681107062">Seneste</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Bloker visning af pop up-vinduer på websites og omdirigeringer (anbefales)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Opdater</translation>
+<translation id="7188508872042490670">Websitedata på enheden</translation>
 <translation id="7203150201908454328">Udvidet</translation>
 <translation id="723171743924126238">Vælg billeder</translation>
 <translation id="7243308994586599757">Du finder indstillingerne nederst på skærmen</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8300705686683892304">Administreres af en app</translation>
 <translation id="8324158725704657629">Spørg ikke igen</translation>
-<translation id="834785183489258869">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browserhistorik på forskellige websites for f.eks. at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="8372893542064058268">Tillad synkronisering i baggrunden for et bestemt website.</translation>
 <translation id="8376384591331888629">Medtag tredjepartscookies på dette websites</translation>
 <translation id="83792324527827022">Et website anvender dit kamera og din mikrofon</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
 <translation id="8499083585497694743">Slå mikrofon til</translation>
+<translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}one{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}other{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites tilhørende <ph name="FPS_OWNER" />}}</translation>

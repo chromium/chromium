@@ -314,7 +314,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2673968385134502798">Games</translation>
 <translation id="2678852583403169292">Menu Selecteer om uitgesproken te worden</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
-<translation id="2695132445805301912">Toetsen en klikken tonen</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Toetsenbordinstellingen tonen. <ph name="KEYBOARD_NAME" /> is geselecteerd.</translation>
 <translation id="2700493154570097719">Je toetsenbord instellen</translation>
@@ -486,6 +485,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3609301425104788351"><ph name="MIC" />,
 <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Als je mobiele data aanzet, wordt bluetooth aangezet</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu verplaatst naar rechtsboven in het scherm.</translation>
 <translation id="3619536907358025872">Instellingen voor Screenshot</translation>
 <translation id="3621202678540785336">Ingang</translation>
@@ -697,6 +697,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4740516757091333363">Opgeslagen bureau verwijderen?</translation>
 <translation id="4752784485658729358">Er zijn maar 6 opgeslagen bureaus toegestaan. Verwijder een bureau om een nieuwe op te slaan.</translation>
 <translation id="4759238208242260848">Downloads</translation>
+<translation id="4762573482154983647">Apps verbergen</translation>
 <translation id="4774338217796918551">Kom morgen terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>

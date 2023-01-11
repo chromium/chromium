@@ -801,6 +801,7 @@
 <translation id="2986368408720340940">วิธีการรับสินค้านี้ไม่พร้อมให้บริการ โปรดลองใช้วิธีการอื่น</translation>
 <translation id="2987034854559945715">ไม่มีฟีเจอร์ที่ตรงกัน</translation>
 <translation id="2989742184762224133">เย็บด้วยลวดเย็บกระดาษด้านบน 2 ครั้ง</translation>
+<translation id="2990882401221831923">ปิดรายการบัตรเครดิตแล้ว</translation>
 <translation id="2991174974383378012">การแชร์กับเว็บไซต์</translation>
 <translation id="299122504639061328">จัดการเครื่องมือค้นหาและการค้นหาเว็บไซต์เริ่มต้น</translation>
 <translation id="2991571918955627853">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้เนื่องจากเว็บไซต์ใช้ HSTS โดยปกติข้อผิดพลาดของเครือข่ายและการโจมตีจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงอาจใช้งานได้ในภายหลัง</translation>
@@ -861,6 +862,7 @@
 <translation id="317878711435188021">ทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
 <translation id="3180358318770512945">การเลี้ยงลูก</translation>
 <translation id="3187306450550410410">ความยืดหยุ่นเรื่องการทำงาน</translation>
+<translation id="3187472288455401631">การวัดผลโฆษณา</translation>
 <translation id="3190736958609431397">ยกเลิกการติดตาม</translation>
 <translation id="319282854780294203">โซเชียลเน็ตเวิร์ก</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ต้องการจัดเก็บข้อมูลอย่างถาวรในอุปกรณ์ของคุณ</translation>
@@ -1584,6 +1586,7 @@
 <translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
 <translation id="498323057460789381">ข้อผิดพลาดในการตรวจสอบความถูกต้องของสคีมา: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">ใช้ไมโครโฟนไหม</translation>
+<translation id="4988822846878841743">รายการบัตรเครดิตที่จะกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="4989163558385430922">ดูทั้งหมด</translation>
 <translation id="4989542687859782284">ไม่มี</translation>
 <translation id="4989809363548539747">ไม่รองรับปลั๊กอินนี้</translation>
@@ -1932,6 +1935,7 @@
 <translation id="5863847714970149516">ระบบอาจพยายามเรียกเก็บเงินจากคุณในหน้าถัดไป</translation>
 <translation id="5866257070973731571">เพิ่มหมายเลขโทรศัพท์</translation>
 <translation id="5866898949289125849">คุณกำลังดูหน้าเครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
+<translation id="5868548454963263350">รายการบัตรเครดิตที่จะกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="5869405914158311789">ไม่สามารถเข้าถึงเว็บไซต์นี้</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="5873013647450402046">ธนาคารต้องการยืนยันตัวตนของคุณ</translation>
@@ -2002,6 +2006,7 @@
 <translation id="6039846035001940113">หากยังคงพบปัญหา ให้ติดต่อเจ้าของเว็บไซต์</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6041777658117377052">อุณหภูมิตู้</translation>
+<translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6044573915096792553">ขนาด 12</translation>
 <translation id="6045164183059402045">เทมเพลตการจัดเรียงหน้าก่อนพิมพ์</translation>
 <translation id="6047233362582046994">หากคุณเข้าใจความเสี่ยงต่อความปลอดภัย คุณสามารถ<ph name="BEGIN_LINK" />ไปยังไซต์นี้<ph name="END_LINK" />ก่อนที่จะมีการนำแอปอันตรายออก</translation>
@@ -2093,6 +2098,7 @@
 <translation id="6290238015253830360">บทความที่แนะนำจะปรากฏที่นี่</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">กำลังบันทึก...</translation>
 <translation id="6300452962057769623">{0,plural, =0{อุปกรณ์จะรีสตาร์ทตอนนี้}=1{อุปกรณ์จะรีสตาร์ทใน 1 วินาที}other{อุปกรณ์จะรีสตาร์ทใน # วินาที}}</translation>
 <translation id="6301104306974789820">รับการแจ้งเตือนการติดตามราคา</translation>
 <translation id="6305205051461490394">ไม่สามารถเข้าถึง <ph name="URL" /></translation>
@@ -2642,6 +2648,7 @@
 <translation id="7653957176542370971">แผ่นงานของเครื่องจัดการการชำระเงินปิดอยู่</translation>
 <translation id="7654909834015434372">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปใช้การหมุนแบบเดิม</translation>
 <translation id="765676359832457558">ซ่อนการตั้งค่าขั้นสูง...</translation>
+<translation id="7656935528854393684">รายการบัตรเครดิตที่จะกรอกเมื่อแตะ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">น้ำตาแห่งความสุข</translation>

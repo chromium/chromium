@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Nie ma następnego przycisku</translation>
 <translation id="2911433807131383493">Otwórz samouczek ChromeVox</translation>
 <translation id="2912405967290226587">Przesuń trzema palcami w prawo</translation>
+<translation id="2919107550468490321">Inteligentny tryb klawiszy trwałych jest włączony</translation>
 <translation id="2937799153569150791">Nie ma następnego nagłówka poziomu 3</translation>
 <translation id="2942710183375260152">Ciemnoniebieski łupkowy</translation>
 <translation id="2943596527105977722">Ciemnozłoty</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Obniż tonację.</translation>
 <translation id="3009352964623081324">Wyszukaj + O, a następnie S. Służy do instalowania i dostosowywania głosów oraz do zarządzania nimi.</translation>
 <translation id="3014130421870723208">@ed 8pt</translation>
+<translation id="3018210433491759145">Wczytuję ChromeVoksa</translation>
 <translation id="3030432017085518523">Przycisk opcji elementu menu</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}few{# apostrofy}many{# apostrofów}other{# apostrophes}}</translation>
 <translation id="3040901448410802366">Wskaźnik postępu</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3813387282697781382">Jasnokoralowy</translation>
 <translation id="3816633764618089385">Następny plik multimedialny</translation>
+<translation id="3821689185319271077">Brak kotwicy wskaźnika</translation>
 <translation id="3840823741487267909">Skrót</translation>
 <translation id="3841319830220785495">Domyślny naturalny głos</translation>
 <translation id="385383972552776628">Otwórz stronę opcji</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formularz</translation>
 <translation id="4601367666219428522">tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorowanie następnego naciśnięcia klawisza</translation>
+<translation id="4617384941327705512">Inteligentny tryb klawiszy trwałych jest wyłączony</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">Funkcji TalkBack na Chromebookach nie można już dostosowywać. Możesz jej nadal używać, ale obsługa jest możliwa tylko za pomocą tych skrótów klawiszowych, które są w niej zdefiniowane. Aby zobaczyć dostępne skróty klawiszowe, naciśnij Wyszukaj + A, a następnie K. Jeśli nadal chcesz używać TalkBack, naciśnij to polecenie ponownie.</translation>
 <translation id="463135993322337640">Naciśnij ChromeVox + O + N, by poznać nowe funkcje</translation>

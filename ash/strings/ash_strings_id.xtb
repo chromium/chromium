@@ -314,7 +314,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2673968385134502798">Game</translation>
 <translation id="2678852583403169292">Menu Klik untuk Diucapkan</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
-<translation id="2695132445805301912">Tampilkan tombol dan klik</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Tampilkan setelan keyboard. <ph name="KEYBOARD_NAME" /> dipilih.</translation>
 <translation id="2700493154570097719">Setel keyboard Anda</translation>
@@ -486,6 +485,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Mengaktifkan data seluler akan mengaktifkan Bluetooth</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu dipindahkan ke pojok kanan atas layar.</translation>
 <translation id="3619536907358025872">Setelan screenshot</translation>
 <translation id="3621202678540785336">Masukan</translation>
@@ -697,6 +697,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4740516757091333363">Hapus desktop tersimpan?</translation>
 <translation id="4752784485658729358">Hanya diizinkan menyimpan 6 desktop. Hapus satu desktop untuk menambahkan yang baru.</translation>
 <translation id="4759238208242260848">Download</translation>
+<translation id="4762573482154983647">Sembunyikan aplikasi</translation>
 <translation id="4774338217796918551">Gunakan lagi besok pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>

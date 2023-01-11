@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1006017844123154345">Hap versionin në linjë</translation>
+<translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="1124090076051167250">Kjo do të pastrojë <ph name="DATASIZE" /> të dhëna dhe kuki të ruajtura nga sajtet ose nga aplikacionet në ekranin bazë.</translation>
 <translation id="1178581264944972037">Pauzë</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Pastro të gjitha të dhënat</translation>
 <translation id="4338831206024587507">Të gjitha sajtet nën domenin <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blloko sajtet që të mos e dinë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
+<translation id="4412992751769744546">Lejo kukit e palëve të treta</translation>
 <translation id="4428065317363009941">Personalizimi i reklamave</translation>
 <translation id="4434045419905280838">Dritaret kërcyese dhe ridrejtimet</translation>
 <translation id="4440642537584213025">Zgjero <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Sajtet nuk mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="5516455585884385570">Hap cilësimet e njoftimeve</translation>
 <translation id="5527111080432883924">Pyet përpara se të lejosh sajtet të lexojnë tekstin dhe imazhet nga kujtesa e fragmenteve (rekomandohet)</translation>
+<translation id="5545693483061321551">Sajtet nuk mund të përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="5553374991681107062">Më të fundit</translation>
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Titrat</translation>
 <translation id="8300705686683892304">Menaxhuar nga aplikacioni</translation>
 <translation id="8324158725704657629">Mos pyet më</translation>
-<translation id="834785183489258869">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="8372893542064058268">Lejo "Sinkronizimin në sfond" për një sajt specifik.</translation>
 <translation id="8376384591331888629">Duke përfshirë kukit e palëve të treta në këtë sajt</translation>
 <translation id="83792324527827022">Një sajt po përdor kamerën dhe mikrofonin tënd</translation>

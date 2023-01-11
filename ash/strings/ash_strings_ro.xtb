@@ -314,7 +314,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2673968385134502798">Jocuri</translation>
 <translation id="2678852583403169292">Meniul Selectați și ascultați</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
-<translation id="2695132445805301912">Afișează tastele și clicurile</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afișează setările pentru tastatură. S-a selectat <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Setează tastatura</translation>
@@ -486,6 +485,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Dacă activezi datele mobile, se va activa Bluetooth</translation>
+<translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Meniul a fost mutat în colțul din dreapta sus al ecranului.</translation>
 <translation id="3619536907358025872">Setări pentru capturile de ecran</translation>
 <translation id="3621202678540785336">Intrări</translation>
@@ -697,6 +697,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4740516757091333363">Ștergi desktopul salvat?</translation>
 <translation id="4752784485658729358">Sunt permise numai șase desktopuri salvate. Elimină un desktop pentru a salva altul nou.</translation>
 <translation id="4759238208242260848">Descărcări</translation>
+<translation id="4762573482154983647">Ascunde aplicațiile</translation>
 <translation id="4774338217796918551">Revino mâine la <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Parolă pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Magazin Play</translation>

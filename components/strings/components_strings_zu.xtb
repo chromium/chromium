@@ -859,6 +859,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="317878711435188021">Yazi lapho usebenzisa le divayisi</translation>
 <translation id="3180358318770512945">Ubuzali</translation>
 <translation id="3187306450550410410">Izinhlelo zokusebenza eziguquguqukayo</translation>
+<translation id="3187472288455401631">Isilinganiso sesikhangiso</translation>
 <translation id="3190736958609431397">Yeka ukulandelela</translation>
 <translation id="319282854780294203">Ukuxhumana nomphakathi</translation>
 <translation id="3194737229810486521">I-<ph name="URL" /> ifuna ukugcina unaphakade idatha kudivayisi yakho</translation>
@@ -2000,6 +2001,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6039846035001940113">Uma inkinga iqhubeka, xhumana nomnikazi wesayithi.</translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6041777658117377052">Ithempelesha yomkhandlu</translation>
+<translation id="6042308850641462728">Okuningi</translation>
 <translation id="6044573915096792553">Usayizi 12</translation>
 <translation id="6045164183059402045">Isifanekiso sokuqondisa</translation>
 <translation id="6047233362582046994">Uma uqonda ubungozi ekuphepheni kwakho, unghle <ph name="BEGIN_LINK" />uvakashele leli sayithi<ph name="END_LINK" /> ngaphambi kokuthi izinhlelo zokusebenza eziyingozi zisuswe.</translation>
@@ -2091,6 +2093,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6290238015253830360">Ama-athikili akho aphakanyisiwe avela lapha</translation>
 <translation id="6293309776179964942">I-JIS B5</translation>
 <translation id="6295618774959045776">I-CVC:</translation>
+<translation id="6295855836753816081">Iyalondoloza...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Idivayisi yakho izoqala kabusha manje}=1{Idivayisi yakho izoqala kabusha ngomzuzwana o-1}one{Idivayisi yakho izoqala kabusha ngemizuzwana engu-#}other{Idivayisi yakho izoqala kabusha ngemizuzwana engu-#}}</translation>
 <translation id="6301104306974789820">Thola izaziso zentengo yokulandelela</translation>
 <translation id="6305205051461490394">I-<ph name="URL" /> ayifinyeleleki.</translation>

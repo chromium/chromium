@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">কোনও পরবর্তী বোতাম নেই</translation>
 <translation id="2911433807131383493">ChromeVox টিউটোরিয়াল খুলুন</translation>
 <translation id="2912405967290226587">তিন আঙ্গুল দিয়ে ডানদিকে সোয়াইপ করুন</translation>
+<translation id="2919107550468490321">স্মার্ট স্টিকি মোড চালু আছে</translation>
 <translation id="2937799153569150791">কোনও পূর্ববর্তী লেভেল ৩ শিরোনাম নেই</translation>
 <translation id="2942710183375260152">গাঢ় স্লেট নীল</translation>
 <translation id="2943596527105977722">গাঢ় সোনালী রড</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">পিচ কমান</translation>
 <translation id="3009352964623081324">'Search' ও 'O' বোতাম একসাথে প্রেস করুন, তারপরে 'S' বোতাম প্রেস করুন। ইনস্টল, ম্যানেজ ও ভয়েস কাস্টমাইজ করতে ব্যবহার করুন।</translation>
 <translation id="3014130421870723208">@ed ৮ডট</translation>
+<translation id="3018210433491759145">ChromeVox লোড করা হচ্ছে</translation>
 <translation id="3030432017085518523">মেনু আইটেম রেডিও বোতাম</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ঊর্ধকমা}one{#টি ঊর্ধকমা}other{#টি ঊর্ধকমা}}</translation>
 <translation id="3040901448410802366">অগ্রগতি সূচক</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3813387282697781382">হালকা প্রবাল</translation>
 <translation id="3816633764618089385">পরবর্তী মিডিয়া</translation>
+<translation id="3821689185319271077">কোনও পয়েন্টার অ্যাঙ্কর নেই</translation>
 <translation id="3840823741487267909">সংক্ষিপ্ত রূপ</translation>
 <translation id="3841319830220785495">ডিফল্ট স্বাভাবিক ভয়েস</translation>
 <translation id="385383972552776628">বিকল্প পৃষ্ঠা খুলুন</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ফর্ম</translation>
 <translation id="4601367666219428522">সারণী <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">পরবর্তী কি টেপা উপেক্ষা করা হচ্ছে</translation>
+<translation id="4617384941327705512">স্মার্ট স্টিকি মোড বন্ধ আছে</translation>
 <translation id="4623097797855662355">বইটির সম্পর্কে</translation>
 <translation id="4624970070706497034">টকব্যাক আর Chromebook-এর জন্য কাস্টমাইজ করার সুবিধা প্রদান করে না। আপনি এখনও এটি ব্যবহার করতে পারেন, তবে টকব্যাক ডিফল্ট কীবোর্ড শর্টকাট ব্যবহার করুন। কী কী শর্টকাট উপলভ্য আছে দেখতে Search+A এবং তারপরে K প্রেস করুন। এখনও টকব্যাক ব্যবহার করতে চাইলে, আবার 'কমান্ড' কী প্রেস করুন।</translation>
 <translation id="463135993322337640">নতুন কি আছে তা দেখার জন্য ChromeVox o, n টিপুন</translation>

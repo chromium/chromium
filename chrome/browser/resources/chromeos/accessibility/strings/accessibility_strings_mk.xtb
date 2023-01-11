@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Нема следно копче</translation>
 <translation id="2911433807131383493">Отворете упатство за ChromeVox</translation>
 <translation id="2912405967290226587">Повлечете надесно со три прста</translation>
+<translation id="2919107550468490321">Паметниот леплив режим е вклучен</translation>
 <translation id="2937799153569150791">Нема следен наслов на ниво 3</translation>
 <translation id="2942710183375260152">Темносина како шкрилец</translation>
 <translation id="2943596527105977722">Темнозлатеста</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Намалување висина</translation>
 <translation id="3009352964623081324">Search + O, потоа S. Користете за инсталирање, управување или приспособување на гласови.</translation>
 <translation id="3014130421870723208">@изм. 8точ.</translation>
+<translation id="3018210433491759145">ChromeVox се вчитува</translation>
 <translation id="3030432017085518523">Копче за радио на ставка од мени</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{апостроф}one{# апостроф}other{# апострофи}}</translation>
 <translation id="3040901448410802366">Показател на напредок</translation>
@@ -440,6 +442,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3813387282697781382">Светлокорална</translation>
 <translation id="3816633764618089385">Следен медиум</translation>
+<translation id="3821689185319271077">Нема сидро за покажувач</translation>
 <translation id="3840823741487267909">Кратенка</translation>
 <translation id="3841319830220785495">Стандарден природен глас</translation>
 <translation id="385383972552776628">Се отвора страница со опции</translation>
@@ -545,6 +548,7 @@
 <translation id="4597532268155981612">образец</translation>
 <translation id="4601367666219428522">таб. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Се игнорира следното притискање на копче</translation>
+<translation id="4617384941327705512">Паметниот леплив режим е исклучен</translation>
 <translation id="4623097797855662355">Отпечаток</translation>
 <translation id="4624970070706497034">TalkBack веќе не обезбедува приспособување за уредите Chromebook. Сѐ уште може да ја користите, но користете ги стандардните кратенки од тастатура на TalkBack. Притиснете „Пребарување“ + A, а потоа K за да ги видите достапните кратенки. Ако сепак сакате да ја користите TalkBack, повторно притиснете ја наредбата.</translation>
 <translation id="463135993322337640">Притиснете ChromeVox o, n за да дознаете што има ново</translation>

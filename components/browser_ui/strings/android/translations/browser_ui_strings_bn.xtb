@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1006017844123154345">অনলাইনে খুলুন</translation>
+<translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1044891598689252897">সাইট স্বাভাবিকভাবেই কাজ করবে</translation>
 <translation id="1124090076051167250">এটি করলে, আপনার হোম স্ক্রিনে সাইট বা অ্যাপের মাধ্যমে সেভ হওয়া <ph name="DATASIZE" /> ডেটা এবং কুকি মুছে যাবে।</translation>
 <translation id="1178581264944972037">বিরতি</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
 <translation id="3763247130972274048">১০ সেকেন্ড আগে পরে স্কিপ করতে বাঁদিকে অথবা ডানদিকে ডবল ট্যাপ করুন</translation>
 <translation id="3797520601150691162">কোনও নির্দিষ্ট সাইটের জন্য ডার্ক থিম প্রয়োগ করবেন না</translation>
+<translation id="3803367742635802571">যেমনভাবে ডিজাইন করা হয়েছে আপনার ভিজিট করা সাইট তেমনভাবে কাজ করা বন্ধ করতে পারে</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>
 <translation id="381841723434055211">ফোন নম্বর</translation>
 <translation id="3826050100957962900">থার্ড-পার্টির সাইন-ইন</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">সব ডেটা মুছে ফেলুন</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />-এর সবকটি সাইট</translation>
 <translation id="4402755511846832236">আপনি ডিভাইস কখন সক্রিয়ভাবে ব্যবহার করছেন, সাইট যাতে জানতে না পারে তার জন্য সাইট ব্লক করুন</translation>
+<translation id="4412992751769744546">তৃতীয় পক্ষের কুকিজ মঞ্জুর করুন</translation>
 <translation id="4428065317363009941">পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া</translation>
 <translation id="4434045419905280838">পপ-আপ এবং রিডাইরেক্ট</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> বড় করুন</translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার মাইক্রোফোন অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও মাইক্রোফোন চালু করে দিন।</translation>
 <translation id="4566417217121906555">মাইক্রোফোন মিউট করুন</translation>
 <translation id="4570913071927164677">বিবরণ</translation>
+<translation id="4598549027014564149">ছদ্মবেশী মোড চালু থাকলে, সম্পর্কিত সাইট সহ বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য আপনার কুকি ব্যবহার করতে পারবে না। আপনার ব্রাউজিং অ্যাক্টিভিটি পছন্দমতো বিজ্ঞাপনের মতো জিনিসগুলির জন্য ব্যবহার করা হয় না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="4645575059429386691">আপনার পিতামাতার দ্বারা পরিচালিত</translation>
 <translation id="4670064810192446073">ভার্চুয়াল রিয়ালিটি</translation>
 <translation id="4751476147751820511">মোশন বা হালকা সেন্সর</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">সাইট আপনাকে বিজ্ঞপ্তি পাঠাতে পারবে না</translation>
 <translation id="5516455585884385570">বিজ্ঞপ্তির সেটিংস খুলুন</translation>
 <translation id="5527111080432883924">ক্লিপবোর্ডের টেক্সট এবং ছবি পড়ার জন্য অনুমতি দেওয়ার আগে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
+<translation id="5545693483061321551">বিভিন্ন ওয়েবসাইট জুড়ে বিজ্ঞাপন পছন্দ অনুযায়ী দেখানোর মতো ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারে না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="5553374991681107062">লেটেস্ট</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">সাইটগুলিকে পপ-আপ দেখাতে এবং রিডাইরেক্ট করা থেকে বাধা দিন (প্রস্তাবিত)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> কেবি</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
+<translation id="7188508872042490670">অন-ডিভাইস সাইট ডেটা</translation>
 <translation id="7203150201908454328">প্রসারিত</translation>
 <translation id="723171743924126238">ছবি বেছে নিন</translation>
 <translation id="7243308994586599757">স্ক্রীনের প্রায় নীচের দিকে বিকল্পগুলি উপলব্ধ</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">পরিচয়লিপিগুলি</translation>
 <translation id="8300705686683892304">অ্যাপ ম্যানেজ করে</translation>
 <translation id="8324158725704657629">আর দেখতে চাই না</translation>
-<translation id="834785183489258869">ছদ্মবেশী মোডে থাকলে, বিভিন্ন ওয়েবসাইট জুড়ে বিজ্ঞাপন পছন্দ অনুযায়ী দেখানোর মতো ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারে না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="8372893542064058268">একটি নির্দিষ্ট সাইটের জন্য পটভূমি সিঙ্কের অনুমতি দিন।</translation>
 <translation id="8376384591331888629">এই সাইটে থার্ড-পার্টি কুকি সহ</translation>
 <translation id="83792324527827022">একটি সাইট আপনার ক্যামেরা ও মাইক্রোফোন ব্যবহার করছে</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
 <translation id="848952951823693243">সবসময় মোবাইল সাইটের অনুরোধ করুন</translation>
 <translation id="8499083585497694743">মাইক্রোফোন আনমিউট করুন</translation>
+<translation id="8514955299594277296">সাইটগুলিকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দেবেন না (প্রস্তাবিত নয়)</translation>
 <translation id="851751545965956758">সাইটকে ডিভাইসের সাথে কানেক্ট করা থেকে ব্লক করুন</translation>
 <translation id="8525306231823319788">পূর্ণ স্ক্রীণ</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}}</translation>

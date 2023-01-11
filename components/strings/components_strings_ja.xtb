@@ -861,6 +861,7 @@
 <translation id="317878711435188021">このデバイスのアクティブ状態の検出</translation>
 <translation id="3180358318770512945">育児</translation>
 <translation id="3187306450550410410">フレックスタイム制</translation>
+<translation id="3187472288455401631">広告の測定</translation>
 <translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="319282854780294203">ソーシャル ネットワーク</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
@@ -2003,6 +2004,7 @@
 <translation id="6039846035001940113">この問題が何度も発生する場合は、サイト所有者にお問い合わせください。</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6041777658117377052">チャンバーの温度</translation>
+<translation id="6042308850641462728">もっと見る</translation>
 <translation id="6044573915096792553">サイズ 12</translation>
 <translation id="6045164183059402045">面付けテンプレート</translation>
 <translation id="6047233362582046994">有害なアプリがまだ存在する可能性があるにもかかわらず<ph name="BEGIN_LINK" />このサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上の危険性をあらかじめご認識ください。</translation>
@@ -2094,6 +2096,7 @@
 <translation id="6290238015253830360">おすすめの記事がここに表示されます</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">保存しています...</translation>
 <translation id="6300452962057769623">{0,plural, =0{デバイスは今すぐ再起動されます}=1{デバイスは 1 秒後に再起動されます}other{デバイスは # 秒後に再起動されます}}</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>

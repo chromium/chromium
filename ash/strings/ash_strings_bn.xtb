@@ -314,7 +314,6 @@
 <translation id="2673968385134502798">গেম</translation>
 <translation id="2678852583403169292">"বাছুন ও শুনুন" মেনু</translation>
 <translation id="2689613560355655046">ডেস্ক ৮</translation>
-<translation id="2695132445805301912">কী এবং ক্লিক দেখান</translation>
 <translation id="2695305337569143674">ওয়েব</translation>
 <translation id="2697697418792422688">কীবোর্ড সেটিংস দেখান। <ph name="KEYBOARD_NAME" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="2700493154570097719">আপনার কীবোর্ড সেট করুন</translation>
@@ -486,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">মোবাইল ডেটা চালু করা হলে ব্লুটুথও চালু হয়ে যাবে</translation>
+<translation id="3616113530831147358">অডিও</translation>
 <translation id="3616883743181209306">স্ক্রিনের উপরে ডানদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="3619536907358025872">স্ক্রিন ক্যাপচার করার সেটিংস</translation>
 <translation id="3621202678540785336">ইনপুট</translation>

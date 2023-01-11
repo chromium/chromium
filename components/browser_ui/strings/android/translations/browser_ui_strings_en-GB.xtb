@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1006017844123154345">Open Online</translation>
+<translation id="1036348656032585052">Turn off</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1124090076051167250">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites or by apps on your home screen.</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
 <translation id="3797520601150691162">Don’t apply Dark theme for a specific site</translation>
+<translation id="3803367742635802571">Sites that you visit may stop working as designed</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Phone numbers</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Clear all data</translation>
 <translation id="4338831206024587507">All sites under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
+<translation id="4412992751769744546">Allow third-party cookies</translation>
 <translation id="4428065317363009941">Ad personalisation</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="4440642537584213025">Expand <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
+<translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Sites can't ask to send notifications</translation>
 <translation id="5516455585884385570">Open notification settings</translation>
 <translation id="5527111080432883924">Ask before allowing sites to read text and images from the clipboard (recommended)</translation>
+<translation id="5545693483061321551">Sites can't use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may not work.</translation>
 <translation id="5553374991681107062">Latest</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Block sites from showing pop-ups and redirects (recommended)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Refresh</translation>
+<translation id="7188508872042490670">On-device site data</translation>
 <translation id="7203150201908454328">Expanded</translation>
 <translation id="723171743924126238">Select images</translation>
 <translation id="7243308994586599757">Options available near bottom of the screen</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Captions</translation>
 <translation id="8300705686683892304">Managed by app</translation>
 <translation id="8324158725704657629">Don't ask again</translation>
-<translation id="834785183489258869">While in Incognito, sites can't use your cookies to see your browsing activity across different sites; for example, to personalise ads. Features on some sites may not work.</translation>
 <translation id="8372893542064058268">Allow Background Sync for a specific site.</translation>
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>
 <translation id="83792324527827022">A site is using your camera and microphone</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="848952951823693243">Always request mobile site</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>
+<translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> site}other{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sites}}</translation>

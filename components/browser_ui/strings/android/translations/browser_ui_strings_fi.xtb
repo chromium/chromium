@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1006017844123154345">Avaa verkkoversio</translation>
+<translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1044891598689252897">Sivustot toimivat normaalisti</translation>
 <translation id="1124090076051167250">Tämä tyhjentää <ph name="DATASIZE" /> dataa ja aloitusnäytölläsi olevien sivustojen tai sovellusten tallentamat evästeet.</translation>
 <translation id="1178581264944972037">Tauko</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Poista kaikki data</translation>
 <translation id="4338831206024587507">Kaikki sivustot, jotka kuuluvat verkkotunnukseen <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Estä sivustoja tietämästä, kun käytät tätä laitetta aktiivisesti</translation>
+<translation id="4412992751769744546">Salli kolmannen osapuolen evästeet</translation>
 <translation id="4428065317363009941">Mainosten personointi</translation>
 <translation id="4434045419905280838">Ponn.ikkunat ja uudelleenohjaus</translation>
 <translation id="4440642537584213025">Laajenna <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Sivustot eivät saa pyytää lupaa ilmoitusten lähettämiseen</translation>
 <translation id="5516455585884385570">Avaa ilmoitusasetukset</translation>
 <translation id="5527111080432883924">Pyydä lupaa, kun sivustot yrittävät lukea tekstiä ja kuvia leikepöydältä (suositus)</translation>
+<translation id="5545693483061321551">Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="5553374991681107062">Uusimmat</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Tekstitykset</translation>
 <translation id="8300705686683892304">Sovelluksen ylläpitämät</translation>
 <translation id="8324158725704657629">Älä kysy uudestaan</translation>
-<translation id="834785183489258869">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
 <translation id="8372893542064058268">Salli taustasynkronointi tietyllä sivustolla.</translation>
 <translation id="8376384591331888629">Mukaan lukien kolmannen osapuolen evästeet tällä sivustolla</translation>
 <translation id="83792324527827022">Sivusto käyttää kameraasi ja mikrofoniasi</translation>

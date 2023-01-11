@@ -801,6 +801,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2986368408720340940">Diese Abholoption ist nicht verfügbar. Bitte wähle eine andere Option aus.</translation>
 <translation id="2987034854559945715">Keine passenden Funktionen</translation>
 <translation id="2989742184762224133">Zwei Heftklammern oben</translation>
+<translation id="2990882401221831923">Die Liste mit den Kreditkarten ist geschlossen.</translation>
 <translation id="2991174974383378012">Datenfreigabe an Websites</translation>
 <translation id="299122504639061328">Standardmäßige Suchmaschine und Websitesuche verwalten</translation>
 <translation id="2991571918955627853">Du kannst <ph name="SITE" /> derzeit nicht aufrufen, da die Website HSTS verwendet. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
@@ -861,6 +862,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="317878711435188021">Informationen zu deiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="3180358318770512945">Eltern</translation>
 <translation id="3187306450550410410">Flexible Arbeits(-zeit-)modelle</translation>
+<translation id="3187472288455401631">Anzeigenanalyse</translation>
 <translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="319282854780294203">Soziale Netzwerke</translation>
 <translation id="3194737229810486521"><ph name="URL" /> möchte Daten dauerhaft auf deinem Gerät speichern</translation>
@@ -1583,6 +1585,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
 <translation id="498323057460789381">Schemavalidierungsfehler: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofon verwenden?</translation>
+<translation id="4988822846878841743">Die Liste mit den Kreditkarten, deren Daten bei Berührung ausgefüllt werden, ist halb geöffnet.</translation>
 <translation id="4989163558385430922">Alle ansehen</translation>
 <translation id="4989542687859782284">Nicht verfügbar</translation>
 <translation id="4989809363548539747">Dieses Plug-in wird nicht unterstützt</translation>
@@ -1931,6 +1934,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5863847714970149516">Auf der nächsten Seite wird möglicherweise versucht, dir etwas in Rechnung zu stellen</translation>
 <translation id="5866257070973731571">Telefonnummer hinzufügen</translation>
 <translation id="5866898949289125849">Du hast eine Entwicklertools-Seite aufgerufen</translation>
+<translation id="5868548454963263350">Die Liste mit den Kreditkarten, deren Daten bei Berührung ausgefüllt werden, ist vollständig geöffnet.</translation>
 <translation id="5869405914158311789">Die Website ist nicht erreichbar</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5873013647450402046">Deine Bank muss deine Identität bestätigen.</translation>
@@ -2001,6 +2005,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6039846035001940113">Falls das Problem weiterhin besteht, wende dich an den Inhaber der Website.</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6041777658117377052">Temperatur der Kammer</translation>
+<translation id="6042308850641462728">Mehr</translation>
 <translation id="6044573915096792553">Größe 12</translation>
 <translation id="6045164183059402045">Vorlage für Ausschießen</translation>
 <translation id="6047233362582046994">Wenn du die Sicherheitsrisiken kennst, kannst du <ph name="BEGIN_LINK" />diese Website aufrufen<ph name="END_LINK" />, bevor die schädlichen Apps entfernt wurden.</translation>
@@ -2092,6 +2097,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6290238015253830360">Hier werden deine vorgeschlagenen Artikel angezeigt</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Wird gespeichert...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Dein Gerät startet jetzt neu}=1{Dein Gerät startet in 1 Sekunde neu}other{Dein Gerät startet in # Sekunden neu}}</translation>
 <translation id="6301104306974789820">Benachrichtigungen zur Preisbeobachtung erhalten</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ist nicht erreichbar.</translation>
@@ -2641,6 +2647,7 @@ Weitere Details:
 <translation id="7653957176542370971">Das Dokument zur Zahlungsabwicklung ist geschlossen</translation>
 <translation id="7654909834015434372">Wenn du Anmerkungen bearbeitest, wechselt das Dokument zu seiner ursprünglichen Ausrichtung zurück</translation>
 <translation id="765676359832457558">Erweiterte Einstellungen ausblenden</translation>
+<translation id="7656935528854393684">Die Liste mit den Kreditkarten, deren Daten bei Berührung ausgefüllt werden.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7659327900411729175">Umschlag Kaku 8</translation>
 <translation id="7659878911471462949">Freudentränen</translation>

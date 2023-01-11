@@ -860,6 +860,7 @@
 <translation id="317878711435188021">知道你使用這部裝置的時間</translation>
 <translation id="3180358318770512945">子女教養</translation>
 <translation id="3187306450550410410">彈性工作安排</translation>
+<translation id="3187472288455401631">廣告評估功能</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="319282854780294203">社群網路</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在你的裝置上永久儲存資料</translation>
@@ -2002,6 +2003,7 @@
 <translation id="6039846035001940113">如果問題仍未解決，請與網站擁有者聯絡。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6041777658117377052">室內溫度</translation>
+<translation id="6042308850641462728">更多</translation>
 <translation id="6044573915096792553">粗細：12</translation>
 <translation id="6045164183059402045">拼版範本</translation>
 <translation id="6047233362582046994">如果你瞭解安全性風險，也可以選擇在有害應用程式尚未遭到移除的狀態下<ph name="BEGIN_LINK" />造訪這個網站<ph name="END_LINK" />。</translation>
@@ -2093,6 +2095,7 @@
 <translation id="6290238015253830360">這裡會顯示推薦給你的文章</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC：</translation>
+<translation id="6295855836753816081">儲存中...</translation>
 <translation id="6300452962057769623">{0,plural, =0{裝置會立即重新啟動}=1{裝置將於 1 秒後重新啟動}other{裝置將於 # 秒後重新啟動}}</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
 <translation id="6305205051461490394">無法連上 <ph name="URL" />。</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1006017844123154345">Fungua Mtandaoni</translation>
+<translation id="1036348656032585052">Zima</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="1124090076051167250">Hatua hii itafuta <ph name="DATASIZE" /> ya data na vidakuzi vilivyohifadhiwa na tovuti au programu kwenye Skrini ya kwanza.</translation>
 <translation id="1178581264944972037">Sitisha</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Futa data yote</translation>
 <translation id="4338831206024587507">Tovuti zote zenye kikoa cha <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Zuia tovuti zisijue wakati unatumia kifaa hiki</translation>
+<translation id="4412992751769744546">Ruhusu vidakuzi vingine</translation>
 <translation id="4428065317363009941">Kuweka mapendeleo ya matangazo</translation>
 <translation id="4434045419905280838">Madirisha ibukizi/kuelekeza kwingine</translation>
 <translation id="4440642537584213025">Panua <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Tovuti haziwezi kukuuliza kutuma arifa</translation>
 <translation id="5516455585884385570">Fungua mipangilio ya arifa</translation>
 <translation id="5527111080432883924">Iulize kabla ya kuruhusu tovuti kusoma maandishi na picha kutoka ubao wa kunakili (inapendekezwa)</translation>
+<translation id="5545693483061321551">Tovuti haziwezi kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi. Huenda vipengele kwenye baadhi ya tovuti visifanye kazi.</translation>
 <translation id="5553374991681107062">Za hivi punde</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Manukuu</translation>
 <translation id="8300705686683892304">Zinazodhibitiwa na programu</translation>
 <translation id="8324158725704657629">Usiniulize tena</translation>
-<translation id="834785183489258869">Katika hali fiche, tovuti haziwezi kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi. Huenda vipengele kwenye baadhi ya tovuti visifanye kazi.</translation>
 <translation id="8372893542064058268">Ruhusu Usawazishaji wa Chini Chini wa tovuti mahususi.</translation>
 <translation id="8376384591331888629">Vikiwemo vidakuzi vya wengine kwenye tovuti hii</translation>
 <translation id="83792324527827022">Tovuti inatumia kamera na maikrofoni yako</translation>

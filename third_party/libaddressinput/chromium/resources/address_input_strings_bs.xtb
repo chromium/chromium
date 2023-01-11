@@ -12,7 +12,7 @@
 <translation id="3885155851504623709">Parohija</translation>
 <translation id="43113324827158664">Ne možete ovo ostaviti prazno.</translation>
 <translation id="4376888869070172068">Ovaj format poštanskog broja se ne priznaje.</translation>
-<translation id="4518701284698680367">Morate navesti ZIP kôd, na primjer <ph name="EXAMPLE" />. Ne znate svoj ZIP kôd? Saznajte ga <ph name="BEGIN_LINK" />ovdje<ph name="END_LINK" />.</translation>
+<translation id="4518701284698680367">Morate upisati poštanski broj, naprimjer <ph name="EXAMPLE" />. Ne znate svoj poštanski broj? Saznajte ga <ph name="BEGIN_LINK" />ovdje<ph name="END_LINK" />.</translation>
 <translation id="5089810972385038852">Država</translation>
 <translation id="5095208057601539847">Pokrajina</translation>
 <translation id="5327248766486351172">Ime</translation>
@@ -39,7 +39,7 @@
 <translation id="7805765407568469194">Selo/Naselje</translation>
 <translation id="8184169487503545976">Ovaj oblik poštanskog broja se ne priznaje.</translation>
 <translation id="820600307078153032">Ovaj oblik poštanskog broja se ne priznaje. Primjer važećeg poštanskog broja: <ph name="EXAMPLE" />.</translation>
-<translation id="8446364922515257065">Do/si</translation>
+<translation id="8446364922515257065">Do/Si</translation>
 <translation id="8449204988444194299">Poštanski grad</translation>
 <translation id="8471101563037901452">Izgleda da ovaj poštanski broj ne odgovara ostatku ove adrese. Ne znate svoj poštanski broj? Saznajte ga <ph name="BEGIN_LINK" />ovdje<ph name="END_LINK" />.</translation>
 <translation id="9104066683700680171">Izgleda da ovaj poštanski broj ne odgovara ostatku ove adrese.</translation>

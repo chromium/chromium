@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">কোনো পৰৱর্তী বুটাম নাই</translation>
 <translation id="2911433807131383493">ChromeVox প্ৰশিক্ষণ খোলক</translation>
 <translation id="2912405967290226587">তিনিটা আঙুলি সোঁফাললৈ ছোৱাইপ কৰক</translation>
+<translation id="2919107550468490321">স্মাৰ্ট ষ্টিকি ম’ড অন আছে</translation>
 <translation id="2937799153569150791">কোনো পৰৱর্তী স্তৰ ৩ৰ শিৰোনাম নাই</translation>
 <translation id="2942710183375260152">গাঢ় স্লেট ব্লু</translation>
 <translation id="2943596527105977722">গাঢ় সোণালী ৰ'ড</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">তীব্ৰতা হ্ৰাস কৰক</translation>
 <translation id="3009352964623081324">Search + O, তাৰ পাছত S। কণ্ঠধ্বনিসমূহ ইনষ্টল, পৰিচালনা আৰু কাষ্টমাইজ কৰিবলৈ ব্যৱহাৰ কৰক।</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox ল’ড হৈ আছে</translation>
 <translation id="3030432017085518523">মেনুত থকা বস্তুৰ ৰেডিঅ’ বুটাম</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ঊৰ্দ্ধকমা}one{#টা ঊৰ্দ্ধকমা}other{#টা ঊৰ্দ্ধকমা}}</translation>
 <translation id="3040901448410802366">প্ৰগতিৰ সূচক</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3813387282697781382">পাতল প্ৰবালৰঙী</translation>
 <translation id="3816633764618089385">পৰৱৰ্তী মিডিয়া</translation>
+<translation id="3821689185319271077">কোনো পইণ্টাৰ এংকৰ নাই</translation>
 <translation id="3840823741487267909">সংক্ষিপ্ত শব্দ</translation>
 <translation id="3841319830220785495">ডিফ’ল্ট স্বাভাৱিক কণ্ঠধ্বনি</translation>
 <translation id="385383972552776628">বিকল্পসমূহৰ পৃষ্ঠা খোলক</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ফ’ৰ্ম</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">পৰৱৰ্তী কীৰ হেঁচা অগ্রাহ্য কৰি থকা হৈছে</translation>
+<translation id="4617384941327705512">স্মাৰ্ট ষ্টিকি ম’ড অফ আছে</translation>
 <translation id="4623097797855662355">ক'ল'ফ'ন</translation>
 <translation id="4624970070706497034">TalkBackএ Chromebooksৰ বাবে আৰু কাষ্টমাইজেশ্বনৰ সুবিধা প্ৰদান নকৰে। আপুনি তথাপিও এইটো ব্যৱহাৰ কৰিব পাৰে, কিন্তু TalkBackৰ ডিফ’ল্ট কীব’ৰ্ডৰ শ্বৰ্টকাটসমূহ ব্যৱহাৰ কৰক। উপলব্ধ শ্বৰ্টকাটসমূহ চাবলৈ প্ৰথমে ছাৰ্চ+এ টিপক, তাৰ পাছত কে টিপক। যদি আপুনি তথাপিও TalkBack ব্যৱহাৰ কৰিবলৈ বিচাৰে, পুনৰ নিৰ্দেশনাটো টিপক।</translation>
 <translation id="463135993322337640">নতুন কি আছে জানিবলৈ ChromeVox o, n টিপক</translation>

@@ -863,6 +863,7 @@
 <translation id="317878711435188021">ဤကိရိယာသုံးနေချိန်ကို သိလိုသည်</translation>
 <translation id="3180358318770512945">မိဘအုပ်ထိန်းမှု</translation>
 <translation id="3187306450550410410">လိုက်လျောညီထွေ အလုပ်စီစဉ်ပေးမှုများ</translation>
+<translation id="3187472288455401631">ကြော်ငြာတိုင်းတာခြင်း</translation>
 <translation id="3190736958609431397">မစောင့်ကြည့်ရန်</translation>
 <translation id="319282854780294203">လူမှုကွန်ရက်များ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> သည် ဒေတာများကို သင်၏စက်တွင် အမြဲတမ်းသိုလှောင်လိုသည်</translation>
@@ -2004,6 +2005,7 @@
 <translation id="6039846035001940113">ပြဿနာ ဆက်ရှိနေသေးလျှင် ဝဘ်ဆိုက်ပိုင်ရှင်ကို ဆက်သွယ်ပါ။</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6041777658117377052">အခန်း အပူချိန်</translation>
+<translation id="6042308850641462728">နောက်ထပ်</translation>
 <translation id="6044573915096792553">အရွယ်အစား ၁၂</translation>
 <translation id="6045164183059402045">သတ်မှတ်ချက် နမူနာ ပုံစံ</translation>
 <translation id="6047233362582046994">သင်၏ လုံခြုံရေးဆိုင်ရာ အန္တရာယ်ကို နားလည်လျှင် အန္တရာယ်ဖြစ်စေနိုင်သည့် အက်ပ်ကို ဖယ်ရှားခြင်းမပြုမီ <ph name="BEGIN_LINK" />ဤဝဘ်ဆိုက်သို့ သွားရောက်နိုင်ပါသည်<ph name="END_LINK" />။</translation>
@@ -2094,6 +2096,7 @@
 <translation id="6290238015253830360">သင်အကြံပြုထားသည့် ဆောင်းပါးများ ဤနေရာတွင် ပေါ်ပါမည်</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC-</translation>
+<translation id="6295855836753816081">သိမ်းဆည်းနေသည်...</translation>
 <translation id="6300452962057769623">{0,plural, =0{သင့်စက်ကို ယခုပြန်စမည်}=1{သင့်စက်ကို 1 စက္ကန့်အတွင်း ပြန်စမည်}other{သင့်စက်ကို # စက္ကန့်အတွင်း ပြန်စမည်}}</translation>
 <translation id="6301104306974789820">ဈေးနှုန်းစောင့်ကြည့်မှု အကြောင်းကြားချက်များ ရယူရန်</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ကိုဆက်သွယ်၍မရနိုင်ပါ။</translation>

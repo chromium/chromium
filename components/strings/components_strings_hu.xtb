@@ -859,6 +859,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="317878711435188021">megtudni, hogy Ön mikor használja aktívan ezt az eszközt</translation>
 <translation id="3180358318770512945">Gyereknevelés</translation>
 <translation id="3187306450550410410">Rugalmas munkaidő</translation>
+<translation id="3187472288455401631">Hirdetésmérés</translation>
 <translation id="3190736958609431397">Nyomon követés megszüntetése</translation>
 <translation id="319282854780294203">Közösségi hálózatok</translation>
 <translation id="3194737229810486521">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni az eszközön</translation>
@@ -2001,6 +2002,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6039846035001940113">Ha a probléma továbbra is fennáll, lépjen kapcsolatba a webhely tulajdonosával.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6041777658117377052">Kamra hőmérséklete</translation>
+<translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6044573915096792553">Méret: 12</translation>
 <translation id="6045164183059402045">Ráhelyezési sablon</translation>
 <translation id="6047233362582046994">Ha tisztában van a biztonságát fenyegető kockázatokkal, a káros alkalmazások eltávolítása előtt is <ph name="BEGIN_LINK" />felkeresheti ezt a webhelyet<ph name="END_LINK" />.</translation>
@@ -2092,6 +2094,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6290238015253830360">A javasolt cikkek helye</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Mentés…</translation>
 <translation id="6300452962057769623">{0,plural, =0{Eszköze most újraindul}=1{Eszköze 1 másodperc múlva újraindul}other{Eszköze # másodperc múlva újraindul}}</translation>
 <translation id="6301104306974789820">Árkövetési értesítések fogadása</translation>
 <translation id="6305205051461490394">A(z) <ph name="URL" /> nem érhető el.</translation>

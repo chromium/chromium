@@ -314,7 +314,6 @@
 <translation id="2673968385134502798">游戏</translation>
 <translation id="2678852583403169292">“随选朗读”菜单</translation>
 <translation id="2689613560355655046">桌面 8</translation>
-<translation id="2695132445805301912">显示按键和点击操作</translation>
 <translation id="2695305337569143674">网络</translation>
 <translation id="2697697418792422688">显示键盘设置。已选择“<ph name="KEYBOARD_NAME" />”。</translation>
 <translation id="2700493154570097719">设置键盘</translation>
@@ -486,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />，
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">如果您启用移动流量，蓝牙亦会随之开启</translation>
+<translation id="3616113530831147358">音频</translation>
 <translation id="3616883743181209306">菜单已移至屏幕的右上角。</translation>
 <translation id="3619536907358025872">截屏设置</translation>
 <translation id="3621202678540785336">输入</translation>

@@ -1434,6 +1434,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2280486287150724112">Pravý okraj</translation>
 <translation id="2281863813036651454">Kliknutie ľavým tlačidlom myši</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
+<translation id="228293613124499805">Väčšina webov, ktoré navštevujete, pravdepodobne ukladá dáta vo vašom zariadení. Často ukladajú vaše predvoľby alebo informácie, ktoré s nimi zdieľate, čím zlepšujú vaše prostredie. Toto nastavenie odporúčame nechať zapnuté.</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Otvoriť všetko na novej skupine kariet}=1{Otvoriť na novej skupine kariet}few{Otvoriť všetko ({COUNT}) na novej skupine kariet}many{Otvoriť všetko ({COUNT}) na novej skupine kariet}other{Otvoriť všetko ({COUNT}) na novej skupine kariet}}</translation>
 <translation id="2285942871162473373">Váš odtlačok prsta sa nepodarilo rozpoznať. Skúste to znova.</translation>
 <translation id="2287944065963043964">Prihlasovacia obrazovka</translation>
@@ -2876,6 +2877,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3603622770190368340">Získanie certifkátu siete</translation>
 <translation id="3605780360466892872">Manažér</translation>
 <translation id="3609277884604412258">Rýchle vyhľadávanie</translation>
+<translation id="3610241585790874201">Nemôžu ukladať dáta v zariadení</translation>
 <translation id="3610369246614755442">Ventilátor doku vyžaduje servis</translation>
 <translation id="361106536627977100">Údaje Flash</translation>
 <translation id="3611655097742243705">Ďalšie aplikácie nájdete v Obchode Play</translation>
@@ -3099,6 +3101,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3802486193901166966">Toto rozšírenie nevyžaduje žiadne špeciálne povolenia ani nemá žiadny ďalší prístup k webu</translation>
 <translation id="380329542618494757">Meno</translation>
 <translation id="3803345858388753269">Kvalita videa</translation>
+<translation id="3803367742635802571">Weby, ktoré navštívite, môžu prestať fungovať podľa plánu</translation>
 <translation id="380408572480438692">Povolením zhromažďovania údajov o výkonnosti pomôžete spoločnosti Google postupom času zlepšovať systém. Kým neodošlete správu so spätnou väzbou (Alt-Shift-I) a nezahrniete údaje o výkonnosti, neodošlú sa žiadne údaje. Zhromažďovanie údajov môžete po prejdení späť na túto stránku kedykoľvek zakázať.</translation>
 <translation id="3807249107536149332">Rozšírenie <ph name="EXTENSION_NAME" /> (ID rozšírenia – <ph name="EXTENSION_ID" />) nie je povolené na prihlasovacej obrazovke.</translation>
 <translation id="3807747707162121253">&amp;Zrušiť</translation>
@@ -3957,6 +3960,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4595560905247879544">Aplikácie a rozšírenia môže upraviť iba správca (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">V súbore máte certifikáty, ktoré identifikujú tieto servery</translation>
 <translation id="4598345735110653698">Spravovať prístupové kľúče</translation>
+<translation id="4598549027014564149">Keď ste v režime inkognito, weby nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania na nich (ani súvisiace weby). Aktivita prehliadania sa nepoužíva ani na prispôsobenie reklám. Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="4598556348158889687">Správa úložiska</translation>
 <translation id="4598776695426288251">Je k dispozícii sieť Wi‑Fi prostredníctvom niekoľkých zariadení</translation>
 <translation id="4600071396330666617">Počet návrhov</translation>
@@ -4122,6 +4126,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4750185073185658673">Skontrolujte vo svojom telefóne niekoľko ďalších povolení. Nezabudnite mať zapnuté rozhranie Bluetooth aj sieť Wi‑Fi.</translation>
 <translation id="4750394297954878236">Návrhy</translation>
 <translation id="475088594373173692">Prvý používateľ</translation>
+<translation id="4756302371612574303">Web, ktorý navštívite, môže ukladať informácie o tom, čo robíte, aby mohol fungovať podľa vašich očakávaní. Vďaka tomu si napríklad môžete na danom webe uchovať aktívne prihlásenie alebo ukladať položky do nákupného košíka. Weby často ukladajú tieto informácie vo vašom zariadení dočasne.</translation>
 <translation id="4756378406049221019">Zastaviť / znova načítať</translation>
 <translation id="4756388243121344051">&amp;História</translation>
 <translation id="4756671452988984333">Text zvuku</translation>
@@ -4462,6 +4467,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="508059534790499809">Obnovenie tiketu Kerberos</translation>
 <translation id="5081960376148623587">Vyberte, či chcete prednačítavať stránky</translation>
 <translation id="5084328598860513926">Nastavovanie bolo prerušené. Skúste to znova alebo kontaktujte vlastníka či správcu zariadenia. Kód chyby: <ph name="ERROR_CODE" />.</translation>
+<translation id="5084622689760736648">Weby budú s väčšou pravdepodobnosťou fungovať podľa vašich očakávaní</translation>
 <translation id="5085162214018721575">Prebieha kontrola aktualizácií</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Poznámka má viac než 1 000 znakov</translation>
@@ -5868,6 +5874,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6406303162637086258">Simulovať reštartovanie prehliadača</translation>
 <translation id="6406506848690869874">Synchronizácia</translation>
 <translation id="6406708970972405507">Nastavenia – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">Môžu ukladať dáta v zariadení</translation>
 <translation id="6408118934673775994">Čítať a meniť údaje na weboch <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> a <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Súbory obrázkov</translation>
 <translation id="6410328738210026208">Zmeniť kanál a použiť funkciu Powerwash</translation>
@@ -6685,6 +6692,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7141105143012495934">Prihlásenie zlyhalo, pretože podrobnosti účtu sa nepodarilo načítať. Kontaktujte svojho správcu alebo to skúste znova.</translation>
 <translation id="7141844554192012199">Skontrolovať</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
+<translation id="7148426638542880639">Weby nemusia fungovať podľa vašich očakávaní. Túto možnosť vyberte, ak nechcete v zariadení uchovávať informácie o navštívených weboch.</translation>
 <translation id="7149839598364933473">Zmeňte toto zariadenie na zariadenie s operačným systémom <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
 <translation id="7152478047064750137">Toto rozšírenie nevyžaduje žiadne špeciálne povolenia</translation>
@@ -6717,6 +6725,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7186088072322679094">Ponechať na paneli s nástrojmi</translation>
 <translation id="7186303001964993981">Web <ph name="ORIGIN" /> nemôže otvoriť tento priečinok, pretože obsahuje súbory systému</translation>
 <translation id="7187428571767585875">Záznamy databázy Registry, ktoré sa majú odstrániť alebo zmeniť:</translation>
+<translation id="7188508872042490670">Dáta webov v zariadení</translation>
 <translation id="7189234443051076392">Uistite sa, či máte v zariadení dosť miesta</translation>
 <translation id="7189451821249468368">Nemáte dostatočný počet inovácií na registráciu tohto zariadenia. Kontaktujte obchodné oddelenie a kúpte si ďalšie. Ak sa domnievate, že ide o chybu, kontaktujte podporu.</translation>
 <translation id="7189965711416741966">Odtlačok prsta bol pridaný.</translation>
@@ -6990,6 +6999,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7444970023873202833">Preskúmajte viac svojich spomienok vo Fotkách Google</translation>
 <translation id="7444983668544353857">Zakázať zariadenie <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Inštalujte aplikácie automaticky</translation>
+<translation id="7448664748118305024">Odstrániť dáta webov uložené v zariadení po zavretí všetkých okien</translation>
 <translation id="7449381494541372002">spúšťa sa…</translation>
 <translation id="7449752890690775568">Chcete odstrániť heslo?</translation>
 <translation id="7450761244949417357">Otvára sa v prehliadači <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -8168,6 +8178,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="851263357009351303">Vždy povoliť stránkam <ph name="HOST" /> zobrazovať obrázky</translation>
 <translation id="8513108775083588393">Aut. otáčanie</translation>
 <translation id="8514746246728959655">Vyskúšajte iný bezpečnostný kľúč</translation>
+<translation id="8514955299594277296">Nepovoliť webom ukladať dáta v zariadení (neodporúča sa)</translation>
 <translation id="8519895319663397036">Heslá sa nedajú importovať. Súbor musí byť menší než 150 kB.</translation>
 <translation id="8523493869875972733">Zachovať zmeny</translation>
 <translation id="8523849605371521713">Pridané pravidlom</translation>
@@ -8614,6 +8625,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8925458182817574960">&amp;Nastavenia</translation>
 <translation id="8926389886865778422">Túto otázku už nezobrazovať</translation>
 <translation id="892706138619340876">Niektoré nastavenia boli obnovené</translation>
+<translation id="8927438609932588163">Povoliť webom ukladať dáta v zariadení</translation>
 <translation id="8929696694736010839">Iba aktuálna relácia inkognito</translation>
 <translation id="8930351635855238750">Nové nastavenia súborov cookie sa použijú po opätovnom načítaní stránky</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>

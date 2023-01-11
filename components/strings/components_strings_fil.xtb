@@ -861,6 +861,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="317878711435188021">Alamin kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="3180358318770512945">Pagiging magulang</translation>
 <translation id="3187306450550410410">Mga flexible na work arrangement</translation>
+<translation id="3187472288455401631">Pagsukat ng ad</translation>
 <translation id="3190736958609431397">Huwag subaybayan</translation>
 <translation id="319282854780294203">Mga social network</translation>
 <translation id="3194737229810486521">Gusto ng <ph name="URL" /> na permanenteng mag-store ng data sa iyong device</translation>
@@ -2003,6 +2004,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6039846035001940113">Kung magpapatuloy ang problema, makipag-ugnayan sa may-ari ng site.</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6041777658117377052">Temperatura ng chamber</translation>
+<translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="6044573915096792553">Laki 12</translation>
 <translation id="6045164183059402045">Template ng imposition</translation>
 <translation id="6047233362582046994">Kung nauunawaan mo ang mga panganib sa iyong seguridad, maaari mong <ph name="BEGIN_LINK" />bisitahin ang site na ito<ph name="END_LINK" /> bago maalis ang mga mapaminsalang app.</translation>
@@ -2094,6 +2096,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6290238015253830360">Lalabas dito ang mga iminungkahi mong artikulo</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Sine-save...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Magre-restart na ngayon ang iyong device}=1{Magre-restart ang iyong device pagkalipas ng 1 segundo}one{Magre-restart ang iyong device pagkalipas ng # segundo}other{Magre-restart ang iyong device pagkalipas ng # na segundo}}</translation>
 <translation id="6301104306974789820">Makakuha ng mga notification sa pagsubaybay sa presyo</translation>
 <translation id="6305205051461490394">Hindi makakonekta sa <ph name="URL" />.</translation>

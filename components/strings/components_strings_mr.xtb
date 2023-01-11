@@ -861,6 +861,7 @@
 <translation id="317878711435188021">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे वापरता याविषयी जाणून घ्या</translation>
 <translation id="3180358318770512945">पालकत्व</translation>
 <translation id="3187306450550410410">कर्मचाऱ्याच्या सोयीनुसार काम करण्याच्या सुविधा</translation>
+<translation id="3187472288455401631">जाहिरात मापन</translation>
 <translation id="3190736958609431397">माग ठेवणे रद्द करा</translation>
 <translation id="319282854780294203">सोशल नेटवर्क</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ला तुमच्या डिव्हाइसवर डेटा कायमचा स्टोअर करायचा आहे</translation>
@@ -2002,6 +2003,7 @@
 <translation id="6039846035001940113">समस्या कायम राहिल्यास साइटच्या मालकाशी संपर्क साधा.</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6041777658117377052">चेंबरचे तापमान</translation>
+<translation id="6042308850641462728">अधिक</translation>
 <translation id="6044573915096792553">आकार १२</translation>
 <translation id="6045164183059402045">लागू करण्याचे टेम्पलेट</translation>
 <translation id="6047233362582046994">तुम्हाला तुमच्या सुरक्षेला असणारा धोका समजत असल्यास, हानिकारक अ‍ॅप्स काढले जाण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
@@ -2094,6 +2096,7 @@
 <translation id="6290238015253830360">तुम्ही सुचविलेले लेख येथे दिसतील</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">सेव्ह करत आहे...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{तुमचे डिव्हाइस एका सेकंदामध्ये रीस्टार्ट होईल}other{तुमचे डिव्हाइस # सेकंदांमध्ये रीस्टार्ट होईल}}</translation>
 <translation id="6301104306974789820">किमतीचा माग ठेवणाऱ्या सूचना मिळवा</translation>
 <translation id="6305205051461490394"><ph name="URL" /> आवाक्याबाहेर आहे.</translation>

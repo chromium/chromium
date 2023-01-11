@@ -2104,9 +2104,6 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
 <translation id="2960999045613902792">Permitir que os usuários adicionem, configurem e imprimam usando impressoras não corporativas</translation>
 <translation id="2962972237615992440">Desativar o proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Desativar ditado</translation>
-<translation id="2964056138564883247">Controla a disponibilidade da <ph name="BOREALIS_NAME" /> para este usuário.
-
-      Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> ficará indisponível. Caso contrário, quando a política for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível se, e apenas se, nenhuma outra política ou configuração a desativar.</translation>
 <translation id="2964373560810620158">Impedir que os usuários usem o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Permitir que os sites usem o SharedArrayBuffers</translation>
 <translation id="2969489219271682844">Não mostrar notificações quando dispositivos USB forem detectados</translation>
@@ -5450,7 +5447,6 @@ Se a política for deixada sem definição, nenhum domínio poderá acessar os U
       Se esta política não for definida, a configuração padrão do sandbox de áudio será usada, o que pode variar de acordo com a plataforma.
       Com esta política, as empresas que usam configurações de software de segurança que afetam o sandbox têm a flexibilidade de desativar o sandbox de áudio.</translation>
 <translation id="624818583115864448">porta 554 (pode ser desbloqueada até 15/10/2021)</translation>
-<translation id="6252773211180267325">Não evitar que a <ph name="BOREALIS_NAME" /> seja executada para um usuário</translation>
 <translation id="6254498834449523938">Não permitir que o usuário ignore o aviso do recurso Navegação segura</translation>
 <translation id="625580680776945310">O modo de alta eficiência vai ser ativado.</translation>
 <translation id="6258658183356534534">Controlar o recurso de atualização do User-Agent Client Hints GREASE.</translation>

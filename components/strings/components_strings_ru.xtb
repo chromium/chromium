@@ -39,7 +39,7 @@
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Закладки на компьютере</translation>
 <translation id="1067561478268651872">Если правило <ph name="SECURE_DNS_SALT" /> не настроено, то правило <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> не будет работать.</translation>
-<translation id="1068672505746868501">Не переводить страницы на этом языке: <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="1068672505746868501">Не переводить <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Гибридные автомобили и транспортные средства, работающие на альтернативном топливе</translation>
 <translation id="1070901266639972381">До ночи</translation>
 <translation id="1072594122896439679">Музыка и аудио</translation>
@@ -860,6 +860,7 @@
 <translation id="317878711435188021">доступ к информации об использовании устройства</translation>
 <translation id="3180358318770512945">Воспитание детей</translation>
 <translation id="3187306450550410410">Гибкие условия работы</translation>
+<translation id="3187472288455401631">Оценка эффективности рекламы</translation>
 <translation id="3190736958609431397">Перестать отслеживать</translation>
 <translation id="319282854780294203">Социальные сети</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение данных на вашем устройстве.</translation>
@@ -1593,7 +1594,7 @@
 <translation id="4995474875135717171">Изменен:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить поиск по сайту и задать поисковую систему по умолчанию.</translation>
 <translation id="5002932099480077015">Chrome будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
-<translation id="5011561501798487822">Обнаружен язык</translation>
+<translation id="5011561501798487822">Автоматически определенный язык</translation>
 <translation id="5015510746216210676">Имя компьютера:</translation>
 <translation id="5017554619425969104">Скопированный текст</translation>
 <translation id="5017828934289857214">Напомнить позже</translation>
@@ -2002,6 +2003,7 @@
 <translation id="6039846035001940113">Если проблема не исчезнет, свяжитесь с владельцем сайта.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6041777658117377052">Температура камеры</translation>
+<translation id="6042308850641462728">Ещё</translation>
 <translation id="6044573915096792553">Размер: 12</translation>
 <translation id="6045164183059402045">Шаблон спуска полос</translation>
 <translation id="6047233362582046994">Если вы осознаете, что можете подвергнуть риску свои личные данные, то можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносных приложений.</translation>
@@ -2093,6 +2095,7 @@
 <translation id="6290238015253830360">Здесь появятся рекомендуемые статьи.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Код CVC:</translation>
+<translation id="6295855836753816081">Сохранение...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Устройство сейчас перезапустится}=1{Устройство перезапустится через 1 секунду}one{Устройство перезапустится через # секунду}few{Устройство перезапустится через # секунды}many{Устройство перезапустится через # секунд}other{Устройство перезапустится через # секунды}}</translation>
 <translation id="6301104306974789820">Получать уведомления об изменении цены</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недоступен.</translation>
@@ -2680,7 +2683,7 @@
 <translation id="7723047071702270851">Измените данные карты</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7734285854693414638">Быстро создать форму в Google Формах</translation>
-<translation id="773466115871691567">Переводить страницы на этом языке: <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="773466115871691567">Всегда переводить <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">Копировать адрес ссылки</translation>
 <translation id="7740996059027112821">Стандартный</translation>
 <translation id="77424286611022110">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
@@ -2745,7 +2748,7 @@
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7943397946612013052">Скачивание остановлено</translation>
 <translation id="7943893128817522649">Разрешено отправлять запрос на автоматическое скачивание нескольких файлов</translation>
-<translation id="7946724693008564269">Обнаруженный язык</translation>
+<translation id="7946724693008564269">Автоматически определенный язык</translation>
 <translation id="7947285636476623132">Проверьте год в сроке действия карты и повторите попытку</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы узнать больше о функциях Chrome, нажмите Tab, а затем Ввод.</translation>
 <translation id="7950027195171824198">Задать параметры файлов cookie в настройках Chrome</translation>

@@ -292,6 +292,7 @@
 <translation id="2909584066358367921">Δεν υπάρχει επόμενο κουμπί.</translation>
 <translation id="2911433807131383493">Άνοιγμα εκπαιδευτικού οδηγού ChromeVox</translation>
 <translation id="2912405967290226587">Σύρετε τρία δάκτυλα προς τα δεξιά</translation>
+<translation id="2919107550468490321">Η Έξυπνη λειτουργία σταθερών πλήκτρων είναι ενεργοποιημένη</translation>
 <translation id="2937799153569150791">Δεν υπάρχει επόμενη κεφαλίδα επιπέδου 3.</translation>
 <translation id="2942710183375260152">Σκούρο μπλε γκρι</translation>
 <translation id="2943596527105977722">Σκούρα χρυσαφί ράβδος</translation>
@@ -306,6 +307,7 @@
 <translation id="2999559350546931576">Μείωση προώθησης</translation>
 <translation id="3009352964623081324">Αναζήτηση + O και έπειτα S. Χρησιμοποιήστε το για να εγκαταστήσετε, να διαχειριστείτε και να προσαρμόσετε φωνές.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">Γίνεται φόρτωση του ChromeVox</translation>
 <translation id="3030432017085518523">Κουμπί επιλογής στοιχείου μενού</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{απόστροφος}other{# απόστροφοι}}</translation>
 <translation id="3040901448410802366">Ένδειξη προόδου</translation>
@@ -440,6 +442,7 @@
 <translation id="3810838688059735925">Βίντεο</translation>
 <translation id="3813387282697781382">Ανοιχτό κοραλλί</translation>
 <translation id="3816633764618089385">Επόμενο μέσο</translation>
+<translation id="3821689185319271077">Δεν υπάρχει αγκύρωση δείκτη</translation>
 <translation id="3840823741487267909">Συντομογραφία</translation>
 <translation id="3841319830220785495">Προεπιλεγμένη φυσική φωνή</translation>
 <translation id="385383972552776628">Άνοιγμα σελίδας επιλογών</translation>
@@ -545,6 +548,7 @@
 <translation id="4597532268155981612">φόρμα</translation>
 <translation id="4601367666219428522">πίνακας <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Παράβλεψη του επόμενου πατήματος πλήκτρου</translation>
+<translation id="4617384941327705512">Η Έξυπνη λειτουργία σταθερών πλήκτρων είναι απενεργοποιημένη</translation>
 <translation id="4623097797855662355">Εκδοτικό σήμα</translation>
 <translation id="4624970070706497034">Το TalkBack δεν παρέχει πλέον δυνατότητα προσαρμογής στα Chromebook. Μπορείτε ακόμα να το χρησιμοποιείτε, αλλά θα πρέπει να χρησιμοποιείτε τις προεπιλεγμένες συντομεύσεις πληκτρολογίου του Talkback. Πατήστε Αναζήτηση+A και έπειτα K για να δείτε τις διαθέσιμες συντομεύσεις. Εάν θέλετε ακόμα να χρησιμοποιήσετε το TalkBack, πατήστε ξανά την εντολή.</translation>
 <translation id="463135993322337640">Πατήστε ChromeVox o, n για να μάθετε τι νέο υπάρχει</translation>

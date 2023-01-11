@@ -413,6 +413,7 @@ In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor ins
       Voor <ph name="PRODUCT_OS_NAME" /> geldt dit beleid alleen voor aangesloten gebruikers.
 
       Dit beleid overschrijft <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.</translation>
+<translation id="1413768951234456918">Browsegeschiedenis wissen</translation>
 <translation id="1413936351612032792">Informatie over gebruik van Linux-apps rapporteren</translation>
 <translation id="1417888712677507140">JavaScript-dialoogvensters blokkeren als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="1418387035898607074">Safe Browsing-checks overslaan voor bestanden die worden gedownload van vertrouwde bronnen</translation>
@@ -2067,9 +2068,6 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
 <translation id="2960999045613902792">Gebruikers toestaan printers van derden toe te voegen, in te stellen en ermee af te drukken</translation>
 <translation id="2962972237615992440"><ph name="CLOUD_PRINT_NAME" />-proxy uitzetten</translation>
 <translation id="2963292398266537394">Dicteren uitzetten</translation>
-<translation id="2964056138564883247">Beheert de beschikbaarheid van <ph name="BOREALIS_NAME" /> voor deze gebruiker.
-
-      Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
 <translation id="2964373560810620158">Niet toestaan dat gebruikers de <ph name="LACROS_NAME" />-browser gebruiken</translation>
 <translation id="2968177167006045252">Toestaan dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="2969489219271682844">Geen meldingen tonen als USB-apparaten worden gevonden</translation>
@@ -2729,6 +2727,7 @@ Elke regel bevat het volgende:
 
 Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translation>
 <translation id="3531084733660068324">Instellingen voor ouderlijk toezicht</translation>
+<translation id="3532827558833318911">Inloggen met wachtwoord wissen</translation>
 <translation id="353611922042274900">Altijd systeemgegevens weergeven op het inlogscherm</translation>
 <translation id="3536263244905016305">WPAD-optimalisatie (Web Proxy Auto-Discovery) uitzetten</translation>
 <translation id="3538869107794555625">Schermtoetsenbord aanzetten in de tabletmodus</translation>
@@ -4169,6 +4168,7 @@ Als je dit beleid niet toepast of niet instelt, is de API window.webkitStorageIn
       Als je het beleid niet toepast, stopt <ph name="PRODUCT_NAME" /> met het sturen van deze query's.</translation>
 <translation id="5033070732967197381">WebAuthn API-verzoeken toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="5034504101537897433">Rapportage voor informatie over crashrapporten van apparaat aanzetten</translation>
+<translation id="5036013147560568855">Versie van het certificaatregistratieprotocol. De standaardinstelling is 1. 1 is het 'statische' protocol. 2 is het 'dynamische' protocol.</translation>
 <translation id="5039110755072335605">Ondersteuning voor CORS-verzoekheaders zonder jokertekens</translation>
 <translation id="504116558738617678">Waarschuwingen voor weinig schijfruimte alleen tonen als het apparaat onbeheerd is of er slechts 1 gebruiker is</translation>
 <translation id="5055474681190962362">Dag van de maand [1-31] waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op MONTHLY. Is dit meer dan het maximumaantal dagen in een bepaalde maand, dan wordt de laatste dag van de maand gekozen.</translation>
@@ -4321,6 +4321,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> is een gerelateerd beleid waarmee controles voor DNS-onderschepping ook kunnen worden uitgezet. Dit beleid is een flexibelere versie waarmee infobalken voor intranetomleidingen afzonderlijk kunnen worden beheerd. Het beleid kan in de toekomst worden uitgebreid.
       Als <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> of dit beleid vraagt om controles voor onderschepping uit te zetten, worden de controles uitgezet.</translation>
+<translation id="5210133032276211845">Afbeeldingen en bestanden in het cachegeheugen wissen</translation>
 <translation id="5212118847531454979">Hiermee kun je de periode in milliseconden instellen waarin gebruikers een melding ontvangen dat <ph name="PRODUCT_NAME" /> opnieuw moet worden gestart of dat een <ph name="PRODUCT_OS_NAME" />-apparaat opnieuw moet worden opgestart om een update in behandeling uit te voeren.
 
       Gedurende deze periode krijgt de gebruiker regelmatig de melding dat er een update moet worden uitgevoerd. Voor <ph name="PRODUCT_OS_NAME" />-apparaten wordt een melding over opnieuw opstarten weergegeven in het systeemvak, in overeenstemming met het <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />-beleid. Voor <ph name="PRODUCT_NAME" />-browsers wordt het app-menu gewijzigd om aan te geven dat er opnieuw moet worden opgestart zodra een derde van de meldingsperiode is verstreken. Deze melding krijgt een andere kleur zodra twee derde van de meldingsperiode is verstreken en dit gebeurt nogmaals als de volledige periode is verstreken. Hetzelfde schema wordt gehanteerd voor aanvullende meldingen die door het <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />-beleid zijn aangezet.
@@ -4680,6 +4681,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Als deze lijst leeg is, vindt het updaten niet gefaseerd plaats en worden updates toegepast volgens ander apparaatbeleid.
 
       Dit beleid is niet van toepassing op kanaalwisselingen.</translation>
+<translation id="5517825566262498086">Gehoste app-gegevens wissen</translation>
 <translation id="5519331583722582543">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor invoer via handschriftherkenning heeft.</translation>
 <translation id="5519619299971727565">Gebruiksrapportage voor Linux-apps uitzetten</translation>
 <translation id="5521035900165046997">Rapportage van bluetooth-informatie van apparaat aanzetten</translation>
@@ -4942,6 +4944,7 @@ Als je het beleid niet instelt, hebben alle domeinen geen toegang tot file://-UR
 
 Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid of door de gebruiker). Gebruik het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> of <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> om Safe Browsing verplicht aan te zetten.</translation>
 <translation id="5835312413892670446">Instellingen voor Screenshot</translation>
+<translation id="5835674781974810379">Cookies en andere sitegegevens wissen</translation>
 <translation id="5836064773277134605">Het UDP-poortbereik beperken dat voor de host voor externe toegang wordt gebruikt</translation>
 <translation id="583627479140113555">Import van opgeslagen wachtwoorden bij eerste uitvoering aanzetten</translation>
 <translation id="5837898601525273156">Als <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> is ingesteld en je <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> aanzet, blijft het stroombeheerbeleid voor de geavanceerde batterijoplaadmodus aan (als het apparaat dit ondersteunt). Deze modus gebruikt buiten werktijden een standaard oplaadalgoritme en andere technieken waarmee gebruikers de batterijprestaties kunnen maximaliseren. Tijdens werktijden wordt snelladen gebruikt. Hiermee wordt de batterij sneller opgeladen. Geef de tijd op wanneer het systeem elke dag het meest wordt gebruikt met een begintijd en de duur.
@@ -5092,6 +5095,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5997543603646547632">Klok met 24-uursnotatie standaard gebruiken</translation>
 <translation id="5997846976342452720">Aangeven of de plug-inzoeker moet worden uitgezet (beëindigd)</translation>
 <translation id="5998198091336830580">Dit beleid maakt deel uit van de volgende atomische groep (alleen beleidsregels van de bron met de hoogste prioriteit in de groep worden toegepast):</translation>
+<translation id="6001621991816939414">Downloadgeschiedenis wissen</translation>
 <translation id="600402562436559989">Toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon</translation>
 <translation id="6004575267180297869">
       Geeft aan of WebAssembly-modules cross-origin kunnen worden verstuurd naar een ander venster of een andere werkrol. Het cross-origin delen van WebAssembly-modules wordt beëindigd als onderdeel van de activiteiten om document.domain te beëindigen, zie https://github.com/mikewest/deprecating-document-domain. Dit beleid staat toe dat het cross-origin delen van WebAssembly-modules opnieuw mogelijk wordt gemaakt om een langere overgangsperiode te bieden voor het beëindigingsproces.
@@ -5332,7 +5336,6 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Als dit beleid niet wordt ingesteld, wordt de standaardconfiguratie voor de audiosandbox gebruikt, die per platform kan verschillen.
       Dit beleid is bedoeld om bedrijven de flexibiliteit te bieden om de audiosandbox uit te zetten als ze instellingen voor beveiligingssoftware gebruiken die de sandbox kunnen verstoren.</translation>
 <translation id="624818583115864448">poort 554 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
-<translation id="6252773211180267325">Niet voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd voor een gebruiker</translation>
 <translation id="6254498834449523938">Gebruiker niet toestaan Safe Browsing-waarschuwingen over te slaan</translation>
 <translation id="625580680776945310">De modus voor hoge efficiëntie wordt aangezet.</translation>
 <translation id="6258658183356534534">De GREASE-updatefunctie voor User-Agent Client Hints beheren.</translation>
@@ -6702,6 +6705,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7519218194072744342">De URL van de protocolhandler.</translation>
 <translation id="7519251620064708155">Het genereren van sleutels toestaan op deze sites</translation>
 <translation id="7521864460386999758">Niet toestaan dat code van derden wordt geïnjecteerd in Chrome</translation>
+<translation id="7524983116584990314">Automatisch invullen wissen</translation>
 <translation id="7529144158022474049">Spreidingsfactor voor automatische update</translation>
 <translation id="7529332889403151669">Geeft aan of de melding voor volledig scherm moet worden getoond als het apparaat uit de slaapstand wordt gehaald of het donkere scherm wordt uitgezet.
 
@@ -7868,6 +7872,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="8657543427358173663">Verzamelen van WebRTC-gebeurtenislogboeken van Google-services toestaan</translation>
 <translation id="8659843732895043951">Klembord toestaan op deze sites</translation>
 <translation id="8661297125441579970">Gegevensmigratie en ARC niet toestaan.</translation>
+<translation id="8661538142776716004">Site-instellingen wissen</translation>
 <translation id="8661980316738569557">Hoog contrast aanzetten</translation>
 <translation id="8664285601317301180">Met dit beleid bepaal je de waarde van <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" /> in afdruktaken.
 
@@ -8114,6 +8119,21 @@ Dit beleid biedt een overzicht van configuratie-ID's die zijn toegewezen aan VM-
 <translation id="8882307005437314052">Schermtoetsenbord op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
 <translation id="8883577480680089760"><ph name="PRODUCT_NAME" /> V2-service uitzetten en geen extern bureau starten bij inloggen</translation>
 <translation id="8887709920496070892">De tijdsduur zonder gebruikersinvoer waarna een waarschuwingsdialoogvenster wordt getoond (in milliseconden)</translation>
+<translation id="8887847586787956456">Lijst met acties die moeten worden uitgevoerd als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt.
+
+      Als het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> niet is ingesteld, heeft dit beleid geen effect.
+
+      Als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt, voert <ph name="PRODUCT_NAME" /> de acties uit die in dit beleid zijn geconfigureerd.
+
+      Als je dit beleid leeg laat of niet instelt, heeft het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> geen effect.
+
+      Deze acties worden ondersteund:
+
+<ph name="CLOSE_BROWSERS_ACTION" />: alle browservensters en PWA's voor dit profiel sluiten.
+
+      <ph name="SHOW_PROFILE_PICKER_ACTION" />: het profielkiezervenster tonen.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: de bijbehorende browsegegevens wissen. Zie het beleid <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> voor meer informatie.</translation>
 <translation id="8890438048579188548">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> verbergen</translation>
 <translation id="8891334958985336685">Rapportage van systeeminformatie van apparaat uitzetten</translation>
 <translation id="8892286064305622118">Vrije schijfruimte vereist voor <ph name="PLUGIN_VM_NAME" /></translation>

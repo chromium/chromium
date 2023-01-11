@@ -2063,9 +2063,6 @@ Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezio
 <translation id="2960999045613902792">Consenti agli utenti di aggiungere, configurare e stampare da stampanti non aziendali</translation>
 <translation id="2962972237615992440">Viene disattivato il proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Disattiva la dettatura</translation>
-<translation id="2964056138564883247">Consente di gestire la disponibilità di <ph name="BOREALIS_NAME" /> per questo utente.
-
-      Se il criterio viene impostato su falso, <ph name="BOREALIS_NAME" /> non sarà disponibile. In caso contrario (se il criterio non viene configurato o se viene impostato su vero) <ph name="BOREALIS_NAME" /> sarà disponibile soltanto se non viene disattivato da altri criteri o impostazioni.</translation>
 <translation id="2964373560810620158">Impedisci agli utenti di usare il browser <ph name="LACROS_NAME" /></translation>
 <translation id="2968177167006045252">Consenti ai siti di utilizzare il criterio SharedArrayBuffers</translation>
 <translation id="2969489219271682844">Non mostrare notifiche quando vengono rilevati dispositivi USB</translation>
@@ -5364,7 +5361,6 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
       Se questo criterio non viene impostato, verrà usata la configurazione predefinita per la sandbox dell'audio, che potrebbe differire in base alla piattaforma.
       Lo scopo di questo criterio è fornire alle imprese la flessibilità di disattivare la sandbox dell'audio qualora interferisca con le configurazioni software di sicurezza utilizzate.</translation>
 <translation id="624818583115864448">porta 554 (può essere sbloccata fino al 15/10/2021)</translation>
-<translation id="6252773211180267325">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> per un utente</translation>
 <translation id="6254498834449523938">Non consentire agli utenti di bypassare l'avviso di Navigazione sicura</translation>
 <translation id="625580680776945310">La modalità ad alta efficienza verrà attivata.</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>

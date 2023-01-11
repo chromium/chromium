@@ -801,6 +801,7 @@
 <translation id="2986368408720340940">שיטת האיסוף הזו אינה זמינה. עליך לבחור שיטה אחרת.</translation>
 <translation id="2987034854559945715">אין תכונות תואמות</translation>
 <translation id="2989742184762224133">שתי סיכות הידוק בחלק העליון</translation>
+<translation id="2990882401221831923">רשימת כרטיסי האשראי סגורה.</translation>
 <translation id="2991174974383378012">שיתוף עם אתרים</translation>
 <translation id="299122504639061328">ניהול מנוע החיפוש שמוגדר כברירת מחדל והחיפוש באתרים</translation>
 <translation id="2991571918955627853">‏נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" /> מאחר שנעשה בו שימוש ב-HSTS. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
@@ -861,6 +862,7 @@
 <translation id="317878711435188021">לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="3180358318770512945">הורות</translation>
 <translation id="3187306450550410410">הסדרי עבודה גמישים</translation>
+<translation id="3187472288455401631">מדידת מודעות</translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
 <translation id="319282854780294203">רשתות חברתיות</translation>
 <translation id="3194737229810486521"><ph name="URL" /> רוצה לאחסן נתונים במכשיר שלך באופן קבוע</translation>
@@ -1589,6 +1591,7 @@ Del</translation>
 <translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
 <translation id="498323057460789381">שגיאה באימות סכימה: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">להשתמש במיקרופון?</translation>
+<translation id="4988822846878841743">רשימת כרטיסי האשראי למילוי במגע פתוחה בחצי מגובה המסך.</translation>
 <translation id="4989163558385430922">אני רוצה לראות הכול</translation>
 <translation id="4989542687859782284">לא זמין</translation>
 <translation id="4989809363548539747">הפלאגין הזה אינו נתמך</translation>
@@ -1938,6 +1941,7 @@ Del</translation>
 <translation id="5863847714970149516">בדף הבא עשויה להיות דרישה לתשלום</translation>
 <translation id="5866257070973731571">הוספת מספר טלפון</translation>
 <translation id="5866898949289125849">הדף המוצג הוא של הכלים למפתחים</translation>
+<translation id="5868548454963263350">רשימת כרטיסי האשראי למילוי במגע פתוחה בגובה המלא של המסך.</translation>
 <translation id="5869405914158311789">לא ניתן לגשת לאתר הזה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="5873013647450402046">הבנק שלך רוצה לאמת את זהותך.</translation>
@@ -2008,6 +2012,7 @@ Del</translation>
 <translation id="6039846035001940113">אם הבעיה ממשיכה, יש לפנות אל בעל האתר.</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6041777658117377052">טמפרטורה בתא</translation>
+<translation id="6042308850641462728">עוד</translation>
 <translation id="6044573915096792553">גודל 12</translation>
 <translation id="6045164183059402045">תבנית הצבה</translation>
 <translation id="6047233362582046994">אם סיכוני האבטחה מובנים לך, יהיה באפשרותך <ph name="BEGIN_LINK" />להיכנס לאתר הזה<ph name="END_LINK" /> לפני הסרת האפליקציות המזיקות.</translation>
@@ -2099,6 +2104,7 @@ Del</translation>
 <translation id="6290238015253830360">הצעות של מאמרים עבורך מופיעות כאן</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">בתהליך שמירה...</translation>
 <translation id="6300452962057769623">{0,plural, =0{המכשיר יופעל מחדש עכשיו}=1{המכשיר יופעל מחדש בתוך שנייה}one{המכשיר יופעל מחדש בתוך # שניות}two{המכשיר יופעל מחדש בתוך # שניות}other{המכשיר יופעל מחדש בתוך # שניות}}</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
 <translation id="6305205051461490394">לא ניתן לגשת אל <ph name="URL" />.</translation>
@@ -2648,6 +2654,7 @@ Del</translation>
 <translation id="7653957176542370971">גיליון פרטי התשלום סגור</translation>
 <translation id="7654909834015434372">המסמך הזה יחזור למצב הסיבוב המקורי שלו בזמן עריכת ההערות</translation>
 <translation id="765676359832457558">הסתרת הגדרות מתקדמות...</translation>
+<translation id="7656935528854393684">רשימת כרטיסי אשראי למילוי במגע.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659327900411729175">‏מעטפה – Kaku 8</translation>
 <translation id="7659878911471462949">דמעות של שמחה</translation>

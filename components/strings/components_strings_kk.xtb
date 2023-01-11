@@ -860,6 +860,7 @@
 <translation id="317878711435188021">Сіз құрылғыны қашан белсенді пайдаланатыныңыз туралы білу</translation>
 <translation id="3180358318770512945">Бала тәрбиесі</translation>
 <translation id="3187306450550410410">Икемді жұмыс кестесі</translation>
+<translation id="3187472288455401631">Жарнама өлшеу</translation>
 <translation id="3190736958609431397">Бақылауды тоқтату</translation>
 <translation id="319282854780294203">Әлеуметтік желілер</translation>
 <translation id="3194737229810486521"><ph name="URL" /> деректерді құрылғыңызда біржола сақтағысы келеді</translation>
@@ -2002,6 +2003,7 @@
 <translation id="6039846035001940113">Мәселе шешілмесе, сайт иесіне хабарласыңыз.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6041777658117377052">Камераның температурасы</translation>
+<translation id="6042308850641462728">Жаю</translation>
 <translation id="6044573915096792553">Өлшемі: 12</translation>
 <translation id="6045164183059402045">Жолақтарды түсіру үлгісі</translation>
 <translation id="6047233362582046994">Қауіпсіздігіңізге келетін қатерлерді түсінсеңіз, зиянды қолданбалар жойылмай жатып, <ph name="BEGIN_LINK" />осы сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
@@ -2093,6 +2095,7 @@
 <translation id="6290238015253830360">Сізге ұсынылған мақалалар осы жерге шығады.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Сақталуда…</translation>
 <translation id="6300452962057769623">{0,plural, =0{Құрылғыңыз қазір қайта қосылады}=1{Құрылғыңыз 1 секундтан кейін қайта қосылады}other{Құрылғыңыз # секундтан кейін қайта қосылады}}</translation>
 <translation id="6301104306974789820">Бағаны бақылау туралы хабарландырулар алу</translation>
 <translation id="6305205051461490394"><ph name="URL" /> мекенжайына кіру мүмкін емес.</translation>

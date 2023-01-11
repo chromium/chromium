@@ -253,6 +253,7 @@
 <translation id="6598877126913850652">Chromium хабарландыру параметрлері бөліміне өту</translation>
 <translation id="6613594504749178791">Өзгертулеріңіз Chromium келесі рет қайта іске қосылғанда күшіне енеді.</translation>
 <translation id="665732753414869868">Chromium айналаңыздың 3D картасын жасау үшін камераны пайдалануға рұқсат сұрайды.</translation>
+<translation id="6663852025006259149">Сайттар сіз күткендей жұмыс істеуі мүмкін, бірақ сіз Chromium-нің барлық терезесін жапқаннан кейін сізді есте сақтамайды</translation>
 <translation id="6676384891291319759">Интернетке кіру</translation>
 <translation id="668175097507315160">Кіру кезіндегі қате себебінен ChromiumOS деректеріңізді синхрондай алмады.</translation>
 <translation id="6709350901466051922">Chromium бұл сайт үшін микрофонды пайдалануға рұқсат сұрайды.</translation>
@@ -382,5 +383,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="945990405696787151">Chromium-нің жаңа нұсқаларын алып тұру үшін macOS 10.13 не одан кейінгі операциялық жүйе керек болады. Бұл компьютерде OS X 10.11 нұсқасы орнатылған.</translation>
 <translation id="965162752251293939">Chromium-ді кім пайдаланып жатыр?</translation>
 <translation id="967427899662692980">Chromium браузерінің ең күшті қорғанысын қолданыңыз</translation>
+<translation id="9792300276217204">Chromium браузерін жапқан кезде құрылғыңыздан сайт деректерін үнемі өшіру</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

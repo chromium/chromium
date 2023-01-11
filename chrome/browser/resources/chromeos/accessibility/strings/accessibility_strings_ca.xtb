@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">No hi ha cap botó més</translation>
 <translation id="2911433807131383493">Obre el tutorial de ChromeVox</translation>
 <translation id="2912405967290226587">Fes lliscar tres dits cap a la dreta</translation>
+<translation id="2919107550468490321">El mode permanent intel·ligent està activat</translation>
 <translation id="2937799153569150791">No hi ha cap encapçalament més de nivell 3</translation>
 <translation id="2942710183375260152">Blau pissarra fosc</translation>
 <translation id="2943596527105977722">Groc daurat fosc</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Disminueix la presentació.</translation>
 <translation id="3009352964623081324">Cerca+O i, després, S. Fes-ho servir per instal·lar, gestionar i personalitzar veus.</translation>
 <translation id="3014130421870723208">@ed 8punts</translation>
+<translation id="3018210433491759145">ChromeVox s'està carregant</translation>
 <translation id="3030432017085518523">Botó d'opció de l'element del menú</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apòstrof}other{# apòstrofs}}</translation>
 <translation id="3040901448410802366">Indicador de progrés</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3813387282697781382">Corall clar</translation>
 <translation id="3816633764618089385">Fitxer multimèdia següent</translation>
+<translation id="3821689185319271077">No hi ha cap àncora de punter</translation>
 <translation id="3840823741487267909">Abreviació</translation>
 <translation id="3841319830220785495">Veu natural predeterminada</translation>
 <translation id="385383972552776628">Obre la pàgina d'opcions</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulari</translation>
 <translation id="4601367666219428522">taula <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">S'ignorarà la propera tecla que premeu.</translation>
+<translation id="4617384941327705512">El mode permanent intel·ligent està desactivat</translation>
 <translation id="4623097797855662355">Colofó</translation>
 <translation id="4624970070706497034">TalkBack ja no ofereix la personalització per als Chromebooks. Podràs continuar fent-la servir, però utilitza les tecles de drecera predeterminades de TalkBack. Prem Cerca+A i després K per veure les dreceres disponibles. Si vols continuar fent servir TalkBack, torna a prémer l'ordre.</translation>
 <translation id="463135993322337640">Prem les tecles O i N de ChromeVox per descobrir-ne les novetats</translation>

@@ -862,6 +862,7 @@
 <translation id="317878711435188021">رصد استخدامك النشط لهذا الجهاز</translation>
 <translation id="3180358318770512945">تربية الأبناء</translation>
 <translation id="3187306450550410410">ترتيبات العمل المرن</translation>
+<translation id="3187472288455401631">قياس أداء الإعلانات</translation>
 <translation id="3190736958609431397">إيقاف التتبُّع</translation>
 <translation id="319282854780294203">شبكات اجتماعية</translation>
 <translation id="3194737229810486521">يريد <ph name="URL" /> تخزين البيانات بشكل دائم على جهازك.</translation>
@@ -2006,6 +2007,7 @@
 <translation id="6039846035001940113">في حال استمرت المشكلة، اتصل بمالك الموقع.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6041777658117377052">درجة حرارة الغرفة</translation>
+<translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="6044573915096792553">الحجم 12</translation>
 <translation id="6045164183059402045">نموذج الأمر</translation>
 <translation id="6047233362582046994">إذا كنت على دراية بالمخاطر التي تهدد أمانك، يمكنك <ph name="BEGIN_LINK" />زيارة الموقع الإلكتروني هذا<ph name="END_LINK" /> قبل أن تتم إزالة التطبيقات الضارة.</translation>
@@ -2097,6 +2099,7 @@
 <translation id="6290238015253830360">ستظهر المقالات المقترحة هنا</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">جارٍ الحفظ...</translation>
 <translation id="6300452962057769623">{0,plural, =0{ستتم إعادة تشغيل جهازك الآن}=1{ستتم إعادة تشغيل جهازك بعد ثانية واحدة}two{ستتم إعادة تشغيل جهازك بعد ثانيتين}few{ستتم إعادة تشغيل جهازك بعد # ثوانٍ}many{ستتم إعادة تشغيل جهازك بعد # ثانية}other{ستتم إعادة تشغيل جهازك بعد # ثانية}}</translation>
 <translation id="6301104306974789820">الحصول على الإشعارات الخاصة بتتبُّع أسعار المنتجات</translation>
 <translation id="6305205051461490394">يتعذر الوصول إلى <ph name="URL" />.</translation>

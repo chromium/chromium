@@ -251,6 +251,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6598877126913850652">Vai alle impostazioni di notifica di Chromium</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
 <translation id="665732753414869868">Chromium deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
+<translation id="6663852025006259149">I siti dovrebbero funzionare come previsto, ma non memorizzeranno le tue informazioni dopo la chiusura di tutte le finestre di Chromium</translation>
 <translation id="6676384891291319759">Accesso a Internet</translation>
 <translation id="668175097507315160">Impossibile sincronizzare i dati in Chromium OS a causa di un errore durante l'accesso.</translation>
 <translation id="6709350901466051922">Chromium deve avere l'autorizzazione di accesso al microfono per questo sito</translation>
@@ -380,5 +381,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="945990405696787151">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.13 o versioni successive. Su questo computer è installato il sistema operativo X 10.11.</translation>
 <translation id="965162752251293939">Chi usa Chromium?</translation>
 <translation id="967427899662692980">Usa la funzionalità di sicurezza più efficace di Chromium</translation>
+<translation id="9792300276217204">Cancella sempre i dati dei siti dal dispositivo alla chiusura di Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

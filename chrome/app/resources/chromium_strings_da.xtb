@@ -251,6 +251,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6598877126913850652">Gå til indstillinger for Chromium-notifikationer</translation>
 <translation id="6613594504749178791">Dine ændringer træder i kraft, næste gang du genstarter Chromium.</translation>
 <translation id="665732753414869868">Chromium skal have adgangstilladelse til kamera for at oprette et 3D-kort over dine omgivelser</translation>
+<translation id="6663852025006259149">Websites fungerer sandsynligvis som forventet, men de husker dig ikke, når du har lukket alle Chromium-vinduer</translation>
 <translation id="6676384891291319759">Få adgang til internettet</translation>
 <translation id="668175097507315160">Chromium OS kunne ikke synkronisere dine data på grund af en loginfejl.</translation>
 <translation id="6709350901466051922">Chromium skal have adgangstilladelse til mikrofon for at bruge dette website</translation>
@@ -381,5 +382,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="945990405696787151">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 10.13 eller nyere. Denne computer anvender OS X 10.11.</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>
+<translation id="9792300276217204">Ryd altid websitedata fra din enhed, når du lukker Chromium</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

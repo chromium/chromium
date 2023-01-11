@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1006017844123154345">Atvērt tiešsaistē</translation>
+<translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
 <translation id="1124090076051167250">Tiks notīrīti dati un sīkfaili (<ph name="DATASIZE" />), ko glabā vietnes vai lietotnes jūsu sākuma ekrānā.</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Notīrīt visus datus</translation>
 <translation id="4338831206024587507">Visas vietnes domēnā <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Nerādīt vietnēm, kad jūs aktīvi lietojat šo ierīci</translation>
+<translation id="4412992751769744546">Atļaut trešo pušu sīkfailus</translation>
 <translation id="4428065317363009941">Reklāmu personalizēšana</translation>
 <translation id="4434045419905280838">Uznirstošie elem. un novirzīšana</translation>
 <translation id="4440642537584213025">Izvērst: <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Vietnēs nevar lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="5516455585884385570">Atvērt paziņojumu iestatījumus</translation>
 <translation id="5527111080432883924">Vaicāt, pirms atļaut vietnēm lasīt tekstu un attēlus no starpliktuves (ieteicams)</translation>
+<translation id="5545693483061321551">Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, lai personalizētu reklāmas. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="5553374991681107062">jaunākās</translation>
 <translation id="5556459405103347317">Pārlādēt</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Subtitri</translation>
 <translation id="8300705686683892304">Pārvalda lietotne</translation>
 <translation id="8324158725704657629">Nejautāt atkārtoti</translation>
-<translation id="834785183489258869">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="8372893542064058268">Atļaut sinhronizāciju fonā konkrētai vietnei</translation>
 <translation id="8376384591331888629">Arī šajā vietnē esošos trešo pušu sīkfailus</translation>
 <translation id="83792324527827022">Kāda vietne izmanto jūsu kameru un mikrofonu</translation>

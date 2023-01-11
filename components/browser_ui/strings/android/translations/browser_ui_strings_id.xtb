@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1006017844123154345">Buka versi Online</translation>
+<translation id="1036348656032585052">Matikan</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
 <translation id="1124090076051167250">Ini akan menghapus <ph name="DATASIZE" /> data dan cookie yang disimpan oleh situs atau aplikasi di Layar utama Anda.</translation>
 <translation id="1178581264944972037">Jeda</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">Hapus semua data</translation>
 <translation id="4338831206024587507">Semua situs di bawah <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blokir situs agar tidak mengetahui saat Anda aktif menggunakan perangkat ini</translation>
+<translation id="4412992751769744546">Izinkan cookie pihak ketiga</translation>
 <translation id="4428065317363009941">Personalisasi iklan</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="4440642537584213025">Luaskan <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">Situs tidak dapat meminta izin mengirimkan notifikasi</translation>
 <translation id="5516455585884385570">Buka setelan notifikasi</translation>
 <translation id="5527111080432883924">Tanya sebelum mengizinkan situs membaca teks dan gambar dari papan klip (disarankan)</translation>
+<translation id="5545693483061321551">Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="5553374991681107062">Terbaru</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">Teks</translation>
 <translation id="8300705686683892304">Dikelola oleh aplikasi</translation>
 <translation id="8324158725704657629">Jangan tanya lagi</translation>
-<translation id="834785183489258869">Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="8372893542064058268">Mengizinkan Sinkronisasi Latar Belakang untuk situs tertentu.</translation>
 <translation id="8376384591331888629">Menyertakan cookie pihak ketiga di situs ini</translation>
 <translation id="83792324527827022">Situs menggunakan kamera dan mikrofon Anda</translation>

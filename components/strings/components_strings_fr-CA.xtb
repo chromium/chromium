@@ -801,6 +801,7 @@
 <translation id="2986368408720340940">Ce mode de ramassage n'est pas disponible. Essayez un autre mode.</translation>
 <translation id="2987034854559945715">Aucune fonctionnalité correspondante</translation>
 <translation id="2989742184762224133">Double agrafe en haut</translation>
+<translation id="2990882401221831923">La liste des cartes de crédit est fermée.</translation>
 <translation id="2991174974383378012">Partage avec des sites Web</translation>
 <translation id="299122504639061328">Gérer votre moteur de recherche par défaut et la recherche de sites</translation>
 <translation id="2991571918955627853">Vous ne pouvez pas consulter le site <ph name="SITE" /> pour le moment, car il utilise le protocole HSTS. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
@@ -861,6 +862,7 @@
 <translation id="317878711435188021">Savoir lorsque vous êtes en train d'utiliser cet appareil</translation>
 <translation id="3180358318770512945">Éducation parentale</translation>
 <translation id="3187306450550410410">Régime de travail flexible</translation>
+<translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3190736958609431397">Annuler le suivi</translation>
 <translation id="319282854780294203">Réseaux sociaux</translation>
 <translation id="3194737229810486521">L'URL <ph name="URL" /> veut stocker de façon permanente des données sur votre appareil</translation>
@@ -1585,6 +1587,7 @@
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
 <translation id="498323057460789381">Erreur de validation du schéma : <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Utiliser le microphone?</translation>
+<translation id="4988822846878841743">La liste des cartes de crédit à remplir au toucher est ouverte à mi-hauteur.</translation>
 <translation id="4989163558385430922">Tout afficher</translation>
 <translation id="4989542687859782284">Non disponible</translation>
 <translation id="4989809363548539747">Ce plugiciel n'est pas pris en charge</translation>
@@ -1933,6 +1936,7 @@
 <translation id="5863847714970149516">La page suivante peut engendrer des frais</translation>
 <translation id="5866257070973731571">Ajouter un numéro de téléphone</translation>
 <translation id="5866898949289125849">Vous consultez une page d'outils de conception</translation>
+<translation id="5868548454963263350">La liste des cartes de crédit à remplir au toucher est ouverte à pleine hauteur.</translation>
 <translation id="5869405914158311789">Impossible d'accéder à ce site</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5873013647450402046">Votre banque veut confirmer votre identité.</translation>
@@ -2003,6 +2007,7 @@
 <translation id="6039846035001940113">Si le problème persiste, communiquez avec le propriétaire du site.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6041777658117377052">Température de la chambre</translation>
+<translation id="6042308850641462728">Plus</translation>
 <translation id="6044573915096792553">Taille 12</translation>
 <translation id="6045164183059402045">Modèle d'imposition</translation>
 <translation id="6047233362582046994">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />vous rendre sur ce site<ph name="END_LINK" /> avant que les applications malveillantes aient été supprimées.</translation>
@@ -2094,6 +2099,7 @@
 <translation id="6290238015253830360">Les articles que vous avez suggérés s'afficheront ici</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Code CVC :</translation>
+<translation id="6295855836753816081">Enregistrement en cours...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Votre appareil va redémarrer maintenant}=1{Votre appareil va redémarrer dans 1 seconde}one{Votre appareil va redémarrer dans # seconde}other{Votre appareil va redémarrer dans # secondes}}</translation>
 <translation id="6301104306974789820">Recevoir les notifications de suivi de prix</translation>
 <translation id="6305205051461490394">Impossible d'accéder à <ph name="URL" />.</translation>
@@ -2643,6 +2649,7 @@ Détails supplémentaires :
 <translation id="7653957176542370971">La feuille du module de traitement du paiement est fermée</translation>
 <translation id="7654909834015434372">Lorsque vous modifiez des annotations, ce document s'affiche dans son orientation d'origine</translation>
 <translation id="765676359832457558">Masquer les paramètres avancés…</translation>
+<translation id="7656935528854393684">La liste des cartes de crédit à remplir au toucher.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659327900411729175">Enveloppe Kaku nᵒ 8</translation>
 <translation id="7659878911471462949">Larmes de joie</translation>

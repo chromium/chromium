@@ -861,6 +861,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="317878711435188021">Saber quando você está usando este dispositivo</translation>
 <translation id="3180358318770512945">Paternidade</translation>
 <translation id="3187306450550410410">Condições flexíveis de trabalho</translation>
+<translation id="3187472288455401631">Medição de anúncios</translation>
 <translation id="3190736958609431397">Não acompanhar</translation>
 <translation id="319282854780294203">Redes sociais</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente os dados no seu dispositivo</translation>
@@ -2003,6 +2004,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6039846035001940113">Se o problema continuar, entre em contato com o proprietário do site.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6041777658117377052">Temperatura da câmara</translation>
+<translation id="6042308850641462728">Mais</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
 <translation id="6047233362582046994">Se você conhece os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os apps prejudiciais serem removidos.</translation>
@@ -2094,6 +2096,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6290238015253830360">Os artigos sugeridos aparecerão aqui</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Salvando...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Seu dispositivo será reiniciado agora}=1{Seu dispositivo será reiniciado em 1 segundo}one{Seu dispositivo será reiniciado em # segundo}other{Seu dispositivo será reiniciado em # segundos}}</translation>
 <translation id="6301104306974789820">Receber notificações de acompanhamento de preço</translation>
 <translation id="6305205051461490394">Não é possível acessar <ph name="URL" />.</translation>

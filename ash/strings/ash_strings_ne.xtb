@@ -314,7 +314,6 @@
 <translation id="2673968385134502798">गेमहरू</translation>
 <translation id="2678852583403169292">'सेलेक्ट टु स्पिक' सुविधाको मेनु</translation>
 <translation id="2689613560355655046">डेस्क ८</translation>
-<translation id="2695132445805301912">किबोर्डको सर्टकट र क्लिकको सङ्ख्या देखाइयोस्</translation>
 <translation id="2695305337569143674">वेब</translation>
 <translation id="2697697418792422688">किबोर्डका सेटिङ देखाउनुहोस् <ph name="KEYBOARD_NAME" /> चयन गरिएको छ।</translation>
 <translation id="2700493154570097719">आफ्नो किबोर्ड सेट गर्नुहोस्‌</translation>
@@ -486,6 +485,7 @@
 <translation id="3609301425104788351"><ph name="MIC" />,
         <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">तपाईंले मोबाइल डेटा अन गर्नुभयो भने ब्लुटुथ अन हुने छ</translation>
+<translation id="3616113530831147358">अडियो</translation>
 <translation id="3616883743181209306">मेनु सारेर स्क्रिनको सिरानको दायाँ कुनामा लगियो।</translation>
 <translation id="3619536907358025872">स्क्रिन क्याप्चरसम्बन्धी सेटिङ</translation>
 <translation id="3621202678540785336">आगत</translation>
@@ -697,6 +697,7 @@
 <translation id="4740516757091333363">सेभ गरिएको डेस्क मेटाउने हो?</translation>
 <translation id="4752784485658729358">६ वटाभन्दा बढी डेस्क सेभ गर्न मिल्दैन। तपाईं नयाँ डेस्क सेभ गर्न चाहनुहुन्छ भने सेभ गरिएको कुनै डेस्क हटाउनुहोस्।</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
+<translation id="4762573482154983647">एपहरू लुकाउनुहोस्</translation>
 <translation id="4774338217796918551">भोलि <ph name="COME_BACK_TIME" /> बजे फेरि आउनुहोला।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
 <translation id="4777825441726637019">Play स्टोर</translation>

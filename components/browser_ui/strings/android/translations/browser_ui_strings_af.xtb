@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1006017844123154345">Maak aanlyn oop</translation>
+<translation id="1036348656032585052">Skakel af</translation>
 <translation id="1044891598689252897">Werwe sal normaalweg werk</translation>
 <translation id="1124090076051167250">Dit sal <ph name="DATASIZE" /> se data en webkoekies uitvee wat deur werwe of deur programme op jou tuisskerm geberg is.</translation>
 <translation id="1178581264944972037">Laat wag</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3763247130972274048">Dubbeltik links of regs op video om 10 s. oor te slaan</translation>
 <translation id="3797520601150691162">Moenie donkertema vir 'n spesifieke werf toepas nie</translation>
+<translation id="3803367742635802571">Werwe wat jy besoek, sal dalk nie meer werk soos ontwerp nie</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Foonnommers</translation>
 <translation id="3826050100957962900">Derdeparty-aanmelding</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Vee alle data uit</translation>
 <translation id="4338831206024587507">Alle werwe onder <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Keer dat werwe weet wanneer jy hierdie toestel aktief gebruik</translation>
+<translation id="4412992751769744546">Laat derdeparty-webkoekies toe</translation>
 <translation id="4428065317363009941">Advertensiepersonalisering</translation>
 <translation id="4434045419905280838">Opspringers en herleidings</translation>
 <translation id="4440642537584213025">Vou <ph name="TARGET_DESCRIPTION" /> uit</translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Om <ph name="APP_NAME" /> toegang tot jou mikrofoon te gee, moet jy mikrofoon ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="4566417217121906555">Demp mikrofoon</translation>
 <translation id="4570913071927164677">Besonderhede</translation>
+<translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4670064810192446073">Virtuele realiteit</translation>
 <translation id="4751476147751820511">Beweging- of ligsensors</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Werwe kan nie vra om kennisgewings te stuur nie</translation>
 <translation id="5516455585884385570">Maak kennisgewinginstellings oop</translation>
 <translation id="5527111080432883924">Vra voordat werwe toegelaat word om teks en prente van die knipbord af te lees (aanbeveel)</translation>
+<translation id="5545693483061321551">Werwe kan nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te publiseer. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="5553374991681107062">Jongste</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Verhinder werwe om opspringers en herleidings te wys (aanbeveel)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Herlaai</translation>
+<translation id="7188508872042490670">Werfdata op toestel</translation>
 <translation id="7203150201908454328">Uitgevou</translation>
 <translation id="723171743924126238">Kies prente</translation>
 <translation id="7243308994586599757">Opsies is naby die onderkant van die skerm beskikbaar</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Onderskrifte</translation>
 <translation id="8300705686683892304">Bestuur deur program</translation>
 <translation id="8324158725704657629">Moenie weer vra nie</translation>
-<translation id="834785183489258869">Terwyl jy in Incognito is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="8372893542064058268">Laat agtergrondsinkronisering vir 'n spesifieke werf toe.</translation>
 <translation id="8376384591331888629">Insluitend derdeparty-webkoekies op hierdie werf</translation>
 <translation id="83792324527827022">'n Werf gebruik tans jou kamera en mikrofoon</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="848952951823693243">Versoek altyd mobiele werf</translation>
 <translation id="8499083585497694743">Ontdemp mikrofoon</translation>
+<translation id="8514955299594277296">Moenie werwe toelaat om data op jou toestel te stoor nie (nie aanbeveel nie)</translation>
 <translation id="851751545965956758">Keer dat werwe aan toestelle koppel</translation>
 <translation id="8525306231823319788">Volskerm</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werf}other{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werwe}}</translation>

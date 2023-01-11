@@ -251,6 +251,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6598877126913850652">Gå til innstillinger for Chromium-varsler</translation>
 <translation id="6613594504749178791">Endringene dine trer i kraft neste gang du starter Chromium.</translation>
 <translation id="665732753414869868">Chromium trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
+<translation id="6663852025006259149">Nettsteder fungerer sannsynligvis som forventet, men husker deg ikke etter at du har lukket alle Chromium-vinduer</translation>
 <translation id="6676384891291319759">Gå til Internett</translation>
 <translation id="668175097507315160">ChromiumOS kunne ikke synkronisere dataene dine på grunn av en feil under pålogging.</translation>
 <translation id="6709350901466051922">Chromium trenger mikrofontillatelse for dette nettstedet</translation>
@@ -380,5 +381,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="945990405696787151">For å få fremtidige Chromium-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker OS X 10.11.</translation>
 <translation id="965162752251293939">Hvem bruker Chromium?</translation>
 <translation id="967427899662692980">Få den sterkeste sikkerheten i Chromium</translation>
+<translation id="9792300276217204">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

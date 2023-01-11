@@ -861,6 +861,7 @@
 <translation id="317878711435188021">да зна када активно користите овај уређај</translation>
 <translation id="3180358318770512945">Родитељство</translation>
 <translation id="3187306450550410410">Флексибилни услови рада</translation>
+<translation id="3187472288455401631">Мерење огласа</translation>
 <translation id="3190736958609431397">Опозови праћење</translation>
 <translation id="319282854780294203">Друштвене мреже</translation>
 <translation id="3194737229810486521"><ph name="URL" /> жели да трајно складишти податке на уређају</translation>
@@ -2003,6 +2004,7 @@
 <translation id="6039846035001940113">Ако се проблем и даље јавља, контактирајте власника сајта.</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6041777658117377052">Температура коморе</translation>
+<translation id="6042308850641462728">Још</translation>
 <translation id="6044573915096792553">Величина 12</translation>
 <translation id="6045164183059402045">Шаблон распореда странице</translation>
 <translation id="6047233362582046994">Ако разумете безбедносне ризике, можете да <ph name="BEGIN_LINK" />посетите овај сајт<ph name="END_LINK" /> пре него што уклонимо штетне апликације.</translation>
@@ -2093,6 +2095,7 @@
 <translation id="6290238015253830360">Предложени чланци се приказују овде</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Чува се…</translation>
 <translation id="6300452962057769623">{0,plural, =0{Уређај ће се рестартовати}=1{Уређај ће се рестартовати за 1 секунду}one{Уређај ће се рестартовати за # секунду}few{Уређај ће се рестартовати за # секунде}other{Уређај ће се рестартовати за # секунди}}</translation>
 <translation id="6301104306974789820">Добијајте обавештења о праћењу цена</translation>
 <translation id="6305205051461490394">URL <ph name="URL" /> није доступан.</translation>

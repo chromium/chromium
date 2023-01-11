@@ -920,6 +920,7 @@
 <translation id="1819721979226826163">Націсніце "Апавяшчэнні праграм &gt; Сэрвісы Google Play".</translation>
 <translation id="1820028137326691631">Увядзіце пароль ад адміністратара</translation>
 <translation id="1822140782238030981">Ужо выкарыстоўваеце Chrome? Увайсці</translation>
+<translation id="1823781806707127806">Дадаць у профіль пад кіраваннем існуючыя даныя вэб-прагляду</translation>
 <translation id="18245044880483936">Даныя рэзервовай копіі не будуць улічвацца ў квоце сховішча вашага дзіцяці на Дыску.</translation>
 <translation id="1825565032302550710">Значэнне для порта павінна быць зададзена ў выглядзе ліку ад 1024 да 65535</translation>
 <translation id="182577151972096764">нядаўна прагледжаныя рэцэпты</translation>
@@ -1080,6 +1081,7 @@
 <translation id="1963976881984600709">Стандартная абарона</translation>
 <translation id="1965624977906726414">Не патрабуе спецыяльных дазволаў.</translation>
 <translation id="1966649499058910679">Вылучаць словы, якія агучваюцца</translation>
+<translation id="1967970931040389207">Уключыць хот-спот</translation>
 <translation id="1969654639948595766">Тэкставыя журналы WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Паскорыцца прагляд сайтаў, паколькі змесціва будзе загружацца без запыту на падставе даных з бягучай вэб-старонкі</translation>
 <translation id="197288927597451399">Пакінуць</translation>
@@ -1168,6 +1170,7 @@
 <translation id="2048554637254265991">Памылка запуску менеджара кантэйнераў. Паўтарыце спробу.</translation>
 <translation id="2048653237708779538">Дзеянне недаступнае</translation>
 <translation id="2050339315714019657">Кніжная</translation>
+<translation id="2051555741181591333">Аўтаматычна адключаць хот-спот</translation>
 <translation id="2052572566310583903">Усталявана на іншых вашых прыладах</translation>
 <translation id="2053105195397337973">Мы апрабоўваем спосабы, якія дазваляюць абмяжоўваць механізмы адсочвання паводзін і дапамагаюць сайтам спыняць рассылку рэкламнага спама і прадухіляць махлярства.</translation>
 <translation id="2053312383184521053">Даныя пра стан бяздзейнасці</translation>
@@ -1276,6 +1279,7 @@
 <translation id="2137128126782078222">Не дазваляць сайту <ph name="WEBSITE" /> адпраўляць апавяшчэнні</translation>
 <translation id="2139919072249842737">Кнопка наладкі</translation>
 <translation id="2140788884185208305">Стан акумулятара</translation>
+<translation id="2140902257485550046">Націсніце, каб заблакіраваць усе пашырэнні на гэтым сайце</translation>
 <translation id="2142328300403846845">Адкрыць спасылку як</translation>
 <translation id="2142582065325732898">Каб праглядаць нядаўна адкрытыя ўкладкі Chrome, уключыце <ph name="LINK1_BEGIN" />Сінхранізацыю Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Даведацца больш<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Заўсёды паказваць панэль інструментаў у поўнаэкранным рэжыме</translation>
@@ -2007,6 +2011,7 @@
 <translation id="2778471504622896352">Дадаваць праграмы з аддаленым доступам на панэль запуску ChromeOS</translation>
 <translation id="2781120507965857989">Каб закладкі, паролі, гісторыя і іншыя даныя былі даступнымі на гэтай і іншых вашых прыладах, уключыце сінхранізацыю. Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць Пошук і іншыя сэрвісы Google.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Пашырэнні на гэтым сайце разблакіраваны</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
 <translation id="2783298271312924866">Спампавана</translation>
 <translation id="2783321960289401138">Стварыць ярлык...</translation>
@@ -3210,6 +3215,7 @@
 <translation id="3898233949376129212">Мова прылады</translation>
 <translation id="3898327728850887246">Сайт <ph name="SITE_NAME" /> запытвае наступныя дазволы: <ph name="FIRST_PERMISSION" /> і <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Пароль для сайта <ph name="WEBSITE" /> захаваны на гэтай прыладзе і ва Уліковым запісе Google. Які з іх выдаліць?</translation>
+<translation id="3898768766145818464">Прайграваць або прыпыніць прайграванне відэа</translation>
 <translation id="389901847090970821">Выбар клавіятуры</translation>
 <translation id="3900966090527141178">Экспарт пароляў</translation>
 <translation id="3902789559055749153">Выберыце, на якой прыладзе трэба стварыць ключ доступу для <ph name="APP_NAME" /></translation>
@@ -3831,6 +3837,7 @@
 <translation id="449126573531210296">Шыфраваць сінхранізаваныя паролі з дапамогай даных Уліковага запісу Google</translation>
 <translation id="449232563137139956">Сайты звычайна паказваюць відарысы для ілюстрацыі (напрыклад, фота да артыкулаў з навінамі або тавараў у інтэрнэт крамах)</translation>
 <translation id="4492698018379445570">Праглядайце тавары, дададзеныя ў кошыкі, і аплачвайце іх</translation>
+<translation id="4493167769966437077">Выдаліць гэту мову (<ph name="LANGUAGE_NAME" />) са спіса моў, з якіх ніколі не трэба прапаноўваць пераклад</translation>
 <translation id="4493468155686877504">Рэкамендуецца (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Дазволіць гэтаму пашырэнню запускацца на сайце <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Не паказваць на гэтай старонцы</translation>
@@ -4401,6 +4408,7 @@
 <translation id="5026874946691314267">Больш не паказваць</translation>
 <translation id="5027550639139316293">Сертыфікат электроннай пошты</translation>
 <translation id="5027562294707732951">Дадаць пашырэнне</translation>
+<translation id="5028445315206872221">Пашырэнні на гэтым сайце заблакіраваны</translation>
 <translation id="5029568752722684782">Выдаліць копію</translation>
 <translation id="5029873138381728058">Не ўдалося праверыць віртуальныя машыны</translation>
 <translation id="503155457707535043">Ідзе спампоўванне праграм</translation>
@@ -4964,6 +4972,7 @@
 <translation id="5554866693883022680">Каб адкрыць гэту спасылку, выберыце праграму на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="5555363196923735206">Змяніць камеру</translation>
 <translation id="5555525474779371165">Выберыце ўзровень абароны для Бяспечнага прагляду</translation>
+<translation id="5555639311269196631">Выключыць хот-спот</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="5558129378926964177">Павялічыць &amp;маштаб</translation>
 <translation id="55601339223879446">Рэгуліроўка граніц працоўнага стала ў межах дысплэя</translation>
@@ -6630,6 +6639,7 @@
 <translation id="7088960765736518739">Доступ праз пераключальнікі</translation>
 <translation id="7089253021944603172">Укладка зноў актыўная</translation>
 <translation id="7090160970140261931">Вы можаце дадаць іншыя ўліковыя запісы на прыкладу "<ph name="DEVICE_TYPE" />", каб выкарыстоўваць іх у праграмах для Android і на сайтах. Вы таксама можаце ўказаць, якія ўліковыя запісы трэба выкарыстоўваць у праграмах для Android.</translation>
+<translation id="7090714929377281710">Аўтаматычна выключаць хот-спот</translation>
 <translation id="7093220653036489319">Хуткія адказы</translation>
 <translation id="7093416310351037609">У мэтах абароны даных ваша арганізацыя патрабуе, каб усе дазволеныя спампоўкі захоўваліся ва ўліковым запісе сэрвісу "<ph name="WEB_DRIVE" />" вашай арганізацыі.</translation>
 <translation id="7093866338626856921">Абмен данымі з прыладамі з назвамі: <ph name="HOSTNAMES" /></translation>
@@ -7250,6 +7260,7 @@
 <translation id="7684718995427157417">Каб ствараць і тэсціраваць праграмы, уключыце Android Debug Bridge (ADB). Звярніце ўвагу, што, уключыўшы ADB, вы дазваляеце ўсталёўваць праграмы для Android, якія не былі спраўджаны Google, а для выключэння ADB патрабуецца скід налад да заводскіх значэнняў.</translation>
 <translation id="7685049629764448582">Памяць JavaScript</translation>
 <translation id="7685087414635069102">Патрабуецца PIN-код</translation>
+<translation id="7686581688229391955">Націсніце, каб разблакіраваць пашырэнні на гэтым сайце</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
 <translation id="7690378713476594306">Выбраць са спіса</translation>
@@ -8062,6 +8073,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (чахол)</translation>
 <translation id="8417548266957501132">Бацькоўскі пароль</translation>
 <translation id="8418445294933751433">&amp;Паказаць як укладку</translation>
+<translation id="8418675848396538775">Дадаць наступную мову: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Вынікі пошуку па запыце "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Змяніць запісы ў слоўніку</translation>
 <translation id="8421361468937925547">Імгненныя субцітры (толькі на англійскай мове)</translation>
@@ -8832,6 +8844,7 @@
 <translation id="9121814364785106365">Адкрыць у замацаванай укладцы</translation>
 <translation id="9123287046453017203">Версія АС на вашай прыладзе з'яўляецца неактуальнай</translation>
 <translation id="9124003689441359348">Захаваныя паролі з'явяцца тут</translation>
+<translation id="9125910124977405374">Выдаліць гэту мову (<ph name="LANGUAGE_NAME" />) са спіса моў, з якіх трэба ажыццяўляць пераклад аўтаматычна</translation>
 <translation id="9126149354162942022">Колер курсора</translation>
 <translation id="9128317794749765148">Не ўдалося завяршыць наладку</translation>
 <translation id="9128335130883257666">Адкрыць старонку налад для метаду ўводу "<ph name="INPUT_METHOD_NAME" />"</translation>

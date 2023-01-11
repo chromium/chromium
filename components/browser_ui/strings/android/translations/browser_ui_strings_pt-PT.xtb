@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1006017844123154345">Abrir online</translation>
+<translation id="1036348656032585052">Desativar</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="1124090076051167250">Esta ação limpa <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps no seu ecrã principal.</translation>
 <translation id="1178581264944972037">Pausa</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no vídeo à esquerda ou à direita para avançar 10 s.</translation>
 <translation id="3797520601150691162">Não aplique o tema escuro a um site específico</translation>
+<translation id="3803367742635802571">Os sites que visita podem deixar de funcionar como previsto</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Números de telefone</translation>
 <translation id="3826050100957962900">Início de sessão de terceiros</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Limpar todos os dados</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Impeça os sites de saberem quando está ativamente a utilizar este dispositivo.</translation>
+<translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="4440642537584213025">Expandir <ph name="TARGET_DESCRIPTION" /></translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427">Para permitir que a app <ph name="APP_NAME" /> aceda ao microfone, ative também o microfone nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
+<translation id="4598549027014564149">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em sites, mesmo em sites relacionados. A sua atividade de navegação não é usada para, por exemplo, personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="4645575059429386691">Gerido pelos teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4751476147751820511">Sensores de movimento ou de luz</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Os sites não podem pedir para enviar notificações.</translation>
 <translation id="5516455585884385570">Abrir definições de notificação</translation>
 <translation id="5527111080432883924">Perguntar antes de autorizar os sites a ler texto e imagens da área de transferência (recomendado).</translation>
+<translation id="5545693483061321551">Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Impedir que os sites apresentem pop-ups e redirecionamentos (recomendado).</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atualizar</translation>
+<translation id="7188508872042490670">Dados de sites no dispositivo</translation>
 <translation id="7203150201908454328">Expandido</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>
 <translation id="7243308994586599757">Opções disponíveis junto à parte inferior do ecrã</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8300705686683892304">Geridos por aplicação</translation>
 <translation id="8324158725704657629">Não perguntar novamente</translation>
-<translation id="834785183489258869">Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="8372893542064058268">Permitir Sincronização em segundo plano num site específico.</translation>
 <translation id="8376384591331888629">Incluindo cookies de terceiros neste site</translation>
 <translation id="83792324527827022">Um site está a utilizar a sua câmara e microfone.</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Disponível offline</translation>
 <translation id="848952951823693243">Peça sempre o site para dispositivos móveis</translation>
 <translation id="8499083585497694743">Reativar microfone</translation>
+<translation id="8514955299594277296">Não permitir que os sites guardem dados no seu dispositivo (não recomendado)</translation>
 <translation id="851751545965956758">Impedir a ligação de sites a dispositivos</translation>
 <translation id="8525306231823319788">Ecrã inteiro</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}other{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> sites de <ph name="FPS_OWNER" />}}</translation>

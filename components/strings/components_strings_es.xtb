@@ -861,6 +861,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="317878711435188021">Detectar cuándo usas activamente este dispositivo</translation>
 <translation id="3180358318770512945">Crianza de los hijos</translation>
 <translation id="3187306450550410410">Trabajo flexible</translation>
+<translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3190736958609431397">Dejar de seguir</translation>
 <translation id="319282854780294203">Redes sociales</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quiere almacenar datos de forma permanente en tu dispositivo</translation>
@@ -2003,6 +2004,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6039846035001940113">Si el problema persiste, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6041777658117377052">Temperatura de la cámara</translation>
+<translation id="6042308850641462728">Más</translation>
 <translation id="6044573915096792553">Tamaño 12</translation>
 <translation id="6045164183059402045">Plantilla de imposición</translation>
 <translation id="6047233362582046994">Si entiendes los riesgos para tu seguridad, puedes <ph name="BEGIN_LINK" />acceder a este sitio web<ph name="END_LINK" /> antes de que se hayan eliminado las aplicaciones dañinas.</translation>
@@ -2094,6 +2096,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6290238015253830360">Los artículos sugeridos aparecen aquí</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6295855836753816081">Guardando...</translation>
 <translation id="6300452962057769623">{0,plural, =0{Tu dispositivo se reiniciará ahora}=1{Tu dispositivo se reiniciará dentro de 1 segundo}other{Tu dispositivo se reiniciará dentro de # segundos}}</translation>
 <translation id="6301104306974789820">Recibe notificaciones de seguimiento de precios</translation>
 <translation id="6305205051461490394">No se puede acceder a <ph name="URL" />.</translation>

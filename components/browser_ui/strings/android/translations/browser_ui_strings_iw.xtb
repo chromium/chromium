@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1006017844123154345">פתיחת גרסה אונליין</translation>
+<translation id="1036348656032585052">כיבוי</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1124090076051167250">‏הפעולה הזאת תמחק <ph name="DATASIZE" /> של נתונים וקובצי cookie שאתרים ואפליקציות שמרו במסך הבית.</translation>
 <translation id="1178581264944972037">השהיה</translation>
@@ -162,6 +163,7 @@
 <translation id="4336434711095810371">ניקוי כל הנתונים</translation>
 <translation id="4338831206024587507">כל האתרים בדומיין <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">אתרים לא יוכלו לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
+<translation id="4412992751769744546">‏התר קובצי Cookie של צד שלישי</translation>
 <translation id="4428065317363009941">התאמה אישית של מודעות</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="4440642537584213025">הרחבה של <ph name="TARGET_DESCRIPTION" /></translation>
@@ -218,6 +220,7 @@
 <translation id="5505264765875738116">אתרים לא יכולים לבקש לשלוח התראות</translation>
 <translation id="5516455585884385570">פתיחה של הגדרות ההתראות</translation>
 <translation id="5527111080432883924">יש לבקש הרשאה לפני מתן גישה לאתרים אל טקסט ותמונות מלוח העריכה (מומלץ)</translation>
+<translation id="5545693483061321551">‏אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך. המידע הזה דרוש להם לצרכים שונים, כמו למשל הצגה של מודעות בהתאמה אישית. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="5553374991681107062">האחרון</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
@@ -358,7 +361,6 @@
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="8300705686683892304">מנוהלים על-ידי אפליקציה</translation>
 <translation id="8324158725704657629">לא לשאול שוב</translation>
-<translation id="834785183489258869">‏במצב אנונימי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים השונים, למשל לצורך הצגת מודעות בהתאמה אישית. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="8372893542064058268">אישור סנכרון ברקע לאתר ספציפי.</translation>
 <translation id="8376384591331888629">‏כולל קובצי cookie של צד שלישי באתר זה</translation>
 <translation id="83792324527827022">אתר כלשהו משתמש במצלמה ובמיקרופון שלך</translation>

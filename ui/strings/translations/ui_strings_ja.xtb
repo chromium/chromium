@@ -26,6 +26,7 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 か月}other{# か月}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/秒</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 時間 }other{# 時間 }}</translation>
+<translation id="185013357618350178">選択(&amp;S)</translation>
 <translation id="1859234291848436338">文章の方向</translation>
 <translation id="1860796786778352021">通知を閉じる</translation>
 <translation id="186476001994626254">ウェブのスマート貼り付けコンテンツ</translation>

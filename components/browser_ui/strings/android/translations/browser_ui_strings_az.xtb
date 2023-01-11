@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1006017844123154345">Onlayn açın</translation>
+<translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
 <translation id="1124090076051167250">Bununla Əsas ekranda saytlar və ya tətbiqlər tərəfindən saxlanılan <ph name="DATASIZE" /> data və kuki silinəcək.</translation>
 <translation id="1178581264944972037">Durdurun</translation>
@@ -134,6 +135,7 @@
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3763247130972274048">10 saniyə keçmək üçün videonun sol və ya sağına iki dəfə toxunun</translation>
 <translation id="3797520601150691162">Müəyyən sayta tünd tema tətbiq etməyin</translation>
+<translation id="3803367742635802571">Ziyarət etdiyiniz saytlar nəzərdə tutulduğu kimi fəaliyyətini dayandıra bilər</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Telefon nömrələri</translation>
 <translation id="3826050100957962900">Üçüncü tərəfin girişi</translation>
@@ -162,6 +164,7 @@
 <translation id="4336434711095810371">Bütün datanı silin</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domenindəki bütün saytlar</translation>
 <translation id="4402755511846832236">Saytların bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməsini bloklayın</translation>
+<translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
 <translation id="4428065317363009941">Reklam fərdiləşdirməsi</translation>
 <translation id="4434045419905280838">Popap və yönləndirmələr</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> genişləndirin</translation>
@@ -172,6 +175,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
+<translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
@@ -218,6 +222,7 @@
 <translation id="5505264765875738116">Saytlar bildiriş göndərilməsini tələb edə bilməz</translation>
 <translation id="5516455585884385570">Bildiriş ayarlarını açın</translation>
 <translation id="5527111080432883924">Saytların buferdəki mətn və şəkillərə girişinə icazə vermədən öncə soruşun (məsləhətlidir)</translation>
+<translation id="5545693483061321551">Saytlar müxtəlif saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün). Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="5553374991681107062">Ən son</translation>
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
@@ -299,6 +304,7 @@
 <translation id="7141896414559753902">Saytların popapları və yönləndirmələri göstərməyini blok edin (tövsiyə olunur)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
+<translation id="7188508872042490670">Cihazda olan sayt məlumatları</translation>
 <translation id="7203150201908454328">Genişləndirilmiş</translation>
 <translation id="723171743924126238">Şəkil seçin</translation>
 <translation id="7243308994586599757">Seçənəklər ekranın aşağısına yaxın yerdə əlçatandır</translation>
@@ -358,7 +364,6 @@
 <translation id="8284326494547611709">Başlıqlar</translation>
 <translation id="8300705686683892304">Tədbiq tərəfindən idarə edilən</translation>
 <translation id="8324158725704657629">Daha soruşma</translation>
-<translation id="834785183489258869">Anonim rejimdə olduqda saytlar müxtəlif saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün). Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="8372893542064058268">Xüsusi sayt üçün Arxa fon Sinxronizasiyasına icazə verin.</translation>
 <translation id="8376384591331888629">Bu saytdakı üçüncü tərəf kukilər daxil olmaqla</translation>
 <translation id="83792324527827022">Sayt kamera və mikrofonunuzdan istifadə edir</translation>
@@ -374,6 +379,7 @@
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="848952951823693243">Həmişə mobil sayt tələb edin</translation>
 <translation id="8499083585497694743">Mikrofonu səssiz rejimdən çıxarın</translation>
+<translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}}</translation>
