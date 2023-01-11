@@ -2,27 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UserNotesPageHandler, UserNotesPageHandlerInterface} from './user_notes.mojom-webui.js';
+import {Note, UserNotesPageCallbackRouter, UserNotesPageHandlerFactory, UserNotesPageHandlerRemote} from './user_notes.mojom-webui.js';
 
 let instance: UserNotesApiProxy|null = null;
 
 export interface UserNotesApiProxy {
   showUi(): void;
+  getNotesForCurrentTab(): Promise<{notes: Note[]}>;
+  newNoteFinished(text: string): Promise<{success: boolean}>;
+  deleteNote(guid: string): Promise<{success: boolean}>;
+  getCallbackRouter(): UserNotesPageCallbackRouter;
 }
 
 export class UserNotesApiProxyImpl implements UserNotesApiProxy {
-  handler: UserNotesPageHandlerInterface;
+  private callbackRouter: UserNotesPageCallbackRouter =
+      new UserNotesPageCallbackRouter();
+  private handler: UserNotesPageHandlerRemote =
+      new UserNotesPageHandlerRemote();
 
   constructor() {
-    this.handler = new UserNotesPageHandler.getRemote();
-
-    const factory = UserNotesPageHandler.getRemote();
-    factory.createBookmarksPageHandler(
+    const factory = UserNotesPageHandlerFactory.getRemote();
+    factory.createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   showUi() {
     this.handler.showUI();
+  }
+
+  getNotesForCurrentTab() {
+    return this.handler.getNotesForCurrentTab();
+  }
+
+  newNoteFinished(text: string) {
+    return this.handler.newNoteFinished(text);
+  }
+
+  deleteNote(guid: string) {
+    return this.handler.deleteNote(guid);
+  }
+
+  getCallbackRouter() {
+    return this.callbackRouter;
   }
 
   static getInstance(): UserNotesApiProxy {

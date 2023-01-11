@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/side_panel_resources.h"
-#include "chrome/grit/side_panel_resources_map.h"
+#include "chrome/grit/side_panel_user_notes_resources.h"
+#include "chrome/grit/side_panel_user_notes_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -22,10 +22,10 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUserNotesSidePanelHost);
 
-  const int resource = IDR_SIDE_PANEL_USER_NOTES_USER_NOTES_HTML;
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
-      resource);
+  webui::SetupWebUIDataSource(source,
+                              base::make_span(kSidePanelUserNotesResources,
+                                              kSidePanelUserNotesResourcesSize),
+                              IDR_SIDE_PANEL_USER_NOTES_USER_NOTES_HTML);
 }
 
 UserNotesSidePanelUI::~UserNotesSidePanelUI() = default;

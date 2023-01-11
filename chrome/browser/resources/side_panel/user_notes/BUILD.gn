@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "side_panel_user_notes"
+
+  static_files = [ "user_notes.html" ]
+
+  non_web_component_files = [ "user_notes_api_proxy.ts" ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings_js__generator" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom-webui.js" ]
+
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+}
