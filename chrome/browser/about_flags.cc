@@ -5128,6 +5128,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEcheSWASendStartSignalingName,
      flag_descriptions::kEcheSWASendStartSignalingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEcheSWASendStartSignaling)},
+    {"phone-hub-nudge", flag_descriptions::kPhoneHubNudgeName,
+     flag_descriptions::kPhoneHubNudgeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPhoneHubNudge)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

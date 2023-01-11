@@ -1584,6 +1584,12 @@ BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
              "PhoneHubMonochromeNotificationIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Determine whether system nudge will be shown on user eligible for Phone Hub
+// instead of multidevice notification.
+BASE_FEATURE(kPhoneHubNudge,
+             "PhoneHubNudge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
              "PhoneHubPingOnBubbleOpen",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2897,6 +2903,10 @@ bool IsPhoneHubCameraRollEnabled() {
 
 bool IsPhoneHubMonochromeNotificationIconsEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubMonochromeNotificationIcons);
+}
+
+bool IsPhoneHubNudgeEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubNudge);
 }
 
 bool IsPhoneHubFeatureSetupErrorHandlingEnabled() {

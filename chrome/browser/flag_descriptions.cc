@@ -5691,6 +5691,10 @@ const char kPhoneHubFeatureSetupErrorHandlingDescription[] =
     "users to see result on Chromebook when the setup failed on connected"
     "remote phone device.";
 
+const char kPhoneHubNudgeName[] = "Phone Hub nudge";
+const char kPhoneHubNudgeDescription[] =
+    "Enables a nudge to direct eligible users to open Phone Hub.";
+
 const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";

@@ -5557,6 +5557,16 @@
     "owners": [ "ellyjones", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 100
   },
+  {
+    "name": "phone-hub-nudge",
+    "owners": [
+      "jennserrano@google.com",
+      "jonmann",
+      "pushi@google.com",
+      "chromeos-cross-device-eng@google.com"
+    ],
+    "expiry_milestone": 120
+  },
     {
     "name": "popout-omnibox-ipad",
     "owners": [ "stkhapugin", "christianxu", "bling-flags@google.com" ],
