@@ -15,7 +15,7 @@
 ++++++[entry] name='Email:' selectable-text labelled-by text-input-type:email
 ++++[label] label-for
 ++++++[static] name='File: '
-++++++[push button] name='File:' labelled-by
+++++++[push button] name='File:: No file chosen' labelled-by
 ++++++++[push button] name='Choose File'
 ++++[label] label-for
 ++++++[static] name='Image: '

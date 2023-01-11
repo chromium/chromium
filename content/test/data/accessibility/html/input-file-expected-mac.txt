@@ -1,4 +1,3 @@
 AXWebArea
 ++AXGroup
-++++AXButton AXTitle='No file chosen, Choose File'
-++++++AXButton AXTitle='Choose File'
+++++AXButton AXTitle='Choose File: No file chosen'
