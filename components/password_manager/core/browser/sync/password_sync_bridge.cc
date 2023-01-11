@@ -862,6 +862,8 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [primary_key, specifics] : key_to_specifics_map) {
+    // TODO(crbug.com/1406388): consider whether the VISIT_SECRET macro in
+    // proto_visitors.h could replace this.
     specifics->set_password_value("<redacted>");
     const std::string storage_key = base::NumberToString(primary_key.value());
     for (sync_pb::PasswordSpecificsData_Notes_Note& note :

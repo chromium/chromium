@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -140,6 +141,14 @@ class ToValueVisitor {
                 base::Base64Encode(base::as_bytes(base::make_span(field))));
   }
 
+  template <class P>
+  void VisitSecret(const P& parent_proto,
+                   const char* field_name,
+                   const std::string& field) {
+    value_->Set(field_name,
+                base::StringPrintf("<%zu-byte secret>", field.size()));
+  }
+
   template <class P, class E>
   void VisitEnum(const P& parent_proto, const char* field_name, E field) {
     value_->Set(field_name, ProtoEnumToString(field));
@@ -225,6 +234,8 @@ class ToValueVisitor {
   // AutofillWalletSpecifics
   base::Value ToValue(const sync_pb::AutofillWalletSpecifics& proto) const {
     base::Value::Dict dict = ToValueDictImpl(proto);
+    // TODO(crbug.com/1406388): consider whether the VISIT_SECRET macro in
+    // proto_visitors.h could replace this.
     if (proto.type() != sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS) {
       dict.Remove("address");
     }

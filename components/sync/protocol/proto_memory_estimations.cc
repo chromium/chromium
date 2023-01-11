@@ -41,6 +41,14 @@ class MemoryUsageVisitor {
     Visit(parent_proto, field_name, field);
   }
 
+  template <class P>
+  void VisitSecret(const P& parent_proto,
+                   const char* field_name,
+                   const std::string& field) {
+    // Delegate to Visit(..., const std::string&) below.
+    Visit(parent_proto, field_name, field);
+  }
+
   template <class P, class E>
   void VisitEnum(const P&, const char* field_name, E field) {}
 

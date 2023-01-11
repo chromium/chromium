@@ -96,6 +96,11 @@
 // This macro unconditionally calls visitor.Visit().
 #define VISIT_REP(field) visitor.Visit(proto, #field, proto.field());
 
+// Values that are secrets do not have their contents reported in debugging
+// output, only their lengths, but are still counted for things like memory
+// estimation.
+#define VISIT_SECRET(field) VISIT_(Secret, field)
+
 #define VISIT_PROTO_FIELDS(proto) \
   template <class V>              \
   void VisitProtoFields(V& visitor, proto)
@@ -772,9 +777,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT(user_name);
   VISIT(user_display_name);
   VISIT(third_party_payments_support);
-  // |private_key| is deliberately omitted to avoid including sensitive
-  // information in debugging output, which might be included in bug reports
-  // etc.
+  VISIT_SECRET(private_key);
+  VISIT_SECRET(encrypted);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::PageTransition& proto) {
