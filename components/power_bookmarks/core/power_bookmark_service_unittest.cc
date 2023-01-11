@@ -16,7 +16,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/power_bookmarks/common/power.h"
-#include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/common/power_overview.h"
 #include "components/power_bookmarks/common/search_params.h"
 #include "components/power_bookmarks/core/power_bookmark_data_provider.h"
@@ -70,8 +69,7 @@ class PowerBookmarkServiceTest : public testing::Test {
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
     service_ = std::make_unique<PowerBookmarkService>(
-        model_.get(), temp_directory_.GetPath(),
-        task_environment_.GetMainThreadTaskRunner(), backend_task_runner_);
+        model_.get(), temp_directory_.GetPath(), backend_task_runner_);
     RunUntilIdle();
   }
 
@@ -93,7 +91,6 @@ class PowerBookmarkServiceTest : public testing::Test {
   base::HistogramTester* histogram() { return &histogram_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList test_features_;
 
   std::unique_ptr<PowerBookmarkService> service_;
@@ -101,6 +98,7 @@ class PowerBookmarkServiceTest : public testing::Test {
 
   base::ScopedTempDir temp_directory_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_;
 };
 
@@ -111,7 +109,7 @@ class MockDataProvider : public PowerBookmarkDataProvider {
                     PowerBookmarkMeta* meta));
 };
 
-class MockObserver : public PowerBookmarkObserver {
+class MockObserver : public PowerBookmarkService::Observer {
  public:
   MOCK_METHOD0(OnPowersChanged, void());
 };

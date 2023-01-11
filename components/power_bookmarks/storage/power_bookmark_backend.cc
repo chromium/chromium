@@ -4,7 +4,6 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 
-#include "components/power_bookmarks/common/power_bookmark_metrics.h"
 #include "components/power_bookmarks/common/search_params.h"
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
@@ -14,13 +13,8 @@
 
 namespace power_bookmarks {
 
-PowerBookmarkBackend::PowerBookmarkBackend(
-    const base::FilePath& database_dir,
-    scoped_refptr<base::SequencedTaskRunner> frontend_task_runner,
-    PowerBookmarkObserver* service_observer)
-    : database_dir_(database_dir),
-      frontend_task_runner_(frontend_task_runner),
-      service_observer_(service_observer) {
+PowerBookmarkBackend::PowerBookmarkBackend(const base::FilePath& database_dir)
+    : database_dir_(database_dir) {
   // This is constructed on the browser thread, but all other interactions
   // happen on a background thread.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -83,66 +77,24 @@ std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::Search(
 
 bool PowerBookmarkBackend::CreatePower(std::unique_ptr<Power> power) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
-  bool success = db_->CreatePower(std::move(power));
-  metrics::RecordPowerCreated(power_type, success);
-  if (success) {
-    // TODO(crbug.com/1406371): Posting a task here causes the observer method
-    // to be called before the callback. This behavior is pretty strange, but
-    // not a problem right now. Eventually we should stop using SequenceBound
-    // for the backend and post tasks directly to ensure proper ordering.
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
-  }
-
-  return success;
+  return db_->CreatePower(std::move(power));
 }
 
 bool PowerBookmarkBackend::UpdatePower(std::unique_ptr<Power> power) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
-  bool success = db_->UpdatePower(std::move(power));
-  metrics::RecordPowerUpdated(power_type, success);
-  if (success) {
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
-  }
-
-  return success;
+  return db_->UpdatePower(std::move(power));
 }
 
 bool PowerBookmarkBackend::DeletePower(const base::GUID& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool success = db_->DeletePower(guid);
-  metrics::RecordPowerDeleted(success);
-  if (success) {
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
-  }
-
-  return success;
+  return db_->DeletePower(guid);
 }
 
 bool PowerBookmarkBackend::DeletePowersForURL(
     const GURL& url,
     const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool success = db_->DeletePowersForURL(url, power_type);
-  metrics::RecordPowersDeletedForURL(power_type, success);
-  if (success) {
-    frontend_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                  base::Unretained(service_observer_)));
-  }
-
-  return success;
+  return db_->DeletePowersForURL(url, power_type);
 }
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetAllPowers() {

@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom.h"
-#include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,10 +22,11 @@ class Browser;
 class UserNotesSidePanelUI;
 class Profile;
 
-class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
-                             public power_bookmarks::PowerBookmarkObserver,
-                             public TabStripModelObserver,
-                             public content::WebContentsObserver {
+class UserNotesPageHandler
+    : public side_panel::mojom::UserNotesPageHandler,
+      public power_bookmarks::PowerBookmarkService::Observer,
+      public TabStripModelObserver,
+      public content::WebContentsObserver {
  public:
   explicit UserNotesPageHandler(
       mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandler> receiver,
@@ -58,7 +58,7 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   GURL GetCurrentTabUrlForTesting() { return current_tab_url_; }
 
  private:
-  // power_bookmarks::PowerBookmarkObserver:
+  // power_bookmarks::PowerBookmarkService::Observer:
   void OnPowersChanged() override;
 
   // TabStripModelObserver:

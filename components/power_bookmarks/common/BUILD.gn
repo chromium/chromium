@@ -8,7 +8,6 @@ static_library("common") {
     "power.h",
     "power_bookmark_metrics.cc",
     "power_bookmark_metrics.h",
-    "power_bookmark_observer.h",
     "power_overview.cc",
     "power_overview.h",
     "search_params.h",

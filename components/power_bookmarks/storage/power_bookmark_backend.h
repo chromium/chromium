@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
-#include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
@@ -23,15 +22,10 @@ struct SearchParams;
 // run on. Calls to this class should be posted on the background task_runner.
 class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
  public:
-  // `database_dir` the directory to create the backend database in.
-  // `frontend_task_runner` the task runner which the service runs, used to
-  // communicate observer events back through the service.
-  // `service_observer` the observer the backend uses to plumb events through to
-  // observers of PowerBookmarkService.
-  PowerBookmarkBackend(
-      const base::FilePath& database_dir,
-      scoped_refptr<base::SequencedTaskRunner> frontend_task_runner,
-      PowerBookmarkObserver* service_observer);
+  // Constructs the backend, should be called form the browser thread.
+  // Subsequent calls to the backend should be posted to the given
+  // `task_runner`.
+  explicit PowerBookmarkBackend(const base::FilePath& database_dir);
   PowerBookmarkBackend(const PowerBookmarkBackend&) = delete;
   PowerBookmarkBackend& operator=(const PowerBookmarkBackend&) = delete;
   virtual ~PowerBookmarkBackend();
@@ -84,12 +78,6 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
   // Sync Bridge implementation. Only initialized when the sqlite database is
   // used.
   std::unique_ptr<PowerBookmarkSyncBridge> bridge_;
-
-  scoped_refptr<base::SequencedTaskRunner> frontend_task_runner_;
-
-  // Observer that serves the frontend of power bookmarks.
-  // Needs to be called on the frontend task runner.
-  PowerBookmarkObserver* service_observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
