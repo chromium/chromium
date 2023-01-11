@@ -45,9 +45,9 @@ function generateTest()
     gl.clearDepth(1);
 
     var p1 = createImageBitmap(blob1).then(function(imageBitmap) { bitmaps.defaultOption = imageBitmap });
-    var p2 = createImageBitmap(blob1, {imageOrientation: "none", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });
-    var p3 = createImageBitmap(blob1, {imageOrientation: "none", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.noFlipYDefault = imageBitmap });
-    var p4 = createImageBitmap(blob1, {imageOrientation: "none", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.noFlipYUnpremul = imageBitmap });
+    var p2 = createImageBitmap(blob1, {imageOrientation: "from-image", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });
+    var p3 = createImageBitmap(blob1, {imageOrientation: "from-image", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.noFlipYDefault = imageBitmap });
+    var p4 = createImageBitmap(blob1, {imageOrientation: "from-image", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.noFlipYUnpremul = imageBitmap });
     var p5 = createImageBitmap(blob1, {imageOrientation: "flipY", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.flipYPremul = imageBitmap });
     var p6 = createImageBitmap(blob1, {imageOrientation: "flipY", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.flipYDefault = imageBitmap });
     var p7 = createImageBitmap(blob1, {imageOrientation: "flipY", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.flipYUnpremul = imageBitmap });

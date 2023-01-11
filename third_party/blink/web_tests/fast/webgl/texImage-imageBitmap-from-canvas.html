@@ -63,9 +63,9 @@ function generateTest()
     setCanvasToRedGreen(ctx);
 
     var p1 = createImageBitmap(testCanvas).then(function(imageBitmap) { bitmaps.defaultOption = imageBitmap });
-    var p2 = createImageBitmap(testCanvas, {imageOrientation: "none", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });
-    var p3 = createImageBitmap(testCanvas, {imageOrientation: "none", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.noFlipYDefault = imageBitmap });
-    var p4 = createImageBitmap(testCanvas, {imageOrientation: "none", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.noFlipYUnpremul = imageBitmap });
+    var p2 = createImageBitmap(testCanvas, {imageOrientation: "from-image", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });
+    var p3 = createImageBitmap(testCanvas, {imageOrientation: "from-image", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.noFlipYDefault = imageBitmap });
+    var p4 = createImageBitmap(testCanvas, {imageOrientation: "from-image", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.noFlipYUnpremul = imageBitmap });
     var p5 = createImageBitmap(testCanvas, {imageOrientation: "flipY", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.flipYPremul = imageBitmap });
     var p6 = createImageBitmap(testCanvas, {imageOrientation: "flipY", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.flipYDefault = imageBitmap });
     var p7 = createImageBitmap(testCanvas, {imageOrientation: "flipY", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.flipYUnpremul = imageBitmap });

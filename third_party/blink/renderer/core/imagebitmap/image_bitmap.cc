@@ -53,6 +53,7 @@
 namespace blink {
 
 constexpr const char* kImageOrientationFlipY = "flipY";
+constexpr const char* kImageOrientationFromImage = "from-image";
 constexpr const char* kImageBitmapOptionNone = "none";
 constexpr const char* kImageBitmapOptionDefault = "default";
 constexpr const char* kImageBitmapOptionPremultiply = "premultiply";
@@ -70,7 +71,8 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
     parsed_options.flip_y = true;
   } else {
     parsed_options.flip_y = false;
-    DCHECK(options->imageOrientation() == kImageBitmapOptionNone);
+    DCHECK(options->imageOrientation() == kImageBitmapOptionNone ||
+           options->imageOrientation() == kImageOrientationFromImage);
   }
 
   if (options->premultiplyAlpha() == kImageBitmapOptionNone) {

@@ -91,7 +91,7 @@ var image2 = new ImageData(new Uint8ClampedArray([255, 128, 64, 127]), imageWidt
 var context = document.getElementById("canvas").getContext("2d", {willReadFrequently: true});
 
 var p1 = createImageBitmap(image1).then(function(image) {imageBitmap1 = image});
-var p2 = createImageBitmap(image2, {imageOrientation: "none", premultiplyAlpha: "none"}).then(function(image) {imageBitmap2 = image});
+var p2 = createImageBitmap(image2, {imageOrientation: "from-image", premultiplyAlpha: "none"}).then(function(image) {imageBitmap2 = image});
 Promise.all([p1, p2]).then(function() {
   getNewImageDataFromImageBitmap(imageBitmap1);
   imageData1 = newImage.data;

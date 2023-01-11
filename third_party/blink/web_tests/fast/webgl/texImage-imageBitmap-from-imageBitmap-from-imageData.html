@@ -50,12 +50,12 @@ function generateTest()
                                   2, 2);
 
     var bitmap; // bitmap will be in unpremultiplied format
-    createImageBitmap(imageData, {imageOrientation: "none", premultiplyAlpha: "none"}).then(function(image) {
+    createImageBitmap(imageData, {imageOrientation: "from-image", premultiplyAlpha: "none"}).then(function(image) {
         bitmap = image;
         var p1 = createImageBitmap(bitmap).then(function(imageBitmap) { bitmaps.defaultOption = imageBitmap });
-        var p2 = createImageBitmap(bitmap, {imageOrientation: "none", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });
-        var p3 = createImageBitmap(bitmap, {imageOrientation: "none", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.noFlipYDefault = imageBitmap });
-        var p4 = createImageBitmap(bitmap, {imageOrientation: "none", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.noFlipYUnpremul = imageBitmap });
+        var p2 = createImageBitmap(bitmap, {imageOrientation: "from-image", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });
+        var p3 = createImageBitmap(bitmap, {imageOrientation: "from-image", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.noFlipYDefault = imageBitmap });
+        var p4 = createImageBitmap(bitmap, {imageOrientation: "from-image", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.noFlipYUnpremul = imageBitmap });
         var p5 = createImageBitmap(bitmap, {imageOrientation: "flipY", premultiplyAlpha: "premultiply"}).then(function(imageBitmap) { bitmaps.flipYPremul = imageBitmap });
         var p6 = createImageBitmap(bitmap, {imageOrientation: "flipY", premultiplyAlpha: "default"}).then(function(imageBitmap) { bitmaps.flipYDefault = imageBitmap });
         var p7 = createImageBitmap(bitmap, {imageOrientation: "flipY", premultiplyAlpha: "none"}).then(function(imageBitmap) { bitmaps.flipYUnpremul = imageBitmap });

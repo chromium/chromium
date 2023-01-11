@@ -149,7 +149,7 @@ function prepareResizedImageBitmapsAndRuntTest(testOptions) {
     var p1 = createImageBitmap(imageSource, options).then(
         function(imageBitmap) { bitmaps.defaultOption = imageBitmap });
 
-    options.imageOrientation = "none";
+    options.imageOrientation = "from-image";
     options.premultiplyAlpha = "premultiply";
     var p2 = createImageBitmap(imageSource, options).then(
         function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });

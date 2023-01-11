@@ -284,7 +284,7 @@ message ImageDecoderApiInvocation {
 
 message ImageBitmapOptions {
   enum ImageOrientation {
-    ORIENTATION_NONE = 0;
+    ORIENTATION_FROM_IMAGE = 0;
     FLIPY = 1;
   }
   enum PremultiplyAlpha {

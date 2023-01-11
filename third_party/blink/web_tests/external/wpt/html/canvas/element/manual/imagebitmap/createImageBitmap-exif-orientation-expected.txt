@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-PASS createImageBitmap with EXIF rotation, imageOrientation none, and no cropping
+PASS createImageBitmap with EXIF rotation, imageOrientation from-image, and no cropping
 FAIL createImageBitmap with EXIF rotation, imageOrientation flipY, and no cropping assert_array_approx_equals: Pixel value at (40,40) 255,128,128,255 =~ 0,0,0,255. property 0, expected 255 +/- 1, expected 255 but got 0
-FAIL createImageBitmap with EXIF rotation, imageOrientation none, and cropping assert_array_approx_equals: Pixel value at (40,40) 0,255,0,255 =~ 128,127,254,255. property 0, expected 0 +/- 1, expected 0 but got 128
+FAIL createImageBitmap with EXIF rotation, imageOrientation from-image, and cropping assert_array_approx_equals: Pixel value at (40,40) 0,255,0,255 =~ 128,127,254,255. property 0, expected 0 +/- 1, expected 0 but got 128
 FAIL createImageBitmap with EXIF rotation, imageOrientation flipY, and cropping assert_array_approx_equals: Pixel value at (40,40) 128,255,128,255 =~ 128,128,128,255. property 1, expected 255 +/- 1, expected 255 but got 128
 Harness: the test ran to completion.
 

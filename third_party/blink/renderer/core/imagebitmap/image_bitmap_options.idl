@@ -4,12 +4,12 @@
 
 // https://html.spec.whatwg.org/C/#imagebitmapoptions
 
-enum ImageOrientation { "none", "flipY" };
+enum ImageOrientation { "from-image", "none", "flipY"};
 enum PremultiplyAlpha { "none", "premultiply", "default" };
 enum ColorSpaceConversion { "none", "default" };
 enum ResizeQuality { "pixelated", "low", "medium", "high" };
 dictionary ImageBitmapOptions {
-    ImageOrientation imageOrientation = "none";
+    ImageOrientation imageOrientation = "from-image";
     PremultiplyAlpha premultiplyAlpha = "default";
     ColorSpaceConversion colorSpaceConversion = "default";
     [EnforceRange] unsigned long resizeWidth;
