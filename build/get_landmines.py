@@ -78,6 +78,7 @@ def print_landmines():
   print('The Great Blink mv for source files (crbug.com/768828)')
   if host_os() == 'linux':
     print('Clobber to workaround buggy .ninja_deps cycle (crbug.com/934404)')
+  print('Clobber to flush stale generated files. See crbug.com/1406628')
 
 
 def main():
