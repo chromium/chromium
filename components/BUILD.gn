@@ -159,7 +159,6 @@ test("components_unittests") {
     "//components/grpc_support/test:unit_tests",
     "//components/heap_profiling/in_process:unit_tests",
     "//components/history/core/browser:unit_tests",
-    "//components/history/core/common:unit_tests",
     "//components/history/metrics:unit_tests",
     "//components/image_fetcher/core:unit_tests",
     "//components/keyed_service/core:unit_tests",

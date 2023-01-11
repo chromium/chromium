@@ -6,18 +6,7 @@ static_library("common") {
   sources = [
     "pref_names.cc",
     "pref_names.h",
-    "thumbnail_score.cc",
-    "thumbnail_score.h",
   ]
 
   deps = [ "//base" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "thumbnail_score_unittest.cc" ]
-  deps = [
-    ":common",
-    "//testing/gtest",
-  ]
 }
