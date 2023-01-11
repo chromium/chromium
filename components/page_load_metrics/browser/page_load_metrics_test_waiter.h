@@ -122,7 +122,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   // Add a main/sub frame layout shift expectation.
   void AddPageLayoutShiftExpectation(
-      ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame);
+      ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
+      uint64_t num_layout_shifts = 1);
 
   // Whether the given TimingField was observed in the page.
   bool DidObserveInPage(TimingField field) const;
@@ -338,7 +339,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     std::unordered_set<content::GlobalRenderFrameHostId,
                        content::GlobalRenderFrameHostIdHasher>
         memory_update_frame_ids_;
-    bool layout_shift_ = false;
+    uint64_t num_layout_shifts_ = 0;
   };
   State expected_;
   State observed_;

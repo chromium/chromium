@@ -244,10 +244,11 @@ void PageLoadMetricsTestWaiter::AddLoadingBehaviorExpectation(
 }
 
 void PageLoadMetricsTestWaiter::AddPageLayoutShiftExpectation(
-    ShiftFrame shift_frame) {
-  expected_.layout_shift_ = true;
+    ShiftFrame shift_frame,
+    uint64_t num_layout_shifts) {
+  expected_.num_layout_shifts_ = num_layout_shifts;
   shift_frame_ = shift_frame;
-  observed_.layout_shift_ = false;
+  observed_.num_layout_shifts_ = 0;
 }
 
 bool PageLoadMetricsTestWaiter::DidObserveInPage(TimingField field) const {
@@ -461,7 +462,7 @@ void PageLoadMetricsTestWaiter::OnPageRenderDataUpdate(
   if ((is_relevant_frame ||
        shift_frame_ == ShiftFrame::LayoutShiftOnlyInBothFrames) &&
       render_data.layout_shift_delta > 0) {
-    observed_.layout_shift_ = true;
+    observed_.num_layout_shifts_ += render_data.new_layout_shifts.size();
   }
 
   if (ExpectationsSatisfied() && run_loop_)
@@ -643,7 +644,7 @@ bool PageLoadMetricsTestWaiter::TotalInputDelayExpectationsSatisfied() const {
 }
 
 bool PageLoadMetricsTestWaiter::LayoutShiftExpectationsSatisfied() const {
-  return expected_.layout_shift_ == observed_.layout_shift_;
+  return expected_.num_layout_shifts_ <= observed_.num_layout_shifts_;
 }
 
 bool PageLoadMetricsTestWaiter::NumInteractionsExpectationsSatisfied() const {

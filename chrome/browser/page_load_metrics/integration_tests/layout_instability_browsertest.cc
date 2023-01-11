@@ -30,6 +30,7 @@ class LayoutInstabilityTest : public MetricIntegrationTest {
   // want to verify the layout shift UKM and UMA values.
   void RunWPT(const std::string& test_file,
               ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
+              uint64_t num_layout_shifts = 1,
               bool check_UKM_UMA_metrics = false);
   double CheckTraceData(Value::List& expectations, TraceAnalyzer&);
   void CheckSources(const Value::List& expected_sources,
@@ -44,11 +45,12 @@ class LayoutInstabilityTest : public MetricIntegrationTest {
 
 void LayoutInstabilityTest::RunWPT(const std::string& test_file,
                                    ShiftFrame frame,
+                                   uint64_t num_layout_shifts,
                                    bool check_UKM_UMA_metrics) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   // Wait for the layout shift in the desired frame.
-  waiter->AddPageLayoutShiftExpectation(frame);
+  waiter->AddPageLayoutShiftExpectation(frame, num_layout_shifts);
 
   Start();
   StartTracing({"loading", TRACE_DISABLED_BY_DEFAULT("layout_shift.debug")});
@@ -281,7 +283,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_SimpleBlockMovement) {
 }
 
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
-  RunWPT("sources-enclosure.html");
+  RunWPT("sources-enclosure.html", ShiftFrame::LayoutShiftOnlyInMainFrame,
+         /*num_layout_shifts=*/2);
 }
 
 // TODO(crbug.com/1400401): Deflake and re-enable this test.
@@ -293,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_Sources_MaxImpact) {
 // correctly in both UKM and UMA, the layout shift score in sub-frame is
 // calculated by applying a sub-frame weighting factor to the total score.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, OOPIFSubframeWeighting) {
-  RunWPT("main-frame.html", ShiftFrame::LayoutShiftOnlyInSubFrame);
+  RunWPT("main-frame.html", ShiftFrame::LayoutShiftOnlyInSubFrame,
+         /*num_layout_shifts=*/2);
 
   // Check UKM.
   ExpectUKMPageLoadMetricNear(
