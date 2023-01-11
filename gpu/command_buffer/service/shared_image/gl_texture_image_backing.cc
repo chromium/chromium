@@ -181,13 +181,23 @@ SharedImageBackingType GLTextureImageBacking::GetType() const {
   return SharedImageBackingType::kGLTexture;
 }
 
+gfx::Rect GLTextureImageBacking::ClearedRect() const {
+  if (!IsPassthrough())
+    return texture_->GetLevelClearedRect(texture_->target(), 0);
+
+  // Use shared image based tracking for passthrough, because we don't always
+  // use angle robust initialization.
+  return ClearTrackingSharedImageBacking::ClearedRect();
+}
+
 void GLTextureImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  if (!IsPassthrough() && !IsCleared()) {
-    // If the image isn't already fully cleared then pass `cleared_rect` to
-    // validating command decoder as well.
+  if (!IsPassthrough()) {
     texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
+    return;
   }
 
+  // Use shared image based tracking for passthrough, because we don't always
+  // use angle robust initialization.
   ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
 }
 
@@ -428,6 +438,7 @@ std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
 
 void GLTextureImageBacking::InitializeGLTexture(
     const GLCommonImageBackingFactory::FormatInfo& format_info,
+    bool is_cleared,
     bool framebuffer_attachment_angle) {
   format_desc_.target = GL_TEXTURE_2D;
   format_desc_.data_format = format_info.gl_format;
@@ -442,6 +453,7 @@ void GLTextureImageBacking::InitializeGLTexture(
 
   if (IsPassthrough()) {
     passthrough_texture_->SetEstimatedSize(GetEstimatedSize());
+    SetClearedRect(is_cleared ? gfx::Rect(size()) : gfx::Rect());
   } else {
     // TODO(piman): We pretend the texture was created in an ES2 context, so
     // that it can be used in other ES2 contexts, and so we have to pass
@@ -450,7 +462,7 @@ void GLTextureImageBacking::InitializeGLTexture(
     texture_->SetLevelInfo(format_desc_.target, 0, format_desc_.data_format,
                            size().width(), size().height(), /*depth=*/1, 0,
                            format_desc_.data_format, format_desc_.data_type,
-                           /*cleared_rect=*/gfx::Rect());
+                           is_cleared ? gfx::Rect(size()) : gfx::Rect());
     texture_->SetImmutable(true, format_info.supports_storage);
   }
 }
