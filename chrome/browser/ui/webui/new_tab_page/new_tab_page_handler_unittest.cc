@@ -402,11 +402,10 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_FALSE(theme->background_image_attribution_2.has_value());
   EXPECT_FALSE(theme->background_image_attribution_url.has_value());
   ASSERT_TRUE(theme->most_visited);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->most_visited->background_color);
   if (RemoveScrim()) {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->most_visited->background_color);
     EXPECT_FALSE(theme->most_visited->use_title_pill);
   } else {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 6), theme->most_visited->background_color);
     EXPECT_TRUE(theme->most_visited->use_title_pill);
   }
   EXPECT_TRUE(theme->most_visited->use_white_tile_icon);
@@ -436,8 +435,10 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
   mock_color_provider_source_.SetColor(kColorNewTabPageLogoUnthemedLight,
                                        SkColorSetRGB(0, 0, 3));
   mock_color_provider_source_.SetColor(
+      kColorNewTabPageMostVisitedTileBackground, SkColorSetRGB(0, 0, 4));
+  mock_color_provider_source_.SetColor(
       kColorNewTabPageMostVisitedTileBackgroundUnthemed,
-      SkColorSetRGB(0, 0, 4));
+      SkColorSetRGB(0, 0, 5));
 
   ntp_custom_background_service_observer_->OnCustomBackgroundImageUpdated();
   mock_page_.FlushForTesting();
@@ -447,7 +448,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
   EXPECT_EQ(SkColorSetRGB(0, 0, 1), theme->background_color);
   EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
   EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->logo_color);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
   EXPECT_EQ("foo line", theme->background_image_attribution_1);
   EXPECT_EQ("bar line", theme->background_image_attribution_2);
@@ -458,6 +458,12 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
     EXPECT_EQ("none", theme->background_image->scrim_display.value());
   } else {
     EXPECT_FALSE(theme->background_image->scrim_display.has_value());
+  }
+
+  if (ComprehensiveTheme()) {
+    EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
+  } else {
+    EXPECT_EQ(SkColorSetRGB(0, 0, 5), theme->most_visited->background_color);
   }
 }
 

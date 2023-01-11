@@ -96,7 +96,7 @@ constexpr int kTallestFrameHeight = kTallestTabHeight + 19;
 // changed default theme assets, if you need themes to recreate their generated
 // images (which are cached), if you changed how missing values are
 // generated, or if you changed any constants.
-const int kThemePackVersion = 102;
+const int kThemePackVersion = 103;
 
 // IDs that are in the DataPack won't clash with the positive integer
 // uint16_t. kHeaderID should always have the maximum value because we want the
@@ -260,7 +260,6 @@ constexpr size_t kOverwritableColorTableLength =
 constexpr int kNonOverwritableColorTable[] = {
     TP::COLOR_NTP_LOGO,
     TP::COLOR_NTP_SECTION_BORDER,
-    TP::COLOR_NTP_SHORTCUT,
     TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
     TP::COLOR_TAB_THROBBER_SPINNING,
     TP::COLOR_TAB_THROBBER_WAITING,
@@ -1074,7 +1073,6 @@ void BrowserThemePack::AddColorMixers(
       {TP::COLOR_NTP_LINK, kColorNewTabPageLink},
       {TP::COLOR_NTP_LOGO, kColorNewTabPageLogo},
       {TP::COLOR_NTP_SECTION_BORDER, kColorNewTabPageSectionBorder},
-      {TP::COLOR_NTP_SHORTCUT, kColorNewTabPageMostVisitedTileBackground},
       {TP::COLOR_NTP_TEXT, kColorNewTabPageText},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_BACKGROUND, kColorToolbarBackgroundSubtleEmphasis},
@@ -1883,16 +1881,6 @@ void BrowserThemePack::GenerateMissingNtpColors() {
                              : GetContrastingColor(background_color,
                                                    /*luminosity_change=*/0.3f);
     SetColor(TP::COLOR_NTP_LOGO, logo_color);
-  }
-
-  // Calculate NTP shortcut color.
-  // Use light color for NTPs with images, and themed color for NTPs with solid
-  // color.
-  if (!has_background_image && has_background_color &&
-      background_color != SK_ColorWHITE) {
-    SetColor(TP::COLOR_NTP_SHORTCUT,
-             GetContrastingColor(background_color,
-                                 /*luminosity_change=*/0.2f));
   }
 
   // Calculate NTP section border color.

@@ -67,6 +67,8 @@ TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeColors) {
       ntp_features::kNtpElementLuminosityChangeForLightBackgroundParam.Get());
   EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonBackground),
             contrasting_color);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageMostVisitedTileBackground),
+            contrasting_color);
 }
 
 TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeRealboxColors) {
@@ -123,6 +125,8 @@ TEST(NewTabPageColorMixer, DefaultColorComprehensiveThemeColor) {
   EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonForeground),
             gfx::kGoogleBlue600);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageLink), gfx::kGoogleBlue600);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageMostVisitedTileBackground),
+            gfx::kGoogleGrey100);
 }
 
 }  // namespace

@@ -82,8 +82,6 @@ SkColor GetLightModeColor(int id) {
       return SK_ColorTRANSPARENT;
     case ThemeProperties::COLOR_NTP_LOGO:
       return SkColorSetRGB(0xEE, 0xEE, 0xEE);
-    case ThemeProperties::COLOR_NTP_SHORTCUT:
-      return gfx::kGoogleGrey100;
 
     // Properties not stored in theme pack.
     case ThemeProperties::COLOR_TAB_STROKE_FRAME_ACTIVE:
@@ -145,8 +143,6 @@ absl::optional<SkColor> GetIncognitoColor(int id) {
     case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE:
       return SkColorSetRGB(0x35, 0x36, 0x3A);
-    case ThemeProperties::COLOR_NTP_SHORTCUT:
-      return gfx::kGoogleGrey900;
     case ThemeProperties::COLOR_TOOLBAR_TEXT:
       return SK_ColorWHITE;
     case ThemeProperties::COLOR_NTP_TEXT:

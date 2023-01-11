@@ -162,8 +162,6 @@ class ThemeProperties {
 
     COLOR_NTP_LOGO,
     COLOR_NTP_SECTION_BORDER,
-    // Color for the background of the most visited/custom link tile.
-    COLOR_NTP_SHORTCUT,
     COLOR_NTP_TEXT_LIGHT,
 
 #if BUILDFLAG(IS_WIN)
