@@ -2221,7 +2221,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GoToEntryAtOffset(int32_t offset,
                          bool has_user_gesture,
                          absl::optional<blink::scheduler::TaskAttributionId>
-                             soft_navigation_heuristic_task_id) override;
+                             soft_navigation_heuristics_task_id) override;
   void NavigateToNavigationApiKey(
       const std::string& key,
       bool has_user_gesture,
