@@ -344,13 +344,22 @@ ScriptValue PerformanceNavigationTiming::NotRestoredReasonsBuilder(
       builder.AddNull("blocked");
       break;
   }
-  builder.AddString("src", AtomicString(reasons->src));
-  builder.AddString("id", AtomicString(reasons->id));
-  builder.AddString("name", AtomicString(reasons->name));
+  builder.AddString("url", AtomicString(reasons->same_origin_details
+                                            ? reasons->same_origin_details->url
+                                            : ""));
+  builder.AddString("src", AtomicString(reasons->same_origin_details
+                                            ? reasons->same_origin_details->src
+                                            : ""));
+  builder.AddString("id", AtomicString(reasons->same_origin_details
+                                           ? reasons->same_origin_details->id
+                                           : ""));
+  builder.AddString("name",
+                    AtomicString(reasons->same_origin_details
+                                     ? reasons->same_origin_details->name
+                                     : ""));
   Vector<AtomicString> reason_strings;
   Vector<v8::Local<v8::Value>> children_result;
   if (reasons->same_origin_details) {
-    builder.AddString("url", AtomicString(reasons->same_origin_details->url));
     for (const auto& reason : reasons->same_origin_details->reasons) {
       reason_strings.push_back(reason);
     }
@@ -358,9 +367,6 @@ ScriptValue PerformanceNavigationTiming::NotRestoredReasonsBuilder(
       children_result.push_back(
           NotRestoredReasonsBuilder(script_state, child).V8Value());
     }
-  } else {
-    // For cross-origin iframes, url should always be null.
-    builder.AddNull("url");
   }
   builder.Add("reasons", reason_strings);
   builder.Add("children", children_result);

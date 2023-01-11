@@ -624,14 +624,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   }
 
   // Populate NotRestoredReasons mojom struct based on the existing tree of
-  // reason to report to the renderer.
+  // reason to report to the renderer. This will only partially contain
+  // cross-origin reasons. See |GetWebExposedNotRestoredReasonsInternal()| for
+  // more explanation.
   // This should be called only when the root document is outermost main
   // document.
-  // We have access to attributes of cross-origin iframes that are children of
-  // same-origin iframes. This method's purpose is to ensure that we only return
-  // the information that should be exposed based on origin. (i.e. we only
-  // include information iframes that are direct children of same-origin
-  // frames).
   blink::mojom::BackForwardCacheNotRestoredReasonsPtr
   GetWebExposedNotRestoredReasons();
 
@@ -700,14 +697,12 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
 
   // See |IsSameOrigin|
   const bool is_same_origin_;
-  // Whether or not the root document of this tree is the outermoust main
-  // frame's document.
-  const bool is_root_outermost_main_frame_;
   // The id, name and src attribute of the frame owner of this subtree's root
   // document.
-  const absl::optional<std::string> id_;
-  const absl::optional<std::string> name_;
-  const absl::optional<std::string> src_;
+  // TODO(yuzus): Make them optional.
+  const std::string id_;
+  const std::string name_;
+  const std::string src_;
   // See |GetUrl|
   const GURL url_;
 };

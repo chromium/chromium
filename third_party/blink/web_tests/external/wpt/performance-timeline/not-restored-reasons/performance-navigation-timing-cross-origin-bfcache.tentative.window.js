@@ -30,6 +30,7 @@ promise_test(async t => {
   );
   // Use WebSocket to block BFCache.
   await useWebSocket(rc1_child);
+
   const rc1_child_url = await rc1_child.executeScript(() => {
     return location.href;
   });
@@ -51,9 +52,9 @@ promise_test(async t => {
       /*reasons=*/[],
       /*children=*/[{
         'blocked': true,
-        'url': null,
-        'src': rc1_child_url,
-        'id': 'test-id',
+        'url': '',
+        'src': '',
+        'id': '',
         'name': '',
         'reasons': [],
         'children': []

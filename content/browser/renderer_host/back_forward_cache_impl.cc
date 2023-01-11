@@ -1487,7 +1487,6 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     : document_result_(std::move(result_for_this_document)),
       is_same_origin_(
           IsSameOriginForTreeResult(rfh, url, main_document_origin)),
-      is_root_outermost_main_frame_(rfh->IsOutermostMainFrame()),
       id_(rfh->frame_tree_node()->html_id()),
       name_(rfh->frame_tree_node()->html_name()),
       src_(rfh->frame_tree_node()->html_src()),
@@ -1498,7 +1497,6 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     const GURL& url)
     : document_result_(BackForwardCacheCanStoreDocumentResult()),
       is_same_origin_(is_same_origin),
-      is_root_outermost_main_frame_(true),
       id_(""),
       name_(""),
       src_(""),
@@ -1555,7 +1553,6 @@ BackForwardCacheCanStoreTreeResult::CreateEmptyTree(RenderFrameHostImpl* rfh) {
 
 blink::mojom::BackForwardCacheNotRestoredReasonsPtr
 BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasons() {
-  DCHECK(is_root_outermost_main_frame_);
   uint32_t count = GetCrossOriginReachableFrameCount();
   int index = count == 0 ? 0 : base::RandInt(0, count - 1);
   return GetWebExposedNotRestoredReasonsInternal(index);
@@ -1573,6 +1570,9 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
     not_restored_reasons->same_origin_details =
         blink::mojom::SameOriginBfcacheNotRestoredDetails::New();
     not_restored_reasons->same_origin_details->url = url_.spec();
+    not_restored_reasons->same_origin_details->src = src_;
+    not_restored_reasons->same_origin_details->id = id_;
+    not_restored_reasons->same_origin_details->name = name_;
     not_restored_reasons->same_origin_details->reasons =
         GetDocumentResult().GetStringReasons();
 
@@ -1597,17 +1597,7 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
     }
     // Decrease the index now that we saw a cross-origin iframe.
     index--;
-    // Do not iterate through the children now that we have encountered a
-    // cross-origin iframe.
   }
-  // Report src, id and name for both cross-origin and same-origin frames. This
-  // information is only sent to the main frame's renderer, which already knew
-  // it on the previous visit. We send this because the frame tree could have
-  // changed by the time the page is navigated away, and sending this
-  // information would help identify which frames caused restore to fail.
-  not_restored_reasons->src = src_;
-  not_restored_reasons->id = id_;
-  not_restored_reasons->name = name_;
   return not_restored_reasons;
 }
 
