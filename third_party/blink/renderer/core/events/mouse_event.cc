@@ -385,11 +385,6 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   // TODO(mustaq): Move click-specific code to `PointerEvent::DispatchEvent`.
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 
-  if (recordreplay::IsRecordingOrReplaying()) {
-    // NOTE: we can also get absolute location, via `ComputePageLocation`
-    recordreplay::OnMouseEvent(type().Ascii().c_str(), client_x_, client_y_);
-  }
-
   bool is_click = type() == event_type_names::kClick;
   bool send_to_disabled_form_controls =
       RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled();

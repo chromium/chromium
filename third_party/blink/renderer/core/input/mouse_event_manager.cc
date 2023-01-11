@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
 
+#include "base/record_replay.h"
+
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -267,6 +269,17 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
          mouse_event_type == event_type_names::kClick ||
          mouse_event_type == event_type_names::kAuxclick);
 
+  if (recordreplay::IsRecordingOrReplaying() && (
+    mouse_event_type == event_type_names::kMouseup ||
+    mouse_event_type == event_type_names::kMousedown ||
+    mouse_event_type == event_type_names::kMousemove)) {
+
+    auto pos = mouse_event.PositionInRootFrame();
+    auto x = (size_t)pos.x();
+    auto y = (size_t)pos.y();
+    recordreplay::OnMouseEvent(mouse_event_type.Ascii().c_str(), x, y);
+  }
+  
   WebInputEventResult input_event_result = WebInputEventResult::kNotHandled;
 
   if (target && target->ToNode()) {

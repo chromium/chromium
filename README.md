@@ -144,25 +144,26 @@ The revision to use for dependent repositories is specified in the [DEPS](./DEPS
 
 After a rebase has happened (e.g. `master` has been rebased to latest `chromium` release version):
 
-1. `git pull` (while on `master`)
-2. Update submodules
+1. `git checkout master`
+2. `git pull`
+3. Update submodules
    ```sh
    cd ./v8 && git checkout master && git pull && \
    cd ../third_party/webrtc && git checkout main && git pull && \
    cd ../skia && git checkout main && git pull && \
    cd ../..
    ```
-3. Verify that submodule revisions are correct in `DEPS`, e.g. via:
+4. (To play it extra safe) Verify that submodule revisions are correct in `DEPS`, e.g. via:
    ```sh
    cd ./v8 && git log
    cd ../third_party/webrtc && git log
    cd ../skia && git log
    cd ../..
    ```
-3. Probably need to update your local `depot_tools`
-4. If possible, update build dependencies: `./build/install-build-deps.sh` (might not always work because it does not support many systems)
-5. Clean your build (delete `out` folder)
-6. Re-do the initial steps:
+5. Update your local `depot_tools`
+6. If possible, update build dependencies: `./build/install-build-deps.sh` (might not always work because it does not support many systems)
+7. Clean your build (delete `out` folder)
+8. Re-do the initial steps:
    ```sh
    cd .../src
    gclient sync -D
