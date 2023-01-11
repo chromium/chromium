@@ -14,7 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/views/extensions/request_file_system_dialog_view.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -214,10 +214,9 @@ void ConsentProviderDelegate::ShowDialog(
     return;
   }
 
-  RequestFileSystemDialogView::ShowDialog(
-      web_contents, extension_name,
-      volume_label.empty() ? volume_id : volume_label, writable,
-      std::move(callback));
+  ShowRequestFileSystemDialog(web_contents, extension_name,
+                              volume_label.empty() ? volume_id : volume_label,
+                              writable, std::move(callback));
 }
 
 void ConsentProviderDelegate::ShowNotification(

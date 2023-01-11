@@ -135,6 +135,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    Builder& SetAccessibleTitle(std::u16string accessible_title) {
+      model_->accessible_title_ = std::move(accessible_title);
+      return *this;
+    }
+
     Builder& SetSubtitle(std::u16string subtitle) {
       model_->subtitle_ = std::move(subtitle);
       return *this;
@@ -386,6 +391,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return title_;
   }
 
+  const std::u16string& accessible_title(base::PassKey<DialogModelHost>) const {
+    return accessible_title_;
+  }
+
   const std::u16string& subtitle(base::PassKey<DialogModelHost>) const {
     return subtitle_;
   }
@@ -465,6 +474,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   bool close_on_deactivate_ = true;
   std::string internal_name_;
   std::u16string title_;
+  std::u16string accessible_title_;
   std::u16string subtitle_;
   ImageModel icon_;
   ImageModel dark_mode_icon_;

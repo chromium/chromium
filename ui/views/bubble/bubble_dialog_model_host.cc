@@ -420,6 +420,10 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   SetTitle(model_->title(GetPassKey()));
 
+  if (!model_->accessible_title(GetPassKey()).empty()) {
+    SetAccessibleTitle(model_->accessible_title(GetPassKey()));
+  }
+
   SetSubtitle(model_->subtitle(GetPassKey()));
 
   if (!model_->main_image(GetPassKey()).IsEmpty())
