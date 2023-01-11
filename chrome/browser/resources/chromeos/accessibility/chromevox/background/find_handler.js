@@ -7,7 +7,7 @@
  */
 import {CursorRange} from '../../common/cursors/range.js';
 
-import {ChromeVoxState} from './chromevox_state.js';
+import {ChromeVoxRange} from './chromevox_range.js';
 import {Output} from './output/output.js';
 import {OutputCustomEvent} from './output/output_types.js';
 
@@ -65,7 +65,7 @@ export class FindHandler {
     }
 
     const range = CursorRange.fromNode(evt.target);
-    ChromeVoxState.instance.setCurrentRange(range);
+    ChromeVoxRange.set(range);
     new Output()
         .withRichSpeechAndBraille(range, null, OutputCustomEvent.NAVIGATE)
         .go();

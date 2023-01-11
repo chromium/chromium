@@ -200,7 +200,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       // Even though we usually don't output events from actions, hit test
       // results should generate output.
       const range = CursorRange.fromNode(focus);
-      ChromeVoxState.instance.setCurrentRange(range);
+      ChromeVoxRange.set(range);
       output.withRichSpeechAndBraille(range, null, OutputCustomEvent.NAVIGATE)
           .go();
     });
@@ -248,7 +248,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // Nullify focus if it no longer exists.
     chrome.automation.getFocus(function(focus) {
       if (!focus) {
-        ChromeVoxState.instance.setCurrentRange(null);
+        ChromeVoxRange.set(null);
       }
     });
   }
@@ -432,8 +432,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       // top.
       if (LocalStorage.get('autoRead') &&
           AutomationUtil.getTopLevelRoot(evt.target) === evt.target) {
-        ChromeVoxState.instance.setCurrentRange(
-            CursorRange.fromNode(evt.target));
+        ChromeVoxRange.set(CursorRange.fromNode(evt.target));
         ChromeVox.tts.stop();
         CommandHandlerInterface.instance.onCommand(Command.READ_FROM_HERE);
         return;
@@ -533,7 +532,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
     if (!ChromeVoxRange.current) {
       this.onEventDefault(evt);
-      ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(evt.target));
+      ChromeVoxRange.set(CursorRange.fromNode(evt.target));
     }
 
     // Sync the ChromeVox range to the editable, if a selection exists.
@@ -552,8 +551,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       // Sync ChromeVox range with selection.
       if (!ChromeVoxState.instance.isReadingContinuously) {
-        ChromeVoxState.instance.setCurrentRange(
-            selectedRange, true /* from editing */);
+        ChromeVoxRange.set(selectedRange, true /* from editing */);
       }
     }
     this.textEditHandler_.onEvent(evt);
@@ -769,7 +767,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         new Output()
             .withRichSpeechAndBraille(range, null, OutputCustomEvent.NAVIGATE)
             .go();
-        ChromeVoxState.instance.setCurrentRange(range);
+        ChromeVoxRange.set(range);
       }
     }.bind(this));
   }
@@ -896,7 +894,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       o.format('$name', focusedRoot);
     }
 
-    ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(focus));
+    ChromeVoxRange.set(CursorRange.fromNode(focus));
     if (!ChromeVoxRange.current) {
       return;
     }

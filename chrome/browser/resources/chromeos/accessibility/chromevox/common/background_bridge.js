@@ -98,12 +98,12 @@ BackgroundBridge.ChromeVoxPrefs = {
   },
 };
 
-BackgroundBridge.ChromeVoxState = {
+BackgroundBridge.ChromeVoxRange = {
   /** @return {!Promise} */
   async clearCurrentRange() {
     return BridgeHelper.sendMessage(
-        BridgeConstants.ChromeVoxState.TARGET,
-        BridgeConstants.ChromeVoxState.Action.CLEAR_CURRENT_RANGE);
+        BridgeConstants.ChromeVoxRange.TARGET,
+        BridgeConstants.ChromeVoxRange.Action.CLEAR_CURRENT_RANGE);
   },
 };
 

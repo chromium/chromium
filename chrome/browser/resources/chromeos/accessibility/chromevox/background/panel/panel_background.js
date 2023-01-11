@@ -260,7 +260,7 @@ export class PanelBackground {
     }
     o.go();
 
-    ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(node));
+    ChromeVoxRange.set(CursorRange.fromNode(node));
   }
 
   /**

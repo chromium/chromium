@@ -989,10 +989,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'OptionChildIndexCount', async function() {
   // Select first child of the list box, similar to what happens if
   // navigated by Tab.
   const firstChild = root.find({role: RoleType.PARAGRAPH});
-  mockFeedback
-      .call(
-          () => ChromeVoxState.instance.setCurrentRange(
-              CursorRange.fromNode(firstChild)))
+  mockFeedback.call(() => ChromeVoxRange.set(CursorRange.fromNode(firstChild)))
       .call(doCmd('nextObject'))
       .expectSpeech('List box')
       .expectSpeech('Fruits')
@@ -2283,15 +2280,13 @@ AX_TEST_F(
 
       mockFeedback
           .call(() => {
-            ChromeVoxState.instance.setCurrentRange(
-                CursorRange.fromNode(blueberries));
+            ChromeVoxRange.set(CursorRange.fromNode(blueberries));
           })
           .call(doCmd('nextObject'))
           .expectSpeech(
               '◦ Raspberries', 'List item', 'List end', 'nested level 2')
           .call(() => {
-            ChromeVoxState.instance.setCurrentRange(
-                CursorRange.fromNode(grapefruits));
+            ChromeVoxRange.set(CursorRange.fromNode(grapefruits));
           })
           .call(doCmd('nextObject'))
           .expectSpeech(
@@ -2535,7 +2530,7 @@ AX_TEST_F(
       this.dispatchOnCustomSpokenFeedbackToggledEvent(false);
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree('<p>Test document</p>');
-      ChromeVoxState.instance.setCurrentRange(null);
+      ChromeVoxRange.set(null);
       mockFeedback.call(doCmd('nextObject'))
           .expectSpeech(
               'No current ChromeVox focus. Press Alt+Shift+L to go to the ' +
@@ -2557,7 +2552,7 @@ AX_TEST_F(
       this.dispatchOnCustomSpokenFeedbackToggledEvent(true);
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree('<p>Start here</p>');
-      ChromeVoxState.instance.setCurrentRange(null);
+      ChromeVoxRange.set(null);
       mockFeedback.call(doCmd('nextObject'))
           .call(
               () => assertFalse(mockFeedback.utteranceInQueue(
@@ -3599,8 +3594,7 @@ AX_TEST_F(
       const nextObjectGesture =
           GestureCommandHandler.instance.onAccessibilityGesture_.bind(
               GestureCommandHandler.instance, Gesture.SWIPE_RIGHT1);
-      const clearCurrentRange = ChromeVoxState.instance.setCurrentRange.bind(
-          ChromeVoxState.instance, null);
+      const clearCurrentRange = () => ChromeVoxRange.set(null);
       const toggleTalkBack = () => {
         ChromeVoxState.instance.talkBackEnabled_ =
             !ChromeVoxState.instance.talkBackEnabled_;

@@ -967,8 +967,7 @@ export class CommandHandler extends CommandHandlerInterface {
         }
 
         if (textEditHandler.isSelectionOnFirstLine()) {
-          ChromeVoxState.instance.setCurrentRange(
-              CursorRange.fromNode(textEditHandler.node));
+          ChromeVoxRange.set(CursorRange.fromNode(textEditHandler.node));
           return true;
         }
         EventGenerator.sendKeyPress(KeyCode.HOME);
@@ -990,8 +989,7 @@ export class CommandHandler extends CommandHandlerInterface {
           return true;
         }
         if (textEditHandler.isSelectionOnFirstLine()) {
-          ChromeVoxState.instance.setCurrentRange(
-              CursorRange.fromNode(textEditHandler.node));
+          ChromeVoxRange.set(CursorRange.fromNode(textEditHandler.node));
           return true;
         }
         EventGenerator.sendKeyPress(KeyCode.PRIOR);
@@ -1100,12 +1098,11 @@ export class CommandHandler extends CommandHandlerInterface {
   checkForLossOfFocus_(focusedNode) {
     const cur = ChromeVoxRange.current;
     if (cur && !cur.isValid() && focusedNode) {
-      ChromeVoxState.instance.setCurrentRange(
-          CursorRange.fromNode(focusedNode));
+      ChromeVoxRange.set(CursorRange.fromNode(focusedNode));
     }
 
     if (!focusedNode) {
-      ChromeVoxState.instance.setCurrentRange(null);
+      ChromeVoxRange.set(null);
       return;
     }
 
@@ -1117,7 +1114,7 @@ export class CommandHandler extends CommandHandlerInterface {
         // ensure we are never inadvertently losing focus. ARC++ windows set
         // "focus" on a root view.
         focusedNode.role === RoleType.CLIENT) {
-      ChromeVoxState.instance.setCurrentRange(null);
+      ChromeVoxRange.set(null);
     }
   }
 
@@ -1553,7 +1550,7 @@ export class CommandHandler extends CommandHandlerInterface {
         return;
       }
 
-      ChromeVoxState.instance.setCurrentRange(newRange);
+      ChromeVoxRange.set(newRange);
       newRange.select();
 
       const o =

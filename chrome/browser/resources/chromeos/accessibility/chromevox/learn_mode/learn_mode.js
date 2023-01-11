@@ -291,7 +291,7 @@ export class LearnMode {
 
   /** Clears ChromeVox range. */
   static async clearRange() {
-    await BackgroundBridge.ChromeVoxState.clearCurrentRange();
+    await BackgroundBridge.ChromeVoxRange.clearCurrentRange();
   }
 
   /** @private */

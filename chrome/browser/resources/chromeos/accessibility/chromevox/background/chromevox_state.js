@@ -62,9 +62,8 @@ export class ChromeVoxState {
 
   /**
    * @param {CursorRange} newRange The new range.
-   * @param {boolean=} opt_fromEditing
    */
-  setCurrentRange(newRange, opt_fromEditing) {}
+  setCurrentRange(newRange) {}
 
   /**
    * @param {boolean} newValue
@@ -112,8 +111,3 @@ ChromeVoxState.resolveReadyPromise_;
 /** @private {!Promise} */
 ChromeVoxState.readyPromise_ =
     new Promise(resolve => ChromeVoxState.resolveReadyPromise_ = resolve);
-
-BridgeHelper.registerHandler(
-    BridgeConstants.ChromeVoxState.TARGET,
-    BridgeConstants.ChromeVoxState.Action.CLEAR_CURRENT_RANGE,
-    () => ChromeVoxState.instance.setCurrentRange(null));

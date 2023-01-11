@@ -15,6 +15,8 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
+        'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
+    await importModule(
         'ChromeVoxState', '/chromevox/background/chromevox_state.js');
     await importModule(
         'BackgroundKeyboardHandler',
@@ -40,7 +42,7 @@ AX_TEST_F(
 
       // A Search keydown does not get eaten when there's no range and there
       // was no previous range. TalkBack is handled elsewhere.
-      ChromeVoxState.instance.setCurrentRange(null);
+      ChromeVoxRange.set(null);
       ChromeVoxState.instance.previousRange_ = null;
       const searchDown2 = {};
       searchDown2.metaKey = true;

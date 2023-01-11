@@ -104,7 +104,7 @@ export class BaseAutomationHandler {
       return;
     }
 
-    ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(node));
+    ChromeVoxRange.set(CursorRange.fromNode(node));
 
     // Because Closure doesn't know this is non-null.
     if (!ChromeVoxRange.current) {

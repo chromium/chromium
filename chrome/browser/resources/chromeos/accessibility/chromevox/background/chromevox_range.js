@@ -5,9 +5,18 @@
 /**
  * @fileoverview Classes that handle the ChromeVox range.
  */
+import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
 
+import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
+import {FocusBounds} from './focus_bounds.js';
+
+const RoleType = chrome.automation.RoleType;
+const Action = BridgeConstants.ChromeVoxRange.Action;
+const TARGET = BridgeConstants.ChromeVoxRange.TARGET;
 
 /**
  * An interface implemented by objects to observe ChromeVox range changes.
@@ -15,7 +24,7 @@ import {ChromeVoxState} from './chromevox_state.js';
  */
 export class ChromeVoxRangeObserver {
   /**
-   * @param {CursorRange} range The new range.
+   * @param {?CursorRange} range The new range.
    * @param {boolean=} opt_fromEditing
    */
   onCurrentRangeChanged(range, opt_fromEditing = undefined) {}
@@ -44,14 +53,61 @@ export class ChromeVoxRange {
     }
   }
 
-  /** @public {CursorRange} */
+  /** @return {?CursorRange} */
   static get current() {
     // TODO(anastasi): Move ownership of currentRange to ChromeVoxRange.
     return ChromeVoxState.instance.currentRange;
   }
 
   /**
-   * @param {CursorRange} range The new range.
+   * @param {?CursorRange} newRange The new range.
+   * @param {boolean=} opt_fromEditing
+   */
+  static set(newRange, opt_fromEditing) {
+    // Clear anything that was frozen on the braille display whenever
+    // the user navigates.
+    ChromeVox.braille.thaw();
+
+    // There's nothing to be updated in this case.
+    if ((!newRange &&
+         !ChromeVoxState.instance.getCurrentRangeWithoutRecovery()) ||
+        (newRange && !newRange.isValid())) {
+      FocusBounds.set([]);
+      return;
+    }
+
+    ChromeVoxState.instance.setCurrentRange(newRange);
+
+    ChromeVoxState.ready().then(
+        ChromeVoxRange.onCurrentRangeChanged(newRange, opt_fromEditing));
+
+    const currentRange =
+        ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
+    if (!currentRange) {
+      FocusBounds.set([]);
+      return;
+    }
+
+    const start = currentRange.start.node;
+    start.makeVisible();
+    start.setAccessibilityFocus();
+
+    const root = AutomationUtil.getTopLevelRoot(start);
+    if (!root || root.role === RoleType.DESKTOP || root === start) {
+      return;
+    }
+
+    const position = {};
+    const loc = start.unclippedLocation;
+    position.x = loc.left + loc.width / 2;
+    position.y = loc.top + loc.height / 2;
+    let url = root.docUrl;
+    url = url.substring(0, url.indexOf('#')) || url;
+    ChromeVoxState.position[url] = position;
+  }
+
+  /**
+   * @param {?CursorRange} range The new range.
    * @param {boolean=} opt_fromEditing
    */
   static onCurrentRangeChanged(range, opt_fromEditing = undefined) {
@@ -63,3 +119,6 @@ export class ChromeVoxRange {
 
 /** @private {!Array<ChromeVoxRangeObserver>} */
 ChromeVoxRange.observers_ = [];
+
+BridgeHelper.registerHandler(
+    TARGET, Action.CLEAR_CURRENT_RANGE, () => ChromeVoxRange.set(null));

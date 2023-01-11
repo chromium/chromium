@@ -16,7 +16,6 @@ import {QueueMode} from '../common/tts_types.js';
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
-import {ChromeVoxState} from './chromevox_state.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 import {Output} from './output/output.js';
 
@@ -183,7 +182,7 @@ export class PointerHandler extends BaseAutomationHandler {
       // This clears the anchor point in the TouchExplorationController (so when
       // a user touch explores back to the previous range, it will be announced
       // again).
-      ChromeVoxState.instance.setCurrentRange(null);
+      ChromeVoxRange.set(null);
 
       // Play a earcon to let the user know they're in the middle of nowhere.
       if ((new Date() - this.lastNoPointerAnchorEarconPlayedTime_) >

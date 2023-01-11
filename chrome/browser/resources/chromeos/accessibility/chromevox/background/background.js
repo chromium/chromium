@@ -180,48 +180,11 @@ export class Background extends ChromeVoxState {
 
   /**
    * @param {CursorRange} newRange The new range.
-   * @param {boolean=} opt_fromEditing
    * @override
    */
-  setCurrentRange(newRange, opt_fromEditing) {
-    // Clear anything that was frozen on the braille display whenever
-    // the user navigates.
-    ChromeVox.braille.thaw();
-
-    // There's nothing to be updated in this case.
-    if ((!newRange && !this.currentRange_) ||
-        (newRange && !newRange.isValid())) {
-      FocusBounds.set([]);
-      return;
-    }
-
+  setCurrentRange(newRange) {
     this.previousRange_ = this.currentRange_;
     this.currentRange_ = newRange;
-
-    ChromeVoxState.ready().then(
-        ChromeVoxRange.onCurrentRangeChanged(newRange, opt_fromEditing));
-
-    if (!this.currentRange_) {
-      FocusBounds.set([]);
-      return;
-    }
-
-    const start = this.currentRange_.start.node;
-    start.makeVisible();
-    start.setAccessibilityFocus();
-
-    const root = AutomationUtil.getTopLevelRoot(start);
-    if (!root || root.role === RoleType.DESKTOP || root === start) {
-      return;
-    }
-
-    const position = {};
-    const loc = start.unclippedLocation;
-    position.x = loc.left + loc.width / 2;
-    position.y = loc.top + loc.height / 2;
-    let url = root.docUrl;
-    url = url.substring(0, url.indexOf('#')) || url;
-    ChromeVoxState.position[url] = position;
   }
 
   /** @override */
@@ -260,7 +223,7 @@ export class Background extends ChromeVoxState {
       this.setFocusToRange_(range, prevRange);
     }
 
-    this.setCurrentRange(range);
+    ChromeVoxRange.set(range);
 
     const o = new Output();
     let selectedRange;
@@ -349,7 +312,7 @@ export class Background extends ChromeVoxState {
     }
 
     if (!this.currentRange_ || !this.currentRange_.isValid()) {
-      this.setCurrentRange(this.previousRange_);
+      ChromeVoxRange.set(this.previousRange_);
     }
   }
 
@@ -357,9 +320,9 @@ export class Background extends ChromeVoxState {
   async setCurrentRangeToFocus_() {
     const focus = await AsyncUtil.getFocus();
     if (focus) {
-      this.setCurrentRange(CursorRange.fromNode(focus));
+      ChromeVoxRange.set(CursorRange.fromNode(focus));
     } else {
-      this.setCurrentRange(null);
+      ChromeVoxRange.set(null);
     }
   }
 
