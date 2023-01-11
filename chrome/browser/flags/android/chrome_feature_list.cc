@@ -370,7 +370,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kTangibleSync,
     &syncer::kSyncEnableHistoryDataType,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
-    &syncer::kSyncAndroidPromosWithAlternativeTitle,
     &syncer::kSyncAndroidPromosWithTitle,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,

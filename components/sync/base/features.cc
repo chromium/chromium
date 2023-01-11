@@ -32,9 +32,6 @@ BASE_FEATURE(kSyncAllowWalletDataInTransportModeWithCustomPassphrase,
 BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
              "SyncAndroidLimitNTPPromoImpressions",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kSyncAndroidPromosWithAlternativeTitle,
-             "SyncAndroidPromosWithAlternativeTitle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncAndroidPromosWithTitle,
              "SyncAndroidPromosWithTitle",
              base::FEATURE_ENABLED_BY_DEFAULT);

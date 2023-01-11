@@ -302,12 +302,7 @@ public class SyncPromoController {
                 mImpressionUserActionName = "Signin_Impression_FromNTPContentSuggestions";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE)) {
-                    mTitleStringId = R.string.sync_promo_alternative_title_ntp_content_suggestions;
-                } else {
-                    mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
-                }
+                mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
                     mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
                     mDescriptionStringIdNoAccount =
@@ -322,12 +317,7 @@ public class SyncPromoController {
             case SigninAccessPoint.RECENT_TABS:
                 mImpressionUserActionName = "Signin_Impression_FromRecentTabs";
                 mSyncPromoDismissedPreferenceTracker = null;
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE)) {
-                    mTitleStringId = R.string.sync_promo_alternative_title_recent_tabs;
-                } else {
-                    mTitleStringId = R.string.sync_promo_title_recent_tabs;
-                }
+                mTitleStringId = R.string.sync_promo_title_recent_tabs;
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
                     mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
                     mDescriptionStringIdNoAccount = R.string.sync_promo_description_recent_tabs;
@@ -341,12 +331,7 @@ public class SyncPromoController {
                 mImpressionUserActionName = "Signin_Impression_FromSettings";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE)) {
-                    mTitleStringId = R.string.sync_promo_alternative_title_settings;
-                } else {
-                    mTitleStringId = R.string.sync_promo_title_settings;
-                }
+                mTitleStringId = R.string.sync_promo_title_settings;
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
                     mDescriptionStringId = R.string.sync_promo_description_settings;
                     mDescriptionStringIdNoAccount = R.string.sync_promo_description_settings;

@@ -190,7 +190,6 @@ public class MainSettingsFragmentTest {
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
-            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE,
     })
     public void
     testRenderDifferentSignedInStates() throws IOException {
