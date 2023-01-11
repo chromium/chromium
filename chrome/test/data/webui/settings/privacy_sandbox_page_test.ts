@@ -181,7 +181,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
-    assertFalse(isChildVisible(page, '#currentTopicsDescription'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescription'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertTrue(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
 
@@ -228,7 +228,7 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
         loadTimeData.getString('topicsPageToggleSubLabel'),
         page.$.topicsToggle.subLabel);
     assertFalse(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
-    assertFalse(isChildVisible(page, '#currentTopicsDescription'));
+    assertTrue(isChildVisible(page, '#currentTopicsDescription'));
     assertFalse(isChildVisible(page, '#currentTopicsDescriptionEmpty'));
     assertTrue(isChildVisible(page, '#currentTopicsDescriptionDisabled'));
     assertEquals(
@@ -474,7 +474,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     assertEquals(
         loadTimeData.getString('fledgePageToggleSubLabel'),
         page.$.fledgeToggle.subLabel);
-    assertFalse(isChildVisible(page, '#currentSitesDescription'));
+    assertTrue(isChildVisible(page, '#currentSitesDescription'));
     assertFalse(isChildVisible(page, '#currentSitesDescriptionEmpty'));
     assertTrue(isChildVisible(page, '#currentSitesDescriptionDisabled'));
 
@@ -521,7 +521,7 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
         loadTimeData.getString('fledgePageToggleSubLabel'),
         page.$.fledgeToggle.subLabel);
     assertFalse(!!page.getPref('privacy_sandbox.m1.fledge_enabled.value'));
-    assertFalse(isChildVisible(page, '#currentSitesDescription'));
+    assertTrue(isChildVisible(page, '#currentSitesDescription'));
     assertFalse(isChildVisible(page, '#currentSitesDescriptionEmpty'));
     assertTrue(isChildVisible(page, '#currentSitesDescriptionDisabled'));
     assertEquals(

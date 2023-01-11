@@ -81,19 +81,18 @@
       <h2 id="currentSitesHeading">
         $i18n{fledgePageCurrentSitesHeading}
       </h2>
+      <div id="currentSitesDescription" class="cr-secondary-text">
+        $i18n{fledgePageCurrentSitesDescription}
+        <!-- TODO(b/264024469): Add "Learn more" into current sites description
+             string. -->
+        <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
+            "$i18n{fledgePageCurrentSitesDescriptionLearnMoreA11yLabel}">
+          $i18n{fledgePageCurrentSitesDescriptionLearnMore}
+        </button>
+      </div>
       <template is="dom-if" if="[[isFledgeEnabledAndLoaded_(
           prefs.privacy_sandbox.m1.fledge_enabled.value, isSitesListLoaded_)]]"
           restamp>
-        <div id="currentSitesDescription" class="cr-secondary-text"
-            hidden="[[isSitesListEmpty_(sitesList_.length)]]">
-          $i18n{fledgePageCurrentSitesDescription}
-          <!-- TODO(b/264024469): Add "Learn more" into current sites
-               description string. -->
-          <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
-              "$i18n{fledgePageCurrentSitesDescriptionLearnMoreA11yLabel}">
-            $i18n{fledgePageCurrentSitesDescriptionLearnMore}
-          </button>
-        </div>
         <template is="dom-repeat" items="[[mainSitesList_]]">
           <privacy-sandbox-interest-item interest="[[item]]"
               on-interest-changed="onInterestChanged_">

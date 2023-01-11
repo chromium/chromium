@@ -76,19 +76,18 @@
       <h2 id="currentTopicsHeading">
         $i18n{topicsPageCurrentTopicsHeading}
       </h2>
+      <div id="currentTopicsDescription" class="cr-secondary-text">
+        $i18n{topicsPageCurrentTopicsDescription}
+        <!-- TODO(b/262502300): Add "Learn more" into current topics description
+             string. -->
+        <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
+            "$i18n{topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel}">
+          $i18n{topicsPageCurrentTopicsDescriptionLearnMoreLink}
+        </button>
+      </div>
       <template is="dom-if" if="[[isTopicsEnabledAndLoaded_(
           prefs.privacy_sandbox.m1.topics_enabled.value, isTopicsListLoaded_)]]"
           restamp>
-          <div id="currentTopicsDescription" class="cr-secondary-text"
-              hidden="[[isTopicsListEmpty_(topicsList_.length)]]">
-            $i18n{topicsPageCurrentTopicsDescription}
-            <!-- TODO(b/262502300): Add "Learn more" into current topics
-                description string. -->
-            <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
-                "$i18n{topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel}">
-              $i18n{topicsPageCurrentTopicsDescriptionLearnMoreLink}
-            </button>
-          </div>
           <template is="dom-repeat" items="[[topicsList_]]">
             <privacy-sandbox-interest-item interest="[[item]]"
                 on-interest-changed="onInterestChanged_">
