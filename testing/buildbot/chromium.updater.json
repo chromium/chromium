@@ -272,7 +272,7 @@
       }
     ]
   },
-  "mac11.0-arm64-updater-tester-dbg": {
+  "mac11-arm64-updater-tester-dbg": {
     "gtest_tests": [
       {
         "merge": {
@@ -313,7 +313,7 @@
       }
     ]
   },
-  "mac11.0-arm64-updater-tester-rel": {
+  "mac11-arm64-updater-tester-rel": {
     "gtest_tests": [
       {
         "merge": {
@@ -354,7 +354,7 @@
       }
     ]
   },
-  "mac11.0-updater-tester-asan-dbg": {
+  "mac11-x64-updater-tester-dbg": {
     "gtest_tests": [
       {
         "merge": {
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "mac11.0-updater-tester-dbg": {
+  "mac11-x64-updater-tester-rel": {
     "gtest_tests": [
       {
         "merge": {
@@ -436,7 +436,7 @@
       }
     ]
   },
-  "mac11.0-updater-tester-rel": {
+  "mac12-x64-updater-tester-asan-dbg": {
     "gtest_tests": [
       {
         "merge": {
@@ -448,32 +448,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11"
+              "os": "Mac-12"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "updater_tests",
         "test_id_prefix": "ninja://chrome/updater:updater_tests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-11",
-              "pool": "chromium.updater.mac"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "updater_tests_system",
-        "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
       }
     ]
   },

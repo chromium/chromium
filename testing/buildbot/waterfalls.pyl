@@ -5750,7 +5750,7 @@
           ]
         },
       },
-      'mac11.0-arm64-updater-tester-dbg': {
+      'mac11-arm64-updater-tester-dbg': {
         'swarming': {
           'dimension_sets': [
             {
@@ -5763,7 +5763,7 @@
           'gtest_tests': 'updater_gtests_mac',
         },
       },
-      'mac11.0-arm64-updater-tester-rel': {
+      'mac11-arm64-updater-tester-rel': {
         'swarming': {
           'dimension_sets': [
             {
@@ -5776,9 +5776,7 @@
           'gtest_tests': 'updater_gtests_mac',
         },
       },
-      # TODO(crbug.com/1381588): move to macOS 12 once crbug.com/1394839 is
-      # resolved.
-      'mac11.0-updater-tester-asan-dbg': {
+      'mac11-x64-updater-tester-dbg': {
         'test_suites': {
           'gtest_tests': 'updater_gtests_mac',
         },
@@ -5791,7 +5789,7 @@
           ]
         },
       },
-      'mac11.0-updater-tester-dbg': {
+      'mac11-x64-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests_mac',
         },
@@ -5804,15 +5802,19 @@
           ]
         },
       },
-      'mac11.0-updater-tester-rel': {
+
+      # TODO(crbug.com/1381588, crbug.com/1405483): replace
+      # `updater_gtests_mac_user` with `updater_gtests_mac` once
+      # crbug.com/1394839 is resolved.
+      'mac12-x64-updater-tester-asan-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
+          'gtest_tests': 'updater_gtests_mac_user',
         },
         'swarming': {
           'dimension_sets': [
             {
               'cpu': 'x86-64',
-              'os': 'Mac-11',
+              'os': 'Mac-12',
             }
           ]
         },

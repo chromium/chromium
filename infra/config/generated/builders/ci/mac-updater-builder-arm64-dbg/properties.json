@@ -29,7 +29,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac11.0-arm64-updater-tester-dbg",
+              "builder": "mac11-arm64-updater-tester-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -94,7 +94,7 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "mac11.0-arm64-updater-tester-dbg",
+          "builder": "mac11-arm64-updater-tester-dbg",
           "project": "chromium"
         },
         {

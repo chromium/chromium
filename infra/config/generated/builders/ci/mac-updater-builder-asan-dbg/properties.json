@@ -29,7 +29,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac11.0-updater-tester-asan-dbg",
+              "builder": "mac12-x64-updater-tester-asan-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -66,7 +66,7 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "mac11.0-updater-tester-asan-dbg",
+          "builder": "mac12-x64-updater-tester-asan-dbg",
           "project": "chromium"
         }
       ]

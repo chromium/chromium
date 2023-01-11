@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac-updater-builder-rel",
+              "builder": "mac-updater-builder-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -29,7 +29,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac11.0-updater-tester-rel",
+              "builder": "mac11-arm64-updater-tester-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -49,7 +49,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "mac-updater-builder-rel",
+                "builder": "mac-updater-builder-arm64-rel",
                 "project": "chromium"
               }
             }
@@ -59,7 +59,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac11.0-updater-tester-rel",
+          "builder": "mac11-arm64-updater-tester-rel",
           "project": "chromium"
         }
       ]
