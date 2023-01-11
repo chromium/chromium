@@ -38,6 +38,8 @@
 #include "components/feature_engagement/internal/system_time_provider.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/group_constants.h"
+#include "components/feature_engagement/public/group_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -112,7 +114,7 @@ Tracker* Tracker::Create(
       std::make_unique<PersistentEventStore>(std::move(event_db));
 
   auto configuration = std::make_unique<ChromeVariationsConfiguration>();
-  configuration->ParseFeatureConfigs(GetAllFeatures());
+  configuration->ParseConfigs(GetAllFeatures(), GetAllGroups());
 
   auto event_storage_validator =
       std::make_unique<FeatureConfigEventStorageValidator>();

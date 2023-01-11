@@ -22,6 +22,7 @@
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_configurations.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/group_configurations.h"
 
 namespace {
 
@@ -412,68 +413,31 @@ bool ParseTrackingOnly(const base::StringPiece& definition,
 
   return base::EqualsCaseInsensitiveASCII(trimmed_def, kTrackingOnlyFalse);
 }
-}  // namespace
 
-ChromeVariationsConfiguration::ChromeVariationsConfiguration() = default;
+// Holds all the possible fields that can be parsed. The parsing code will fill
+// the provided items with parsed data. If any field is null, then it won't be
+// parsed.
+struct ConfigParseOutput {
+  uint32_t& parse_errors;
+  Comparator* session_rate = nullptr;
+  SessionRateImpact* session_rate_impact = nullptr;
+  Blocking* blocking = nullptr;
+  BlockedBy* blocked_by = nullptr;
+  EventConfig* trigger = nullptr;
+  EventConfig* used = nullptr;
+  std::set<EventConfig>* event_configs = nullptr;
+  bool* tracking_only = nullptr;
+  Comparator* availability = nullptr;
+  SnoozeParams* snooze_params = nullptr;
 
-ChromeVariationsConfiguration::~ChromeVariationsConfiguration() = default;
+  explicit ConfigParseOutput(uint32_t& parse_errors)
+      : parse_errors(parse_errors) {}
+};
 
-void ChromeVariationsConfiguration::ParseFeatureConfigs(
-    const FeatureVector& features) {
-  for (auto* feature : features) {
-    ParseFeatureConfig(feature, features);
-  }
-}
-
-void ChromeVariationsConfiguration::ParseFeatureConfig(
-    const base::Feature* feature,
-    const FeatureVector& all_features) {
-  DCHECK(feature);
-  DCHECK(configs_.find(feature->name) == configs_.end());
-
-  DVLOG(3) << "Parsing feature config for " << feature->name;
-
-  // Client-side configuration is used under any of the following circumstances:
-  // - The UseClientConfigIPH feature flag is enabled
-  // - There are no field trial parameters set for the feature
-  // - The field trial configuration is empty
-  //
-  // Note that the "empty configuration = use client-side" is quite useful, as
-  // it means that json field trial configs, Finch configurations, and tests can
-  // simply enable a feature engagement feature, and it will default to using
-  // the client-side configuration; there is no need to duplicate a standard
-  // configuration in more than one place.
-  std::map<std::string, std::string> params;
-  if (base::FeatureList::IsEnabled(kUseClientConfigIPH) ||
-      !base::GetFieldTrialParamsByFeature(*feature, &params) ||
-      params.empty()) {
-    // Try to read the client-side configuration.
-    if (MaybeAddClientSideFeatureConfig(feature)) {
-      stats::RecordConfigParsingEvent(
-          stats::ConfigParsingEvent::SUCCESS_FROM_SOURCE);
-      DVLOG(3) << "Read checked in config for " << feature->name;
-      return;
-    }
-
-    // No server-side nor client side configuration is available, but the
-    // feature was on the list of available features, so give it an invalid
-    // config.
-    FeatureConfig& config = configs_[feature->name];
-    config.valid = false;
-
-    stats::RecordConfigParsingEvent(
-        stats::ConfigParsingEvent::FAILURE_NO_FIELD_TRIAL);
-    // Returns early. If no field trial, ConfigParsingEvent::FAILURE will not be
-    // recorded.
-    DVLOG(3) << "No field trial or checked in config for " << feature->name;
-    return;
-  }
-
-  // Initially all new configurations are considered invalid.
-  FeatureConfig& config = configs_[feature->name];
-  config.valid = false;
-  uint32_t parse_errors = 0;
-
+void ParseConfigFields(const base::Feature* feature,
+                       const FeatureVector& all_features,
+                       std::map<std::string, std::string> params,
+                       ConfigParseOutput& output) {
   for (const auto& it : params) {
     std::string param_name = it.first;
     std::string param_value = params[param_name];
@@ -484,98 +448,100 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
     if (base::StartsWith(key, feature->name, base::CompareCase::SENSITIVE))
       key = param_name.substr(strlen(feature->name) + 1);
 
-    if (key == kEventConfigUsedKey) {
+    if (key == kEventConfigUsedKey && output.used) {
       EventConfig event_config;
       if (!ParseEventConfig(param_value, &event_config)) {
-        ++parse_errors;
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_USED_EVENT_PARSE);
+        ++output.parse_errors;
         continue;
       }
-      config.used = event_config;
-    } else if (key == kEventConfigTriggerKey) {
+      *output.used = event_config;
+    } else if (key == kEventConfigTriggerKey && output.trigger) {
       EventConfig event_config;
       if (!ParseEventConfig(param_value, &event_config)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_TRIGGER_EVENT_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.trigger = event_config;
-    } else if (key == kSessionRateKey) {
+      *output.trigger = event_config;
+    } else if (key == kSessionRateKey && output.session_rate) {
       Comparator comparator;
       if (!ParseComparator(param_value, &comparator)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SESSION_RATE_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.session_rate = comparator;
-    } else if (key == kSessionRateImpactKey) {
-      SessionRateImpact impact;
-      if (!ParseSessionRateImpact(param_value, &impact, feature,
-                                  all_features)) {
+      *output.session_rate = comparator;
+    } else if (key == kSessionRateImpactKey && output.session_rate_impact) {
+      SessionRateImpact parsed_session_rate_impact;
+      if (!ParseSessionRateImpact(param_value, &parsed_session_rate_impact,
+                                  feature, all_features)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SESSION_RATE_IMPACT_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.session_rate_impact = impact;
-    } else if (key == kBlockingKey) {
-      Blocking blocking;
-      if (!ParseBlocking(param_value, &blocking)) {
+      *output.session_rate_impact = parsed_session_rate_impact;
+    } else if (key == kBlockingKey && output.blocking) {
+      Blocking parsed_blocking;
+      if (!ParseBlocking(param_value, &parsed_blocking)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_BLOCKING_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.blocking = blocking;
-    } else if (key == kBlockedByKey) {
-      BlockedBy blocked_by;
-      if (!ParseBlockedBy(param_value, &blocked_by, feature, all_features)) {
+      *output.blocking = parsed_blocking;
+    } else if (key == kBlockedByKey && output.blocked_by) {
+      BlockedBy parsed_blocked_by;
+      if (!ParseBlockedBy(param_value, &parsed_blocked_by, feature,
+                          all_features)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_BLOCKED_BY_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.blocked_by = blocked_by;
-    } else if (key == kTrackingOnlyKey) {
-      bool tracking_only;
-      if (!ParseTrackingOnly(param_value, &tracking_only)) {
+      *output.blocked_by = parsed_blocked_by;
+    } else if (key == kTrackingOnlyKey && output.tracking_only) {
+      bool parsed_tracking_only;
+      if (!ParseTrackingOnly(param_value, &parsed_tracking_only)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_TRACKING_ONLY_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.tracking_only = tracking_only;
-    } else if (key == kAvailabilityKey) {
+      *output.tracking_only = parsed_tracking_only;
+    } else if (key == kAvailabilityKey && output.availability) {
       Comparator comparator;
       if (!ParseComparator(param_value, &comparator)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_AVAILABILITY_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.availability = comparator;
-    } else if (key == kSnoozeParams) {
-      SnoozeParams snooze_params;
-      if (!ParseSnoozeParams(param_value, &snooze_params)) {
+      *output.availability = comparator;
+    } else if (key == kSnoozeParams && output.snooze_params) {
+      SnoozeParams parsed_snooze_params;
+      if (!ParseSnoozeParams(param_value, &parsed_snooze_params)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_SNOOZE_PARAMS_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.snooze_params = snooze_params;
+      *output.snooze_params = parsed_snooze_params;
     } else if (base::StartsWith(key, kEventConfigKeyPrefix,
-                                base::CompareCase::INSENSITIVE_ASCII)) {
+                                base::CompareCase::INSENSITIVE_ASCII) &&
+               output.event_configs) {
       EventConfig event_config;
       if (!ParseEventConfig(param_value, &event_config)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_OTHER_EVENT_PARSE);
-        ++parse_errors;
+        ++output.parse_errors;
         continue;
       }
-      config.event_configs.insert(event_config);
+      output.event_configs->insert(event_config);
     } else if (base::StartsWith(key, kIgnoredKeyPrefix,
                                 base::CompareCase::INSENSITIVE_ASCII)) {
       // Intentionally ignoring parameter using registered ignored prefix.
@@ -588,6 +554,123 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
           stats::ConfigParsingEvent::FAILURE_UNKNOWN_KEY);
     }
   }
+}
+
+template <typename T>
+void RecordParseResult(std::string name, T config) {
+  if (config.valid) {
+    stats::RecordConfigParsingEvent(stats::ConfigParsingEvent::SUCCESS);
+    DVLOG(2) << "Config for " << name << " is valid.";
+    DVLOG(3) << "Config for " << name << " = " << config;
+  } else {
+    stats::RecordConfigParsingEvent(stats::ConfigParsingEvent::FAILURE);
+    DVLOG(2) << "Config for " << name << " is invalid.";
+  }
+}
+
+}  // namespace
+
+ChromeVariationsConfiguration::ChromeVariationsConfiguration() = default;
+
+ChromeVariationsConfiguration::~ChromeVariationsConfiguration() = default;
+
+void ChromeVariationsConfiguration::ParseConfigs(const FeatureVector& features,
+                                                 const GroupVector& groups) {
+  for (auto* feature : features) {
+    ParseFeatureConfig(feature, features);
+  }
+
+  if (!base::FeatureList::IsEnabled(kIPHGroups)) {
+    return;
+  }
+
+  for (auto* group : groups) {
+    ParseGroupConfig(group, features);
+  }
+}
+
+bool ChromeVariationsConfiguration::ShouldUseClientSideConfig(
+    const base::Feature* feature,
+    base::FieldTrialParams* params) {
+  // Client-side configuration is used under any of the following circumstances:
+  // - The UseClientConfigIPH feature flag is enabled
+  // - There are no field trial parameters set for the feature
+  // - The field trial configuration is empty
+  //
+  // Note that the "empty configuration = use client-side" is quite useful, as
+  // it means that json field trial configs, Finch configurations, and tests can
+  // simply enable a feature engagement feature, and it will default to using
+  // the client-side configuration; there is no need to duplicate a standard
+  // configuration in more than one place.
+  return base::FeatureList::IsEnabled(kUseClientConfigIPH) ||
+         !base::GetFieldTrialParamsByFeature(*feature, params) ||
+         params->empty();
+}
+
+void ChromeVariationsConfiguration::TryAddingClientSideConfig(
+    const base::Feature* feature,
+    bool is_group) {
+  // Try to read the client-side configuration.
+  bool added_client_config = (is_group)
+                                 ? MaybeAddClientSideGroupConfig(feature)
+                                 : MaybeAddClientSideFeatureConfig(feature);
+  if (added_client_config) {
+    stats::RecordConfigParsingEvent(
+        stats::ConfigParsingEvent::SUCCESS_FROM_SOURCE);
+    DVLOG(3) << "Read checked in config for " << feature->name;
+    return;
+  }
+
+  // No server-side nor client side configuration is available, but the
+  // feature was on the list of available features, so give it an invalid
+  // config.
+  if (is_group) {
+    GroupConfig& config = group_configs_[feature->name];
+    config.valid = false;
+  } else {
+    FeatureConfig& config = configs_[feature->name];
+    config.valid = false;
+  }
+
+  stats::RecordConfigParsingEvent(
+      stats::ConfigParsingEvent::FAILURE_NO_FIELD_TRIAL);
+  // Returns early. If no field trial, ConfigParsingEvent::FAILURE will not be
+  // recorded.
+  DVLOG(3) << "No field trial or checked in config for " << feature->name;
+  return;
+}
+
+void ChromeVariationsConfiguration::ParseFeatureConfig(
+    const base::Feature* feature,
+    const FeatureVector& all_features) {
+  DCHECK(feature);
+  DCHECK(configs_.find(feature->name) == configs_.end());
+
+  DVLOG(3) << "Parsing feature config for " << feature->name;
+  std::map<std::string, std::string> params;
+  if (ShouldUseClientSideConfig(feature, &params)) {
+    TryAddingClientSideConfig(feature, /*is_group=*/false);
+    return;
+  }
+
+  // Initially all new configurations are considered invalid.
+  FeatureConfig& config = configs_[feature->name];
+  config.valid = false;
+  uint32_t parse_errors = 0;
+
+  ConfigParseOutput output(parse_errors);
+  output.session_rate = &config.session_rate;
+  output.session_rate_impact = &config.session_rate_impact;
+  output.blocking = &config.blocking;
+  output.blocked_by = &config.blocked_by;
+  output.trigger = &config.trigger;
+  output.used = &config.used;
+  output.event_configs = &config.event_configs;
+  output.tracking_only = &config.tracking_only;
+  output.availability = &config.availability;
+  output.snooze_params = &config.snooze_params;
+
+  ParseConfigFields(feature, all_features, params, output);
 
   // The |used| and |trigger| members are required, so should not be the
   // default values.
@@ -595,14 +678,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
   bool has_trigger_event = config.trigger != EventConfig();
   config.valid = has_used_event && has_trigger_event && parse_errors == 0;
 
-  if (config.valid) {
-    stats::RecordConfigParsingEvent(stats::ConfigParsingEvent::SUCCESS);
-    DVLOG(2) << "Config for " << feature->name << " is valid.";
-    DVLOG(3) << "Config for " << feature->name << " = " << config;
-  } else {
-    stats::RecordConfigParsingEvent(stats::ConfigParsingEvent::FAILURE);
-    DVLOG(2) << "Config for " << feature->name << " is invalid.";
-  }
+  RecordParseResult(feature->name, config);
 
   // Notice parse errors for used and trigger events will also cause the
   // following histograms being recorded.
@@ -624,6 +700,61 @@ bool ChromeVariationsConfiguration::MaybeAddClientSideFeatureConfig(
   DCHECK(configs_.find(feature->name) == configs_.end());
   if (auto config = GetClientSideFeatureConfig(feature)) {
     configs_[feature->name] = *config;
+    return true;
+  }
+  return false;
+}
+
+void ChromeVariationsConfiguration::ParseGroupConfig(
+    const base::Feature* group,
+    const FeatureVector& all_features) {
+  DCHECK(group);
+  DCHECK(group_configs_.find(group->name) == group_configs_.end());
+
+  DVLOG(3) << "Parsing group config for " << group->name;
+
+  std::map<std::string, std::string> params;
+  if (ShouldUseClientSideConfig(group, &params)) {
+    TryAddingClientSideConfig(group, /*is_group=*/true);
+    return;
+  }
+
+  // Initially all new configurations are considered invalid.
+  GroupConfig& config = group_configs_[group->name];
+  config.valid = false;
+  uint32_t parse_errors = 0;
+
+  ConfigParseOutput output(parse_errors);
+  output.session_rate = &config.session_rate;
+  output.trigger = &config.trigger;
+  output.event_configs = &config.event_configs;
+
+  ParseConfigFields(group, all_features, params, output);
+
+  // The |trigger| member is required, so should not be the
+  // default value.
+  bool has_trigger_event = config.trigger != EventConfig();
+  config.valid = has_trigger_event && parse_errors == 0;
+
+  RecordParseResult(group->name, config);
+
+  // Notice parse errors for trigger event will also cause the
+  // following histogram to be recorded.
+  if (!has_trigger_event) {
+    stats::RecordConfigParsingEvent(
+        stats::ConfigParsingEvent::FAILURE_TRIGGER_EVENT_MISSING);
+  }
+}
+
+bool ChromeVariationsConfiguration::MaybeAddClientSideGroupConfig(
+    const base::Feature* group) {
+  if (!base::FeatureList::IsEnabled(*group)) {
+    return false;
+  }
+
+  DCHECK(configs_.find(group->name) == configs_.end());
+  if (auto config = GetClientSideGroupConfig(group)) {
+    group_configs_[group->name] = *config;
     return true;
   }
   return false;

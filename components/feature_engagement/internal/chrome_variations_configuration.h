@@ -6,8 +6,10 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_CHROME_VARIATIONS_CONFIGURATION_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/group_list.h"
 
 namespace feature_engagement {
 
@@ -39,15 +41,29 @@ class ChromeVariationsConfiguration : public Configuration {
   const std::vector<std::string> GetRegisteredGroups() const override;
 
   // Parses the variations configuration for all of the given |features| and
-  // stores the result. It is only valid to call ParseFeatureConfig once.
-  void ParseFeatureConfigs(const FeatureVector& features);
+  // |groups| and stores the result. It is only valid to call ParseConfigs once.
+  void ParseConfigs(const FeatureVector& features, const GroupVector& groups);
 
  private:
   void ParseFeatureConfig(const base::Feature* feature,
                           const FeatureVector& all_features);
+  void ParseGroupConfig(const base::Feature* group,
+                        const FeatureVector& all_features);
+
+  // Checks whether |feature| should use a client side config and fills in
+  // |params| the parameters for later parsing if necessary.
+  bool ShouldUseClientSideConfig(const base::Feature* feature,
+                                 base::FieldTrialParams* params);
+  // Attempts to get the client side config for |feature| and add its config to
+  // the config store. If |is_group| is true, then |feature| refers to a group
+  // configuration instead of a feature configuration.
+  void TryAddingClientSideConfig(const base::Feature* feature, bool is_group);
   // Returns true if FeatureConfig was found with a local hard coded
   // configuration.
   bool MaybeAddClientSideFeatureConfig(const base::Feature* feature);
+  // Returns true if GroupConfig was found with a local hard coded
+  // configuration.
+  bool MaybeAddClientSideGroupConfig(const base::Feature* group);
 
   // The current configurations.
   ConfigMap configs_;
