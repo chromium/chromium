@@ -152,6 +152,9 @@ class MEDIA_EXPORT VideoResourceUpdater
     return context_provider_ == nullptr && raster_context_provider_ == nullptr;
   }
 
+  // Reallocate |upload_pixels_| with the requested size.
+  bool ReallocateUploadPixels(size_t needed_size);
+
   // Obtain a resource of the right format by either recycling an
   // unreferenced but appropriately formatted resource, or by
   // allocating a new resource.
@@ -217,7 +220,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   uint32_t next_plane_resource_id_ = 1;
 
   // Temporary pixel buffer when converting between formats.
-  std::unique_ptr<uint8_t[]> upload_pixels_;
+  std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter> upload_pixels_;
   size_t upload_pixels_size_ = 0;
 
   VideoFrameResourceType frame_resource_type_;
