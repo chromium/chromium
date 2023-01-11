@@ -63,7 +63,6 @@ source_set("unit_tests") {
   sources = [
     "app_metrics_app_state_agent_unittest.mm",
     "deferred_initialization_runner_unittest.mm",
-    "main_application_delegate_unittest.mm",
     "post_restore_app_agent_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",
     "tab_opener_unittest.mm",
@@ -113,7 +112,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/variations:fetcher",
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/testing:block_swizzler",
     "//ios/third_party/material_components_ios",

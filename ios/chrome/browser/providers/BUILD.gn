@@ -26,9 +26,6 @@ source_set("chromium_provider_factory") {
 
 group("chromium_providers") {
   deps = [
-    # The target providing the ChromeBrowserProvider factory.
-    ":chromium_provider_factory",
-
     # The individual API implementations.
     "//ios/chrome/browser/providers/app_distribution:chromium_app_distribution",
     "//ios/chrome/browser/providers/app_utils:chromium_app_utils",

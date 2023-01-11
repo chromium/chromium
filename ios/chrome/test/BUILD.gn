@@ -132,7 +132,6 @@ source_set("ios_chrome_unit_test_suite") {
     "//ios/chrome/browser/web/web_performance_metrics:unit_tests",
     "//ios/chrome/test:test_support",
     "//ios/components/webui:url_constants",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web/public",
     "//ios/web/public/test",

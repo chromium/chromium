@@ -5,9 +5,6 @@
 group("providers") {
   testonly = true
   deps = [
-    # The target providing the ChromeBrowserProvider factory.
-    "//ios/public/provider/chrome/browser:test_provider_factory",
-
     # The individual API implementations.
     "//ios/chrome/test/providers/app_distribution",
     "//ios/chrome/test/providers/app_utils",

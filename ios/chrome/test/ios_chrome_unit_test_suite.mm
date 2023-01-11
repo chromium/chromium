@@ -16,7 +16,6 @@
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/web/public/web_client.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -44,11 +43,6 @@ class IOSChromeUnitTestSuiteInitializer
   void OnTestStart(const testing::TestInfo& test_info) override {
     ios::provider::Initialize();
 
-    chrome_browser_provider_ = ios::CreateChromeBrowserProvider();
-    ios::ChromeBrowserProvider* previous_provider =
-        ios::SetChromeBrowserProvider(chrome_browser_provider_.get());
-    DCHECK(!previous_provider);
-
     DCHECK(!GetApplicationContext());
     application_context_.reset(new TestingApplicationContext);
   }
@@ -57,16 +51,10 @@ class IOSChromeUnitTestSuiteInitializer
     DCHECK_EQ(GetApplicationContext(), application_context_.get());
     application_context_.reset();
 
-    ios::ChromeBrowserProvider* previous_provider =
-        ios::SetChromeBrowserProvider(nullptr);
-    DCHECK_EQ(previous_provider, chrome_browser_provider_.get());
-    chrome_browser_provider_.reset();
-
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
   }
 
  private:
-  std::unique_ptr<ios::ChromeBrowserProvider> chrome_browser_provider_;
   std::unique_ptr<ApplicationContext> application_context_;
 };
 
