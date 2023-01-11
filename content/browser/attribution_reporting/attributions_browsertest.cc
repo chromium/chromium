@@ -122,19 +122,19 @@ struct ExpectedReportWaiter {
                        std::string trigger_data,
                        net::EmbeddedTestServer* server)
       : ExpectedReportWaiter(std::move(report_url),
-                             base::Value(base::Value::Dict()),
+                             base::Value::Dict(),
                              server) {
-    expected_body.SetStringKey("attribution_destination",
-                               std::move(attribution_destination));
-    expected_body.SetStringKey("source_event_id", std::move(source_event_id));
-    expected_body.SetStringKey("source_type", std::move(source_type));
-    expected_body.SetStringKey("trigger_data", std::move(trigger_data));
+    expected_body.Set("attribution_destination",
+                      std::move(attribution_destination));
+    expected_body.Set("source_event_id", std::move(source_event_id));
+    expected_body.Set("source_type", std::move(source_type));
+    expected_body.Set("trigger_data", std::move(trigger_data));
   }
 
   // ControllableHTTPResponses can only wait for relative urls, so only supply
   // the path.
   ExpectedReportWaiter(GURL report_url,
-                       base::Value body,
+                       base::Value::Dict body,
                        net::EmbeddedTestServer* server)
       : expected_url(std::move(report_url)),
         expected_body(std::move(body)),
@@ -143,7 +143,7 @@ struct ExpectedReportWaiter {
             expected_url.path())) {}
 
   GURL expected_url;
-  base::Value expected_body;
+  base::Value::Dict expected_body;
   std::string source_debug_key;
   std::string trigger_debug_key;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
@@ -168,7 +168,8 @@ struct ExpectedReportWaiter {
     replace_host.SetHostStr(host);
 
     base::Value body = base::test::ParseJson(request.content);
-    EXPECT_THAT(body, base::test::DictionaryHasValues(expected_body));
+    EXPECT_THAT(body, base::test::DictionaryHasValues(
+                          base::Value(expected_body.Clone())));
     const base::Value::Dict& body_dict = body.GetDict();
 
     // The report ID is random, so just test that the field exists here and is a
@@ -731,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
-      /*body=*/base::Value(), https_server());
+      /*body=*/base::Value::Dict(), https_server());
   ASSERT_TRUE(https_server()->Start());
 
   GURL impression_url = https_server()->GetURL(
