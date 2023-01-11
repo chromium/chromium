@@ -251,6 +251,7 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   ~ImageDecodingStore();
 
   static ImageDecodingStore& Instance();
+  static bool HasInstance();
 
   // Accesses a cached decoder object. A decoder is indexed by origin
   // (ImageFrameGenerator) and scaled size. Returns true if the cached object

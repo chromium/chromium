@@ -41,13 +41,17 @@ static const size_t kDefaultMaxTotalSizeOfHeapEntries = 32 * 1024 * 1024;
 
 }  // namespace
 
+static std::atomic<bool> gHasInstance{false};
+
 ImageDecodingStore::ImageDecodingStore()
     : heap_limit_in_bytes_(kDefaultMaxTotalSizeOfHeapEntries),
       heap_memory_usage_in_bytes_(0),
       memory_pressure_listener_(
           FROM_HERE,
           base::BindRepeating(&ImageDecodingStore::OnMemoryPressure,
-                              base::Unretained(this))) {}
+                              base::Unretained(this))) {
+  gHasInstance = true;
+}
 
 ImageDecodingStore::~ImageDecodingStore() {
 #if DCHECK_IS_ON()
@@ -61,6 +65,10 @@ ImageDecodingStore::~ImageDecodingStore() {
 ImageDecodingStore& ImageDecodingStore::Instance() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ImageDecodingStore, store, ());
   return store;
+}
+
+bool ImageDecodingStore::HasInstance() {
+  return gHasInstance;
 }
 
 bool ImageDecodingStore::LockDecoder(

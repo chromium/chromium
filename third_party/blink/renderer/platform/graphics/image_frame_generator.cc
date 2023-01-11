@@ -99,6 +99,12 @@ ImageFrameGenerator::ImageFrameGenerator(const SkISize& full_size,
 }
 
 ImageFrameGenerator::~ImageFrameGenerator() {
+  // Creating the store interacts with the recording so avoid instantiating
+  // it at non-deterministic points. If the store doesn't exist then it won't
+  // have any references to this generator.
+  if (recordreplay::AreEventsDisallowed() && !ImageDecodingStore::HasInstance())
+    return;
+
   // We expect all image decoders to be unlocked and catch with DCHECKs if not.
   ImageDecodingStore::Instance().RemoveCacheIndexedByGenerator(this);
 }
