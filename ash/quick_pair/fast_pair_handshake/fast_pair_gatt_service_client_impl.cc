@@ -187,16 +187,16 @@ void FastPairGattServiceClientImpl::AttemptGattConnection() {
     return;
   }
 
-  device->CreateGattConnection(
-      base::BindOnce(&FastPairGattServiceClientImpl::OnGattConnection,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-      kFastPairBluetoothUuid);
-
   gatt_service_discovery_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyInitializedError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kGattServiceDiscoveryTimeout));
+
+  device->CreateGattConnection(
+      base::BindOnce(&FastPairGattServiceClientImpl::OnGattConnection,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+      kFastPairBluetoothUuid);
 }
 
 void FastPairGattServiceClientImpl::OnGattConnection(
