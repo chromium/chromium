@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -21,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace drivefs::pinning {
-
 namespace {
 
 using ::base::test::RunClosure;
@@ -119,19 +119,11 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   mojo::Receiver<mojom::SearchQuery> search_receiver_{this};
 };
 
-class MockFreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
+class MockFreeSpace {
  public:
-  MockFreeDiskSpaceImpl() = default;
-
-  MockFreeDiskSpaceImpl(const MockFreeDiskSpaceImpl&) = delete;
-  MockFreeDiskSpaceImpl& operator=(const MockFreeDiskSpaceImpl&) = delete;
-
-  ~MockFreeDiskSpaceImpl() override = default;
-
   MOCK_METHOD(void,
-              AmountOfFreeDiskSpace,
-              (const base::FilePath&, base::OnceCallback<void(int64_t)>),
-              (override));
+              GetFreeSpace,
+              (const base::FilePath&, DriveFsPinManager::SpaceResult));
 };
 
 class DriveFsPinManagerTest : public testing::Test {
@@ -187,12 +179,12 @@ class DriveFsPinManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   base::FilePath gcache_dir_;
+  MockFreeSpace mock_free_space_;
   MockDriveFs mock_drivefs_;
 };
 
 TEST_F(DriveFsPinManagerTest, DisabledPinManagerShouldNotStartSearching) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -200,18 +192,18 @@ TEST_F(DriveFsPinManagerTest, DisabledPinManagerShouldNotStartSearching) {
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_)).Times(0);
   EXPECT_CALL(mock_callback, Run(SetupStage::kDisabled))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(_, _)).Times(0);
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(_, _)).Times(0);
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/false, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 }
 
 TEST_F(DriveFsPinManagerTest, OnFreeDiskSpaceFailingShouldNotSearchDrive) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -219,19 +211,19 @@ TEST_F(DriveFsPinManagerTest, OnFreeDiskSpaceFailingShouldNotSearchDrive) {
   EXPECT_CALL(mock_drivefs_, OnGetNextPage(_)).Times(0);
   EXPECT_CALL(mock_callback, Run(SetupStage::kCannotCalculateFreeSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(-1));
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 }
 
 TEST_F(DriveFsPinManagerTest, DriveReturningAnErrorShouldFail) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -241,19 +233,19 @@ TEST_F(DriveFsPinManagerTest, DriveReturningAnErrorShouldFail) {
                       Return(drive::FileError::FILE_ERROR_FAILED)));
   EXPECT_CALL(mock_callback, Run(SetupStage::kCannotRetrieveSearchResults))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 }
 
 TEST_F(DriveFsPinManagerTest, DriveReturnedSuccessButInvalidResultsShouldFail) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -262,19 +254,19 @@ TEST_F(DriveFsPinManagerTest, DriveReturnedSuccessButInvalidResultsShouldFail) {
       .WillOnce(Return(drive::FileError::FILE_ERROR_OK));
   EXPECT_CALL(mock_callback, Run(SetupStage::kCannotRetrieveSearchResults))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 }
 
 TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeDiskSpaceShouldFail) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -288,12 +280,13 @@ TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeDiskSpaceShouldFail) {
                       Return(drive::FileError::FILE_ERROR_OK)));
   EXPECT_CALL(mock_callback, Run(SetupStage::kNotEnoughSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 }
@@ -301,7 +294,6 @@ TEST_F(DriveFsPinManagerTest, IfPinnedItemSizeExceedsFreeDiskSpaceShouldFail) {
 TEST_F(DriveFsPinManagerTest,
        DISABLED_FailingToPinOneItemShouldFailCompletely) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -321,7 +313,7 @@ TEST_F(DriveFsPinManagerTest,
                       Return(drive::FileError::FILE_ERROR_OK)));
   EXPECT_CALL(mock_callback, Run(SetupStage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
   EXPECT_CALL(mock_drivefs_, SetPinned(_, true, _))
       // Mock the first file to successfully get pinned.
@@ -331,14 +323,14 @@ TEST_F(DriveFsPinManagerTest,
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 }
 
 TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -367,7 +359,7 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
       // `OnSyncingStatusUpdate` instead.
       .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
                       Return(drive::FileError::FILE_ERROR_OK)));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
   EXPECT_CALL(mock_drivefs_, SetPinned(_, true, _))
       .Times(2)
@@ -383,7 +375,8 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 
@@ -422,7 +415,6 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
 TEST_F(DriveFsPinManagerTest,
        DISABLED_ZeroByteItemsAndHostedItemsShouldBePeriodicallyCleaned) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -446,7 +438,7 @@ TEST_F(DriveFsPinManagerTest,
       // `OnSyncingStatusUpdate` instead.
       .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
                       Return(drive::FileError::FILE_ERROR_OK)));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
   EXPECT_CALL(mock_drivefs_, SetPinned(_, true, _))
       .Times(2)
@@ -462,7 +454,8 @@ TEST_F(DriveFsPinManagerTest,
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->Start(mock_callback.Get());
   run_loop.Run();
 
@@ -512,7 +505,6 @@ class TestBulkPinObserver : public DriveFsBulkPinObserver {
 TEST_F(DriveFsPinManagerTest,
        DISABLED_SyncingStatusUpdateProgressIsReportedBackToObserver) {
   base::MockOnceCallback<void(SetupStage)> mock_callback;
-  auto mock_free_space = std::make_unique<MockFreeDiskSpaceImpl>();
 
   base::RunLoop run_loop;
 
@@ -532,7 +524,7 @@ TEST_F(DriveFsPinManagerTest,
       // `OnSyncingStatusUpdate` instead.
       .WillOnce(DoAll(PopulateSearchItems(expected_drive_items),
                       Return(drive::FileError::FILE_ERROR_OK)));
-  EXPECT_CALL(*mock_free_space, AmountOfFreeDiskSpace(gcache_dir_, _))
+  EXPECT_CALL(mock_free_space_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1024));  // 1 MB.
   EXPECT_CALL(mock_drivefs_, SetPinned(_, true, _))
       .Times(1)
@@ -550,7 +542,8 @@ TEST_F(DriveFsPinManagerTest,
 
   auto manager = std::make_unique<DriveFsPinManager>(
       /*enabled=*/true, temp_dir_.GetPath(), &mock_drivefs_,
-      std::move(mock_free_space));
+      base::BindRepeating(&MockFreeSpace::GetFreeSpace,
+                          base::Unretained(&mock_free_space_)));
   manager->AddObserver(&mock_pin_observer);
   manager->Start(mock_callback.Get());
   run_loop.Run();

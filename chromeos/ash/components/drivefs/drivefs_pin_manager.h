@@ -66,24 +66,6 @@ enum class SetupStage {
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, SetupStage stage);
 
-// A delegate to aid in mocking the free disk scenarios for testing, in non-test
-// scenarios this simply calls `base::SysInfo::AmountOfFreeDiskSpace`.
-class FreeDiskSpaceDelegate {
- public:
-  // Invokes the `base::SysInfo::AmountOfFreeDiskSpace` method on a blocking
-  // thread.
-  virtual void AmountOfFreeDiskSpace(
-      const base::FilePath& path,
-      base::OnceCallback<void(int64_t)> callback) = 0;
-
-  virtual ~FreeDiskSpaceDelegate() = default;
-};
-
-struct DrivePathAndStatus {
-  base::FilePath path;
-  drive::FileError status;
-};
-
 // When the manager is setting up, this struct maintains all the information
 // gathered.
 struct SetupProgress {
@@ -143,11 +125,14 @@ class DriveFsBulkPinObserver {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     : public DriveFsHostObserver {
  public:
-  DriveFsPinManager(
-      bool enabled,
-      const base::FilePath& profile_path,
-      mojom::DriveFs* drivefs_interface,
-      std::unique_ptr<FreeDiskSpaceDelegate> free_space = nullptr);
+  using SpaceResult = base::OnceCallback<void(int64_t)>;
+  using SpaceGetter =
+      base::RepeatingCallback<void(const base::FilePath&, SpaceResult)>;
+
+  DriveFsPinManager(bool enabled,
+                    const base::FilePath& profile_path,
+                    mojom::DriveFs* drivefs_interface,
+                    SpaceGetter get_free_space = {});
 
   DriveFsPinManager(const DriveFsPinManager&) = delete;
   DriveFsPinManager& operator=(const DriveFsPinManager&) = delete;
@@ -230,7 +215,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   };
 
   // Invoked on retrieval of available space in the `~/GCache` directory.
-  void OnFreeDiskSpaceRetrieved(int64_t free_space);
+  void OnFreeSpaceRetrieved(int64_t free_space);
 
   // Once the free disk space has been retrieved, this method will be invoked
   // after every batch of searches to Drive complete. This is required as the
@@ -291,7 +276,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   bool should_pin_ = false;
 
   CompletionCallback complete_callback_;
-  const std::unique_ptr<FreeDiskSpaceDelegate> free_space_;
+  const SpaceGetter get_free_space_;
 
   SetupProgress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<DriveFsBulkPinObserver>::Unchecked observers_;

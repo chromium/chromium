@@ -44,24 +44,14 @@ mojom::QueryParametersPtr CreateMyDriveQuery() {
   return query;
 }
 
-class FreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
- public:
-  FreeDiskSpaceImpl() = default;
-
-  FreeDiskSpaceImpl(const FreeDiskSpaceImpl&) = delete;
-  FreeDiskSpaceImpl& operator=(const FreeDiskSpaceImpl&) = delete;
-
-  ~FreeDiskSpaceImpl() override = default;
-
-  void AmountOfFreeDiskSpace(
-      const base::FilePath& path,
-      base::OnceCallback<void(int64_t)> callback) override {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
-        std::move(callback));
-  }
-};
+// Calls `base::SysInfo::AmountOfFreeDiskSpace` on a blocking thread.
+void GetFreeSpace(const base::FilePath& path,
+                  DriveFsPinManager::SpaceResult callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
+      std::move(callback));
+}
 
 class NumPunct : public std::numpunct<char> {
  private:
@@ -434,14 +424,13 @@ bool DriveFsPinManager::MarkInProgress(const StableId id,
   return true;
 }
 
-DriveFsPinManager::DriveFsPinManager(
-    bool enabled,
-    const base::FilePath& profile_path,
-    mojom::DriveFs* drivefs_interface,
-    std::unique_ptr<FreeDiskSpaceDelegate> free_space)
+DriveFsPinManager::DriveFsPinManager(bool enabled,
+                                     const base::FilePath& profile_path,
+                                     mojom::DriveFs* drivefs_interface,
+                                     SpaceGetter get_free_space)
     : enabled_(enabled),
-      free_space_(free_space ? std::move(free_space)
-                             : std::make_unique<FreeDiskSpaceImpl>()),
+      get_free_space_(get_free_space ? std::move(get_free_space)
+                                     : base::BindRepeating(&GetFreeSpace)),
       profile_path_(profile_path),  // The GCache directory is located in the
                                     // users profile path.
       drivefs_interface_(drivefs_interface) {}
@@ -469,17 +458,16 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
   progress_ = {.stage = SetupStage::kCalculatingFreeSpace};
   NotifyProgress();
 
-  free_space_->AmountOfFreeDiskSpace(
-      profile_path_.AppendASCII(kGCacheFolderName),
-      base::BindOnce(&DriveFsPinManager::OnFreeDiskSpaceRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()));
+  get_free_space_.Run(profile_path_.AppendASCII(kGCacheFolderName),
+                      base::BindOnce(&DriveFsPinManager::OnFreeSpaceRetrieved,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DriveFsPinManager::Stop() {
   Complete(SetupStage::kStopped);
 }
 
-void DriveFsPinManager::OnFreeDiskSpaceRetrieved(const int64_t free_space) {
+void DriveFsPinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (free_space < 0) {
