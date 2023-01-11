@@ -727,7 +727,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
     expires_after="2023-06-18">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The number of tabs groups that are collapsed in all browsers (counting
@@ -737,7 +737,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.CollapsedTabCount" units="tabs"
     expires_after="2021-09-12">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The number of tabs in a collapsed tab group in all browsers, reported every
@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.NonZeroUserGroupCountPerLoad" units="groups"
     expires_after="2021-09-12">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The number of (non-zero) tabs groups open in all browsers (counting app-mode
@@ -769,7 +769,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.TimeSpentCollapsed2" units="seconds"
     expires_after="2021-09-12">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The time a tab group spends in the collapsed state before the group is
@@ -779,7 +779,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.TimeSpentExpanded2" units="seconds"
     expires_after="2021-09-12">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The time a tab group spends in the expanded state before the group is either
@@ -789,7 +789,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.UserCustomizedGroupCountPerLoad" units="groups"
     expires_after="2023-07-02">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The number of tabs groups with a user-set name or color open in all browsers
@@ -809,7 +809,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabGroups.UserGroupCountPerLoad" units="groups"
     expires_after="2023-06-18">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The number of tabs groups open in all browsers (counting app-mode windows)
@@ -1950,7 +1950,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabCountInGroupPerLoad" units="tabs"
     expires_after="2023-06-18">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The number of tabs in the current active group when a load completes.
@@ -1985,7 +1985,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabCountPerDomainPerLoad.{TotalTabCountBucket}"
     units="tabs" expires_after="2021-06-30">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The number of tabs across all browsers (counting app-mode windows) with the
@@ -2821,7 +2821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.TimeToSwitch" units="ms" expires_after="2023-06-18">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The amount of time from cursor entering the tabstrip to first click on a tab

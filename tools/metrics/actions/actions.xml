@@ -905,7 +905,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_NewTabInGroup">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User added a new tab to the existing group by keyboard shortcut Ctrl-T.
@@ -6066,7 +6066,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CloseGroupedTab">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>User closed a tab that belongs to a group.</description>
 </action>
@@ -33627,7 +33627,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabContextMenu_NewTabInGroup">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User added a tab to an existing group by choosing 'Add to existing group'
@@ -33825,7 +33825,7 @@ should be able to be added at any place in this file.
   <obsolete>
     This action no longer occurs as of 11/2022. Tab groups can always collapse.
   </obsolete>
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User clicked on the tab group header of the last expanded tab group. This
@@ -33834,13 +33834,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_SwitchGroupedTab">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>User switched to a tab that belongs in a group.</description>
 </action>
 
 <action name="TabGroups_TabGroupBubble_CloseGroup">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User closed a group by choosing 'Close group' from the tab group editor
@@ -33849,7 +33849,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupBubble_ColorChanged">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User changed the color of a group through the color picker in the tab group
@@ -33858,7 +33858,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupBubble_GroupSaved">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User saved an existing tab group by switching the toggle to the right next
@@ -33867,7 +33867,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupBubble_GroupUnsaved">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User unsaved an existing tab group by switching the toggle to the left next
@@ -33876,7 +33876,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupBubble_NameChanged">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User changed the name of a group through the editor bubble.
@@ -33884,7 +33884,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupBubble_NewTabInGroup">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User added a new tab to an existing group by choosing 'New tab in group'
@@ -33893,7 +33893,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupBubble_SendFeedback">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User opened the feedback app by choosing 'Send feedback' from the tab group
@@ -33902,7 +33902,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupBubble_Ungroup">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User removed all tabs in a group from that group by choosing 'Ungroup' from
@@ -33911,7 +33911,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupHeader_Collapsed">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User clicked on the tab group header of an expanded tab group to collapse
@@ -33920,7 +33920,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroups_TabGroupHeader_Expanded">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     User clicked on the tab group header of a collapsed tab group to expand the
@@ -35810,7 +35810,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WrenchMenu_OpenRecentGroup">
-  <owner>connily@chromium.org</owner>
+  <owner>dpenning@chromium.org</owner>
   <description>App Menu: Recently Closed: Open a recent group.</description>
 </action>
 
