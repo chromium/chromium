@@ -2641,6 +2641,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION" desc="The label used in the accessibility menu of the system tray to toggle on/off Live Caption feature.">
         Live Caption
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION_OFF" desc="The label used in the accessibility menu of the system tray when Live Caption is turned off.">
+        Off
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Live Caption feature on or off.">
         Toggle Live Caption. <ph name="STATE_TEXT">$1<ex>Live Caption is on.</ex></ph>
       </message>
@@ -2675,6 +2678,9 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUDIO" desc="The label used in audio detailed page bottom header of ash tray pop up.">
         Audio settings
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_QS_REVAMP" desc="The label used in audio detailed page bottom header of ash tray pop up.">
+        Audio
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_OUTPUT" desc="The label used in audio detailed page for audio output section of ash tray pop up.">
         Output

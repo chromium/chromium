@@ -23,13 +23,6 @@
 namespace ash {
 
 namespace {
-
-constexpr int kMicGainSliderViewSpacing = 8;
-
-// Constants used in the revamped `AudioDetailedView`.
-constexpr auto kQsMicGainSliderPadding = gfx::Insets::TLBR(0, 4, 0, 24);
-constexpr auto kQsMicGainSliderViewPadding = gfx::Insets::TLBR(0, 20, 0, 0);
-
 // Gets resource ID for the string that should be used for mute state portion of
 // the microphone toggle button tooltip.
 int GetMuteStateTooltipTextResourceId(bool is_muted,
@@ -79,13 +72,16 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
 
   if (features::IsQsRevampEnabled()) {
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, kQsMicGainSliderViewPadding,
-        kMicGainSliderViewSpacing));
-    slider()->SetBorder(views::CreateEmptyBorder(kQsMicGainSliderPadding));
+        views::BoxLayout::Orientation::kHorizontal, kRadioSliderViewPadding,
+        kRadioSliderViewSpacing));
+    slider()->SetBorder(views::CreateEmptyBorder(kRadioSliderPadding));
+    slider()->SetPreferredSize(kRadioSliderPreferredSize);
+    slider_icon()->SetBorder(views::CreateEmptyBorder(kRadioSliderIconPadding));
     layout->SetFlexForView(slider()->parent(), /*flex=*/1);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     announcement_view_ = AddChildView(std::make_unique<views::View>());
+    SetPreferredSize(kRadioSliderPreferredSize);
 
     Update(/*by_user=*/false);
 
@@ -94,7 +90,7 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kMicGainSliderViewPadding,
-      kMicGainSliderViewSpacing));
+      kRadioSliderViewSpacing));
   slider()->SetBorder(views::CreateEmptyBorder(kMicGainSliderPadding));
   layout->SetFlexForView(slider(), 1);
   layout->set_cross_axis_alignment(
@@ -113,20 +109,20 @@ void MicGainSliderView::Update(bool by_user) {
   uint64_t active_device_id = audio_handler->GetPrimaryActiveInputNode();
   auto* active_device = audio_handler->GetDeviceFromId(active_device_id);
 
-  // For device that has dual internal mics, both the sliders in the
-  // `AudioDetailedView` will be shown if one of the internal mic is the active
-  // node. All other input nodes will be hidden.
+  // For device that has dual internal mics, a new device will be created to
+  // show only one slider for both the internal mics, and the new device has a
+  // new id that doesn't match either of the internal mic id. If the device has
+  // dual internal mics and the internal mic shown in the ui is a stub, we need
+  // to show this slider despite the `device_id_` not matching the active input
+  // node.
+  const bool show_internal_stub =
+      internal_ && (active_device && active_device->IsInternalMic()) &&
+      audio_handler->HasDualInternalMic();
+
   // For QsRevamp: we want to show the sliders for all the input nodes, so we
   // don't need this code block to hide the slider that is inactive and is not
-  // one of the dual internal mics.
+  // the newly created internal mic for the dual-internal-mic device.
   if (!features::IsQsRevampEnabled()) {
-    // If the device has dual internal mics and the internal mic shown in the ui
-    // is a stub, we need to show this slider despite the `device_id_` not
-    // matching the active input node.
-    const bool show_internal_stub =
-        internal_ && (active_device && active_device->IsInternalMic()) &&
-        audio_handler->HasDualInternalMic();
-
     if (audio_handler->GetPrimaryActiveInputNode() != device_id_ &&
         !show_internal_stub) {
       SetVisible(false);
@@ -135,22 +131,27 @@ void MicGainSliderView::Update(bool by_user) {
   }
 
   SetVisible(true);
-  const bool is_muted = audio_handler->IsInputMuted();
+  bool is_muted = audio_handler->IsInputMuted();
   const bool is_muted_by_mute_switch =
       audio_handler->input_muted_by_microphone_mute_switch();
 
   float level = audio_handler->GetInputGainPercent() / 100.f;
 
   // Gets the input gain for each device to draw each slider in
-  // `AudioDetailedView`.
-  if (features::IsQsRevampEnabled()) {
+  // `AudioDetailedView`. If the internal mic stub is showing, don't get the
+  // audio level by its id and don't set it invisible.
+  if (features::IsQsRevampEnabled() && !show_internal_stub) {
     // If the device cannot be found by `device_id_`, hides this view and early
     // returns to avoid a crash.
     if (!audio_handler->GetDeviceFromId(device_id_)) {
       SetVisible(false);
       return;
     }
+    // Inactive input devices don't have a record of their mute states. So we
+    // manually get the level and set the mute state before setting the slider
+    // icon.
     level = audio_handler->GetInputGainPercentForDevice(device_id_) / 100.f;
+    is_muted = level == 0;
   }
 
   if (toast_label()) {

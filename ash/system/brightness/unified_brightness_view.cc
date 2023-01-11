@@ -45,15 +45,15 @@ UnifiedBrightnessView::UnifiedBrightnessView(
       controller_(controller) {
   if (features::IsQsRevampEnabled()) {
     AddChildView(std::make_unique<IconButton>(
-        views::Button::PressedCallback(), IconButton::Type::kSmall,
+        views::Button::PressedCallback(), IconButton::Type::kMedium,
         &kUnifiedMenuNightLightOffIcon,
         IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL,
         /*is_togglable=*/true,
         /*has_border=*/true));
     AddChildView(std::make_unique<IconButton>(
         views::Button::PressedCallback(),
-        features::IsQsRevampEnabled() ? IconButton::Type::kSmallFloating
-                                      : IconButton::Type::kSmall,
+        features::IsQsRevampEnabled() ? IconButton::Type::kMediumFloating
+                                      : IconButton::Type::kMedium,
         &kQuickSettingsRightArrowIcon,
         IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
   } else {

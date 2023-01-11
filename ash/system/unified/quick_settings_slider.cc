@@ -22,12 +22,6 @@ namespace ash {
 
 namespace {
 
-// The thickness of the empty slider.
-constexpr int kEmptySliderThickness = 4;
-
-// The thickness of the full slider.
-constexpr int kFullSliderThickness = 32;
-
 // The radius used to draw the rounded empty slider ends.
 constexpr float kEmptySliderRoundedRadius = 2.f;
 constexpr float kEmptySliderWidth = 2 * kEmptySliderRoundedRadius;
@@ -38,9 +32,9 @@ constexpr float kFullSliderWidth = 2 * kFullSliderRoundedRadius;
 
 // The radius used to draw the rounded corner for active/inactive slider on the
 // audio subpage.
-constexpr float kActiveRadioSliderRoundedRadius = 16.f;
-// TODO(b/256705775): Replace the actual radius value once the spec is updated.
+constexpr float kActiveRadioSliderRoundedRadius = 18.f;
 constexpr float kInactiveRadioSliderRoundedRadius = 8.f;
+constexpr float kRadioSliderWidth = 2 * kActiveRadioSliderRoundedRadius;
 
 // TODO(b/256705775): Replace the value once the spec is updated.
 // The thickness of the focus ring border.
@@ -56,6 +50,18 @@ float GetSliderRoundedCornerRadius(QuickSettingsSlider::Style slider_style) {
       return kActiveRadioSliderRoundedRadius;
     case QuickSettingsSlider::Style::kRadioInactive:
       return kInactiveRadioSliderRoundedRadius;
+    default:
+      NOTREACHED();
+  }
+}
+
+float GetSliderWidth(QuickSettingsSlider::Style slider_style) {
+  switch (slider_style) {
+    case QuickSettingsSlider::Style::kDefault:
+      return kFullSliderWidth;
+    case QuickSettingsSlider::Style::kRadioActive:
+    case QuickSettingsSlider::Style::kRadioInactive:
+      return kRadioSliderWidth;
     default:
       NOTREACHED();
   }
@@ -84,6 +90,18 @@ void QuickSettingsSlider::SetSliderStyle(Style style) {
     SetFocusBehavior(FocusBehavior::NEVER);
 
   SchedulePaint();
+}
+
+gfx::Rect QuickSettingsSlider::GetInactiveRadioSliderRect() {
+  const gfx::Rect content = GetContentsBounds();
+  return gfx::Rect(content.x() - kFocusOffset,
+                   content.height() / 2 - kRadioSliderWidth / 2 - kFocusOffset,
+                   content.width() + 2 * kFocusOffset,
+                   kRadioSliderWidth + 2 * kFocusOffset);
+}
+
+int QuickSettingsSlider::GetInactiveRadioSliderRoundedCornerRadius() {
+  return kInactiveRadioSliderRoundedRadius + kFocusOffset;
 }
 
 SkColor QuickSettingsSlider::GetThumbColor() const {
@@ -139,10 +157,12 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
   }
 
   const gfx::Rect content = GetContentsBounds();
-  const int width = content.width() - kFullSliderWidth;
-  const int full_width = GetAnimatingValue() * width + kFullSliderWidth;
+  const float slider_width = GetSliderWidth(slider_style_);
+  const float slider_radius = GetSliderRoundedCornerRadius(slider_style_);
+  const int width = content.width() - slider_width;
+  const int full_width = GetAnimatingValue() * width + slider_width;
   const int x = content.x();
-  const int y = content.height() / 2 - kFullSliderThickness / 2;
+  const int y = content.height() / 2 - slider_width / 2;
 
   gfx::Rect empty_slider_rect;
   float empty_slider_radius;
@@ -151,18 +171,17 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
       const int empty_width =
           width + kFullSliderRoundedRadius - full_width + kEmptySliderWidth;
       const int x_empty = x + full_width - kEmptySliderRoundedRadius;
-      const int y_empty = content.height() / 2 - kEmptySliderThickness / 2;
+      const int y_empty = content.height() / 2 - kEmptySliderWidth / 2;
 
       empty_slider_rect =
-          gfx::Rect(x_empty, y_empty, empty_width, kEmptySliderThickness);
+          gfx::Rect(x_empty, y_empty, empty_width, kEmptySliderWidth);
       empty_slider_radius = kEmptySliderRoundedRadius;
       break;
     }
     case Style::kRadioActive:
     case Style::kRadioInactive: {
-      empty_slider_rect =
-          gfx::Rect(x, y, content.width(), kFullSliderThickness);
-      empty_slider_radius = GetSliderRoundedCornerRadius(slider_style_);
+      empty_slider_rect = gfx::Rect(x, y, content.width(), kRadioSliderWidth);
+      empty_slider_radius = slider_radius;
       break;
     }
     default:
@@ -176,9 +195,8 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(empty_slider_rect, empty_slider_radius, slider_flags);
 
   slider_flags.setColor(GetThumbColor());
-  canvas->DrawRoundRect(gfx::Rect(x, y, full_width, kFullSliderThickness),
-                        GetSliderRoundedCornerRadius(slider_style_),
-                        slider_flags);
+  canvas->DrawRoundRect(gfx::Rect(x, y, full_width, slider_width),
+                        slider_radius, slider_flags);
 
   // Paints the focusing ring for the slider. It should be painted last to be
   // on the top.
@@ -191,9 +209,8 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
     highlight_border.setStrokeWidth(kLineThickness);
     canvas->DrawRoundRect(gfx::Rect(x - kFocusOffset, y - kFocusOffset,
                                     full_width + 2 * kFocusOffset,
-                                    kFullSliderThickness + 2 * kFocusOffset),
-                          kFullSliderRoundedRadius + kFocusOffset,
-                          highlight_border);
+                                    slider_width + 2 * kFocusOffset),
+                          slider_radius + kFocusOffset, highlight_border);
   }
 }
 

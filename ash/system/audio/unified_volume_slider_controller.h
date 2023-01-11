@@ -10,6 +10,7 @@
 #include "ash/system/unified/unified_slider_view.h"
 
 namespace ash {
+class UnifiedVolumeView;
 
 // Controller of a slider that can change audio volume.
 class ASH_EXPORT UnifiedVolumeSliderController : public UnifiedSliderListener {
@@ -23,13 +24,31 @@ class ASH_EXPORT UnifiedVolumeSliderController : public UnifiedSliderListener {
     base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
   };
 
+  // This constructor is for controllers of `UnifiedVolumeView` with a trailing
+  // settings button that leads to `AudioDetailedView`, i.e. volume slider in
+  // the Quick Settings main page and Quick Settings toasts. `delegate` is used
+  // to construct the callback for `more_button_`.
   explicit UnifiedVolumeSliderController(Delegate* delegate);
+  // This constructor is for controllers of a single `UnifiedVolumeView`, i.e.
+  // volume sliders in `AudioDetailedView`. `delegate_` is set to nullptr.
+  UnifiedVolumeSliderController();
 
   UnifiedVolumeSliderController(const UnifiedVolumeSliderController&) = delete;
   UnifiedVolumeSliderController& operator=(
       const UnifiedVolumeSliderController&) = delete;
 
   ~UnifiedVolumeSliderController() override;
+
+  // For QsRevamp: Creates a slider view for a specific output device in
+  // `AudioDetailedView`.
+  std::unique_ptr<UnifiedVolumeView> CreateVolumeSlider(uint64_t device_id);
+
+  // This callback is used to map the `device_id` to `UnifiedVolumeView` in
+  // `UnifiedVolumeViewTest`.
+  using MapDeviceSliderCallback =
+      base::RepeatingCallback<void(uint64_t, views::View*)>;
+  static void SetMapDeviceSliderCallbackForTest(
+      MapDeviceSliderCallback* test_slider_device_callback);
 
   // UnifiedSliderListener:
   views::View* CreateView() override;

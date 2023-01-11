@@ -5,11 +5,14 @@
 #include "ash/system/audio/unified_volume_slider_controller.h"
 
 #include "ash/constants/quick_settings_catalogs.h"
-#include "ash/shell.h"
 #include "ash/system/audio/unified_volume_view.h"
-#include "ash/system/machine_learning/user_settings_event_logger.h"
 
 namespace ash {
+
+namespace {
+UnifiedVolumeSliderController::MapDeviceSliderCallback*
+    g_map_slider_device_callback = nullptr;
+}  // namespace
 
 UnifiedVolumeSliderController::Delegate::Delegate() = default;
 
@@ -21,10 +24,31 @@ UnifiedVolumeSliderController::UnifiedVolumeSliderController(
   DCHECK(delegate);
 }
 
+UnifiedVolumeSliderController::UnifiedVolumeSliderController()
+    : delegate_(nullptr) {}
+
 UnifiedVolumeSliderController::~UnifiedVolumeSliderController() = default;
 
+std::unique_ptr<UnifiedVolumeView>
+UnifiedVolumeSliderController::CreateVolumeSlider(uint64_t device_id) {
+  auto slider = std::make_unique<UnifiedVolumeView>(
+      this, device_id, /*is_active_output_node=*/false);
+
+  if (g_map_slider_device_callback) {
+    g_map_slider_device_callback->Run(device_id, slider.get());
+  }
+
+  return slider;
+}
+
+// static
+void UnifiedVolumeSliderController::SetMapDeviceSliderCallbackForTest(
+    MapDeviceSliderCallback* map_slider_device_callback) {
+  g_map_slider_device_callback = map_slider_device_callback;
+}
+
 views::View* UnifiedVolumeSliderController::CreateView() {
-  return new UnifiedVolumeView(this, delegate_);
+  return new UnifiedVolumeView(this, delegate_, /*is_active_output_node=*/true);
 }
 
 QsSliderCatalogName UnifiedVolumeSliderController::GetCatalogName() {

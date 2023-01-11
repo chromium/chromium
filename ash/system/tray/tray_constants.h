@@ -133,6 +133,11 @@ constexpr auto kMicGainSliderPadding = gfx::Insets::TLBR(0, 8, 0, 48);
 
 // Constants used in the QuickSettingsSlider of the `QuickSettingsView`.
 constexpr int kQsSliderIconSize = 20;
+constexpr auto kRadioSliderIconPadding = gfx::Insets::VH(0, 2);
+constexpr auto kRadioSliderPadding = gfx::Insets::TLBR(0, 4, 0, 24);
+constexpr auto kRadioSliderPreferredSize = gfx::Size(0, 44);
+constexpr auto kRadioSliderViewPadding = gfx::Insets::TLBR(0, 20, 0, 0);
+constexpr int kRadioSliderViewSpacing = 8;
 
 constexpr int kMessageCenterCollapseThreshold = 175;
 constexpr int kStackedNotificationBarHeight = 32;

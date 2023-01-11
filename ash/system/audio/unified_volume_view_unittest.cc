@@ -73,8 +73,12 @@ TEST_F(UnifiedVolumeViewTest, SliderButtonComponents) {
       static_cast<IconButton*>(unified_volume_view()->children()[1]);
   EXPECT_STREQ(live_caption_button->GetClassName(), "IconButton");
   EXPECT_EQ(live_caption_button->GetAccessibleName(),
-            l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
-  EXPECT_EQ(live_caption_button->GetTooltipText(), u"Live Caption");
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP)));
+  EXPECT_EQ(live_caption_button->GetTooltipText(),
+            u"Toggle Live Caption. Live Caption is off.");
 
   auto* audio_subpage_drill_in_button =
       static_cast<IconButton*>(unified_volume_view()->children()[2]);

@@ -7,14 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_constants.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -53,7 +59,8 @@ const gfx::VectorIcon& GetVolumeIconForLevel(float level) {
 
 UnifiedVolumeView::UnifiedVolumeView(
     UnifiedVolumeSliderController* controller,
-    UnifiedVolumeSliderController::Delegate* delegate)
+    UnifiedVolumeSliderController::Delegate* delegate,
+    bool is_active_output_node)
     : UnifiedSliderView(base::BindRepeating(
                             &UnifiedVolumeSliderController::SliderButtonPressed,
                             base::Unretained(controller)),
@@ -67,16 +74,31 @@ UnifiedVolumeView::UnifiedVolumeView(
           features::IsQsRevampEnabled() ? IconButton::Type::kMediumFloating
                                         : IconButton::Type::kMedium,
           &kQuickSettingsRightArrowIcon,
-          IDS_ASH_STATUS_TRAY_AUDIO))) {
+          IDS_ASH_STATUS_TRAY_AUDIO))),
+      is_active_output_node_(is_active_output_node),
+      slider_style_(QuickSettingsSlider::Style::kDefault),
+      a11y_controller_(Shell::Get()->accessibility_controller()),
+      device_id_(CrasAudioHandler::Get()->GetPrimaryActiveOutputNode()) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
   if (features::IsQsRevampEnabled()) {
     // TODO(b/257151067): Update the a11y name id.
     // Adds the live caption button before `more_button_`.
-    AddChildViewAt(
+    a11y_controller_->AddObserver(this);
+    const bool enabled = a11y_controller_->live_caption().enabled();
+    live_caption_button_ = AddChildViewAt(
         std::make_unique<IconButton>(
-            views::Button::PressedCallback(), IconButton::Type::kSmall,
-            &kUnifiedMenuLiveCaptionOffIcon, IDS_ASH_STATUS_TRAY_LIVE_CAPTION,
+            base::BindRepeating(&UnifiedVolumeView::OnLiveCaptionButtonPressed,
+                                base::Unretained(this)),
+            IconButton::Type::kMedium,
+            enabled ? &kUnifiedMenuLiveCaptionIcon
+                    : &kUnifiedMenuLiveCaptionOffIcon,
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP,
+                l10n_util::GetStringUTF16(
+                    enabled
+                        ? IDS_ASH_STATUS_TRAY_LIVE_CAPTION_ENABLED_STATE_TOOLTIP
+                        : IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP)),
             /*is_togglable=*/true,
             /*has_border=*/true),
         GetIndexOf(more_button_).value());
@@ -85,12 +107,48 @@ UnifiedVolumeView::UnifiedVolumeView(
   Update(/*by_user=*/false);
 }
 
+UnifiedVolumeView::UnifiedVolumeView(UnifiedVolumeSliderController* controller,
+                                     uint64_t device_id,
+                                     bool is_active_output_node)
+    : UnifiedSliderView(base::BindRepeating(
+                            &UnifiedVolumeSliderController::SliderButtonPressed,
+                            base::Unretained(controller)),
+                        controller,
+                        kSystemMenuVolumeHighIcon,
+                        IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL,
+                        false,
+                        QuickSettingsSlider::Style::kRadioActive),
+      more_button_(nullptr),
+      is_active_output_node_(is_active_output_node),
+      slider_style_(QuickSettingsSlider::Style::kRadioActive),
+      a11y_controller_(Shell::Get()->accessibility_controller()),
+      device_id_(device_id) {
+  CrasAudioHandler::Get()->AddAudioObserver(this);
+
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, kRadioSliderViewPadding,
+      kRadioSliderViewSpacing));
+  slider()->SetBorder(views::CreateEmptyBorder(kRadioSliderPadding));
+  slider()->SetPreferredSize(kRadioSliderPreferredSize);
+  slider_icon()->SetBorder(views::CreateEmptyBorder(kRadioSliderIconPadding));
+  layout->SetFlexForView(slider()->parent(), /*flex=*/1);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetPreferredSize(kRadioSliderPreferredSize);
+
+  Update(/*by_user=*/false);
+}
+
 UnifiedVolumeView::~UnifiedVolumeView() {
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  if (features::IsQsRevampEnabled()) {
+    a11y_controller_->RemoveObserver(this);
+  }
 }
 
 void UnifiedVolumeView::Update(bool by_user) {
-  float level = CrasAudioHandler::Get()->GetOutputVolumePercent() / 100.f;
+  auto* audio_handler = CrasAudioHandler::Get();
+  float level = audio_handler->GetOutputVolumePercent() / 100.f;
 
   if (!features::IsQsRevampEnabled()) {
     bool is_muted = CrasAudioHandler::Get()->IsOutputMuted();
@@ -111,10 +169,35 @@ void UnifiedVolumeView::Update(bool by_user) {
     button()->SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
   } else {
-    // TODO(b/257151067): Adds tooltip.
-    slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
-        GetVolumeIconForLevel(level),
-        cros_tokens::kCrosSysSystemOnPrimaryContainer, kQsSliderIconSize));
+    level = audio_handler->GetOutputVolumePercentForDevice(device_id_) / 100.f;
+    auto active_device_id = audio_handler->GetPrimaryActiveOutputNode();
+
+    switch (slider_style_) {
+      case QuickSettingsSlider::Style::kDefault: {
+        // TODO(b/257151067): Adds tooltip.
+        slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
+            GetVolumeIconForLevel(level),
+            cros_tokens::kCrosSysSystemOnPrimaryContainer, kQsSliderIconSize));
+        break;
+      }
+      case QuickSettingsSlider::Style::kRadioActive:
+      case QuickSettingsSlider::Style::kRadioInactive: {
+        static_cast<QuickSettingsSlider*>(slider())->SetSliderStyle(
+            active_device_id == device_id_
+                ? QuickSettingsSlider::Style::kRadioActive
+                : QuickSettingsSlider::Style::kRadioInactive);
+
+        slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
+            GetVolumeIconForLevel(level),
+            active_device_id == device_id_
+                ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysSecondary,
+            kQsSliderIconSize));
+        break;
+      }
+      default:
+        NOTREACHED();
+    }
   }
 
   // Slider's value is in finer granularity than audio volume level(0.01),
@@ -128,6 +211,11 @@ void UnifiedVolumeView::Update(bool by_user) {
   // Note: even if the value does not change, we still need to call this
   // function to enable accessibility events (crbug.com/1013251).
   SetSliderValue(level, by_user);
+}
+
+void UnifiedVolumeView::OnLiveCaptionButtonPressed() {
+  a11y_controller_->live_caption().SetEnabled(
+      !a11y_controller_->live_caption().enabled());
 }
 
 void UnifiedVolumeView::OnOutputNodeVolumeChanged(uint64_t node_id,
@@ -144,6 +232,12 @@ void UnifiedVolumeView::OnAudioNodesChanged() {
 }
 
 void UnifiedVolumeView::OnActiveOutputNodeChanged() {
+  // If this view is for the active output node, we need to update the
+  // `device_id_` before repaint.
+  if (is_active_output_node_) {
+    device_id_ = CrasAudioHandler::Get()->GetPrimaryActiveOutputNode();
+  }
+
   Update(/*by_user=*/true);
 }
 
@@ -151,8 +245,34 @@ void UnifiedVolumeView::OnActiveInputNodeChanged() {
   Update(/*by_user=*/true);
 }
 
+void UnifiedVolumeView::OnAccessibilityStatusChanged() {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
+  const bool enabled = a11y_controller_->live_caption().enabled();
+
+  // Updates the icon of `live_caption_button_`.
+  live_caption_button_->SetVectorIcon(a11y_controller_->live_caption().enabled()
+                                          ? kUnifiedMenuLiveCaptionIcon
+                                          : kUnifiedMenuLiveCaptionOffIcon);
+
+  // Updates the tooltip of `live_caption_button_`.
+  std::u16string toggle_tooltip = l10n_util::GetStringUTF16(
+      enabled ? IDS_ASH_STATUS_TRAY_LIVE_CAPTION_ENABLED_STATE_TOOLTIP
+              : IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP);
+
+  live_caption_button_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP, toggle_tooltip));
+}
+
 void UnifiedVolumeView::ChildVisibilityChanged(views::View* child) {
   Layout();
+}
+
+void UnifiedVolumeView::VisibilityChanged(View* starting_from,
+                                          bool is_visible) {
+  Update(/*by_user=*/true);
 }
 
 BEGIN_METADATA(UnifiedVolumeView, views::View)

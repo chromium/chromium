@@ -173,10 +173,18 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   if (Shell::Get()->session_controller()->IsRunningInAppMode())
     return;
 
+  bool is_audio_slider = slider_type == SLIDER_TYPE_MIC;
+  // For QsRevamp: both the volume slider and mic gain slider will be shown in
+  // `AudioDetailedView`.
+  if (features::IsQsRevampEnabled()) {
+    is_audio_slider = is_audio_slider || slider_type == SLIDER_TYPE_VOLUME;
+  }
   // When tray bubble is already shown, the microphone slider will get shown in
   // audio detailed view. Bail out if the audio details are already showing to
   // avoid resetting the bubble state.
-  if (slider_type == SLIDER_TYPE_MIC && tray_->bubble() &&
+  // For QsRevamp: If already in the `AudioDetailedView`, bail out if it's
+  // either `SLIDER_TYPE_MIC` or `SLIDER_TYPE_VOLUME`.
+  if (is_audio_slider && tray_->bubble() &&
       tray_->bubble()->ShowingAudioDetailedView()) {
     return;
   }
