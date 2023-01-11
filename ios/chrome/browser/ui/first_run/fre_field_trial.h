@@ -15,18 +15,6 @@ namespace base {
 class FeatureList;
 }  // namespace base
 
-// Version of the new Default Browser Promo FRE to show.
-enum class NewDefaultBrowserPromoFRE {
-  // FRE default browser promo only.
-  kFirstRunOnly = 0,
-  // Wait 3 days after FRE default browser promo.
-  kShortDelay,
-  // Wait 14 days after FRE default browser promo.
-  kDefaultDelay,
-  // FRE default browser promo not enabled.
-  kDisabled,
-};
-
 // Version of the new MICE FRE to show.
 enum class NewMobileIdentityConsistencyFRE {
   // New MICE FRE with tangible sync (welcome with sign-in + tangible sync
