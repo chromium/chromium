@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/phonehub/fake_attestation_certificate_generator.h"
 #include "chromeos/ash/components/phonehub/fake_message_sender.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
@@ -39,20 +42,25 @@ class CrosStateSenderTest : public testing::Test {
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     phone_model_ = std::make_unique<MutablePhoneModel>();
+    auto fake_attestation_certificate_generator =
+        std::make_unique<FakeAttestationCertificateGenerator>();
+    fake_attestation_certificate_generator_ =
+        fake_attestation_certificate_generator.get();
     cros_state_sender_ = base::WrapUnique(new CrosStateSender(
         fake_message_sender_.get(), fake_connection_manager_.get(),
         fake_multidevice_setup_client_.get(), phone_model_.get(),
-        std::move(timer)));
+        std::move(timer), std::move(fake_attestation_certificate_generator)));
   }
 
   base::TimeDelta GetRetryDelay() { return cros_state_sender_->retry_delay_; }
-
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeMessageSender> fake_message_sender_;
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<MutablePhoneModel> phone_model_;
+  FakeAttestationCertificateGenerator* fake_attestation_certificate_generator_;
   base::MockOneShotTimer* mock_timer_;
 
  private:
@@ -103,6 +111,8 @@ TEST_F(CrosStateSenderTest, PerformUpdateCrosStateRetrySequence) {
 }
 
 TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {},
+                                 /* disabled_features= */ {features::kEcheSWA});
   // Set notification feature to be enabled.
   fake_multidevice_setup_client_->SetFeatureState(
       Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
@@ -125,6 +135,7 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
       secure_channel::ConnectionManager::Status::kConnected);
   EXPECT_TRUE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_TRUE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_EQ(nullptr, std::get<2>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 
   // Phone model is populated.
@@ -139,6 +150,24 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
   EXPECT_TRUE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
   EXPECT_FALSE(mock_timer_->IsRunning());
+}
+
+TEST_F(CrosStateSenderTest, CrosStateMessageIncludesAttestationIfEcheEnabled) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
+                                 /* disabled_features= */ {});
+  // Set notification feature to be enabled.
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+  // Set camera roll feature to be enabled.
+  fake_multidevice_setup_client_->SetFeatureState(Feature::kPhoneHubCameraRoll,
+                                                  FeatureState::kEnabledByUser);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
+  EXPECT_TRUE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_TRUE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_EQ(&(fake_attestation_certificate_generator_->CERTS),
+            std::get<2>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 }
 
 TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {

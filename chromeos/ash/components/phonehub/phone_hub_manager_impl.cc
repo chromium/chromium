@@ -87,7 +87,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<CrosStateSender>(message_sender_.get(),
                                             connection_manager_.get(),
                                             multidevice_setup_client,
-                                            phone_model_.get())),
+                                            phone_model_.get(),
+                                            nullptr)),
       do_not_disturb_controller_(std::make_unique<DoNotDisturbControllerImpl>(
           message_sender_.get(),
           user_action_recorder_.get())),

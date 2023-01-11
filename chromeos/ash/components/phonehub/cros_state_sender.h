@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/phonehub/public/cpp/attestation_certificate_generator.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
@@ -26,7 +27,9 @@ class CrosStateSender
       MessageSender* message_sender,
       secure_channel::ConnectionManager* connection_manager,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      PhoneModel* phone_model);
+      PhoneModel* phone_model,
+      std::unique_ptr<AttestationCertificateGenerator>
+          attestation_certificate_generator);
   ~CrosStateSender() override;
 
  private:
@@ -37,7 +40,9 @@ class CrosStateSender
       secure_channel::ConnectionManager* connection_manager,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       PhoneModel* phone_model,
-      std::unique_ptr<base::OneShotTimer> timer);
+      std::unique_ptr<base::OneShotTimer> timer,
+      std::unique_ptr<AttestationCertificateGenerator>
+          attestation_certificate_generator);
 
   void AttemptUpdateCrosState();
 
@@ -53,6 +58,10 @@ class CrosStateSender
   // |retry_delay_| if the message was not successfully sent.
   void PerformUpdateCrosState();
   void OnRetryTimerFired();
+  void SendCrosStateMessage(const std::vector<std::string>* attestation_certs);
+  void OnAttestationCertificateGenerated(
+      const std::vector<std::string>& attestation_certs,
+      bool is_valid);
 
   MessageSender* message_sender_;
   secure_channel::ConnectionManager* connection_manager_;
@@ -60,6 +69,9 @@ class CrosStateSender
   PhoneModel* phone_model_;
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   base::TimeDelta retry_delay_;
+  std::unique_ptr<AttestationCertificateGenerator>
+      attestation_certificate_generator_;
+  base::WeakPtrFactory<CrosStateSender> weak_ptr_factory_{this};
 };
 
 }  // namespace phonehub

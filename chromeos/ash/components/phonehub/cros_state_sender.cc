@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/phonehub/cros_state_sender.h"
+#include "ash/constants/ash_features.h"
 
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/message_sender.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
+#include "chromeos/ash/components/phonehub/public/cpp/attestation_certificate_generator.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
@@ -33,25 +35,32 @@ CrosStateSender::CrosStateSender(
     MessageSender* message_sender,
     secure_channel::ConnectionManager* connection_manager,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    PhoneModel* phone_model)
+    PhoneModel* phone_model,
+    std::unique_ptr<AttestationCertificateGenerator>
+        attestation_certificate_generator)
     : CrosStateSender(message_sender,
                       connection_manager,
                       multidevice_setup_client,
                       phone_model,
-                      std::make_unique<base::OneShotTimer>()) {}
+                      std::make_unique<base::OneShotTimer>(),
+                      std::move(attestation_certificate_generator)) {}
 
 CrosStateSender::CrosStateSender(
     MessageSender* message_sender,
     secure_channel::ConnectionManager* connection_manager,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     PhoneModel* phone_model,
-    std::unique_ptr<base::OneShotTimer> timer)
+    std::unique_ptr<base::OneShotTimer> timer,
+    std::unique_ptr<AttestationCertificateGenerator>
+        attestation_certificate_generator)
     : message_sender_(message_sender),
       connection_manager_(connection_manager),
       multidevice_setup_client_(multidevice_setup_client),
       phone_model_(phone_model),
       retry_timer_(std::move(timer)),
-      retry_delay_(kMinimumRetryDelay) {
+      retry_delay_(kMinimumRetryDelay),
+      attestation_certificate_generator_(
+          std::move(attestation_certificate_generator)) {
   DCHECK(message_sender_);
   DCHECK(connection_manager_);
   DCHECK(multidevice_setup_client_);
@@ -86,6 +95,31 @@ void CrosStateSender::AttemptUpdateCrosState() {
 }
 
 void CrosStateSender::PerformUpdateCrosState() {
+  // If Eche isn't enabled, or there's no way to generate an attestation
+  // certificate, send the CrosState message without attestation.
+  if (!features::IsEcheSWAEnabled() ||
+      attestation_certificate_generator_ == nullptr) {
+    SendCrosStateMessage(nullptr);
+    return;
+  }
+
+  attestation_certificate_generator_->GenerateCertificate(
+      base::BindRepeating(&CrosStateSender::OnAttestationCertificateGenerated,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrosStateSender::OnAttestationCertificateGenerated(
+    const std::vector<std::string>& attestation_certs,
+    bool is_valid) {
+  if (!is_valid) {
+    SendCrosStateMessage(/*attestation_certs=*/nullptr);
+  }
+
+  SendCrosStateMessage(std::move(&attestation_certs));
+}
+
+void CrosStateSender::SendCrosStateMessage(
+    const std::vector<std::string>* attestation_certs) {
   bool are_notifications_enabled =
       multidevice_setup_client_->GetFeatureState(
           Feature::kPhoneHubNotifications) == FeatureState::kEnabledByUser;
@@ -99,7 +133,7 @@ void CrosStateSender::PerformUpdateCrosState() {
                << is_camera_roll_enabled;
   message_sender_->SendCrosState(are_notifications_enabled,
                                  is_camera_roll_enabled,
-                                 /*attestation_certs=*/nullptr);
+                                 /*attestation_certs=*/attestation_certs);
 
   retry_timer_->Start(FROM_HERE, retry_delay_,
                       base::BindOnce(&CrosStateSender::OnRetryTimerFired,

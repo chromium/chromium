@@ -218,6 +218,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_attestation_certificate_generator.cc",
+    "fake_attestation_certificate_generator.h",
     "fake_browser_tabs_metadata_fetcher.cc",
     "fake_browser_tabs_metadata_fetcher.h",
     "fake_browser_tabs_model_provider.cc",
