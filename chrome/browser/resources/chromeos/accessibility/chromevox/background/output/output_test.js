@@ -342,7 +342,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
     ['Time control', [{value: 'role', start: 0, end: 12}]],
     ['Date control', [{value: 'role', start: 0, end: 12}]],
     [
-      'Choose File: No file chosen|Button',
+      'No file chosen, Choose File|Button',
       [
         {value: 'name', start: 0, end: 27},
         {value: new OutputEarconAction(EarconId.BUTTON), start: 0, end: 27},
@@ -362,7 +362,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Input', async function() {
     {string_: 'spnbtn', spans_: []},
     {string_: 'time'},
     {string_: 'date'},
-    {string_: 'Choose File: No file chosen btn'},
+    {string_: 'No file chosen, Choose File btn'},
     ' search',
     ' ed',
   ];

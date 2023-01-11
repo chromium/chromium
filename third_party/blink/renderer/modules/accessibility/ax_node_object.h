@@ -305,7 +305,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                                AXRelatedObjectVector*,
                                NameSources*,
                                bool* found_text_alternative) const;
-  String MaybeAppendFileDescriptionToName(const String& name) const;
   bool IsDescendantOfElementType(HashSet<QualifiedName>& tag_names) const;
   String PlaceholderFromNativeAttribute() const;
   String GetValueContributionToName(AXObjectSet& visited) const;

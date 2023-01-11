@@ -15,7 +15,8 @@ AXWebArea
 ++++++AXTextField AXTitle='Email:'
 ++++AXGroup
 ++++++AXStaticText AXValue='File: '
-++++++AXButton AXTitle='File:: No file chosen'
+++++++AXButton AXTitle='File:'
+++++++++AXButton AXTitle='Choose File'
 ++++AXGroup
 ++++++AXStaticText AXValue='Image: '
 ++++++AXButton AXTitle='Image:'
