@@ -23,6 +23,10 @@ void CryptohomeRecoveryScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_CRYPTOHOME_RECOVERY_SUCCESS_TITLE);
   builder->Add("cryptohomeRecoveryErrorTitle",
                IDS_LOGIN_CRYPTOHOME_RECOVERY_ERROR_TITLE);
+  builder->Add("cryptohomeRecoveryReauthNotificationTitle",
+               IDS_LOGIN_CRYPTOHOME_RECOVERY_REAUTH_NOTIFICATION_TITLE);
+  builder->Add("cryptohomeRecoveryReauthNotificationSubtitle",
+               IDS_LOGIN_CRYPTOHOME_RECOVERY_REAUTH_NOTIFICATION_SUBTITLE);
   builder->Add("cryptohomeRecoveryManualRecoveryButton",
                IDS_LOGIN_CRYPTOHOME_RECOVERY_MANUAL_RECOVERY_BUTTON);
   builder->Add("cryptohomeRecoveryRetryButton",
@@ -41,6 +45,10 @@ void CryptohomeRecoveryScreenHandler::OnRecoverySucceeded() {
 
 void CryptohomeRecoveryScreenHandler::OnRecoveryFailed() {
   CallExternalAPI("onRecoveryFailed");
+}
+
+void CryptohomeRecoveryScreenHandler::ShowReauthNotification() {
+  CallExternalAPI("showReauthNotification");
 }
 
 }  // namespace ash

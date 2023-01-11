@@ -24,6 +24,7 @@ const CryptohomeRecoveryUIState = {
   LOADING: 'loading',
   DONE: 'done',
   ERROR: 'error',
+  REAUTH_NOTIFICATION: 'reauth-notification',
 };
 
 /**
@@ -49,7 +50,16 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   }
 
   static get properties() {
-    return {};
+    return {
+      /**
+       * Whether the page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+    };
   }
 
   defaultUIStep() {
@@ -61,7 +71,11 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   }
 
   get EXTERNAL_API() {
-    return ['onRecoverySucceeded', 'onRecoveryFailed'];
+    return [
+      'onRecoverySucceeded',
+      'onRecoveryFailed',
+      'showReauthNotification',
+    ];
   }
 
   /** @override */
@@ -71,7 +85,9 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   }
 
   // Invoked just before being shown. Contains all the data for the screen.
-  onBeforeShow(data) {}
+  onBeforeShow(data) {
+    this.reset();
+  }
 
   reset() {
     this.setUIStep(CryptohomeRecoveryUIState.LOADING);
@@ -89,6 +105,13 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    */
   onRecoveryFailed() {
     this.setUIStep(CryptohomeRecoveryUIState.ERROR);
+  }
+
+  /**
+   * Shows a reauth required message when there's no reauth proof token.
+   */
+  showReauthNotification() {
+    this.setUIStep(CryptohomeRecoveryUIState.REAUTH_NOTIFICATION);
   }
 
   /**
@@ -113,6 +136,23 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
    */
   onDone_() {
     this.userActed('done');
+  }
+
+  /**
+   * Click handler for the next button on the reauth notification screen.
+   * @private
+   */
+  onReauthButtonClicked_() {
+    this.userActed('reauth');
+  }
+
+  /**
+   * Returns the src of the illustration.
+   * @private
+   */
+  getImageSource_() {
+    return this.isDarkModeActive_ ? 'images/security_lock_dark.svg' :
+                                    'images/security_lock_light.svg';
   }
 }
 

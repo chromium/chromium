@@ -1386,6 +1386,12 @@
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_ERROR_TITLE" desc="The title message when Cryptohome recovery failed.">
     Failed to recover local data
   </message>
+  <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_REAUTH_NOTIFICATION_TITLE" desc="The title message when reauth is required during Cryptohome recovery.">
+    Your password has changed since the last time you signed in
+  </message>
+  <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_REAUTH_NOTIFICATION_SUBTITLE" desc="The subtitle message when reauth is required during Cryptohome recovery.">
+    Enter your Google Account password again on the next screen to finish recovery
+  </message>
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_MANUAL_RECOVERY_BUTTON" desc="Label for the button to enter old password when Cryptohome recovery failed.">
     Enter the old password
   </message>

@@ -123,6 +123,8 @@ generate_grd("build_oobe_grd") {
     "images/parental_control.svg",
     "images/powerwash.svg",
     "images/pin_illustration.svg",
+    "images/security_lock_dark.svg",
+    "images/security_lock_light.svg",
     "images/settings_gear.svg",
     "images/sync-consent.svg",
     "images/update_boot.svg",

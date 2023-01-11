@@ -18,6 +18,7 @@ namespace {
 constexpr char kUserActionDone[] = "done";
 constexpr char kUserActionRetry[] = "retry";
 constexpr char kUserActionEnterOldPassword[] = "enter-old-password";
+constexpr char kUserActionReauth[] = "reauth";
 
 }  // namespace
 
@@ -76,6 +77,8 @@ void CryptohomeRecoveryScreen::OnUserAction(const base::Value::List& args) {
     exit_callback_.Run(Result::kRetry);
   } else if (action_id == kUserActionEnterOldPassword) {
     exit_callback_.Run(Result::kManualRecovery);
+  } else if (action_id == kUserActionReauth) {
+    exit_callback_.Run(Result::kGaiaLogin);
   } else {
     BaseScreen::OnUserAction(args);
   }
@@ -100,7 +103,7 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       RecordReauthReason(user_context->GetAccountId(),
                          ReauthReason::kCryptohomeRecovery);
       context()->user_context = std::move(user_context);
-      exit_callback_.Run(Result::kGaiaLogin);
+      view_->ShowReauthNotification();
       return;
     }
     recovery_performer_ = std::make_unique<CryptohomeRecoveryPerformer>(
