@@ -53,11 +53,6 @@
 #error "This file requires ARC support."
 #endif
 
-// Override readonly property for testing.
-@interface NSUserActivity (IntentsTesting)
-@property(readwrite, nullable, NS_NONATOMIC_IOSONLY) INInteraction* interaction;
-@end
-
 #pragma mark - Test class.
 
 // A block that takes as arguments the caller and the arguments from
@@ -101,6 +96,23 @@ class UserActivityHandlerTest : public base::test::WithFeatureOverride,
 
   NSString* GetTabIdForWebState(web::WebState* web_state) {
     return web_state->GetStableIdentifier();
+  }
+
+  // Mock & stub a NSUserActivity object with an arbitrary `interaction`
+  // property. The object is mock'ed otherwise the same as the `base` parameter
+  id CreateMockNSUserActivity(NSUserActivity* base,
+                              INInteraction* interaction) {
+    id mock_user_activity = OCMClassMock([NSUserActivity class]);
+    OCMStub([(NSUserActivity*)mock_user_activity interaction])
+        .andReturn(interaction);
+    OCMStub([(NSUserActivity*)mock_user_activity webpageURL])
+        .andReturn(base.webpageURL);
+    OCMStub([(NSUserActivity*)mock_user_activity activityType])
+        .andReturn(base.activityType);
+    OCMStub([(NSUserActivity*)mock_user_activity userInfo])
+        .andReturn(base.userInfo);
+
+    return mock_user_activity;
   }
 
   conditionBlock getCompletionHandler() {
@@ -471,7 +483,7 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoBackground) {
   INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
                                                             response:nil];
 
-  userActivity.interaction = interaction;
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
 
   id startupInformationMock =
       [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
@@ -499,7 +511,7 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoBackground) {
 
   // Action.
   BOOL result = [UserActivityHandler
-       continueUserActivity:userActivity
+       continueUserActivity:mock_user_activity
         applicationIsActive:NO
                   tabOpener:tabOpener
       connectionInformation:connectionInformationMock
@@ -525,10 +537,12 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentBackground) {
   intent.url = urls;
   INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
                                                             response:nil];
-  userActivity.interaction = interaction;
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
 
   id startupInformationMock =
       [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
+
   id connectionInformationMock =
       [OCMockObject niceMockForProtocol:@protocol(ConnectionInformation)];
 
@@ -553,7 +567,7 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentBackground) {
 
   // Action.
   BOOL result = [UserActivityHandler
-       continueUserActivity:userActivity
+       continueUserActivity:mock_user_activity
         applicationIsActive:NO
                   tabOpener:tabOpenerMock
       connectionInformation:connectionInformationMock
@@ -584,7 +598,7 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoForeground) {
   INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
                                                             response:nil];
 
-  userActivity.interaction = interaction;
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
 
   id startupInformationMock =
       [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
@@ -624,7 +638,7 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoForeground) {
 
   // Action.
   BOOL result = [UserActivityHandler
-       continueUserActivity:userActivity
+       continueUserActivity:mock_user_activity
         applicationIsActive:YES
                   tabOpener:tabOpener
       connectionInformation:connectionInformationMock
@@ -651,7 +665,8 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentForeground) {
   intent.url = urls;
   INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
                                                             response:nil];
-  userActivity.interaction = interaction;
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
 
   id startupInformationMock =
       [OCMockObject niceMockForProtocol:@protocol(StartupInformation)];
@@ -690,7 +705,7 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentForeground) {
 
   // Action.
   BOOL result = [UserActivityHandler
-       continueUserActivity:userActivity
+       continueUserActivity:mock_user_activity
         applicationIsActive:YES
                   tabOpener:tabOpener
       connectionInformation:connectionInformationMock
