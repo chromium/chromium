@@ -167,6 +167,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "app-list-drag-and-drop-refactor",
+    "owners": [ "anasalazar", "//ash/app_list/OWNERS" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "app-management-app-details",
     "owners": [ "jshikaram",  "chromeos-apps-foundation-team" ],
     "expiry_milestone": 118

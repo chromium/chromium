@@ -5718,6 +5718,12 @@ const char kQuickActionShowBubbleLauncherDescription[] =
     "Enables a fling gesture or mouse scroll from the shelf to show the bubble "
     "launcher.";
 
+const char kAppListDragAndDropRefactorName[] =
+    "Drag and drop refactor in launcher";
+const char kAppListDragAndDropRefactorDescription[] =
+    "Enables app list drag and drop refactor to use views drag and drop APIs. "
+    "No user visible changes are expected.";
+
 const char kProjectorName[] = "Enable Projector";
 const char kProjectorDescription[] =
     "Enables Projects SWA and associated recording tools";

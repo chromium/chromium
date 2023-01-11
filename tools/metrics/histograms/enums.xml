@@ -58400,6 +58400,7 @@ from previous Chrome versions.
   <int value="-1435804236" label="ThrottleIntersectionObserverUMA:enabled"/>
   <int value="-1433719718" label="enable-webrtc-stun-origin"/>
   <int value="-1433452630" label="AllowRemoteContextForNotifications:enabled"/>
+  <int value="-1433156012" label="AppListDragAndDropRefactor:disabled"/>
   <int value="-1433087548" label="enable-app-install-alerts"/>
   <int value="-1432246303" label="FilesZipPack:enabled"/>
   <int value="-1431851314" label="BorealisDiskManagement:disabled"/>
@@ -58529,6 +58530,7 @@ from previous Chrome versions.
   <int value="-1365795470"
       label="ServiceWorkerImportedScriptUpdateCheck:disabled"/>
   <int value="-1365503870" label="enable-simplified-fullscreen-ui"/>
+  <int value="-1364703377" label="AppListDragAndDropRefactor:enabled"/>
   <int value="-1363709707" label="MaterialDesignHistory:disabled"/>
   <int value="-1362431915" label="RelatedSearches:disabled"/>
   <int value="-1361493814" label="FCMInvalidations:disabled"/>
