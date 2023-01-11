@@ -295,8 +295,6 @@ std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
 // queue.
 constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
 
-constexpr char kGCacheFolderName[] = "GCache";
-
 void DriveFsPinManager::Add(const StableId id,
                             const std::string& path,
                             const int64_t expected_size) {
@@ -368,7 +366,14 @@ bool DriveFsPinManager::Update(const StableId id,
     return false;
   }
 
-  Progress& progress = files_[id];
+  const Files::iterator it = files_.find(id);
+  if (it == files_.end()) {
+    VLOG(3) << "Not tracked: " << id << " " << path;
+    return false;
+  }
+
+  DCHECK_EQ(it->first, id);
+  Progress& progress = it->second;
 
   if (path != progress.path) {
     LOG(ERROR) << "Changed path of " << id << " " << Quote(progress.path)
@@ -404,7 +409,14 @@ bool DriveFsPinManager::MarkInProgress(const StableId id,
                                        const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Progress& progress = files_[id];
+  const Files::iterator it = files_.find(id);
+  if (it == files_.end()) {
+    VLOG(3) << "Not tracked: " << id << " " << path;
+    return false;
+  }
+
+  DCHECK_EQ(it->first, id);
+  Progress& progress = it->second;
 
   if (path != progress.path) {
     LOG(ERROR) << "Changed path of " << id << " " << Quote(progress.path)
@@ -431,8 +443,7 @@ DriveFsPinManager::DriveFsPinManager(bool enabled,
     : enabled_(enabled),
       get_free_space_(get_free_space ? std::move(get_free_space)
                                      : base::BindRepeating(&GetFreeSpace)),
-      profile_path_(profile_path),  // The GCache directory is located in the
-                                    // users profile path.
+      profile_path_(profile_path),
       drivefs_interface_(drivefs_interface) {}
 
 DriveFsPinManager::~DriveFsPinManager() = default;
@@ -458,7 +469,7 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
   progress_ = {.stage = SetupStage::kCalculatingFreeSpace};
   NotifyProgress();
 
-  get_free_space_.Run(profile_path_.AppendASCII(kGCacheFolderName),
+  get_free_space_.Run(profile_path_.AppendASCII("GCache"),
                       base::BindOnce(&DriveFsPinManager::OnFreeSpaceRetrieved,
                                      weak_ptr_factory_.GetWeakPtr()));
 }

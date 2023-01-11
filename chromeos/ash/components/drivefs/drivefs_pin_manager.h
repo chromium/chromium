@@ -32,9 +32,6 @@ enum HumanReadableSize : int64_t;
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 
-// Constant representing the GCache folder name.
-extern const char kGCacheFolderName[];
-
 // The periodic removal task is ran to ensure any leftover items in the syncing
 // map are identified as being `available_offline` or 0 byte files.
 extern const base::TimeDelta kPeriodicRemovalInterval;
@@ -180,7 +177,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
               const std::string& path,
               int64_t bytes_transferred = -1);
 
-  // Adds or updates the item keyed at `path` with the new progress bytes.
+  // Updates an item in the map. Does nothing if the item is not in the map.
   // Updates the total number of bytes transferred so far.
   // Returns whether anything has actually been updated.
   bool Update(StableId id,
@@ -188,7 +185,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
               int64_t bytes_transferred,
               int64_t bytes_to_transfer);
 
-  // Adds or updates the item to mark it in progress.
+  // Updates an item to mark it in progress.
+  // Does nothing if the item is not in the map.
   // Returns whether anything has actually been updated.
   bool MarkInProgress(StableId id, const std::string& path);
 
