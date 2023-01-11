@@ -767,6 +767,9 @@ bool CommerceHintAgent::IsAddToCartButton(blink::WebElement& element) {
     }
     if (!button_text.empty())
       break;
+    if (!element.ParentNode().IsElementNode()) {
+      return false;
+    }
     element = element.ParentNode().To<blink::WebElement>();
   }
   if (element.IsNull() ||
