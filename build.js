@@ -88,6 +88,7 @@ namespace recordreplay {
 `
 );
 
+console.log(`Preparing...`);
 const useGoma = !process.env.NO_GOMA;
 if (useGoma) {
   // ensure goma is started for cloud builds with engflow
@@ -112,8 +113,9 @@ function spawnChecked(cmd, args, options) {
   const rv = spawnSync(cmd, args, options);
 
   if (rv.status != 0 || rv.error) {
-    console.error(rv.error);
-    console.error(rv.stderr.toString());
+    console.error('Process failed:', rv.error || '');
+    console.log(rv.stdout.toString() || '');
+    console.error(rv.stderr.toString() || '');
     throw new Error(`Spawned process failed with exit code ${rv.status}`);
   }
 
