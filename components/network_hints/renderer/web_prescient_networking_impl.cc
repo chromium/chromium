@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "content/public/renderer/render_frame.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace network_hints {
@@ -13,7 +14,11 @@ namespace {
 
 void ForwardToHandler(mojo::Remote<mojom::NetworkHintsHandler>* handler,
                       const std::vector<std::string>& names) {
-  handler->get()->PrefetchDNS(names);
+  std::vector<GURL> urls;
+  for (const auto& name : names) {
+    urls.emplace_back("http://" + name);
+  }
+  handler->get()->PrefetchDNS(urls);
 }
 
 }  // namespace
@@ -28,13 +33,24 @@ WebPrescientNetworkingImpl::WebPrescientNetworkingImpl(
 
 WebPrescientNetworkingImpl::~WebPrescientNetworkingImpl() {}
 
-void WebPrescientNetworkingImpl::PrefetchDNS(const blink::WebString& hostname) {
-  DVLOG(2) << "Prefetch DNS: " << hostname.Utf8();
-  if (hostname.IsEmpty())
+void WebPrescientNetworkingImpl::PrefetchDNS(const blink::WebURL& url) {
+  DVLOG(2) << "Prefetch DNS: " << url.GetString().Utf8();
+  GURL gurl(url);
+  if (!gurl.is_valid() || !gurl.has_host()) {
     return;
+  }
 
-  std::string hostname_utf8 = hostname.Utf8();
-  dns_prefetch_.Resolve(hostname_utf8.data(), hostname_utf8.length());
+  if (base::FeatureList::IsEnabled(network::features::kPrefetchDNSWithURL)) {
+    std::vector<GURL> urls;
+    urls.push_back(std::move(gurl));
+    handler_->PrefetchDNS(urls);
+    // TODO(jam): If this launches remove DnsQueue and RendererDnsPrefetch
+    // which are no longer needed. They were from a feature which existed
+    // at launch but not anymore that prefetched DNS for every link on a page.
+  } else {
+    auto host_piece = gurl.host_piece();
+    dns_prefetch_.Resolve(host_piece.data(), host_piece.length());
+  }
 }
 
 void WebPrescientNetworkingImpl::Preconnect(

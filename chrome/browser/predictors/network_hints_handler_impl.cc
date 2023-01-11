@@ -43,8 +43,7 @@ void NetworkHintsHandlerImpl::Create(
       std::move(receiver));
 }
 
-void NetworkHintsHandlerImpl::PrefetchDNS(
-    const std::vector<std::string>& names) {
+void NetworkHintsHandlerImpl::PrefetchDNS(const std::vector<GURL>& urls) {
   if (!preconnect_manager_)
     return;
 
@@ -54,7 +53,7 @@ void NetworkHintsHandlerImpl::PrefetchDNS(
     return;
 
   preconnect_manager_->StartPreresolveHosts(
-      names, GetPendingNetworkAnonymizationKey(render_frame_host));
+      urls, GetPendingNetworkAnonymizationKey(render_frame_host));
 }
 
 void NetworkHintsHandlerImpl::Preconnect(const GURL& url,

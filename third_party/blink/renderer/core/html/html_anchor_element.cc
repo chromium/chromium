@@ -259,7 +259,7 @@ void HTMLAnchorElement::ParseAttribute(
               GetDocument().GetFrame()->PrescientNetworking();
           if (web_prescient_networking) {
             web_prescient_networking->PrefetchDNS(
-                GetDocument().CompleteURL(parsed_url).Host());
+                GetDocument().CompleteURL(parsed_url));
           }
         }
       }

@@ -61,9 +61,7 @@ class NetworkHintsMock : public WebPrescientNetworking {
  public:
   NetworkHintsMock() = default;
 
-  void PrefetchDNS(const WebString& hostname) override {
-    did_dns_prefetch_ = true;
-  }
+  void PrefetchDNS(const WebURL& url) override { did_dns_prefetch_ = true; }
   void Preconnect(const WebURL& url, bool allow_credentials) override {
     did_preconnect_ = true;
     is_https_ = url.ProtocolIs("https");

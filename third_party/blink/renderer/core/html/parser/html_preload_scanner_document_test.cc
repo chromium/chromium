@@ -28,7 +28,7 @@ class MockPrescientNetworking : public WebPrescientNetworking {
   bool DidPreconnect() const { return did_preconnect_; }
 
  private:
-  void PrefetchDNS(const WebString&) override { did_dns_prefetch_ = true; }
+  void PrefetchDNS(const WebURL&) override { did_dns_prefetch_ = true; }
   void Preconnect(const WebURL&, bool) override { did_preconnect_ = true; }
 
   bool did_dns_prefetch_ = false;

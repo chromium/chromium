@@ -177,7 +177,7 @@ void PreloadHelper::DnsPrefetchIfNeeded(
       WebPrescientNetworking* web_prescient_networking =
           frame ? frame->PrescientNetworking() : nullptr;
       if (web_prescient_networking) {
-        web_prescient_networking->PrefetchDNS(params.href.Host());
+        web_prescient_networking->PrefetchDNS(params.href);
       }
     }
   }

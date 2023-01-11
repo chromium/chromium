@@ -161,7 +161,7 @@ void ChromeClient::MouseDidMoveOverElement(LocalFrame& frame,
     WebPrescientNetworking* web_prescient_networking =
         frame.PrescientNetworking();
     if (web_prescient_networking) {
-      web_prescient_networking->PrefetchDNS(result.AbsoluteLinkURL().Host());
+      web_prescient_networking->PrefetchDNS(result.AbsoluteLinkURL());
     }
   }
 

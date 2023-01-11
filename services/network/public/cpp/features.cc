@@ -299,6 +299,13 @@ BASE_FEATURE(kPreconnectInNetworkService,
              "PreconnectInNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When prefetching a DNS record ensures that the scheme and port are taken
+// into account so that the cache (which is keyed by scheme and port) works
+// for subsequent queries.
+BASE_FEATURE(kPrefetchDNSWithURL,
+             "PrefetchDNSWithURL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Preconnect to a new origin right when a redirect starts.
 BASE_FEATURE(kPreconnectOnRedirect,
              "PreconnectOnRedirect",

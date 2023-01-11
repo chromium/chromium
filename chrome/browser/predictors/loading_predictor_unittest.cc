@@ -54,7 +54,7 @@ class MockPreconnectManager : public PreconnectManager {
            const net::NetworkAnonymizationKey& network_anonymization_key));
   MOCK_METHOD2(
       StartPreresolveHosts,
-      void(const std::vector<std::string>& hostnames,
+      void(const std::vector<GURL>& urls,
            const net::NetworkAnonymizationKey& network_anonymization_key));
   MOCK_METHOD3(StartPreconnectUrl,
                void(const GURL& url,
