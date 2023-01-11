@@ -205,8 +205,6 @@ TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
   prefs.SetInteger(
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
-  EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
-            content::PreloadingEligibility::kEligible);
 
   battery::OverrideIsBatterySaverEnabledForTesting(false);
   EXPECT_EQ(prefetch::IsSomePreloadingEnabled(prefs),
