@@ -418,6 +418,13 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
       WrapWeakPersistent(this)));
 }
 
+LocalFrameMojoHandler::~LocalFrameMojoHandler() {
+  // Avoid destroying power mode voters at non-deterministic points, as their
+  // vote will affect the arbiter's behavior.
+  if (recordreplay::AreEventsDisallowed())
+    script_execution_power_mode_voter_.release();
+}
+
 void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(back_forward_cache_controller_host_remote_);
