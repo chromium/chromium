@@ -23,7 +23,7 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="third_party_cookies"
-        android:title="@string/third_party_cookies_page_title"
+        android:title="@string/third_party_cookies_link_row_label"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <Preference
         android:key="privacy_sandbox"
