@@ -97,6 +97,9 @@ BASE_DECLARE_FEATURE(kCalendarExperienceKit);
 // Feature flag to enable Apple Calendar event in experience kit.
 BASE_DECLARE_FEATURE(kEnableExpKitAppleCalendar);
 
+// Feature flag to enable Emails detection.
+BASE_DECLARE_FEATURE(kEnableEmails);
+
 // Feature flag to enable Phone Numbers detection.
 BASE_DECLARE_FEATURE(kEnablePhoneNumbers);
 

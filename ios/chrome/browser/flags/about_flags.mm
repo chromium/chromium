@@ -1251,6 +1251,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kNativeFindInPage,
                                     kNativeFindInPageVariations,
                                     "NativeFindInPage")},
+    {"intents-on-email", flag_descriptions::kEmailName,
+     flag_descriptions::kEmailDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableEmails)},
+
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

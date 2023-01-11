@@ -109,6 +109,8 @@ BASE_FEATURE(kEnableExpKitAppleCalendar,
              "EnableExpKitAppleCalendar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableEmails, "EnableEmails", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnablePhoneNumbers,
              "EnablePhoneNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);

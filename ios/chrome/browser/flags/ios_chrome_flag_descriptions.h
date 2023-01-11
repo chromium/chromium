@@ -134,6 +134,10 @@ extern const char kCalendarExperienceKitDescription[];
 extern const char kAppleCalendarExperienceKitName[];
 extern const char kAppleCalendarExperienceKitDescription[];
 
+// Title and description for the flag to enable emails detection and processing
+extern const char kEmailName[];
+extern const char kEmailDescription[];
+
 // Title and description for the flag to enable phone numbers detection and
 // processing.
 extern const char kPhoneNumberName[];
