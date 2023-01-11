@@ -168,34 +168,27 @@ TEST(WebRequestActionTest, CreateAction) {
   bool bad_message = false;
   scoped_refptr<const WebRequestAction> result;
 
-  // Test wrong data type passed.
-  error.clear();
-  result = WebRequestAction::Create(
-      nullptr, nullptr, base::Value(base::Value::List()), &error, &bad_message);
-  EXPECT_TRUE(bad_message);
-  EXPECT_FALSE(result.get());
-
   // Test missing instanceType element.
   base::Value::Dict input;
   error.clear();
-  result = WebRequestAction::Create(
-      nullptr, nullptr, base::Value(input.Clone()), &error, &bad_message);
+  result =
+      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
   EXPECT_TRUE(bad_message);
   EXPECT_FALSE(result.get());
 
   // Test wrong instanceType element.
   input.Set(keys::kInstanceTypeKey, kUnknownActionType);
   error.clear();
-  result = WebRequestAction::Create(
-      nullptr, nullptr, base::Value(input.Clone()), &error, &bad_message);
+  result =
+      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
   EXPECT_NE("", error);
   EXPECT_FALSE(result.get());
 
   // Test success
   input.Set(keys::kInstanceTypeKey, keys::kCancelRequestType);
   error.clear();
-  result = WebRequestAction::Create(
-      nullptr, nullptr, base::Value(input.Clone()), &error, &bad_message);
+  result =
+      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
   EXPECT_EQ("", error);
   EXPECT_FALSE(bad_message);
   ASSERT_TRUE(result.get());
@@ -224,6 +217,7 @@ TEST(WebRequestActionTest, CreateActionSet) {
   correct_action.Set(keys::kLowerPriorityThanKey, 10);
   base::Value::Dict incorrect_action;
   incorrect_action.Set(keys::kInstanceTypeKey, kUnknownActionType);
+  base::Value::List wrong_format_action;
 
   // Test success.
   input.emplace_back(std::move(correct_action));
@@ -240,6 +234,14 @@ TEST(WebRequestActionTest, CreateActionSet) {
 
   // Test failure.
   input.emplace_back(std::move(incorrect_action));
+  error.clear();
+  result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
+                                       &bad_message);
+  EXPECT_NE("", error);
+  EXPECT_FALSE(result.get());
+
+  // Test wrong data type passed.
+  input.emplace_back(std::move(wrong_format_action));
   error.clear();
   result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
                                        &bad_message);

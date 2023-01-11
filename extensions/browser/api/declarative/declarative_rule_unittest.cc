@@ -217,11 +217,9 @@ class SummingAction : public base::RefCounted<SummingAction> {
   static scoped_refptr<const SummingAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value& action,
+      const base::Value::Dict& dict,
       std::string* error,
       bool* bad_message) {
-    EXPECT_TRUE(action.is_dict());
-    const base::Value::Dict& dict = action.GetDict();
     if (const base::Value* value = dict.Find("error")) {
       EXPECT_TRUE(value->is_string());
       *error = value->GetString();

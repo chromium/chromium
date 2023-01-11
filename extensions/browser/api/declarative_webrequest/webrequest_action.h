@@ -130,7 +130,7 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
   static scoped_refptr<const WebRequestAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value& json_action,
+      const base::Value::Dict& json_action,
       std::string* error,
       bool* bad_message);
 

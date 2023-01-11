@@ -122,7 +122,7 @@ class DeclarativeConditionSet {
 //   static std::unique_ptr<ActionT> Create(
 //       const Extension* extension,
 //       // Except this argument gets elements of the Values array.
-//       const base::Value& definition,
+//       const base::Value::Dict& definition,
 //       std::string* error, bool* bad_message);
 //   void Apply(const std::string& extension_id,
 //              const base::Time& extension_install_time,
@@ -369,8 +369,13 @@ DeclarativeActionSet<ActionT>::Create(content::BrowserContext* browser_context,
   Actions result;
 
   for (const auto& value : action_values) {
-    scoped_refptr<const ActionT> action =
-        ActionT::Create(browser_context, extension, value, error, bad_message);
+    if (!value.is_dict()) {
+      *bad_message = true;
+      *error = "Action must be an object.";
+      return nullptr;
+    }
+    scoped_refptr<const ActionT> action = ActionT::Create(
+        browser_context, extension, value.GetDict(), error, bad_message);
     if (!error->empty() || *bad_message)
       return nullptr;
     result.push_back(action);

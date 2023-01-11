@@ -470,21 +470,18 @@ bool WebRequestAction::HasPermission(ApplyInfo* apply_info,
 scoped_refptr<const WebRequestAction> WebRequestAction::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::Value& json_action,
+    const base::Value::Dict& json_action,
     std::string* error,
     bool* bad_message) {
   *error = "";
   *bad_message = false;
 
-  const base::Value::Dict* action_dict = json_action.GetIfDict();
-  INPUT_FORMAT_VALIDATE(action_dict);
-
   const std::string* instance_type =
-      action_dict->FindString(keys::kInstanceTypeKey);
+      json_action.FindString(keys::kInstanceTypeKey);
   INPUT_FORMAT_VALIDATE(instance_type);
 
   WebRequestActionFactory& factory = g_web_request_action_factory.Get();
-  return factory.factory.Instantiate(*instance_type, *action_dict, error,
+  return factory.factory.Instantiate(*instance_type, json_action, error,
                                      bad_message);
 }
 
