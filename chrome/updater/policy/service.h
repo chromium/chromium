@@ -92,7 +92,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Fetches policies from device management and updates the PolicyService
   // instance. `callback` is passed a result that is `kErrorOk` on success,
   // `kErrorDMRegistrationFailed` if DM registration fails, or any other error.
-  void FetchPolicies(base::OnceCallback<void(int)> callback);
+  void FetchPolicies(base::OnceCallback<void(int)> callback,
+                     bool is_system_install_scenario);
 
   std::string source() const;
 
@@ -131,6 +132,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // in a blocking sequence since it needs to do I/O to load policies.
   void FetchPoliciesDone(
       base::OnceCallback<void(int)> callback,
+      bool is_system_install_scenario,
       int result,
       std::unique_ptr<PolicyManagerInterface> dm_policy_manager);
 

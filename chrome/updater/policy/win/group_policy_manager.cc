@@ -34,15 +34,22 @@ struct ScopedHCriticalPolicySectionTraits {
 using scoped_hpolicy =
     base::ScopedGeneric<HANDLE, updater::ScopedHCriticalPolicySectionTraits>;
 
-base::Value::Dict LoadGroupPolicies() {
+base::Value::Dict LoadGroupPolicies(bool is_system_install_scenario) {
   scoped_hpolicy policy_lock;
 
-  if (base::IsManagedDevice()) {
+  if (!is_system_install_scenario && base::IsManagedDevice()) {
     // GPO rules mandate a call to EnterCriticalPolicySection() before reading
     // policies (and a matching LeaveCriticalPolicySection() call after read).
-    // Acquire the lock for managed machines because group policies are
-    // applied only in this case, and the lock acquisition can take a long
-    // time, in the worst case scenarios.
+    //
+    // The Group Policy critical section is taken for all user installs and
+    // updates, as well as all system updates. The Group Policy critical section
+    // is not taken for system install scenarios, because system installs could
+    // be running under GPO which takes the critical section, and this can cause
+    // a deadlock.
+    //
+    // Additionally, the Group Policy critical section is only taken for managed
+    // machines because group policies are applied only in this case, and the
+    // lock acquisition can take a long time in the worst case scenarios.
     policy_lock.reset(::EnterCriticalPolicySection(true));
     CHECK(policy_lock.is_valid()) << "Failed to get policy lock.";
   }
@@ -73,7 +80,8 @@ base::Value::Dict LoadGroupPolicies() {
 
 }  // namespace
 
-GroupPolicyManager::GroupPolicyManager() : PolicyManager(LoadGroupPolicies()) {}
+GroupPolicyManager::GroupPolicyManager(bool is_system_install_scenario)
+    : PolicyManager(LoadGroupPolicies(is_system_install_scenario)) {}
 
 GroupPolicyManager::~GroupPolicyManager() = default;
 

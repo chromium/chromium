@@ -236,7 +236,9 @@ void UpdateServiceImpl::FetchPolicies(base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  config_->GetPolicyService()->FetchPolicies(std::move(callback));
+  config_->GetPolicyService()->FetchPolicies(
+      std::move(callback),
+      /*is_system_install_scenario*/ IsSystemInstall());
 }
 
 void UpdateServiceImpl::RegisterApp(const RegistrationRequest& request,
@@ -306,15 +308,16 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
                                          GetUpdaterScope(), persisted_data_)));
 
   new_tasks.push_back(base::BindOnce(
-      [](scoped_refptr<UpdateServiceImpl> update_service_impl,
-         base::OnceClosure callback) {
-        update_service_impl->FetchPolicies(base::BindOnce(
-            [](base::OnceClosure callback, int /* ignore_result */) {
-              std::move(callback).Run();
-            },
-            std::move(callback)));
+      [](scoped_refptr<Configurator> config, base::OnceClosure callback) {
+        config->GetPolicyService()->FetchPolicies(
+            base::BindOnce(
+                [](base::OnceClosure callback, int /* ignore_result */) {
+                  std::move(callback).Run();
+                },
+                std::move(callback)),
+            /*is_system_install_scenario*/ false);
       },
-      base::WrapRefCounted(this)));
+      config_));
   new_tasks.push_back(base::BindOnce(
       &CheckForUpdatesTask::Run,
       base::MakeRefCounted<CheckForUpdatesTask>(

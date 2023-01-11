@@ -51,6 +51,7 @@ PolicyService::PolicyManagerVector SortManagers(
 
 PolicyService::PolicyManagerVector CreatePolicyManagerVector(
     scoped_refptr<ExternalConstants> external_constants,
+    bool is_system_install_scenario,
     std::unique_ptr<PolicyManagerInterface> dm_policy_manager) {
   PolicyService::PolicyManagerVector managers;
   if (external_constants) {
@@ -59,7 +60,8 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
   }
 
 #if BUILDFLAG(IS_WIN)
-  managers.push_back(std::make_unique<GroupPolicyManager>());
+  managers.push_back(
+      std::make_unique<GroupPolicyManager>(is_system_install_scenario));
 #endif
 
   if (!dm_policy_manager)
@@ -83,32 +85,47 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
 PolicyService::PolicyService(PolicyManagerVector managers)
     : policy_managers_(SortManagers(std::move(managers))) {}
 
+// The policy managers are initialized without taking the Group Policy critical
+// section here, by passing `true` for `is_system_install_scenario`.
+// Later, if the scenario is user installs/updates or system updates (but not
+// system installs), the policies are reloaded with the critical section lock.
+// System installs may run under GPO that itself takes the critical section, so
+// to prevent a deadlock, updater does not attempt to take the critical section
+// in that scenario.
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants)
-    : policy_managers_(
-          SortManagers(CreatePolicyManagerVector(external_constants, nullptr))),
+    : policy_managers_(SortManagers(
+          CreatePolicyManagerVector(external_constants,
+                                    /*is_system_install_scenario*/ true,
+                                    nullptr))),
       external_constants_(external_constants),
       policy_fetcher_(base::MakeRefCounted<PolicyFetcher>(this)) {}
 
 PolicyService::~PolicyService() = default;
 
-void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
+void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback,
+                                  bool is_system_install_scenario) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  policy_fetcher_->FetchPolicies(base::BindOnce(
-      &PolicyService::FetchPoliciesDone, this, std::move(callback)));
+  policy_fetcher_->FetchPolicies(
+      base::BindOnce(&PolicyService::FetchPoliciesDone, this,
+                     std::move(callback), is_system_install_scenario));
 }
 
 void PolicyService::FetchPoliciesDone(
     base::OnceCallback<void(int)> callback,
+    bool is_system_install_scenario,
     int result,
     std::unique_ptr<PolicyManagerInterface> dm_policy_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
+  // TODO(crbug/1259428): The managers may need to be reinitialized even when
+  // dm_policy_manager is not provided, the next CL will address this.
   if (dm_policy_manager) {
     policy_managers_ = SortManagers(CreatePolicyManagerVector(
-        external_constants_, std::move(dm_policy_manager)));
+        external_constants_, is_system_install_scenario,
+        std::move(dm_policy_manager)));
   }
 
   std::move(callback).Run(result);
