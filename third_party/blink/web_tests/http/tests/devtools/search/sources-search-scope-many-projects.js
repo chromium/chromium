@@ -12,8 +12,11 @@
   function fileSystemUISourceCodes() {
     var uiSourceCodes = [];
     var fileSystemProjects = Workspace.workspace.projectsForType(Workspace.projectTypes.FileSystem);
-    for (var project of fileSystemProjects)
-      uiSourceCodes = uiSourceCodes.concat(project.uiSourceCodes());
+    for (var project of fileSystemProjects) {
+      for (const uiSourceCode of project.uiSourceCodes()) {
+        uiSourceCodes.push(uiSourceCode);
+      }
+    }
     return uiSourceCodes;
   }
 
