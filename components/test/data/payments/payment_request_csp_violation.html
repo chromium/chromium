@@ -10,15 +10,7 @@ found in the LICENSE file.
 <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5">
 <!-- CSP to disallow any payment method URL -->
 <meta http-equiv="Content-Security-Policy" content="connect-src 'none';">
-<script>
-function buildPaymentRequest(method) {
-  return new PaymentRequest(
-      [
-        {supportedMethods: method},
-      ],
-      {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
-}
-</script>
+<script src="payment_request_csp_check_can_make_payment.js"></script>
 <title>Payment Request CSP Test</title>
 </head>
 <body>
