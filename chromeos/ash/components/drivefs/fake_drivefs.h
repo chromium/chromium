@@ -155,6 +155,10 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void GetPooledQuotaUsage(
       drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback) override;
 
+  void SetPinnedByStableId(int64_t stable_id,
+                           bool pinned,
+                           SetPinnedCallback callback) override;
+
   void ToggleMirroring(
       bool enabled,
       drivefs::mojom::DriveFs::ToggleMirroringCallback callback) override;

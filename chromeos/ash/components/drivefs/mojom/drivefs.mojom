@@ -125,6 +125,9 @@ interface DriveFs {
   // Returns the total and free space available in the user's Drive and their
   // organization's, if they belong to one.
   GetPooledQuotaUsage() => (FileError error, PooledQuotaUsage quota);
+
+  // Pin or unpin an item by the supplied `stable_id`.
+  SetPinnedByStableId(int64 stable_id, bool pinned) => (FileError error);
 };
 
 // Implemented by Chrome, used from DriveFS.
