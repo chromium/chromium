@@ -132,11 +132,16 @@ TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
   // Pointer registration is needed for sorting in the following places:
   // TaskQueueThrottler::PumpThrottledTasks
   // BudgetPool::UpdateThrottlingStateForAllQueues
+  // FrameTaskQueueController::~FrameTaskQueueController
   recordreplay::RegisterPointer("TaskQueue", this);
 }
 
 TaskQueue::~TaskQueue() {
   recordreplay::UnregisterPointer(this);
+
+  // Because the refcount is threadsafe, destruction can happen at non-deterministic points.
+  recordreplay::AutoDisallowEvents disallow;
+
   ShutdownTaskQueueGracefully();
 }
 
