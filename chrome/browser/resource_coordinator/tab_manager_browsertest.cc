@@ -49,6 +49,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -849,6 +850,88 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
       main_frame, kDiscardedStateJS, &discarded_mainframe_result));
   EXPECT_FALSE(discarded_mainframe_result);
+}
+
+class TabManagerFencedFrameTest : public TabManagerTest {
+ public:
+  TabManagerFencedFrameTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+  }
+  ~TabManagerFencedFrameTest() override = default;
+
+ protected:
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  net::EmbeddedTestServer https_server_;
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that `window.document.wasDiscarded` is updated for a fenced frame.
+IN_PROC_BROWSER_TEST_F(TabManagerFencedFrameTest, TabManagerWasDiscarded) {
+  const char kDiscardedStateJS[] =
+      "window.domAutomationController.send("
+      "window.document.wasDiscarded);";
+
+  // Navigate to a page with a fenced frame.
+  ASSERT_TRUE(https_server().Start());
+  GURL main_url(
+      https_server().GetURL("c.test", "/fenced_frames/basic_title.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Grab the original frames.
+  content::WebContents* contents = tsm()->GetActiveWebContents();
+  content::RenderFrameHost* primary_main_frame =
+      contents->GetPrimaryMainFrame();
+
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+          primary_main_frame);
+  ASSERT_TRUE(fenced_frame);
+
+  // document.wasDiscarded is false before discard, on a main frame and fenced
+  // frame.
+  bool before_discard_mainframe_result = false;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      primary_main_frame, kDiscardedStateJS, &before_discard_mainframe_result));
+  EXPECT_FALSE(before_discard_mainframe_result);
+
+  bool before_discard_fencedframe_result = false;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      fenced_frame, kDiscardedStateJS, &before_discard_fencedframe_result));
+  EXPECT_FALSE(before_discard_fencedframe_result);
+
+  // Discard the tab. This simulates a tab discard.
+  TabLifecycleUnitExternal::FromWebContents(contents)->DiscardTab(
+      LifecycleUnitDiscardReason::URGENT);
+
+  // Here we simulate re-focussing the tab causing reload with navigation,
+  // the navigation will reload the tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Re-assign pointers after discarding, as they've changed.
+  contents = tsm()->GetActiveWebContents();
+  primary_main_frame = contents->GetPrimaryMainFrame();
+  fenced_frame = fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+      primary_main_frame);
+  ASSERT_TRUE(fenced_frame);
+
+  // document.wasDiscarded is true after discard, on a main frame and fenced
+  // frame.
+  bool discarded_mainframe_result = false;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      primary_main_frame, kDiscardedStateJS, &discarded_mainframe_result));
+  EXPECT_TRUE(discarded_mainframe_result);
+
+  bool discarded_fencedframe_result = false;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      fenced_frame, kDiscardedStateJS, &discarded_fencedframe_result));
+  EXPECT_TRUE(discarded_fencedframe_result);
 }
 
 namespace {

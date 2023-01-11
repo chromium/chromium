@@ -44,7 +44,8 @@ FrameTreeNode* CreateDelegateFrameTreeNode(
 
 FencedFrame::FencedFrame(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-    blink::mojom::FencedFrameMode mode)
+    blink::mojom::FencedFrameMode mode,
+    bool was_discarded)
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
@@ -61,7 +62,10 @@ FencedFrame::FencedFrame(
                                       /*manager_delegate=*/web_contents_,
                                       /*page_delegate=*/web_contents_,
                                       FrameTree::Type::kFencedFrame)),
-      mode_(mode) {}
+      mode_(mode) {
+  if (was_discarded)
+    frame_tree_->root()->set_was_discarded();
+}
 
 FencedFrame::~FencedFrame() {
   DCHECK(frame_tree_);

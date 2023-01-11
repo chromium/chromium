@@ -298,8 +298,8 @@ void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
 
 TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
     blink::mojom::FencedFrameMode mode) {
-  fenced_frames_.push_back(
-      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
+  fenced_frames_.push_back(std::make_unique<FencedFrame>(
+      weak_ptr_factory_.GetSafeRef(), mode, /* was_discarded= */ false));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   // Create stub RemoteFrameInterfaces.
   auto remote_frame_interfaces =

@@ -34,9 +34,9 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
                                    public FrameTree::Delegate,
                                    public NavigationControllerDelegate {
  public:
-  explicit FencedFrame(
-      base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-      blink::mojom::FencedFrameMode mode);
+  FencedFrame(base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
+              blink::mojom::FencedFrameMode mode,
+              bool was_discarded);
   ~FencedFrame() override;
 
   void Bind(mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>

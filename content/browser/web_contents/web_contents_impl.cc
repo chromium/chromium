@@ -2065,10 +2065,8 @@ bool WebContentsImpl::WasDiscarded() {
 }
 
 void WebContentsImpl::SetWasDiscarded(bool was_discarded) {
-  // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
-  // multiple FrameTrees. Should we propagate the was_discarded to all other
-  // FrameTrees? It seems that was_discarded could be a WebContentsImpl
-  // property.
+  // It's set based on a tab and the setting value is started from a primary
+  // tree and propagated to all children nodes including a fenced frame node.
   GetPrimaryFrameTree().root()->set_was_discarded();
 }
 

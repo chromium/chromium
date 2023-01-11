@@ -7824,8 +7824,8 @@ void RenderFrameHostImpl::CreateFencedFrame(
     return;
   }
 
-  fenced_frames_.push_back(
-      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
+  fenced_frames_.push_back(std::make_unique<FencedFrame>(
+      weak_ptr_factory_.GetSafeRef(), mode, was_discarded_));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   RenderFrameProxyHost* proxy_host =
       fenced_frame->InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
