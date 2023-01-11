@@ -45,6 +45,13 @@ class VideoConferenceAppServiceClient
     bool is_capturing_camera = false;
   };
 
+  // Struct holding the granted status of media device permissions used by
+  // videoconferencing apps.
+  struct VideoConferencePermissions {
+    bool has_camera_permission = false;
+    bool has_microphone_permission = false;
+  };
+
   VideoConferenceAppServiceClient();
 
   VideoConferenceAppServiceClient(const VideoConferenceAppServiceClient&) =
@@ -83,17 +90,31 @@ class VideoConferenceAppServiceClient
   // Returns the name of the app with `app_id`.
   std::string GetAppName(const AppIdString& app_id);
 
+  // Returns the current camera/microphone permission status for `app_id`.
+  VideoConferencePermissions GetAppPermission(const AppIdString& app_id);
+
   // Returns AppState of `app_id`; adds if doesn't exist yet.
   AppState& GetOrAddAppState(const AppIdString& app_id);
 
-  // Remove `app_id` from `id_to_app_state_` if there is no running instance for
-  // it.
+  // Removes `app_id` from `id_to_app_state_` if there is no running instance
+  // for it.
   void MaybeRemoveApp(const AppIdString& app_id);
+
+  // Calculates a new `crosapi::mojom::VideoConferenceMediaUsageStatus` from all
+  // current VC apps and notifies the manager if a field has changed.
+  void HandleMediaUsageUpdate();
 
   // These registries are used for observing app behaviors.
   base::raw_ptr<apps::InstanceRegistry> instance_registry_;
   base::raw_ptr<apps::AppRegistryCache> app_registry_;
   base::raw_ptr<apps::AppCapabilityAccessCache> capability_cache_;
+
+  // Unique id associated with this client. It is used by the VcManager to
+  // identify clients.
+  const base::UnguessableToken client_id_;
+
+  // Current status_ aggregated from all apps in `id_to_app_state_`.
+  crosapi::mojom::VideoConferenceMediaUsageStatusPtr status_;
 
   // The following two fields are true if the camera/microphone is system-wide
   // software disabled OR disabled via a hardware switch.

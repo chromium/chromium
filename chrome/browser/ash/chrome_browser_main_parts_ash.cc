@@ -157,6 +157,7 @@
 #include "chrome/browser/ash/system/user_removal_manager.h"
 #include "chrome/browser/ash/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
+#include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -1003,6 +1004,12 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   lacros_data_backward_migration_mode_policy_observer_ = std::make_unique<
       crosapi::LacrosDataBackwardMigrationModePolicyObserver>();
 
+  // Only creates VideoConferenceAppServiceClient if VcControlsUi is enabled.
+  if (features::IsVcControlsUiEnabled()) {
+    vc_app_service_client_ =
+        std::make_unique<VideoConferenceAppServiceClient>();
+  }
+
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   // Needs to be initialized after crosapi_manager_.
@@ -1584,6 +1591,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   lacros_data_backward_migration_mode_policy_observer_.reset();
 
   multi_capture_notification_.reset();
+
+  // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
+  vc_app_service_client_.reset();
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();

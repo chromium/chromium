@@ -6,10 +6,14 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
@@ -18,12 +22,33 @@
 
 namespace ash {
 
-VideoConferenceAppServiceClient::VideoConferenceAppServiceClient() {
+VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
+    : client_id_(base::UnguessableToken::Create()),
+      status_(crosapi::mojom::VideoConferenceMediaUsageStatus::New(
+          /*client_id=*/client_id_,
+          /*has_media_app=*/false,
+          /*has_camera_permission=*/false,
+          /*has_microphone_permission=*/false,
+          /*is_capturing_camera=*/false,
+          /*is_capturing_microphone=*/false,
+          /*is_capturing_screen=*/false)) {
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->video_conference_manager_ash()
+      ->RegisterCppClient(this, client_id_);
   ChromeUserManager::Get()->AddSessionStateObserver(this);
 }
 
 VideoConferenceAppServiceClient::~VideoConferenceAppServiceClient() {
   ChromeUserManager::Get()->RemoveSessionStateObserver(this);
+  // C++ clients are responsible for manually calling |UnregisterClient| on the
+  // manager when disconnecting.
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->video_conference_manager_ash()
+        ->UnregisterClient(client_id_);
+  }
 }
 
 void VideoConferenceAppServiceClient::GetMediaApps(
@@ -103,26 +128,28 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
     return;
   }
 
-  const bool is_capturing = update.CameraChanged()
-                                ? update.Camera().value_or(false)
-                                : update.Microphone().value_or(false);
+  const bool is_capturing_camera = update.Camera().value_or(false);
+  const bool is_capturing_microphone = update.Microphone().value_or(false);
 
   const AppIdString& app_id = update.AppId();
   // We only want to start tracking a app if it starts to accessing
   // microphone/camera.
-  if (!is_capturing && !base::Contains(id_to_app_state_, app_id)) {
+  if (!is_capturing_camera && !is_capturing_microphone &&
+      !base::Contains(id_to_app_state_, app_id)) {
     return;
   }
 
   AppState& state = GetOrAddAppState(app_id);
 
   if (update.CameraChanged()) {
-    state.is_capturing_camera = is_capturing;
+    state.is_capturing_camera = is_capturing_camera;
   }
 
   if (update.MicrophoneChanged()) {
-    state.is_capturing_microphone = is_capturing;
+    state.is_capturing_microphone = is_capturing_microphone;
   }
+
+  HandleMediaUsageUpdate();
 }
 
 void VideoConferenceAppServiceClient::OnAppCapabilityAccessCacheWillBeDestroyed(
@@ -164,8 +191,15 @@ void VideoConferenceAppServiceClient::OnInstanceRegistryWillBeDestroyed(
 void VideoConferenceAppServiceClient::ActiveUserChanged(
     user_manager::User* active_user) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
+
+  // Skip the profile that AppServiceProxy is not available.
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    instance_registry_observation_.Reset();
+    app_capability_observation_.Reset();
+    return;
+  }
+
   auto* ash_proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK(ash_proxy);
   instance_registry_ = &ash_proxy->InstanceRegistry();
   app_registry_ = &ash_proxy->AppRegistryCache();
 
@@ -189,6 +223,26 @@ std::string VideoConferenceAppServiceClient::GetAppName(
   return app_name;
 }
 
+// Get current camera/microphone permission of the `app_id`.
+VideoConferenceAppServiceClient::VideoConferencePermissions
+VideoConferenceAppServiceClient::GetAppPermission(const AppIdString& app_id) {
+  VideoConferencePermissions permissions;
+
+  app_registry_->ForOneApp(app_id, [&permissions](
+                                       const apps::AppUpdate& update) {
+    for (const auto& permission : update.Permissions()) {
+      if (permission->permission_type == apps::PermissionType::kCamera) {
+        permissions.has_camera_permission = permission->IsPermissionEnabled();
+      }
+      if (permission->permission_type == apps::PermissionType::kMicrophone) {
+        permissions.has_microphone_permission =
+            permission->IsPermissionEnabled();
+      }
+    }
+  });
+  return permissions;
+}
+
 VideoConferenceAppServiceClient::AppState&
 VideoConferenceAppServiceClient::GetOrAddAppState(const std::string& app_id) {
   if (!base::Contains(id_to_app_state_, app_id)) {
@@ -205,6 +259,42 @@ void VideoConferenceAppServiceClient::MaybeRemoveApp(
   // (2) in an extreme case, the instance_registry_ is reset.
   if (!instance_registry_ || !instance_registry_->ContainsAppId(app_id)) {
     id_to_app_state_.erase(app_id);
+    HandleMediaUsageUpdate();
   }
 }
+
+void VideoConferenceAppServiceClient::HandleMediaUsageUpdate() {
+  crosapi::mojom::VideoConferenceMediaUsageStatusPtr new_status =
+      crosapi::mojom::VideoConferenceMediaUsageStatus::New();
+  new_status->client_id = client_id_;
+  new_status->has_media_app = !id_to_app_state_.empty();
+
+  for (const auto& [app_id, app_state] : id_to_app_state_) {
+    new_status->is_capturing_camera |= app_state.is_capturing_camera;
+    new_status->is_capturing_microphone |= app_state.is_capturing_microphone;
+
+    VideoConferencePermissions permissions = GetAppPermission(app_id);
+    new_status->has_camera_permission |= permissions.has_camera_permission;
+    new_status->has_microphone_permission |=
+        permissions.has_microphone_permission;
+  }
+
+  // If `status` equals the previously sent status, don't notify manager.
+  if (new_status.Equals(status_)) {
+    return;
+  }
+  status_ = new_status->Clone();
+
+  auto callback = base::BindOnce([](bool success) {
+    if (!success) {
+      LOG(ERROR)
+          << "VideoConferenceManager::NotifyMediaUsageUpdate did not succeed.";
+    }
+  });
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->video_conference_manager_ash()
+      ->NotifyMediaUsageUpdate(std::move(new_status), std::move(callback));
+}
+
 }  // namespace ash

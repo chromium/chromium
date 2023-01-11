@@ -6,14 +6,18 @@
 
 #include <cstdlib>
 
+#include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +32,7 @@
 #include "ui/aura/test/test_windows.h"
 
 namespace ash {
+namespace {
 
 using AppIdString = std::string;
 
@@ -36,11 +41,28 @@ constexpr char kAppName1[] = "random_app_name_1";
 constexpr char kAppId2[] = "random_app_id_2";
 constexpr char kAppName2[] = "random_app_name_2";
 
-// Creates an app with given id and name.
-apps::AppPtr MakeApp(const AppIdString& app_id, const std::string& name) {
+// Creates an app with given id and permissions.
+apps::AppPtr MakeApp(const AppIdString& app_id,
+                     bool has_camera_permission = false,
+                     bool has_microphone_permission = false) {
   apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
-  app->name = name;
+  if (app_id == kAppId1) {
+    app->name = kAppName1;
+  }
+  if (app_id == kAppId2) {
+    app->name = kAppName2;
+  }
+
   app->publisher_id = app_id;
+
+  app->permissions.push_back(std::make_unique<apps::Permission>(
+      apps::PermissionType::kCamera,
+      std::make_unique<apps::PermissionValue>(has_camera_permission),
+      /*is_managed=*/false));
+  app->permissions.push_back(std::make_unique<apps::Permission>(
+      apps::PermissionType::kMicrophone,
+      std::make_unique<apps::PermissionValue>(has_microphone_permission),
+      /*is_managed=*/false));
   return app;
 }
 
@@ -99,6 +121,8 @@ class FakeAppInstance {
 
 int FakeAppInstance::next_window_id_ = 0;
 
+}  // namespace
+
 class VideoConferenceAppServiceClientTest : public LoginManagerTest {
  public:
   void SetUpOnMainThread() override {
@@ -129,13 +153,26 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
 
   // This function creates an app with given id and name, and adds the app into
   // AppRegistryCache of current profile.
-  void InstallApp(const std::string& app_id, const std::string& app_name) {
+  void InstallApp(const std::string& app_id) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     std::vector<apps::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
-    deltas.push_back(MakeApp(app_id, app_name));
+    deltas.push_back(MakeApp(app_id));
     cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 /* should_notify_initialized = */ false);
+                 /*should_notify_initialized=*/false);
+  }
+
+  // Update the permission of current `app_id`.
+  void UpdateAppPermision(const std::string& app_id,
+                          bool has_camera_permission,
+                          bool has_microphone_permission) {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+    std::vector<apps::AppPtr> deltas;
+    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
+    deltas.push_back(
+        MakeApp(app_id, has_camera_permission, has_microphone_permission));
+    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
+                 /*should_notify_initialized=*/false);
   }
 
   // Set the camera/michrophone accessing info for app with `app_id`.
@@ -162,6 +199,11 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
     return client_->GetAppName(app_id);
   }
 
+  VideoConferenceAppServiceClient::VideoConferencePermissions GetAppPermission(
+      const AppIdString& app_id) {
+    return client_->GetAppPermission(app_id);
+  }
+
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> GetMediaApps() {
     std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> media_app_info;
 
@@ -171,6 +213,14 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
                 result) { media_app_info = std::move(result); }));
 
     return media_app_info;
+  }
+
+  // Returns current VideoConferenceMediaState in the VideoConferenceManagerAsh
+  VideoConferenceMediaState GetMediaStateInVideoConferenceManagerAsh() {
+    return crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->video_conference_manager_ash()
+        ->GetAggregatedState();
   }
 
  protected:
@@ -185,10 +235,39 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppName) {
   // AppName should be empty if it is not installed.
   EXPECT_EQ(GetAppName(kAppId1), std::string());
 
-  InstallApp(kAppId1, kAppName1);
+  InstallApp(kAppId1);
 
   // AppName should be correct if installed.
   EXPECT_EQ(GetAppName(kAppId1), kAppName1);
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppPermission) {
+  InstallApp(kAppId1);
+
+  VideoConferenceAppServiceClient::VideoConferencePermissions permission =
+      GetAppPermission(kAppId1);
+  EXPECT_FALSE(permission.has_camera_permission);
+  EXPECT_FALSE(permission.has_microphone_permission);
+
+  UpdateAppPermision(kAppId1, false, true);
+  permission = GetAppPermission(kAppId1);
+  EXPECT_FALSE(permission.has_camera_permission);
+  EXPECT_TRUE(permission.has_microphone_permission);
+
+  UpdateAppPermision(kAppId1, true, true);
+  permission = GetAppPermission(kAppId1);
+  EXPECT_TRUE(permission.has_camera_permission);
+  EXPECT_TRUE(permission.has_microphone_permission);
+
+  UpdateAppPermision(kAppId1, true, false);
+  permission = GetAppPermission(kAppId1);
+  EXPECT_TRUE(permission.has_camera_permission);
+  EXPECT_FALSE(permission.has_microphone_permission);
+
+  UpdateAppPermision(kAppId1, false, false);
+  permission = GetAppPermission(kAppId1);
+  EXPECT_FALSE(permission.has_camera_permission);
+  EXPECT_FALSE(permission.has_microphone_permission);
 }
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
@@ -211,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
   // skipped.
   EXPECT_TRUE(media_app_info.empty());
 
-  InstallApp(kAppId1, kAppName1);
+  InstallApp(kAppId1);
 
   // GetMediaApps should return kAppId1 since it is installed.
   media_app_info = GetMediaApps();
@@ -274,8 +353,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, ReturnToApp) {
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
   // Install two apps so that they will can be tracked inside GetMediaApps.
-  InstallApp(kAppId1, kAppName1);
-  InstallApp(kAppId2, kAppName2);
+  InstallApp(kAppId1);
+  InstallApp(kAppId2);
 
   // no-camera, no-mic should not start a tracking of the app.
   SetAppCapabilityAccess(kAppId1, false, false);
@@ -322,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, LastActivityTime) {
   // Start an instance of kAppId1.
-  InstallApp(kAppId1, kAppName1);
+  InstallApp(kAppId1);
   FakeAppInstance instance1(profile_, kAppId1);
   instance1.Start();
 
@@ -359,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, LastActivityTime) {
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, CloseApp) {
   // Start two instance of kAppId1.
-  InstallApp(kAppId1, kAppName1);
+  InstallApp(kAppId1);
   FakeAppInstance instance1(profile_, kAppId1);
   instance1.Start();
   FakeAppInstance instance2(profile_, kAppId1);
@@ -400,6 +479,82 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, CloseApp) {
   // in the PostTask.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetMediaApps().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
+                       HandleMediaUsageUpdate) {
+  // Install two apps with permissions.
+  InstallApp(kAppId1);
+  InstallApp(kAppId2);
+  UpdateAppPermision(kAppId1, true, false);
+  UpdateAppPermision(kAppId2, false, true);
+
+  // Start two running instance.
+  FakeAppInstance instance1(profile_, kAppId1);
+  instance1.Start();
+  FakeAppInstance instance2(profile_, kAppId2);
+  instance2.Start();
+
+  VideoConferenceMediaState state = GetMediaStateInVideoConferenceManagerAsh();
+  EXPECT_FALSE(state.has_media_app);
+  EXPECT_FALSE(state.has_camera_permission);
+  EXPECT_FALSE(state.has_microphone_permission);
+  EXPECT_FALSE(state.is_capturing_camera);
+  EXPECT_FALSE(state.is_capturing_microphone);
+  EXPECT_FALSE(state.is_capturing_screen);
+
+  // Accessing camera should start a tracking of the kAppId1.
+  SetAppCapabilityAccess(kAppId1, true, false);
+
+  state = GetMediaStateInVideoConferenceManagerAsh();
+  EXPECT_TRUE(state.has_media_app);
+  EXPECT_TRUE(state.has_camera_permission);
+  EXPECT_TRUE(state.is_capturing_camera);
+
+  // Accessing microphone should start a tracking of the kAppId2.
+  SetAppCapabilityAccess(kAppId2, false, true);
+
+  state = GetMediaStateInVideoConferenceManagerAsh();
+  EXPECT_TRUE(state.has_media_app);
+  EXPECT_TRUE(state.has_microphone_permission);
+  EXPECT_TRUE(state.is_capturing_microphone);
+
+  // This should stop the accessing, but not the permission.
+  SetAppCapabilityAccess(kAppId1, false, false);
+
+  state = GetMediaStateInVideoConferenceManagerAsh();
+  EXPECT_TRUE(state.has_camera_permission);
+  EXPECT_FALSE(state.is_capturing_camera);
+
+  // Closing instance1 should remove tracking of kAppId1.
+  instance1.Close();
+  // Wait for the VideoConferenceAppServiceClient::MaybeRemoveApp to be called
+  // in the PostTask.
+  base::RunLoop().RunUntilIdle();
+
+  state = GetMediaStateInVideoConferenceManagerAsh();
+  EXPECT_FALSE(state.has_camera_permission);
+  EXPECT_FALSE(state.is_capturing_camera);
+
+  SetAppCapabilityAccess(kAppId2, false, false);
+
+  state = GetMediaStateInVideoConferenceManagerAsh();
+  EXPECT_TRUE(state.has_microphone_permission);
+  EXPECT_FALSE(state.is_capturing_microphone);
+
+  // Closing instance2 should remove trackingg of kAppId2.
+  instance2.Close();
+  // Wait for the VideoConferenceAppServiceClient::MaybeRemoveApp to be called
+  // in the PostTask.
+  base::RunLoop().RunUntilIdle();
+
+  state = GetMediaStateInVideoConferenceManagerAsh();
+  EXPECT_FALSE(state.has_media_app);
+  EXPECT_FALSE(state.has_camera_permission);
+  EXPECT_FALSE(state.has_microphone_permission);
+  EXPECT_FALSE(state.is_capturing_camera);
+  EXPECT_FALSE(state.is_capturing_microphone);
+  EXPECT_FALSE(state.is_capturing_screen);
 }
 
 }  // namespace ash

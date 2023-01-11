@@ -95,6 +95,8 @@ class VideoConferenceManagerAsh
   VideoConferenceTrayController* GetTrayController();
 
  private:
+  friend class VideoConferenceAppServiceClientTest;
+
   // A (client_id, client_wrapper) entry is inserted into this map
   // whenever a new client is registered on the manager and deleted
   // upon destruction of the client.

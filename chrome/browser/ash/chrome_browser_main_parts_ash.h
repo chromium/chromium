@@ -92,6 +92,7 @@ class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
 class SigninProfileHandler;
 class SystemTokenCertDBInitializer;
+class VideoConferenceAppServiceClient;
 class WebKioskAppManager;
 class KioskAppManager;
 
@@ -232,6 +233,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       lacros_availability_policy_observer_;
   std::unique_ptr<crosapi::LacrosDataBackwardMigrationModePolicyObserver>
       lacros_data_backward_migration_mode_policy_observer_;
+
+  std::unique_ptr<VideoConferenceAppServiceClient> vc_app_service_client_;
 
   std::unique_ptr<power::SmartChargingManager> smart_charging_manager_;
 
