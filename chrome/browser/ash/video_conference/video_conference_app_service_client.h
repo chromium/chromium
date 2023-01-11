@@ -8,6 +8,8 @@
 #include <map>
 #include <string>
 
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -15,7 +17,6 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "components/user_manager/user_manager.h"
 
 namespace apps {
 class AppRegistryCache;
@@ -31,7 +32,7 @@ class VideoConferenceAppServiceClient
     : public crosapi::mojom::VideoConferenceManagerClient,
       public apps::AppCapabilityAccessCache::Observer,
       public apps::InstanceRegistry::Observer,
-      public user_manager::UserManager::UserSessionStateObserver {
+      public SessionObserver {
  public:
   using AppIdString = std::string;
 
@@ -81,11 +82,14 @@ class VideoConferenceAppServiceClient
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  // user_manager::UserManager::UserSessionStateObserver overrides.
-  void ActiveUserChanged(user_manager::User* active_user) override;
+  // SessionObserver overrides.
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
  private:
   friend class VideoConferenceAppServiceClientTest;
+
+  // Returns current VideoConferenceAppServiceClient for testing purpose.
+  static VideoConferenceAppServiceClient* GetForTesting();
 
   // Returns the name of the app with `app_id`.
   std::string GetAppName(const AppIdString& app_id);
@@ -123,6 +127,9 @@ class VideoConferenceAppServiceClient
 
   // This records a list of AppState; each represents a video conference app.
   std::map<AppIdString, AppState> id_to_app_state_;
+
+  base::ScopedObservation<SessionController, SessionObserver>
+      session_observation_{this};
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

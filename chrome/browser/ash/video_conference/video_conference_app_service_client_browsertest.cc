@@ -6,17 +6,19 @@
 
 #include <cstdlib>
 
+#include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -70,9 +72,9 @@ apps::AppPtr MakeApp(const AppIdString& app_id,
 // showing an app instance.
 class FakeAppInstance {
  public:
-  FakeAppInstance(Profile* profile, const AppIdString& app_id) {
-    instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
-                              ->InstanceRegistry();
+  FakeAppInstance(apps::InstanceRegistry* instance_registry,
+                  const AppIdString& app_id) {
+    instance_registry_ = instance_registry;
     window_ = std::unique_ptr<aura::Window>(
         aura::test::CreateTestWindowWithId(/*id=*/++next_window_id_, nullptr));
     instance_ = std::make_unique<apps::Instance>(
@@ -123,56 +125,46 @@ int FakeAppInstance::next_window_id_ = 0;
 
 }  // namespace
 
-class VideoConferenceAppServiceClientTest : public LoginManagerTest {
+class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    LoginManagerTest::SetUpOnMainThread();
+    InProcessBrowserTest::SetUpOnMainThread();
 
-    // Login two accounts.
-    login_manager_.AppendRegularUsers(2);
-    LoginUser(login_manager_.users()[0].account_id);
-    LoginUser(login_manager_.users()[1].account_id);
+    client_ = VideoConferenceAppServiceClient::GetForTesting();
+    // This is not triggered automatically.
+    client_->OnSessionStateChanged(
+        Shell::Get()->session_controller()->GetSessionState());
 
-    capability_cache_.SetAccountId(login_manager_.users()[0].account_id);
-    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
-        login_manager_.users()[0].account_id, &capability_cache_);
-
-    client_ = std::make_unique<VideoConferenceAppServiceClient>();
-
-    // Switching users will force AppService objects update inside the
-    // `client_`.
-    user_manager::UserManager::Get()->SwitchActiveUser(
-        login_manager_.users()[0].account_id);
-    profile_ = ProfileManager::GetActiveUserProfile();
-  }
-
-  void TearDownOnMainThread() override {
-    client_.reset();
-    LoginManagerTest::TearDownOnMainThread();
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
+                              ->InstanceRegistry();
+    app_registry_cache_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
+                               ->AppRegistryCache();
+    capability_cache_ =
+        apps::AppCapabilityAccessCacheWrapper::Get()
+            .GetAppCapabilityAccessCache(user_manager::UserManager::Get()
+                                             ->GetActiveUser()
+                                             ->GetAccountId());
   }
 
   // This function creates an app with given id and name, and adds the app into
   // AppRegistryCache of current profile.
   void InstallApp(const std::string& app_id) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     std::vector<apps::AppPtr> deltas;
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(MakeApp(app_id));
-    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 /*should_notify_initialized=*/false);
+    app_registry_cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                                /*should_notify_initialized=*/false);
   }
 
   // Update the permission of current `app_id`.
   void UpdateAppPermision(const std::string& app_id,
                           bool has_camera_permission,
                           bool has_microphone_permission) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     std::vector<apps::AppPtr> deltas;
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(
         MakeApp(app_id, has_camera_permission, has_microphone_permission));
-    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 /*should_notify_initialized=*/false);
+    app_registry_cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                                /*should_notify_initialized=*/false);
   }
 
   // Set the camera/michrophone accessing info for app with `app_id`.
@@ -186,7 +178,7 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
     std::vector<apps::CapabilityAccessPtr> deltas;
     deltas.push_back(std::move(delta));
 
-    capability_cache_.OnCapabilityAccesses(std::move(deltas));
+    capability_cache_->OnCapabilityAccesses(std::move(deltas));
   }
 
   // Adds {id, state} pair to client_->id_to_app_state_.
@@ -225,10 +217,13 @@ class VideoConferenceAppServiceClientTest : public LoginManagerTest {
 
  protected:
   int next_window_id_ = 0;
-  LoginManagerMixin login_manager_{&mixin_host_};
-  Profile* profile_ = nullptr;
-  apps::AppCapabilityAccessCache capability_cache_;
-  std::unique_ptr<VideoConferenceAppServiceClient> client_;
+  apps::InstanceRegistry* instance_registry_ = nullptr;
+  apps::AppRegistryCache* app_registry_cache_ = nullptr;
+  apps::AppCapabilityAccessCache* capability_cache_ = nullptr;
+  VideoConferenceAppServiceClient* client_ = nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kVcControlsUi};
 };
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppName) {
@@ -311,9 +306,9 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, ReturnToApp) {
   // Add two instance for kAppId1.
-  FakeAppInstance instance1(profile_, kAppId1);
+  FakeAppInstance instance1(instance_registry_, kAppId1);
   instance1.Start();
-  FakeAppInstance instance2(profile_, kAppId1);
+  FakeAppInstance instance2(instance_registry_, kAppId1);
   instance2.Start();
 
   aura::Window* window1 = instance1.window();
@@ -402,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, MediaCapturing) {
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, LastActivityTime) {
   // Start an instance of kAppId1.
   InstallApp(kAppId1);
-  FakeAppInstance instance1(profile_, kAppId1);
+  FakeAppInstance instance1(instance_registry_, kAppId1);
   instance1.Start();
 
   // has-camera, has-mic should start tracking of the kAppId1.
@@ -439,9 +434,9 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, LastActivityTime) {
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, CloseApp) {
   // Start two instance of kAppId1.
   InstallApp(kAppId1);
-  FakeAppInstance instance1(profile_, kAppId1);
+  FakeAppInstance instance1(instance_registry_, kAppId1);
   instance1.Start();
-  FakeAppInstance instance2(profile_, kAppId1);
+  FakeAppInstance instance2(instance_registry_, kAppId1);
   instance2.Start();
 
   // No media app should be recorded till now.
@@ -490,9 +485,9 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
   UpdateAppPermision(kAppId2, false, true);
 
   // Start two running instance.
-  FakeAppInstance instance1(profile_, kAppId1);
+  FakeAppInstance instance1(instance_registry_, kAppId1);
   instance1.Start();
-  FakeAppInstance instance2(profile_, kAppId2);
+  FakeAppInstance instance2(instance_registry_, kAppId2);
   instance2.Start();
 
   VideoConferenceMediaState state = GetMediaStateInVideoConferenceManagerAsh();

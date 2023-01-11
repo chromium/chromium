@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -11,8 +13,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,6 +21,9 @@
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
+namespace {
+VideoConferenceAppServiceClient* g_client_instance = nullptr;
+}
 
 VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
     : client_id_(base::UnguessableToken::Create()),
@@ -36,19 +39,21 @@ VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
       ->crosapi_ash()
       ->video_conference_manager_ash()
       ->RegisterCppClient(this, client_id_);
-  ChromeUserManager::Get()->AddSessionStateObserver(this);
+
+  session_observation_.Observe(Shell::Get()->session_controller());
+
+  g_client_instance = this;
 }
 
 VideoConferenceAppServiceClient::~VideoConferenceAppServiceClient() {
-  ChromeUserManager::Get()->RemoveSessionStateObserver(this);
   // C++ clients are responsible for manually calling |UnregisterClient| on the
   // manager when disconnecting.
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->UnregisterClient(client_id_);
-  }
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->video_conference_manager_ash()
+      ->UnregisterClient(client_id_);
+
+  g_client_instance = nullptr;
 }
 
 void VideoConferenceAppServiceClient::GetMediaApps(
@@ -188,12 +193,19 @@ void VideoConferenceAppServiceClient::OnInstanceRegistryWillBeDestroyed(
   instance_registry_ = nullptr;
 }
 
-void VideoConferenceAppServiceClient::ActiveUserChanged(
-    user_manager::User* active_user) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
+void VideoConferenceAppServiceClient::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (state != session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
 
   // Skip the profile that AppServiceProxy is not available.
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile) ||
+      !active_user) {
     instance_registry_observation_.Reset();
     app_capability_observation_.Reset();
     return;
@@ -209,9 +221,13 @@ void VideoConferenceAppServiceClient::ActiveUserChanged(
   capability_cache_ =
       apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
           active_user->GetAccountId());
-  DCHECK(capability_cache_);
   app_capability_observation_.Reset();
   app_capability_observation_.Observe(capability_cache_);
+}
+
+VideoConferenceAppServiceClient*
+VideoConferenceAppServiceClient::GetForTesting() {
+  return g_client_instance;
 }
 
 std::string VideoConferenceAppServiceClient::GetAppName(
