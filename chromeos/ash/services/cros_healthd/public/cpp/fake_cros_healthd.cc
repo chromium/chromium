@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -15,8 +16,10 @@
 #include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
@@ -369,6 +372,17 @@ void FakeCrosHealthd::EmitUsbAddEventForTesting() {
   mojom::UsbEventInfo info;
   for (auto& observer : usb_observers_)
     observer->OnAdd(info.Clone());
+}
+
+void FakeCrosHealthd::EmitEventForCategory(mojom::EventCategoryEnum category,
+                                           mojom::EventInfo info) {
+  if (!event_observers_.contains(category)) {
+    return;
+  }
+
+  for (const auto& observer : *event_observers_.at(category)) {
+    observer->OnEvent(info.Clone());
+  }
 }
 
 void FakeCrosHealthd::EmitConnectionStateChangedEventForTesting(
@@ -999,7 +1013,12 @@ void FakeCrosHealthd::AddUsbObserver(
 void FakeCrosHealthd::AddEventObserver(
     mojom::EventCategoryEnum category,
     mojo::PendingRemote<mojom::EventObserver> observer) {
-  NOTIMPLEMENTED();
+  if (!event_observers_.contains(category)) {
+    event_observers_.try_emplace(
+        category, std::make_unique<mojo::RemoteSet<mojom::EventObserver>>());
+  }
+
+  event_observers_.at(category)->Add(std::move(observer));
 }
 
 void FakeCrosHealthd::ProbeTelemetryInfo(

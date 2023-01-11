@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
@@ -199,6 +200,11 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
 
   // Calls the USB event OnAdd on all registered USB observers.
   void EmitUsbAddEventForTesting();
+
+  // Calls the `OnEvent` method with `info` on all observers registered for
+  // `category`.
+  void EmitEventForCategory(mojom::EventCategoryEnum category,
+                            mojom::EventInfo info);
 
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
@@ -449,6 +455,10 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
   // Collection of registered USB observers.
   mojo::RemoteSet<mojom::CrosHealthdUsbObserver> usb_observers_;
+  // Collection of registered general observers grouped by category.
+  base::flat_map<mojom::EventCategoryEnum,
+                 std::unique_ptr<mojo::RemoteSet<mojom::EventObserver>>>
+      event_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
