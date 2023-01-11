@@ -551,9 +551,14 @@ void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool backed_off_types_changed =
       (status.backed_off_types != cached_status_.backed_off_types);
+  const bool invalidation_status_changed =
+      (status.notifications_enabled != cached_status_.notifications_enabled);
   cached_status_ = status;
   if (backed_off_types_changed) {
     host_->OnBackedOffTypesChanged();
+  }
+  if (invalidation_status_changed) {
+    host_->OnInvalidationStatusChanged();
   }
 }
 

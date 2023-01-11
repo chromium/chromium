@@ -164,6 +164,7 @@ class SyncServiceImpl : public SyncService,
   void OnMigrationNeededForTypes(ModelTypeSet types) override;
   void OnActionableError(const SyncProtocolError& error) override;
   void OnBackedOffTypesChanged() override;
+  void OnInvalidationStatusChanged() override;
 
   // DataTypeManagerObserver implementation.
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result) override;

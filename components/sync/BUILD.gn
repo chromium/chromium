@@ -111,8 +111,6 @@ static_library("test_support") {
     "test/sync_change_processor_wrapper_for_test.h",
     "test/sync_client_mock.cc",
     "test/sync_client_mock.h",
-    "test/sync_engine_host_stub.cc",
-    "test/sync_engine_host_stub.h",
     "test/sync_error_factory_mock.cc",
     "test/sync_error_factory_mock.h",
     "test/sync_service_impl_bundle.cc",

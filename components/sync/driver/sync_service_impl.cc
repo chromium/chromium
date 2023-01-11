@@ -896,6 +896,10 @@ void SyncServiceImpl::OnBackedOffTypesChanged() {
   NotifyObservers();
 }
 
+void SyncServiceImpl::OnInvalidationStatusChanged() {
+  NotifyObservers();
+}
+
 void SyncServiceImpl::OnConfigureDone(
     const DataTypeManager::ConfigureResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
