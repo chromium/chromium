@@ -193,6 +193,7 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
                                       /*user_gesture=*/false);
 
       create_params.restore_id = window_iter.first;
+      create_params.creation_source = Browser::CreationSource::kDeskTemplate;
 
       absl::optional<chromeos::WindowStateType> window_state_type(
           app_restore_data->window_state_type);

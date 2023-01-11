@@ -1355,6 +1355,43 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
   EXPECT_EQ(*app_name, *new_app_name);
 }
 
+// Tests that PWAs with out of scope urls are saved and launched correctly.
+// Regression test for b/248645623.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  Browser* pwa_browser =
+      InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/false);
+  ASSERT_TRUE(pwa_browser->is_type_app());
+  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  const std::string* app_name =
+      pwa_window->GetProperty(app_restore::kBrowserAppNameKey);
+  ASSERT_TRUE(app_name);
+
+  const GURL out_of_scope_url(kExampleUrl1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(pwa_browser, out_of_scope_url));
+  // Verify that the PWA has navigated to the out of scope url.
+  const std::vector<GURL> urls = GetURLsForBrowserWindow(pwa_browser);
+  ASSERT_THAT(urls, ElementsAre(out_of_scope_url));
+
+  // Set the template and launch it.
+  SetAndLaunchTemplate(
+      CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate));
+
+  // Verify that the PWA was launched correctly, and that the out of scope url
+  // was successfully opened in the PWA (and not in a normal browser window).
+  Browser* new_pwa_browser = FindLaunchedBrowserByURLs(urls);
+  ASSERT_TRUE(new_pwa_browser);
+  ASSERT_TRUE(new_pwa_browser->is_type_app());
+  aura::Window* new_browser_window =
+      new_pwa_browser->window()->GetNativeWindow();
+  EXPECT_NE(new_browser_window, pwa_window);
+  const std::string* new_app_name =
+      new_browser_window->GetProperty(app_restore::kBrowserAppNameKey);
+  ASSERT_TRUE(new_app_name);
+  EXPECT_EQ(*app_name, *new_app_name);
+}
+
 // Tests that saving and launching a template that contains a PWA in a browser
 // window works as expected.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {

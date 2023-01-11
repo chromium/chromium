@@ -103,12 +103,18 @@ namespace {
 
 // Returns true if |params.browser| exists and can open a new tab for
 // |params.url|. Not all browsers support multiple tabs, such as app frames and
-// popups. TYPE_APP will only open a new tab if the URL is within the app scope.
+// popups. TYPE_APP will open a new tab if the browser was launched from a
+// template, otherwise only if the URL is within the app scope.
 bool WindowCanOpenTabs(const NavigateParams& params) {
-  if (!params.browser)
+  if (!params.browser) {
     return false;
+  }
 
-  if (params.browser->app_controller() &&
+  // If the browser is created from a template, we do not need to check if the
+  // url is in the app scope since we know it was saved directly from the app.
+  if (params.browser->creation_source() !=
+          Browser::CreationSource::kDeskTemplate &&
+      params.browser->app_controller() &&
       !params.browser->app_controller()->IsUrlInAppScope(params.url)) {
     return false;
   }
