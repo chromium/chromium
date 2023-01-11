@@ -28,7 +28,7 @@ found in the LICENSE file.
         android:layout_marginEnd="8dp"
         tools:ignore="ContentDescription"
         android:scaleType="centerInside"
-        app:tint="@macro/default_icon_color_inverse" />
+        app:tint="@macro/default_icon_color_on_accent1" />
 
     <!-- The FrameLayout is to center the smaller LoadingView in the same space as the icon, as well
      as for providing a contentDescription for the LoadingView. -->
@@ -43,7 +43,7 @@ found in the LICENSE file.
             android:layout_width="16sp"
             android:layout_height="16sp"
             android:layout_gravity="center"
-            android:indeterminateTint="@macro/default_icon_color_inverse" />
+            android:indeterminateTint="@macro/default_icon_color_on_accent1" />
     </FrameLayout>
 
     <TextView
