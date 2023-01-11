@@ -2244,13 +2244,21 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - PinnedTabsViewControllerDelegate
 
-- (void)didSelectItemWithID:(NSString*)itemID {
+- (void)pinnedTabsViewController:
+            (PinnedTabsViewController*)pinnedTabsViewController
+             didSelectItemWithID:(NSString*)itemID {
   [self.pinnedTabsDelegate selectItemWithID:itemID];
 
   self.activePage = self.currentPage;
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO
                                        closeTabGrid:YES];
+}
+
+- (void)pinnedTabsViewController:
+            (PinnedTabsViewController*)pinnedTabsViewController
+              didChangeItemCount:(NSUInteger)count {
+  self.topToolbar.pageControl.pinnedTabCount = count;
 }
 
 #pragma mark - GridViewControllerDelegate

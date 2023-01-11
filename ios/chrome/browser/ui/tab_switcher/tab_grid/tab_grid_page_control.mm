@@ -352,6 +352,11 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   [self updateRegularLabels];
 }
 
+- (void)setPinnedTabCount:(NSUInteger)pinnedTabCount {
+  _pinnedTabCount = pinnedTabCount;
+  [self updateRegularLabels];
+}
+
 #pragma mark - Public methods
 
 - (void)setSelectedPage:(TabGridPage)selectedPage animated:(BOOL)animated {
@@ -801,10 +806,11 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
 // Updates the labels displaying the regular tab count.
 - (void)updateRegularLabels {
+  NSUInteger totalTabsCount = self.regularTabCount + self.pinnedTabCount;
   self.regularLabel.attributedText =
-      TextForTabCount(self.regularTabCount, kLabelSize * kLabelSizeToFontSize);
+      TextForTabCount(totalTabsCount, kLabelSize * kLabelSizeToFontSize);
   self.regularSelectedLabel.attributedText = TextForTabCount(
-      self.regularTabCount, kSelectedLabelSize * kLabelSizeToFontSize);
+      totalTabsCount, kSelectedLabelSize * kLabelSizeToFontSize);
 }
 
 // Creates a label for use in this control.

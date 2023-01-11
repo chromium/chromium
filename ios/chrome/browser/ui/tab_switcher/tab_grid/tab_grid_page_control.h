@@ -40,10 +40,17 @@
 // but will not cause any UIControl actions to be sent.
 @property(nonatomic, assign) CGFloat sliderPosition;
 
-// The numbers that the control should display in the appropriate sections.
+// The number of regular tabs that the control should display in the appropriate
+// sections.
 // Numbers less than 1 are not displayed.
 // Numbers greated than 99 are displayed as ':-)'.
 @property(nonatomic, assign) NSUInteger regularTabCount;
+
+// The number of pinned tabs that the control should display in the appropriate
+// sections.
+// Numbers less than 1 are not displayed.
+// Numbers greated than 99 are displayed as ':-)'.
+@property(nonatomic, assign) NSUInteger pinnedTabCount;
 
 // Create and return a new instance of this control. This is the preferred way
 // to create instances of this class.

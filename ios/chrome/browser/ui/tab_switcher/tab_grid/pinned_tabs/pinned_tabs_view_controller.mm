@@ -92,6 +92,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self configureEmptyCollectionViewLabel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self contentWillAppearAnimated:animated];
+}
+
 #pragma mark - Public
 
 - (void)dragSessionEnabled:(BOOL)enabled {
@@ -152,6 +157,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   [self updateEmptyCollectionViewLabelVisibility];
 
+  [self.delegate pinnedTabsViewController:self didChangeItemCount:items.count];
+
   [self.collectionView reloadData];
   [self.collectionView
       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
@@ -165,30 +172,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Consistency check: `item`'s ID is not in `_items`.
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
 
-  ProceduralBlock modelUpdates = ^{
-    [self->_items insertObject:item atIndex:index];
-    self->_selectedItemID = selectedItemID;
-  };
-
-  ProceduralBlock collectionViewUpdates = ^{
-    [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
-    [self updateEmptyCollectionViewLabelVisibility];
-  };
+  NSString* previousItemID = _selectedItemID;
 
   __weak __typeof(self) weakSelf = self;
-  NSString* previousItemID = _selectedItemID;
-  ProceduralBlock collectionViewUpdatesCompletion = ^{
-    [weakSelf updateCollectionViewAfterItemInsertionWithPreviousItemID:
-                  previousItemID];
-  };
-
   [self.collectionView
       performBatchUpdates:^{
-        modelUpdates();
-        collectionViewUpdates();
+        [weakSelf performBatchUpdateForInsertingItem:item
+                                             atIndex:index
+                                      selectedItemID:selectedItemID];
       }
       completion:^(BOOL completed) {
-        collectionViewUpdatesCompletion();
+        [weakSelf
+            handleItemInsertionCompletionWithPreviousItemID:previousItemID];
       }];
 }
 
@@ -199,28 +194,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  ProceduralBlock modelUpdates = ^{
-    [self->_items removeObjectAtIndex:index];
-    self->_selectedItemID = selectedItemID;
-  };
-
-  ProceduralBlock collectionViewUpdates = ^{
-    [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
-    [self updateEmptyCollectionViewLabelVisibility];
-  };
-
   __weak __typeof(self) weakSelf = self;
-  ProceduralBlock collectionViewUpdatesCompletion = ^{
-    [weakSelf updateCollectionViewAfterItemDeletion];
-  };
-
   [self.collectionView
       performBatchUpdates:^{
-        modelUpdates();
-        collectionViewUpdates();
+        [weakSelf performBatchUpdateForRemovingItemAtIndex:index
+                                            selectedItemID:selectedItemID];
       }
       completion:^(BOOL completed) {
-        collectionViewUpdatesCompletion();
+        [weakSelf handleItemRemovalCompletion];
       }];
 }
 
@@ -436,6 +417,56 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private
 
+// Performs (in batch) all the actions needed to insert an `item` at the
+// specified `index` into the collection view and updates its appearance.
+// `selectedItemID` is saved to an instance variable.
+- (void)performBatchUpdateForInsertingItem:(TabSwitcherItem*)item
+                                   atIndex:(NSUInteger)index
+                            selectedItemID:(NSString*)selectedItemID {
+  [_items insertObject:item atIndex:index];
+  _selectedItemID = selectedItemID;
+  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+
+  [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
+  [self updateEmptyCollectionViewLabelVisibility];
+}
+
+// Performs (in batch) all the actions needed to remove an item at the
+// specified `index` from the collection view and updates its appearance.
+// `selectedItemID` is saved to an instance variable.
+- (void)performBatchUpdateForRemovingItemAtIndex:(NSUInteger)index
+                                  selectedItemID:(NSString*)selectedItemID {
+  [_items removeObjectAtIndex:index];
+  _selectedItemID = selectedItemID;
+  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+
+  [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
+  [self updateEmptyCollectionViewLabelVisibility];
+}
+
+// Handles the completion of item insertion into the collection view.
+- (void)handleItemInsertionCompletionWithPreviousItemID:
+    (NSString*)previousItemID {
+  [self
+      updateCollectionViewAfterItemInsertionWithPreviousItemID:previousItemID];
+  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+}
+
+// Handles the completion of item removal into the collection view.
+- (void)handleItemRemovalCompletion {
+  [self updateCollectionViewAfterItemDeletion];
+  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+}
+
+// Notifies the ViewController that its content is being displayed.
+- (void)contentWillAppearAnimated:(BOOL)animated {
+  [self.collectionView reloadData];
+  [self updateEmptyCollectionViewLabelVisibility];
+
+  // Update the delegate, in case it wasn't set when `items` was populated.
+  [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
+}
+
 // Configures the collectionView.
 - (void)configureCollectionView {
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
@@ -602,7 +633,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   DCHECK_LT(index, _items.count);
 
   NSString* itemID = _items[index].identifier;
-  [self.delegate didSelectItemWithID:itemID];
+  [self.delegate pinnedTabsViewController:self didSelectItemWithID:itemID];
 }
 
 @end

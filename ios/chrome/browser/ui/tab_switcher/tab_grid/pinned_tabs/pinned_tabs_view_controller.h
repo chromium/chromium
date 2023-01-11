@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 
+@class PinnedTabsViewController;
 @protocol GridImageDataSource;
 @protocol TabContextMenuProvider;
 
@@ -16,8 +17,17 @@
 // PinnedTabsViewController.
 @protocol PinnedTabsViewControllerDelegate
 
-// Tells the delegate that the item with `itemID` was selected.
-- (void)didSelectItemWithID:(NSString*)itemID;
+// Tells the delegate that the item with `itemID` in `pinnedTabsViewController`
+// was selected.
+- (void)pinnedTabsViewController:
+            (PinnedTabsViewController*)pinnedTabsViewController
+             didSelectItemWithID:(NSString*)itemID;
+
+// Tells the delegate that the the number of items in `pinnedTabsViewController`
+// changed to `count`.
+- (void)pinnedTabsViewController:
+            (PinnedTabsViewController*)pinnedTabsViewController
+              didChangeItemCount:(NSUInteger)count;
 
 @end
 
