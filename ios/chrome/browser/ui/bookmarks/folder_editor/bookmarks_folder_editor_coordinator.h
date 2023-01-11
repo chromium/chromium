@@ -20,12 +20,12 @@ class BookmarkNode;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-// Initializes BookmarksEditorCoordinator, to create a new folder.
+// Initializes BookmarksFolderEditorCoordinator, to create a new folder.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
-// Initializes BookmarksEditorCoordinator. The view will edit the bookmark
+// Initializes BookmarksFolderEditorCoordinator. The view will edit the bookmark
 // folder node. `folderNode` cannot be nil.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)navigationController
