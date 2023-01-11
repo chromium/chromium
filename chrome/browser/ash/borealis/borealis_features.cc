@@ -217,46 +217,59 @@ void BorealisFeatures::IsAllowed(
 }
 
 AllowStatus BorealisFeatures::MightBeAllowed() {
-  if (!base::FeatureList::IsEnabled(features::kBorealis))
+  if (!base::FeatureList::IsEnabled(features::kBorealis)) {
     return AllowStatus::kFeatureDisabled;
+  }
 
-  if (!virtual_machines::AreVirtualMachinesAllowedByPolicy())
+  if (!virtual_machines::AreVirtualMachinesAllowedByPolicy()) {
     return AllowStatus::kVmPolicyBlocked;
+  }
 
-  if (!profile_ || !profile_->IsRegularProfile())
+  if (!profile_ || !profile_->IsRegularProfile()) {
     return AllowStatus::kBlockedOnIrregularProfile;
+  }
 
-  if (!ash::ProfileHelper::IsPrimaryProfile(profile_))
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile_)) {
     return AllowStatus::kBlockedOnNonPrimaryProfile;
+  }
 
-  if (profile_->IsChild())
+  if (profile_->IsChild()) {
     return AllowStatus::kBlockedOnChildAccount;
+  }
 
   const PrefService::Preference* user_allowed_pref =
       profile_->GetPrefs()->FindPreference(prefs::kBorealisAllowedForUser);
-  if (!user_allowed_pref || !user_allowed_pref->GetValue()->GetBool())
+  if (!user_allowed_pref || !user_allowed_pref->GetValue()->GetBool()) {
     return AllowStatus::kUserPrefBlocked;
+  }
 
   // For managed users the preference must be explicitly set true. So we block
   // in the case where the user is managed and the pref isn't.
+  //
+  // TODO(b/213398438): We migrated to using `default_for_enterprise_users` in
+  // crrev.com/c/4121754, which means we should remove the below code since an
+  // enterprise user will always have the policy set to its default (false).
   if (!user_allowed_pref->IsManaged() &&
       profile_->GetProfilePolicyConnector()->IsManaged()) {
     return AllowStatus::kUserPrefBlocked;
   }
 
   version_info::Channel c = chrome::GetChannel();
-  if (c == version_info::Channel::STABLE)
+  if (c == version_info::Channel::STABLE) {
     return AllowStatus::kBlockedOnStable;
+  }
 
-  if (!base::FeatureList::IsEnabled(ash::features::kBorealisPermitted))
+  if (!base::FeatureList::IsEnabled(ash::features::kBorealisPermitted)) {
     return AllowStatus::kBlockedByFlag;
+  }
 
   return AllowStatus::kAllowed;
 }
 
 bool BorealisFeatures::IsEnabled() {
-  if (MightBeAllowed() != AllowStatus::kAllowed)
+  if (MightBeAllowed() != AllowStatus::kAllowed) {
     return false;
+  }
   return profile_->GetPrefs()->GetBoolean(prefs::kBorealisInstalledOnDevice);
 }
 

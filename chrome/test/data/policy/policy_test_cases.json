@@ -13047,7 +13047,7 @@
         "policies": {},
         "prefs": {
           "borealis.allowed_for_user": {
-            "default_value": true
+            "value": false
           }
         }
       },

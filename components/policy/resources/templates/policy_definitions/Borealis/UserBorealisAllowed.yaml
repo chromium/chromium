@@ -1,22 +1,22 @@
 caption: Allow users to use <ph name="BOREALIS_NAME">Borealis</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google
   ChromeOS</ex></ph>
 default: true
+default_for_enterprise_users: false
 desc: |-
   Controls the availability of <ph name="BOREALIS_NAME">Borealis</ph> for this user.
 
-        If the policy is set to false, <ph name="BOREALIS_NAME">Borealis</ph> will be unavailable. Otherwise (when the policy is unset, or true) <ph name="BOREALIS_NAME">Borealis</ph> will be available if and only if no other policy or setting disables it.
+        If the policy is unset, or is set to false, <ph name="BOREALIS_NAME">Borealis</ph> will be unavailable. When the policy is set to true <ph name="BOREALIS_NAME">Borealis</ph> will be available if and only if no other policy or setting disables it.
 example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
 items:
-- caption: Do not prevent <ph name="BOREALIS_NAME">Borealis</ph> from running for
-    a user
+- caption: Allow <ph name="BOREALIS_NAME">Borealis</ph> to run for a user
   value: true
 - caption: Prevent <ph name="BOREALIS_NAME">Borealis</ph> from running for a user
   value: false
 owners:
-- "hollingum@google.com\t"
+- hollingum@google.com
 - dca@google.com
 schema:
   type: boolean
