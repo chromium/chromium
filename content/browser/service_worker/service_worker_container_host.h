@@ -438,10 +438,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   base::TimeTicks create_time() const { return create_time_; }
 
   // For service worker window clients. The RFH ID is set only after navigation
-  // commit. Prefer to use GetRenderFrameHostId() over
-  // GetFrameTreeNodeIdForOngoingNavigation() when possible, since the client
-  // can change to another FrameTreeNode over its lifetime while its RFH ID
-  // never changes. See also comments for RenderFrameHost::GetFrameTreeNodeId()
+  // commit. See also comments for RenderFrameHost::GetFrameTreeNodeId()
   // for more details.
   GlobalRenderFrameHostId GetRenderFrameHostId() const;
 
@@ -449,14 +446,16 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // after navigation commit.
   int GetProcessId() const;
 
-  // For service worker window clients. Returns the frame tree node ID before
-  // the navigation commit starts and kNoFrameTreeNodeId after the navigation
-  // commit. Prefer to use GetRenderFrameHostId() over
-  // GetFrameTreeNodeIdForOngoingNavigation() when possible, since the client
-  // can change to another FrameTreeNode over its lifetime while its RFH ID
-  // never changes. See also comments for RenderFrameHost::GetFrameTreeNodeId()
-  // for more details.
-  int GetFrameTreeNodeIdForOngoingNavigation(
+  // For service worker window clients.
+  // Returns the ongoing navigation request before the navigation commit starts.
+  // Returns a nullptr if the clients was discarded, e.g., the WebContents was
+  // closed.
+  // Never call this function if `GetRenderFrameHostId` can return a valid
+  // value, since the client can change to another FrameTreeNode(FTN) over its
+  // lifetime while its RFH ID never changes, and and function uses the FTN ID
+  // to find the NavigationRequest. See also comments for
+  // RenderFrameHost::GetFrameTreeNodeId() for more details.
+  NavigationRequest* GetOngoingNavigationRequestBeforeCommit(
       base::PassKey<StoragePartitionImpl>) const;
 
   // For service worker clients.

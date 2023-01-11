@@ -1836,15 +1836,16 @@ void StoragePartitionImpl::OnAuthRequired(
             is_primary_main_frame =
                 render_frame_host_impl->IsInPrimaryMainFrame();
           }
-        } else {
+        } else if (NavigationRequest* ongoing_navigation =
+                       container_host->GetOngoingNavigationRequestBeforeCommit(
+                           base::PassKey<StoragePartitionImpl>())) {
+          // This auth request is for an ongoing navigation controlled
+          // by service worker. The navigation request can be nullptr if user
+          // has closed the WebContents.
           // Overwrite the context; set `type` to kNavigationRequestContext.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
-          int frame_tree_node_id =
-              container_host->GetFrameTreeNodeIdForOngoingNavigation(
-                  base::PassKey<StoragePartitionImpl>());
-          context = URLLoaderNetworkContext::CreateForNavigation(
-              *(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
-                    ->navigation_request()));
+          context =
+              URLLoaderNetworkContext::CreateForNavigation(*ongoing_navigation);
         }
       }
     }
@@ -1920,15 +1921,20 @@ void StoragePartitionImpl::OnCertificateRequested(
               container_host->GetRenderFrameHostId();
           context = URLLoaderNetworkContext::CreateForRenderFrameHost(
               render_frame_host_id);
-        } else {
+        } else if (NavigationRequest* ongoing_navigation =
+                       container_host->GetOngoingNavigationRequestBeforeCommit(
+                           base::PassKey<StoragePartitionImpl>())) {
+          // This certification request is for an ongoing navigation.
           // Overwrite the context; set `type` to kNavigationRequestContext.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
-          int frame_tree_node_id =
-              container_host->GetFrameTreeNodeIdForOngoingNavigation(
-                  base::PassKey<StoragePartitionImpl>());
-          context = URLLoaderNetworkContext::CreateForNavigation(
-              *(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
-                    ->navigation_request()));
+          context =
+              URLLoaderNetworkContext::CreateForNavigation(*ongoing_navigation);
+        } else {
+          // The navigation request was canceled since the WebContents was
+          // discarded, so it is meaningless to continue the certification
+          // request.
+          CallCancelRequest(std::move(cert_responder));
+          return;
         }
       }
     }

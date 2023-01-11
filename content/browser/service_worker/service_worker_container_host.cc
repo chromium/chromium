@@ -1104,12 +1104,27 @@ int ServiceWorkerContainerHost::GetProcessId() const {
   return process_id_for_worker_client_;
 }
 
-int ServiceWorkerContainerHost::GetFrameTreeNodeIdForOngoingNavigation(
+NavigationRequest*
+ServiceWorkerContainerHost::GetOngoingNavigationRequestBeforeCommit(
     base::PassKey<StoragePartitionImpl>) const {
   DCHECK(IsContainerForWindowClient());
   DCHECK_NE(ongoing_navigation_frame_tree_node_id_,
             RenderFrameHost::kNoFrameTreeNodeId);
-  return ongoing_navigation_frame_tree_node_id_;
+  DCHECK(!GetRenderFrameHostId());
+
+  // It is safe to use `ongoing_navigation_frame_tree_node_id_` to obtain the
+  // corresponding navigation request without being concerned about the case
+  // that a new navigation had started and the old navigation had been deleted,
+  // because the owner of this instance will reset the key that can be used to
+  // retrieve this instance, which makes the old key stale and cannot locate
+  // this instance. This mechanism guarantees that this instance would always be
+  // associated with the latest navigation.
+  // However, this design requires callers to carefully get the
+  // `ServiceWorkerContainerHost` instance from scratch instead of using a
+  // stored one, and it would be better to optimize the design when possible.
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(ongoing_navigation_frame_tree_node_id_);
+  return frame_tree_node ? frame_tree_node->navigation_request() : nullptr;
 }
 
 const std::string& ServiceWorkerContainerHost::client_uuid() const {

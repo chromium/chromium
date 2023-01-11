@@ -18,6 +18,7 @@
 #include "net/base/net_errors.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_server_config.h"
+#include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -102,6 +103,57 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTlsTest, ClientAuthFetchMainResource) {
   EXPECT_FALSE(NavigateToURL(
       shell(), https_server.GetURL("/workers/simple.html?intercept")));
   EXPECT_EQ(1, select_certificate_count());
+}
+
+// Tests that TLS client auth prompts for a page controlled by a service
+// worker drop silently without crash if the client gets destroyed right
+// before the UA receives the certification request. Regression test for
+// https://crbug.com/1375795.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTlsTest,
+                       ClientAuthFetchMainResourceAfterDestruction) {
+  // 1. Start an HTTPS server which doesn't need client certs and initialize
+  // trackers.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::test_server::ConnectionTracker connection_tracker{&https_server};
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_cert_type =
+      net::SSLServerConfig::ClientCertType::NO_CLIENT_CERT;
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+  ASSERT_TRUE(https_server.Start());
+  GURL service_worker_page_url =
+      https_server.GetURL("/workers/service_worker_setup.html");
+  GURL destruction_url = https_server.GetURL("/workers/simple.html?intercept");
+
+  // 2. Open a new shell and load a page that installs the service worker.
+  Shell* new_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetController().GetBrowserContext(),
+      GURL::EmptyGURL(), nullptr, gfx::Size());
+  EXPECT_TRUE(NavigateToURL(new_shell, service_worker_page_url));
+  ASSERT_EQ("ok", EvalJs(new_shell, "setup();"));
+
+  // 3. Set the HTTPS server to require client certs.
+  ssl_config.client_cert_type =
+      net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+  https_server.ResetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+
+  // 4. Load a page that the SW intercepts with respondWith(fetch()), and then
+  // hold the test until the client is attempting to build the connection with
+  // the server. The server will ask the client for the certification soon.
+  TestNavigationManager navigation_manager{new_shell->web_contents(),
+                                           destruction_url};
+  ASSERT_EQ(connection_tracker.GetAcceptedSocketCount(), 2U);
+  std::ignore = ExecJs(new_shell, JsReplace("location = $1", destruction_url),
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  navigation_manager.ResumeNavigation();
+  connection_tracker.WaitForAcceptedConnections(3);
+
+  // 5. Close the tab.
+  new_shell->Close();
+
+  // Crash should not happen.
+  EXPECT_FALSE(NavigateToURL(shell(), https_server.GetURL("/title1.html")));
 }
 
 // Tests that TLS client auth prompts for a page controlled by a service
