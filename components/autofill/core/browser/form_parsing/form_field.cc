@@ -51,6 +51,8 @@ namespace autofill {
 
 namespace {
 
+constexpr char16_t kEmptyLabelRegex[] = u"^$";
+
 constexpr bool IsEmpty(const char16_t* s) {
   return s == nullptr || s[0] == '\0';
 }
@@ -354,7 +356,7 @@ bool FormField::ParseInAnyOrder(
 bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
                                 AutofillField** match) {
   return ParseFieldSpecificsWithLegacyPattern(
-      scanner, u"^$",
+      scanner, kEmptyLabelRegex,
       MatchParams({MatchAttribute::kLabel}, kAllMatchFieldTypes), match,
       /*logging=*/{});
 }
@@ -442,11 +444,14 @@ bool FormField::Match(const AutofillField* field,
     found_match = true;
     match_type_string = "Match in name";
     value = name;
-  } else if (match_label &&
+  } else if (match_label && pattern != kEmptyLabelRegex &&
              base::FeatureList::IsEnabled(
-                 features::kAutofillConsiderPlaceholderForParsing) &&
+                 features::kAutofillAlwaysParsePlaceholders) &&
              MatchesRegexWithCache(field->placeholder, pattern,
                                    capture_destination)) {
+    // Placeholders are matched against the same regexes as labels. However, to
+    // prevent false positives in `ParseEmptyLabel()`, matches in placeholders
+    // are explicitly prevented for `kEmptyLabelRegex`.
     // TODO(crbug.com/1317961): The label and placeholder cases should logically
     // be grouped together. Placeholder is currently last, because for the finch
     // study we want the group assignment to happen as late as possible.
