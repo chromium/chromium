@@ -152,7 +152,7 @@ class RenderFrameHostImplForHistoryBackInterceptor
   void GoToEntryAtOffset(int32_t offset,
                          bool has_user_gesture,
                          absl::optional<blink::scheduler::TaskAttributionId>
-                             soft_navigation_heuristics_task_id) override {
+                             soft_navigation_heuristic_task_id) override {
     if (quit_handler_)
       std::move(quit_handler_).Run();
   }

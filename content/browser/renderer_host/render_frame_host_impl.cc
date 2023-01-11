@@ -6197,7 +6197,7 @@ void RenderFrameHostImpl::GoToEntryAtOffset(
     int32_t offset,
     bool has_user_gesture,
     absl::optional<blink::scheduler::TaskAttributionId>
-        soft_navigation_heuristics_task_id) {
+        soft_navigation_heuristic_task_id) {
   OPTIONAL_TRACE_EVENT2("content", "RenderFrameHostImpl::GoToEntryAtOffset",
                         "render_frame_host", this, "offset", offset);
 
@@ -6215,7 +6215,7 @@ void RenderFrameHostImpl::GoToEntryAtOffset(
   // All frames are allowed to navigate the global history.
   if (delegate_->IsAllowedToGoToEntryAtOffset(offset)) {
     frame_tree_->controller().GoToOffsetFromRenderer(
-        offset, this, soft_navigation_heuristics_task_id);
+        offset, this, soft_navigation_heuristic_task_id);
   }
 }
 
