@@ -345,10 +345,13 @@ class FixtureWithMockMessagePump : public Fixture {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockTimeMessagePump> pump_ = nullptr;
   SimpleTestTickClock mock_clock_;
   CallCountingTickClock call_counting_clock_;
+
+  // Must outlive `pump_`.
   std::unique_ptr<SequenceManagerForTest> sequence_manager_;
+
+  raw_ptr<MockTimeMessagePump> pump_ = nullptr;
   WakeUpType wake_up_type_;
   TimeTicks start_time_;
 };
