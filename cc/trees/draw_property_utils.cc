@@ -506,14 +506,9 @@ bool LayerNeedsUpdate(LayerType* layer,
         !HasSingularTransform(backface_transform_id, tree) &&
         draw_property_utils::IsLayerBackFaceVisible(
             layer, backface_transform_id, property_trees)) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.Renderer.LayerUpdateSkippedDueToBackface", true);
       return false;
     }
   }
-
-  UMA_HISTOGRAM_BOOLEAN("Compositing.Renderer.LayerUpdateSkippedDueToBackface",
-                        false);
 
   return true;
 }
