@@ -391,11 +391,35 @@ void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
 
 ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
     const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
+    const absl::optional<testing::Matcher<std::string>>& id,
+    const absl::optional<testing::Matcher<std::string>>& name,
+    const absl::optional<testing::Matcher<std::string>>& src,
     const absl::optional<SameOriginMatcher>& same_origin_details) {
   return testing::Pointee(testing::AllOf(
       testing::Field("blocked",
                      &blink::mojom::BackForwardCacheNotRestoredReasons::blocked,
                      blocked),
+      id.has_value()
+          ? testing::Field(
+                "id", &blink::mojom::BackForwardCacheNotRestoredReasons::id,
+                testing::Optional(id.value()))
+          : testing::Field(
+                "id", &blink::mojom::BackForwardCacheNotRestoredReasons::id,
+                absl::optional<std::string>(absl::nullopt)),
+      name.has_value()
+          ? testing::Field(
+                "name", &blink::mojom::BackForwardCacheNotRestoredReasons::name,
+                testing::Optional(name.value()))
+          : testing::Field(
+                "name", &blink::mojom::BackForwardCacheNotRestoredReasons::name,
+                absl::optional<std::string>(absl::nullopt)),
+      src.has_value()
+          ? testing::Field(
+                "src", &blink::mojom::BackForwardCacheNotRestoredReasons::src,
+                testing::Optional(src.value()))
+          : testing::Field(
+                "src", &blink::mojom::BackForwardCacheNotRestoredReasons::src,
+                absl::optional<std::string>(absl::nullopt)),
       testing::Field(
           "same_origin_details",
           &blink::mojom::BackForwardCacheNotRestoredReasons::
@@ -410,20 +434,10 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
 }
 
 SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
-    const testing::Matcher<std::string>& id,
-    const testing::Matcher<std::string>& name,
-    const testing::Matcher<std::string>& src,
     const testing::Matcher<std::string>& url,
     const std::vector<testing::Matcher<std::string>>& reasons,
     const std::vector<ReasonsMatcher>& children) {
   return testing::Pointee(testing::AllOf(
-      testing::Field(
-          "id", &blink::mojom::SameOriginBfcacheNotRestoredDetails::id, id),
-      testing::Field("name",
-                     &blink::mojom::SameOriginBfcacheNotRestoredDetails::name,
-                     name),
-      testing::Field(
-          "src", &blink::mojom::SameOriginBfcacheNotRestoredDetails::src, src),
       testing::Field(
           "url", &blink::mojom::SameOriginBfcacheNotRestoredDetails::url, url),
       testing::Field(

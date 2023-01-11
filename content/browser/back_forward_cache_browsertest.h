@@ -133,11 +133,11 @@ class BackForwardCacheBrowserTest
 
   ReasonsMatcher MatchesNotRestoredReasons(
       const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
+      const absl::optional<testing::Matcher<std::string>>& id,
+      const absl::optional<testing::Matcher<std::string>>& name,
+      const absl::optional<testing::Matcher<std::string>>& src,
       const absl::optional<SameOriginMatcher>& same_origin_details);
   SameOriginMatcher MatchesSameOriginDetails(
-      const testing::Matcher<std::string>& id,
-      const testing::Matcher<std::string>& name,
-      const testing::Matcher<std::string>& src,
       const testing::Matcher<std::string>& url,
       const std::vector<testing::Matcher<std::string>>& reasons,
       const std::vector<ReasonsMatcher>& children);

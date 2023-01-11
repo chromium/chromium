@@ -5,16 +5,14 @@
 module blink.mojom;
 
 // This is a recursive struct which has HTML attributes and information
-// about whether this document blocked back/forward cache.
+// about whether this document blocked back/forward cache.  This struct
+// contains the information that is reported for same-origin iframes.
+// This will be sent from browser to renderer as part of
+// BackForwardCacheNotRestoredReasons.
 struct SameOriginBfcacheNotRestoredDetails {
-  // URL when the frame navigated away. This could be cut down if the reported value was longer than a limit.
+  // URL when the frame navigated away. This could be cut down if the
+  // reported value was longer than a limit.
   string url;
-  // HTML src attribute of the frame. This could be cut down if the reported value was longer than a limit.
-  string src;
-  // HTML id attribute of the frame.
-  string id;
-  // HTML name attribute of the frame.
-  string name;
   // List of reasons that blocked back/forward cache if any.
   array<string> reasons;
   // List of children frames' information.
@@ -25,17 +23,27 @@ struct SameOriginBfcacheNotRestoredDetails {
 enum BFCacheBlocked {
   kYes = 0,
   kNo = 1,
-  // This value indicates that the privacy sensitive information (whether or not a document blocked back/forward cache) is masked for a cross-origin iframe.
+  // This value indicates that the privacy sensitive information (whether or
+  // not a document blocked back/forward cache) is masked for a cross-origin
+  // iframe.
   kMasked = 2
 };
 
-// Struct for NotRestoredReasons API to report from browser to renderer.
+// Struct for NotRestoredReasons API to report from browser to renderer. This
+// contains the information that is common to both same-origin and cross-origin iframes.
 struct BackForwardCacheNotRestoredReasons {
   // Indicates whether or not this document blocked back/forward cache. If this
   // document is cross-origin from the main document, this indicates if this
   // frame's subtree blocked back/forward cache. This value can be |kMasked| for
   // privacy reasons.
   BFCacheBlocked blocked;
+  // HTML src attribute of the frame. This could be cut down if the reported
+  // value was longer than a limit.
+  string? src;
+  // HTML id attribute of the frame.
+  string? id;
+  // HTML name attribute of the frame.
+  string? name;
   // This will be absl::nullopt when this document is cross-origin from the main
   // document.
   SameOriginBfcacheNotRestoredDetails? same_origin_details;
