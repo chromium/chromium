@@ -90,7 +90,7 @@ public class FledgeAllSitesFragmentV4
                     new FledgePreference(getStyledContext(), site, mLargeIconBridge);
             preference.setImage(R.drawable.btn_close,
                     getResources().getString(
-                            R.string.privacy_sandbox_remove_site_button_description, site));
+                            R.string.settings_fledge_page_block_site_a11y_label, site));
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
             mPreferenceScreen.addPreference(preference);

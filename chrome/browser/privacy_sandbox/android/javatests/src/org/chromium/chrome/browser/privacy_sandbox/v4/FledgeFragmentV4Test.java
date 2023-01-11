@@ -117,7 +117,8 @@ public final class FledgeFragmentV4Test {
 
     private void startFledgeSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
-        ViewUtils.onViewWaiting(withText(R.string.settings_fledge_page_title));
+        ViewUtils.onViewWaiting(allOf(withText(R.string.settings_fledge_page_title),
+                withParent(withId(R.id.action_bar))));
     }
 
     private Matcher<View> getFledgeToggleMatcher() {
@@ -127,7 +128,7 @@ public final class FledgeFragmentV4Test {
     }
 
     private View getFledgeRootView() {
-        return getRootViewSanitized(R.string.settings_fledge_page_title);
+        return getRootViewSanitized(R.string.settings_fledge_page_toggle_sub_label);
     }
 
     private View getAllSitesPageRootView() {
@@ -159,6 +160,16 @@ public final class FledgeFragmentV4Test {
 
     private String generateSiteFromNr(int nr) {
         return "site-" + nr + ".com";
+    }
+
+    // TODO(http://b/265121969): Properly deal with the spans in the description
+    private Matcher<View> emptyFledgeDescriptionMatcher() {
+        return withText(containsString("It can take up to a week"));
+    }
+
+    // TODO(http://b/265121969): Properly deal with the spans in the description
+    private Matcher<View> disabledFledgeDescriptionMatcher() {
+        return withText(containsString("When on, a list of sites"));
     }
 
     @Test
@@ -259,10 +270,8 @@ public final class FledgeFragmentV4Test {
         onView(getFledgeToggleMatcher()).perform(click());
 
         assertTrue(isFledgePrefEnabled());
-        onViewWaiting(withText(R.string.settings_fledge_page_current_sites_description_empty))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.settings_fledge_page_current_sites_description_disabled))
-                .check(doesNotExist());
+        onViewWaiting(emptyFledgeDescriptionMatcher()).check(matches(isDisplayed()));
+        onView(disabledFledgeDescriptionMatcher()).check(doesNotExist());
 
         assertThat(
                 mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Fledge.Enabled"));
@@ -299,10 +308,8 @@ public final class FledgeFragmentV4Test {
         onView(getFledgeToggleMatcher()).perform(click());
 
         assertFalse(isFledgePrefEnabled());
-        onViewWaiting(withText(R.string.settings_fledge_page_current_sites_description_disabled))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.settings_fledge_page_current_sites_description_empty))
-                .check(doesNotExist());
+        onViewWaiting(disabledFledgeDescriptionMatcher()).check(matches(isDisplayed()));
+        onView(emptyFledgeDescriptionMatcher()).check(doesNotExist());
 
         assertThat(mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Fledge.Disabled"));
@@ -374,8 +381,7 @@ public final class FledgeFragmentV4Test {
                 .check(matches(isDisplayed()));
 
         // Check that the empty state UI is displayed when the sites list is empty.
-        onView(withText(R.string.settings_fledge_page_current_sites_description_empty))
-                .check(matches(isDisplayed()));
+        onView(emptyFledgeDescriptionMatcher()).check(matches(isDisplayed()));
 
         // Open the blocked sites sub-page.
         onView(withText(R.string.settings_fledge_page_blocked_sites_heading)).perform(click());
@@ -418,7 +424,7 @@ public final class FledgeFragmentV4Test {
 
         // Go back to the main Fledge fragment.
         pressBack();
-        onViewWaiting(withText(R.string.settings_fledge_page_title));
+        onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label));
 
         // Verify that the sites are unblocked.
         onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
@@ -488,7 +494,7 @@ public final class FledgeFragmentV4Test {
         setFledgePrefEnabled(true);
         startFledgeSettings();
         // Open a Topics settings activity.
-        onView(withText(containsString("topics settings"))).perform(clickOnClickableSpan(0));
+        onView(withText(containsString("Ad topics"))).perform(clickOnClickableSpan(0));
         onView(withText(R.string.settings_topics_page_title)).check(matches(isDisplayed()));
         // Close the additional activity by navigating back.
         pressBack();
@@ -504,5 +510,23 @@ public final class FledgeFragmentV4Test {
         onView(withText(R.string.third_party_cookies_page_title)).check(matches(isDisplayed()));
         // Close the additional activity by navigating back.
         pressBack();
+    }
+
+    @Test
+    @SmallTest
+    public void testLearnMoreAlwaysVisible() {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1);
+        startFledgeSettings();
+        // Verify learn more is displayed when the current sites list is populated
+        onView(withText(containsString("Learn more"))).check(matches(isDisplayed()));
+        // Verify learn more is displayed when the current sites list is empty
+        clickImageButtonNextToText(SITE_NAME_1);
+        onViewWaiting(emptyFledgeDescriptionMatcher());
+        onView(withText(containsString("Learn more"))).check(matches(isDisplayed()));
+        // Verify learn more is displayed when Fledge is disabled
+        onView(getFledgeToggleMatcher()).perform(click());
+        onViewWaiting(disabledFledgeDescriptionMatcher());
+        onView(withText(containsString("Learn more"))).check(matches(isDisplayed()));
     }
 }

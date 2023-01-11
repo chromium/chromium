@@ -95,6 +95,18 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
                 new SpanApplier.SpanInfo("<link>", "</link>",
                         new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
 
+        mEmptyFledgePreference.setSummary(SpanApplier.applySpans(
+                getResources().getString(
+                        R.string.settings_fledge_page_current_sites_description_empty),
+                new SpanApplier.SpanInfo("<link>", "</link>",
+                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+
+        mDisabledFledgePreference.setSummary(SpanApplier.applySpans(
+                getResources().getString(
+                        R.string.settings_fledge_page_current_sites_description_disabled),
+                new SpanApplier.SpanInfo("<link>", "</link>",
+                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
+
         mFooterPreference.setSummary(SpanApplier.applySpans(
                 getResources().getString(R.string.settings_fledge_page_footer),
                 new SpanApplier.SpanInfo("<link1>", "</link1>",
@@ -186,7 +198,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
                     new FledgePreference(getContext(), site, mLargeIconBridge);
             preference.setImage(R.drawable.btn_close,
                     getResources().getString(
-                            R.string.privacy_sandbox_remove_site_button_description, site));
+                            R.string.settings_fledge_page_block_site_a11y_label, site));
             preference.setDividerAllowedAbove(false);
             preference.setOnPreferenceClickListener(this);
             mCurrentSitesCategory.addPreference(preference);

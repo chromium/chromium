@@ -1114,7 +1114,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_SUB_PAGE_TITLE" translateable="false" desc="">
         Integer faucibus metus
       </message>
-      <!-- TODO(http://b/254412601): Format links.-->
       <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" translateable="false" desc="Section description for the current Topics list.">
         Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit, eget bibendum neque.  <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
@@ -1129,60 +1128,65 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       </message>
 
       <!-- Privacy Sandbox v4 - Fledge Page -->
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" translateable="false" desc="Title for the Fledge preferences page.">
-        Fledge title
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" desc="A page title and the name of a new setting. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an “Ad privacy” page in Chrome settings. For an equivalent structure, see “Security” on chrome://settings/privacy that opens chrome://settings/security. Likewise, “Ad privacy” on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
+        Site-suggested ads
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_LABEL" translateable="false" desc="Title for the Fledge toggle.">
-        Nunc aliquam consequat felis non tincidunt
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_LABEL" desc="The label for a new setting.">
+        Site-suggested ads
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Description for the Fledge toggle.">
-        Donec pretium non elit vitae ornare. Morbi arcu elit, rutrum nec sapien quis
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_SUB_LABEL" desc="A description of the new Site-suggested ads setting. This text appears beneath the name of the new setting, 'Site-suggested ads', and is associated with the control that a user can turn on or off. * 'determine what you like': Based on your interaction with a site, that site can define your interests any way it wants. For example, if you put a pair of red running shoes in a shopping cart, the site might define an interest as 'red_running_shoes_size_36'. * 'suggest ads as you continue browsing': 1) you interact with a site and if defines an interest for you. That information is saved with Chrome. 2) You continue browsing. 3) a new site you visit checks with Chrome if 'Site-suggested ads' is turned on and then can request information related to that user. 4) The site might end up showing ads related to 'red_running_shoes_size_36'. **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an “Ad privacy” page in Chrome settings. For an equivalent structure, see “Security” on chrome://settings/privacy that opens chrome://settings/security. Likewise, “Ad privacy” on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
+        Sites you visit can determine what you like and then suggest ads as you continue browsing
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_HEADING" translateable="false" desc="Section title for the current Fledge sites list.">
-        Aliquam
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_HEADING" desc="A label for a list of sites the user has visited. The list of sites looks similar to the user's browsing history, but this is a distinct list. * 'browsing history' is a list of the sites the user has visited. See the Help-center definition here: https://support.google.com/chrome/answer/95589 * This list of 'Sites' is a subset of the user's browsing history. 1) Only sites that use the 'Site-suggested ads' API (https://developer.chrome.com/docs/privacy-sandbox/fledge/) can appear on this list. 2) This list is based on recent sites the user has visited and sites older than 4 weeks are regularly deleted.">
+        Sites
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION" translateable="false" desc="Section description for the current Fledge sites list.">
-        Nullam sollicitudin elit vitae hendrerit suscipit. Nunc mi leo, placerat sit amet lorem non, semper convallis sapien. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION" desc="A paragraph beneath the 'Sites' label. It explains how users can control the sites that appear in the list. * 'block sites': When a user blocks a site, that site may no longer save info with Chrome about the user's visit. As the user continues to browse, they will not see ads suggested by the blocked site. * 'auto-deletes': We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly. ">
+        You can block sites you don’t want. Chrome also auto-deletes sites from the list that are older than 4 weeks. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_DISABLED" translateable="false" desc="Description which appears when Fledge is disabled.">
-        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_DISABLED" desc="1 of 3 possible descriptions that appear beneath the 'Sites' title. If this setting is off, no sites appear. The link opens a dialog box that provides more information about Site-suggested ads.">
+        When on, a list of sites you visit that guess your interests appears here. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" translateable="false" desc="Description which appears when the Fledge sites list is empty.">
-        Morbi quis orci in mauris tempus rutrum. Curabitur blandit orci tortor, pellentesque tempor turpis lacinia ac.
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" desc="1 of 3 possible descriptions that appear beneath the 'Sites' title. This setting could be on but no topics appear in the list. This text explains why.">
+        It can take up to a week for a list of sites to appear here based on your browsing history. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_SEE_ALL_SITES_LABEL" translateable="false" desc="Title for the all Fledge sites preference.">
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_SEE_ALL_SITES_LABEL" desc="Text that serves as a button. Because the list of sites might be long, we only show the most recent sites. This button allows the user to browse all sites (because sites are auto-deleted every 4 weeks, the list is never older than 4 weeks).">
+        See all sites
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_HEADING" desc="A label that serves as a button to open the 'Sites you blocked' page.">
+        Sites you blocked
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Site-suggested ads' setting. The user is on this page. * 'Ad topics': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
+        As you browse, whether an ad you see is personalized depends on this setting, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>Ad topics<ph name="END_LINK_1">&lt;/link1&gt;</ph>, your <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, and if the site you’re viewing personalizes ads
+      </message>
+      <message name="IDS_SETTINGS_FLEDGE_ALL_SITES_SUB_PAGE_TITLE" desc="The page title that shows all sites. This is a subpage.">
         All sites
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_HEADING" translateable="false" desc="Title for the blocked Fledge sites preference.">
-        Blocked sites
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_SUB_PAGE_TITLE" desc="The page title that shows blocked sites. This is a subpage.">
+        Sites you blocked
       </message>
-      <!-- TODO(http://b/254412044): Format links.-->
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_FOOTER" translateable="false" desc="">
-        Fledge footer. Pellentesque sollicitudin purus sit amet felis fringilla blandit. Donec a eleifend ligula, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>topics settings<ph name="END_LINK_1">&lt;/link1&gt;</ph>. Vivamus sit amet <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>. Etiam ultricies rutrum orci, eget accumsan purus mattis in.
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION" desc="1 of 2 possible descriptions that appear beneath the 'Sites you blocked' title. In this case, the user has previously blocked sites. * 'pool of sites': We want to express that by clicking 'Add', the user is making a site eligible again for consideration.">
+        Add a site back if you want it in the pool of sites that can guess what you like
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_ALL_SITES_SUB_PAGE_TITLE" translateable="false" desc="">
-        All sites
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMPTY" desc="1 of 2 possible descriptions beneath the 'Sites you blocked' title. In this case, the list is empty (the user hasn't blocked any sites).">
+        Blocked sites appear here
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_SUB_PAGE_TITLE" translateable="false" desc="">
-        Blocked sites
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_HEADING" desc="The title of a dialog box that explains site-suggested ads in more detail.">
+        More about site-suggested ads
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION" translateable="false" desc="">
-        Vivamus ultrices libero purus, quis gravida risus tristique eu. Integer nunc mi, feugiat a pharetra et.
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_1" desc="1 of 3 paragraphs on the Learn more page for Site-suggested ads. * 'It's common...' this sentence is intended to be reassuring. Many sites the user visits are retaining some information about the user, such as their preferred language if the site has a language picker. If cookies are allowed, this info might be stored with a first-party cookie on the user's device. Sites can also store limited information with Chrome.">
+        It’s common for sites you visit to remember things you’re interested in, to personalize your experience. Sites can also store information with Chrome about your interests.
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCKED_SITES_DESCRIPTION_EMPTY" translateable="false" desc="">
-        Vivamus non urna sit amet turpis euismod semper. Phasellus sodales turpis ipsum.
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_2" desc="2 of 3 paragraphs on the Learn more page for Site-suggested ads.">
+        For example, if you visit a site that sells long-distance running shoes, the site might decide that you’re interested in running marathons. Later, if you visit a different site, that site can show you an ad for running shoes suggested by the first site.
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_HEADING" translateable="false" desc="">
-        Vivamus nibh turpis
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3" desc="3 of 3 paragraphs on the Learn more page for Site-suggested ads. * 'Auto-deletes': This could just read 'Chrome deletes...' but we include the 'auto' to suggest that the deletion happens regularly and as part of the system. * 'A site you visit again...': We want to reassure the user. We just told them sites are automatically deleted. And yet, a user might see the same site in the list month after month if they visit that site regularly.">
+        Chrome auto-deletes sites that are older than 4 weeks. A site you visit again might reappear on the list. Or you can block a site from suggesting ads for you.
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_1" translateable="false" desc="">
-        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_BLOCK_SITE_A11Y_LABEL" desc="A button label read by screen readers that indicates which site will get blocked. The list is of sites the user has recently visited and that use the Site-suggested ads API to suggest ads to other sites as the user continues browsing.">
+        Block <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_2" translateable="false" desc="">
-        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
-      </message>
-      <message name="IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3" translateable="false" desc="">
-        Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+      <message name="IDS_SETTINGS_FLEDGE_PAGE_ALLOW_SITE_A11Y_LABEL" desc="A button label read by screen readers that indicates which site will get added back to the pool of potential sites.">
+        Add <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
       </message>
 
       <!-- Privacy Sandbox v4 - Ad Measurement Page -->

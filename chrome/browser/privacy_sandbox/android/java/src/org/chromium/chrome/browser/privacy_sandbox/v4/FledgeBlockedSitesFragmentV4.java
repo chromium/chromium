@@ -97,7 +97,7 @@ public class FledgeBlockedSitesFragmentV4
                     new FledgePreference(getContext(), site, mLargeIconBridge);
             preference.setImage(R.drawable.ic_add,
                     getResources().getString(
-                            R.string.privacy_sandbox_add_site_button_description, site));
+                            R.string.settings_fledge_page_allow_site_a11y_label, site));
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
             mBlockedSitesCategory.addPreference(preference);
