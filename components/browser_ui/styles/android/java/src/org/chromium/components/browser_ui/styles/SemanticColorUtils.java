@@ -113,6 +113,11 @@ public class SemanticColorUtils {
         return getDefaultBgColor(context);
     }
 
+    /** Returns the semantic color value that corresponds to default_bg_color_elev_1. */
+    public static @ColorInt int getDefaultBgColorElev1(Context context) {
+        return resolveSurfaceColorElev(R.dimen.default_elevation_1, context);
+    }
+
     /** Returns the semantic color value that corresponds to default_bg_color_elev_2. */
     public static @ColorInt int getDefaultBgColorElev2(Context context) {
         return resolveSurfaceColorElev(R.dimen.default_elevation_2, context);
