@@ -1232,7 +1232,7 @@
     You have run out of space
   </message>
   <message name="IDS_FILE_BROWSER_SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE" desc="Message informing the user that there is not enough space on a specific shared drive.">
-    Files can't be uploaded because <ph name="SHARED_DRIVE_NAME">$1<ex>Shared team documents</ex></ph> doesn't have enough storage.
+    Files can't be uploaded because "<ph name="SHARED_DRIVE_NAME">$1<ex>Shared team documents</ex></ph>" doesn't have enough storage.
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_CANNOT_REACH" desc="Message informing the user that Google Drive can not be reached at this moment.">
     Google Drive cannot be reached at this time.
