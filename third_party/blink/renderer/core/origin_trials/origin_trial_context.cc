@@ -529,10 +529,6 @@ Vector<OriginTrialFeature> OriginTrialContext::RestrictedFeaturesForTrial(
       restricted.push_back(OriginTrialFeature::kFledge);
     if (!base::FeatureList::IsEnabled(features::kBrowsingTopics))
       restricted.push_back(OriginTrialFeature::kTopicsAPI);
-    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
-        !base::FeatureList::IsEnabled(features::kBrowsingTopicsXHR)) {
-      restricted.push_back(OriginTrialFeature::kTopicsXHR);
-    }
     if (!base::FeatureList::IsEnabled(features::kConversionMeasurement))
       restricted.push_back(OriginTrialFeature::kAttributionReporting);
     if (!base::FeatureList::IsEnabled(features::kFencedFrames))
