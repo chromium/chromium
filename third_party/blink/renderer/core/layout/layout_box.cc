@@ -1094,7 +1094,7 @@ DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientWidth() const {
   NOT_DESTROYED();
   // We need to clamp negative values. This function may be called during layout
-  // before frame_rect_ gets the final proper value. Another reason: While
+  // before frame_size_ gets the final proper value. Another reason: While
   // border side values are currently limited to 2^20px (a recent change in the
   // code), if this limit is raised again in the future, we'd have ill effects
   // of saturated arithmetic otherwise.
@@ -1112,7 +1112,7 @@ DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientHeight() const {
   NOT_DESTROYED();
   // We need to clamp negative values. This function can be called during layout
-  // before frame_rect_ gets the final proper value. The scrollbar may be wider
+  // before frame_size_ gets the final proper value. The scrollbar may be wider
   // than the padding box. Another reason: While border side values are
   // currently limited to 2^20px (a recent change in the code), if this limit is
   // raised again in the future, we'd have ill effects of saturated arithmetic
