@@ -41,6 +41,7 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -70,6 +71,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     public void setup() throws NameNotFoundException {
         mTestValues = new TestValues();
         mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW, false);
         FeatureList.setTestValues(mTestValues);
 
         Context mApplicationContext = Mockito.spy(ContextUtils.getApplicationContext());
@@ -91,6 +93,8 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME, "true");
         mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
         assertTrue("SupportDropInChrome should be true.", mDelegate.getSupportDropInChrome());
+        assertFalse("SupportAnimatedImageDragShadow should be false.",
+                mDelegate.getSupportAnimatedImageDragShadow());
 
         DragAndDropPermissions permissions = mDelegate.getDragAndDropPermissions(mDragEvent);
         assertNotNull("DragAndDropPermissions should not be null.", permissions);

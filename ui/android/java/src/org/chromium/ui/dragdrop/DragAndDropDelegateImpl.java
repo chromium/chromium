@@ -18,7 +18,6 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.View;
@@ -32,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
@@ -93,13 +91,21 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     // Implements ViewAndroidDelegate.DragAndDropDelegate
 
     /**
-     * Wrapper to call {@link android.view.View#startDragAndDrop}.
+     * Create DragShadowBuilder and start {@link View#startDragAndDrop(ClipData, DragShadowBuilder,
+     * Object, int)}.
      *
-     * @see ViewAndroidDelegate#startDragAndDrop(Bitmap, DropDataAndroid)
+     * @param containerView The container view where the drag starts.
+     * @param shadowImage The bitmap which represents the shadow image.
+     * @param dropData The drop data presenting the drag target.
+     * @param cursorOffsetX The x offset of the cursor w.r.t. to top-left corner of the drag-image.
+     * @param cursorOffsetY The y offset of the cursor w.r.t. to top-left corner of the drag-image.
+     * @param dragObjRectWidth The width of the drag object.
+     * @param dragObjRectHeight The height of the drag object.
      */
     @Override
     public boolean startDragAndDrop(@NonNull View containerView, @NonNull Bitmap shadowImage,
-            @NonNull DropDataAndroid dropData) {
+            @NonNull DropDataAndroid dropData, int cursorOffsetX, int cursorOffsetY,
+            int dragObjRectWidth, int dragObjRectHeight) {
         // Drag and drop is disabled when gesture related a11y service is enabled.
         // See https://crbug.com/1250067.
         AccessibilityManager a11yManager =
@@ -122,10 +128,11 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 && mDragAndDropBrowserDelegate.getSupportDropInChrome()) {
             myLocalState = dropData;
         }
-        return ApiHelperForN.startDragAndDrop(containerView, clipdata,
-                createDragShadowBuilder(containerView.getContext(), shadowImage,
-                        dropData.hasImage(), windowWidth, windowHeight),
-                myLocalState, buildFlags(dropData));
+        View.DragShadowBuilder dragShadowBuilder = createDragShadowBuilder(containerView,
+                shadowImage, dropData.hasImage(), windowWidth, windowHeight, cursorOffsetX,
+                cursorOffsetY, dragObjRectWidth, dragObjRectHeight);
+        return ApiHelperForN.startDragAndDrop(
+                containerView, clipdata, dragShadowBuilder, myLocalState, buildFlags(dropData));
     }
 
     @Override
@@ -242,7 +249,12 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         if (dropData.isPlainText()) {
             return View.DRAG_FLAG_GLOBAL;
         } else if (dropData.hasImage()) {
-            return View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ;
+            int flag = View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ;
+            if (mDragAndDropBrowserDelegate != null
+                    && mDragAndDropBrowserDelegate.getSupportAnimatedImageDragShadow()) {
+                flag |= View.DRAG_FLAG_OPAQUE;
+            }
+            return flag;
         } else if (dropData.hasLink()) {
             return View.DRAG_FLAG_GLOBAL;
         } else {
@@ -250,8 +262,10 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         }
     }
 
-    protected View.DragShadowBuilder createDragShadowBuilder(Context context, Bitmap shadowImage,
-            boolean isImage, int windowWidth, int windowHeight) {
+    protected View.DragShadowBuilder createDragShadowBuilder(View containerView, Bitmap shadowImage,
+            boolean isImage, int windowWidth, int windowHeight, int cursorOffsetX,
+            int cursorOffsetY, int dragObjRectWidth, int dragObjRectHeight) {
+        Context context = containerView.getContext();
         ImageView imageView = new ImageView(context);
         if (isImage) {
             // If drag shadow image is an 1*1 image, it is not considered as a valid drag shadow.
@@ -262,17 +276,32 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                         AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
                 assert globeIcon != null;
 
-                final int minSize = getDragShadowMinSize(context.getResources());
+                final int minSize =
+                        AnimatedImageDragShadowBuilder.getDragShadowMinSize(context.getResources());
                 mShadowWidth = minSize;
                 mShadowHeight = minSize;
                 imageView.setLayoutParams(new ViewGroup.LayoutParams(minSize, minSize));
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 imageView.setImageDrawable(globeIcon);
             } else {
-                Pair<Integer, Integer> widthHeight = getWidthHeightForScaleDragShadow(context,
-                        shadowImage.getWidth(), shadowImage.getHeight(), windowWidth, windowHeight);
-                updateShadowImage(
-                        context, shadowImage, imageView, widthHeight.first, widthHeight.second);
+                DragShadowSpec dragShadowSpec = AnimatedImageDragShadowBuilder.getDragShadowSpec(
+                        context, shadowImage.getWidth(), shadowImage.getHeight(), windowWidth,
+                        windowHeight);
+                updateShadowSizeWithBorder(
+                        context, dragShadowSpec.targetWidth, dragShadowSpec.targetHeight);
+                if (mDragAndDropBrowserDelegate != null
+                        && mDragAndDropBrowserDelegate.getSupportAnimatedImageDragShadow()) {
+                    // TODO(shuyng): Need update to support cropped image.
+                    //  See go/animated-image-drag-shadow-corner-cases for details.
+                    assert dragObjRectWidth != 0;
+                    float scaleFactor = (float) dragShadowSpec.startWidth / dragObjRectWidth;
+                    return new AnimatedImageDragShadowBuilder(containerView, shadowImage,
+                            cursorOffsetX * scaleFactor, cursorOffsetY * scaleFactor,
+                            dragShadowSpec);
+                } else {
+                    updateShadowImage(context, shadowImage, imageView, dragShadowSpec.targetWidth,
+                            dragShadowSpec.targetHeight);
+                }
             }
         } else {
             mShadowWidth = shadowImage.getWidth();
@@ -282,51 +311,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         imageView.layout(0, 0, mShadowWidth, mShadowHeight);
 
         return new DragShadowBuilder(imageView);
-    }
-
-    // TODO(crbug.com/1295868): Scale image in C++ before passing into Java.
-    @VisibleForTesting
-    static Pair<Integer, Integer> getWidthHeightForScaleDragShadow(Context context,
-            float imageWidth, float imageHeight, int windowWidth, int windowHeight) {
-        Resources resources = context.getResources();
-
-        // Calculate the default scaled width / height.
-        final float resizeRatio =
-                ResourcesCompat.getFloat(resources, R.dimen.drag_shadow_resize_ratio);
-        imageWidth *= resizeRatio;
-        imageHeight *= resizeRatio;
-
-        // Scale down if the width / height exceeded the max width / height, estimated based on the
-        // window size, while maintaining the width-to-height ratio.
-        final float maxSizeRatio =
-                ResourcesCompat.getFloat(resources, R.dimen.drag_shadow_max_size_to_window_ratio);
-
-        final float maxHeightPx = windowHeight * maxSizeRatio;
-        final float maxWidthPx = windowWidth * maxSizeRatio;
-
-        if (imageWidth > maxWidthPx || imageHeight > maxHeightPx) {
-            final float downScaleRatio =
-                    Math.min(maxHeightPx / imageHeight, maxWidthPx / imageWidth);
-            imageWidth *= downScaleRatio;
-            imageHeight *= downScaleRatio;
-        }
-
-        // Scale up with respect to the short side if the width or height is smaller than the min
-        // size. Truncate the long side to stay within the max width / height as applicable.
-        final int minSizePx = getDragShadowMinSize(resources);
-        if (imageWidth <= imageHeight && imageWidth < minSizePx) {
-            float scaleUpRatio = minSizePx / imageWidth;
-            imageHeight *= scaleUpRatio;
-            imageWidth *= scaleUpRatio;
-            imageHeight = Math.min(imageHeight, maxHeightPx);
-        } else if (imageHeight < minSizePx) {
-            float scaleUpRatio = minSizePx / imageHeight;
-            imageHeight *= scaleUpRatio;
-            imageWidth *= scaleUpRatio;
-            imageWidth = Math.min(imageWidth, maxWidthPx);
-        }
-
-        return new Pair<>(Math.round(imageWidth), Math.round(imageHeight));
     }
 
     /**
@@ -347,7 +331,12 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         imageView.setBackgroundResource(R.drawable.drag_shadow_background);
         int borderSize = res.getDimensionPixelSize(R.dimen.drag_shadow_border_size);
         imageView.setPadding(borderSize, borderSize, borderSize, borderSize);
-        // Enlarge the ImageView to fit the border in.
+    }
+
+    // Enlarge the shadow image by twice the size of the border.
+    private void updateShadowSizeWithBorder(Context context, int targetWidth, int targetHeight) {
+        Resources res = context.getResources();
+        int borderSize = res.getDimensionPixelSize(R.dimen.drag_shadow_border_size);
         mShadowWidth = targetWidth + borderSize * 2;
         mShadowHeight = targetHeight + borderSize * 2;
     }
@@ -415,10 +404,6 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         }
     }
 
-    private static int getDragShadowMinSize(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.drag_shadow_min_size);
-    }
-
     /**
      * Return the text to be dropped when {@link DropDataAndroid} contains a link.
      */
@@ -456,5 +441,22 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     @VisibleForTesting
     float getDragStartYDp() {
         return mDragStartYDp;
+    }
+
+    static class DragShadowSpec {
+        public final int startWidth;
+        public final int startHeight;
+        public final int targetWidth;
+        public final int targetHeight;
+        public final boolean isTruncated;
+
+        DragShadowSpec(int startWidth, int startHeight, int targetWidth, int targetHeight,
+                boolean isTruncated) {
+            this.startWidth = startWidth;
+            this.startHeight = startHeight;
+            this.targetWidth = targetWidth;
+            this.targetHeight = targetHeight;
+            this.isTruncated = isTruncated;
+        }
     }
 }

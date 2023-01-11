@@ -1951,6 +1951,9 @@ extern const char kAndroidMediaPickerSupportDescription[];
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 
+extern const char kAnimatedImageDragShadowName[];
+extern const char kAnimatedImageDragShadowDescription[];
+
 extern const char kAssistantIntentTranslateInfoName[];
 extern const char kAssistantIntentTranslateInfoDescription[];
 

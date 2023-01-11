@@ -245,15 +245,21 @@ public class ViewAndroidDelegate {
      * Start {@link View#startDragAndDrop(ClipData, DragShadowBuilder, Object, int)} with
      * {@link DropDataAndroid} from the web content.
      *
-     * @param shadowImage The shadow image for the dragged text.
+     * @param shadowImage The shadow image for the dragged object.
      * @param dropData The drop data presenting the drag target.
+     * @param cursorOffsetX The x offset of the cursor w.r.t. to top-left corner of the drag-image.
+     * @param cursorOffsetY The y offset of the cursor w.r.t. to top-left corner of the drag-image.
+     * @param dragObjRectWidth The width of the drag object.
+     * @param dragObjRectHeight The height of the drag object.
      */
     @CalledByNative
-    private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData) {
+    private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData,
+            int cursorOffsetX, int cursorOffsetY, int dragObjRectWidth, int dragObjRectHeight) {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return false;
 
-        return getDragAndDropDelegate().startDragAndDrop(containerView, shadowImage, dropData);
+        return getDragAndDropDelegate().startDragAndDrop(containerView, shadowImage, dropData,
+                cursorOffsetX, cursorOffsetY, dragObjRectWidth, dragObjRectHeight);
     }
 
     @VisibleForTesting

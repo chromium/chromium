@@ -155,8 +155,18 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // Pass necessary |jdrop_data| to build Android ClipData for drag and drop.
   // |jshadow_image| is a bitmap presentation of the shadow image to be used
   // for dragging.
+  // |cursor_offset_x| is the x offset of the cursor w.r.t. to top-left corner
+  // of the drag-image.
+  // |cursor_offset_y| is the y offset of the cursor w.r.t. to top-left corner
+  // of the drag-image.
+  // |drag_obj_rect_width| is the width of the drag object.
+  // |drag_obj_rect_height| is the height of the drag object.
   bool StartDragAndDrop(const base::android::JavaRef<jobject>& jshadow_image,
-                        const base::android::JavaRef<jobject>& jdrop_data);
+                        const base::android::JavaRef<jobject>& jdrop_data,
+                        jint cursor_offset_x,
+                        jint cursor_offset_y,
+                        jint drag_obj_rect_width,
+                        jint drag_obj_rect_height);
 
   gfx::Size GetPhysicalBackingSize() const;
   gfx::Size GetSize() const;

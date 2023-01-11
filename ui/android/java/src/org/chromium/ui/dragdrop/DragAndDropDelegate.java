@@ -23,7 +23,8 @@ public interface DragAndDropDelegate {
     }
 
     /** @see View#startDragAndDrop */
-    boolean startDragAndDrop(View containerView, Bitmap shadowImage, DropDataAndroid dropData);
+    boolean startDragAndDrop(View containerView, Bitmap shadowImage, DropDataAndroid dropData,
+            int cursorOffsetX, int cursorOffsetY, int dragObjRectWidth, int dragObjRectHeight);
 
     /**
      * Set the {@link DragAndDropBrowserDelegate} that will be used to facilitate browser related

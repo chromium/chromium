@@ -12,8 +12,11 @@ import android.view.DragEvent;
  * Delegate for browser related functions used by Drag and Drop.
  */
 public interface DragAndDropBrowserDelegate {
-    /** Get whether to support the image drop into Chrome */
+    /** Get whether to support the image drop into Chrome. */
     boolean getSupportDropInChrome();
+
+    /** Get whether to support the image drag shadow animation. */
+    boolean getSupportAnimatedImageDragShadow();
 
     /** Request DragAndDropPermissions. */
     DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent);

@@ -202,8 +202,9 @@ public class ContextMenuDragTest {
         public int startDragAndDropCallCount;
 
         @Override
-        public boolean startDragAndDrop(
-                View containerView, Bitmap shadowImage, DropDataAndroid dropData) {
+        public boolean startDragAndDrop(View containerView, Bitmap shadowImage,
+                DropDataAndroid dropData, int cursorOffsetX, int cursorOffsetY,
+                int dragObjRectWidth, int dragObjRectHeight) {
             lastDropData = dropData;
             startDragAndDropCallCount += 1;
 

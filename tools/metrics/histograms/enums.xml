@@ -60714,6 +60714,7 @@ from previous Chrome versions.
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
   <int value="-99781021" label="disable-roboto-font-ui"/>
   <int value="-97599565" label="WebViewNewInvalidateHeuristic:disabled"/>
+  <int value="-97511671" label="AnimatedImageDragShadow:disabled"/>
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
   <int value="-96820962"
       label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:enabled"/>
@@ -63534,6 +63535,7 @@ from previous Chrome versions.
   <int value="1546652609" label="SharingHubDesktopOmnibox:disabled"/>
   <int value="1548776701" label="AllBookmarks:disabled"/>
   <int value="1548942246" label="PassiveDocumentEventListeners:disabled"/>
+  <int value="1550865563" label="AnimatedImageDragShadow:enabled"/>
   <int value="1551743170"
       label="WebAuthenticationNewDiscoverableCredentialsUi:disabled"/>
   <int value="1552753678" label="DnsHttpssvc:disabled"/>

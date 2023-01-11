@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -32,6 +33,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
 
     private final Context mContext;
     private final boolean mSupportDropInChrome;
+    private final boolean mSupportAnimatedImageDragShadow;
 
     /**
      * @param context The current context this delegate is associated with.
@@ -40,6 +42,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         mContext = context;
         mSupportDropInChrome = ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
+        mSupportAnimatedImageDragShadow =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW);
 
         int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
                 ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
@@ -50,6 +54,11 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     @Override
     public boolean getSupportDropInChrome() {
         return mSupportDropInChrome;
+    }
+
+    @Override
+    public boolean getSupportAnimatedImageDragShadow() {
+        return mSupportAnimatedImageDragShadow;
     }
 
     @Override

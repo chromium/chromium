@@ -27,6 +27,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
@@ -37,6 +38,7 @@ import org.chromium.ui.base.WindowAndroid;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 @Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+@Features.DisableFeatures(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW)
 public class TabViewAndroidDelegateTest {
     private final ArgumentCaptor<TabObserver> mTabObserverCaptor =
             ArgumentCaptor.forClass(TabObserver.class);

@@ -152,6 +152,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "animated-image-drag-shadow",
+    "owners": [ "shuyng@google.com", "wenyufu", "clank-app-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "animated-image-resume",
     "owners": [ "cblume", "vmpstr" ],
     "expiry_milestone": 93

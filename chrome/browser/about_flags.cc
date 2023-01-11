@@ -8505,6 +8505,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchDragAndContextMenuName,
      flag_descriptions::kTouchDragAndContextMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kTouchDragAndContextMenu)},
+    {"animated-image-drag-shadow",
+     flag_descriptions::kAnimatedImageDragShadowName,
+     flag_descriptions::kAnimatedImageDragShadowDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAnimatedImageDragShadow)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-update-virtual-card-enrollment",

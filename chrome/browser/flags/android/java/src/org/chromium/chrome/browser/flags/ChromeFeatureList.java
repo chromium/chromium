@@ -170,6 +170,7 @@ public abstract class ChromeFeatureList {
     public static final String ADD_TO_HOMESCREEN_IPH = "AddToHomescreenIPH";
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ANDROID_SCROLL_OPTIMIZATIONS = "AndroidScrollOptimizations";
+    public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT =
             "AutofillAddressProfileSavePromptNicknameSupport";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
