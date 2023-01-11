@@ -157,7 +157,7 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
       WebMediaPlayerEncryptedMediaClient*,
       WebContentDecryptionModule*,
       const WebString& sink_id,
-      const cc::LayerTreeSettings& settings,
+      const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
     MockWebMediaPlayer* player = new MockWebMediaPlayer(client);
     EXPECT_CALL(*player, HasAvailableVideoFrame)

@@ -90,8 +90,9 @@ class PLATFORM_EXPORT FrameWidget {
   virtual int GetLayerTreeId() = 0;
 
   // Return the LayerTreeSettings from the compositor. These are constant from
-  // the time the compositor is created.
-  virtual const cc::LayerTreeSettings& GetLayerTreeSettings() = 0;
+  // the time the compositor is created. This may return null if the widget
+  // does not composite.
+  virtual const cc::LayerTreeSettings* GetLayerTreeSettings() = 0;
 
   // Sets the state of the browser controls. (Used for URL bar animations.)
   virtual void UpdateBrowserControlsState(cc::BrowserControlsState constraints,

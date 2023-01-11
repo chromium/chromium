@@ -1671,8 +1671,11 @@ int WebFrameWidgetImpl::GetLayerTreeId() {
   return widget_base_->LayerTreeHost()->GetId();
 }
 
-const cc::LayerTreeSettings& WebFrameWidgetImpl::GetLayerTreeSettings() {
-  return widget_base_->LayerTreeHost()->GetSettings();
+const cc::LayerTreeSettings* WebFrameWidgetImpl::GetLayerTreeSettings() {
+  if (!View()->does_composite()) {
+    return nullptr;
+  }
+  return &widget_base_->LayerTreeHost()->GetSettings();
 }
 
 void WebFrameWidgetImpl::UpdateBrowserControlsState(

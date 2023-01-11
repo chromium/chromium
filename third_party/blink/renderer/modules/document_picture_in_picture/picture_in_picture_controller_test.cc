@@ -279,7 +279,7 @@ class PictureInPictureTestWebFrameClient
       WebMediaPlayerEncryptedMediaClient*,
       WebContentDecryptionModule*,
       const WebString& sink_id,
-      const cc::LayerTreeSettings& settings,
+      const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
     return web_media_player_.release();
   }
