@@ -1453,6 +1453,11 @@ BASE_FEATURE(kNotificationExperimentalShortTimeouts,
              "NotificationExperimentalShortTimeouts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables dragging the image from a notification by mouse or gesture.
+BASE_FEATURE(kNotificationImageDrag,
+             "NotificationImageDrag",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables notification scroll bar in UnifiedSystemTray.
 BASE_FEATURE(kNotificationScrollBar,
              "NotificationScrollBar",
@@ -2819,6 +2824,10 @@ bool IsNotificationExpansionAnimationEnabled() {
 
 bool IsNotificationExperimentalShortTimeoutsEnabled() {
   return base::FeatureList::IsEnabled(kNotificationExperimentalShortTimeouts);
+}
+
+bool IsNotificationImageDragEnabled() {
+  return base::FeatureList::IsEnabled(kNotificationImageDrag);
 }
 
 bool IsNotificationScrollBarEnabled() {

@@ -417,6 +417,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationExpansionAnimation);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationExperimentalShortTimeouts);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kNotificationImageDrag);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNotificationScrollBar);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationsInContextMenu);
@@ -764,6 +766,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewLockScreenReauthLayoutEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationExpansionAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsNotificationExperimentalShortTimeoutsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationImageDragEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationScrollBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsInContextMenuEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsRefreshEnabled();
