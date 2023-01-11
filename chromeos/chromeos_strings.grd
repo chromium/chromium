@@ -1871,6 +1871,15 @@ Try tapping the mic to ask me anything.
         <message name="IDS_ONC_TETHER_CARRIER_UNKNOWN" desc="Settings > Internet > Text displayed in the settings UI in place of a cellular provider when the actual name of the provider is unknown. In this context, the cellular provider refers to the carrier which provides mobile data service to another device which can start a tether hotspot to provide a data connection to the current device.">
           Unknown carrier
         </message>
+        <message name="IDS_ONC_HOTSPOT_WIFI_SECURITY_WPA2" desc="In settings > Network > Hotspot > Configure, a string specifying hotspot Wi-Fi security type = WPA2.">
+          WPA2
+        </message>
+        <message name="IDS_ONC_HOTSPOT_WIFI_SECURITY_WPA3" desc="In settings > Network > Hotspot > Configure, a string specifying hotspot Wi-Fi security type = WPA3.">
+          WPA3
+        </message>
+        <message name="IDS_ONC_HOTSPOT_WIFI_SECURITY_WPA2WPA3" desc="In settings > Network > Hotspot > Configure, a string specifying hotspot Wi-Fi security type = WPA2+WPA3.">
+          WPA2WPA3
+        </message>
 
         <!-- Network Health display strings -->
         <message name="IDS_NETWORK_HEALTH_STATE" desc="Label for the current state of a networking device.">

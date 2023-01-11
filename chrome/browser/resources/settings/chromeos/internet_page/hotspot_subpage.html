@@ -38,7 +38,9 @@
       </div>
     </div>
   </div>
-  <cr-button id="configureButton">
+  <cr-button id="configureButton" 
+      hidden$="[[!showHotspotAutoDisableToggle_(hotspotInfo)]]"
+      on-click="onHotspotConfigureTap_">
     $i18n{hotspotConfigureButton}
   </cr-button>
 </div>

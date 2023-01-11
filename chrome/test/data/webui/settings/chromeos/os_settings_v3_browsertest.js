@@ -280,46 +280,6 @@ TEST_F('OSSettingsInternetPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-// TODO(b/239477916) Move this test back into the list of tests below once
-// hotspot is launched.
-var OSSettingsHotspotSubpageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/hotspot_subpage_tests.js&host=test';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(['ash::features::kHotspot'])
-    };
-  }
-};
-
-TEST_F('OSSettingsHotspotSubpageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-// TODO(b/239477916) Move this test back into the list of tests below once
-// hotspot is launched.
-var OSSettingsHotspotSummaryItemV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/hotspot_summary_item_tests.js&host=test';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(['ash::features::kHotspot'])
-    };
-  }
-};
-
-TEST_F('OSSettingsHotspotSummaryItemV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
   GEN('fake_crostini_features.SetAll(true);');
@@ -432,6 +392,21 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['GoogleAssistantPage', 'google_assistant_page_test.js'],
  ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os_shared_usb_devices_test.js'],
+ [
+   'HotspotConfigDialog',
+   'hotspot_config_dialog_tests.js',
+   {enabled: ['ash::features::kHotspot']},
+ ],
+ [
+   'HotspotSubpage',
+   'hotspot_subpage_tests.js',
+   {enabled: ['ash::features::kHotspot']},
+ ],
+ [
+   'HotspotSummaryItem',
+   'hotspot_summary_item_tests.js',
+   {enabled: ['ash::features::kHotspot']},
+ ],
  ['InputMethodOptionPage', 'input_method_options_page_test.js'],
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],

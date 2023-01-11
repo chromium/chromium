@@ -8,6 +8,7 @@ import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hots
 import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult, WiFiSecurityMode} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('HotspotSubpageTest', function() {
@@ -231,4 +232,32 @@ suite('HotspotSubpageTest', function() {
         hotspotSubpage.shadowRoot.querySelector('#hotspotAutoDisableToggle');
     assertEquals(null, autoDisableToggle);
   });
+
+  test('Hide configure button when hotspot config is null', async function() {
+    await init();
+    const configureButton =
+        hotspotSubpage.shadowRoot.querySelector('#configureButton');
+    assertTrue(!!configureButton, 'Hotspot configure button does not exist');
+    assertFalse(configureButton.hidden);
+
+    hotspotConfig.setFakeHotspotConfig(null);
+    await flushAsync();
+    assertTrue(configureButton.hidden);
+  });
+
+  test(
+      'Click on configure button should fire show-hotspot-config-dialog event',
+      async function() {
+        await init();
+        const configureButton =
+            hotspotSubpage.shadowRoot.querySelector('#configureButton');
+        assertTrue(
+            !!configureButton, 'Hotspot configure button does not exist');
+        assertFalse(configureButton.hidden);
+
+        const showHotspotConfigDialogEvent =
+            eventToPromise('show-hotspot-config-dialog', hotspotSubpage);
+        configureButton.click();
+        await Promise.all([showHotspotConfigDialogEvent, flushTasks()]);
+      });
 });

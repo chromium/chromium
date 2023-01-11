@@ -946,6 +946,34 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_LABEL},
       {"hotspotAutoDisableSublabel",
        IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_SUBLABEL},
+      {"hotspotSettingsTitle", IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE},
+      {"hotspotConfigNameLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_LABEL},
+      {"hotspotConfigNameInfo", IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_INFO},
+      {"hotspotConfigPasswordLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_LABEL},
+      {"hotspotConfigPasswordInfo",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_INFO},
+      {"hotspotConfigSecurityLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SECURITY_LABEL},
+      {"hotspotConfigBssidToggleLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_BSSID_TOGGLE_LABEL},
+      {"hotspotConfigBssidToggleSublabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_BSSID_TOGGLE_SUBLABEL},
+      {"hotspotConfigCompatibilityToggleLabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_COMPATIBILITY_TOGGLE_LABEL},
+      {"hotspotConfigCompatibilityToggleSublabel",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_COMPATIBILITY_TOGGLE_SUBLABEL},
+      {"hotspotConfigWarningMessage",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_WARNING_MESSAGE},
+      {"hotspotConfigSaveButton",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SAVE_BUTTON},
+      {"hotspotConfigCancelButton",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_CANCEL_BUTTON},
+      {"hotspotConfigInvalidConfigurationErrorMessage",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE},
+      {"hotspotConfigNotLoginErrorMessage",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NOT_LOGIN_ERROR_MESSAGE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1013,6 +1041,11 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "hotspotSubpageSubtitle",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK,
+          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+  html_source->AddString(
+      "hotspotSettingsSubtitle",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK,
           GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
 }
 

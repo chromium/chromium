@@ -226,6 +226,13 @@
   </sim-lock-dialogs>
 </template>
 
+<template is="dom-if" if="[[showHotspotConfigDialog_]]" restamp>
+  <hotspot-config-dialog id="hotspotConfigDialog"
+      on-close="onCloseHotspotConfigDialog_"
+      hotspot-info="[[hotspotInfo]]">
+  </hotspot-config-dialog>
+</template>
+
 <cr-toast id="errorToast" duration="5000">
   <span id="errorToastMessage">[[errorToastMessage_]]</span>
 </cr-toast>

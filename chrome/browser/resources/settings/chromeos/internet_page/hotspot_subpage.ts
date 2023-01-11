@@ -150,6 +150,14 @@ class SettingsHotspotSubpageElement extends SettingsHotspotSubpageElementBase {
     return !!hotspotInfo?.config;
   }
 
+  private onHotspotConfigureTap_() {
+    const event = new CustomEvent('show-hotspot-config-dialog', {
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
+
   private async onAutoDisableChange_(): Promise<void> {
     const configToSet = castExists(this.hotspotInfo!.config);
     configToSet.autoDisable = this.autoDisableVirtualPref_.value;

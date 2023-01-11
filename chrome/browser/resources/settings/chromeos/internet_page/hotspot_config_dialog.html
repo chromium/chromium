@@ -1,0 +1,117 @@
+<style include="internet-shared iron-flex">
+  :host {
+    --cr-dialog-width: 380px;
+  }
+
+  #title {
+    font-weight: 500;
+    height: 15px;
+  }
+
+  #warningMessage {
+    --iron-icon-fill-color: var(--cros-icon-color-disabled);
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    font-size: smaller;
+    margin-top: 20px;
+  }
+
+  #warningMessage iron-icon {
+    float: left;
+    padding-inline-end: 4px;
+  }
+
+  :host-context([dir='rtl']) #warningMessage iron-icon {
+    float: right;
+  }
+
+  #warningMessage div {
+    overflow: hidden;
+  }
+
+  #subtitle {
+    font-size: 0.75rem;
+    padding-top: 12px;
+  }
+
+  network-config-toggle {
+    color: var(--cr-primary-text-color);
+  }
+
+  .input-info {
+    font-size: var(--cr-form-field-label-font-size);
+    height: 20px;
+    position: relative;
+    top: -18px;
+  }
+
+  .error {
+    color: var(--cros-text-color-alert);
+    font-weight: 500;
+  }
+</style>
+
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">
+    <div id="title">
+      $i18n{hotspotSettingsTitle}
+    </div>
+    <div id="subtitle" class="secondary">
+      <localized-link
+          localized-string="[[i18nAdvanced('hotspotSettingsSubtitle')]]">
+      </localized-link>
+    </div>
+  </div>
+
+  <div id="body" slot="body">
+    <network-config-input id="hotspotName" label="$i18n{hotspotConfigNameLabel}"
+        value="{{hotspotSsid_}}">
+    </network-config-input>
+    <div id="hotspotNameInputInfo" class="secondary info input-info"
+        aria-hidden="true">
+      $i18n{hotspotConfigNameInfo}
+    </div>
+    <network-password-input id="hotspotPassword"
+        label="$i18n{hotspotConfigPasswordLabel}" value="{{hotspotPassword_}}"
+        invalid="[[isPasswordInvalid_]]">
+    </network-password-input>
+    <div id="hotspotPasswordInputInfo" class="secondary info input-info"
+        aria-hidden="true">
+      $i18n{hotspotConfigPasswordInfo}
+    </div>
+    <network-config-select id="security"
+        label="$i18n{hotspotConfigSecurityLabel}"
+        onc-prefix="Hotspot.WiFi.Security"
+        value="{{securityType_}}" items="[[getSecurityItems_()]]">
+    </network-config-select>
+    <network-config-toggle id="hotspotBssidToggle"
+        label="$i18n{hotspotConfigBssidToggleLabel}"
+        sub-label="$i18n{hotspotConfigBssidToggleSublabel}"
+        checked="{{isRandomizeBssidToggleOn_}}">
+    </network-config-toggle>
+    <network-config-toggle id="hotspotCompatibilityToggle"
+        label="$i18n{hotspotConfigCompatibilityToggleLabel}"
+        sub-label="$i18n{hotspotConfigCompatibilityToggleSublabel}"
+        checked="{{isExtendCompatibilityToggleOn_}}">
+    </network-config-toggle>
+    <div id="warningMessage">
+      <iron-icon icon="cr:info-outline"></iron-icon>
+      <div>$i18n{hotspotConfigWarningMessage}</div>
+    </div>
+  </div>
+
+  <div class="layout horizontal center" slot="button-container">
+    <template is="dom-if" if="[[error_]]" restamp>
+      <div id="errorMessage" class="flex error">
+        [[error_]]
+      </div>
+    </template>
+    <cr-button id="cancelButton" class="cancel-button" on-click="onCancelTap_">
+      $i18n{hotspotConfigCancelButton}
+    </cr-button>
+    <cr-button id="saveButton" class="action-button"
+        on-click="onSaveTap_" disabled="[[isPasswordInvalid_]]">
+      $i18n{hotspotConfigSaveButton}
+    </cr-button>
+  </div>
+</cr-dialog>

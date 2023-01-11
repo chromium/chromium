@@ -66,6 +66,7 @@ web_component_files = [
   "chromeos/internet_page/esim_install_error_dialog.ts",
   "chromeos/internet_page/esim_remove_profile_dialog.ts",
   "chromeos/internet_page/esim_rename_dialog.ts",
+  "chromeos/internet_page/hotspot_config_dialog.ts",
   "chromeos/internet_page/hotspot_subpage.ts",
   "chromeos/internet_page/hotspot_summary_item.ts",
   "chromeos/internet_page/internet_config.ts",

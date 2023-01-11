@@ -24,14 +24,15 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_icons.css.js';
 import './apn_subpage.js';
 import './cellular_setup_dialog.js';
+import './esim_rename_dialog.js';
+import './esim_remove_profile_dialog.js';
+import './hotspot_config_dialog.js';
 import './internet_config.js';
 import './internet_detail_menu.js';
 import './internet_detail_page.js';
 import './internet_known_networks_page.js';
 import './internet_subpage.js';
 import './network_summary.js';
-import './esim_rename_dialog.js';
-import './esim_remove_profile_dialog.js';
 
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
@@ -247,6 +248,12 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: false,
       },
 
+      /** @private {boolean} */
+      showHotspotConfigDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * Flag, if true, indicating that the next deviceStates update
        * should set showSimLockDialog_ to true.
@@ -337,6 +344,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private showCellularSetupDialog_: boolean;
   private showESimProfileRenameDialog_: boolean;
   private showESimRemoveProfileDialog_: boolean;
+  private showHotspotConfigDialog_: boolean;
   private showInternetConfig_: boolean;
   private showSimLockDialog_: boolean;
   private showSpinner_: boolean;
@@ -387,6 +395,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     });
     this.addEventListener('show-esim-remove-profile-dialog', (event) => {
       this.onShowEsimRemoveProfileDialog_(event);
+    });
+    this.addEventListener('show-hotspot-config-dialog', () => {
+      this.onShowHotspotConfigDialog_();
     });
     this.addEventListener('show-error-toast', (event) => {
       this.onShowErrorToast_(event);
@@ -680,6 +691,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   private onCloseEsimRemoveProfileDialog_(): void {
     this.showESimRemoveProfileDialog_ = false;
+  }
+
+  private onShowHotspotConfigDialog_() {
+    this.showHotspotConfigDialog_ = true;
+  }
+
+  private onCloseHotspotConfigDialog_(): void {
+    this.showHotspotConfigDialog_ = false;
   }
 
   private onShowNetworks_(event: CustomEvent<NetworkType>): void {

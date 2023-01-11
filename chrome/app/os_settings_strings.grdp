@@ -2918,6 +2918,54 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_HOTSPOT_AUTO_DISABLED_SUBLABEL" desc="Sublabel for showing if hotspot should be turned off automatically when no devices are connected in the hotspot subpage.">
     When no devices are connected
   </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Title for the hotspot configuration dialog.">
+    Hotspot Settings
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the hotspot configuration dialog which explains that creating a WiFi hotspot to provide internet to other devices.">
+    Create a Wi-Fi hotspot to provide internet to other deivces. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot name input.">
+    Hotspot name
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NAME_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot name input to inform users that the hotspot name will be visible to others.">
+    This will be visible to others
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot password input.">
+    Password
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_PASSWORD_INFO" desc="Settings > Network > Hotspot > Configure hotspot dialog: Info label under the hotspot password input to inform users that the hotspot password must be longer than 8 characters.">
+    Use at least 8 characters
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SECURITY_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the hotspot security select dropdown.">
+    Security
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_BSSID_TOGGLE_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the toggle which control whether to randomize the BSSID.">
+    Improve privacy for this hotspot
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_BSSID_TOGGLE_SUBLABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Sublabel for the toggle which control whether to randomize the BSSID.">
+    Randomize your hardware's ID (BSSID) to prevent others from tracking this device.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_COMPATIBILITY_TOGGLE_LABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Label for the toggle which control whether to set the hotspot bandwidth to 2.4GHz.">
+    Extend compatibility
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_COMPATIBILITY_TOGGLE_SUBLABEL" desc="Settings > Network > Hotspot > Configure hotspot dialog: Sublabel for the toggle which control whether to set the hotspot bandwidth to 2.4GHz.">
+    Help other devices find this hotspot.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_WARNING_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: The Label for the dialog warning message informing the user that changing hotspot settings will restart the hotspot and devices using the hotspot will disconnect.">
+    Changing settings will restart the hotspot. Devices using the hotspot will disconnect.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SAVE_BUTTON" desc="Settings > Network > Hotspot > Configure hotspot dialog: Text for the button to save hotspot configuration.">
+    Save
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_CANCEL_BUTTON" desc="Settings > Network > Hotspot > Configure hotspot dialog: Text for the button to cancel hotspot configuration dialog.">
+    Cancel
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed because of invalid configuration.">
+    Invalid hotspot configuration
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_NOT_LOGIN_ERROR_MESSAGE" desc="Settings > Network > Hotspot > Configure hotspot dialog: Error message shown when save configuration failed because the user is not logged in.">
+    Cannot save configuration without login first
+  </message>
   <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORKS" desc="Name of the settings page which displays a list of Wi-Fi networks which the user can choose to connect to.">
     Wi-Fi networks
   </message>
