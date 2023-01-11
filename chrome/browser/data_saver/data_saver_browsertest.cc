@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -606,7 +605,6 @@ IN_PROC_BROWSER_TEST_F(DataSaverWithImageServerBrowserTest,
   data_saver::OverrideIsDataSaverEnabledForTesting(true);
   SetImagesNotToLoad({"/data_saver/red.jpg"});
 
-  base::HistogramTester histogram_tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), test_server_->GetURL("/data_saver/image_srcset.html")));
 }
@@ -616,7 +614,6 @@ IN_PROC_BROWSER_TEST_F(DataSaverWithImageServerBrowserTest,
   data_saver::OverrideIsDataSaverEnabledForTesting(false);
   SetImagesNotToLoad({"/data_saver/green.jpg"});
 
-  base::HistogramTester histogram_tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), test_server_->GetURL("/data_saver/image_srcset.html")));
 }
