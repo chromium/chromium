@@ -217,6 +217,25 @@ std::set<std::string> kLocalesWithUniqueNumerals{"bn", "fa", "mr", "pa-pk"};
 
 namespace calendar_test_utils {
 
+// Used for over-riding the locale that `base::Time` uses. Copied from
+// `time_unittest.cc`.
+class ScopedLibcTimeZone {
+ public:
+  explicit ScopedLibcTimeZone(const std::string& timezone);
+  ~ScopedLibcTimeZone();
+
+  ScopedLibcTimeZone(const ScopedLibcTimeZone& other) = delete;
+  ScopedLibcTimeZone& operator=(const ScopedLibcTimeZone& other) = delete;
+
+  bool is_success() const { return success_; }
+
+ private:
+  static constexpr char kTimeZoneEnvVarName[] = "TZ";
+
+  bool success_ = true;
+  absl::optional<std::string> old_timezone_;
+};
+
 // A duration to let the animation finish and pass the cool down duration in
 // tests.
 constexpr base::TimeDelta kAnimationSettleDownDuration = base::Seconds(3);

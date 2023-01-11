@@ -96,10 +96,11 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
   base::test::ScopedFeatureList features_;
 };
 
-TEST_F(
-    CalendarViewEventListItemViewJellyTest,
-    GivenAOneHourEvent_WhenEventListItemViewIsCreated_ThenShowCorrectLabels) {
+TEST_F(CalendarViewEventListItemViewJellyTest,
+       ShouldShowCorrectLabels_GivenAOneHourEvent) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT+2");
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone("GMT+2");
+  ASSERT_TRUE(scoped_libc_timezone.is_success());
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);

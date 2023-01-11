@@ -323,6 +323,8 @@ TEST_F(
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
       nullptr, nullptr);
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone("GMT");
+  ASSERT_TRUE(scoped_libc_timezone.is_success());
 
   // Add multiple events starting in 10 mins.
   std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;

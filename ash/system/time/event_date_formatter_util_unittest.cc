@@ -200,11 +200,18 @@ TEST_P(EventDateFormatterMultiDayEventTest, GetMultiDayText_MultiDayEvent) {
   const char* selected_date_string = GetSelectedDateString();
   const auto event = CreateEvent(start_time_string, end_time_string);
   base::Time start_time, end_time, selected_time;
-  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT+1");
+  // This is needed for the calendar util / `DateHelper` functions to use the
+  // correct locale.
+  ash::system::ScopedTimezoneSettings timezone_settings(u"Europe/Paris");
+  // This is needed for `base::Time` to use the correct locale. Without this
+  // override, it will ignore the `ash::system::ScopedTimezoneSettings` and use
+  // the timezone of the environment it's running on.
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone("Europe/Paris");
+  ASSERT_TRUE(scoped_libc_timezone.is_success());
 
   EXPECT_TRUE(base::Time::FromString(start_time_string, &start_time));
   EXPECT_TRUE(base::Time::FromString(end_time_string, &end_time));
-  EXPECT_TRUE(base::Time::FromString(selected_date_string, &selected_time));
+  EXPECT_TRUE(base::Time::FromUTCString(selected_date_string, &selected_time));
 
   const auto result = event_date_formatter_util::GetMultiDayText(
       event.get(), selected_time.UTCMidnight(), selected_time.LocalMidnight());

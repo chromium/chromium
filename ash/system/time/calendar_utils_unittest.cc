@@ -411,9 +411,8 @@ TEST_F(
   EXPECT_EQ(actual_end, expected_end);
 }
 
-TEST_F(
-    CalendarUtilsUnitTest,
-    GivenAnAllDayEvent_WhenGetStartAndEndTimesIsCalled_ThenReturnDatesAdjustedForLocalMidnight) {
+TEST_F(CalendarUtilsUnitTest,
+       ShouldReturnDatesAdjustedForLocalMidnight_GivenAnAllDayEvent) {
   const char* start_time_string = "22 Nov 2021 00:00 UTC";
   const char* end_time_string = "23 Nov 2021 00:00 UTC";
   // After getting the date, it should have been adjusted to 23:59 local time,
@@ -422,6 +421,8 @@ TEST_F(
   const auto event = CreateEvent(start_time_string, end_time_string, true);
   base::Time expected_start, expected_end;
   ash::system::ScopedTimezoneSettings timezone_settings(u"PST");
+  calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone("PST");
+  ASSERT_TRUE(scoped_libc_timezone.is_success());
 
   EXPECT_TRUE(base::Time::FromString(start_time_string, &expected_start));
   EXPECT_TRUE(base::Time::FromUTCString(expected_end_string, &expected_end));
