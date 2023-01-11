@@ -6,6 +6,8 @@ source_set("chromium_find_in_page") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_find_in_page.mm" ]
   frameworks = [ "Foundation.framework" ]
-  deps =
-      [ "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api" ]
+  deps = [
+    "//base:base",
+    "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api",
+  ]
 }

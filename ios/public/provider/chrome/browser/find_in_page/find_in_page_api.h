@@ -28,14 +28,17 @@ bool IsNativeFindInPageWithChromeFindBar();
 // enabled.
 bool IsNativeFindInPageEnabled();
 
-// Provides a searchable object for a given `web_state`.
+// Provides a searchable object for a given `web_state`. Should only be called
+// when `IsNativeFindInPageWithChromeFindBar()` returns `true`.
 id<UITextSearching> GetSearchableObjectForWebState(web::WebState* web_state)
     API_AVAILABLE(ios(16));
 
-// Initiates a Find in Page session on the given `web_state`.
+// Initiates a Find in Page session on the given `web_state`. Should only be
+// called when `IsNativeFindInPageWithChromeFindBar()` returns `true`.
 void StartTextSearchInWebState(web::WebState* web_state);
 
-// Terminates a Find in Page session on the given `web_state`.
+// Terminates a Find in Page session on the given `web_state`. Should only be
+// called when `IsNativeFindInPageWithChromeFindBar()` returns `true`.
 void StopTextSearchInWebState(web::WebState* web_state);
 
 }  // namespace provider
