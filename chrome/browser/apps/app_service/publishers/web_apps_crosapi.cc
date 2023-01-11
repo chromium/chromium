@@ -413,6 +413,11 @@ void WebAppsCrosapi::OnLoadIcon(IconType icon_type,
     std::move(callback).Run(IconValuePtr());
     return;
   }
+  if (icon_value->is_maskable_icon) {
+    icon_effects &= ~apps::IconEffects::kCrOsStandardIcon;
+    icon_effects |= apps::IconEffects::kCrOsStandardBackground;
+    icon_effects |= apps::IconEffects::kCrOsStandardMask;
+  }
   // We apply the masking effect here, as masking is not implemented in Lacros.
   // (There is no resource file in the Lacros side to apply the icon effects.)
   ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon_value),
