@@ -32,3 +32,8 @@ BASE_FEATURE(kSigninInterceptBubbleV2,
 BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,
              "ShowEnterpriseDialogForAllManagedAccountsSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Disables signout for enteprise managed profiles
+BASE_FEATURE(kDisallowManagedProfileSignout,
+             "DisallowManagedProfileSignout",
+             base::FEATURE_DISABLED_BY_DEFAULT);

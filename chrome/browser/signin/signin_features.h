@@ -19,4 +19,6 @@ BASE_DECLARE_FEATURE(kSigninInterceptBubbleV2);
 
 BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 
+BASE_DECLARE_FEATURE(kDisallowManagedProfileSignout);
+
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_

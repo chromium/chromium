@@ -4113,6 +4113,24 @@
             ]
         }
     ],
+    "DisallowManagedProfileSignout": [
+        {
+            "platforms": [
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisallowManagedProfileSignout"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscardableMemoryExperiments": [
         {
             "platforms": [
