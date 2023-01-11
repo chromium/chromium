@@ -60,12 +60,6 @@ static inline float DimensionForLengthMode(SVGLengthMode mode,
   return 0;
 }
 
-static float ConvertValueFromPercentageToUserUnits(const SVGLength& value,
-                                                   float viewport_dimension) {
-  return CSSPrimitiveValue::ClampToCSSLengthRange(
-      value.ScaleByPercentage(viewport_dimension));
-}
-
 static const ComputedStyle* ComputedStyleForLengthResolving(
     const SVGElement* context) {
   if (!context) {
@@ -131,6 +125,26 @@ class CSSToLengthConversionDataContext {
   const ComputedStyle* root_style_ = nullptr;
   mutable CSSToLengthConversionData::Flags ignored_flags_ = 0;
 };
+
+float ObjectBoundingBoxUnitToUserUnits(const Length& length,
+                                       float ref_dimension) {
+  // For "plain" percentages we resolve against the real reference dimension
+  // and scale with the unit dimension to avoid losing precision for common
+  // cases. In essence because of the difference between:
+  //
+  //   v * percentage / 100
+  //
+  // and:
+  //
+  //   v * (percentage / 100)
+  //
+  // for certain, common, values of v and percentage.
+  float unit_dimension = 1;
+  if (length.IsPercent()) {
+    std::swap(unit_dimension, ref_dimension);
+  }
+  return FloatValueForLength(length, unit_dimension, nullptr) * ref_dimension;
+}
 
 }  // namespace
 
@@ -329,19 +343,46 @@ gfx::RectF SVGLengthContext::ResolveRectangle(const SVGElement* context,
                                               const SVGLength& width,
                                               const SVGLength& height) {
   DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
-  if (type != SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
-    return gfx::RectF(
-        ConvertValueFromPercentageToUserUnits(x, viewport.width()) +
-            viewport.x(),
-        ConvertValueFromPercentageToUserUnits(y, viewport.height()) +
-            viewport.y(),
-        ConvertValueFromPercentageToUserUnits(width, viewport.width()),
-        ConvertValueFromPercentageToUserUnits(height, viewport.height()));
+  CSSToLengthConversionDataContext conversion_context(context);
+  if (!conversion_context.HasStyle()) {
+    return gfx::RectF(0, 0, 0, 0);
   }
+  const CSSToLengthConversionData conversion_data =
+      conversion_context.MakeConversionData();
+  // Convert SVGLengths to Lengths (preserves percentages).
+  const LengthPoint point(
+      x.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
+      y.AsCSSPrimitiveValue().ConvertToLength(conversion_data));
+  const LengthSize size(
+      width.AsCSSPrimitiveValue().ConvertToLength(conversion_data),
+      height.AsCSSPrimitiveValue().ConvertToLength(conversion_data));
 
-  SVGLengthContext length_context(context);
-  return gfx::RectF(x.Value(length_context), y.Value(length_context),
-                    width.Value(length_context), height.Value(length_context));
+  gfx::RectF resolved_rect;
+  // If the requested unit is 'objectBoundingBox' then the resolved user units
+  // are actually normalized (in bounding box units), so transform them to the
+  // actual user space.
+  if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+    // Resolve the Lengths to user units.
+    resolved_rect = gfx::RectF(
+        ObjectBoundingBoxUnitToUserUnits(point.X(), viewport.width()),
+        ObjectBoundingBoxUnitToUserUnits(point.Y(), viewport.height()),
+        ObjectBoundingBoxUnitToUserUnits(size.Width(), viewport.width()),
+        ObjectBoundingBoxUnitToUserUnits(size.Height(), viewport.height()));
+    resolved_rect += viewport.OffsetFromOrigin();
+  } else {
+    DCHECK_EQ(type, SVGUnitTypes::kSvgUnitTypeUserspaceonuse);
+    // Determine the viewport to use for resolving the Lengths to user units.
+    gfx::SizeF viewport_size_for_resolve;
+    if (size.Width().IsPercentOrCalc() || size.Height().IsPercentOrCalc() ||
+        point.X().IsPercentOrCalc() || point.Y().IsPercentOrCalc()) {
+      SVGLengthContext(context).DetermineViewport(viewport_size_for_resolve);
+    }
+    // Resolve the Lengths to user units.
+    resolved_rect =
+        gfx::RectF(PointForLengthPoint(point, viewport_size_for_resolve),
+                   SizeForLengthSize(size, viewport_size_for_resolve));
+  }
+  return resolved_rect;
 }
 
 gfx::PointF SVGLengthContext::ResolvePoint(const SVGElement* context,
