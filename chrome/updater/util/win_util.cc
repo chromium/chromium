@@ -365,6 +365,25 @@ std::wstring GetRegistryKeyClientStateUpdater() {
   return GetAppClientStateKey(kUpdaterAppId);
 }
 
+bool SetRegistryKey(HKEY root,
+                    const std::wstring& key,
+                    const std::wstring& name,
+                    const std::wstring& value) {
+  base::win::RegKey rkey;
+  LONG result = rkey.Open(root, key.c_str(), Wow6432(KEY_WRITE));
+  if (!result) {
+    VLOG(1) << "Failed to open (" << root << ") " << key << ": " << result;
+    return false;
+  }
+  result = rkey.WriteValue(name.c_str(), value.c_str());
+  if (!result) {
+    VLOG(1) << "Failed to write (" << root << ") " << key << " @ " << name
+            << ": " << result;
+    return false;
+  }
+  return result == ERROR_SUCCESS;
+}
+
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   if (downloaded_bytes == -1 || total_bytes == -1 || total_bytes == 0)
     return -1;

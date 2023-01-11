@@ -202,6 +202,12 @@ std::wstring GetRegistryKeyClientsUpdater();
 // subkey. The path does not include the registry root hive prefix.
 std::wstring GetRegistryKeyClientStateUpdater();
 
+// Set `name` in `root`\`key` to `value`.
+bool SetRegistryKey(HKEY root,
+                    const std::wstring& key,
+                    const std::wstring& name,
+                    const std::wstring& value);
+
 // Returns a value in the [0, 100] range or -1 if the progress could not
 // be computed.
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);

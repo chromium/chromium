@@ -27,6 +27,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/util/win_util.h"
 #endif
 
@@ -124,6 +125,22 @@ std::string PersistedData::GetAP(const std::string& id) const {
 void PersistedData::SetAP(const std::string& id, const std::string& ap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetString(id, kAP, ap);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, we record the AP in ClientState as well.
+  // (Some applications read it from there.)
+
+  // Chromium Updater has both local and global pref stores. In practice, if
+  // this `PersistedData` is using a local pref store, `id` will be the
+  // qualification app and the ClientState value is not important, so it is
+  // acceptable for each instance of the updater to overwrite it with various
+  // values. Else, this is the global pref store and reflecting the value in
+  // registry is correct. Clients should transition to requesting the
+  // registration info for their application via RPC.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(GetUpdaterScope()),
+                 GetAppClientStateKey(base::SysUTF8ToWide(ap)), L"ap",
+                 base::SysUTF8ToWide(ap));
+#endif
 }
 
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
