@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +18,8 @@ class FeatureTile;
 class UnifiedSystemTrayController;
 
 // Controller of a feature pod button that launches screen capture.
-class CaptureModeFeaturePodController : public FeaturePodControllerBase {
+class ASH_EXPORT CaptureModeFeaturePodController
+    : public FeaturePodControllerBase {
  public:
   explicit CaptureModeFeaturePodController(
       UnifiedSystemTrayController* controller);

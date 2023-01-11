@@ -2820,6 +2820,7 @@ test("ash_unittests") {
     "bubble/bubble_utils_unittest.cc",
     "capture_mode/capture_mode_camera_unittests.cc",
     "capture_mode/capture_mode_demo_tools_unittests.cc",
+    "capture_mode/capture_mode_feature_pod_controller_unittest.cc",
     "capture_mode/capture_mode_test_util.cc",
     "capture_mode/capture_mode_test_util.h",
     "capture_mode/capture_mode_unittests.cc",

@@ -48,7 +48,7 @@ namespace capture_mode_util {
 // Returns true if the capture mode feature is enabled and capture mode is
 // active. This method allows callers to avoid including the full header for
 // CaptureModeController, which has many transitive includes.
-bool IsCaptureModeActive();
+ASH_EXPORT bool IsCaptureModeActive();
 
 // Retrieves the point on the |rect| associated with |position|.
 ASH_EXPORT gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,

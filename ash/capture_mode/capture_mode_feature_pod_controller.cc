@@ -28,6 +28,7 @@ CaptureModeFeaturePodController::~CaptureModeFeaturePodController() = default;
 
 FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
   DCHECK(!button_);
+  DCHECK(!features::IsQsRevampEnabled());
   button_ = new FeaturePodButton(this, /*is_togglable=*/false);
   button_->SetVectorIcon(kCaptureModeIcon);
   const auto label_text =
@@ -59,6 +60,12 @@ std::unique_ptr<FeatureTile> CaptureModeFeaturePodController::CreateTile() {
   feature_tile->SetLabel(label_text);
   feature_tile->SetSubLabelVisibility(false);
   feature_tile->SetTooltipText(label_text);
+  const bool visible =
+      !Shell::Get()->session_controller()->IsUserSessionBlocked();
+  feature_tile->SetVisible(visible);
+  if (visible) {
+    TrackVisibilityUMA();
+  }
   return feature_tile;
 }
 
