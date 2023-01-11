@@ -129,7 +129,7 @@ export class OutputFormatter {
       }
       this.speechProps_.properties['relativePitch'] = -0.2;
     }
-    this.output_.formatMessage_(this.params_, token, tree, options);
+    this.formatMessage_(this.params_, token, tree, options);
   }
 
   /** @override */
@@ -562,6 +562,104 @@ export class OutputFormatter {
       current = current.parent;
     }
     this.output_.append_(buff, level.toString());
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatMessage_(data, token, tree, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    const isPluralized = (token[0] === '@');
+    if (isPluralized) {
+      token = token.slice(1);
+    }
+    // Tokens can have substitutions.
+    const pieces = token.split('+');
+    token = pieces.reduce((prev, cur) => {
+      let lookup = cur;
+      if (cur[0] === '$') {
+        lookup = node[cur.slice(1)];
+      }
+      return prev + lookup;
+    }, '');
+    const msgId = token;
+    let msgArgs = [];
+    formatLog.write(token + '{');
+    if (!isPluralized) {
+      let curArg = tree.firstChild;
+      while (curArg) {
+        if (curArg.value[0] !== '$') {
+          const errorMsg = 'Unexpected value: ' + curArg.value;
+          formatLog.writeError(errorMsg);
+          console.error(errorMsg);
+          return;
+        }
+        let msgBuff = [];
+        this.output_.format_({
+          node,
+          outputFormat: curArg,
+          outputBuffer: msgBuff,
+          outputFormatLogger: formatLog,
+        });
+        // Fill in empty string if nothing was formatted.
+        if (!msgBuff.length) {
+          msgBuff = [''];
+        }
+        msgArgs = msgArgs.concat(msgBuff);
+        curArg = curArg.nextSibling;
+      }
+    }
+    let msg = Msgs.getMsg(msgId, msgArgs);
+    try {
+      if (this.output_.formatAsBraille) {
+        msg = Msgs.getMsg(msgId + '_brl', msgArgs) || msg;
+      }
+    } catch (e) {
+      // TODO(accessibility): Handle whatever error this is.
+    }
+
+    if (!msg) {
+      const errorMsg = 'Could not get message ' + msgId;
+      formatLog.writeError(errorMsg);
+      console.error(errorMsg);
+      return;
+    }
+
+    if (isPluralized) {
+      const arg = tree.firstChild;
+      if (!arg || arg.nextSibling) {
+        const errorMsg = 'Pluralized messages take exactly one argument';
+        formatLog.writeError(errorMsg);
+        console.error(errorMsg);
+        return;
+      }
+      if (arg.value[0] !== '$') {
+        const errorMsg = 'Unexpected value: ' + arg.value;
+        formatLog.writeError(errorMsg);
+        console.error(errorMsg);
+        return;
+      }
+      const argBuff = [];
+      this.output_.format_({
+        node,
+        outputFormat: arg,
+        outputBuffer: argBuff,
+        outputFormatLogger: formatLog,
+      });
+      const namedArgs = {COUNT: Number(argBuff[0])};
+      msg = new goog.i18n.MessageFormat(msg).format(namedArgs);
+    }
+    formatLog.write('}');
+
+    this.output_.append_(buff, msg, options);
+    formatLog.write(': ' + msg + '\n');
   }
 
   /**

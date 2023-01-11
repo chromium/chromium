@@ -49,14 +49,6 @@ export class OutputInterface {
   format_(params) {}
 
   /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatMessage_(data, token, tree, options) {}
-
-  /**
    * @param {!AutomationNode} node
    * @param {!AutomationNode} prevNode
    * @param {!outputTypes.OutputEventType} type
