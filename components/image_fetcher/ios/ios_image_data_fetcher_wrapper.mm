@@ -4,7 +4,7 @@
 
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #include "base/task/thread_pool.h"
 #include "net/http/http_response_headers.h"

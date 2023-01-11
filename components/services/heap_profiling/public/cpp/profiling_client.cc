@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/bind.h"
 #include "base/debug/stack_trace.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"

@@ -5,12 +5,12 @@
 #include "components/feedback/feedback_report.h"
 
 #include "base/base_paths.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"

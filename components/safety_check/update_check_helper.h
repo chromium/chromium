@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFETY_CHECK_UPDATE_CHECK_HELPER_H_
 #define COMPONENTS_SAFETY_CHECK_UPDATE_CHECK_HELPER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "net/http/http_response_headers.h"
 
 namespace network {

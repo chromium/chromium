@@ -4,8 +4,8 @@
 
 #include "components/winhttp/network_fetcher.h"
 
-#include "base/bind.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

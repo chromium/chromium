@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"

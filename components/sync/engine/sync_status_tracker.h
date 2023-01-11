@@ -8,8 +8,8 @@
 #include <map>
 #include <string>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_engine_event_listener.h"

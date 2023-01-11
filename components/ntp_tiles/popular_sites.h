@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_title_source.h"

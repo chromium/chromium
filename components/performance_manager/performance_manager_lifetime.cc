@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"

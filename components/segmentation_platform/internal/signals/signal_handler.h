@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace history {

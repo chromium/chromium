@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/default_clock.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/send_tab_to_self/features.h"

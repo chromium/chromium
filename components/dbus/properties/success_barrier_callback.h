@@ -7,8 +7,8 @@
 
 #include <cstddef>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 
 // A callback wrapper that must be called |num_calls| times with an argument of
 // true (indicates success) for |done_callback| to be called with true.  If the

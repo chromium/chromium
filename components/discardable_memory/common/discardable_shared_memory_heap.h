@@ -12,9 +12,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/linked_list.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/discardable_memory/common/discardable_memory_export.h"

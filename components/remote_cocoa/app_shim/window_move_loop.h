@@ -9,7 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/mac/scoped_cocoa_disable_screen_updates.h"
 

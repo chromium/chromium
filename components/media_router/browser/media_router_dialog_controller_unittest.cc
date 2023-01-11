@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"

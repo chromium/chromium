@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_GET_OPERATION_REQUEST_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_GET_OPERATION_REQUEST_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/version_info/channel.h"
 

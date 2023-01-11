@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/public/render_process_host_proxy.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"

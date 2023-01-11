@@ -9,8 +9,8 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/shell.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/exo/mock_vsync_timing_observer.h"
 #include "components/exo/test/exo_test_base.h"

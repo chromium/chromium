@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/configuration_policy_provider.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"

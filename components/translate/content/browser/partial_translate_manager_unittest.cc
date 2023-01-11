@@ -4,7 +4,7 @@
 
 #include "components/translate/content/browser/partial_translate_manager.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"

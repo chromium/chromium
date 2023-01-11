@@ -4,8 +4,8 @@
 
 #include "components/exo/surface.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"

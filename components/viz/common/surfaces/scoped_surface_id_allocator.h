@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_SURFACES_SCOPED_SURFACE_ID_ALLOCATOR_H_
 #define COMPONENTS_VIZ_COMMON_SURFACES_SCOPED_SURFACE_ID_ALLOCATOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/viz_common_export.h"

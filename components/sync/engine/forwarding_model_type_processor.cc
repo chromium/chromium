@@ -5,7 +5,7 @@
 #include "components/sync/engine/forwarding_model_type_processor.h"
 
 #include <utility>
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/sync/engine/commit_queue.h"
 
 namespace syncer {

@@ -10,11 +10,11 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"

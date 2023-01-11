@@ -5,9 +5,9 @@
 #include "components/app_restore/desk_template_read_handler.h"
 
 #include "ash/constants/app_types.h"
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"

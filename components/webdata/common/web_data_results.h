@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/webdata/common/webdata_export.h"
 

@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "components/language/core/browser/pref_names.h"

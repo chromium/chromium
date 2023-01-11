@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

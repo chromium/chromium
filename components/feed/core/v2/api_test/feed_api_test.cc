@@ -14,10 +14,10 @@
 #include "components/feed/core/v2/types.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

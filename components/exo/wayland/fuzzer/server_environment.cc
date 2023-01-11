@@ -11,9 +11,9 @@
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"

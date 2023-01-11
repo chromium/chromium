@@ -7,7 +7,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/content_creation/notes/android/jni_headers/NoteServiceBridge_jni.h"
 #include "components/content_creation/notes/android/note_template_conversion_bridge.h"
 #include "components/content_creation/notes/core/server/note_data.h"

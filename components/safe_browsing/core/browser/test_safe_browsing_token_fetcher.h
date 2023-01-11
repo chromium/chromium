@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TEST_SAFE_BROWSING_TOKEN_FETCHER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TEST_SAFE_BROWSING_TOKEN_FETCHER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

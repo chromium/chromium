@@ -4,7 +4,7 @@
 
 #include "components/download/public/background_service/test/test_download_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

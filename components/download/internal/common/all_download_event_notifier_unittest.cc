@@ -4,7 +4,7 @@
 
 #include "components/download/public/common/all_download_event_notifier.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/download/public/common/mock_simple_download_manager.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"

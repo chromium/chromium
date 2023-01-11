@@ -4,7 +4,7 @@
 
 #include "components/payments/core/const_csp_checker.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace payments {
 

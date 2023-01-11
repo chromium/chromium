@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
 

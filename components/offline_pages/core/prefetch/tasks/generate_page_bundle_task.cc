@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "components/offline_pages/core/client_id.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "components/offline_pages/core/prefetch/prefetch_gcm_handler.h"

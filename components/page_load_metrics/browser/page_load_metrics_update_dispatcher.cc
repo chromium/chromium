@@ -9,7 +9,7 @@
 #include <ostream>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"

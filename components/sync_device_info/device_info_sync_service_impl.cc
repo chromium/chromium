@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"

@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/functional/not_fn.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"

@@ -4,8 +4,8 @@
 
 #include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

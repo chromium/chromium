@@ -4,7 +4,7 @@
 
 #include "components/background_sync/background_sync_metrics.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/background_sync/background_sync_delegate.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

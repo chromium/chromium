@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "components/spellcheck/browser/platform_spell_checker.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"

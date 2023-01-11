@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/component_updater/android/component_loader_policy.h"
 

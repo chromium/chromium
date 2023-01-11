@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_store_types.h"
 #include "components/offline_pages/task/sql_store_base.h"

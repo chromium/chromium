@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/password_requirements_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"

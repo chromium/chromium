@@ -4,7 +4,7 @@
 
 #include "components/cast_streaming/browser/playback_command_dispatcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/renderer_rpc_call_translator.h"

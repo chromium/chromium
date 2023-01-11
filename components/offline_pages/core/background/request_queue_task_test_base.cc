@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/offline_pages/core/background/request_queue_task_test_base.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace offline_pages {
 

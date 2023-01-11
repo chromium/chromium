@@ -4,8 +4,8 @@
 
 #include "components/web_resource/resource_request_allowed_notifier.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 
 namespace web_resource {
 

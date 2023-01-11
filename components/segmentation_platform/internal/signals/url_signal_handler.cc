@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 
 namespace segmentation_platform {

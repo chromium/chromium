@@ -4,7 +4,7 @@
 
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"

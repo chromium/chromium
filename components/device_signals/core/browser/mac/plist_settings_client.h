@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/device_signals/core/browser/settings_client.h"
 
 namespace device_signals {

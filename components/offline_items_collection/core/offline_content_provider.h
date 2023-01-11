@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "components/offline_items_collection/core/launch_location.h"
 #include "components/offline_items_collection/core/open_params.h"

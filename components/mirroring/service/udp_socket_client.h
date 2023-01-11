@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_UDP_SOCKET_CLIENT_H_
 #define COMPONENTS_MIRRORING_SERVICE_UDP_SOCKET_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"

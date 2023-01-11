@@ -4,7 +4,7 @@
 
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_piece.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/url_matcher/url_util.h"

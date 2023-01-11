@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_GPU_GPU_VSYNC_CALLBACK_H_
 #define COMPONENTS_VIZ_COMMON_GPU_GPU_VSYNC_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 
 namespace viz {

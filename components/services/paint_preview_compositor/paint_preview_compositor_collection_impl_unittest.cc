@@ -4,7 +4,7 @@
 
 #include "components/services/paint_preview_compositor/paint_preview_compositor_collection_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"

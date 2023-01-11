@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/cast/named_message_port_connector/grit/named_message_port_connector_resources.h"

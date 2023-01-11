@@ -4,7 +4,7 @@
 
 #include "components/content_creation/notes/core/note_service.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/server/notes_repository.h"
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_FIELD_INFO_STORE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_FIELD_INFO_STORE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "testing/gmock/include/gmock/gmock.h"

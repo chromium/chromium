@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "components/update_client/update_client.h"
 
 class GURL;

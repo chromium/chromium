@@ -4,8 +4,8 @@
 
 #include "components/content_settings/core/common/cookie_settings_base.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"

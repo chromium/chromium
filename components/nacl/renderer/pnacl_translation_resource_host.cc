@@ -4,7 +4,7 @@
 
 #include "pnacl_translation_resource_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/nacl/common/nacl_host_messages.h"

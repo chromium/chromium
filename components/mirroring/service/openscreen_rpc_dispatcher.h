@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_RPC_DISPATCHER_H_
 #define COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_RPC_DISPATCHER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/mirroring/service/receiver_response.h"

@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/deleted_tile_type.h"

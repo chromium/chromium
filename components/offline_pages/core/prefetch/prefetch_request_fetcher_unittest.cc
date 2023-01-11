@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_request_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
 #include "components/offline_pages/core/prefetch/prefetch_request_test_base.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"

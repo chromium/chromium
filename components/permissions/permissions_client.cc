@@ -4,7 +4,7 @@
 
 #include "components/permissions/permissions_client.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/permissions/permission_request_enums.h"

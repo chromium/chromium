@@ -4,7 +4,7 @@
 
 #include "components/download/public/common/stream_handle_input_stream.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_utils.h"

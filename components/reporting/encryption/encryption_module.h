@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_REPORTING_ENCRYPTION_ENCRYPTION_MODULE_H_
 #define COMPONENTS_REPORTING_ENCRYPTION_ENCRYPTION_MODULE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"

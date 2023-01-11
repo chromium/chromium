@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/time/clock.h"
 #include "components/reading_list/core/proto/reading_list.pb.h"
 #include "components/sync/model/metadata_batch.h"

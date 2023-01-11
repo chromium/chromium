@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"

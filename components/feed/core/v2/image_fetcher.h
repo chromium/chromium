@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_IMAGE_FETCHER_H_
 #define COMPONENTS_FEED_CORE_V2_IMAGE_FETCHER_H_
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/public/types.h"

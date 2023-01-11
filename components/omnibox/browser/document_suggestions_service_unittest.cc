@@ -4,7 +4,7 @@
 
 #include "components/omnibox/browser/document_suggestions_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"

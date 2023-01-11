@@ -4,7 +4,7 @@
 
 #include "components/spellcheck/renderer/spellcheck_panel.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"

@@ -4,7 +4,7 @@
 
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/sync/model/syncable_service.h"
 
 namespace syncer {

@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/logging/log_manager.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "testing/gmock/include/gmock/gmock.h"

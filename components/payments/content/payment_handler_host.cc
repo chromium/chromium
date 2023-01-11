@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/native_error_strings.h"

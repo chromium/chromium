@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/external_data_fetcher.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/policy/core/common/external_data_manager.h"
 
 namespace policy {

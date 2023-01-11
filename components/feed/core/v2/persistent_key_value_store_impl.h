@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/public/persistent_key_value_store.h"
 #include "components/leveldb_proto/public/proto_database.h"

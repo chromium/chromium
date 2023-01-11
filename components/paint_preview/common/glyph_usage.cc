@@ -4,7 +4,7 @@
 
 #include "components/paint_preview/common/glyph_usage.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace paint_preview {
 

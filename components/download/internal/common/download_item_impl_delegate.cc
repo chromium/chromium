@@ -4,8 +4,8 @@
 
 #include "components/download/public/common/download_item_impl_delegate.h"
 
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_danger_type.h"

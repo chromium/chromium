@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_HELP_BUBBLE_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_HELP_BUBBLE_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"

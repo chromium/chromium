@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/assist_ranker/example_preprocessing.h"
 #include "components/assist_ranker/nn_classifier.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"

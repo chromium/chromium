@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/page_criteria.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "testing/gtest/include/gtest/gtest.h"

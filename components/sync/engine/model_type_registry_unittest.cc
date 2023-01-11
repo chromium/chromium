@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"

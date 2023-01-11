@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/web_contents.h"
 
 namespace performance_manager {

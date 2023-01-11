@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_TASK_SQL_CALLBACK_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_TASK_SQL_CALLBACK_TASK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"

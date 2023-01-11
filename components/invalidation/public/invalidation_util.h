@@ -12,7 +12,7 @@
 #include <set>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/invalidation/public/invalidation_export.h"
 
 namespace invalidation {

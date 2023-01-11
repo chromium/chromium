@@ -8,7 +8,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "components/exo/wayland/server.h"
 #include "components/exo/wayland/test/test_client.h"

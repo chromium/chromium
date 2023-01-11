@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SERVICES_PATCH_CONTENT_PATCH_SERVICE_H_
 #define COMPONENTS_SERVICES_PATCH_CONTENT_PATCH_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

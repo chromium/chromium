@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_RENDERER_CONTROLLER_PROXY_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_RENDERER_CONTROLLER_PROXY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"

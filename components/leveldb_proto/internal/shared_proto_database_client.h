@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/component_export.h"
+#include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "base/types/strong_alias.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"

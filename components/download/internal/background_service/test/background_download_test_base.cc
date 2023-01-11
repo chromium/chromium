@@ -4,7 +4,7 @@
 
 #include "components/download/internal/background_service/test/background_download_test_base.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 using net::test_server::HttpMethod;
 using net::test_server::HttpRequest;

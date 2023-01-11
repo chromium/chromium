@@ -4,7 +4,7 @@
 
 #include "components/mirroring/service/rtp_stream.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"

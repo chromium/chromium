@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/snapshot_controller.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"

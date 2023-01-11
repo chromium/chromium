@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/model/get_visuals_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "sql/database.h"

@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/android/real_time_url_checks_allowlist.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

@@ -64,7 +64,7 @@
 
 #include "components/password_manager/core/browser/affiliation/facet_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/task_runner.h"
 #include "base/time/clock.h"

@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/background/cleanup_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/offliner_policy_utils.h"

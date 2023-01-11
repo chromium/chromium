@@ -5,7 +5,7 @@
 #include "components/page_image_annotation/content/renderer/content_page_annotator_driver.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "crypto/sha2.h"

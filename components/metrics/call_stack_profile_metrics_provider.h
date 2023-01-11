@@ -8,8 +8,8 @@
 #include <map>
 #include <string>
 
-#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "components/metrics/metrics_provider.h"

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "base/threading/thread.h"
 #include "components/exo/wayland/test/test_client.h"

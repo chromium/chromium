@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BACKGROUND_FETCH_JOB_DETAILS_H_
 #define COMPONENTS_BACKGROUND_FETCH_JOB_DETAILS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/background_fetch_delegate.h"
 

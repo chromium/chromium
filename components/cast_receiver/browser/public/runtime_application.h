@@ -8,7 +8,7 @@
 #include <ostream>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/cast_receiver/common/public/status.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 

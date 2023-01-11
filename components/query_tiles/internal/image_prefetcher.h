@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/query_tiles/internal/tile_types.h"
 
 namespace query_tiles {

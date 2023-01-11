@@ -4,7 +4,7 @@
 
 #include "components/media_router/common/test/test_helper.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/media_router/common/media_sink.h"

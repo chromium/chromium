@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_NAMED_MESSAGE_PORT_CONNECTOR_H_
 #define COMPONENTS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_NAMED_MESSAGE_PORT_CONNECTOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port.h"
 

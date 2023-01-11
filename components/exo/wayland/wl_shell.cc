@@ -8,7 +8,7 @@
 #include <wayland-server-protocol-core.h>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/display.h"
 #include "components/exo/shell_surface.h"

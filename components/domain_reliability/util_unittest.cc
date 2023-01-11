@@ -4,7 +4,7 @@
 
 #include "components/domain_reliability/util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/test_util.h"

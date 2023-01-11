@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_FAVICON_CONTENT_LARGE_FAVICON_PROVIDER_GETTER_H_
 #define COMPONENTS_FAVICON_CONTENT_LARGE_FAVICON_PROVIDER_GETTER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace content {
 class BrowserContext;

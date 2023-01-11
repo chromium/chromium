@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_IMPL_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_WIN_WMI_CLIENT_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/device_signals/core/system_signals/win/wmi_client.h"
 
 // WMI interfaces are available on Windows Vista and above, and are officially

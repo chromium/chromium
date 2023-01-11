@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/test_support/test_harness_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"

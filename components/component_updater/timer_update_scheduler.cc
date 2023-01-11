@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/component_updater/timer_update_scheduler.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 
 namespace component_updater {
 

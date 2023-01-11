@@ -4,7 +4,7 @@
 
 #include "components/browser_ui/site_settings/android/storage_info_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

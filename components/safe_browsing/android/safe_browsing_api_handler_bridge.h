@@ -10,7 +10,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 class GURL;

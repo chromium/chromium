@@ -4,9 +4,9 @@
 
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"

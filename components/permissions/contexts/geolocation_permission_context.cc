@@ -4,7 +4,7 @@
 
 #include "components/permissions/contexts/geolocation_permission_context.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"

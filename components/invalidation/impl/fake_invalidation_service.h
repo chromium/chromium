@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/invalidation/impl/fake_ack_handler.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/public/invalidation_service.h"

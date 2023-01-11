@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_SYNC_OBSERVER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_SAFE_BROWSING_SYNC_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace safe_browsing {
 

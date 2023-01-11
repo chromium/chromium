@@ -7,7 +7,7 @@
 #include <string>
 #include <tuple>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"

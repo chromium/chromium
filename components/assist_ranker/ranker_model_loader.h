@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/assist_ranker/ranker_model.h"
 
 namespace assist_ranker {

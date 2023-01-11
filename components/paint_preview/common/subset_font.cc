@@ -14,8 +14,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/skia/include/core/SkStream.h"

@@ -4,7 +4,7 @@
 
 #include "components/ntp_snippets/remote/remote_suggestions_fetcher_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"

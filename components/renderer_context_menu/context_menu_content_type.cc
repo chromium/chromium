@@ -4,7 +4,7 @@
 
 #include "components/renderer_context_menu/context_menu_content_type.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "printing/buildflags/buildflags.h"

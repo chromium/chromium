@@ -7,7 +7,7 @@
 
 #include "components/policy/core/common/cloud/signing_service.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

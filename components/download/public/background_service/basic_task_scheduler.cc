@@ -4,7 +4,7 @@
 
 #include "components/download/public/background_service/basic_task_scheduler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"

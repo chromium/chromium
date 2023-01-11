@@ -5,8 +5,8 @@
 #include "components/quirks/quirks_client.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"

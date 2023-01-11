@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/autofill_manager.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"

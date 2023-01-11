@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_DESKTOP_H_
 #define COMPONENTS_PERMISSIONS_BLUETOOTH_CHOOSER_DESKTOP_H_
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 

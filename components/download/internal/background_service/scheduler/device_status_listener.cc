@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/download/internal/background_service/scheduler/device_status_listener.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 
 namespace download {

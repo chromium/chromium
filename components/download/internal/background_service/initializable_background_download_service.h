@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_INITIALIZABLE_BACKGROUND_DOWNLOAD_SERVICE_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_INITIALIZABLE_BACKGROUND_DOWNLOAD_SERVICE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/download/public/background_service/background_download_service.h"
 
 namespace download {

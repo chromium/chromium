@@ -4,7 +4,7 @@
 
 #include "components/variations/variations_request_scheduler_mobile.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

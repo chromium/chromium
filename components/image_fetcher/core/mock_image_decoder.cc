@@ -4,7 +4,7 @@
 
 #include "components/image_fetcher/core/mock_image_decoder.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 

@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"

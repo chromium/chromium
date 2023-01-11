@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_RECEIVER_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
 #define COMPONENTS_CAST_RECEIVER_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/url_rewrite/renderer/url_request_rules_receiver.h"
 #include "content/public/renderer/render_frame_observer.h"
 

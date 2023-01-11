@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BACKGROUND_TASK_SCHEDULER_BACKGROUND_TASK_H_
 #define COMPONENTS_BACKGROUND_TASK_SCHEDULER_BACKGROUND_TASK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/background_task_scheduler/task_parameters.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 

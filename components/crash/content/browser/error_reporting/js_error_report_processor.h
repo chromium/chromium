@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_JS_ERROR_REPORT_PROCESSOR_H_
 #define COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_JS_ERROR_REPORT_PROCESSOR_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 

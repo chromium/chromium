@@ -7,8 +7,8 @@
 
 #include <unordered_map>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/threading/sequence_bound.h"
 #include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
 #include "components/user_notes/interfaces/user_note_storage.h"

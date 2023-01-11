@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_RESOURCES_RETURN_CALLBACK_H_
 #define COMPONENTS_VIZ_COMMON_RESOURCES_RETURN_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/viz/common/resources/returned_resource.h"
 
 namespace viz {

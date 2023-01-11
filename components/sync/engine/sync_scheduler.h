@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_SCHEDULER_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_SCHEDULER_H_
 
-#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/sync_cycle.h"

@@ -8,9 +8,9 @@
 
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/shell.h"
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"

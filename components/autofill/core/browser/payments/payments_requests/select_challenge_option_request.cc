@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_client.h"

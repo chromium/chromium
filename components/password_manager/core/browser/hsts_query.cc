@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/hsts_query.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"

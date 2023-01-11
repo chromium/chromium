@@ -4,7 +4,7 @@
 
 #include "components/feature_engagement/internal/display_lock_controller_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/thread_checker.h"
 #include "components/feature_engagement/public/tracker.h"
 

@@ -6,7 +6,7 @@
 #define COMPONENTS_INFOBARS_ANDROID_INFOBAR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/infobars/core/infobar.h"
 
 namespace infobars {

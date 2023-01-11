@@ -4,7 +4,7 @@
 
 #include "components/services/storage/test_api_stubs.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 
 namespace storage {

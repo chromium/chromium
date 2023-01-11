@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/digital_asset_links/android/jni_headers/OriginVerifier_jni.h"
 #include "components/digital_asset_links/digital_asset_links_handler.h"
 #include "content/public/browser/android/browser_context_handle.h"

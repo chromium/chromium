@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 

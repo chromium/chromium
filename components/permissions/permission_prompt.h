@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "url/gurl.h"
 

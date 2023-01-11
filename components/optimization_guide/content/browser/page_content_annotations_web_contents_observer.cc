@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"

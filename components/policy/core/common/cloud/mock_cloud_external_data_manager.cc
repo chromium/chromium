@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 

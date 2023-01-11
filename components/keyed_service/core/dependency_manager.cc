@@ -6,9 +6,9 @@
 
 #include <ostream>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"

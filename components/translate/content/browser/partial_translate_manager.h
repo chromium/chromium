@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/contextual_search/core/browser/contextual_search_context.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate.h"

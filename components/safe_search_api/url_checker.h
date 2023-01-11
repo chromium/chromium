@@ -8,8 +8,8 @@
 #include <list>
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/containers/lru_cache.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_search_api/url_checker_client.h"

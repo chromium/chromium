@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/hash/md5.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"

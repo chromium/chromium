@@ -4,7 +4,7 @@
 
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 FakeAccountManagerUI::FakeAccountManagerUI() = default;
 FakeAccountManagerUI::~FakeAccountManagerUI() = default;

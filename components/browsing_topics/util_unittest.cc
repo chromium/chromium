@@ -5,7 +5,7 @@
 #include "components/browsing_topics/util.h"
 
 #include "base/bits.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/test/bind.h"

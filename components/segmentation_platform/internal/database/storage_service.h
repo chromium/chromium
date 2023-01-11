@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"

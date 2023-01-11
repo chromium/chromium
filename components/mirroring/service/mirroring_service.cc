@@ -4,9 +4,9 @@
 
 #include "components/mirroring/service/mirroring_service.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/debug/stack_trace.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/openscreen_session_host.h"

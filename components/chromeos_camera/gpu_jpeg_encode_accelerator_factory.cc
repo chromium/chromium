@@ -4,7 +4,7 @@
 
 #include "components/chromeos_camera/gpu_jpeg_encode_accelerator_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"

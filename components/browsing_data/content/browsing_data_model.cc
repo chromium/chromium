@@ -5,8 +5,8 @@
 #include "components/browsing_data/content/browsing_data_model.h"
 
 #include "base/barrier_closure.h"
-#include "base/callback.h"
 #include "base/containers/enum_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"

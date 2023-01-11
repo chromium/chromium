@@ -7,7 +7,7 @@
 #include <sstream>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "components/zucchini/io_utils.h"

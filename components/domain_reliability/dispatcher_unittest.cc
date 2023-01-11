@@ -4,7 +4,7 @@
 
 #include "components/domain_reliability/dispatcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/domain_reliability/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

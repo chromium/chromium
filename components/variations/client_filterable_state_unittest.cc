@@ -4,7 +4,7 @@
 
 #include "components/variations/client_filterable_state.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {

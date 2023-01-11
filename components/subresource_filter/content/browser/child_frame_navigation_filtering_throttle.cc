@@ -6,10 +6,10 @@
 
 #include <sstream>
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"

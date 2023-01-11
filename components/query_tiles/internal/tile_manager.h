@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/query_tiles/internal/store.h"
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/internal/tile_types.h"

@@ -4,7 +4,7 @@
 
 #include "components/gcm_driver/instance_id/instance_id.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/gcm_driver/gcm_driver.h"
 
 namespace instance_id {

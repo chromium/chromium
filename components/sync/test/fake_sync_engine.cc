@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine_host.h"

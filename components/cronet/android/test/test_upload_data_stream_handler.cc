@@ -10,7 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/cronet/android/cronet_tests_jni_headers/TestUploadDataStreamHandler_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
 #include "net/base/net_errors.h"

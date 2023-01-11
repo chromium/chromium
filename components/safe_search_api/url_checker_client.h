@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_SEARCH_API_URL_CHECKER_CLIENT_H_
 #define COMPONENTS_SAFE_SEARCH_API_URL_CHECKER_CLIENT_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "url/gurl.h"
 
 namespace safe_search_api {

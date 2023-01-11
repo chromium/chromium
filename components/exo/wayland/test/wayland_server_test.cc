@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "components/exo/security_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

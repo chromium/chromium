@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_TASK_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_TASK_TASK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace offline_pages {

@@ -4,7 +4,7 @@
 
 #include "components/cast_streaming/renderer/decoder_buffer_reader.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace cast_streaming {
 

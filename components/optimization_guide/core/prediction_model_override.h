@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_OVERRIDE_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_OVERRIDE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {

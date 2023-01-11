@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/web_contents.h"

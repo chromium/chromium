@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_REPORTING_METRICS_SAMPLER_H_
 #define COMPONENTS_REPORTING_METRICS_SAMPLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

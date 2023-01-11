@@ -6,7 +6,7 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"

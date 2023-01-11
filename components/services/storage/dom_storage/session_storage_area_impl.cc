@@ -4,8 +4,8 @@
 
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/services/storage/dom_storage/session_storage_data_map.h"

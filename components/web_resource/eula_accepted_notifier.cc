@@ -4,8 +4,8 @@
 
 #include "components/web_resource/eula_accepted_notifier.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

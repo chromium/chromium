@@ -4,7 +4,7 @@
 
 #include "components/sync/invalidations/interested_data_types_manager.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

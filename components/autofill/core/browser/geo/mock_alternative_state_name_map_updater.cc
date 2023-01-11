@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/geo/mock_alternative_state_name_map_updater.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_METRICS_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_METRICS_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 
 namespace base {

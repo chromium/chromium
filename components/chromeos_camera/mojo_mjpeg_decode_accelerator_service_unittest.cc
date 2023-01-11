@@ -4,8 +4,8 @@
 
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_FRAME_NODE_SOURCE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_FRAME_NODE_SOURCE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "content/public/browser/global_routing_id.h"
 

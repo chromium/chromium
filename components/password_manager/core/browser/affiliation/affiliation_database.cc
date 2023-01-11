@@ -11,9 +11,9 @@
 #include <set>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"

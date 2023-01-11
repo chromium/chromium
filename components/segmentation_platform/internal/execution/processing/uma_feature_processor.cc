@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"

@@ -4,9 +4,9 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_importer_impl.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"

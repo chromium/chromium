@@ -5,7 +5,7 @@
 #include "components/embedder_support/android/util/input_stream_reader.h"
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "net/base/io_buffer.h"

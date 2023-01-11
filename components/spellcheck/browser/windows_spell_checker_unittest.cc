@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <ostream>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"

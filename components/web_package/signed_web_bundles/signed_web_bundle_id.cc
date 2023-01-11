@@ -4,8 +4,8 @@
 
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
-#include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"

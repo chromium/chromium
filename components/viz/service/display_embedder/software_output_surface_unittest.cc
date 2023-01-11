@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"

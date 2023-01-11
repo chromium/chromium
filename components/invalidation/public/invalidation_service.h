@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_
 #define COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation_traits.h"
 #include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"

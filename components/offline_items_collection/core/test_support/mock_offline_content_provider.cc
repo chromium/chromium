@@ -4,7 +4,7 @@
 
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace offline_items_collection {

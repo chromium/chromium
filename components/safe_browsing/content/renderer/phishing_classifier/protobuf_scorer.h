@@ -21,9 +21,9 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"

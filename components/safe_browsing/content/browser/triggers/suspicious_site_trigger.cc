@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"

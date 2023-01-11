@@ -4,10 +4,10 @@
 
 #include "components/translate/core/browser/translate_model_service.h"
 
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"

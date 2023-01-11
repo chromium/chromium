@@ -7,7 +7,7 @@
 
 #include "components/password_manager/core/browser/capabilities_service.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "url/origin.h"
 
 class CapabilitiesServiceImpl : public password_manager::CapabilitiesService {

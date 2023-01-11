@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/permissions/bluetooth_scanning_prompt_controller.h"
 #include "components/permissions/mock_chooser_controller_view.h"

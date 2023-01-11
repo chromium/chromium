@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/background/initialize_store_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace offline_pages {
 

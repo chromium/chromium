@@ -4,7 +4,7 @@
 
 #include "components/os_crypt/key_storage_linux.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"

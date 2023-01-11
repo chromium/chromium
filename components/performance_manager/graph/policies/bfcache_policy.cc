@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/graph/policies/bfcache_policy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"

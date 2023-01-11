@@ -7,7 +7,7 @@
 #include <GLES2/gl2extchromium.h>
 
 #include "ash/shell.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/surface_tree_host.h"

@@ -19,8 +19,8 @@
 #include <utility>
 
 #include "base/base_paths_win.h"
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"

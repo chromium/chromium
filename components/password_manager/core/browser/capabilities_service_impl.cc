@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "url/origin.h"
 
 CapabilitiesServiceImpl::CapabilitiesServiceImpl() = default;

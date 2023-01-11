@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "components/update_client/buildflags.h"

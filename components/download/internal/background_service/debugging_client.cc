@@ -4,7 +4,7 @@
 
 #include "components/download/internal/background_service/debugging_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "services/network/public/cpp/resource_request_body.h"

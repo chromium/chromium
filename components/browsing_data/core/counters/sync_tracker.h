@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BROWSING_DATA_CORE_COUNTERS_SYNC_TRACKER_H_
 #define COMPONENTS_BROWSING_DATA_CORE_COUNTERS_SYNC_TRACKER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 

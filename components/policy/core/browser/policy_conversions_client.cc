@@ -4,8 +4,8 @@
 
 #include "components/policy/core/browser/policy_conversions_client.h"
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"

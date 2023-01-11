@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_SALIENT_IMAGE_RETRIEVER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_SALIENT_IMAGE_RETRIEVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom-forward.h"

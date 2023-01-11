@@ -4,8 +4,8 @@
 
 #include "components/captive_portal/content/captive_portal_tab_reloader.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/captive_portal/core/captive_portal_types.h"

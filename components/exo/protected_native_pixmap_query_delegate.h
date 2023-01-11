@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_EXO_PROTECTED_NATIVE_PIXMAP_QUERY_DELEGATE_H_
 #define COMPONENTS_EXO_PROTECTED_NATIVE_PIXMAP_QUERY_DELEGATE_H_
 
-#include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
 
 namespace exo {
 // Interface for querying if a GMB handle is associated with a protected native

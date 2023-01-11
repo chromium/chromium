@@ -4,7 +4,7 @@
 
 #include "components/download/network/network_status_listener_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace download {
 

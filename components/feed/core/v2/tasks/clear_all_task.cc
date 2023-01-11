@@ -4,8 +4,8 @@
 
 #include "components/feed/core/v2/tasks/clear_all_task.h"
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 
 #include "components/feed/core/v2/feed_store.h"

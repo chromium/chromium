@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_SYNC_EXPLICIT_PASSPHRASE_CLIENT_ASH_H_
 #define COMPONENTS_SYNC_TEST_FAKE_SYNC_EXPLICIT_PASSPHRASE_CLIENT_ASH_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

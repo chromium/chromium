@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BATCH_ENTITY_METADATA_TASK_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BATCH_ENTITY_METADATA_TASK_H_
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

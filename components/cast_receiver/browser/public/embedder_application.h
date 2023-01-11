@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 
 namespace content {

@@ -5,8 +5,8 @@
 #include "components/sync_device_info/local_device_info_util.h"
 
 #include "base/barrier_closure.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"

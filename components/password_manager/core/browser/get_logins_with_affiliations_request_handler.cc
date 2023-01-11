@@ -4,10 +4,10 @@
 
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/trace_event/trace_event.h"
 
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"

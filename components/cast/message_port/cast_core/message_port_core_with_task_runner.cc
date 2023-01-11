@@ -4,7 +4,7 @@
 
 #include "components/cast/message_port/cast_core/message_port_core_with_task_runner.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"

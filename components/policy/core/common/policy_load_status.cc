@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/policy_load_status.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
 #include "components/policy/core/common/policy_types.h"
 

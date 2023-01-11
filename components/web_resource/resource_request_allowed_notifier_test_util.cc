@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/web_resource/resource_request_allowed_notifier_test_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace web_resource {
 

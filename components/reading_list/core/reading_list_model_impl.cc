@@ -4,9 +4,9 @@
 
 #include "components/reading_list/core/reading_list_model_impl.h"
 
-#include "base/bind.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"

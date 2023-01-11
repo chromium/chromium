@@ -4,7 +4,7 @@
 
 #include <cstddef>
 #include <sstream>
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"

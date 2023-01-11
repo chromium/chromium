@@ -5,8 +5,8 @@
 #include "components/password_manager/core/browser/leak_detection_delegate_helper.h"
 
 #include "base/barrier_closure.h"
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_form.h"

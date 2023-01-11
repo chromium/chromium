@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_FAKE_NETWORK_SERVICE_H_
 #define COMPONENTS_MIRRORING_SERVICE_FAKE_NETWORK_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/config.h"
 #include "components/domain_reliability/test_util.h"

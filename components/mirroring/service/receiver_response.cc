@@ -5,8 +5,8 @@
 #include "components/mirroring/service/receiver_response.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "components/mirroring/service/value_util.h"

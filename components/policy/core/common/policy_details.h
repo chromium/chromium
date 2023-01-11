@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/risk_tag.h"
 

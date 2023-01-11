@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DEVICE_REAUTH_MOCK_BIOMETRIC_AUTHENTICATOR_H_
 #define COMPONENTS_DEVICE_REAUTH_MOCK_BIOMETRIC_AUTHENTICATOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

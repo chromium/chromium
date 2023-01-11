@@ -8,7 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/payments/content/android/csp_checker_android.h"
 #include "components/payments/content/android/jni_headers/PaymentManifestDownloader_jni.h"
 #include "components/payments/content/developer_console_logger.h"

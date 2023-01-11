@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLIENT_DATA_DELEGATE_H_
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLIENT_DATA_DELEGATE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace enterprise_management {
 class RegisterBrowserRequest;

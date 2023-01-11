@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 
 namespace offline_pages {

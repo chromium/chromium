@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEMPLATES_TEMPLATE_FETCHER_H_
 #define COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEMPLATES_TEMPLATE_FETCHER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace network {
 class SharedURLLoaderFactory;

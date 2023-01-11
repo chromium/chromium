@@ -4,7 +4,7 @@
 
 #include "components/paint_preview/player/android/convert_to_java_bitmap.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"

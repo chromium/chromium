@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/permissions/bluetooth_chooser_controller.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "testing/gmock/include/gmock/gmock.h"

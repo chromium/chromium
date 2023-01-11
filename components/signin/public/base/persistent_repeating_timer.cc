@@ -4,7 +4,7 @@
 
 #include "components/signin/public/base/persistent_repeating_timer.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/prefs/pref_service.h"
 
 namespace signin {

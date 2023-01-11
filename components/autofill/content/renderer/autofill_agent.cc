@@ -8,12 +8,12 @@
 
 #include <tuple>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase_set.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/location.h"
 #include "base/metrics/field_trial.h"

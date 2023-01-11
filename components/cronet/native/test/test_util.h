@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CRONET_NATIVE_TEST_TEST_UTIL_H_
 #define COMPONENTS_CRONET_NATIVE_TEST_TEST_UTIL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "cronet_c.h"
 
 namespace cronet {

@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/test_support/graph_test_harness.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 
 namespace performance_manager {

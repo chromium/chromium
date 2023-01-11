@@ -4,7 +4,7 @@
 
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"

@@ -4,7 +4,7 @@
 
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 

@@ -13,7 +13,7 @@
 //    --perf-test-time-ms=240000 --disable_discard_framebuffer=1 \
 //    --use_virtualized_gl_contexts=1
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"

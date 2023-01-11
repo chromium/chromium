@@ -4,7 +4,7 @@
 
 #include "components/component_updater/android/background_task_update_scheduler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/component_updater/android/background_task_update_scheduler_jni_headers/UpdateScheduler_jni.h"
 

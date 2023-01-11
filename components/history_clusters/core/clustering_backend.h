@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_BACKEND_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_BACKEND_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace history_clusters {

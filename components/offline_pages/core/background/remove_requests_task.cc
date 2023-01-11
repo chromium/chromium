@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/background/remove_requests_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace offline_pages {
 

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/content_creation/notes/core/server/note_data.h"
 #include "components/content_creation/notes/core/server/notes_server_base.h"

@@ -5,7 +5,7 @@
 #include "components/offline_pages/core/prefetch/fake_suggestions_provider.h"
 
 #include <utility>
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace offline_pages {

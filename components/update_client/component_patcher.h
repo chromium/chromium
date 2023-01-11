@@ -27,7 +27,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_COMPONENT_PATCHER_H_
 #define COMPONENTS_UPDATE_CLIENT_COMPONENT_PATCHER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/update_client/component_unpacker.h"

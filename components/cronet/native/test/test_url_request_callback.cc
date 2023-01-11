@@ -4,7 +4,7 @@
 
 #include "components/cronet/native/test/test_url_request_callback.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/cronet/native/test/test_util.h"
 
 namespace cronet {

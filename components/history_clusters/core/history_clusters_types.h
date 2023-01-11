@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/history/core/browser/history_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

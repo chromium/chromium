@@ -4,7 +4,7 @@
 
 #include "components/cast_receiver/browser/bindings_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cast/message_port/blink_message_port_adapter.h"

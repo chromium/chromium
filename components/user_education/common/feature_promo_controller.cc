@@ -7,11 +7,11 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/feature_engagement/public/event_constants.h"

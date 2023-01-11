@@ -12,8 +12,8 @@
 #include <ostream>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/element_detection.h"

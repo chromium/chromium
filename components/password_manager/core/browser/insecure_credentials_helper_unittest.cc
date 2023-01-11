@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 
 #include "components/password_manager/core/browser/mock_password_store_interface.h"

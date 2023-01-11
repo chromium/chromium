@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_ACTION_RUNNER_H_
 #define COMPONENTS_UPDATE_CLIENT_ACTION_RUNNER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/threading/thread_checker.h"
 #include "components/update_client/update_client.h"

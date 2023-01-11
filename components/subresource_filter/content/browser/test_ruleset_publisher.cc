@@ -4,7 +4,7 @@
 
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_METRICS_METRICS_SCHEDULER_H_
 #define COMPONENTS_METRICS_METRICS_SCHEDULER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 

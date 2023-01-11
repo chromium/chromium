@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/android/arcore/arcore_session_utils.h"
 

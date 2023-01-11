@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/device_signals/core/browser/signals_collector.h"
 
 namespace device_signals {

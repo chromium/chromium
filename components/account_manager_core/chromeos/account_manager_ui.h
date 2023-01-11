@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_UI_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_UI_H_
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "components/account_manager_core/account_addition_options.h"
 
 namespace account_manager {

@@ -5,7 +5,6 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"

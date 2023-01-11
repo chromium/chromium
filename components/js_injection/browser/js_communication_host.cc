@@ -4,7 +4,7 @@
 
 #include "components/js_injection/browser/js_communication_host.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/js_injection/browser/js_to_browser_messaging.h"

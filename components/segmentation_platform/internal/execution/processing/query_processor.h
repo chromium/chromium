@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 
 namespace segmentation_platform::processing {

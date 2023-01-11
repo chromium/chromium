@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/generate_page_bundle_request.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "components/offline_pages/core/prefetch/prefetch_proto_utils.h"
 #include "components/offline_pages/core/prefetch/prefetch_request_fetcher.h"

@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
 #include "components/reporting/metrics/reporting_settings.h"
 
 namespace reporting {

@@ -5,9 +5,9 @@
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
 
 #include "base/barrier_callback.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"

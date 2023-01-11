@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"

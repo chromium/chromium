@@ -4,8 +4,8 @@
 
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/invalidation_util.h"

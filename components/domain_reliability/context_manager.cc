@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "components/domain_reliability/google_configs.h"
 #include "net/base/url_util.h"
 

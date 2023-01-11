@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "components/pdf/browser/plugin_response_writer.h"
 #include "content/public/browser/url_loader_request_interceptor.h"

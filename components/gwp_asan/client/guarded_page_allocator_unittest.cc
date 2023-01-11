@@ -12,7 +12,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/bits.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"

@@ -4,7 +4,7 @@
 
 #include "components/lookalikes/core/lookalike_url_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"

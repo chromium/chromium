@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_SERVICE_PROVIDER_H_
 #define COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_SERVICE_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class SimpleFactoryKey;
 

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/feature_engagement/internal/stats.h"
 #include "components/leveldb_proto/public/proto_database.h"
 

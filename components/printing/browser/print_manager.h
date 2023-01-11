@@ -18,7 +18,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #endif
 
 namespace printing {

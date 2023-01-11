@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_RPC_DISPATCHER_IMPL_H_
 #define COMPONENTS_MIRRORING_SERVICE_RPC_DISPATCHER_IMPL_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/receiver_response.h"
 #include "components/mirroring/service/rpc_dispatcher.h"

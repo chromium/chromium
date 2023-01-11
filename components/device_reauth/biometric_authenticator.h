@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_
 #define COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 
 namespace device_reauth {

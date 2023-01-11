@@ -8,8 +8,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #import "base/ios/ios_util.h"
 #include "base/task/thread_pool.h"
 #include "ios/web/public/thread/web_thread.h"

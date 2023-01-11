@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"

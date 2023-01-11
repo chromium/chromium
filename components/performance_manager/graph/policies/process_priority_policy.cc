@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/graph/policies/process_priority_policy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/browser_task_traits.h"

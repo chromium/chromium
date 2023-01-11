@@ -4,7 +4,7 @@
 
 #include "components/signin/internal/identity_manager/diagnostics_provider_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"

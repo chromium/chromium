@@ -4,9 +4,9 @@
 
 #include "components/variations/fake_crash.h"
 
-#include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"

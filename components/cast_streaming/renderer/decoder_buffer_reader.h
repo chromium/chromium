@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_READER_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_READER_H_
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

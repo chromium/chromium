@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble.h"

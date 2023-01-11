@@ -20,8 +20,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/gcm_driver/gcm_driver_android.h"
 #else
-#include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/account_tracker.h"
 #include "components/gcm_driver/gcm_account_tracker.h"

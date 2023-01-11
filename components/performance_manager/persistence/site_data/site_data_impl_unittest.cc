@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/persistence/site_data/unittest_utils.h"

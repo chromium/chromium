@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"

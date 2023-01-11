@@ -4,8 +4,8 @@
 
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/update_client/unzipper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

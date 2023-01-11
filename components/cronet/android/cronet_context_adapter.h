@@ -11,8 +11,8 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "components/cronet/cronet_context.h"

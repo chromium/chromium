@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"

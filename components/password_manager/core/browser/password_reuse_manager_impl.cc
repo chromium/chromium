@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/task/sequenced_task_runner.h"

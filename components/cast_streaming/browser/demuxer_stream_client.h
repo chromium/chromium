@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_DEMUXER_STREAM_CLIENT_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_DEMUXER_STREAM_CLIENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace cast_streaming {
 

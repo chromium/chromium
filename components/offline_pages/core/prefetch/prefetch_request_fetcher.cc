@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_request_fetcher.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/offline_pages/core/prefetch/prefetch_server_urls.h"

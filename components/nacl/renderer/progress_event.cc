@@ -4,7 +4,7 @@
 
 #include "components/nacl/renderer/progress_event.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
 #include "content/public/renderer/pepper_plugin_instance.h"

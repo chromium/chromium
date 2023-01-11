@@ -4,7 +4,7 @@
 
 #include "components/feed/core/v2/stream/unread_content_notifier.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace feed {

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_SETTINGS_CLIENT_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_SETTINGS_CLIENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/device_signals/core/browser/settings_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_LOGIN_SECURE_MODULE_UTIL_CHROMEOS_H_
 #define COMPONENTS_LOGIN_SECURE_MODULE_UTIL_CHROMEOS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/login/login_export.h"
 
 namespace login {

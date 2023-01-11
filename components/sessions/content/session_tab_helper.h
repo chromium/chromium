@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_H_
 #define COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
 #include "content/public/browser/web_contents_observer.h"

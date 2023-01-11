@@ -4,7 +4,7 @@
 
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/custom_handlers/protocol_handler_registry.h"

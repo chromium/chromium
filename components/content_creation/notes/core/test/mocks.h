@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEST_MOCKS_H_
 #define COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEST_MOCKS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/content_creation/notes/core/server/note_data.h"
 #include "components/content_creation/notes/core/server/notes_repository.h"
 #include "components/content_creation/notes/core/templates/note_template.h"

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/at_exit.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"

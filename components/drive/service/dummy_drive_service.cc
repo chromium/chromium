@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 using google_apis::AboutResourceCallback;
 using google_apis::AuthStatusCallback;

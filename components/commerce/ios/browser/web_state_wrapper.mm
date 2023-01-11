@@ -4,7 +4,7 @@
 
 #include "components/commerce/ios/browser/web_state_wrapper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"

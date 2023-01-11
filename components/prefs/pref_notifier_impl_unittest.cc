@@ -4,8 +4,8 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_observer.h"

@@ -4,7 +4,7 @@
 
 #include "components/media_router/common/discovery/media_sink_service_util.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 

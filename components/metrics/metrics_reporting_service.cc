@@ -6,8 +6,8 @@
 
 #include "components/metrics/metrics_reporting_service.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/metrics/metrics_logs_event_manager.h"

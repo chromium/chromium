@@ -5,7 +5,7 @@
 #include "components/feed/feed_feature_list.h"
 #include <sstream>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/signin/public/base/consent_level.h"
 #include "testing/gtest/include/gtest/gtest.h"

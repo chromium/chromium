@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"

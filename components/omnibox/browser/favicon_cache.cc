@@ -6,8 +6,8 @@
 
 #include <tuple>
 
-#include "base/bind.h"
 #include "base/containers/lru_cache.h"
+#include "base/functional/bind.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 

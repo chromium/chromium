@@ -4,7 +4,7 @@
 
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"

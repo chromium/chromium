@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 

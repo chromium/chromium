@@ -4,8 +4,8 @@
 
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
-#include "base/bind.h"
 #include "base/containers/lru_cache.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/throttler/domain_session_throttler.h"

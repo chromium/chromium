@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/media_router/common/discovery/media_sink_service_base.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "components/media_router/common/media_route.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
 #define COMPONENTS_CAST_STREAMING_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"

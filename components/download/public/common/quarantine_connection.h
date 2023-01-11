@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_QUARANTINE_CONNECTION_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_QUARANTINE_CONNECTION_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

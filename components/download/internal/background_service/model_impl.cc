@@ -7,7 +7,7 @@
 #include <map>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/model_stats.h"

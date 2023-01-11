@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"

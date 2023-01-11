@@ -5,10 +5,10 @@
 #include "components/metrics/drive_metrics_provider.h"
 
 #include "base/base_paths.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"

@@ -7,7 +7,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/device_signals/core/browser/signals_types.h"
 
 namespace device_signals {

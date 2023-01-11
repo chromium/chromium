@@ -4,7 +4,7 @@
 
 #include "components/ukm/ukm_recorder_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/task_environment.h"
 #include "components/ukm/scheme_constants.h"

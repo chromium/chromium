@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/cast/message_port/blink_message_port_adapter.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/cast/message_port/platform_message_port.h"

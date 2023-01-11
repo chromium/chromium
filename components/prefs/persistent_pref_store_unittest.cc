@@ -4,7 +4,7 @@
 
 #include "components/prefs/persistent_pref_store.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker_impl.h"
 #include "base/test/task_environment.h"

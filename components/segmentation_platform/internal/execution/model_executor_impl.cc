@@ -5,7 +5,7 @@
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/clock.h"

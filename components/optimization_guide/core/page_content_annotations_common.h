@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/page_content_annotation_type.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GENERATION_PASSWORD_REQUIREMENTS_SPEC_FETCHER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GENERATION_PASSWORD_REQUIREMENTS_SPEC_FETCHER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "url/gurl.h"
 
 namespace autofill {

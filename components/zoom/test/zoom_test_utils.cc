@@ -4,8 +4,8 @@
 
 #include "components/zoom/test/zoom_test_utils.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 

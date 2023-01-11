@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_CORE_SESSION_ID_GENERATOR_H_
 #define COMPONENTS_SESSIONS_CORE_SESSION_ID_GENERATOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"

@@ -9,8 +9,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

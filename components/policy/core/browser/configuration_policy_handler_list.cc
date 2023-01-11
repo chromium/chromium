@@ -4,8 +4,8 @@
 
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 
-#include "base/bind.h"
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"

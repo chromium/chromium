@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/thread_pool.h"
 #include "components/metrics/motherboard.h"
 #include "third_party/metrics_proto/system_profile.pb.h"

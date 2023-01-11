@@ -4,7 +4,7 @@
 
 #include "components/cronet/native/test/test_upload_data_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

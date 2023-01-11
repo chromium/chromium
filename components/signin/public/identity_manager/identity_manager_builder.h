@@ -18,7 +18,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #endif
 
 class PrefService;

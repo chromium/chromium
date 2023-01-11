@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

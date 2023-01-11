@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "cc/base/math_util.h"

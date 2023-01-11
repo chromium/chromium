@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 

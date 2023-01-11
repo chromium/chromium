@@ -4,8 +4,8 @@
 
 #include "components/segmentation_platform/internal/execution/processing/sql_feature_processor.h"
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"

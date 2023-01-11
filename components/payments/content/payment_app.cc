@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 
 namespace payments {
 namespace {

@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/model/visuals_availability_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "sql/database.h"
 #include "sql/statement.h"

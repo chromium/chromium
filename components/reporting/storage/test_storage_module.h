@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_REPORTING_STORAGE_TEST_STORAGE_MODULE_H_
 #define COMPONENTS_REPORTING_STORAGE_TEST_STORAGE_MODULE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"

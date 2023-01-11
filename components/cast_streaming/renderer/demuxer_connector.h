@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_DEMUXER_CONNECTOR_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_DEMUXER_CONNECTOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

@@ -4,8 +4,8 @@
 
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_consumer.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 
 namespace password_manager {
 

@@ -10,8 +10,8 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "net/base/url_util.h"

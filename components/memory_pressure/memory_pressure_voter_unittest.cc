@@ -4,7 +4,7 @@
 
 #include "components/memory_pressure/memory_pressure_voter.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

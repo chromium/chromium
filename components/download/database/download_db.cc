@@ -4,7 +4,7 @@
 
 #include "components/download/database/download_db.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/download/database/download_db_entry.h"
 
 namespace download {

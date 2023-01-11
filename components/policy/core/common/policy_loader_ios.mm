@@ -8,8 +8,8 @@
 #include <stddef.h>
 #import <UIKit/UIKit.h>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #import "base/mac/foundation_util.h"

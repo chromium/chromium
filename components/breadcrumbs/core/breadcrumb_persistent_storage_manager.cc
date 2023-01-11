@@ -8,10 +8,10 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

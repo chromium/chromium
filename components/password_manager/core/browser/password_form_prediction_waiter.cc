@@ -4,8 +4,8 @@
 
 #include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 
 namespace password_manager {

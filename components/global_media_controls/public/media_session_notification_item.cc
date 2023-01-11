@@ -4,8 +4,8 @@
 
 #include "components/global_media_controls/public/media_session_notification_item.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"

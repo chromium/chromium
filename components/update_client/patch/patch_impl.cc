@@ -4,8 +4,8 @@
 
 #include "components/update_client/patch/patch_impl.h"
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "components/services/patch/public/cpp/patch.h"
 #include "components/update_client/buildflags.h"

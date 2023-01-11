@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "components/autofill/core/common/unique_ids.h"

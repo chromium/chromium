@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 namespace content_settings {
 

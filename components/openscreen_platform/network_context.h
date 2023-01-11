@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_NETWORK_CONTEXT_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_NETWORK_CONTEXT_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace openscreen_platform {

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "components/sync/base/client_tag_hash.h"

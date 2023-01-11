@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_
 #define COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_observer.h"

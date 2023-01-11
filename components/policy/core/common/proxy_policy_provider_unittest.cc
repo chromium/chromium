@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/proxy_policy_provider.h"
 #include <memory>
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"

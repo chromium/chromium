@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_MEMORY_METRICS_LOGGER_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_METRICS_MEMORY_METRICS_LOGGER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace metrics {

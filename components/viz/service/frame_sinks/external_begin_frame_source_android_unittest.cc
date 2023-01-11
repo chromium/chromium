@@ -5,7 +5,7 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 
 #include "base/android/java_handler_thread.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

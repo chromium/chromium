@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

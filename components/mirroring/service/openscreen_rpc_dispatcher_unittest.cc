@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/test/task_environment.h"
 #include "components/mirroring/service/value_util.h"

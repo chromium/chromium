@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

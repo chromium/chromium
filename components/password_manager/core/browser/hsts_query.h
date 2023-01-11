@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HSTS_QUERY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HSTS_QUERY_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace network {
 namespace mojom {

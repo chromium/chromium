@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_WAIT_FOR_SIGNAL_OR_TIMEOUT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_WAIT_FOR_SIGNAL_OR_TIMEOUT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"

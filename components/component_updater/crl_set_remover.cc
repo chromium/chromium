@@ -4,8 +4,8 @@
 
 #include "components/component_updater/crl_set_remover.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 
 namespace component_updater {

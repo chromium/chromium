@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"

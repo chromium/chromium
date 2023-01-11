@@ -4,7 +4,7 @@
 
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -5,7 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"

@@ -4,8 +4,8 @@
 
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 
 namespace segmentation_platform {

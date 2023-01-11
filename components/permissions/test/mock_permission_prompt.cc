@@ -4,7 +4,7 @@
 
 #include "components/permissions/test/mock_permission_prompt.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_uma_util.h"

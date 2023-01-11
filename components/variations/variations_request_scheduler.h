@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_REQUEST_SCHEDULER_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_REQUEST_SCHEDULER_H_
 
-#include "base/bind.h"
 #include "base/component_export.h"
+#include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

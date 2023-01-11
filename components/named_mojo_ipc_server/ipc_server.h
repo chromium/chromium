@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_IPC_SERVER_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_IPC_SERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

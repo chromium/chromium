@@ -4,8 +4,8 @@
 
 #include "components/component_updater/url_param_filter_remover.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 
 #include "components/component_updater/component_updater_utils.h"

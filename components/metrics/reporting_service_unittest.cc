@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"

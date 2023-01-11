@@ -5,7 +5,7 @@
 #include "components/sync/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 
 #include <utility>
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"

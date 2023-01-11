@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "components/download/public/common/download_danger_type.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_TILE_TYPES_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_TILE_TYPES_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 // Please keep the same order as QueryTilesRequestStatus enum in
 // tools/metrics/histograms/enums.xml.

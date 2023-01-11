@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 
 namespace syncer {

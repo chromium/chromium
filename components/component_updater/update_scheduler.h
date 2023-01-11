@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_UPDATE_SCHEDULER_H_
 #define COMPONENTS_COMPONENT_UPDATER_UPDATE_SCHEDULER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 
 namespace component_updater {

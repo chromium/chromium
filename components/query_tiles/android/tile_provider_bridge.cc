@@ -10,7 +10,7 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "components/query_tiles/jni_headers/TileProviderBridge_jni.h"
 #include "ui/gfx/android/java_bitmap.h"

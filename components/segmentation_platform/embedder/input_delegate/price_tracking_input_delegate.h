@@ -7,7 +7,7 @@
 
 #include "components/segmentation_platform/public/input_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

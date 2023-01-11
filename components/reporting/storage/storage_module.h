@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_REPORTING_STORAGE_STORAGE_MODULE_H_
 #define COMPONENTS_REPORTING_STORAGE_STORAGE_MODULE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"

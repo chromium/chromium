@@ -8,8 +8,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/escape.h"
 #include "components/navigation_interception/jni_headers/InterceptNavigationDelegate_jni.h"
 #include "content/public/browser/browser_thread.h"

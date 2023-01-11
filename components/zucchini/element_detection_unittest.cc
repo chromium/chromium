@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/zucchini/buffer_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

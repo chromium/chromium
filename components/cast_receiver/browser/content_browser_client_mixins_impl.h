@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/cast_receiver/browser/application_client.h"
 #include "components/cast_receiver/browser/public/content_browser_client_mixins.h"
 

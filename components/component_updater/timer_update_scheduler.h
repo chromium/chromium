@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_TIMER_UPDATE_SCHEDULER_H_
 #define COMPONENTS_COMPONENT_UPDATER_TIMER_UPDATE_SCHEDULER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/component_updater/timer.h"
 #include "components/component_updater/update_scheduler.h"
 

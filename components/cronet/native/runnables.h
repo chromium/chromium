@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CRONET_NATIVE_RUNNABLES_H_
 #define COMPONENTS_CRONET_NATIVE_RUNNABLES_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
 namespace cronet {

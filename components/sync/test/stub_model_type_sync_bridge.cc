@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/sync/model/metadata_change_list.h"
 
 namespace syncer {

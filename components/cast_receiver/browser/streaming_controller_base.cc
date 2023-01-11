@@ -4,7 +4,7 @@
 
 #include "components/cast_receiver/browser/streaming_controller_base.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/streaming_controller_mirroring.h"

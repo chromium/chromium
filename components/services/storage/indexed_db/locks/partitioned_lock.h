@@ -7,8 +7,8 @@
 
 #include <iosfwd>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
 namespace content {

@@ -4,7 +4,7 @@
 
 #include "components/mirroring/service/video_capture_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"

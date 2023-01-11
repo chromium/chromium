@@ -7,12 +7,12 @@
 #include <atomic>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"

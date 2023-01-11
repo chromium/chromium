@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/exo/notification.h"
 #include "components/exo/notification_surface.h"

@@ -8,7 +8,7 @@
 #include <set>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "url/origin.h"
 
 namespace password_manager {

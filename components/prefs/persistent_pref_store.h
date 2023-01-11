@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PREFS_PERSISTENT_PREF_STORE_H_
 #define COMPONENTS_PREFS_PERSISTENT_PREF_STORE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/prefs/prefs_export.h"
 #include "components/prefs/writeable_pref_store.h"
 

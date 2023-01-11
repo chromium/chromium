@@ -8,9 +8,9 @@
 #include <array>
 
 #include "ash/ime/ime_controller_impl.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/data_source_observer.h"

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/arc/common/intent_helper/activity_icon_loader.h"
 
 namespace gfx {

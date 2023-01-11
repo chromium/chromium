@@ -4,7 +4,7 @@
 
 #include "components/invalidation/impl/fake_invalidation_service.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/invalidation/impl/invalidation_service_util.h"
 #include "components/invalidation/public/invalidation_util.h"

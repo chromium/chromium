@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/login_database_async_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/password_manager/core/browser/login_database.h"

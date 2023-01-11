@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/offline_pages/core/client_id.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

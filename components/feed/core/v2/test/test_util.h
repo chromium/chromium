@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "testing/gmock/include/gmock/gmock.h"

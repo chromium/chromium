@@ -4,8 +4,8 @@
 
 #include "components/services/storage/test_api/test_api.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"

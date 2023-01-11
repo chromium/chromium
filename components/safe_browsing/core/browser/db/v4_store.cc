@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/cpu_reduction_experiment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

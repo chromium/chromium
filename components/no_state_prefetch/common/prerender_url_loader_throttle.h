@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_URL_LOADER_THROTTLE_H_
 #define COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_URL_LOADER_THROTTLE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"

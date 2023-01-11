@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BLOCKED_CONTENT_ANDROID_POPUP_BLOCKED_HELPER_H_
 #define COMPONENTS_BLOCKED_CONTENT_ANDROID_POPUP_BLOCKED_HELPER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "url/gurl.h"
 

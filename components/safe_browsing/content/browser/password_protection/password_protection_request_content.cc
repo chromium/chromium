@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"

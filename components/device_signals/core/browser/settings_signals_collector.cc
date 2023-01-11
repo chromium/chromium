@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "components/device_signals/core/browser/settings_client.h"
 #include "components/device_signals/core/browser/signals_types.h"
 

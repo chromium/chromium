@@ -4,7 +4,7 @@
 
 #include "components/cast_streaming/browser/streaming_initialization_info.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 namespace cast_streaming {
 

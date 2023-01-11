@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_H_
 #define COMPONENTS_CAST_RECEIVER_BROWSER_STREAMING_CONTROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 

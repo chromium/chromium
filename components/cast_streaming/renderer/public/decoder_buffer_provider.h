@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_DECODER_BUFFER_PROVIDER_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_DECODER_BUFFER_PROVIDER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace media {

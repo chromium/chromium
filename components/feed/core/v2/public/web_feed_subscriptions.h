@@ -8,7 +8,7 @@
 #include <ostream>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/public/types.h"
 

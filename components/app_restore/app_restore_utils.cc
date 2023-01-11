@@ -5,7 +5,7 @@
 #include "components/app_restore/app_restore_utils.h"
 
 #include "ash/constants/app_types.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/features.h"

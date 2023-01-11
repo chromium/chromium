@@ -4,7 +4,7 @@
 
 #include "components/language/content/browser/geo_language_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"

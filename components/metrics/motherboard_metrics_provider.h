@@ -6,7 +6,7 @@
 #define COMPONENTS_METRICS_MOTHERBOARD_METRICS_PROVIDER_H_
 
 #include <memory>
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/motherboard.h"

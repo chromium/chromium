@@ -4,7 +4,7 @@
 
 #include "components/optimization_guide/core/push_notification_manager.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 

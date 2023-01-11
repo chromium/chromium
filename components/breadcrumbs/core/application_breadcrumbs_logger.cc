@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_not_user_action.inc"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"

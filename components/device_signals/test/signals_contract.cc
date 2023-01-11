@@ -4,8 +4,8 @@
 
 #include "components/device_signals/test/signals_contract.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/common/signals_constants.h"

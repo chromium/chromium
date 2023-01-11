@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/resources/android/theme_resources.h"

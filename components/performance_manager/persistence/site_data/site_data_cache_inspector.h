@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

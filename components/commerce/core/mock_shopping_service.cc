@@ -4,7 +4,7 @@
 
 #include "components/commerce/core/mock_shopping_service.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace commerce {

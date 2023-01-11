@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_REPORTING_METRICS_METRIC_EVENT_OBSERVER_H_
 #define COMPONENTS_REPORTING_METRICS_METRIC_EVENT_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/offline_pages/core/client_id.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_store.h"
 #include "sql/database.h"

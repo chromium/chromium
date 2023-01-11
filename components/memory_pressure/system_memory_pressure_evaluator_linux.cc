@@ -4,7 +4,7 @@
 
 #include "components/memory_pressure/system_memory_pressure_evaluator_linux.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/task/single_thread_task_runner.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_WEBDATA_COMMON_WEB_DATA_SERVICE_BASE_H_
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATA_SERVICE_BASE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "components/webdata/common/webdata_export.h"

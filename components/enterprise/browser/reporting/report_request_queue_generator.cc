@@ -4,9 +4,9 @@
 
 #include "components/enterprise/browser/reporting/report_request_queue_generator.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/report_type.h"

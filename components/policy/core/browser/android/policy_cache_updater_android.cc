@@ -5,7 +5,7 @@
 #include "components/policy/core/browser/android/policy_cache_updater_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/policy/android/jni_headers/PolicyCacheUpdater_jni.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/android/policy_map_android.h"

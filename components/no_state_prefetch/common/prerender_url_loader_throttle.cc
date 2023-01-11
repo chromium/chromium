@@ -4,7 +4,7 @@
 
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
 #include "content/public/common/content_constants.h"

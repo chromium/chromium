@@ -4,8 +4,8 @@
 
 #include "components/safe_browsing/content/browser/ui_manager.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread.h"

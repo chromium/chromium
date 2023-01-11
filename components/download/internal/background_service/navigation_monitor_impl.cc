@@ -4,8 +4,8 @@
 
 #include "components/download/internal/background_service/navigation_monitor_impl.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace download {

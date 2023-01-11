@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
 #define COMPONENTS_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/permissions/permission_request.h"

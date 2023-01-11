@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/tasks/download_archives_task.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/offline_pages/core/offline_clock.h"

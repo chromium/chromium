@@ -4,7 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

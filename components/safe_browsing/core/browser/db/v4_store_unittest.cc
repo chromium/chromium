@@ -5,9 +5,9 @@
 #include "components/safe_browsing/core/browser/db/v4_store.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"

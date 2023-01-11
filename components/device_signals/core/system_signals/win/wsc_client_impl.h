@@ -7,7 +7,7 @@
 
 #include <iwscapi.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/device_signals/core/system_signals/win/wsc_client.h"
 
 namespace device_signals {

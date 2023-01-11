@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/shopping_service.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"

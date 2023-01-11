@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SQLITE_PROTO_TABLE_MANAGER_H_
 #define COMPONENTS_SQLITE_PROTO_TABLE_MANAGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"

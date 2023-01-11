@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_METRICS_SINGLE_SAMPLE_METRICS_H_
 #define COMPONENTS_METRICS_SINGLE_SAMPLE_METRICS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/metrics/public/mojom/single_sample_metrics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

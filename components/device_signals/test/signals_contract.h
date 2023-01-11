@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_TEST_SIGNALS_CONTRACT_H_
 #define COMPONENTS_DEVICE_SIGNALS_TEST_SIGNALS_CONTRACT_H_
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 
 namespace device_signals::test {

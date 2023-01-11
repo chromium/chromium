@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 
 namespace enterprise_management {

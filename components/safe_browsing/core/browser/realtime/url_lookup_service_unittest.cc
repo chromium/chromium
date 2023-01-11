@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"

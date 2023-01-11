@@ -5,7 +5,7 @@
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/permissions/android/nfc/nfc_system_level_setting_impl.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/web_contents.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_
 #define COMPONENTS_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
 

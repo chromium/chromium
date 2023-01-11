@@ -8,7 +8,7 @@
 #include <list>
 #include <map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 
 namespace content {

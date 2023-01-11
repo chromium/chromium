@@ -5,8 +5,8 @@
 #include "components/mirroring/service/rpc_dispatcher_impl.h"
 
 #include "base/base64.h"
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"

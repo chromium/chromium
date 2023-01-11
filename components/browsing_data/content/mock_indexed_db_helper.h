@@ -8,7 +8,7 @@
 #include <list>
 #include <map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/browsing_data/content/indexed_db_helper.h"
 
 namespace blink {

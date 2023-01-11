@@ -4,8 +4,8 @@
 
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"

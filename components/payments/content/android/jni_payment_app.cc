@@ -10,7 +10,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "components/payments/content/android/jni_headers/JniPaymentApp_jni.h"
 #include "components/payments/content/android/payment_handler_host.h"

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_CSP_CHECKER_H_
 #define COMPONENTS_PAYMENTS_CORE_CSP_CHECKER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 class GURL;
 

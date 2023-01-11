@@ -4,7 +4,7 @@
 
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

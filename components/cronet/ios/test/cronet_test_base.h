@@ -7,7 +7,7 @@
 
 #include <Cronet/Cronet.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,8 +4,8 @@
 
 #include "components/mirroring/service/message_dispatcher.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/timer/timer.h"

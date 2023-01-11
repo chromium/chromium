@@ -4,7 +4,7 @@
 
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "components/services/heap_profiling/public/cpp/controller.h"

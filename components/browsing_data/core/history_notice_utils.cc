@@ -4,8 +4,8 @@
 
 #include "components/browsing_data/core/history_notice_utils.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/history/core/browser/web_history_service.h"
