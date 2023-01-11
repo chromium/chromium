@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/lens/lens_api.h"
-#import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
-#import "url/url_constants.h"
+#import <UIKit/UIKit.h>
+#import <ostream>
 
 #import "base/bind.h"
 #import "base/notreached.h"
-
-#import <UIKit/UIKit.h>
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
