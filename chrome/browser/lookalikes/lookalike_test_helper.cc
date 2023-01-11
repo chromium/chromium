@@ -34,7 +34,7 @@ void LookalikeTestHelper::SetUpLookalikeTestParams() {
       test_top500_domains::kNumTop500EditDistanceSkeletons};
   SetTop500DomainsParamsForTesting(top500_params);
 
-  reputation::InitializeSafetyTipConfig();
+  lookalikes::InitializeSafetyTipConfig();
 }
 
 // static

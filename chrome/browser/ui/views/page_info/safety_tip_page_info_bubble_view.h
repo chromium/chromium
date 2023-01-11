@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SAFETY_TIP_PAGE_INFO_BUBBLE_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/reputation/safety_tip_ui.h"
+#include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/visibility.h"

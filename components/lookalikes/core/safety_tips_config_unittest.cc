@@ -8,7 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace reputation {
+namespace lookalikes {
 
 // Build an allowlist with testable scoped allowlist entries.
 void ConfigureAllowlistWithScopes() {
@@ -162,4 +162,4 @@ TEST(SafetyTipsConfigTest, TestCommonWords) {
   EXPECT_FALSE(IsCommonWordInConfigProto(config, "uncommon"));
 }
 
-}  // namespace reputation
+}  // namespace lookalikes

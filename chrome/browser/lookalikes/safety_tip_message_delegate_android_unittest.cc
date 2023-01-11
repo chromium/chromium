@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/safety_tip_message_delegate_android.h"
+#include "chrome/browser/lookalikes/safety_tip_message_delegate_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/reputation/safety_tip_ui_helper.h"
+#include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"

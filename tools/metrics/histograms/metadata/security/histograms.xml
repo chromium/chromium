@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SafetyTips.PageInfo.Action"
     enum="WebsiteSettingsAction" expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/reputation/OWNERS</owner>
+  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
   <summary>
     Tracks Page Info bubble actions along with the Safety Tip status of the
     page.
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 <histogram base="true" name="Security.SafetyTips.ReputationCheckComplete"
     enum="SafetyTipStatus" expires_after="2022-05-01">
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/reputation/OWNERS</owner>
+  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
   <summary>
     Records the Safety Tip status of a page after navigation commit or page
     visibility change. This is the same as SafetyTipShown, but with additional
@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
     enum="SafetyTipStatus" expires_after="2021-12-26">
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/reputation/OWNERS</owner>
+  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
   <summary>
     Records the Safety Tip status of a page after navigation commit for a page
     where the Safety Tip has previously been ignored.
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SafetyTips.SafetyTipShown_AfterFlag"
     enum="SafetyTipStatus" expires_after="2021-12-25">
   <owner>jdeblasio@chromium.org</owner>
-  <owner>src/chrome/browser/reputation/OWNERS</owner>
+  <owner>src/chrome/browser/lookalikes/OWNERS</owner>
   <summary>
     Records the Safety Tip status of a page after navigation commit or page
     visibility change. This is the same as SafetyTipShown, but records *after*

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/safety_tip_message_delegate_android.h"
+#include "chrome/browser/lookalikes/safety_tip_message_delegate_android.h"
 
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/reputation/safety_tip_ui_helper.h"
+#include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
@@ -23,8 +23,9 @@ void SafetyTipMessageDelegateAndroid::DisplaySafetyTipPrompt(
     const GURL& suggested_url,
     content::WebContents* web_contents,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
-  if (message_)
+  if (message_) {
     return;
+  }
   web_contents_ = web_contents;
   safety_tip_status_ = safety_tip_status;
   suggested_url_ = suggested_url;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_REPUTATION_REPUTATION_SERVICE_H_
-#define CHROME_BROWSER_REPUTATION_REPUTATION_SERVICE_H_
+#ifndef CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_SERVICE_H_
+#define CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_SERVICE_H_
 
 #include <set>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/reputation/safety_tip_ui.h"
+#include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -21,56 +21,56 @@
 class Profile;
 struct DomainInfo;
 
-// Wrapper used to store the results of a reputation check. Specifically, this
-// is passed to the callback given to GetReputationStatus.  |url| is the URL
+// Wrapper used to store the results of a safety tip check. Specifically, this
+// is passed to the callback given to GetSafetyTipStatus.  |url| is the URL
 // applicable for this result.
-struct ReputationCheckResult {
-  ReputationCheckResult() = default;
-  ReputationCheckResult(const ReputationCheckResult& other) = default;
+struct SafetyTipCheckResult {
+  SafetyTipCheckResult() = default;
+  SafetyTipCheckResult(const SafetyTipCheckResult& other) = default;
 
   security_state::SafetyTipStatus safety_tip_status =
       security_state::SafetyTipStatus::kNone;
   GURL url;
   GURL suggested_url;
   // True if a lookalike heuristic was triggered. Used temporarily to keep track
-  // of whether a heuristic triggers during a reputation check, and later used
+  // of whether a heuristic triggers during a safety tip check, and later used
   // to decide whether metrics get recorded.
   bool lookalike_heuristic_triggered = false;
 };
 
-// Callback type used for retrieving reputation status. The results of the
-// reputation check are given in |result|.
-using ReputationCheckCallback =
-    base::OnceCallback<void(ReputationCheckResult result)>;
+// Callback type used for retrieving safety tip status. The results of the
+// check are given in |result|.
+using SafetyTipCheckCallback =
+    base::OnceCallback<void(SafetyTipCheckResult result)>;
 
-// Provides reputation information on URLs for Safety Tips.
-class ReputationService : public KeyedService {
+// Provides lookalike information on URLs for Safety Tips.
+class SafetyTipService : public KeyedService {
  public:
-  explicit ReputationService(Profile* profile);
+  explicit SafetyTipService(Profile* profile);
 
-  ReputationService(const ReputationService&) = delete;
-  ReputationService& operator=(const ReputationService&) = delete;
+  SafetyTipService(const SafetyTipService&) = delete;
+  SafetyTipService& operator=(const SafetyTipService&) = delete;
 
-  ~ReputationService() override;
+  ~SafetyTipService() override;
 
-  static ReputationService* Get(Profile* profile);
+  static SafetyTipService* Get(Profile* profile);
 
-  // Calculate the overall reputation status of the given URL, and
+  // Calculate the safety tip status of the given URL, and
   // asynchronously call |callback| with the results. See
-  // ReputationCheckCallback above for details on what's returned. |callback|
+  // SafetyTipCheckCallback above for details on what's returned. |callback|
   // will be called regardless of whether |url| is flagged or
   // not. (Specifically, |callback| will be called with SafetyTipStatus::kNone
   // if the url is not flagged).
-  void GetReputationStatus(const GURL& url,
-                           content::WebContents* web_contents,
-                           ReputationCheckCallback callback);
+  void GetSafetyTipStatus(const GURL& url,
+                          content::WebContents* web_contents,
+                          SafetyTipCheckCallback callback);
 
   // Returns whether the user has dismissed a similar warning, and thus no
   // warning should be shown for the provided url.
   bool IsIgnored(const GURL& url) const;
 
   // Tells the service that the user has explicitly ignored the warning (thus
-  // adding to the profile-wide allowlist)..
+  // adding to the profile-wide allowlist).
   void SetUserIgnore(const GURL& url);
 
   // Tells the service that the user has the UI disabled, and thus the warning
@@ -84,13 +84,10 @@ class ReputationService : public KeyedService {
 
  private:
   // Callback once we have up-to-date |engaged_sites|. Performs checks on the
-  // navigated |url|. |has_delayed_warning| is true if the relevant WebContents
-  // is currently delaying a Safe Browsing warning (an experiment described in
-  // https://crbug.com/1057157). Displays the Safety Tip warning when needed.
-  void GetReputationStatusWithEngagedSites(
+  // navigated |url|. Displays the Safety Tip warning when needed.
+  void GetSafetyTipStatusWithEngagedSites(
       const GURL& url,
-      bool has_delayed_warning,
-      ReputationCheckCallback callback,
+      SafetyTipCheckCallback callback,
       const std::vector<DomainInfo>& engaged_sites);
 
   // Set of eTLD+1s that we've warned about, and the user has explicitly
@@ -99,7 +96,7 @@ class ReputationService : public KeyedService {
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  base::WeakPtrFactory<ReputationService> weak_factory_{this};
+  base::WeakPtrFactory<SafetyTipService> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_REPUTATION_REPUTATION_SERVICE_H_
+#endif  // CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_SERVICE_H_

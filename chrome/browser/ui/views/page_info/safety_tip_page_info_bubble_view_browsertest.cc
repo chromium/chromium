@@ -16,10 +16,10 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
-#include "chrome/browser/reputation/reputation_service.h"
-#include "chrome/browser/reputation/reputation_web_contents_observer.h"
-#include "chrome/browser/reputation/safety_tip_ui.h"
-#include "chrome/browser/reputation/safety_tip_ui_helper.h"
+#include "chrome/browser/lookalikes/safety_tip_service.h"
+#include "chrome/browser/lookalikes/safety_tip_ui.h"
+#include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
+#include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -106,7 +106,7 @@ std::string GetInteractionHistogram(const char* name) {
 // typing the URL, causing the site to have a site engagement score of at
 // least LOW.
 //
-// This function waits for the reputation check to complete.
+// This function waits for safety tip checks to complete.
 void NavigateToURL(Browser* browser,
                    const GURL& url,
                    WindowOpenDisposition disposition) {
@@ -117,9 +117,9 @@ void NavigateToURL(Browser* browser,
     // Null web contents happen when you first create an incognito browser,
     // since it doesn't create the tab until first navigation.
     if (contents) {
-      ReputationWebContentsObserver* rep_observer =
-          ReputationWebContentsObserver::FromWebContents(contents);
-      rep_observer->reset_reputation_check_pending_for_testing();
+      SafetyTipWebContentsObserver* safety_tip_observer =
+          SafetyTipWebContentsObserver::FromWebContents(contents);
+      safety_tip_observer->reset_safety_tip_check_pending_for_testing();
     }
   }
   // Otherwise*, we're creating a new tab and we don't need to do anything.
@@ -134,15 +134,16 @@ void NavigateToURL(Browser* browser,
   params.is_renderer_initiated = true;
   Navigate(&params);
   // (Note that we don't need to wait for the load to finish, since we're
-  //  waiting for a reputation check, which will happen even later.)
+  //  waiting for a safety tip check, which will happen even later.)
 
-  // If there's still a reputation check pending, wait for it to complete.
-  ReputationWebContentsObserver* rep_observer =
-      ReputationWebContentsObserver::FromWebContents(
+  // If there's still a safety tip check pending, wait for it to complete.
+  SafetyTipWebContentsObserver* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(
           params.navigated_or_inserted_contents);
-  if (rep_observer->reputation_check_pending_for_testing()) {
+  if (safety_tip_observer->safety_tip_check_pending_for_testing()) {
     base::RunLoop loop;
-    rep_observer->RegisterReputationCheckCallbackForTesting(loop.QuitClosure());
+    safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
+        loop.QuitClosure());
     loop.Run();
   }
 }
@@ -190,25 +191,26 @@ void OpenPageInfoBubble(Browser* browser) {
 }
 
 // Switches the tab at |tab_index| to the foreground, and waits for the
-// OnVisibilityChanged reputation check to complete.
+// OnVisibilityChanged safety tip check to complete.
 void SwitchToTabAndWait(const Browser* browser, int tab_index) {
   base::RunLoop loop;
   auto* tab_strip = browser->tab_strip_model();
   auto* bg_tab = tab_strip->GetWebContentsAt(tab_index);
   EXPECT_NE(browser->tab_strip_model()->active_index(), tab_index);
-  ReputationWebContentsObserver* rep_observer =
-      ReputationWebContentsObserver::FromWebContents(bg_tab);
+  SafetyTipWebContentsObserver* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(bg_tab);
 
-  rep_observer->RegisterReputationCheckCallbackForTesting(loop.QuitClosure());
+  safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
+      loop.QuitClosure());
   tab_strip->ActivateTabAt(tab_index);
-  if (rep_observer->reputation_check_pending_for_testing()) {
+  if (safety_tip_observer->safety_tip_check_pending_for_testing()) {
     loop.Run();
   }
 }
 
 // Add an allowlist with entries that aren't allowlisted for all domains.
 void ConfigureAllowlistWithScopes() {
-  auto config_proto = reputation::GetOrCreateSafetyTipsConfig();
+  auto config_proto = lookalikes::GetOrCreateSafetyTipsConfig();
   config_proto->clear_allowed_pattern();
   config_proto->clear_canonical_pattern();
   config_proto->clear_cohort();
@@ -231,7 +233,7 @@ void ConfigureAllowlistWithScopes() {
   cohort->add_canonical_index(1);  // blogspot.com
   pattern->add_cohort_index(1);
 
-  reputation::SetSafetyTipsRemoteConfigProto(std::move(config_proto));
+  lookalikes::SetSafetyTipsRemoteConfigProto(std::move(config_proto));
 }
 
 }  // namespace
@@ -239,7 +241,7 @@ void ConfigureAllowlistWithScopes() {
 class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUp() override {
-    reputation::InitializeSafetyTipConfig();
+    lookalikes::InitializeSafetyTipConfig();
     InProcessBrowserTest::SetUp();
   }
 
@@ -261,7 +263,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
     LookalikeTestHelper::TearDownLookalikeTestParams();
-    ReputationService::Get(browser()->profile())
+    SafetyTipService::Get(browser()->profile())
         ->ResetWarningDismissedETLDPlusOnesForTesting();
   }
 
@@ -798,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // ...but suppressed by the allowlist.
   views::test::WidgetDestroyedWaiter waiter(
       PageInfoBubbleViewBase::GetPageInfoBubbleForTesting()->GetWidget());
-  reputation::SetSafetyTipAllowlistPatterns({"accounts-google.com/"}, {}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({"accounts-google.com/"}, {}, {});
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
   waiter.Wait();
@@ -822,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // This domain is one edit distance from one of a top 500 domain.
   const GURL kNavigatedUrl = GetURL("gooogle.com");
 
-  reputation::SetSafetyTipAllowlistPatterns({}, {"google\\.com"}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({}, {"google\\.com"}, {});
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
@@ -1140,8 +1142,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   // Prep the web contents for later observing.
   NavigateToURL(browser(), GURL("about:blank"),
                 WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  ReputationWebContentsObserver* rep_observer =
-      ReputationWebContentsObserver::FromWebContents(
+  SafetyTipWebContentsObserver* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
 
   // Trigger the warning in the prepped web contents.
@@ -1151,7 +1153,8 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   // Close the current tab and wait for that to happen.
   base::RunLoop loop;
-  rep_observer->RegisterSafetyTipCloseCallbackForTesting(loop.QuitClosure());
+  safety_tip_observer->RegisterSafetyTipCloseCallbackForTesting(
+      loop.QuitClosure());
   chrome::CloseTab(browser());
   loop.Run();
 
@@ -1171,11 +1174,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Prep the web contents for later observing.
-  ReputationWebContentsObserver* rep_observer =
-      ReputationWebContentsObserver::FromWebContents(
+  SafetyTipWebContentsObserver* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
   base::RunLoop loop;
-  rep_observer->RegisterSafetyTipCloseCallbackForTesting(loop.QuitClosure());
+  safety_tip_observer->RegisterSafetyTipCloseCallbackForTesting(
+      loop.QuitClosure());
 
   // Trigger the warning in the prepped web contents.
   auto kNavigatedUrl = GetURL("accounts4-google.com");
@@ -1201,11 +1205,12 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Prep the web contents for later observing.
-  ReputationWebContentsObserver* rep_observer =
-      ReputationWebContentsObserver::FromWebContents(
+  SafetyTipWebContentsObserver* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
   base::RunLoop loop;
-  rep_observer->RegisterSafetyTipCloseCallbackForTesting(loop.QuitClosure());
+  safety_tip_observer->RegisterSafetyTipCloseCallbackForTesting(
+      loop.QuitClosure());
 
   auto kNavigatedUrl = GetURL("accounts5-google.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -1378,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggerOnComboSquatting) {
   // Set a launch config with 100% rollout for Combo Squatting.
-  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+  lookalikes::AddSafetyTipHeuristicLaunchConfigForTesting(
       reputation::HeuristicLaunchConfig::HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
       100);
   base::HistogramTester histograms;
@@ -1437,13 +1442,13 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DontTriggerOnAllowlistedComboSquatting) {
   // Set a launch config with 100% rollout for Combo Squatting.
-  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+  lookalikes::AddSafetyTipHeuristicLaunchConfigForTesting(
       reputation::HeuristicLaunchConfig::HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
       100);
   base::HistogramTester histograms;
   const GURL kNavigatedUrl = GetURL("google-login.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  reputation::SetSafetyTipAllowlistPatterns({"google-login.com/"}, {}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({"google-login.com/"}, {}, {});
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
 
@@ -1464,7 +1469,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggerOnlyOnComboSquatting) {
   // Set a launch config with 100% rollout for Combo Squatting.
-  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+  lookalikes::AddSafetyTipHeuristicLaunchConfigForTesting(
       reputation::HeuristicLaunchConfig::HEURISTIC_COMBO_SQUATTING_TOP_DOMAINS,
       100);
   base::HistogramTester histograms;
@@ -1520,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        ComboSquattingSiteEngagement_UIEnabled) {
   // Set a launch config with 100% rollout for Combo Squatting UI.
-  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+  lookalikes::AddSafetyTipHeuristicLaunchConfigForTesting(
       reputation::HeuristicLaunchConfig::
           HEURISTIC_COMBO_SQUATTING_ENGAGED_SITES,
       100);
@@ -1578,7 +1583,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        ComboSquatting_UIDisabled_ShouldRecordMetrics) {
   // Set a launch config with 0% rollout for Combo Squatting UI.
-  reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
+  lookalikes::AddSafetyTipHeuristicLaunchConfigForTesting(
       reputation::HeuristicLaunchConfig::
           HEURISTIC_COMBO_SQUATTING_ENGAGED_SITES,
       0);
@@ -1640,7 +1645,7 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
       const SafetyTipPageInfoBubbleViewPrerenderBrowserTest&) = delete;
 
   void SetUp() override {
-    reputation::InitializeSafetyTipConfig();
+    lookalikes::InitializeSafetyTipConfig();
     prerender_helper_.SetUp(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
@@ -1662,7 +1667,7 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-// Tests that ReputationWebContentsObserver only checks heuristics when the
+// Tests that SafetyTipWebContentsObserver only checks heuristics when the
 // primary page navigates. It loads a page in the prerenderer, verifies that
 // heuristics were not run, then navigates to the prerendered site, and verifies
 // that heuristics are then run.
@@ -1673,39 +1678,39 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::RunLoop run_loop_for_prerenderer;
-  auto* rep_observer =
-      ReputationWebContentsObserver::FromWebContents(web_contents());
-  ASSERT_TRUE(rep_observer);
-  rep_observer->reset_reputation_check_pending_for_testing();
-  rep_observer->RegisterReputationCheckCallbackForTesting(
+  auto* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(web_contents());
+  ASSERT_TRUE(safety_tip_observer);
+  safety_tip_observer->reset_safety_tip_check_pending_for_testing();
+  safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
       run_loop_for_prerenderer.QuitClosure());
 
-  ASSERT_TRUE(rep_observer->reputation_check_pending_for_testing());
+  ASSERT_TRUE(safety_tip_observer->safety_tip_check_pending_for_testing());
   auto prerender_url = embedded_test_server()->GetURL("/simple.html");
   // Loads |prerender_url| in the prerenderer.
   auto prerender_id = prerender_helper()->AddPrerender(prerender_url);
   ASSERT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      prerender_id);
-  // Waits until ReputationWebContentsObserver calls the callback.
+  // Waits until SafetyTipWebContentsObserver calls the callback.
   run_loop_for_prerenderer.Run();
-  // |reputation_check_pending_for_testing_| is not updated since
-  // ReputationWebContentsObserver ignores the prerenderer.
-  ASSERT_TRUE(rep_observer->reputation_check_pending_for_testing());
+  // |safety_tip_check_pending_for_testing_| is not updated since
+  // SafetyTipWebContentsObserver ignores the prerenderer.
+  ASSERT_TRUE(safety_tip_observer->safety_tip_check_pending_for_testing());
 
   base::RunLoop run_loop_for_primary;
-  rep_observer->reset_reputation_check_pending_for_testing();
-  rep_observer->RegisterReputationCheckCallbackForTesting(
+  safety_tip_observer->reset_safety_tip_check_pending_for_testing();
+  safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
       run_loop_for_primary.QuitClosure());
-  ASSERT_TRUE(rep_observer->reputation_check_pending_for_testing());
+  ASSERT_TRUE(safety_tip_observer->safety_tip_check_pending_for_testing());
   // Navigates the primary page to the URL.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
-  // Waits until ReputationWebContentsObserver calls the callback.
+  // Waits until SafetyTipWebContentsObserver calls the callback.
   run_loop_for_primary.Run();
 
-  // |reputation_check_pending_for_testing_| is updated to false as
-  // ReputationWebContentsObserver works with the primary page.
-  ASSERT_FALSE(rep_observer->reputation_check_pending_for_testing());
+  // |safety_tip_check_pending_for_testing_| is updated to false as
+  // SafetyTipWebContentsObserver works with the primary page.
+  ASSERT_FALSE(safety_tip_observer->safety_tip_check_pending_for_testing());
 
   // Make sure that the prerender was activated when the main frame was
   // navigated to the prerender_url.

@@ -13,36 +13,39 @@
 
 class GURL;
 
-namespace reputation {
+namespace lookalikes {
 
 // Sets the global configuration for Safety Tips retrieved from the component
 // updater. The configuration proto contains the list of URLs that can trigger
 // a safety tip.
-void SetSafetyTipsRemoteConfigProto(std::unique_ptr<SafetyTipsConfig> proto);
+void SetSafetyTipsRemoteConfigProto(
+    std::unique_ptr<reputation::SafetyTipsConfig> proto);
 
 // Gets the global configuration for Safety Tips as retrieved from the component
 // updater. The configuration proto contains the list of URLs that can trigger
 // a safety tip.
-const SafetyTipsConfig* GetSafetyTipsRemoteConfigProto();
+const reputation::SafetyTipsConfig* GetSafetyTipsRemoteConfigProto();
 
 // Checks permutations of |visited_url| against the component updater allowlist
 // and returns whether the URL is explicitly allowed to spoof |canonical_url|.
 //
 // Cases when canonical_url is unknown (as in kFailedSpoofChecks) are treated as
 // if they're trying to spoof themselves, so set canonical_url = visited_url.
-bool IsUrlAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
-                                           const GURL& visited_url,
-                                           const GURL& canonical_url);
+bool IsUrlAllowlistedBySafetyTipsComponent(
+    const reputation::SafetyTipsConfig* proto,
+    const GURL& visited_url,
+    const GURL& canonical_url);
 
 // Checks |hostname| against the component updater target allowlist and returns
 // whether it is explicitly allowed.
-bool IsTargetHostAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
-                                                  const std::string& hostname);
+bool IsTargetHostAllowlistedBySafetyTipsComponent(
+    const reputation::SafetyTipsConfig* proto,
+    const std::string& hostname);
 
 // Returns whether |word| is included in the component updater common word list
-bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,
+bool IsCommonWordInConfigProto(const reputation::SafetyTipsConfig* proto,
                                const std::string& word);
 
-}  // namespace reputation
+}  // namespace lookalikes
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_SAFETY_TIPS_CONFIG_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/reputation_web_contents_observer.h"
+#include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 
 #include <string>
 #include <utility>
@@ -12,9 +12,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/safety_tip_service.h"
+#include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/reputation/reputation_service.h"
-#include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/security_state/core/security_state.h"
@@ -27,7 +27,7 @@
 
 namespace {
 
-void RecordHeuristicsUKMData(ReputationCheckResult result,
+void RecordHeuristicsUKMData(SafetyTipCheckResult result,
                              ukm::SourceId navigation_source_id,
                              SafetyTipInteraction action) {
   // If we didn't trigger any heuristics at all, we don't want to record UKM
@@ -50,7 +50,7 @@ void RecordHeuristicsUKMData(ReputationCheckResult result,
       .Record(ukm::UkmRecorder::Get());
 }
 
-void OnSafetyTipClosed(ReputationCheckResult result,
+void OnSafetyTipClosed(SafetyTipCheckResult result,
                        ukm::SourceId navigation_source_id,
                        Profile* profile,
                        const GURL& url,
@@ -60,7 +60,7 @@ void OnSafetyTipClosed(ReputationCheckResult result,
   if (action == SafetyTipInteraction::kDismissWithEsc ||
       action == SafetyTipInteraction::kDismissWithClose ||
       action == SafetyTipInteraction::kDismissWithIgnore) {
-    ReputationService::Get(profile)->SetUserIgnore(url);
+    SafetyTipService::Get(profile)->SetUserIgnore(url);
 
     // Record that the user dismissed the safety tip. kDismiss is recorded in
     // all dismiss-like cases, which makes it easier to track overall dismissals
@@ -101,10 +101,10 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
   if (committed_url != current_url) {
     // So long as we only record this metric following DidFinishNavigation, not
     // OnVisibilityChanged, this should rarely happen. It would mean that a new
-    // navigation committed in this web contents before the reputation check
+    // navigation committed in this web contents before the safety tip check
     // completed. This is possible only when engaged_sites is out of date
     // (forcing an async update). In that scenario, there may be a race
-    // condition between the async reputation check completing and the next call
+    // condition between the async safety tip check completing and the next call
     // to DidFinishNavigation.
     suffix = "UnexpectedUrl";
   } else if (!committed_initiator_origin.has_value()) {
@@ -135,13 +135,13 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
 
 }  // namespace
 
-ReputationWebContentsObserver::~ReputationWebContentsObserver() = default;
+SafetyTipWebContentsObserver::~SafetyTipWebContentsObserver() = default;
 
-void ReputationWebContentsObserver::DidFinishNavigation(
+void SafetyTipWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
-    MaybeCallReputationCheckCallback(false);
+    MaybeCallSafetyTipCheckCallback(false);
     return;
   }
 
@@ -150,7 +150,7 @@ void ReputationWebContentsObserver::DidFinishNavigation(
   if (navigation_handle->IsSameDocument()) {
     last_safety_tip_navigation_entry_id_ =
         web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID();
-    MaybeCallReputationCheckCallback(false);
+    MaybeCallSafetyTipCheckCallback(false);
     return;
   }
 
@@ -167,7 +167,7 @@ void ReputationWebContentsObserver::DidFinishNavigation(
       /*record_ukm_if_tip_not_shown=*/true);
 }
 
-void ReputationWebContentsObserver::OnVisibilityChanged(
+void SafetyTipWebContentsObserver::OnVisibilityChanged(
     content::Visibility visibility) {
   MaybeShowSafetyTip(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
@@ -176,76 +176,75 @@ void ReputationWebContentsObserver::OnVisibilityChanged(
 }
 
 security_state::SafetyTipInfo
-ReputationWebContentsObserver::GetSafetyTipInfoForVisibleNavigation() const {
+SafetyTipWebContentsObserver::GetSafetyTipInfoForVisibleNavigation() const {
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
-  if (!entry)
+  if (!entry) {
     return {security_state::SafetyTipStatus::kUnknown, GURL()};
+  }
   return last_safety_tip_navigation_entry_id_ == entry->GetUniqueID()
              ? last_navigation_safety_tip_info_
              : security_state::SafetyTipInfo(
                    {security_state::SafetyTipStatus::kUnknown, GURL()});
 }
 
-void ReputationWebContentsObserver::RegisterReputationCheckCallbackForTesting(
+void SafetyTipWebContentsObserver::RegisterSafetyTipCheckCallbackForTesting(
     base::OnceClosure callback) {
-  reputation_check_callback_for_testing_ = std::move(callback);
+  safety_tip_check_callback_for_testing_ = std::move(callback);
 }
 
-void ReputationWebContentsObserver::RegisterSafetyTipCloseCallbackForTesting(
+void SafetyTipWebContentsObserver::RegisterSafetyTipCloseCallbackForTesting(
     base::OnceClosure callback) {
   safety_tip_close_callback_for_testing_ = std::move(callback);
 }
 
-ReputationWebContentsObserver::ReputationWebContentsObserver(
+SafetyTipWebContentsObserver::SafetyTipWebContentsObserver(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      content::WebContentsUserData<ReputationWebContentsObserver>(
-          *web_contents),
+      content::WebContentsUserData<SafetyTipWebContentsObserver>(*web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      reputation_check_pending_for_testing_(true),
       weak_factory_(this) {
   last_navigation_safety_tip_info_ = {security_state::SafetyTipStatus::kUnknown,
                                       GURL()};
 }
 
-void ReputationWebContentsObserver::MaybeShowSafetyTip(
+void SafetyTipWebContentsObserver::MaybeShowSafetyTip(
     ukm::SourceId navigation_source_id,
     bool called_from_visibility_check,
     bool record_ukm_if_tip_not_shown) {
   if (web_contents()->GetPrimaryMainFrame()->GetVisibilityState() !=
       content::PageVisibilityState::kVisible) {
-    MaybeCallReputationCheckCallback(false);
+    MaybeCallSafetyTipCheckCallback(false);
     return;
   }
 
   // Filter out loads with no navigations, error pages and interstitials.
   auto* last_entry = web_contents()->GetController().GetLastCommittedEntry();
   if (!last_entry || last_entry->GetPageType() != content::PAGE_TYPE_NORMAL) {
-    MaybeCallReputationCheckCallback(false);
+    MaybeCallSafetyTipCheckCallback(false);
     return;
   }
 
   const GURL& url = web_contents()->GetLastCommittedURL();
   if (!url.SchemeIsHTTPOrHTTPS()) {
-    MaybeCallReputationCheckCallback(false);
+    MaybeCallSafetyTipCheckCallback(false);
     return;
   }
 
-  ReputationService* service = ReputationService::Get(profile_);
-  service->GetReputationStatus(
+  SafetyTipService* service = SafetyTipService::Get(profile_);
+  service->GetSafetyTipStatus(
       url, web_contents(),
-      base::BindOnce(
-          &ReputationWebContentsObserver::HandleReputationCheckResult,
-          weak_factory_.GetWeakPtr(), navigation_source_id,
-          called_from_visibility_check, record_ukm_if_tip_not_shown));
+      base::BindOnce(&SafetyTipWebContentsObserver::HandleSafetyTipCheckResult,
+                     weak_factory_.GetWeakPtr(), navigation_source_id,
+                     called_from_visibility_check,
+                     record_ukm_if_tip_not_shown));
 }
 
-void ReputationWebContentsObserver::HandleReputationCheckResult(
+void SafetyTipWebContentsObserver::HandleSafetyTipCheckResult(
     ukm::SourceId navigation_source_id,
     bool called_from_visibility_check,
     bool record_ukm_if_tip_not_shown,
-    ReputationCheckResult result) {
+    SafetyTipCheckResult result) {
   UMA_HISTOGRAM_ENUMERATION("Security.SafetyTips.SafetyTipShown",
                             result.safety_tip_status);
   base::UmaHistogramEnumeration(
@@ -265,7 +264,7 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
   last_navigation_safety_tip_info_ = {result.safety_tip_status,
                                       result.suggested_url};
 
-  // A navigation entry should always exist because reputation checks are only
+  // A navigation entry should always exist because safety tip checks are only
   // triggered when a committed navigation finishes.
   last_safety_tip_navigation_entry_id_ =
       web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID();
@@ -279,8 +278,8 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
   if (result.safety_tip_status == security_state::SafetyTipStatus::kNone ||
       result.safety_tip_status ==
           security_state::SafetyTipStatus::kBadKeyword) {
-    FinalizeReputationCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
-                                           navigation_source_id);
+    FinalizeSafetyTipCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
+                                          navigation_source_id);
     return;
   }
 
@@ -290,8 +289,8 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
           security_state::SafetyTipStatus::kBadReputationIgnored) {
     UMA_HISTOGRAM_ENUMERATION("Security.SafetyTips.SafetyTipIgnoredPageLoad",
                               result.safety_tip_status);
-    FinalizeReputationCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
-                                           navigation_source_id);
+    FinalizeSafetyTipCheckWhenTipNotShown(record_ukm_if_tip_not_shown, result,
+                                          navigation_source_id);
     return;
   }
 
@@ -320,27 +319,29 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
   ShowSafetyTipDialog(web_contents(), result.safety_tip_status,
                       result.suggested_url, std::move(close_callback));
 #endif
-  MaybeCallReputationCheckCallback(true);
+  MaybeCallSafetyTipCheckCallback(true);
 }
 
-void ReputationWebContentsObserver::MaybeCallReputationCheckCallback(
+void SafetyTipWebContentsObserver::MaybeCallSafetyTipCheckCallback(
     bool heuristics_checked) {
-  if (heuristics_checked)
-    reputation_check_pending_for_testing_ = false;
-  if (reputation_check_callback_for_testing_.is_null())
+  if (heuristics_checked) {
+    safety_tip_check_pending_for_testing_ = false;
+  }
+  if (safety_tip_check_callback_for_testing_.is_null()) {
     return;
-  std::move(reputation_check_callback_for_testing_).Run();
+  }
+  std::move(safety_tip_check_callback_for_testing_).Run();
 }
 
-void ReputationWebContentsObserver::FinalizeReputationCheckWhenTipNotShown(
+void SafetyTipWebContentsObserver::FinalizeSafetyTipCheckWhenTipNotShown(
     bool record_ukm,
-    ReputationCheckResult result,
+    SafetyTipCheckResult result,
     ukm::SourceId navigation_source_id) {
   if (record_ukm) {
     RecordHeuristicsUKMData(result, navigation_source_id,
                             SafetyTipInteraction::kNotShown);
   }
-  MaybeCallReputationCheckCallback(true);
+  MaybeCallSafetyTipCheckCallback(true);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReputationWebContentsObserver);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SafetyTipWebContentsObserver);

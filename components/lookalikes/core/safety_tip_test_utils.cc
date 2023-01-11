@@ -10,15 +10,15 @@
 
 #include "components/lookalikes/core/safety_tips_config.h"
 
-namespace reputation {
+namespace lookalikes {
 
-std::unique_ptr<SafetyTipsConfig> GetOrCreateSafetyTipsConfig() {
+std::unique_ptr<reputation::SafetyTipsConfig> GetOrCreateSafetyTipsConfig() {
   auto* old = GetSafetyTipsRemoteConfigProto();
   if (old) {
-    return std::make_unique<SafetyTipsConfig>(*old);
+    return std::make_unique<reputation::SafetyTipsConfig>(*old);
   }
 
-  auto conf = std::make_unique<SafetyTipsConfig>();
+  auto conf = std::make_unique<reputation::SafetyTipsConfig>();
   // Any version ID will do.
   conf->set_version_id(4);
   return conf;
@@ -29,13 +29,13 @@ void InitializeSafetyTipConfig() {
 }
 
 void SetSafetyTipPatternsWithFlagType(std::vector<std::string> patterns,
-                                      FlaggedPage::FlagType type) {
+                                      reputation::FlaggedPage::FlagType type) {
   auto config_proto = GetOrCreateSafetyTipsConfig();
   config_proto->clear_flagged_page();
 
   std::sort(patterns.begin(), patterns.end());
   for (const auto& pattern : patterns) {
-    FlaggedPage* page = config_proto->add_flagged_page();
+    reputation::FlaggedPage* page = config_proto->add_flagged_page();
     page->set_pattern(pattern);
     page->set_type(type);
   }
@@ -44,7 +44,7 @@ void SetSafetyTipPatternsWithFlagType(std::vector<std::string> patterns,
 }
 
 void SetSafetyTipBadRepPatterns(std::vector<std::string> patterns) {
-  SetSafetyTipPatternsWithFlagType(patterns, FlaggedPage::BAD_REP);
+  SetSafetyTipPatternsWithFlagType(patterns, reputation::FlaggedPage::BAD_REP);
 }
 
 void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
@@ -60,11 +60,11 @@ void SetSafetyTipAllowlistPatterns(std::vector<std::string> patterns,
   std::sort(common_words.begin(), common_words.end());
 
   for (const auto& pattern : patterns) {
-    UrlPattern* page = config_proto->add_allowed_pattern();
+    reputation::UrlPattern* page = config_proto->add_allowed_pattern();
     page->set_pattern(pattern);
   }
   for (const auto& pattern : target_patterns) {
-    HostPattern* page = config_proto->add_allowed_target_pattern();
+    reputation::HostPattern* page = config_proto->add_allowed_target_pattern();
     page->set_regex(pattern);
   }
   for (const auto& word : common_words) {
@@ -88,4 +88,4 @@ void AddSafetyTipHeuristicLaunchConfigForTesting(
   SetSafetyTipsRemoteConfigProto(std::move(config_proto));
 }
 
-}  // namespace reputation
+}  // namespace lookalikes

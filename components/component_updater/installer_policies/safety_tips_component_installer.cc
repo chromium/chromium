@@ -98,7 +98,7 @@ void SafetyTipsComponentInstallerPolicy::ComponentReady(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadSafetyTipsProtoFromDisk, pb_path),
-      base::BindOnce(&reputation::SetSafetyTipsRemoteConfigProto));
+      base::BindOnce(&lookalikes::SetSafetyTipsRemoteConfigProto));
 }
 
 // Called during startup and installation before ComponentReady().

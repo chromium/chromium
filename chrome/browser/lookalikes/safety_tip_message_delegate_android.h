@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_
-#define CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_
+#ifndef CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/reputation/safety_tip_ui.h"
+#include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/security_state/core/security_state.h"
@@ -52,4 +52,4 @@ class SafetyTipMessageDelegateAndroid {
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;
 };
 
-#endif  // CHROME_BROWSER_REPUTATION_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_
+#endif  // CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_MESSAGE_DELEGATE_ANDROID_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/reputation_service.h"
+#include "chrome/browser/lookalikes/safety_tip_service.h"
 
 #include <cstddef>
 #include <string>
@@ -18,8 +18,8 @@
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/reputation/local_heuristics.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/common/channel_info.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/security_state/core/security_state.h"
@@ -32,36 +32,36 @@ namespace {
 
 using security_state::SafetyTipStatus;
 
-// This factory helps construct and find the singleton ReputationService linked
+// This factory helps construct and find the singleton SafetyTipService linked
 // to a Profile.
-class ReputationServiceFactory : public ProfileKeyedServiceFactory {
+class SafetyTipServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static ReputationService* GetForProfile(Profile* profile) {
-    return static_cast<ReputationService*>(
+  static SafetyTipService* GetForProfile(Profile* profile) {
+    return static_cast<SafetyTipService*>(
         GetInstance()->GetServiceForBrowserContext(profile,
                                                    /*create_service=*/true));
   }
-  static ReputationServiceFactory* GetInstance() {
-    return base::Singleton<ReputationServiceFactory>::get();
+  static SafetyTipServiceFactory* GetInstance() {
+    return base::Singleton<SafetyTipServiceFactory>::get();
   }
 
-  ReputationServiceFactory(const ReputationServiceFactory&) = delete;
-  ReputationServiceFactory& operator=(const ReputationServiceFactory&) = delete;
+  SafetyTipServiceFactory(const SafetyTipServiceFactory&) = delete;
+  SafetyTipServiceFactory& operator=(const SafetyTipServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ReputationServiceFactory>;
+  friend struct base::DefaultSingletonTraits<SafetyTipServiceFactory>;
 
-  ReputationServiceFactory()
+  SafetyTipServiceFactory()
       : ProfileKeyedServiceFactory(
-            "ReputationServiceFactory",
+            "SafetyTipServiceFactory",
             ProfileSelections::BuildForRegularAndIncognito()) {}
 
-  ~ReputationServiceFactory() override = default;
+  ~SafetyTipServiceFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override {
-    return new ReputationService(static_cast<Profile*>(profile));
+    return new SafetyTipService(static_cast<Profile*>(profile));
   }
 };
 
@@ -77,7 +77,7 @@ bool ShouldSuppressWarning(Profile* profile,
     return true;
   }
 
-  auto* proto = reputation::GetSafetyTipsRemoteConfigProto();
+  auto* proto = lookalikes::GetSafetyTipsRemoteConfigProto();
   if (!proto) {
     // This happens when the component hasn't downloaded yet. This should only
     // happen for a short time after initial upgrade to M79.
@@ -86,7 +86,7 @@ bool ShouldSuppressWarning(Profile* profile,
     // flag on any known false positives until the client received the update.
     return true;
   }
-  return reputation::IsUrlAllowlistedBySafetyTipsComponent(
+  return lookalikes::IsUrlAllowlistedBySafetyTipsComponent(
       proto, url.GetWithEmptyPath(), victim_url.GetWithEmptyPath());
 }
 
@@ -97,64 +97,85 @@ std::string GetETLDPlusOneWithPrivateRegistries(const std::string& hostname) {
       hostname, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-}  // namespace
+bool ShouldTriggerSafetyTipFromLookalike(
+    const GURL& url,
+    const DomainInfo& navigated_domain,
+    const std::vector<DomainInfo>& engaged_sites,
+    GURL* safe_url,
+    LookalikeUrlMatchType* match_type) {
+  if (navigated_domain.domain_and_registry.empty()) {
+    return false;
+  }
 
-ReputationService::ReputationService(Profile* profile) : profile_(profile) {}
+  std::string matched_domain;
+  auto* config = lookalikes::GetSafetyTipsRemoteConfigProto();
+  const LookalikeTargetAllowlistChecker in_target_allowlist =
+      base::BindRepeating(
+          &lookalikes::IsTargetHostAllowlistedBySafetyTipsComponent, config);
+  if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
+                         config, &matched_domain, match_type)) {
+    return false;
+  }
 
-ReputationService::~ReputationService() = default;
-
-// static
-ReputationService* ReputationService::Get(Profile* profile) {
-  return ReputationServiceFactory::GetForProfile(profile);
+  if (GetActionForMatchType(
+          config, chrome::GetChannel(), navigated_domain.domain_and_registry,
+          *match_type) == LookalikeActionType::kShowSafetyTip) {
+    *safe_url = GetSuggestedURL(*match_type, url, matched_domain);
+    return true;
+  }
+  return false;
 }
 
-void ReputationService::GetReputationStatus(const GURL& url,
-                                            content::WebContents* web_contents,
-                                            ReputationCheckCallback callback) {
+}  // namespace
+
+SafetyTipService::SafetyTipService(Profile* profile) : profile_(profile) {}
+
+SafetyTipService::~SafetyTipService() = default;
+
+// static
+SafetyTipService* SafetyTipService::Get(Profile* profile) {
+  return SafetyTipServiceFactory::GetForProfile(profile);
+}
+
+void SafetyTipService::GetSafetyTipStatus(const GURL& url,
+                                          content::WebContents* web_contents,
+                                          SafetyTipCheckCallback callback) {
   DCHECK(url.SchemeIsHTTPOrHTTPS());
-
-  bool has_delayed_warning =
-      !!safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
-          web_contents);
-
   LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
   if (service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(
-        base::BindOnce(&ReputationService::GetReputationStatusWithEngagedSites,
-                       weak_factory_.GetWeakPtr(), url, has_delayed_warning,
-                       std::move(callback)));
+        base::BindOnce(&SafetyTipService::GetSafetyTipStatusWithEngagedSites,
+                       weak_factory_.GetWeakPtr(), url, std::move(callback)));
     // If the engaged sites need updating, there's nothing to do until callback.
     return;
   }
 
-  GetReputationStatusWithEngagedSites(url, has_delayed_warning,
-                                      std::move(callback),
-                                      service->GetLatestEngagedSites());
+  GetSafetyTipStatusWithEngagedSites(url, std::move(callback),
+                                     service->GetLatestEngagedSites());
 }
 
-bool ReputationService::IsIgnored(const GURL& url) const {
+bool SafetyTipService::IsIgnored(const GURL& url) const {
   return warning_dismissed_etld1s_.count(
              GetETLDPlusOneWithPrivateRegistries(url.host())) > 0;
 }
 
-void ReputationService::SetUserIgnore(const GURL& url) {
+void SafetyTipService::SetUserIgnore(const GURL& url) {
   warning_dismissed_etld1s_.insert(
       GetETLDPlusOneWithPrivateRegistries(url.host()));
 }
 
-void ReputationService::OnUIDisabledFirstVisit(const GURL& url) {
+void SafetyTipService::OnUIDisabledFirstVisit(const GURL& url) {
   warning_dismissed_etld1s_.insert(
       GetETLDPlusOneWithPrivateRegistries(url.host()));
 }
 
-void ReputationService::ResetWarningDismissedETLDPlusOnesForTesting() {
+void SafetyTipService::ResetWarningDismissedETLDPlusOnesForTesting() {
   warning_dismissed_etld1s_.clear();
 }
 
-void ReputationService::GetReputationStatusWithEngagedSites(
+void SafetyTipService::GetSafetyTipStatusWithEngagedSites(
     const GURL& url,
-    bool has_delayed_warning,
-    ReputationCheckCallback callback,
+    SafetyTipCheckCallback callback,
     const std::vector<DomainInfo>& engaged_sites) {
   base::TimeTicks start = base::TimeTicks::Now();
 
@@ -163,13 +184,13 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   UMA_HISTOGRAM_TIMES("Security.SafetyTips.GetDomainInfoTime",
                       base::TimeTicks::Now() - start);
 
-  ReputationCheckResult result;
+  SafetyTipCheckResult result;
 
   // We evaluate every heuristic for metrics, but only display the first result
-  // for the UI. We use |done_checking_reputation_status| to track when we've
+  // for the UI. We use |done_checking_safety_tip_status| to track when we've
   // settled on the safety tip to show in the UI, so as to not overwrite this
   // decision with other heuristics that may trigger later.
-  bool done_checking_reputation_status = false;
+  bool done_checking_safety_tip_status = false;
 
   // 1. Engagement check
   // Ensure that this URL is not already engaged. We can't use the synchronous
@@ -179,7 +200,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
       base::Contains(engaged_sites, navigated_domain.domain_and_registry,
                      &DomainInfo::domain_and_registry);
   if (already_engaged) {
-    done_checking_reputation_status = true;
+    done_checking_safety_tip_status = true;
   }
 
   // 2. Protect against bad false positives by allowing top domains and safe
@@ -187,7 +208,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   if (navigated_domain.domain_and_registry.empty() ||
       IsTopDomain(navigated_domain) ||
       IsSafeTLD(navigated_domain.domain_and_registry)) {
-    done_checking_reputation_status = true;
+    done_checking_safety_tip_status = true;
   }
 
   // 3. Lookalike heuristics.
@@ -196,14 +217,15 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   if (!already_engaged &&
       ShouldTriggerSafetyTipFromLookalike(url, navigated_domain, engaged_sites,
                                           &safe_url, &match_type)) {
-    if (!done_checking_reputation_status) {
+    if (!done_checking_safety_tip_status) {
       result.suggested_url = safe_url;
       result.safety_tip_status = SafetyTipStatus::kLookalike;
     }
     result.lookalike_heuristic_triggered = true;
-    done_checking_reputation_status = true;
+    done_checking_safety_tip_status = true;
   }
   DCHECK(result.safety_tip_status != SafetyTipStatus::kBadKeyword);
+  DCHECK(result.safety_tip_status != SafetyTipStatus::kBadReputation);
 
   // If we found a SafetyTipStatus, possibly clear it if the URL is on the
   // allowlist.
@@ -215,9 +237,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   }
 
   if (IsIgnored(url)) {
-    if (result.safety_tip_status == SafetyTipStatus::kBadReputation) {
-      result.safety_tip_status = SafetyTipStatus::kBadReputationIgnored;
-    } else if (result.safety_tip_status == SafetyTipStatus::kLookalike) {
+    if (result.safety_tip_status == SafetyTipStatus::kLookalike) {
       result.safety_tip_status = SafetyTipStatus::kLookalikeIgnored;
     }
     // The local allowlist is used by both the interstitial and safety tips, so
@@ -228,7 +248,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   }
   result.url = url;
 
-  DCHECK(done_checking_reputation_status ||
+  DCHECK(done_checking_safety_tip_status ||
          !result.lookalike_heuristic_triggered);
   std::move(callback).Run(result);
 

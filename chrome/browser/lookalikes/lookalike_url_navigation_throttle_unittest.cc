@@ -42,7 +42,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests that spoofy hostnames are properly handled in the throttle.
 TEST_P(LookalikeThrottleTest, SpoofsBlocked) {
-  reputation::InitializeSafetyTipConfig();
+  lookalikes::InitializeSafetyTipConfig();
 
   const struct TestCase {
     const char* hostname;

@@ -69,7 +69,7 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
 // Also tests that UMA records correctly.
 TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
   GURL lookalike_url("https://xn--googl-fsa.com/");
-  reputation::InitializeSafetyTipConfig();
+  lookalikes::InitializeSafetyTipConfig();
 
   // Lookalike IDNs should be blocked.
   EXPECT_FALSE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
@@ -101,8 +101,8 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
 // when the domain has been allowlisted by the Safety Tips component.
 TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponseForAllowlistedDomains) {
   GURL lookalike_url("https://xn--googl-fsa.com/");
-  reputation::InitializeSafetyTipConfig();
-  reputation::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.com/"}, {}, {});
+  lookalikes::InitializeSafetyTipConfig();
+  lookalikes::SetSafetyTipAllowlistPatterns({"xn--googl-fsa.com/"}, {}, {});
 
   EXPECT_TRUE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                   .ShouldAllowNavigation());
@@ -112,7 +112,7 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponseForAllowlistedDomains) {
 // to IDNs.
 TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponseForPunycode) {
   GURL lookalike_url("https://ɴoτ-τoρ-ďoᛖaiɴ.com/");
-  reputation::InitializeSafetyTipConfig();
+  lookalikes::InitializeSafetyTipConfig();
 
   EXPECT_FALSE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                    .ShouldAllowNavigation());

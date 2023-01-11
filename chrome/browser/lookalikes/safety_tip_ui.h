@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_UI_H_
-#define CHROME_BROWSER_REPUTATION_SAFETY_TIP_UI_H_
+#ifndef CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_UI_H_
+#define CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_UI_H_
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
@@ -59,4 +59,4 @@ void ShowSafetyTipDialog(
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback);
 
-#endif  // CHROME_BROWSER_REPUTATION_SAFETY_TIP_UI_H_
+#endif  // CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_UI_H_

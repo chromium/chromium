@@ -12,17 +12,17 @@
 
 using safe_browsing::V4ProtocolManagerUtil;
 
-namespace reputation {
+namespace lookalikes {
 
 namespace {
 
 class SafetyTipsConfigSingleton {
  public:
-  void SetProto(std::unique_ptr<SafetyTipsConfig> proto) {
+  void SetProto(std::unique_ptr<reputation::SafetyTipsConfig> proto) {
     proto_ = std::move(proto);
   }
 
-  SafetyTipsConfig* GetProto() const { return proto_.get(); }
+  reputation::SafetyTipsConfig* GetProto() const { return proto_.get(); }
 
   static SafetyTipsConfigSingleton& GetInstance() {
     static base::NoDestructor<SafetyTipsConfigSingleton> instance;
@@ -30,7 +30,7 @@ class SafetyTipsConfigSingleton {
   }
 
  private:
-  std::unique_ptr<SafetyTipsConfig> proto_;
+  std::unique_ptr<reputation::SafetyTipsConfig> proto_;
 };
 
 // Given a URL, generates all possible variant URLs to check the blocklist for.
@@ -66,7 +66,7 @@ void UrlToSafetyTipPatterns(const GURL& url,
 }
 
 // Return whether |canonical_url| is a member of the designated cohort.
-bool IsUrlAllowedByCohort(const SafetyTipsConfig* proto,
+bool IsUrlAllowedByCohort(const reputation::SafetyTipsConfig* proto,
                           const GURL& canonical_url,
                           unsigned cohort_index) {
   DCHECK(proto);
@@ -115,32 +115,33 @@ bool IsUrlAllowedByCohort(const SafetyTipsConfig* proto,
 }  // namespace
 
 // static
-void SetSafetyTipsRemoteConfigProto(std::unique_ptr<SafetyTipsConfig> proto) {
+void SetSafetyTipsRemoteConfigProto(
+    std::unique_ptr<reputation::SafetyTipsConfig> proto) {
   SafetyTipsConfigSingleton::GetInstance().SetProto(std::move(proto));
 }
 
 // static
-const SafetyTipsConfig* GetSafetyTipsRemoteConfigProto() {
+const reputation::SafetyTipsConfig* GetSafetyTipsRemoteConfigProto() {
   return SafetyTipsConfigSingleton::GetInstance().GetProto();
 }
 
-bool IsUrlAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
-                                           const GURL& visited_url,
-                                           const GURL& canonical_url) {
+bool IsUrlAllowlistedBySafetyTipsComponent(
+    const reputation::SafetyTipsConfig* proto,
+    const GURL& visited_url,
+    const GURL& canonical_url) {
   DCHECK(proto);
   DCHECK(visited_url.is_valid());
   std::vector<std::string> patterns;
   UrlToSafetyTipPatterns(visited_url, &patterns);
   auto allowed_patterns = proto->allowed_pattern();
   for (const auto& pattern : patterns) {
-    UrlPattern search_target;
+    reputation::UrlPattern search_target;
     search_target.set_pattern(pattern);
 
     auto maybe_before = std::lower_bound(
         allowed_patterns.begin(), allowed_patterns.end(), search_target,
-        [](const UrlPattern& a, const UrlPattern& b) -> bool {
-          return a.pattern() < b.pattern();
-        });
+        [](const reputation::UrlPattern& a, const reputation::UrlPattern& b)
+            -> bool { return a.pattern() < b.pattern(); });
 
     if (maybe_before != allowed_patterns.end() &&
         pattern == maybe_before->pattern()) {
@@ -159,8 +160,9 @@ bool IsUrlAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
   return false;
 }
 
-bool IsTargetHostAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
-                                                  const std::string& hostname) {
+bool IsTargetHostAllowlistedBySafetyTipsComponent(
+    const reputation::SafetyTipsConfig* proto,
+    const std::string& hostname) {
   DCHECK(!hostname.empty());
   if (proto == nullptr) {
     return false;
@@ -179,7 +181,7 @@ bool IsTargetHostAllowlistedBySafetyTipsComponent(const SafetyTipsConfig* proto,
   return false;
 }
 
-bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,
+bool IsCommonWordInConfigProto(const reputation::SafetyTipsConfig* proto,
                                const std::string& word) {
   // proto is nullptr when running in non-Lookalike tests.
   if (proto == nullptr) {
@@ -195,4 +197,4 @@ bool IsCommonWordInConfigProto(const SafetyTipsConfig* proto,
   return lower != common_words.end() && word == *lower;
 }
 
-}  // namespace reputation
+}  // namespace lookalikes

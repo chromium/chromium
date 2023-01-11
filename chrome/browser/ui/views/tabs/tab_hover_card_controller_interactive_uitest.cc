@@ -311,7 +311,7 @@ class TabHoverCardBubbleViewInterstitialBrowserTest
     https_server_mismatched_->AddDefaultHandlers(GetChromeTestDataDir());
 
     TabHoverCardInteractiveUiTest::SetUpOnMainThread();
-    reputation::InitializeSafetyTipConfig();
+    lookalikes::InitializeSafetyTipConfig();
   }
 
   net::EmbeddedTestServer* https_server_mismatched() {

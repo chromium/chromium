@@ -75,7 +75,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   }
 
   // Fetch the component allowlist.
-  const auto* proto = reputation::GetSafetyTipsRemoteConfigProto();
+  const auto* proto = lookalikes::GetSafetyTipsRemoteConfigProto();
   // When there's no proto (like at browser start), fail-safe and don't block.
   if (!proto) {
     std::move(callback).Run(CreateAllowDecision());
@@ -112,7 +112,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     // If the URL fails a spoof check, and isn't in the component allowlist,
     // then show a spoof check interstitial.
     if (ShouldBlockBySpoofCheckResult(navigated_domain) &&
-        !reputation::IsUrlAllowlistedBySafetyTipsComponent(
+        !lookalikes::IsUrlAllowlistedBySafetyTipsComponent(
             proto, response_url.GetWithEmptyPath(),
             response_url.GetWithEmptyPath())) {
       match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
@@ -140,7 +140,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
       response_url.ReplaceComponents(replace_host).GetWithEmptyPath();
 
   // If the URL is in the component updater allowlist, don't show any warning.
-  if (reputation::IsUrlAllowlistedBySafetyTipsComponent(
+  if (lookalikes::IsUrlAllowlistedBySafetyTipsComponent(
           proto, response_url.GetWithEmptyPath(),
           suggested_url.GetWithEmptyPath())) {
     std::move(callback).Run(CreateAllowDecision());

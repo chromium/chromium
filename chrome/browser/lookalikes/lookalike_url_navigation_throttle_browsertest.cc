@@ -19,8 +19,8 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/safety_tip_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_features.h"
@@ -203,7 +203,7 @@ void TestInterstitialNotShown(Browser* browser, const GURL& navigated_url) {
 
 // Add an allowlist with entries that aren't allowlisted for all domains.
 void ConfigureAllowlistWithScopes() {
-  auto config_proto = reputation::GetOrCreateSafetyTipsConfig();
+  auto config_proto = lookalikes::GetOrCreateSafetyTipsConfig();
   config_proto->clear_allowed_pattern();
   config_proto->clear_canonical_pattern();
   config_proto->clear_cohort();
@@ -222,7 +222,7 @@ void ConfigureAllowlistWithScopes() {
   cohort->add_canonical_index(0);  // google.com
   pattern->add_cohort_index(0);
 
-  reputation::SetSafetyTipsRemoteConfigProto(std::move(config_proto));
+  lookalikes::SetSafetyTipsRemoteConfigProto(std::move(config_proto));
 }
 
 }  // namespace
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   const GURL kNavigatedUrl = GetURL("googlé.com");
 
   // Clear out any existing proto.
-  reputation::SetSafetyTipsRemoteConfigProto(nullptr);
+  lookalikes::SetSafetyTipsRemoteConfigProto(nullptr);
 
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   TestInterstitialNotShown(browser(), kNavigatedUrl);
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_EmbedderAllowlist) {
   const GURL kNavigatedUrl = GetURL("google.com.allowlisted.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  reputation::SetSafetyTipAllowlistPatterns({"allowlisted.com/"}, {}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({"allowlisted.com/"}, {}, {});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   test_helper()->CheckNoLookalikeUkm();
 }
@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_TargetAllowlist) {
   const GURL kNavigatedUrl = GetURL("foo.scholar.google.com.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  reputation::SetSafetyTipAllowlistPatterns({}, {"scholar\\.google\\.com"}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({}, {"scholar\\.google\\.com"}, {});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   test_helper()->CheckNoLookalikeUkm();
 }
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_ComponentCommonWords) {
   const GURL kNavigatedUrl = GetURL("google.com.example.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  reputation::SetSafetyTipAllowlistPatterns({}, {}, {"google"});
+  lookalikes::SetSafetyTipAllowlistPatterns({}, {}, {"google"});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   test_helper()->CheckNoLookalikeUkm();
 }
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_TargetAllowlistWithNoSeparators) {
   const GURL kNavigatedUrl = GetURL("googlecom.example.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  reputation::SetSafetyTipAllowlistPatterns({}, {"google\\.com"}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({}, {"google\\.com"}, {});
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   test_helper()->CheckNoLookalikeUkm();
 }
@@ -883,7 +883,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        EditDistance_TopDomain_Target_Allowlist) {
   base::HistogramTester histograms;
-  reputation::SetSafetyTipAllowlistPatterns({}, {"google\\.com"}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({}, {"google\\.com"}, {});
 
   // The skeleton of this domain, gooogle.corn, is one 1 edit away from
   // google.corn, the skeleton of google.com.
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        EditDistance_EngagedDomain_Target_Allowlist) {
   base::HistogramTester histograms;
   SetEngagementScore(browser(), GURL("https://test-site.com"), kHighEngagement);
-  reputation::SetSafetyTipAllowlistPatterns({}, {"test-site\\.com"}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({}, {"test-site\\.com"}, {});
 
   // The skeleton of this domain is one 1 edit away from the skeleton of
   // test-site.com.
@@ -1101,7 +1101,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 // The site is allowed by the component updater.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        AllowedByComponentUpdater) {
-  reputation::SetSafetyTipAllowlistPatterns(
+  lookalikes::SetSafetyTipAllowlistPatterns(
       {"xn--googl-fsa.com/",  // googlé.com in punycode
        "site.test/", "another-site.test/"},
       {}, {});
@@ -1583,7 +1583,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        ComboSquatting_ShouldNotTriggeredForAllowlist) {
   const GURL kNavigatedUrl = GetURL("google-login.com");
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-  reputation::SetSafetyTipAllowlistPatterns({"google-login.com/"}, {}, {});
+  lookalikes::SetSafetyTipAllowlistPatterns({"google-login.com/"}, {}, {});
 
   TestInterstitialNotShown(browser(), kNavigatedUrl);
   test_helper()->CheckNoLookalikeUkm();
@@ -1857,7 +1857,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottlePrerenderBrowserTest,
   LoadAndCheckInterstitialAt(browser(), kNavigateUrl);
   SendInterstitialCommandSync(browser(),
                               SecurityInterstitialCommand::CMD_PROCEED);
-  ReputationService::Get(browser()->profile())
+  SafetyTipService::Get(browser()->profile())
       ->ResetWarningDismissedETLDPlusOnesForTesting();
 
   // Start a prerender.

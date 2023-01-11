@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_DELEGATE_H_
-#define CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_DELEGATE_H_
+#ifndef CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_INFOBAR_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_INFOBAR_DELEGATE_ANDROID_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/reputation/safety_tip_ui.h"
+#include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
@@ -50,4 +50,4 @@ class SafetyTipInfoBarDelegate : public ConfirmInfoBarDelegate {
   raw_ptr<content::WebContents> web_contents_;
 };
 
-#endif  // CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_DELEGATE_H_
+#endif  // CHROME_BROWSER_LOOKALIKES_SAFETY_TIP_INFOBAR_DELEGATE_ANDROID_H_

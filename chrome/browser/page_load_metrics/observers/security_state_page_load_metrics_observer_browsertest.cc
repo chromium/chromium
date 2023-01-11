@@ -12,7 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
-#include "chrome/browser/reputation/reputation_web_contents_observer.h"
+#include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -288,14 +288,14 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
-    ReputationWebContentsObserver* rep_observer =
-        ReputationWebContentsObserver::FromWebContents(contents);
-    ASSERT_TRUE(rep_observer);
+    SafetyTipWebContentsObserver* safety_tip_observer =
+        SafetyTipWebContentsObserver::FromWebContents(contents);
+    ASSERT_TRUE(safety_tip_observer);
 
-    // Navigate to |url| and wait for the reputation check to complete before
+    // Navigate to |url| and wait for the safety tip check to complete before
     // checking the histograms.
     base::RunLoop run_loop;
-    rep_observer->RegisterReputationCheckCallbackForTesting(
+    safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
         run_loop.QuitClosure());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.url));
     run_loop.Run();
@@ -347,14 +347,14 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ReputationWebContentsObserver* rep_observer =
-        ReputationWebContentsObserver::FromWebContents(contents);
-    ASSERT_TRUE(rep_observer);
+    SafetyTipWebContentsObserver* safety_tip_observer =
+        SafetyTipWebContentsObserver::FromWebContents(contents);
+    ASSERT_TRUE(safety_tip_observer);
 
-    // Navigate to the lookalike and wait for the reputation check to complete
+    // Navigate to the lookalike and wait for the safety tip check to complete
     // before checking the histograms.
     base::RunLoop run_loop;
-    rep_observer->RegisterReputationCheckCallbackForTesting(
+    safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
         run_loop.QuitClosure());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.url));
     run_loop.Run();
@@ -525,14 +525,14 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ReputationWebContentsObserver* rep_observer =
-      ReputationWebContentsObserver::FromWebContents(contents);
-  ASSERT_TRUE(rep_observer);
+  SafetyTipWebContentsObserver* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(contents);
+  ASSERT_TRUE(safety_tip_observer);
 
-  // Navigate to |url| and wait for the reputation check to complete before
+  // Navigate to |url| and wait for the safety tip check to complete before
   // checking the histograms.
   base::RunLoop run_loop;
-  rep_observer->RegisterReputationCheckCallbackForTesting(
+  safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
       run_loop.QuitClosure());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   run_loop.Run();

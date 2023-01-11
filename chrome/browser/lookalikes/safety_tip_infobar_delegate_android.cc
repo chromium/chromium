@@ -2,34 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/reputation/safety_tip_infobar_delegate.h"
+#include "chrome/browser/lookalikes/safety_tip_infobar_delegate_android.h"
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/reputation/reputation_service.h"
-#include "chrome/browser/reputation/safety_tip_infobar.h"
-#include "chrome/browser/reputation/safety_tip_ui_helper.h"
-#include "components/infobars/content/content_infobar_manager.h"
+#include "chrome/browser/lookalikes/safety_tip_service.h"
+#include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-
-// From safety_tip_ui.h
-void ShowSafetyTipDialog(
-    content::WebContents* web_contents,
-    security_state::SafetyTipStatus safety_tip_status,
-    const GURL& suggested_url,
-    base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  auto delegate = std::make_unique<SafetyTipInfoBarDelegate>(
-      safety_tip_status, suggested_url, web_contents,
-      std::move(close_callback));
-  infobar_manager->AddInfoBar(
-      SafetyTipInfoBar::CreateInfoBar(std::move(delegate)));
-}
 
 SafetyTipInfoBarDelegate::SafetyTipInfoBarDelegate(
     security_state::SafetyTipStatus safety_tip_status,

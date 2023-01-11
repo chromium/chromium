@@ -401,8 +401,8 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
       {"example-google.com", "google.com", TargetEmbeddingType::kSafetyTip},
   };
 
-  reputation::InitializeBlankLookalikeAllowlistForTesting();
-  auto* config_proto = reputation::GetSafetyTipsRemoteConfigProto();
+  lookalikes::InitializeBlankLookalikeAllowlistForTesting();
+  auto* config_proto = lookalikes::GetSafetyTipsRemoteConfigProto();
 
   for (auto& test_case : kTestCases) {
     std::string safe_hostname;
@@ -435,8 +435,8 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingIgnoresComponentWordlist) {
       GetDomainInfo(GURL("https://uncommonword.com")),
   };
 
-  reputation::SetSafetyTipAllowlistPatterns({}, {}, {"commonword"});
-  auto* config_proto = reputation::GetSafetyTipsRemoteConfigProto();
+  lookalikes::SetSafetyTipAllowlistPatterns({}, {}, {"commonword"});
+  auto* config_proto = lookalikes::GetSafetyTipsRemoteConfigProto();
   TargetEmbeddingType embedding_type;
   std::string safe_hostname;
 
@@ -517,6 +517,56 @@ TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
                                       base::WideToUTF16(test_case.str2));
     EXPECT_EQ(test_case.expected, result)
         << "when comparing " << test_case.str1 << " with " << test_case.str2;
+  }
+}
+
+TEST(LookalikeUrlUtilTest, GetSuggestedURL) {
+  struct TestCase {
+    const LookalikeUrlMatchType match_type;
+    const GURL navigated_url;
+    const std::string matched_hostname;
+    const GURL expected_suggested_url;
+  } kTestCases[] = {
+      // Certain heuristics such as top domain matches should use https for
+      // the suggested URL.
+      {LookalikeUrlMatchType::kSkeletonMatchTop500,
+       GURL("http://docs.googlé.com"), "google.com",
+       GURL("https://google.com")},
+      // But not for non-default ports:
+      {LookalikeUrlMatchType::kSkeletonMatchTop500,
+       GURL("http://docs.googlé.com:8080"), "google.com",
+       GURL("http://google.com:8080")},
+      // Site engagement should use http for the suggested URL.
+      {LookalikeUrlMatchType::kSkeletonMatchSiteEngagement,
+       GURL("http://docs.googlé.com"), "google.com", GURL("http://google.com")},
+
+      // Same tests with the matched hostname having a subdomain.
+      {LookalikeUrlMatchType::kSkeletonMatchTop500,
+       GURL("http://docs.googlé.com"), "docs.google.com",
+       GURL("https://google.com")},
+      {LookalikeUrlMatchType::kSkeletonMatchTop500,
+       GURL("http://docs.googlé.com:8080"), "docs.google.com",
+       GURL("http://google.com:8080")},
+      {LookalikeUrlMatchType::kSkeletonMatchSiteEngagement,
+       GURL("http://docs.googlé.com"), "docs.google.com",
+       GURL("http://google.com")},
+
+      // Same tests with neither the matched hostname or navigated domain having
+      // a subdomain.
+      {LookalikeUrlMatchType::kSkeletonMatchTop500, GURL("http://googlé.com"),
+       "docs.google.com", GURL("https://google.com")},
+      {LookalikeUrlMatchType::kSkeletonMatchTop500,
+       GURL("http://googlé.com:8080"), "docs.google.com",
+       GURL("http://google.com:8080")},
+      {LookalikeUrlMatchType::kSkeletonMatchSiteEngagement,
+       GURL("http://googlé.com"), "docs.google.com", GURL("http://google.com")},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    GURL suggested_url =
+        GetSuggestedURL(test_case.match_type, test_case.navigated_url,
+                        test_case.matched_hostname);
+    EXPECT_EQ(test_case.expected_suggested_url, suggested_url);
   }
 }
 

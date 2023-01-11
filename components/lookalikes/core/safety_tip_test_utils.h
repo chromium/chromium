@@ -10,11 +10,11 @@
 
 #include "components/lookalikes/core/safety_tips.pb.h"
 
-namespace reputation {
+namespace lookalikes {
 
 // Retrieve any existing Safety Tips config proto if set, or create a new one
 // otherwise.
-std::unique_ptr<SafetyTipsConfig> GetOrCreateSafetyTipsConfig();
+std::unique_ptr<reputation::SafetyTipsConfig> GetOrCreateSafetyTipsConfig();
 
 // Initialize component configuration. Necessary to enable Safety Tips for
 // testing, as no heuristics trigger if the allowlist is inaccessible.
@@ -41,6 +41,6 @@ void AddSafetyTipHeuristicLaunchConfigForTesting(
 // SetSafetyTipAllowlistPatterns().
 void InitializeBlankLookalikeAllowlistForTesting();
 
-}  // namespace reputation
+}  // namespace lookalikes
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_SAFETY_TIP_TEST_UTILS_H_

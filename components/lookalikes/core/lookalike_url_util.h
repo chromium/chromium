@@ -324,4 +324,10 @@ LookalikeActionType GetActionForMatchType(
     const std::string& etld_plus_one,
     LookalikeUrlMatchType match_type);
 
+// Returns the suggested URL for the given parameters. Returns an https URL for
+// top domain matches because it's more likely for top sites to support https.
+GURL GetSuggestedURL(LookalikeUrlMatchType match_type,
+                     const GURL& navigated_url,
+                     const std::string& matched_hostname);
+
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_
