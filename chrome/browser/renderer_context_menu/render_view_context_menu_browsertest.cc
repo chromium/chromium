@@ -1826,7 +1826,7 @@ class SearchByRegionBrowserBaseTest : public InProcessBrowserTest {
     EXPECT_THAT(content,
                 testing::MatchesRegex(
                     expected_content.substr(0, query_start_pos) +
-                    ".*ep=crs&re=dcsp&s=csp&st=\\d+&lm=.+&sideimagesearch=1"));
+                    ".*ep=crs&re=dcsp&s=4&st=\\d+&lm=.+&sideimagesearch=1"));
     if (quit_closure_)
       quit_closure_.Run();
   }
@@ -2057,7 +2057,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(new_tab_content, testing::MatchesRegex(
                                    expected_content.substr(0, query_start_pos) +
-                                   ".*ep=crs&re=df&s=&st=\\d+&lm=.+"));
+                                   ".*ep=crs&re=df&s=4&st=\\d+&lm=.+"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,

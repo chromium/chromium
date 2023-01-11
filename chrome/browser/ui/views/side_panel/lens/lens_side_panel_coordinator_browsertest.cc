@@ -53,7 +53,7 @@ namespace {
 
 constexpr char kCloseAction[] = "LensUnifiedSidePanel.HideSidePanel";
 constexpr char kExpectedSidePanelContentUrlRegex[] =
-    ".*ep=ccm&re=dcsp&s=csp&st=\\d+&p=somepayload&sideimagesearch=1";
+    ".*ep=ccm&re=dcsp&s=4&st=\\d+&p=somepayload&sideimagesearch=1";
 constexpr char kExpectedNewTabContentUrlRegex[] = ".*p=somepayload";
 
 // Maintains image search test state. In particular, note that |menu_observer_|
