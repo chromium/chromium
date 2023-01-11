@@ -17,6 +17,9 @@
     ],
     "gtest_tests": [
       {
+        "args": [
+          "--tast-retries=1"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -77,9 +80,9 @@
     "gtest_tests": [
       {
         "args": [
+          "--tast-retries=1",
           "--magic-vm-cache=magic_cros_vm_cache",
-          "--strip-chrome",
-          "--tast-retries=1"
+          "--strip-chrome"
         ],
         "merge": {
           "args": [],
@@ -323,6 +326,7 @@
       },
       {
         "args": [
+          "--tast-retries=1",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
@@ -1327,6 +1331,9 @@
         }
       },
       {
+        "args": [
+          "--tast-retries=1"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1516,6 +1523,9 @@
         }
       },
       {
+        "args": [
+          "--tast-retries=1"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1624,6 +1634,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--tast-retries=1",
           "--magic-vm-cache=magic_cros_reven_vm_cache"
         ],
         "merge": {

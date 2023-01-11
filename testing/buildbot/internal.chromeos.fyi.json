@@ -159,6 +159,7 @@
       },
       {
         "args": [
+          "--tast-retries=1",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {

@@ -626,6 +626,9 @@
           'io_timeout': 3600,
           'shards': 10,
         },
+        'args': [
+          '--tast-retries=1',
+        ],
         'mixins': [
           'has_native_resultdb_integration',
         ],
