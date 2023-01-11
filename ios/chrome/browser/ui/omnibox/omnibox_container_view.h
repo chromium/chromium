@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class LayoutGuideCenter;
 @class OmniboxTextFieldIOS;
 
 // The omnibox container view is the view that is shown in the location bar's
@@ -33,6 +34,9 @@
 // and icon colors.
 @property(nonatomic, assign) BOOL incognito;
 
+// The layout guide center to use to refer to the omnibox leading image.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
 // Sets the leading button's image.
 - (void)setLeadingImage:(UIImage*)image;
 
@@ -41,9 +45,6 @@
 
 // Sets the scale of the leading image view.
 - (void)setLeadingImageScale:(CGFloat)scaleValue;
-
-// Asks the container view to attch any layout guides to its views.
-- (void)attachLayoutGuides;
 
 @end
 

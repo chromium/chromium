@@ -117,6 +117,7 @@ const CGFloat kClearButtonSize = 28.0f;
                                             textFieldTint:textFieldTintColor
                                                  iconTint:iconTintColor];
   self.view.incognito = self.incognito;
+  self.view.layoutGuideCenter = self.layoutGuideCenter;
 
   self.view.shouldGroupAccessibilityChildren = YES;
 
@@ -161,8 +162,6 @@ const CGFloat kClearButtonSize = 28.0f;
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-
-  [self.view attachLayoutGuides];
 
   [NSNotificationCenter.defaultCenter
       addObserver:self

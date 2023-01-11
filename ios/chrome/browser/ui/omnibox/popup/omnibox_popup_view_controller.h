@@ -19,6 +19,7 @@ class LargeIconCache;
 namespace favicon {
 class LargeIconService;
 }
+@class LayoutGuideCenter;
 @protocol ImageRetriever;
 @protocol PopupMatchPreviewDelegate;
 
@@ -52,6 +53,9 @@ class LargeIconService;
 /// When set, this view controller will present `debugInfoViewController` when a
 /// special debug gesture is executed.
 @property(nonatomic, strong) UIViewController* debugInfoViewController;
+
+/// The layout guide center to use to refer to the omnibox leading image.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* currentResult;

@@ -798,6 +798,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
           (NSUInteger)indexPath.row <
           self.currentResult[indexPath.section].suggestions.count - 1;
       cell.delegate = self;
+      cell.layoutGuideCenter = self.layoutGuideCenter;
       return cell;
     }
     case SuggestionGroupDisplayStyleCarousel: {

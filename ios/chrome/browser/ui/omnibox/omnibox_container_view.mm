@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
@@ -57,7 +58,7 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 @synthesize leadingTextfieldConstraint = _leadingTextfieldConstraint;
 @synthesize incognito = _incognito;
 
-#pragma mark - Public methods
+#pragma mark - Public
 
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
@@ -101,18 +102,6 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
   return self;
 }
 
-- (void)attachLayoutGuides {
-  [NamedGuide guideWithName:kOmniboxTextFieldGuide view:self].constrainedView =
-      self.textField;
-
-  // The leading image view can be not present, in which case the guide
-  // shouldn't be attached.
-  if (self.leadingImageView.superview) {
-    [NamedGuide guideWithName:kOmniboxLeadingImageGuide view:self]
-        .constrainedView = self.leadingImageView;
-  }
-}
-
 - (void)setLeadingImage:(UIImage*)image {
   [self.leadingImageView setImage:image];
 }
@@ -130,7 +119,16 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
   self.leadingImageView.transform =
       CGAffineTransformMakeScale(scaleValue, scaleValue);
 }
-#pragma mark - private
+
+- (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
+  _layoutGuideCenter = layoutGuideCenter;
+  [_layoutGuideCenter referenceView:_leadingImageView
+                          underName:kOmniboxLeadingImageGuide];
+  [_layoutGuideCenter referenceView:_textField
+                          underName:kOmniboxTextFieldGuide];
+}
+
+#pragma mark - Private
 
 - (void)setupLeadingImageViewWithTint:(UIColor*)iconTint {
   _leadingImageView = [[UIImageView alloc] init];

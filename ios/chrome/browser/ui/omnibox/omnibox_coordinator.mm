@@ -110,6 +110,8 @@
   self.viewController.defaultLeadingImage =
       GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
   self.viewController.textInputDelegate = self;
+  self.viewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
   self.mediator = [[OmniboxMediator alloc] initWithIncognito:isIncognito];
 
   TemplateURLService* templateURLService =

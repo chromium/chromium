@@ -13,8 +13,9 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -74,6 +75,10 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 /// Stores the extra constrants activated when the cell is not in deletion mode.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* nonDeletingLayoutGuideConstraints;
+
+/// The layout guides tracking external views to base layout off of.
+@property(nonatomic, strong) UILayoutGuide* imageLayoutGuide;
+@property(nonatomic, strong) UILayoutGuide* textLayoutGuide;
 
 @end
 
@@ -233,6 +238,13 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   [self.contentView addSubview:self.textStackView];
   [self.contentView addSubview:self.separator];
 
+  self.imageLayoutGuide =
+      [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxLeadingImageGuide];
+  [self.contentView addLayoutGuide:self.imageLayoutGuide];
+  self.textLayoutGuide =
+      [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxTextFieldGuide];
+  [self.contentView addLayoutGuide:self.textLayoutGuide];
+
   [NSLayoutConstraint activateConstraints:@[
     // Row has a minimum height.
     [self.contentView.heightAnchor
@@ -292,42 +304,16 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 }
 
 - (void)attachToLayoutGuides {
-  NamedGuide* imageLayoutGuide =
-      [NamedGuide guideWithName:kOmniboxLeadingImageGuide view:self];
-  NamedGuide* textLayoutGuide = [NamedGuide guideWithName:kOmniboxTextFieldGuide
-                                                     view:self];
+  // Layout guides should both exist.
+  DCHECK(self.imageLayoutGuide);
+  DCHECK(self.textLayoutGuide);
 
-  // Layout guides should both be setup
-  DCHECK(imageLayoutGuide);
-  DCHECK(textLayoutGuide);
-
-  // The text stack view is attached to both ends of the layout gude. This is
-  // because it needs to switch directions if the device is in LTR mode and the
-  // user types in RTL. Furthermore, because the layout guide is added to the
-  // main view, its direction will not change if the `semanticContentAttribute`
-  // of this cell or the omnibox changes.
-  // However, the text should still extend all the way to cell's trailing edge.
-  // To do this, constrain the text to the layout guide using a low priority
-  // constraint, so it will be there if possible, but add medium priority
-  // constraint to the cell's trailing edge. This will pull the text past the
-  // layout guide if necessary.
-
-  NSLayoutConstraint* stackViewToLayoutGuideLeading =
-      [self.textStackView.leadingAnchor
-          constraintEqualToAnchor:textLayoutGuide.leadingAnchor];
-  NSLayoutConstraint* stackViewToLayoutGuideTrailing =
-      [self.textStackView.trailingAnchor
-          constraintEqualToAnchor:textLayoutGuide.trailingAnchor];
-  NSLayoutConstraint* stackViewToCellTrailing =
-      [self.textStackView.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor];
-
-  UILayoutPriority highest = UILayoutPriorityRequired - 1;
-  UILayoutPriority higher = UILayoutPriorityRequired - 2;
-
-  stackViewToLayoutGuideLeading.priority = higher;
-  stackViewToLayoutGuideTrailing.priority = higher;
-  stackViewToCellTrailing.priority = highest;
+  // The text stack view should extend to the end of the omnibox, except if
+  // there is a trailing button. Make this constraint non-required so that it is
+  // ignored in that conflicting case.
+  NSLayoutConstraint* constraint = [self.textStackView.trailingAnchor
+      constraintEqualToAnchor:self.textLayoutGuide.trailingAnchor];
+  constraint.priority = UILayoutPriorityDefaultHigh;
 
   // These constraints need to be removed when freezing the position of these
   // views. See -freezeLayoutGuidePositions for the reason why.
@@ -335,12 +321,12 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
       deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
   self.nonDeletingLayoutGuideConstraints = @[
     [self.leadingIconView.centerXAnchor
-        constraintEqualToAnchor:imageLayoutGuide.centerXAnchor],
+        constraintEqualToAnchor:self.imageLayoutGuide.centerXAnchor],
     [self.leadingIconView.widthAnchor
-        constraintEqualToAnchor:imageLayoutGuide.widthAnchor],
-    stackViewToLayoutGuideLeading,
-    stackViewToLayoutGuideTrailing,
-    stackViewToCellTrailing,
+        constraintEqualToAnchor:self.imageLayoutGuide.widthAnchor],
+    [self.textStackView.leadingAnchor
+        constraintEqualToAnchor:self.textLayoutGuide.leadingAnchor],
+    constraint,
   ];
 
   [NSLayoutConstraint
@@ -357,24 +343,19 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
   [NSLayoutConstraint
       deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
 
-  NamedGuide* imageLayoutGuide =
-      [NamedGuide guideWithName:kOmniboxLeadingImageGuide view:self];
-  NamedGuide* textLayoutGuide = [NamedGuide guideWithName:kOmniboxTextFieldGuide
-                                                     view:self];
-
-  // Layout guides should both be setup
-  DCHECK(imageLayoutGuide.isConstrained);
-  DCHECK(textLayoutGuide.isConstrained);
+  // Layout guides should both be tracking their external view.
+  DCHECK(!CGRectEqualToRect(self.imageLayoutGuide.layoutFrame, CGRectZero));
+  DCHECK(!CGRectEqualToRect(self.textLayoutGuide.layoutFrame, CGRectZero));
 
   self.deletingLayoutGuideConstraints = @[
     [self.leadingIconView.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:
-                           [self leadingSpaceForLayoutGuide:imageLayoutGuide]],
+                       constant:[self leadingSpaceForLayoutGuide:
+                                          self.imageLayoutGuide]],
     [self.textStackView.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:
-                           [self leadingSpaceForLayoutGuide:textLayoutGuide]],
+                       constant:[self leadingSpaceForLayoutGuide:
+                                          self.textLayoutGuide]],
   ];
 
   [NSLayoutConstraint activateConstraints:self.deletingLayoutGuideConstraints];

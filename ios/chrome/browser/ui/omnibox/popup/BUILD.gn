@@ -81,6 +81,7 @@ source_set("popup") {
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+    "//ios/chrome/browser/ui/main:layout_guide_util",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp:util",

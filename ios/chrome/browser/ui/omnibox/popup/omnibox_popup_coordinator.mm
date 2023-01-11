@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
@@ -134,6 +135,8 @@
   self.popupViewController.largeIconService = largeIconService;
   self.popupViewController.largeIconCache = cache;
   self.popupViewController.carouselMenuProvider = self.mediator;
+  self.popupViewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
 
   self.mediator.consumer = self.popupViewController;
   self.popupViewController.matchPreviewDelegate =

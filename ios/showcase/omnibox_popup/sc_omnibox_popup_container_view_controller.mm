@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/util/named_guide_util.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -68,13 +68,12 @@ CGFloat kFakeTextBoxWidth = 240;
     [fakeTextView.topAnchor constraintEqualToAnchor:fakeImageView.topAnchor],
   ]];
 
-  AddNamedGuidesToView(@[ kOmniboxLeadingImageGuide, kOmniboxTextFieldGuide ],
-                       self.view);
-
-  [NamedGuide guideWithName:kOmniboxLeadingImageGuide view:self.view]
-      .constrainedView = fakeImageView;
-  [NamedGuide guideWithName:kOmniboxTextFieldGuide view:self.view]
-      .constrainedView = fakeTextView;
+  LayoutGuideCenter* layoutGuideCenter =
+      self.popupViewController.layoutGuideCenter;
+  [layoutGuideCenter referenceView:fakeImageView
+                         underName:kOmniboxLeadingImageGuide];
+  [layoutGuideCenter referenceView:fakeTextView
+                         underName:kOmniboxTextFieldGuide];
 
   // Popup uses same colors as the toolbar, so the ToolbarConfiguration is
   // used to get the style.

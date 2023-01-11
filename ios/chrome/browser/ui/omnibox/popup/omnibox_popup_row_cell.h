@@ -10,6 +10,7 @@
 @protocol AutocompleteSuggestion;
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
+@class LayoutGuideCenter;
 @class OmniboxIconView;
 @class OmniboxPopupRowCell;
 
@@ -52,6 +53,9 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
 /// Image view for the leading image.
 @property(nonatomic, strong, readonly) OmniboxIconView* leadingIconView;
+
+/// The layout guide center to use to refer to the omnibox leading image.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 /// Layout this cell with the given data before displaying.
 - (void)setupWithAutocompleteSuggestion:(id<AutocompleteSuggestion>)suggestion

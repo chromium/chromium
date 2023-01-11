@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 
+@class LayoutGuideCenter;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
@@ -68,6 +69,9 @@ class OmniboxTextChangeDelegate;
 @property(nonatomic, weak) id<OmniboxViewControllerPasteDelegate> pasteDelegate;
 @property(nonatomic, weak) id<OmniboxReturnDelegate> returnKeyDelegate;
 @property(nonatomic, weak) id<OmniboxKeyboardDelegate> popupKeyboardDelegate;
+
+// The layout guide center to use to refer to the omnibox leading image.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Designated initializer.
 - (instancetype)initWithIncognito:(BOOL)isIncognito;
