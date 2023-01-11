@@ -2568,21 +2568,6 @@
             ]
         }
     ],
-    "ChromeOSLibAssistantDLC": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LibAssistantDlc"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSLibAssistantV2": [
         {
             "platforms": [
