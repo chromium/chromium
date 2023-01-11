@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -56,8 +57,11 @@ public class PartialCustomTabTestRule implements TestRule {
     // Pixel 3 XL metrics
     static final int DEVICE_HEIGHT = 2960;
     static final int DEVICE_WIDTH = 1440;
+    static final int DEVICE_HEIGHT_LANDSCAPE = DEVICE_WIDTH;
+    static final int DEVICE_WIDTH_LANDSCAPE = DEVICE_HEIGHT;
     static final int NAVBAR_HEIGHT = 160;
     static final int STATUS_BAR_HEIGHT = 68;
+    static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
 
     @Mock
     Activity mActivity;
@@ -203,6 +207,11 @@ public class PartialCustomTabTestRule implements TestRule {
         mRealMetrics.heightPixels = DEVICE_WIDTH;
         when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
         when(mDisplay.getRotation()).thenReturn(direction);
+    }
+
+    public void verifyWindowFlagsSet() {
+        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     }
 
     @Override

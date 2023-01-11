@@ -21,6 +21,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_WIDTH;
+import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.FULL_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.NAVBAR_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.STATUS_BAR_HEIGHT;
 
@@ -71,7 +72,6 @@ public class PartialCustomTabHeightStrategyTest {
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private static final int INITIAL_HEIGHT = DEVICE_HEIGHT / 2 - NAVBAR_HEIGHT;
-    private static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
     private static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
 
     private static final int FIND_TOOLBAR_COLOR = 3755;
@@ -106,7 +106,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void create_heightIsCappedToHalfOfDeviceHeight() {
         createPcctAtHeight(500);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -115,7 +115,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void create_largeInitialHeight() {
         createPcctAtHeight(5000);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsFullHeight(mPCCTTestRule.mAttributeResults.get(0));
@@ -124,7 +124,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void create_heightIsCappedToDeviceHeight() {
         createPcctAtHeight(DEVICE_HEIGHT + 100);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsFullHeight(mPCCTTestRule.mAttributeResults.get(0));
@@ -134,7 +134,7 @@ public class PartialCustomTabHeightStrategyTest {
         when(mPCCTTestRule.mContentFrame.getHeight())
                 .thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT - STATUS_BAR_HEIGHT);
         createPcctAtHeight(DEVICE_HEIGHT + 100);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
     }
 
@@ -178,7 +178,7 @@ public class PartialCustomTabHeightStrategyTest {
     public void create_landscapeOrientation() {
         mPCCTTestRule.configLandscapeMode();
         createPcctAtHeight(800);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         // Full height when in landscape mode.
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
@@ -297,16 +297,11 @@ public class PartialCustomTabHeightStrategyTest {
                 .getDimensionPixelSize(eq(statusBarId));
     }
 
-    private void verifyWindowFlagsSet() {
-        verify(mPCCTTestRule.mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mPCCTTestRule.mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-    }
-
     @Test
     public void moveFromTop() {
         // Drag to the top
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -326,7 +321,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void moveFromInitialHeight() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
 
@@ -436,7 +431,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void moveDownToDismiss() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -627,7 +622,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void moveUpFixedHeight() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -645,7 +640,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void moveDownFixedHeight() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -659,7 +654,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void moveDownToDismissFixedHeight() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -675,7 +670,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void dragHandlebarInvisibleFixedHeight() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(1, mPCCTTestRule.mAttributeResults.size());
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -686,7 +681,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void invokeResizeCallbackExpansion() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals("mPCCTTestRule.mAttributeResults should have exactly 1 element.", 1,
                 mPCCTTestRule.mAttributeResults.size());
@@ -708,7 +703,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void invokeResizeCallbackMinimization() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals("mPCCTTestRule.mAttributeResults should have exactly 1 element.", 1,
                 mPCCTTestRule.mAttributeResults.size());
@@ -825,7 +820,7 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void dragToTheSameInitialY() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-        verifyWindowFlagsSet();
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals("mPCCTTestRule.mAttributeResults should have exactly 1 element.", 1,
                 mPCCTTestRule.mAttributeResults.size());

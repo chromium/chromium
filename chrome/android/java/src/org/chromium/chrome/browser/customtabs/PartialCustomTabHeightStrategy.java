@@ -30,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowCompat;
@@ -62,7 +61,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener,
-                   PartialCustomTabHandleStrategy.DragEventCallback, FullscreenManager.Observer {
+                   PartialCustomTabHandleStrategy.DragEventCallback {
     @VisibleForTesting
     static final long SPINNER_TIMEOUT_MS = 500;
     /**
@@ -98,21 +97,9 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     private int mShadowOffset;
     private boolean mDrawOutlineShadow;
 
-    // ContentFrame + CoordinatorLayout - CompositorViewHolder
-    //              + NavigationBar
-    //              + Spinner
-    // Not just CompositorViewHolder but also CoordinatorLayout is resized because many UI
-    // components such as BottomSheet, InfoBar, Snackbar are child views of CoordinatorLayout,
-    // which makes them appear correctly at the bottom.
-    private ViewGroup mCoordinatorLayout;
-
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
 
-    // Bottom navigation bar height. Set to zero when the bar is positioned on the right side
-    // in landcape mode.
-    private @Px int mNavbarHeight;
     private int mOrientation;
-    private @Px int mStatusbarHeight;
 
     // Note: Do not use anywhere except in |onConfigurationChanged| as it might not be up-to-date.
     private boolean mIsInMultiWindowMode;
@@ -123,14 +110,9 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     private View mToolbarView;
     private View mToolbarCoordinator;
     private int mToolbarColor;
-    private Runnable mPositionUpdater;
     private Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
     private boolean mRestoreAfterFindPage;
-
-    // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
-    @Nullable
-    private Runnable mFinishRunnable;
 
     // Y offset when a dragging gesture/animation starts.
     private int mMoveStartY;
@@ -151,10 +133,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         int AUTO_MINIMIZATION = 3;
         int COUNT = 4;
     }
-
-    // The current height/width used to trigger onResizedCallback when it is resized.
-    private int mHeight;
-    private int mWidth;
 
     // Used to initialize the coordinator view (R.id.coordinator) to full-height at the beginning.
     // This is a workaround to an issue of the host app briefly flashing when the tab is resized.
@@ -192,7 +170,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
         mPositionUpdater = mVersionCompat::updatePosition;
 
-        fullscreenManager.addObserver(this);
         mIsTablet = isTablet;
         mHeight = MATCH_PARENT;
         mWidth = MATCH_PARENT;
@@ -202,17 +179,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     @PartialCustomTabType
     public int getStrategyType() {
         return PartialCustomTabType.BOTTOM_SHEET;
-    }
-
-    @Override
-    public void onPostInflationStartup() {
-        mCoordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
-        // Elevate the main web contents area as high as the handle bar to have the shadow
-        // effect look right.
-        int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
-        mCoordinatorLayout.setElevation(ev);
-
-        mPositionUpdater.run();
     }
 
     @Override
@@ -442,19 +408,9 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         }
     }
 
-    private void initializeHeight() {
-        Window window = mActivity.getWindow();
-        if (canInteractWithBackground()) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.setDimAmount(0.6f);
-        }
-
-        mNavbarHeight = mVersionCompat.getNavbarHeight();
-        mStatusbarHeight = mVersionCompat.getStatusbarHeight();
+    @Override
+    protected void initializeHeight() {
+        super.initializeHeight();
 
         // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
         // 90% of the height.
@@ -474,7 +430,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
             }
         }
 
-        WindowManager.LayoutParams attrs = window.getAttributes();
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         if (attrs.height == height) return;
 
         // To avoid the bottom navigation bar area flickering when starting dragging, position
@@ -503,20 +459,9 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         mActivity.getWindow().setAttributes(attrs);
     }
 
-    private void setCoordinatorLayoutHeight(int height) {
-        ViewGroup.LayoutParams p = mCoordinatorLayout.getLayoutParams();
-        p.height = height;
-        mCoordinatorLayout.setLayoutParams(p);
-    }
-
     private void updateDragBarVisibility() {
-        View dragBar = mActivity.findViewById(R.id.drag_bar);
-        if (dragBar != null) dragBar.setVisibility(isFullHeight() ? View.GONE : View.VISIBLE);
-
-        View dragHandlebar = mActivity.findViewById(R.id.drag_handlebar);
-        if (dragHandlebar != null) {
-            dragHandlebar.setVisibility(isFixedHeight() ? View.GONE : View.VISIBLE);
-        }
+        updateDragBarVisibility(
+                /*dragHandlebarVisibility*/ isFixedHeight() ? View.GONE : View.VISIBLE);
     }
 
     private void updateShadowOffset() {
@@ -547,7 +492,8 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         return isFullHeight() ? 0 : mCachedHandleHeight;
     }
 
-    private boolean isFullHeight() {
+    @Override
+    protected boolean isFullHeight() {
         return isLandscape() || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
     }
 
@@ -563,10 +509,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         return attrs.x == 0 && attrs.y == 0 && attrs.width == MATCH_PARENT
                 && attrs.height == MATCH_PARENT;
-    }
-
-    private boolean canInteractWithBackground() {
-        return mInteractWithBackground;
     }
 
     private void updateWindowPos(@Px int y, boolean userGesture) {

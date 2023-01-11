@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
+import static org.chromium.chrome.browser.customtabs.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
+
 import androidx.annotation.Px;
 
 import org.junit.Rule;
@@ -31,17 +34,65 @@ public class PartialCustomTabSideSheetStrategyTest {
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(@Px int heightPx) {
-        return new PartialCustomTabSideSheetStrategy(mPCCTTestRule.mActivity, heightPx, false,
-                mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mFullscreenManager, false, true);
+        PartialCustomTabSideSheetStrategy pcct = new PartialCustomTabSideSheetStrategy(
+                mPCCTTestRule.mActivity, heightPx, false, mPCCTTestRule.mOnResizedCallback,
+                mPCCTTestRule.mFullscreenManager, false, true);
+        pcct.setMockViewForTesting();
+        return pcct;
     }
 
     @Test
-    public void create_SideSheetStrategy() {
+    public void create_sideSheetStrategy() {
         mPCCTTestRule.configLandscapeMode();
         PartialCustomTabSideSheetStrategy strategy = createPcctSideSheetStrategy(2000);
 
         assertEquals("Side-Sheet PCCT should be created",
                 PartialCustomTabBaseStrategy.PartialCustomTabType.SIDE_SHEET,
                 strategy.getStrategyType());
+    }
+
+    @Test
+    public void create_largeHeightLandscape() {
+        mPCCTTestRule.configLandscapeMode();
+        createPcctSideSheetStrategy(5000);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertTabIsAtFullLandscapeHeight();
+    }
+
+    @Test
+    public void create_smallHeightLandscape() {
+        mPCCTTestRule.configLandscapeMode();
+        createPcctSideSheetStrategy(100);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertTabIsAtFullLandscapeHeight();
+    }
+
+    @Test
+    public void create_deviceHeightLandscape() {
+        mPCCTTestRule.configLandscapeMode();
+        createPcctSideSheetStrategy(DEVICE_HEIGHT_LANDSCAPE);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertTabIsAtFullLandscapeHeight();
+    }
+
+    @Test
+    public void create_widthHalfWindowLandscape() {
+        // TODO(crbug.com/1406104): This test case will be redone once we support configurable width
+        mPCCTTestRule.configLandscapeMode();
+        createPcctSideSheetStrategy(DEVICE_HEIGHT_LANDSCAPE);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertEquals(
+                "Should only have one attribute result", 1, mPCCTTestRule.mAttributeResults.size());
+        assertEquals(DEVICE_WIDTH_LANDSCAPE / 2, mPCCTTestRule.mAttributeResults.get(0).width);
+    }
+
+    private void assertTabIsAtFullLandscapeHeight() {
+        assertEquals(
+                "Should only have one attribute result", 1, mPCCTTestRule.mAttributeResults.size());
+        assertEquals(DEVICE_HEIGHT_LANDSCAPE, mPCCTTestRule.mAttributeResults.get(0).height);
     }
 }
