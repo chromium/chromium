@@ -7,7 +7,6 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 
-#include "base/functional/callback.h"
 #include "components/autofill/core/common/signatures.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
@@ -18,10 +17,7 @@ class MockFastCheckoutCapabilitiesFetcher
   MockFastCheckoutCapabilitiesFetcher();
   ~MockFastCheckoutCapabilitiesFetcher() override;
 
-  MOCK_METHOD(void,
-              FetchAvailability,
-              (const url::Origin&, Callback),
-              (override));
+  MOCK_METHOD(void, FetchCapabilities, (), (override));
   MOCK_METHOD(bool,
               IsTriggerFormSupported,
               (const url::Origin&, autofill::FormSignature),

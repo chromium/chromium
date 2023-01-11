@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package fast_checkout;
+
+option optimize_for = LITE_RUNTIME;
+option java_multiple_files = true;
+
+message FastCheckoutFunnels {
+  message FastCheckoutFunnel {
+    repeated string domains = 1;
+    repeated uint64 trigger = 2 [packed = true];
+    repeated uint64 fill = 3 [packed = true];
+  }
+
+  repeated FastCheckoutFunnel funnels = 1;
+}

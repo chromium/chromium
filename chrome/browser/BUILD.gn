@@ -3281,6 +3281,7 @@ static_library("browser") {
     deps += [
       ":delta_file_proto",
       ":explore_sites_proto",
+      ":fast_checkout_funnels_proto",
       ":profile_token",
       ":usage_stats_proto",
       "//chrome/android:jni_headers",
@@ -7576,6 +7577,10 @@ if (is_android) {
 
   proto_library("explore_sites_proto") {
     sources = [ "android/explore_sites/catalog.proto" ]
+  }
+
+  proto_library("fast_checkout_funnels_proto") {
+    sources = [ "fast_checkout/fast_checkout_funnels.proto" ]
   }
 
   proto_library("profile_token") {

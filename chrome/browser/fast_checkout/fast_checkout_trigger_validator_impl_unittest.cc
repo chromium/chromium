@@ -38,10 +38,7 @@ class MockAutofillClient : public autofill::TestAutofillClient {
 
 class MockCapabilitiesFetcher : public FastCheckoutCapabilitiesFetcher {
  public:
-  MOCK_METHOD(void,
-              FetchAvailability,
-              (const url::Origin& origin, Callback callback),
-              ());
+  MOCK_METHOD(void, FetchCapabilities, (), ());
   MOCK_METHOD(bool,
               IsTriggerFormSupported,
               (const url::Origin& origin,

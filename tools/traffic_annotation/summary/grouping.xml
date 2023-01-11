@@ -489,6 +489,7 @@ after discussions on the right group.
       <annotation id="autofill_image_fetcher_card_art_image"/>
       <annotation id="autofill_query"/>
       <annotation id="autofill_upload"/>
+      <annotation id="gstatic_fast_checkout_funnels"/>
       <annotation id="load_autofill_gstatic_data"/>
     </sender>
     <sender name="Personalization">
