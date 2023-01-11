@@ -74,6 +74,7 @@ public class ChromeCachedFlags {
             {
                 add(ChromeFeatureList.sAppMenuMobileSiteOption);
                 add(ChromeFeatureList.sBackGestureRefactorAndroid);
+                add(ChromeFeatureList.sBaselineGm3SurfaceColors);
                 add(ChromeFeatureList.sCctAutoTranslate);
                 add(ChromeFeatureList.sCctBrandTransparency);
                 add(ChromeFeatureList.sCctFeatureUsage);

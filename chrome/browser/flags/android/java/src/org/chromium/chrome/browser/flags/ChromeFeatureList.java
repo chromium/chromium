@@ -208,6 +208,7 @@ public abstract class ChromeFeatureList {
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
+    public static final String BASELINE_GM3_SURFACE_COLORS = "BaselineGM3SurfaceColors";
     public static final String BIOMETRIC_TOUCH_TO_FILL = "BiometricTouchToFill";
     public static final String CACHE_DEPRECATED_SYSTEM_LOCATION_SETTING =
             "CacheDeprecatedSystemLocationSetting";
@@ -551,6 +552,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
     public static final CachedFlag sBackGestureRefactorAndroid =
             new CachedFlag(BACK_GESTURE_REFACTOR, false);
+    public static final CachedFlag sBaselineGm3SurfaceColors =
+            new CachedFlag(BASELINE_GM3_SURFACE_COLORS, false);
     public static final CachedFlag sCctAutoTranslate = new CachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBrandTransparency =
             new CachedFlag(CCT_BRAND_TRANSPARENCY, false);

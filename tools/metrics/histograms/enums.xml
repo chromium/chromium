@@ -61574,6 +61574,7 @@ from previous Chrome versions.
   <int value="390360656" label="TrustSafetySentimentSurvey:enabled"/>
   <int value="391632490" label="NtpDriveModule:enabled"/>
   <int value="392107748" label="PwaUpdateDialogForIcon:disabled"/>
+  <int value="392154827" label="BaselineGM3SurfaceColors:enabled"/>
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
   <int value="393569083" label="OmniboxMatchToolbarAndStatusBarColor:enabled"/>
   <int value="393704200" label="account-consistency"/>
@@ -63990,6 +63991,7 @@ from previous Chrome versions.
   <int value="1814854881" label="NearbySharingSelfShareUI:disabled"/>
   <int value="1815186008" label="SearchResumptionModuleAndroid:enabled"/>
   <int value="1816174635" label="RequestUnbufferedDispatch:enabled"/>
+  <int value="1816515324" label="BaselineGM3SurfaceColors:disabled"/>
   <int value="1816723085" label="SchemefulSameSite:enabled"/>
   <int value="1816816375" label="MediaAppHandlesAudio:disabled"/>
   <int value="1816843861" label="ServiceWorkerServicification:enabled"/>

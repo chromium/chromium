@@ -1664,8 +1664,12 @@ extern const char kDiscoverFeedMultiColumnAndroidDescription[];
 
 extern const char kTabStripRedesignAndroidName[];
 extern const char kTabStripRedesignAndroidDescription[];
+
 extern const char kFoldableJankFixAndroidName[];
 extern const char kFoldableJankFixAndroidDescription[];
+
+extern const char kBaselineGM3SurfaceColorsName[];
+extern const char kBaselineGM3SurfaceColorsDescription[];
 
 extern const char kTextBasedAudioDescriptionName[];
 extern const char kTextBasedAudioDescriptionDescription[];

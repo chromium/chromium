@@ -170,6 +170,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAppMenuMobileSiteOption,
     &kAppToWebAttribution,
     &kBackgroundThreadPool,
+    &kBaselineGM3SurfaceColors,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
@@ -468,6 +469,10 @@ BASE_FEATURE(kAppToWebAttribution,
 
 BASE_FEATURE(kBackgroundThreadPool,
              "BackgroundThreadPool",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBaselineGM3SurfaceColors,
+             "BaselineGM3SurfaceColors",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kConditionalTabStripAndroid,

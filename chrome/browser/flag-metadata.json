@@ -1797,6 +1797,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "enable-baseline-gm3-surface-colors",
+    "owners": ["nemco", "skavuluru"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-bluetooth-spp-in-serial-api",
     "owners": [ "mattreynolds", "//content/browser/serial/OWNERS" ],
     "expiry_milestone": 120

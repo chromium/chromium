@@ -22,6 +22,11 @@ found in the LICENSE file.
     <style name="ThemeOverlay.Settings.DisableElevationOverlay" parent="">
         <item name="elevationOverlayEnabled">false</item>
     </style>
+    <!-- Updated Clank Baseline Surface-N Colors -->
+    <style name="SurfaceColorsThemeOverlay" parent="">
+        <item name="elevationOverlayColor">@color/baseline_primary_300</item>
+        <item name="elevationOverlayAccentColor">@color/baseline_neutral_500</item>
+    </style>
     <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
         <item name="elevationOverlayColor">?attr/colorPrimary</item>
         <item name="elevationOverlayAccentColor">@android:color/transparent</item>

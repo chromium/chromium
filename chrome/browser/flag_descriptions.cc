@@ -4008,6 +4008,10 @@ const char kFoldableJankFixAndroidDescription[] =
     "Enables fix for jank seen during fold to unfold transition on foldables "
     "with Android 12+";
 
+const char kBaselineGM3SurfaceColorsName[] = "Baseline GM3 Surface Colors";
+const char kBaselineGM3SurfaceColorsDescription[] =
+    "Updates baseline surface colors to match the GM3 formula.";
+
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";
 const char kTouchDragAndContextMenuDescription[] =

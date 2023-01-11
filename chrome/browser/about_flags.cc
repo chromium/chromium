@@ -6176,6 +6176,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFoldableJankFix,
                                     kFoldableJankFixDelayVariations,
                                     "FoldableJankFix")},
+
+    {"enable-baseline-gm3-surface-colors",
+     flag_descriptions::kBaselineGM3SurfaceColorsName,
+     flag_descriptions::kBaselineGM3SurfaceColorsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBaselineGM3SurfaceColors)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"unsafely-treat-insecure-origin-as-secure",
