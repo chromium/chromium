@@ -2381,11 +2381,20 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
           StartUploadRequest(SingleUsernameDataNotUploaded(), _, _, _, _, _));
     }
 
+    base::HistogramTester histogram_tester;
+
     if (!is_password_update)
       form_manager_->Save();
     else
       form_manager_->Update(saved_match_);
 
+#if !BUILDFLAG(IS_ANDROID)
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0, 1);
+#else
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0);
+#endif
     Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
   }
 }
@@ -2455,8 +2464,17 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   // Simulate showing the prompt and saving the suggested value.
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
 
+  base::HistogramTester histogram_tester;
+
   form_manager_->Save();
 
+#if !BUILDFLAG(IS_ANDROID)
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 1, 1);
+#else
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0);
+#endif
   Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
 }
 
@@ -2550,7 +2568,17 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
                 UploadedSingleUsernameDataIs(expected_single_username_data)),
           _, _, _, _, _));
 
+  base::HistogramTester histogram_tester;
+
   form_manager_->Save();
+
+#if !BUILDFLAG(IS_ANDROID)
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0, 1);
+#else
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0);
+#endif
 }
 
 // Tests that username is taken during username first flow, but no votes are

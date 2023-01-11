@@ -77726,6 +77726,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Password export confirmed by the user"/>
 </enum>
 
+<enum name="PasswordFormHadUsernameField">
+  <int value="0" label="No username field"/>
+  <int value="1" label="Username match"/>
+</enum>
+
 <enum name="PasswordFormQueryVolume">
   <int value="0" label="New password query"/>
   <int value="1" label="Current query"/>

@@ -41,7 +41,8 @@ struct SingleUsernameVoteData {
       autofill::FieldRendererId renderer_id,
       const std::u16string& username_value,
       const FormPredictions& form_predictions,
-      const std::vector<const PasswordForm*>& stored_credentials);
+      const std::vector<const PasswordForm*>& stored_credentials,
+      bool password_form_had_username_field);
   SingleUsernameVoteData(const SingleUsernameVoteData&);
   SingleUsernameVoteData& operator=(const SingleUsernameVoteData&);
   SingleUsernameVoteData(SingleUsernameVoteData&& other);
@@ -64,6 +65,10 @@ struct SingleUsernameVoteData {
   // Android, because it's not possible to edit credentials in prompts on
   // Android.
   autofill::AutofillUploadContents::SingleUsernamePromptEdit prompt_edit;
+
+  // True if the password form has username field whose value matches username
+  // value in the single username form.
+  bool password_form_had_username_field;
 };
 
 // This class manages vote uploads for password forms.
@@ -205,9 +210,11 @@ class VotesUploader {
       autofill::FieldRendererId renderer_id,
       const std::u16string& username_candidate_value,
       const FormPredictions& form_predictions,
-      const std::vector<const PasswordForm*>& stored_credentials) {
+      const std::vector<const PasswordForm*>& stored_credentials,
+      bool password_form_had_username_field) {
     single_username_vote_data_.emplace(renderer_id, username_candidate_value,
-                                       form_predictions, stored_credentials);
+                                       form_predictions, stored_credentials,
+                                       password_form_had_username_field);
   }
 
   void set_suggested_username(const std::u16string& suggested_username) {

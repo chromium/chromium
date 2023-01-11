@@ -3144,6 +3144,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.SingleUsername.PasswordFormHadUsernameField"
+    enum="PasswordFormHadUsernameField" expires_after="2023-11-28">
+  <owner>kolos@chromium.org</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <summary>
+    Single username vote is sent after user is signed in (i.e. entered password
+    in password form). This means that there are actually 2 forms in username
+    first flow, that is single username and password form.
+
+    Form is considered for single username vote in 2 cases:
+
+    (1) There is a password field and no username fields in the password form.
+
+    (2) There is a password field and username value from password form matches
+    username value in the single username form.
+
+    This metric tracks which of the two cases the vote is coming from. Recorded
+    once per vote submission.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.StoreDecryptionResult"
     enum="PasswordDecryptionResult" expires_after="2023-03-19">
   <owner>cfroussios@chromium.org</owner>

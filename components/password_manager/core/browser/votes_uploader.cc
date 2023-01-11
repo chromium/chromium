@@ -230,8 +230,11 @@ SingleUsernameVoteData::SingleUsernameVoteData(
     FieldRendererId renderer_id,
     const std::u16string& username_value,
     const FormPredictions& form_predictions,
-    const std::vector<const PasswordForm*>& stored_credentials)
-    : renderer_id(renderer_id), form_predictions(form_predictions) {
+    const std::vector<const PasswordForm*>& stored_credentials,
+    bool password_form_had_username_field)
+    : renderer_id(renderer_id),
+      form_predictions(form_predictions),
+      password_form_had_username_field(password_form_had_username_field) {
   base::TrimWhitespace(username_value, base::TrimPositions::TRIM_ALL,
                        &username_candidate_value);
   value_type = GetValueType(username_candidate_value, stored_credentials);
@@ -594,7 +597,12 @@ void VotesUploader::MaybeSendSingleUsernameVote() {
       logger.LogFormStructure(Logger::STRING_USERNAME_FIRST_FLOW_VOTE,
                               *form_to_upload);
     }
-    StartUploadRequest(std::move(form_to_upload), available_field_types);
+
+    if (StartUploadRequest(std::move(form_to_upload), available_field_types)) {
+      base::UmaHistogramBoolean(
+          "PasswordManager.SingleUsername.PasswordFormHadUsernameField",
+          single_username_vote_data_->password_form_had_username_field);
+    }
   }
 }
 

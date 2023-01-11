@@ -506,10 +506,10 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   form_predictions.fields.back().signature = kSingleUsernameFieldSignature;
 
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(kSingleUsernameRendererId,
-                                               single_username_candidate_value,
-                                               form_predictions,
-                                               /*stored_credentials=*/{});
+  votes_uploader.set_single_username_vote_data(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      form_predictions,
+      /*stored_credentials=*/{}, /*password_form_had_username_field=*/false);
   votes_uploader.set_suggested_username(single_username_candidate_value);
 #if !BUILDFLAG(IS_ANDROID)
   votes_uploader.CalculateUsernamePromptEditState(
@@ -552,7 +552,7 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
       kSingleUsernameRendererId,
       /*username_candidate_value=*/u"some search query",
       MakeSimpleSingleUsernamePredictions(),
-      /*stored_credentials=*/{});
+      /*stored_credentials=*/{}, /*password_form_had_username_field=*/false);
 #if !BUILDFLAG(IS_ANDROID)
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/u"saved_value");
@@ -609,7 +609,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId, single_username_candidate_value,
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{});
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false);
   votes_uploader.set_suggested_username(single_username_candidate_value);
 #if !BUILDFLAG(IS_ANDROID)
   votes_uploader.CalculateUsernamePromptEditState(
@@ -672,7 +673,8 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId, single_username_candidate_value,
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{});
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false);
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
 #if !BUILDFLAG(IS_ANDROID)
@@ -735,7 +737,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId, single_username_candidate_value,
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{});
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false);
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
 #if !BUILDFLAG(IS_ANDROID)
@@ -797,7 +800,8 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId, single_username_candidate_value,
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{});
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false);
   votes_uploader.set_suggested_username(single_username_candidate_value);
 #if !BUILDFLAG(IS_ANDROID)
   votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
@@ -858,7 +862,8 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId, single_username_candidate_value,
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{});
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false);
   std::u16string other_value = u"other_value";
   votes_uploader.set_suggested_username(other_value);
 #if !BUILDFLAG(IS_ANDROID)
@@ -902,7 +907,7 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
   VotesUploader votes_uploader(&client_, false);
   votes_uploader.set_single_username_vote_data(
       FieldRendererId(), std::u16string(), FormPredictions(),
-      /*stored_credentials=*/{});
+      /*stored_credentials=*/{}, /*password_form_had_username_field=*/false);
   votes_uploader.set_suggested_username(u"");
 #if !BUILDFLAG(IS_ANDROID)
   votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
@@ -934,7 +939,8 @@ TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId, single_username_candidate_value,
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{});
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false);
 #if !BUILDFLAG(IS_ANDROID)
   votes_uploader.CalculateUsernamePromptEditState(
       /*saved_username=*/single_username_candidate_value);
@@ -980,7 +986,8 @@ TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
 
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId, u"username_candidate_value",
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{});
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false);
 
   // Expect no upload on the username form, since the vote has been already
   // uploaded.

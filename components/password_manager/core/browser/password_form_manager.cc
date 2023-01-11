@@ -38,6 +38,7 @@
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
+#include "components/password_manager/core/browser/votes_uploader.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -786,8 +787,10 @@ bool PasswordFormManager::ProvisionallySave(
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_vote_data();
 
+  bool password_form_had_username = false;
   // TODO(crbug.com/959776): Reset possible username after it's used.
-  if (IsPasswordFormAfterSingleUsernameForm(possible_username)) {
+  if (IsPasswordFormAfterSingleUsernameForm(possible_username,
+                                            password_form_had_username)) {
     if (IsPossibleSingleUsernameAvailable(possible_username)) {
       // Suggest the possible username value in a prompt if the server confirmed
       // it is a single username field. Otherwise, |possible_username| is used
@@ -806,13 +809,13 @@ bool PasswordFormManager::ProvisionallySave(
       votes_uploader_.set_single_username_vote_data(
           possible_username->renderer_id, possible_username->value,
           possible_username->form_predictions.value_or(FormPredictions()),
-          form_fetcher_->GetBestMatches());
+          form_fetcher_->GetBestMatches(), password_form_had_username);
     } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
       // If no single username typing preceded single password typing, set
       // empty single username vote data for the fallback classifier.
       votes_uploader_.set_single_username_vote_data(
           FieldRendererId(), std::u16string(), FormPredictions(),
-          form_fetcher_->GetBestMatches());
+          form_fetcher_->GetBestMatches(), password_form_had_username);
     }
   }
   CreatePendingCredentials();
@@ -1173,12 +1176,23 @@ bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
 // 2) There is a password field and username value matches username value in the
 // single username form.
 bool PasswordFormManager::IsPasswordFormAfterSingleUsernameForm(
-    const PossibleUsernameData* possible_username) {
-  return !parsed_submitted_form_->password_value.empty() &&
-         (parsed_submitted_form_->username_value.empty() ||
-          (possible_username && base::EqualsCaseInsensitiveASCII(
-                                    possible_username->value,
-                                    parsed_submitted_form_->username_value)));
+    const PossibleUsernameData* possible_username,
+    bool& password_form_had_username) {
+  if (parsed_submitted_form_->password_value.empty()) {
+    return false;
+  }
+  if (parsed_submitted_form_->username_value.empty()) {
+    // Regular single password form - the username field is absent.
+    return true;
+  }
+
+  // In some username-first flows, the second form contains a username field as
+  // well as a password field.
+  password_form_had_username =
+      possible_username &&
+      base::EqualsCaseInsensitiveASCII(possible_username->value,
+                                       parsed_submitted_form_->username_value);
+  return password_form_had_username;
 }
 
 void PasswordFormManager::UpdatePredictionsForObservedForm(
