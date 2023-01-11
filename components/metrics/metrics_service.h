@@ -529,6 +529,9 @@ class MetricsService {
   // Updates the "last live" browser timestamp and schedules the next update.
   void UpdateLastLiveTimestampTask();
 
+  // Returns whether it is too early to close a log.
+  bool IsTooEarlyToCloseLog();
+
   // Snapshots histogram deltas using the passed |log_histogram_writer| and then
   // finalizes |log| by calling FinalizeLog(). |log|, |current_app_version| and
   // |signing_key| are used to finalize the log (see FinalizeLog()).

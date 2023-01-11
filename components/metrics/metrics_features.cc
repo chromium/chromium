@@ -15,4 +15,8 @@ const base::FeatureParam<bool> kEmitHistogramsForIndependentLogs{
 BASE_FEATURE(kMetricsServiceAsyncCollection,
              "MetricsServiceAsyncCollection",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMetricsServiceAllowEarlyLogClose,
+             "MetricsServiceAllowEarlyLogClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace metrics::features
