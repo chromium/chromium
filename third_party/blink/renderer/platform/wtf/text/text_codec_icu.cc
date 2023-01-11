@@ -116,6 +116,10 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
       continue;
     }
 #endif
+    // Avoid codecs supported by `TextCodecCJK`.
+    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
+      continue;
+    }
 
 // A number of these aliases are handled in Chrome's copy of ICU, but
 // Chromium can be compiled with the system ICU.
@@ -144,11 +148,12 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
     }
 #endif
 
-    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
-      continue;
+    // Avoid registering codecs registered by
+    // `TextCodecCJK::RegisterEncodingNames`.
+    if (!is_text_codec_cjk_enabled ||
+        !TextCodecCJK::IsSupported(standard_name)) {
+      registrar(standard_name, standard_name);
     }
-
-    registrar(standard_name, standard_name);
 
     uint16_t num_aliases = ucnv_countAliases(name, &error);
     DCHECK(U_SUCCESS(error));
@@ -289,6 +294,7 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
       continue;
     }
 #endif
+    // Avoid codecs supported by `TextCodecCJK`.
     if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
       continue;
     }
