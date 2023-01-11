@@ -1248,7 +1248,29 @@ std::string AXNode::GetValueForControl() const {
 }
 
 std::ostream& operator<<(std::ostream& stream, const AXNode& node) {
-  return stream << node.data().ToString(/*verbose*/ false);
+  stream << node.data().ToString(/*verbose*/ false);
+  if (node.GetUnignoredChildCountCrossingTreeBoundary()) {
+    stream << " unignored_child_ids=";
+    bool needs_comma = false;
+    for (auto it = node.UnignoredChildrenBegin();
+         it != node.UnignoredChildrenEnd(); ++it) {
+      if (needs_comma) {
+        stream << ",";
+      } else {
+        needs_comma = true;
+      }
+      stream << it.get()->data().id;
+    }
+  }
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const AXNode* node) {
+  if (!node) {
+    return stream << "null";
+  }
+
+  return stream << *node;
 }
 
 bool AXNode::IsTable() const {

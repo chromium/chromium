@@ -529,13 +529,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
       LONG num_hyperlinks = -1;
       get_nHyperlinks(&num_hyperlinks);
       std::ostringstream error;
-      CHECK(false) << "Hyperlink error:\n index=" << index
-                   << " nHyperLinks#1=" << hypertext_.hyperlinks.size()
-                   << " nHyperLinks#2="
-                   << hypertext_.hyperlink_offset_to_index.size()
-                   << " needs_update=" << hypertext_.needs_update
-                   << " hyperlink_id=" << id
-                   << "\nparent=" << GetData().ToString();
+      ui::AXTreeManager* manager = GetDelegate()->GetTreeManager();
+      LOG(FATAL) << "Hyperlink error:\n index=" << index
+                 << " nHyperLinks=" << hypertext_.hyperlinks.size()
+                 << " hyperlink_id=" << id
+                 << "\nparent=" << GetDelegate()->node()
+                 << "\nframe=" << manager->GetRoot()
+                 << "\nroot=" << manager->GetRootManager()->GetRoot();
     }
     return E_FAIL;
   }

@@ -161,13 +161,45 @@ absl::optional<AXTreeID> AXTreeManager::last_focused_node_tree_id_ = {};
 
 // static
 void AXTreeManager::SetLastFocusedNode(AXNode* node) {
+#if defined(AX_FAIL_FAST_BUILD)
+  static auto* const ax_crash_key_focus = base::debug::AllocateCrashKeyString(
+      "ax_focus", base::debug::CrashKeySize::Size256);
+  static auto* const ax_crash_key_focus_top_frame =
+      base::debug::AllocateCrashKeyString("ax_focus_top_frame",
+                                          base::debug::CrashKeySize::Size256);
+  static auto* const ax_crash_key_focus_frame =
+      base::debug::AllocateCrashKeyString("ax_focus_frame",
+                                          base::debug::CrashKeySize::Size256);
+#endif
   if (node) {
+#if defined(AX_FAIL_FAST_BUILD)
+    std::ostringstream node_info_focus, node_info_top_frame, node_info_frame;
+    node_info_focus << node;
+    if (node->GetManager() && node->GetManager()->GetRootManager()) {
+      node_info_top_frame << node->GetManager()->GetRootManager()->GetRoot();
+      if (!node->GetManager()->IsRoot()) {
+        // There is a parent manager, so provide frame root info as well.
+        node_info_frame << node->GetManager()->GetRoot();
+      }
+    }
+    base::debug::SetCrashKeyString(ax_crash_key_focus, node_info_focus.str());
+    base::debug::SetCrashKeyString(ax_crash_key_focus_top_frame,
+                                   node_info_top_frame.str());
+    base::debug::SetCrashKeyString(ax_crash_key_focus_frame,
+                                   node_info_frame.str());
+#endif
     DCHECK(node->GetManager());
+
     last_focused_node_id_ = node->id();
     last_focused_node_tree_id_ = node->GetManager()->GetTreeID();
     DCHECK(last_focused_node_tree_id_);
     DCHECK(last_focused_node_tree_id_ != AXTreeIDUnknown());
   } else {
+#if defined(AX_FAIL_FAST_BUILD)
+    base::debug::ClearCrashKeyString(ax_crash_key_focus);
+    base::debug::ClearCrashKeyString(ax_crash_key_focus_top_frame);
+    base::debug::ClearCrashKeyString(ax_crash_key_focus_frame);
+#endif
     last_focused_node_id_.reset();
     last_focused_node_tree_id_.reset();
   }

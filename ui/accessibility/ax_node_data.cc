@@ -1232,7 +1232,11 @@ std::string AXNodeData::ToString(bool verbose) const {
     result += " has_child_tree";
   }
 
-  if (HasBoolAttribute(ax::mojom::BoolAttribute::kBusy)) {
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren)) {
+    result += " clips_children";
+  }
+
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy)) {
     result += " busy";
   }
 
@@ -1783,7 +1787,7 @@ std::string AXNodeData::ToString(bool verbose) const {
         result += " clickable=" + value;
         break;
       case ax::mojom::BoolAttribute::kClipsChildren:
-        result += " clips_children=" + value;
+        // Already provided in default (non-verbose) section above.
         break;
       case ax::mojom::BoolAttribute::kNotUserSelectableStyle:
         result += " not_user_selectable=" + value;

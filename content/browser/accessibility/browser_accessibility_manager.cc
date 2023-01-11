@@ -196,15 +196,15 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
       return;
   }
 
-  // Wait until navigation is complete or stopped, before attempting to move the
-  // accessibility focus.
-  if (user_is_navigating_away_)
-    return;
-
   ui::AXNode* last_focused_node = GetLastFocusedNode();
-  if (focus != GetFromAXNode(last_focused_node))
-    FireFocusEvent(focus->node());
-  SetLastFocusedNode(focus->node());
+  if (focus != GetFromAXNode(last_focused_node)) {
+    // Wait until navigation is complete or stopped, before attempting to move
+    // the accessibility focus.
+    if (!user_is_navigating_away_) {
+      FireFocusEvent(focus->node());
+    }
+    SetLastFocusedNode(focus->node());
+  }
 }
 
 bool BrowserAccessibilityManager::CanFireEvents() const {

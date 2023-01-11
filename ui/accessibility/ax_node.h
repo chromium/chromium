@@ -801,6 +801,7 @@ class AX_EXPORT AXNode final {
 };
 
 AX_EXPORT std::ostream& operator<<(std::ostream& stream, const AXNode& node);
+AX_EXPORT std::ostream& operator<<(std::ostream& stream, const AXNode* node);
 
 template <typename NodeType,
           NodeType* (NodeType::*NextSibling)() const,
