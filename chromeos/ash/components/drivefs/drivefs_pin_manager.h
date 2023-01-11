@@ -181,32 +181,38 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   void OnFilesChanged(const std::vector<mojom::FileChange>& changes) override;
   void OnError(const mojom::DriveError& error) override;
 
+  // Stable ID provided by DriveFS.
+  enum class StableId : int64_t { kNone = 0 };
+
  private:
   // Adds an item to the tracked files.
-  void Add(const std::string& path, int64_t expected_size);
+  void Add(StableId id, const std::string& path, int64_t expected_size);
 
   // Removes an item from the map. Does nothing if the item is not in the map.
   // Updates the total number of bytes transferred so far.
   // Returns whether an item was actually removed.
-  bool Remove(const std::string& path, int64_t bytes_transferred = -1);
+  bool Remove(StableId id,
+              const std::string& path,
+              int64_t bytes_transferred = -1);
 
   // Adds or updates the item keyed at `path` with the new progress bytes.
   // Updates the total number of bytes transferred so far.
   // Returns whether anything has actually been updated.
-  bool Update(const std::string& path,
+  bool Update(StableId id,
+              const std::string& path,
               int64_t bytes_transferred,
               int64_t bytes_to_transfer);
 
   // Adds or updates the item to mark it in progress.
   // Returns whether anything has actually been updated.
-  bool MarkInProgress(const std::string& path);
-
-  // Returns the paths of the tracked files that haven't started syncing yet.
-  std::vector<std::string> GetUnstartedPaths() const;
+  bool MarkInProgress(StableId id, const std::string& path);
 
  private:
   // Struct keeping track of the progress of a file being synced.
   struct Progress {
+    // Path inside the Drive folder.
+    std::string path;
+
     // Number of bytes that have been transferred so far.
     int64_t transferred = 0;
 
@@ -250,7 +256,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // emplaced. Note the file being pinned is just an update in drivefs, not the
   // actually completion of the file being downloaded, that is monitored via
   // `OnSyncingStatusUpdate`.
-  void OnFilePinned(const std::string& path, drive::FileError status);
+  void OnFilePinned(StableId id,
+                    const std::string& path,
+                    drive::FileError status);
 
   // Invoked at a regular interval to look at the map of in progress items and
   // ensure they are all still not available offline (i.e. still syncing). In
@@ -261,7 +269,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // When an item goes to completed, it doesn't emit the final chunk of progress
   // nor it's final size, to ensure progress is adequately retrieved, this
   // method is used to get the total size to keep track of.
-  void OnMetadataRetrieved(const std::string& path,
+  void OnMetadataRetrieved(StableId id,
+                           const std::string& path,
                            drive::FileError error,
                            mojom::FileMetadataPtr metadata);
 
@@ -292,12 +301,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
 
-  // Map that tracks the in-progress files indexed by their path.
-  using Files = std::map<std::string, Progress>;
+  // Map that tracks the in-progress files indexed by their stable ID.
+  using Files = std::map<StableId, Progress>;
   Files files_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<DriveFsPinManager> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& out, DriveFsPinManager::StableId id);
 
 }  // namespace drivefs::pinning
 

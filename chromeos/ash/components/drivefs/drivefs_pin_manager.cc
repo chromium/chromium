@@ -109,8 +109,8 @@ std::ostream& operator<<(std::ostream& out,
 #undef PRINT
   }
 
-  return out << "Type(" << static_cast<std::underlying_type_t<Type>>(q.value)
-             << ")";
+  return out << "FileMetadata::Type("
+             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
 }
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent::State> q) {
@@ -126,8 +126,8 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent::State> q) {
 #undef PRINT
   }
 
-  return out << "State(" << static_cast<std::underlying_type_t<State>>(q.value)
-             << ")";
+  return out << "ItemEvent::State("
+             << static_cast<std::underlying_type_t<State>>(q.value) << ")";
 }
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange::Type> q) {
@@ -148,29 +148,31 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange::Type> q) {
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileMetadata> q) {
   const mojom::FileMetadata& md = q.value;
-  return out << "{type: " << Quote(md.type)
+  return out << "{" << Quote(md.type) << " "
+             << DriveFsPinManager::StableId(md.stable_id)
              << ", size: " << HumanReadableSize(md.size)
              << ", pinned: " << md.pinned << ", can_pin: "
              << (md.can_pin == mojom::FileMetadata::CanPinStatus::kOk)
              << ", available_offline: " << md.available_offline
              << ", shared: " << md.shared << ", starred: " << md.starred
-             << ", stable_id: " << md.stable_id
              << ", item_id = " << Quote(md.item_id) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {
   const mojom::ItemEvent& e = q.value;
-  return out << "{state: " << Quote(e.state) << ", path: " << Quote(e.path)
-             << ", stable_id: " << e.stable_id
-             << ", bytes_transferred: " << e.bytes_transferred
-             << ", bytes_to_transfer: " << e.bytes_to_transfer << "}";
+  return out << "{" << Quote(e.state) << " "
+             << DriveFsPinManager::StableId(e.stable_id) << " " << Quote(e.path)
+             << ", bytes_transferred: "
+             << HumanReadableSize(e.bytes_transferred)
+             << ", bytes_to_transfer: "
+             << HumanReadableSize(e.bytes_to_transfer) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange> q) {
   const mojom::FileChange& change = q.value;
-  return out << "{path: " << Quote(change.path)
-             << ", type: " << Quote(change.type)
-             << ", stable_id: " << change.stable_id << "}";
+  return out << "{" << Quote(change.type) << " "
+             << DriveFsPinManager::StableId(change.stable_id) << " "
+             << Quote(change.path) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::DriveError::Type> q) {
@@ -192,8 +194,9 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::DriveError::Type> q) {
 
 std::ostream& operator<<(std::ostream& out, Quoter<mojom::DriveError> q) {
   const mojom::DriveError& e = q.value;
-  return out << "{type: " << Quote(e.type) << ", path: " << Quote(e.path)
-             << ", stable_id: " << e.stable_id << "}";
+  return out << "{" << Quote(e.type) << " "
+             << DriveFsPinManager::StableId(e.stable_id) << " " << Quote(e.path)
+             << "}";
 }
 
 int64_t GetSize(const mojom::FileMetadata& metadata) {
@@ -206,26 +209,28 @@ int64_t GetSize(const mojom::FileMetadata& metadata) {
 bool CanPinItem(const mojom::FileMetadata& metadata,
                 const base::FilePath& path) {
   using Type = mojom::FileMetadata::Type;
+  const auto id = DriveFsPinManager::StableId(metadata.stable_id);
 
   if (metadata.type == Type::kDirectory) {
-    VLOG(2) << "Skipped " << Quote(path) << ": Directory";
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Directory";
     return false;
   }
 
   // TODO (b/264596214) Drive shortcuts masquerade as empty files. Is there a
   // better way to recognize Drive shortcuts?
   if (metadata.type == Type::kFile && metadata.size == 0) {
-    VLOG(2) << "Skipped " << Quote(path) << ": Empty file or shortcut";
+    VLOG(2) << "Skipped " << id << " " << Quote(path)
+            << ": Empty file or shortcut";
     return false;
   }
 
   if (metadata.pinned) {
-    VLOG(2) << "Skipped " << Quote(path) << ": Already pinned";
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Already pinned";
     return false;
   }
 
   if (metadata.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
-    VLOG(2) << "Skipped " << Quote(path) << ": Cannot be pinned";
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Cannot be pinned";
     return false;
   }
 
@@ -233,6 +238,11 @@ bool CanPinItem(const mojom::FileMetadata& metadata,
 }
 
 }  // namespace
+
+std::ostream& operator<<(std::ostream& out,
+                         const DriveFsPinManager::StableId id) {
+  return out << "#" << static_cast<int64_t>(id);
+}
 
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
   int64_t i = static_cast<int64_t>(size);
@@ -297,36 +307,42 @@ constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
 
 constexpr char kGCacheFolderName[] = "GCache";
 
-void DriveFsPinManager::Add(const std::string& path,
+void DriveFsPinManager::Add(const StableId id,
+                            const std::string& path,
                             const int64_t expected_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Emplace an item with no progress (yet). The progress values will get
   // updated in the `OnSyncingStatusUpdate`.
   const auto [it, ok] =
-      files_.try_emplace(path, Progress{.total = expected_size});
-  DCHECK_EQ(path, it->first);
+      files_.try_emplace(id, Progress{.path = path, .total = expected_size});
+  DCHECK_EQ(id, it->first);
   if (ok) {
-    VLOG(3) << "Added " << Quote(path) << " to the tracked files";
+    VLOG(3) << "Added " << id << " " << Quote(path) << " to the tracked files";
     VLOG_IF(1, expected_size <= 0)
-        << "Tracked file " << Quote(path) << " has an expected size of "
+        << "Tracked " << id << " " << Quote(path) << " has an expected size of "
         << HumanReadableSize(expected_size);
   } else {
-    LOG(ERROR) << "Cannot add " << Quote(path)
+    LOG(ERROR) << "Cannot add " << id << " " << Quote(path)
                << " to the tracked files: Conflicting entry " << it->second;
   }
 }
 
-bool DriveFsPinManager::Remove(const std::string& path,
+bool DriveFsPinManager::Remove(const StableId id,
+                               const std::string& path,
                                int64_t bytes_transferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const Files::node_type node = files_.extract(path);
+  const Files::node_type node = files_.extract(id);
   if (!node) {
     return false;
   }
 
-  DCHECK_EQ(node.key(), path);
+  DCHECK_EQ(node.key(), id);
   const Progress& progress = node.mapped();
+
+  LOG_IF(ERROR, path != progress.path)
+      << "Changed path of " << id << " " << Quote(progress.path) << " to "
+      << Quote(path);
 
   if (bytes_transferred < 0) {
     bytes_transferred = progress.total;
@@ -334,33 +350,42 @@ bool DriveFsPinManager::Remove(const std::string& path,
     LOG_IF(ERROR, progress.total != bytes_transferred)
         << "Expected final progress " << HumanReadableSize(progress.total)
         << " instead of " << HumanReadableSize(bytes_transferred) << " for "
-        << Quote(path);
+        << id << " " << Quote(path);
   }
 
   LOG_IF(ERROR, progress.transferred > bytes_transferred)
       << "Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
-      << HumanReadableSize(bytes_transferred) << " for " << Quote(path);
+      << HumanReadableSize(bytes_transferred) << " for " << id << " "
+      << Quote(path);
   progress_.transferred_bytes += bytes_transferred - progress.transferred;
 
-  VLOG(3) << "Stopped tracking " << Quote(path);
+  VLOG(3) << "Stopped tracking " << id << " " << Quote(path);
   return true;
 }
 
-bool DriveFsPinManager::Update(const std::string& path,
+bool DriveFsPinManager::Update(const StableId id,
+                               const std::string& path,
                                const int64_t bytes_transferred,
                                const int64_t bytes_to_transfer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(bytes_to_transfer, 0) << " for " << Quote(path);
+  DCHECK_GE(bytes_to_transfer, 0) << " for " << id << " " << Quote(path);
 
   if (bytes_transferred < 0) {
     LOG(ERROR) << "Negative bytes_transferred = "
-               << HumanReadableSize(bytes_transferred) << " for "
+               << HumanReadableSize(bytes_transferred) << " for " << id << " "
                << Quote(path);
     return false;
   }
 
-  Progress& progress = files_[path];
+  Progress& progress = files_[id];
+
+  if (path != progress.path) {
+    LOG(ERROR) << "Changed path of " << id << " " << Quote(progress.path)
+               << " to " << Quote(path);
+    progress.path = path;
+  }
+
   if (bytes_transferred == progress.transferred &&
       bytes_to_transfer == progress.total && progress.in_progress) {
     return false;
@@ -371,10 +396,11 @@ bool DriveFsPinManager::Update(const std::string& path,
   LOG_IF(ERROR, bytes_transferred < progress.transferred)
       << "Progress went backwards from "
       << HumanReadableSize(progress.transferred) << " to "
-      << HumanReadableSize(bytes_transferred) << " for " << Quote(path);
+      << HumanReadableSize(bytes_transferred) << " for " << id << " "
+      << Quote(path);
 
   LOG_IF(ERROR, bytes_to_transfer != progress.total)
-      << "Changed expected size of " << Quote(path) << " from "
+      << "Changed expected size of " << id << " " << Quote(path) << " from "
       << HumanReadableSize(progress.total) << " to "
       << HumanReadableSize(bytes_to_transfer);
 
@@ -384,32 +410,28 @@ bool DriveFsPinManager::Update(const std::string& path,
   return true;
 }
 
-bool DriveFsPinManager::MarkInProgress(const std::string& path) {
+bool DriveFsPinManager::MarkInProgress(const StableId id,
+                                       const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Progress& progress = files_[path];
+  Progress& progress = files_[id];
+
+  if (path != progress.path) {
+    LOG(ERROR) << "Changed path of " << id << " " << Quote(progress.path)
+               << " to " << Quote(path);
+    progress.path = path;
+  }
+
   if (progress.in_progress) {
     return false;
   }
 
   LOG_IF(ERROR, progress.transferred != 0)
-      << "Queued file " << Quote(path) << " already has transferred "
+      << "Queued " << id << " " << Quote(path) << " already has transferred "
       << HumanReadableSize(progress.transferred);
 
   progress.in_progress = true;
   return true;
-}
-
-std::vector<std::string> DriveFsPinManager::GetUnstartedPaths() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::string> paths;
-  paths.reserve(files_.size());
-  for (const auto& [path, progress] : files_) {
-    if (!progress.in_progress) {
-      paths.push_back(path);
-    }
-  }
-  return paths;
 }
 
 DriveFsPinManager::DriveFsPinManager(
@@ -505,13 +527,14 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     const base::FilePath& path = item->path;
     DCHECK(item->metadata);
     const mojom::FileMetadata& md = *item->metadata;
-    VLOG(1) << "Considering " << Quote(path) << ", metadata: " << Quote(md);
+    const StableId id = StableId(md.stable_id);
+    VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
 
     if (!CanPinItem(md, item->path)) {
       continue;
     }
 
-    DCHECK_GE(md.size, 0) << " for " << Quote(path);
+    DCHECK_GE(md.size, 0) << " for " << id << " " << Quote(path);
     const int64_t size = GetSize(md);
     progress_.total_bytes += size;
 
@@ -617,37 +640,41 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     const base::FilePath& path = item->path;
     DCHECK(item->metadata);
     const mojom::FileMetadata& md = *item->metadata;
-    VLOG(3) << "Considering " << Quote(path) << ", metadata: " << Quote(md);
+    const StableId id = StableId(md.stable_id);
+    VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
 
     if (!CanPinItem(md, item->path)) {
       continue;
     }
 
-    VLOG(2) << "Pinning " << Quote(path) << "...";
-    Add(path.value(), GetSize(md));
+    VLOG(2) << "Pinning " << id << " " << Quote(path);
+    Add(id, path.value(), GetSize(md));
+
+    // TODO(b/264932437) Use stable ID instead of path.
     drivefs_interface_->SetPinned(
         path, true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
-                       weak_ptr_factory_.GetWeakPtr(), path.value()));
+                       weak_ptr_factory_.GetWeakPtr(), id, path.value()));
   }
 
   MaybeContinueSearch();
 }
 
-void DriveFsPinManager::OnFilePinned(const std::string& path,
+void DriveFsPinManager::OnFilePinned(const StableId id,
+                                     const std::string& path,
                                      const drive::FileError status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Cannot pin " << Quote(path) << ": " << status;
-    if (Remove(path, 0)) {
+    LOG(ERROR) << "Cannot pin " << id << " " << Quote(path) << ": " << status;
+    if (Remove(id, path, 0)) {
       progress_.errors++;
       NotifyProgress();
     }
     return;
   }
 
-  VLOG(1) << "Pinned " << Quote(path);
+  VLOG(1) << "Pinned " << id << " " << Quote(path);
 }
 
 void DriveFsPinManager::OnSyncingStatusUpdate(
@@ -661,12 +688,15 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
 
   for (const mojom::ItemEventPtr& event : status.item_events) {
     DCHECK(event);
+    const StableId id = StableId(event->stable_id);
     using State = mojom::ItemEvent::State;
     switch (event->state) {
       case State::kQueued:
-        if (MarkInProgress(event->path)) {
-          VLOG(2) << "Queued " << Quote(event->path) << ": " << Quote(*event);
-          VLOG_IF(1, !VLOG_IS_ON(2)) << "Queued " << Quote(event->path);
+        if (MarkInProgress(id, event->path)) {
+          VLOG(2) << "Queued " << id << " " << Quote(event->path) << ": "
+                  << Quote(*event);
+          VLOG_IF(1, !VLOG_IS_ON(2))
+              << "Queued " << id << " " << Quote(event->path);
           progress_.useful_events++;
         } else {
           VLOG(3) << "Duplicated event: " << Quote(*event);
@@ -675,9 +705,11 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
         continue;
 
       case State::kCompleted:
-        if (Remove(event->path)) {
-          VLOG(2) << "Synced " << Quote(event->path) << ": " << Quote(*event);
-          VLOG_IF(1, !VLOG_IS_ON(2)) << "Synced " << Quote(event->path);
+        if (Remove(id, event->path)) {
+          VLOG(2) << "Synced " << id << " " << Quote(event->path) << ": "
+                  << Quote(*event);
+          VLOG_IF(1, !VLOG_IS_ON(2))
+              << "Synced " << id << " " << Quote(event->path);
           progress_.useful_events++;
           progress_.pinned_files++;
           NotifyProgress();
@@ -688,9 +720,9 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
         continue;
 
       case State::kFailed:
-        if (Remove(event->path, 0)) {
-          LOG(ERROR) << "Cannot sync " << Quote(event->path) << ": "
-                     << Quote(*event);
+        if (Remove(id, event->path, 0)) {
+          LOG(ERROR) << "Cannot sync " << id << " " << Quote(event->path)
+                     << ": " << Quote(*event);
           progress_.errors++;
           progress_.useful_events++;
           NotifyProgress();
@@ -701,9 +733,11 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
         continue;
 
       case State::kInProgress:
-        if (Update(event->path, event->bytes_transferred,
+        if (Update(id, event->path, event->bytes_transferred,
                    event->bytes_to_transfer)) {
-          VLOG(2) << "Syncing " << Quote(event->path) << ": " << Quote(*event);
+          VLOG(2) << "Syncing " << id << " " << Quote(event->path) << " at "
+                  << (100 * event->bytes_transferred / event->bytes_to_transfer)
+                  << "%: " << Quote(*event);
           progress_.useful_events++;
           NotifyProgress();
         } else {
@@ -723,11 +757,11 @@ void DriveFsPinManager::MaybeContinueSearch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!files_.empty()) {
-    VLOG(1) << "Syncing " << files_.size() << " files...";
+    VLOG(1) << "Syncing " << files_.size() << " files";
     return;
   }
 
-  VLOG(1) << "Getting next batch of items...";
+  VLOG(1) << "Getting next batch of items";
   DCHECK(search_query_);
   search_query_->GetNextPage(
       base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
@@ -754,7 +788,7 @@ void DriveFsPinManager::NotifyProgress() {
     return;
   }
 
-  VLOG(3) << "Notifying observers...";
+  VLOG(3) << "Notifying observers";
   for (DriveFsBulkPinObserver& observer : observers_) {
     observer.OnSetupProgress(progress_);
   }
@@ -770,15 +804,17 @@ void DriveFsPinManager::RemoveObserver(DriveFsBulkPinObserver* observer) {
 }
 
 void DriveFsPinManager::CheckUnstartedFiles() {
-  if (const std::vector<std::string> paths = GetUnstartedPaths();
-      !paths.empty()) {
-    VLOG(1) << "Checking " << paths.size() << " unstarted files...";
-    for (const std::string& path : paths) {
-      VLOG(2) << "Checking unstarted " << Quote(path) << "...";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& [id, progress] : files_) {
+    if (!progress.in_progress) {
+      const std::string& path = progress.path;
+      VLOG(2) << "Checking unstarted " << id << " " << Quote(path);
+      // TODO(b/264932920) Use stable ID instead of path.
       drivefs_interface_->GetMetadata(
           base::FilePath(path),
           base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
-                         weak_ptr_factory_.GetWeakPtr(), path));
+                         weak_ptr_factory_.GetWeakPtr(), id, path));
     }
   }
 
@@ -792,33 +828,47 @@ void DriveFsPinManager::CheckUnstartedFiles() {
 }
 
 void DriveFsPinManager::OnMetadataRetrieved(
+    const StableId id,
     const std::string& path,
     const drive::FileError error,
     const mojom::FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Cannot get metadata of " << Quote(path) << ": " << error;
-    if (Remove(path)) {
-      progress_.errors++;
-      NotifyProgress();
+    LOG(ERROR) << "Cannot get metadata of " << id << " " << Quote(path) << ": "
+               << error;
+    if (!Remove(id, path)) {
+      LOG(ERROR) << "Not tracked: " << id << " " << Quote(path);
+      return;
     }
+
+    VLOG(1) << "Stopped tracking " << id << " " << Quote(path);
+    progress_.errors++;
+    NotifyProgress();
     return;
   }
 
   DCHECK(metadata);
-  VLOG(2) << "Got metadata for " << Quote(path) << ": " << Quote(*metadata);
+  DCHECK_EQ(id, StableId(metadata->stable_id));
+  VLOG(2) << "Got metadata for " << id << " " << Quote(path) << ": "
+          << Quote(*metadata);
 
-  if (!metadata->pinned || metadata->available_offline) {
-    VLOG_IF(1, !metadata->pinned)
-        << "Stop tracking " << Quote(path) << ": Not pinned";
-    VLOG_IF(1, metadata->available_offline)
-        << "Stop tracking " << Quote(path) << ": Already available offline";
-    if (Remove(path, GetSize(*metadata))) {
-      progress_.pinned_files++;
-      NotifyProgress();
-    }
+  if (metadata->pinned && !metadata->available_offline) {
+    return;
   }
+
+  if (!Remove(id, path, GetSize(*metadata))) {
+    LOG(ERROR) << "Not tracked: " << id << " " << Quote(path);
+  }
+
+  VLOG_IF(1, !metadata->pinned)
+      << "Stopped tracking " << id << " " << Quote(path) << ": Not pinned";
+  VLOG_IF(1, metadata->available_offline)
+      << "Stopped tracking " << id << " " << Quote(path)
+      << ": Available offline";
+
+  progress_.pinned_files++;
+  NotifyProgress();
 }
 
 }  // namespace drivefs::pinning
