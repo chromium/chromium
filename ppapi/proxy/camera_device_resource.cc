@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/camera_device_resource.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ppapi/proxy/camera_capabilities_resource.h"
 #include "ppapi/proxy/plugin_resource_tracker.h"
 #include "ppapi/proxy/ppapi_messages.h"

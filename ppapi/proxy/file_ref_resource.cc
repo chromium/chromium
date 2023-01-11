@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "ppapi/c/pp_directory_entry.h"
 #include "ppapi/c/pp_instance.h"

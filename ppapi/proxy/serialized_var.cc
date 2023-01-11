@@ -4,8 +4,8 @@
 
 #include "ppapi/proxy/serialized_var.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "ipc/ipc_message_utils.h"
 #include "ppapi/c/pp_instance.h"

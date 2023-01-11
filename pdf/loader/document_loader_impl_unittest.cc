@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "pdf/loader/url_loader_wrapper.h"

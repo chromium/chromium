@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/dispatch_reply_message.h"

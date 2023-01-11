@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 

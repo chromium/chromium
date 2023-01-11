@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_errors.h"

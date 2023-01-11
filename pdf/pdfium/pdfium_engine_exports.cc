@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"

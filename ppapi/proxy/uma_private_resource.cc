@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/uma_private_resource.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/resource_message_params.h"
 #include "ppapi/shared_impl/var.h"

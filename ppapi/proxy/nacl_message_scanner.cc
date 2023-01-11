@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"

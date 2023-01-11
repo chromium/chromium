@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/proxy/ppapi_param_traits.h"

@@ -41,7 +41,7 @@ HANDLER_HEADER = """// DO NOT MODIFY
 
 #include "printing/backend/ipp_handler_map.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "printing/backend/ipp_handlers.h"
 
 namespace printing {

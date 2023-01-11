@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/network_proxy_resource.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ppapi/proxy/dispatch_reply_message.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/tracked_callback.h"

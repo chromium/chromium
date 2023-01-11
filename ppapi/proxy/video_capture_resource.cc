@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ppapi/c/dev/ppp_video_capture_dev.h"
 #include "ppapi/proxy/dispatch_reply_message.h"
 #include "ppapi/proxy/plugin_dispatcher.h"

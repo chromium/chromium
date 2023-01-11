@@ -4,8 +4,8 @@
 
 #include "ppapi/proxy/media_stream_video_track_resource.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/video_frame_resource.h"
 #include "ppapi/shared_impl/media_stream_buffer.h"

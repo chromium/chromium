@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/graphics_2d_resource.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_point.h"
 #include "ppapi/c/pp_rect.h"

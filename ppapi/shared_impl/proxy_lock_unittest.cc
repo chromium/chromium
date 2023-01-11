@@ -4,9 +4,9 @@
 
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "ppapi/shared_impl/proxy_lock.h"

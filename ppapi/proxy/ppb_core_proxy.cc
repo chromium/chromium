@@ -7,8 +7,8 @@
 #include <stdint.h>
 #include <stdlib.h>  // For malloc
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

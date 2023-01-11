@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "ppapi/c/dev/ppb_var_deprecated.h"

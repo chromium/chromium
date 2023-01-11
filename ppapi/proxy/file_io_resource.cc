@@ -7,7 +7,7 @@
 #include <limits>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/ppapi_messages.h"

@@ -10,10 +10,10 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "pdf/loader/result_codes.h"

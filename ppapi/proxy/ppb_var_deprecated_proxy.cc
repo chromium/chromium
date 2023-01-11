@@ -6,7 +6,7 @@
 
 #include <stdlib.h>  // For malloc
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "ppapi/c/dev/ppb_var_deprecated.h"
 #include "ppapi/c/pp_var.h"

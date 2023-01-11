@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_array_output.h"
 #include "ppapi/c/pp_codecs.h"

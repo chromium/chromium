@@ -14,12 +14,12 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
 #include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"

@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/c/ppb_core.h"

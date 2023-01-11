@@ -11,9 +11,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 

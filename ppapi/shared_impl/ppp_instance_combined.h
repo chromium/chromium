@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ppapi/c/ppp_instance.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 

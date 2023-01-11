@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "pdf/document_layout.h"

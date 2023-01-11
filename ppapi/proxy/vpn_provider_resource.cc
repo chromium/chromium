@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/dispatch_reply_message.h"

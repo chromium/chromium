@@ -4,7 +4,7 @@
 
 #include <cstring>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/c/ppb_var.h"
