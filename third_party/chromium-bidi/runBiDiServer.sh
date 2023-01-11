@@ -1,6 +1,7 @@
 #!/bin/sh
 
 readonly LOG_DIR="logs"
+readonly LOG_FILE="$LOG_DIR/$(date +%s).log"
 
 # Go to the project root folder.
 (cd "$(dirname $0)/" && \
@@ -9,4 +10,4 @@ mkdir -p "$LOG_DIR" && \
 NODE_OPTIONS="--unhandled-rejections=strict" \
 DEBUG=* \
 CHANNEL=chrome-dev \
-npm run server-no-build -- "$@" 2>&1 | tee -a "$LOG_DIR/$(date +%s).log")
+npm run server-no-build -- "$@" 2>&1 | tee -a "$LOG_FILE")
