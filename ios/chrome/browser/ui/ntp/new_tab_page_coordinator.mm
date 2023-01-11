@@ -324,6 +324,9 @@
     self.feedSignInPromoCoordinator = nil;
   }
 
+  [self.linkPreviewCoordinator stop];
+  self.linkPreviewCoordinator = nil;
+
   self.alertCoordinator = nil;
   self.authService = nil;
   self.templateURLService = nil;
