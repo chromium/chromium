@@ -1059,6 +1059,58 @@ chromium-metrics-reviews@google.com.
   <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.SameOrigin.FirstContentfulPaint" units="ms"
+    expires_after="2023-07-10">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but recorded only for
+    same-origin navigations.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.SameOrigin.InteractiveTiming.FirstInputDelay"
+    units="ms" expires_after="2023-07-10">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    PageLoad.InteractiveTiming.FirstInputDelay4, but recorded only for
+    same-origin navigations.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.SameOrigin.LargestContentfulPaint" units="ms"
+    expires_after="2023-07-10">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but recorded only
+    for same-origin navigations.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.SameOrigin.LayoutInstability.CumulativeShiftScore"
+    units="ms" expires_after="2023-07-10">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    PageLoad.LayoutInstability.CumulativeShiftScore, but recorded only for
+    same-origin navigations.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.SameOrigin.LayoutInstability.CumulativeShiftScore.MainFrame"
+    units="ms" expires_after="2023-07-10">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame, but recorded only
+    for same-origin navigations.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat"
     enum="PageLoadTimingUnderStat" expires_after="2022-04-03">
   <owner>tbansal@chromium.org</owner>
