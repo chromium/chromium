@@ -976,7 +976,13 @@ TEST(ProcessMitigationsTest, CheckChildProcessSuccess) {
 // This test validates that setting the
 // MITIGATION_CHILD_PROCESS_CREATION_RESTRICTED mitigation prevents
 // the spawning of child processes.
-TEST(ProcessMitigationsTest, CheckChildProcessFailure) {
+// Test flakiness on Windows. http://crbug.com/1406365
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CheckChildProcessFailure DISABLED_CheckChildProcessFailure
+#else
+#define MAYBE_CheckChildProcessFailure CheckChildProcessFailure
+#endif
+TEST(ProcessMitigationsTest, MAYBE_CheckChildProcessFailure) {
   TestRunner runner;
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
