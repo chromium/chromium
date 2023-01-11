@@ -1,8 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {PageHandlerFactory, PageHandlerRemote} from './emoji_picker.mojom-webui.js';
-import {EmojiVariants, GifSubcategoryData, TenorGifResults, VisualContent} from './types.js';
+import {PageHandlerFactory, PageHandlerRemote, TenorGifResponse} from './emoji_picker.mojom-webui.js';
+import {EmojiVariants, GifSubcategoryData} from './types.js';
 
 /** @interface */
 export interface EmojiPickerApiProxy {
@@ -14,40 +14,14 @@ export interface EmojiPickerApiProxy {
 
   getFeatureList(): Promise<{featureList: number[]}>;
 
-  getCategories(): Promise<{categories: GifSubcategoryData[]}>;
+  getCategories(): Promise<{gifCategories: GifSubcategoryData[]}>;
 
-  getFeaturedGifs(pos?: string): Promise<{featured: TenorGifResults}>;
+  getFeaturedGifs(pos?: string): Promise<{featuredGifs: TenorGifResponse}>;
 
-  searchGifs(query: string, pos?: string): Promise<{gifs: TenorGifResults}>;
+  searchGifs(query: string, pos?: string):
+      Promise<{searchGifs: TenorGifResponse}>;
 
-  convertTenorGifsToEmoji(gifs: TenorGifResults): EmojiVariants[];
-}
-
-// https://developers.google.com/tenor/guides/response-objects-and-errors#category-object
-declare interface CategoryObject {
-  searchterm: string;  // the search term that corresponds to the category
-  path: string;        // the search url to request
-  image: string;       // a url to the category's example GIF
-  name: string;        // category name
-}
-
-// https://developers.google.com/tenor/guides/response-objects-and-errors#media-object
-declare interface MediaObject {
-  url: string;       // a url to the media source
-  dims: number[];    // width and height of the media in pixels
-  duration: number;  // the time in seconds for one loop of the content
-  size: number;      // size of the file in bytes
-}
-
-// https://developers.google.com/tenor/guides/response-objects-and-errors#response-object
-declare interface ResponseObject {
-  id: string;  // tenor result identifier
-  media_formats: {
-    gif: MediaObject,
-    mediumgif: MediaObject,
-  };
-  content_description: string;  // a textual description of the content for user
-                                // accessibility features
+  convertTenorGifsToEmoji(gifs: TenorGifResponse): EmojiVariants[];
 }
 
 export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
@@ -78,52 +52,38 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   }
 
   /** @override */
-  async getCategories(): Promise<{categories: GifSubcategoryData[]}> {
-    const {categories} = await this.handler.getCategories();
+  async getCategories(): Promise<{gifCategories: GifSubcategoryData[]}> {
+    const {gifCategories} = await this.handler.getCategories();
     return {
-      categories: JSON.parse(categories)
-                      .tags.map((tag: CategoryObject) => ({name: tag.name})),
-    };
-  }
-
-  private formatGifResults = (res: string): TenorGifResults => {
-    const gifs = JSON.parse(res);
-    return {
-      next: gifs.next,
-      results: gifs.results.map((response: ResponseObject) => {
-        const {gif, mediumgif} = response.media_formats;
-        const [width, height] = mediumgif.dims;
-        return {
-          url: {full: gif.url, preview: mediumgif.url},
-          previewDims: {width, height},
-          contentDescription: response.content_description,
-        };
-      }),
-    };
-  };
-
-  /** @override */
-  async getFeaturedGifs(pos?: string): Promise<{featured: TenorGifResults}> {
-    const {featured} = await this.handler.getFeaturedGifs(pos || null);
-    return {
-      featured: this.formatGifResults(featured),
+      gifCategories: gifCategories.map((category) => ({name: category})),
     };
   }
 
   /** @override */
-  async searchGifs(query: string, pos?: string):
-      Promise<{gifs: TenorGifResults}> {
-    const {gifs} = await this.handler.searchGifs(query, pos || null);
-    return {
-      gifs: this.formatGifResults(gifs),
-    };
+  getFeaturedGifs(pos?: string): Promise<{featuredGifs: TenorGifResponse}> {
+    return this.handler.getFeaturedGifs(pos || null);
   }
 
-  convertTenorGifsToEmoji(gifs: TenorGifResults): EmojiVariants[] {
-    return gifs.results.map((visualContent: VisualContent) => ({
+  /** @override */
+  searchGifs(query: string, pos?: string):
+      Promise<{searchGifs: TenorGifResponse}> {
+    return this.handler.searchGifs(query, pos || null);
+  }
+
+  convertTenorGifsToEmoji(gifs: TenorGifResponse): EmojiVariants[] {
+    return gifs.results.map(({
+                              id,
+                              url,
+                              previewSize,
+                              contentDescription,
+                            }) => ({
                               base: {
-                                visualContent,
-                                name: visualContent.contentDescription,
+                                visualContent: {
+                                  id,
+                                  url,
+                                  previewSize,
+                                },
+                                name: contentDescription,
                               },
                               alternates: [],
                             }));

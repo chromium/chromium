@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
 export interface CategoryData {
   name: string;
   icon: string;
@@ -35,23 +38,9 @@ export interface EmojiGroup {
 export type EmojiGroupData = EmojiGroup[];
 
 export interface VisualContent {
-  url: {full: string, preview: string};
-  previewDims: {
-    // dimensions of the visual content preview for the height balancing
-    // algorithm
-    width: number,
-    height: number,
-  };
-  contentDescription: string;  // for user accessibility features
-}
-
-// This is to represent the Response format from the Tenor search and featured
-// API which will contain just enough information for us to display GIFs.
-// https://developers.google.com/tenor/guides/endpoints#response-format-search
-// https://developers.google.com/tenor/guides/endpoints#response-format-featured
-export interface TenorGifResults {
-  next: string;
-  results: VisualContent[];
+  id: string;
+  url: {full: Url, preview: Url};
+  previewSize: Size;
 }
 
 export interface StoredItem {

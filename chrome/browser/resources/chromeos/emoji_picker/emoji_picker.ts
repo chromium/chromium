@@ -299,10 +299,10 @@ export class EmojiPicker extends PolymerElement {
       const categoriesRenderPromise =
           Promise.all([prevRenderPromise, categoriesFetchPromise])
               .then((values) => {
-                const {categories} = values[1];
+                const {gifCategories} = values[1];
                 const categoryTabs = {
                   ...CATEGORY_TABS,
-                  gif: [{name: constants.TRENDING}, ...categories],
+                  gif: [{name: constants.TRENDING}, ...gifCategories],
                 };
                 this.allCategoryTabs = gifCategoryTabs(categoryTabs);
               });
@@ -312,11 +312,11 @@ export class EmojiPicker extends PolymerElement {
 
       Promise.all([categoriesRenderPromise, featuredGifFetchPromise])
           .then((values) => {
-            const {featured} = values[1];
+            const {featuredGifs} = values[1];
             const trendingGifs = [{
               group: constants.TRENDING,
               category: CategoryEnum.GIF,
-              emoji: this.apiProxy.convertTenorGifsToEmoji(featured),
+              emoji: this.apiProxy.convertTenorGifsToEmoji(featuredGifs),
             }];
 
             this.gifDataInitialised = true;

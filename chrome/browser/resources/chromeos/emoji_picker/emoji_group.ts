@@ -327,9 +327,9 @@ export class EmojiGroupComponent extends PolymerElement {
 
     const colData = data.filter((item) => {
       if (item.base.visualContent) {
-        const contentHeight = item.base.visualContent.previewDims.height *
+        const contentHeight = item.base.visualContent.previewSize.height *
             DEFAULT_VISUAL_CONTENT_WIDTH /
-            item.base.visualContent.previewDims.width;
+            item.base.visualContent.previewSize.width;
 
         // Filter visual content to be displayed in the given column if it's
         // currently the shortest
@@ -352,7 +352,7 @@ export class EmojiGroupComponent extends PolymerElement {
    * Returns visual content preview url.
    */
   getUrl(item: EmojiVariants): string|undefined {
-    return item.base.visualContent?.url.preview;
+    return item.base.visualContent?.url.preview.url;
   }
 }
 

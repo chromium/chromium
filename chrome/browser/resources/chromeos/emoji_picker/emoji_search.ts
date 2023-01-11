@@ -251,11 +251,11 @@ export class EmojiSearch extends PolymerElement {
 
     const searchResults: EmojiGroupData = [];
     const apiProxy = EmojiPickerApiProxyImpl.getInstance();
-    const {gifs} = await apiProxy.searchGifs(search);
+    const {searchGifs} = await apiProxy.searchGifs(search);
     searchResults.push({
       'category': CategoryEnum.GIF,
       'group': '',
-      'emoji': apiProxy.convertTenorGifsToEmoji(gifs),
+      'emoji': apiProxy.convertTenorGifsToEmoji(searchGifs),
       'searchOnly': false,
     });
     return searchResults;

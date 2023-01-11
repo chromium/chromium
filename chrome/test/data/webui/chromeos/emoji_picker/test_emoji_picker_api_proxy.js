@@ -12,12 +12,12 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
       results: [
         {
           url: {
-            gif:
+            full:
                 'https://media.tenor.com/TSzcha4Ohi0AAAAC/youre-a-star-star.gif',
-            gifpreview:
+            preview:
                 'https://media.tenor.com/TSzcha4Ohi0AAAAd/youre-a-star-star.gif',
           },
-          previewDims: {
+          previewSize: {
             width: 640,
             height: 640,
           },
@@ -30,7 +30,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
   getCategories() {
     return new Promise((resolve) => {
       resolve({
-        categories: [
+        gifCategories: [
           {name: '#EXCITED'},
           {name: '#ANGRY'},
           {name: '#CRY'},
@@ -44,7 +44,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
   getFeaturedGifs(pos) {
     return new Promise((resolve) => {
       resolve({
-        featured: this.gifs,
+        featuredGifs: this.gifs,
       });
     });
   }
@@ -52,7 +52,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
   searchGifs(query, pos) {
     return new Promise((resolve) => {
       resolve({
-        gifs: this.gifs,
+        searchGifs: this.gifs,
       });
     });
   }

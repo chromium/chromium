@@ -9,6 +9,10 @@ assert(is_chromeos_ash)
 
 mojom("mojo_bindings") {
   sources = [ "emoji_picker.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/"
 }

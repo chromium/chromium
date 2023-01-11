@@ -4,6 +4,9 @@
 
 module emoji_picker.mojom;
 
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // Capture any relevant enabled features from the system.
 enum Feature {
   // Extends the emoji picker to include symbols and emoticons alongside
@@ -15,6 +18,28 @@ enum Feature {
   // Extends the emoji picker to include gifs as an insertable option for the
   // user.
   EMOJI_PICKER_GIF_SUPPORT = 2,
+};
+
+// The below structs are used to represent the Response format from the Tenor
+// search and featured API endpoints which contains just enough information for
+// the frontend to display GIFs.
+// https://developers.google.com/tenor/guides/endpoints#response-format-search
+// https://developers.google.com/tenor/guides/endpoints#response-format-featured
+struct TenorGifResponse {
+  string next;
+  array<GifResponse> results;
+};
+
+struct GifUrls {
+  url.mojom.Url full;
+  url.mojom.Url preview;
+};
+
+struct GifResponse {
+  string id;
+  string content_description;
+  GifUrls url;
+  gfx.mojom.Size preview_size;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -43,61 +68,16 @@ interface PageHandler {
   // picker (ie. any feature flags or other related switches).
   GetFeatureList() => (array<Feature> feature_list);
 
-  // Returns a string in JSON format containing a list of GIF categories
-  // fetched from the tenor API (https://tenor.googleapis.com).
-  // JSON response format is shown below.
-  // {
-  //   tags: {
-  //     searchterm: string, // the search term that corresponds to the category
-  //     path: string, // the search url to request
-  //     image: string, // a url to the category's example GIF
-  //     name: string, // category name
-  //   }[]
-  // }
-  GetCategories() => (string categories);
+  // Returns a list of GIF categories from the Tenor API
+  // (https://developers.google.com/tenor/guides/endpoints#categories).
+  GetCategories() => (array<string> gif_categories);
 
-  // Returns a string in JSON format containing a list of the current global
-  // featured GIFs fetched from the tenor API (https://tenor.googleapis.com).
-  // JSON response format is shown below.
-  // {
-  //   next: string,
-  //   results: {
-  //     id: string, // tenor result identifier
-  //     content_description: string, // a textual description of the content
-  //     media_formats: {
-  //       gif: {
-  //         url: string, // a url to the media source
-  //         dims: int[], width and height of the media in pixels
-  //       }
-  //       mediumgif: {
-  //         url: string, // a url to the media source
-  //         dims: int[], width and height of the media in pixels
-  //       }
-  //     },
-  //   }[]
-  // }
-  GetFeaturedGifs(string? pos) => (string featured);
+  // Returns a list of the current global featured GIFs from the Tenor API
+  // (https://developers.google.com/tenor/guides/endpoints#base-url-featured).
+  GetFeaturedGifs(string? pos) => (TenorGifResponse featured_gifs);
 
-  // Returns a string in JSON format containing a list of the most relevant
-  // GIFs for a given search set of search terms or categories, fetched from
-  // the tenor API (https://tenor.googleapis.com).
-  // JSON response format is shown below.
-  // {
-  //   next: string,
-  //   results: {
-  //     id: string, // tenor result identifier
-  //     content_description: string, // a textual description of the content
-  //     media_formats: {
-  //       gif: {
-  //         url: string, // a url to the media source
-  //         dims: int[], width and height of the media in pixels
-  //       }
-  //       mediumgif: {
-  //         url: string, // a url to the media source
-  //         dims: int[], width and height of the media in pixels
-  //       }
-  //     },
-  //   }[]
-  // }
-  SearchGifs(string query, string? pos) => (string gifs);
+  // Returns a list of the most relevant GIFs for a given search set of search
+  // terms or categories from the Tenor API
+  // (https://developers.google.com/tenor/guides/endpoints#base-url-search).
+  SearchGifs(string query, string? pos) => (TenorGifResponse search_gifs);
 };
