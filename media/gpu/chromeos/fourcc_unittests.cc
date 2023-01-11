@@ -204,7 +204,7 @@ TEST(FourccTest, FourccToSinglePlanar) {
   EXPECT_EQ(Fourcc(Fourcc::NM21).ToSinglePlanar(),
             Fourcc(Fourcc::NV21).ToSinglePlanar());
   EXPECT_EQ(Fourcc(Fourcc::MT21).ToSinglePlanar(), absl::nullopt);
-  EXPECT_EQ(Fourcc(Fourcc::Q10C).ToSinglePlanar(), absl::nullopt);
+  EXPECT_EQ(Fourcc(Fourcc::Q08C).ToSinglePlanar(), absl::nullopt);
   EXPECT_EQ(Fourcc(Fourcc::Q10C).ToSinglePlanar(), absl::nullopt);
 }
 }  // namespace media
