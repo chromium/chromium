@@ -149,6 +149,7 @@ generate_grd("build_oobe_grd") {
     "images/2x/verify-account.svg",
     "images/blazey_dark.svg",
     "images/blazey_light.svg",
+    "images/touchpad_scroll_direction.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
   resource_path_rewrites = [
