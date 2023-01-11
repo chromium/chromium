@@ -15,7 +15,7 @@ namespace screentime {
 
 // This class wraps the STWebpageController screentime class, to allow for tests
 // to use a fake controller.
-class WebpageControllerImpl : public WebpageController {
+class NS_AVAILABLE_MAC(11.0) WebpageControllerImpl : public WebpageController {
  public:
   WebpageControllerImpl(const BlockedChangedCallback& callback);
   ~WebpageControllerImpl() override;
