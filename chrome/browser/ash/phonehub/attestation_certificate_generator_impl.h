@@ -26,9 +26,9 @@ class AttestationCertificateGeneratorImpl
   void GenerateCertificate(OnCertificateGeneratedCallback callback) override;
 
  private:
-  std::unique_ptr<device_sync::CryptAuthKeyRegistry> key_registry_;
   std::unique_ptr<attestation::SoftBindAttestationFlow>
       soft_bind_attestation_flow_;
+  std::unique_ptr<device_sync::CryptAuthKeyRegistry> key_registry_;
   Profile* profile_;
 };
 }  // namespace ash::phonehub

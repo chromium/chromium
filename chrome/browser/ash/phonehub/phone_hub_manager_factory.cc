@@ -6,8 +6,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray.h"
+#include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/phonehub/attestation_certificate_generator_impl.h"
 #include "chrome/browser/ash/phonehub/browser_tabs_metadata_fetcher_impl.h"
 #include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 #include "chrome/browser/ash/phonehub/camera_roll_download_manager_impl.h"
@@ -47,12 +49,14 @@ bool IsProhibitedByPolicy(Profile* profile) {
 
 bool IsLoggedInAsPrimaryUser(Profile* profile) {
   // Guest/incognito profiles cannot use Phone Hub.
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return false;
+  }
 
   // Likewise, kiosk users are ineligible.
-  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp())
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     return false;
+  }
 
   return ProfileHelper::IsPrimaryProfile(profile);
 }
@@ -88,17 +92,32 @@ PhoneHubManagerFactory::~PhoneHubManagerFactory() = default;
 
 KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!features::IsPhoneHubEnabled())
+  if (!features::IsPhoneHubEnabled()) {
     return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context);
 
   // Only available to the primary profile.
-  if (!IsLoggedInAsPrimaryUser(profile))
+  if (!IsLoggedInAsPrimaryUser(profile)) {
     return nullptr;
+  }
 
-  if (IsProhibitedByPolicy(profile))
+  if (IsProhibitedByPolicy(profile)) {
     return nullptr;
+  }
+
+  std::unique_ptr<AttestationCertificateGeneratorImpl>
+      attestation_certificate_generator = nullptr;
+
+  if (features::IsEcheSWAEnabled()) {
+    auto soft_bind_attestation_flow =
+        std::make_unique<attestation::SoftBindAttestationFlowImpl>();
+
+    attestation_certificate_generator =
+        std::make_unique<AttestationCertificateGeneratorImpl>(
+            profile, std::move(soft_bind_attestation_flow));
+  }
 
   PhoneHubManagerImpl* phone_hub_manager = new PhoneHubManagerImpl(
       profile->GetPrefs(),
@@ -121,7 +140,8 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
                 ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
                     profile))
           : nullptr,
-      base::BindRepeating(&multidevice_setup::MultiDeviceSetupDialog::Show));
+      base::BindRepeating(&multidevice_setup::MultiDeviceSetupDialog::Show),
+      std::move(attestation_certificate_generator));
 
   // Provide |phone_hub_manager| to the system tray so that it can be used by
   // the UI.
@@ -154,8 +174,9 @@ void PhoneHubManagerFactory::BrowserContextShutdown(
   // to be necessary in tests.
   if (g_context_for_service == context) {
     auto* system_tray = SystemTray::Get();
-    if (system_tray)
+    if (system_tray) {
       system_tray->SetPhoneHubManager(nullptr);
+    }
 
     g_context_for_service = nullptr;
   }

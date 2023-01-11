@@ -9,6 +9,7 @@
 #include "components/user_manager/user.h"
 
 namespace ash::phonehub {
+
 AttestationCertificateGeneratorImpl::AttestationCertificateGeneratorImpl(
     Profile* profile,
     std::unique_ptr<attestation::SoftBindAttestationFlow>

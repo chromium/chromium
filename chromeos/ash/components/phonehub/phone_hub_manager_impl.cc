@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/phonehub/phone_model.h"
 #include "chromeos/ash/components/phonehub/phone_status_processor.h"
 #include "chromeos/ash/components/phonehub/ping_manager_impl.h"
+#include "chromeos/ash/components/phonehub/public/cpp/attestation_certificate_generator.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager_impl.h"
 #include "chromeos/ash/components/phonehub/tether_controller_impl.h"
@@ -61,7 +62,9 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
     std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager,
-    const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
+    const base::RepeatingClosure& show_multidevice_setup_dialog_callback,
+    std::unique_ptr<AttestationCertificateGenerator>
+        attestation_certificate_generator)
     : icon_decoder_(std::make_unique<IconDecoderImpl>()),
       connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
@@ -83,12 +86,12 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       message_sender_(
           std::make_unique<MessageSenderImpl>(connection_manager_.get())),
       phone_model_(std::make_unique<MutablePhoneModel>()),
-      cros_state_sender_(
-          std::make_unique<CrosStateSender>(message_sender_.get(),
-                                            connection_manager_.get(),
-                                            multidevice_setup_client,
-                                            phone_model_.get(),
-                                            nullptr)),
+      cros_state_sender_(std::make_unique<CrosStateSender>(
+          message_sender_.get(),
+          connection_manager_.get(),
+          multidevice_setup_client,
+          phone_model_.get(),
+          std::move(attestation_certificate_generator))),
       do_not_disturb_controller_(std::make_unique<DoNotDisturbControllerImpl>(
           message_sender_.get(),
           user_action_recorder_.get())),
