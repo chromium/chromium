@@ -116,6 +116,7 @@
 #include "ash/style/ash_color_mixer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/audio/audio_effects_controller.h"
 #include "ash/system/audio/display_speaker_controller.h"
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 #include "ash/system/bluetooth/bluetooth_notification_controller.h"
@@ -1033,6 +1034,8 @@ Shell::~Shell() {
 
   camera_effects_controller_.reset();
 
+  audio_effects_controller_.reset();
+
   shell_delegate_.reset();
 
   multi_capture_service_client_.reset();
@@ -1293,6 +1296,10 @@ void Shell::Init(
 
   if (CameraEffectsController::IsCameraEffectsSupported()) {
     camera_effects_controller_ = std::make_unique<CameraEffectsController>();
+  }
+
+  if (features::IsVcControlsUiEnabled()) {
+    audio_effects_controller_ = std::make_unique<AudioEffectsController>();
   }
 
   shelf_config_ = std::make_unique<ShelfConfig>();
