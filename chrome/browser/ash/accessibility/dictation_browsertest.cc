@@ -56,6 +56,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -895,22 +896,21 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartDeletePhraseNoChange) {
 
 // Is a DictationTest for the same reason as the above test.
 IN_PROC_BROWSER_TEST_P(DictationTest, Help) {
+  // Setup a TestNavigationObserver, which will allow us to know when the help
+  // center URL is loaded.
+  auto observer = std::make_unique<content::TestNavigationObserver>(
+      GURL("https://support.google.com/chromebook?p=text_dictation_m100"));
+  observer->WatchExistingWebContents();
+  observer->StartWatchingNewWebContents();
+
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   SendFinalResultAndWait("help");
 
-  // Wait for the help URL to load.
-  SuccessWaiter(
-      base::BindLambdaForTesting([&]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        return web_contents->GetVisibleURL() ==
-               "https://support.google.com/chromebook?p=text_dictation_m100";
-      }),
-      "Still waiting for help URL to load")
-      .Wait();
-
+  // Speech recognition should automatically turn off.
   WaitForRecognitionStopped();
+  // Wait for the help center URL to load.
+  observer->Wait();
 }
 
 // Confirms that punctuation can be sent and entered into the editable. We
