@@ -120,9 +120,22 @@ void ReadAnythingModel::SetSelectedLetterSpacingByIndex(size_t new_index) {
   NotifyThemeChanged();
 }
 
-void ReadAnythingModel::OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot) {
+void ReadAnythingModel::AccessibilityEventReceived(
+    const content::AXEventNotificationDetails& details) {
   for (Observer& obs : observers_) {
-    obs.OnAXTreeSnapshotted(snapshot);
+    obs.AccessibilityEventReceived(details);
+  }
+}
+
+void ReadAnythingModel::OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
+  for (Observer& obs : observers_) {
+    obs.OnActiveAXTreeIDChanged(tree_id);
+  }
+}
+
+void ReadAnythingModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
+  for (Observer& obs : observers_) {
+    obs.OnAXTreeDestroyed(tree_id);
   }
 }
 

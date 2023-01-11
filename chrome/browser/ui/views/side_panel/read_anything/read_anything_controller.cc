@@ -6,29 +6,88 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "ui/accessibility/ax_tree_update.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
+#include "ui/accessibility/ax_action_data.h"
+
+class ReadAnythingWebContentsObserver
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<ReadAnythingWebContentsObserver> {
+ public:
+  ReadAnythingWebContentsObserver(const ReadAnythingWebContentsObserver&) =
+      delete;
+  ReadAnythingWebContentsObserver& operator=(
+      const ReadAnythingWebContentsObserver&) = delete;
+  ~ReadAnythingWebContentsObserver() override = default;
+
+  // content::WebContentsObserver:
+  void AccessibilityEventReceived(
+      const content::AXEventNotificationDetails& details) override {
+    if (controller_) {
+      controller_->AccessibilityEventReceived(details);
+    }
+  }
+
+  void WebContentsDestroyed() override {
+    if (controller_) {
+      controller_->WebContentsDestroyed(web_contents());
+    }
+  }
+
+  // This causes AXTreeSerializer to reset and send accessibility events of the
+  // AXTree when it is re-serialized.
+  void EnableAccessibility() {
+    // TODO(crbug.com/1266555): Only enable kReadAnythingAXMode.
+    web_contents()->EnableWebContentsOnlyAccessibilityMode();
+  }
+
+  void SetController(ReadAnythingController* controller) {
+    controller_ = controller;
+  }
+
+ private:
+  friend class content::WebContentsUserData<ReadAnythingWebContentsObserver>;
+
+  explicit ReadAnythingWebContentsObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents),
+        content::WebContentsUserData<ReadAnythingWebContentsObserver>(
+            *web_contents) {}
+
+  ReadAnythingController* controller_ = nullptr;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingWebContentsObserver);
 
 ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
                                                Browser* browser)
     : model_(model), browser_(browser) {
   DCHECK(browser_);
   browser_->tab_strip_model()->AddObserver(this);
-  WebContentsObserver::Observe(
-      browser_->tab_strip_model()->GetActiveWebContents());
 }
 
 ReadAnythingController::~ReadAnythingController() {
   TabStripModelObserver::StopObservingAll(this);
-  WebContentsObserver::Observe(nullptr);
+  for (auto* web_contents : AllTabContentses()) {
+    ReadAnythingWebContentsObserver* observer =
+        ReadAnythingWebContentsObserver::FromWebContents(web_contents);
+    if (observer) {
+      observer->SetController(nullptr);
+    }
+  }
 }
 
 void ReadAnythingController::Activate(bool active) {
   active_ = active;
-  SnapshotAXTree();
+  NotifyActiveAXTreeIDChanged();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,7 +172,26 @@ ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
 
 void ReadAnythingController::OnUIReady() {
   ui_ready_ = true;
-  SnapshotAXTree();
+
+  // Create web contents observers on all tabs and enable web contents-only
+  // accessibility on each tab. This causes AXTreeSerializer to reset and send
+  // accessibility events of the AXTree when it is re-serialized. The WebUI
+  // receives these events and stores a copy of each web contents' AXTree. If
+  // the UI was destroyed, it stops receiving events. OnUIReady is called when
+  // it is re-created, indicating that it needs to restore its copy of each
+  // web contents' AXTree.
+  for (int i = 0; i < browser_->tab_strip_model()->count(); i++) {
+    content::WebContents* web_contents =
+        browser_->tab_strip_model()->GetWebContentsAt(i);
+    // CreateForWebContents is no-op if an observer already exists.
+    ReadAnythingWebContentsObserver::CreateForWebContents(web_contents);
+    ReadAnythingWebContentsObserver* observer =
+        ReadAnythingWebContentsObserver::FromWebContents(web_contents);
+    observer->SetController(this);
+    observer->EnableAccessibility();
+  }
+
+  NotifyActiveAXTreeIDChanged();
 }
 
 void ReadAnythingController::OnUIDestroyed() {
@@ -122,16 +200,7 @@ void ReadAnythingController::OnUIDestroyed() {
 
 void ReadAnythingController::OnLinkClicked(const GURL& url,
                                            bool open_in_new_tab) {
-  if (!web_contents())
-    return;
-  WindowOpenDisposition disposition =
-      open_in_new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                      : WindowOpenDisposition::CURRENT_TAB;
-  content::OpenURLParams params(url, content::Referrer(), disposition,
-                                ui::PAGE_TRANSITION_LINK,
-                                /* is_renderer_initiated= */ true);
-  params.initiator_origin = url::Origin::Create(web_contents()->GetURL());
-  browser_->OpenURL(params);
+  // TODO(abigailbklein): Reimplement with AccessibilityPerformAction.
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,10 +211,26 @@ void ReadAnythingController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed())
+  if (!ui_ready_) {
     return;
-  WebContentsObserver::Observe(selection.new_contents);
-  SnapshotAXTree();
+  }
+  // Create a new ReadAnythingWebContentsObserver for inserted web contentses.
+  if (change.type() == TabStripModelChange::kInserted) {
+    for (auto contents_with_index : change.GetInsert()->contents) {
+      content::WebContents* web_contents = contents_with_index.contents;
+      if (!web_contents) {
+        continue;
+      }
+      ReadAnythingWebContentsObserver::CreateForWebContents(web_contents);
+      ReadAnythingWebContentsObserver* observer =
+          ReadAnythingWebContentsObserver::FromWebContents(web_contents);
+      observer->SetController(this);
+      observer->EnableAccessibility();
+    }
+  }
+  if (selection.active_tab_changed()) {
+    NotifyActiveAXTreeIDChanged();
+  }
 }
 
 void ReadAnythingController::OnTabStripModelDestroyed(
@@ -158,37 +243,36 @@ void ReadAnythingController::OnTabStripModelDestroyed(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// content::WebContentsObserver:
-///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingController::DidStopLoading() {
-  SnapshotAXTree();
+void ReadAnythingController::AccessibilityEventReceived(
+    const content::AXEventNotificationDetails& details) {
+  model_->AccessibilityEventReceived(details);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-void ReadAnythingController::SnapshotAXTree() {
-  if (!active_ || !ui_ready_ || !web_contents())
-    return;
-
-  // Read Anything just runs on the main frame and does not run on embedded
-  // content.
+void ReadAnythingController::WebContentsDestroyed(
+    content::WebContents* web_contents) {
   content::RenderFrameHost* render_frame_host =
-      web_contents()->GetPrimaryMainFrame();
+      web_contents->GetPrimaryMainFrame();
   if (!render_frame_host)
     return;
-
-  // Request an AXTreeSnapshot on the main render frame, not the entire web
-  // contents. The web contents snapshotter combines all render frames which
-  // Read Anything doesn't require.
-  render_frame_host->RequestAXTreeSnapshot(
-      base::BindOnce(&ReadAnythingController::OnAXTreeSnapshotted,
-                     weak_pointer_factory_.GetWeakPtr()),
-      kReadAnythingAXMode, /* exclude_offscreen= */ false,
-      /* max_nodes= */ 0, /* timeout= */ {});
+  ui::AXTreeID tree_id = render_frame_host->GetAXTreeID();
+  model_->OnAXTreeDestroyed(tree_id);
 }
 
-void ReadAnythingController::OnAXTreeSnapshotted(
-    const ui::AXTreeUpdate& snapshot) {
-  model_->OnAXTreeSnapshotted(snapshot);
+void ReadAnythingController::NotifyActiveAXTreeIDChanged() {
+  ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
+  if (active_) {
+    content::WebContents* web_contents =
+        browser_->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      return;
+    }
+    content::RenderFrameHost* render_frame_host =
+        web_contents->GetPrimaryMainFrame();
+    if (!render_frame_host) {
+      return;
+    }
+    tree_id = render_frame_host->GetAXTreeID();
+  }
+  model_->OnActiveAXTreeIDChanged(tree_id);
 }

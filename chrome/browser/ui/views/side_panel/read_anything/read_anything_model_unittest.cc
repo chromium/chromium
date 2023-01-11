@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "content/public/browser/ax_event_notification_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #include "ui/accessibility/accessibility_features.h"
@@ -20,8 +21,16 @@ using testing::FloatNear;
 class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
  public:
   MOCK_METHOD(void,
-              OnAXTreeSnapshotted,
-              (const ui::AXTreeUpdate& snapshot),
+              AccessibilityEventReceived,
+              (const content::AXEventNotificationDetails& details),
+              (override));
+  MOCK_METHOD(void,
+              OnActiveAXTreeIDChanged,
+              (const ui::AXTreeID& tree_id),
+              (override));
+  MOCK_METHOD(void,
+              OnAXTreeDestroyed,
+              (const ui::AXTreeID& tree_id),
               (override));
   MOCK_METHOD(void,
               OnReadAnythingThemeChanged,
@@ -64,11 +73,13 @@ class ReadAnythingModelTest : public TestWithBrowserView {
 TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnAXTreeSnapshotted(_)).Times(0);
+  EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(0);
+  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_)).Times(0);
   EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
-  EXPECT_CALL(model_observer_2_, OnAXTreeSnapshotted(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, AccessibilityEventReceived(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_)).Times(0);
   EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
@@ -79,15 +90,18 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
   model_->AddObserver(&model_observer_1_);
   model_->AddObserver(&model_observer_2_);
 
-  EXPECT_CALL(model_observer_1_, OnAXTreeSnapshotted(_)).Times(0);
+  EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(0);
+  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_)).Times(0);
   EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
-  EXPECT_CALL(model_observer_2_, OnAXTreeSnapshotted(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, AccessibilityEventReceived(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_)).Times(0);
   EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(0);
 
-  EXPECT_CALL(model_observer_3_, OnAXTreeSnapshotted(_)).Times(0);
+  EXPECT_CALL(model_observer_3_, AccessibilityEventReceived(_)).Times(0);
+  EXPECT_CALL(model_observer_3_, OnActiveAXTreeIDChanged(_)).Times(0);
   EXPECT_CALL(model_observer_3_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
@@ -104,14 +118,31 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedFontIndex) {
   model_->SetSelectedFontByIndex(2);
 }
 
-TEST_F(ReadAnythingModelTest, NotificationsOnAXTreeSnapshotted) {
+TEST_F(ReadAnythingModelTest, NotificationsOnAccessibilityEventReceived) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnAXTreeSnapshotted(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(1);
 
-  ui::AXTreeUpdate snapshot;
-  snapshot.root_id = 1;
-  model_->OnAXTreeSnapshotted(snapshot);
+  content::AXEventNotificationDetails details;
+  model_->AccessibilityEventReceived(details);
+}
+
+TEST_F(ReadAnythingModelTest, NotificationsOnActiveAXTreeIDChanged) {
+  model_->AddObserver(&model_observer_1_);
+
+  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_)).Times(1);
+
+  ui::AXTreeID tree_id;
+  model_->OnActiveAXTreeIDChanged(tree_id);
+}
+
+TEST_F(ReadAnythingModelTest, NotificationsOnAXTreeDestroyed) {
+  model_->AddObserver(&model_observer_1_);
+
+  EXPECT_CALL(model_observer_1_, OnAXTreeDestroyed(_)).Times(1);
+
+  ui::AXTreeID tree_id;
+  model_->OnAXTreeDestroyed(tree_id);
 }
 
 TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {

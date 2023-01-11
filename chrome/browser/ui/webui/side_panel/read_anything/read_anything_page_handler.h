@@ -12,11 +12,11 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "content/public/browser/ax_event_notification_details.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/accessibility/ax_tree_update_forward.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingPageHandler
@@ -49,7 +49,10 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   void OnLinkClicked(const GURL& url, bool open_in_new_tab) override;
 
   // ReadAnythingModel::Observer:
-  void OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot) override;
+  void AccessibilityEventReceived(
+      const content::AXEventNotificationDetails& details) override;
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) override;
+  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnReadAnythingThemeChanged(
       const std::string& font_name,
       double font_scale,

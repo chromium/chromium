@@ -6,6 +6,8 @@
 module read_anything.mojom;
 
 import "skia/public/mojom/skcolor.mojom";
+import "ui/accessibility/mojom/ax_event.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "url/mojom/url.mojom";
 
@@ -66,10 +68,22 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Trigger the frontend to update the current read anything display. Snapshot
-  // is an accessibility tree snapshot of a web page.
-  OnAXTreeSnapshotted(ax.mojom.AXTreeUpdate snapshot);
+  // Send an accessibility event notification to the WebUI. The WebUI
+  // unserializes the updates and stores a copy of the tree with ID tree_id in
+  // a map.
+  AccessibilityEventReceived(ax.mojom.AXTreeID tree_id,
+                             array<ax.mojom.AXTreeUpdate> updates,
+                             array<ax.mojom.AXEvent> events);
 
-  // Send an updated theme to front end.
+  // Sends the active AXTreeID to the WebUI. This is not guaranteed to be called
+  // after the tree_id was previously passed to AccessibilityEventsReceived.
+  OnActiveAXTreeIDChanged(ax.mojom.AXTreeID tree_id);
+
+  // Notifies the WebUI that an AXTree with the provided AXTreeID was
+  // destroyed. This is not guaranteed to be called after the tree_id was
+  // previously passed to AccessibilityEventsReceived.
+  OnAXTreeDestroyed(ax.mojom.AXTreeID tree_id);
+
+  // Send an updated theme to the WebUI.
   OnThemeChanged(ReadAnythingTheme new_theme);
 };

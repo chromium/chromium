@@ -25,20 +25,35 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
         content::RenderFrame::FromWebFrame(GetMainFrame());
     controller_ = ReadAnythingAppController::Install(render_frame);
 
-    // Create simple AXTreeUpdate with a root node and 3 children.
-    basic_snapshot_.root_id = 1;
-    basic_snapshot_.nodes.resize(4);
-    basic_snapshot_.nodes[0].id = 1;
-    basic_snapshot_.nodes[0].child_ids = {2, 3, 4};
-    basic_snapshot_.nodes[1].id = 2;
-    basic_snapshot_.nodes[2].id = 3;
-    basic_snapshot_.nodes[3].id = 4;
+    // Create a tree id.
+    tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 
-    // Create simple AXTreeData with selection.
-    basic_tree_data_with_selection_.sel_anchor_object_id = 2;
-    basic_tree_data_with_selection_.sel_focus_object_id = 3;
-    basic_tree_data_with_selection_.sel_anchor_offset = 0;
-    basic_tree_data_with_selection_.sel_focus_offset = 0;
+    // Create simple AXTreeUpdate with a root node and 3 children.
+    ui::AXTreeUpdate snapshot;
+    snapshot.root_id = 1;
+    snapshot.nodes.resize(4);
+    snapshot.nodes[0].id = 1;
+    snapshot.nodes[0].child_ids = {2, 3, 4};
+    snapshot.nodes[1].id = 2;
+    snapshot.nodes[2].id = 3;
+    snapshot.nodes[3].id = 4;
+    SetUpdateTreeID(&snapshot);
+
+    // Send the snapshot to the controller and set its tree ID to be the active
+    // tree ID.
+    AccessibilityEventReceived({snapshot});
+    OnActiveAXTreeIDChanged(tree_id_);
+  }
+
+  void SetUpdateTreeID(ui::AXTreeUpdate* update) {
+    SetUpdateTreeID(update, tree_id_);
+  }
+
+  void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id) {
+    ui::AXTreeData tree_data;
+    tree_data.tree_id = tree_id;
+    update->has_tree_data = true;
+    update->tree_data = tree_data;
   }
 
   void SetThemeForTesting(const std::string& font_name,
@@ -52,10 +67,22 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                     letter_spacing);
   }
 
-  void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
-                         const std::vector<ui::AXNodeID>& content_node_ids) {
-    controller_->OnAXTreeSnapshotted(snapshot);
+  void AccessibilityEventReceived(
+      const std::vector<ui::AXTreeUpdate>& updates) {
+    controller_->AccessibilityEventReceived(updates[0].tree_data.tree_id,
+                                            updates, {});
+  }
+
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
+    controller_->OnActiveAXTreeIDChanged(tree_id);
+  }
+
+  void OnAXTreeDistilled(const std::vector<ui::AXNodeID>& content_node_ids) {
     controller_->OnAXTreeDistilled(content_node_ids);
+  }
+
+  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
+    controller_->OnAXTreeDestroyed(tree_id);
   }
 
   ui::AXNodeID RootId() { return controller_->RootId(); }
@@ -92,8 +119,9 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetUrl(ax_node_id);
   }
 
-  ui::AXTreeUpdate basic_snapshot_;
-  ui::AXTreeData basic_tree_data_with_selection_;
+  size_t GetNumTrees() { return controller_->trees_.size(); }
+
+  ui::AXTreeID tree_id_;
 
  private:
   // ReadAnythingAppController constructor and destructor are private so it's
@@ -121,19 +149,24 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
-  OnAXTreeDistilled(basic_snapshot_, {1});
+  OnAXTreeDistilled({1});
   EXPECT_EQ(1, RootId());
-  OnAXTreeDistilled(basic_snapshot_, {2});
+  OnAXTreeDistilled({2});
   EXPECT_EQ(1, RootId());
-  OnAXTreeDistilled(basic_snapshot_, {3});
+  OnAXTreeDistilled({3});
   EXPECT_EQ(1, RootId());
-  OnAXTreeDistilled(basic_snapshot_, {4});
+  OnAXTreeDistilled({4});
   EXPECT_EQ(1, RootId());
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetChildren_NoSelectionOrContentNodes) {
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kNone;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(1);
+  update.nodes[0].id = 3;
+  update.nodes[0].role = ax::mojom::Role::kNone;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ(0u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
@@ -141,8 +174,13 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_NoSelectionOrContentNodes) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetChildren_WithContentNodes) {
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kNone;
-  OnAXTreeDistilled(basic_snapshot_, {1, 2, 3, 4});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(1);
+  update.nodes[0].id = 3;
+  update.nodes[0].role = ax::mojom::Role::kNone;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({1, 2, 3, 4});
   EXPECT_EQ(2u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
@@ -154,11 +192,15 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_WithContentNodes) {
 
 TEST_F(ReadAnythingAppControllerTest, GetChildren_WithSelection) {
   // Create selection from node 3-4.
-  basic_tree_data_with_selection_.sel_anchor_object_id = 3;
-  basic_tree_data_with_selection_.sel_focus_object_id = 4;
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 3;
+  update.tree_data.sel_focus_object_id = 4;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ(2u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
@@ -170,12 +212,15 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_WithSelection) {
 
 TEST_F(ReadAnythingAppControllerTest, GetChildren_WithBackwardSelection) {
   // Create backward selection from node 4-3.
-  basic_tree_data_with_selection_.sel_is_backward = true;
-  basic_tree_data_with_selection_.sel_anchor_object_id = 4;
-  basic_tree_data_with_selection_.sel_focus_object_id = 3;
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 4;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = true;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ(2u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
@@ -189,13 +234,18 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag) {
   std::string span = "span";
   std::string h1 = "h1";
   std::string ul = "ul";
-  basic_snapshot_.nodes[1].AddStringAttribute(
-      ax::mojom::StringAttribute::kHtmlTag, span);
-  basic_snapshot_.nodes[2].AddStringAttribute(
-      ax::mojom::StringAttribute::kHtmlTag, h1);
-  basic_snapshot_.nodes[3].AddStringAttribute(
-      ax::mojom::StringAttribute::kHtmlTag, ul);
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     span);
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, h1);
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, ul);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ(span, GetHtmlTag(2));
   EXPECT_EQ(h1, GetHtmlTag(3));
   EXPECT_EQ(ul, GetHtmlTag(4));
@@ -205,16 +255,23 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   std::string text_content = "Hello";
   std::string missing_text_content = "";
   std::string more_text_content = " world";
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[1].SetName(text_content);
-  basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[2].SetName(missing_text_content);
-  basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[3].SetName(more_text_content);
-  basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[0].SetName(text_content);
+  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].SetName(missing_text_content);
+  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].SetName(more_text_content);
+  update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ("Hello world", GetTextContent(1));
   EXPECT_EQ(text_content, GetTextContent(2));
   EXPECT_EQ(missing_text_content, GetTextContent(3));
@@ -225,23 +282,29 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_With2NodeSelection) {
   std::string text_content_1 = "Hello";
   std::string text_content_2 = " world";
   std::string text_content_3 = " friend";
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[1].SetName(text_content_1);
-  basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[2].SetName(text_content_2);
-  basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[3].SetName(text_content_3);
-  basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[0].SetName(text_content_1);
+  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].SetName(text_content_2);
+  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].SetName(text_content_3);
+  update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
   // Create selection from node 2-3.
-  basic_tree_data_with_selection_.sel_anchor_object_id = 2;
-  basic_tree_data_with_selection_.sel_focus_object_id = 3;
-  basic_tree_data_with_selection_.sel_anchor_offset = 1;
-  basic_tree_data_with_selection_.sel_focus_offset = 3;
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 1;
+  update.tree_data.sel_focus_offset = 3;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ("Hello world friend", GetTextContent(1));
   EXPECT_EQ("ello", GetTextContent(2));
   EXPECT_EQ(" wo", GetTextContent(3));
@@ -252,23 +315,29 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_With3NodeSelection) {
   std::string text_content_1 = "Hello";
   std::string text_content_2 = " world";
   std::string text_content_3 = " friend";
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[1].SetName(text_content_1);
-  basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[2].SetName(text_content_2);
-  basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[3].SetName(text_content_3);
-  basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[0].SetName(text_content_1);
+  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].SetName(text_content_2);
+  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].SetName(text_content_3);
+  update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
   // Create selection from node 2-4.
-  basic_tree_data_with_selection_.sel_anchor_object_id = 2;
-  basic_tree_data_with_selection_.sel_focus_object_id = 4;
-  basic_tree_data_with_selection_.sel_anchor_offset = 1;
-  basic_tree_data_with_selection_.sel_focus_offset = 3;
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 4;
+  update.tree_data.sel_anchor_offset = 1;
+  update.tree_data.sel_focus_offset = 3;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ("Hello world friend", GetTextContent(1));
   EXPECT_EQ("ello", GetTextContent(2));
   EXPECT_EQ(" world", GetTextContent(3));
@@ -279,24 +348,29 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithBackwardSelection) {
   std::string text_content_1 = "Hello";
   std::string text_content_2 = " world";
   std::string text_content_3 = " friend";
-  basic_snapshot_.nodes[1].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[1].SetName(text_content_1);
-  basic_snapshot_.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[2].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[2].SetName(text_content_2);
-  basic_snapshot_.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
-  basic_snapshot_.nodes[3].role = ax::mojom::Role::kStaticText;
-  basic_snapshot_.nodes[3].SetName(text_content_3);
-  basic_snapshot_.nodes[3].SetNameFrom(ax::mojom::NameFrom::kContents);
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[0].SetName(text_content_1);
+  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].SetName(text_content_2);
+  update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].SetName(text_content_3);
+  update.nodes[2].SetNameFrom(ax::mojom::NameFrom::kContents);
   // Create backward selection from node 4-3.
-  basic_tree_data_with_selection_.sel_is_backward = true;
-  basic_tree_data_with_selection_.sel_anchor_object_id = 4;
-  basic_tree_data_with_selection_.sel_focus_object_id = 3;
-  basic_tree_data_with_selection_.sel_anchor_offset = 5;
-  basic_tree_data_with_selection_.sel_focus_offset = 2;
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  update.tree_data.sel_anchor_object_id = 4;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 5;
+  update.tree_data.sel_focus_offset = 2;
+  update.tree_data.sel_is_backward = true;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ("Hello world friend", GetTextContent(1));
   EXPECT_EQ("Hello", GetTextContent(2));
   EXPECT_EQ("orld", GetTextContent(3));
@@ -307,22 +381,34 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   std::string url = "http://www.google.com";
   std::string invalid_url = "cats";
   std::string missing_url = "";
-  basic_snapshot_.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                              url);
-  basic_snapshot_.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                              invalid_url);
-  basic_snapshot_.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                              missing_url);
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
+  update.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                     invalid_url);
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                     missing_url);
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_EQ(url, GetUrl(2));
   EXPECT_EQ(invalid_url, GetUrl(3));
   EXPECT_EQ(missing_url, GetUrl(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_Selection) {
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_TRUE(DisplayNodeIdsContains(1));
   EXPECT_TRUE(DisplayNodeIdsContains(2));
   EXPECT_TRUE(DisplayNodeIdsContains(3));
@@ -331,12 +417,15 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_Selection) {
 
 TEST_F(ReadAnythingAppControllerTest,
        DisplayNodeIdsContains_BackwardSelection) {
-  basic_tree_data_with_selection_.sel_is_backward = true;
-  basic_tree_data_with_selection_.sel_anchor_object_id = 3;
-  basic_tree_data_with_selection_.sel_focus_object_id = 2;
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 3;
+  update.tree_data.sel_focus_object_id = 2;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = true;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
   EXPECT_TRUE(DisplayNodeIdsContains(1));
   EXPECT_TRUE(DisplayNodeIdsContains(2));
   EXPECT_TRUE(DisplayNodeIdsContains(3));
@@ -344,12 +433,15 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
-  basic_snapshot_.nodes.resize(6);
-  basic_snapshot_.nodes[3].child_ids = {5, 6};
-  basic_snapshot_.nodes[4].id = 5;
-  basic_snapshot_.nodes[5].id = 6;
-
-  OnAXTreeDistilled(basic_snapshot_, {3, 4});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 4;
+  update.nodes[0].child_ids = {5, 6};
+  update.nodes[1].id = 5;
+  update.nodes[2].id = 6;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({3, 4});
   EXPECT_TRUE(DisplayNodeIdsContains(1));
   EXPECT_FALSE(DisplayNodeIdsContains(2));
   EXPECT_TRUE(DisplayNodeIdsContains(3));
@@ -360,7 +452,7 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
 
 TEST_F(ReadAnythingAppControllerTest,
        DisplayNodeIdsContains_NoSelectionOrContentNodes) {
-  OnAXTreeDistilled(basic_snapshot_, {});
+  OnAXTreeDistilled({});
   EXPECT_FALSE(DisplayNodeIdsContains(1));
   EXPECT_FALSE(DisplayNodeIdsContains(2));
   EXPECT_FALSE(DisplayNodeIdsContains(3));
@@ -368,5 +460,171 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfContentNodeNotFoundInTree) {
-  OnAXTreeDistilled(basic_snapshot_, {6});
+  OnAXTreeDistilled({6});
+}
+
+TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
+  // Tree starts off with no text content.
+  EXPECT_EQ("", GetTextContent(1));
+  EXPECT_EQ("", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ("", GetTextContent(4));
+
+  // Send a new update which settings the text content of node 2.
+  ui::AXTreeUpdate update_1;
+  SetUpdateTreeID(&update_1);
+  update_1.nodes.resize(1);
+  update_1.nodes[0].id = 2;
+  update_1.nodes[0].role = ax::mojom::Role::kStaticText;
+  update_1.nodes[0].SetName("Hello world");
+  update_1.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  AccessibilityEventReceived({update_1});
+  EXPECT_EQ("Hello world", GetTextContent(1));
+  EXPECT_EQ("Hello world", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ("", GetTextContent(4));
+
+  // Send three updates which should be merged.
+  std::vector<ui::AXTreeUpdate> batch_updates;
+  for (int i = 2; i < 5; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    update.nodes.resize(1);
+    update.nodes[0].id = i;
+    update.nodes[0].role = ax::mojom::Role::kStaticText;
+    update.nodes[0].SetName("Node " + base::NumberToString(i));
+    update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+    batch_updates.push_back(update);
+  }
+  AccessibilityEventReceived(batch_updates);
+  EXPECT_EQ("Node 2Node 3Node 4", GetTextContent(1));
+  EXPECT_EQ("Node 2", GetTextContent(2));
+  EXPECT_EQ("Node 3", GetTextContent(3));
+  EXPECT_EQ("Node 4", GetTextContent(4));
+
+  // Clear node 1.
+  ui::AXTreeUpdate clear_update;
+  SetUpdateTreeID(&clear_update);
+  clear_update.root_id = 1;
+  clear_update.node_id_to_clear = 1;
+  clear_update.nodes.resize(1);
+  clear_update.nodes[0].id = 1;
+  AccessibilityEventReceived({clear_update});
+  EXPECT_EQ("", GetTextContent(1));
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
+  // Create three AXTreeUpdates with three different tree IDs.
+  std::vector<ui::AXTreeID> tree_ids = {tree_id_,
+                                        ui::AXTreeID::CreateNewAXTreeID(),
+                                        ui::AXTreeID::CreateNewAXTreeID()};
+  std::vector<ui::AXTreeUpdate> updates;
+  for (int i = 0; i < 3; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update, tree_ids[i]);
+    update.root_id = 1;
+    update.nodes.resize(1);
+    update.nodes[0].id = 1;
+    update.nodes[0].role = ax::mojom::Role::kStaticText;
+    update.nodes[0].SetName("Tree " + base::NumberToString(i));
+    update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+    updates.push_back(update);
+  }
+  // Add the three updates separately since they have different tree IDs.
+  for (int i = 0; i < 3; i++) {
+    AccessibilityEventReceived({updates[i]});
+  }
+
+  OnAXTreeDistilled({1});
+
+  // Check that changing the active tree ID changes the active tree which is
+  // used when using a v8 getter.
+  for (int i = 0; i < 3; i++) {
+    OnActiveAXTreeIDChanged(tree_ids[i]);
+    EXPECT_EQ("Tree " + base::NumberToString(i), GetTextContent(1));
+  }
+}
+
+TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDUnknown) {
+  ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
+  OnActiveAXTreeIDChanged(tree_id);
+  OnAXTreeDestroyed(tree_id);
+}
+
+TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDNotInTrees) {
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  OnActiveAXTreeIDChanged(tree_id);
+  OnAXTreeDestroyed(tree_id);
+}
+
+TEST_F(ReadAnythingAppControllerTest, AddAndRemoveTrees) {
+  // Create two new trees with new tree IDs.
+  std::vector<ui::AXTreeID> tree_ids = {ui::AXTreeID::CreateNewAXTreeID(),
+                                        ui::AXTreeID::CreateNewAXTreeID()};
+  std::vector<ui::AXTreeUpdate> updates;
+  for (int i = 0; i < 2; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update, tree_ids[i]);
+    update.root_id = 1;
+    update.nodes.resize(1);
+    update.nodes[0].id = 1;
+    updates.push_back(update);
+  }
+
+  // Start with 1 tree (the tree created in SetUp).
+  ASSERT_EQ(1u, GetNumTrees());
+
+  // Add the two trees.
+  AccessibilityEventReceived({updates[0]});
+  ASSERT_EQ(2u, GetNumTrees());
+  AccessibilityEventReceived({updates[1]});
+  ASSERT_EQ(3u, GetNumTrees());
+
+  // Remove all of the trees.
+  OnAXTreeDestroyed(tree_id_);
+  ASSERT_EQ(2u, GetNumTrees());
+  OnAXTreeDestroyed(tree_ids[0]);
+  ASSERT_EQ(1u, GetNumTrees());
+  OnAXTreeDestroyed(tree_ids[1]);
+  ASSERT_EQ(0u, GetNumTrees());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_ChildTree) {
+  // Create three AXTreeUpdates. The first has tree ID tree_id_ and the others
+  // have two new tree IDs.
+  std::vector<ui::AXTreeID> tree_ids = {tree_id_,
+                                        ui::AXTreeID::CreateNewAXTreeID(),
+                                        ui::AXTreeID::CreateNewAXTreeID()};
+  std::vector<ui::AXTreeUpdate> updates;
+  for (int i = 0; i < 3; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update, tree_ids[i]);
+    update.root_id = 1;
+    update.nodes.resize(1);
+    update.nodes[0].id = 1;
+    updates.push_back(update);
+  }
+
+  // Tree_ids[0] is the parent of tree_ids[1]. Tree_ids[1] is the parent of
+  // tree_ids[2].
+  updates[1].tree_data.parent_tree_id = tree_ids[0];
+  updates[2].tree_data.parent_tree_id = tree_ids[1];
+  updates[0].nodes[0].AddChildTreeId(tree_ids[1]);
+  updates[1].nodes[0].AddChildTreeId(tree_ids[2]);
+
+  // Start with 1 tree (the tree created in SetUp).
+  ASSERT_EQ(1u, GetNumTrees());
+  AccessibilityEventReceived({updates[0]});
+  ASSERT_EQ(1u, GetNumTrees());
+
+  // Add two trees.
+  AccessibilityEventReceived({updates[1]});
+  ASSERT_EQ(2u, GetNumTrees());
+  AccessibilityEventReceived({updates[2]});
+  ASSERT_EQ(3u, GetNumTrees());
+
+  // Remove the grandparent tree (tree_ids[0]. When it is removed, its
+  // child (tree_ids[1]) and its child's child (tree_ids[2]) are both removed.
+  OnAXTreeDestroyed(tree_ids[0]);
+  ASSERT_EQ(0u, GetNumTrees());
 }

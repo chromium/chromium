@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "ui/accessibility/ax_tree_update.h"
+#include "content/public/browser/ax_event_notification_details.h"
 #include "ui/base/models/combobox_model.h"
 
 using read_anything::mojom::Spacing;
@@ -161,7 +161,10 @@ class ReadAnythingModel {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot) {}
+    virtual void AccessibilityEventReceived(
+        const content::AXEventNotificationDetails& details) {}
+    virtual void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {}
+    virtual void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {}
     virtual void OnReadAnythingThemeChanged(
         const std::string& font_name,
         double font_scale,
@@ -185,7 +188,10 @@ class ReadAnythingModel {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
-  void OnAXTreeSnapshotted(const ui::AXTreeUpdate& snapshot);
+  void AccessibilityEventReceived(
+      const content::AXEventNotificationDetails& details);
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id);
+  void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
   void SetSelectedFontByIndex(size_t new_index);
   double GetValidFontScale(double font_scale);
