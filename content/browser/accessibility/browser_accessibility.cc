@@ -114,16 +114,15 @@ bool BrowserAccessibility::IsValid() const {
   if (input_type != "text" && input_type != "search")
     return true;  // Not a plain text field, just consider it valid.
 
-  if (InternalChildCount()) {
-    // If the atomic text field is aria-hidden then all its descendants are
-    // ignored.
-    //   See the dump tree test AccessibilityAriaHiddenFocusedInput.
-    //
-    // TODO(accessibility): We need to fix this by pruning the tree and removing
-    // the native text field if it is aria-hidden.
-    return IsInvisibleOrIgnored() || GetTextFieldInnerEditorElement(*this);
+  // If the atomic text field is aria-hidden then all its descendants are
+  // ignored. See the dump tree test AccessibilityAriaHiddenFocusedInput.
+  // TODO(accessibility): We need to fix this by pruning the tree and removing
+  // the native text field if it is aria-hidden.
+  if (IsInvisibleOrIgnored() || !InternalGetFirstChild()) {
+    return true;
   }
-  return true;
+
+  return GetTextFieldInnerEditorElement(*this);
 }
 
 void BrowserAccessibility::OnDataChanged() {
