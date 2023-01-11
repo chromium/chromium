@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
@@ -208,110 +209,6 @@ mojom::AcceleratorInfoPtr CreateBaseAcceleratorInfo(
                                        mojom::AcceleratorState::kEnabled);
 }
 
-// Create alias accelerator info for top row key if applicable
-mojom::AcceleratorInfoPtr CreateRemappedTopRowAcceleratorInfo(
-    const ui::Accelerator& accelerator) {
-  // Avoid remapping if [Search] is part of original accelerator.
-  if (accelerator.IsCmdDown() ||
-      !Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys() ||
-      !ui::kLayout2TopRowKeyToFKeyMap.contains(accelerator.key_code())) {
-    // No remapping is done.
-    return nullptr;
-  }
-  // If top row keys are function keys, top row shortcut will become
-  // [Fkey] + [search] + [modifiers]
-  ui::Accelerator updated_accelerator(
-      ui::kLayout2TopRowKeyToFKeyMap.at(accelerator.key_code()),
-      accelerator.modifiers() | ui::EF_COMMAND_DOWN, accelerator.key_state());
-  return CreateBaseAcceleratorInfo(updated_accelerator);
-}
-
-// Create alias accelerator info for six pack key if applicable.
-mojom::AcceleratorInfoPtr CreateRemappedSixPackAcceleratorInfo(
-    const ui::Accelerator& accelerator) {
-  // For all six-pack-keys, avoid remapping if [Search] is part of
-  // original accelerator.
-  if (accelerator.IsCmdDown() ||
-      !::features::IsImprovedKeyboardShortcutsEnabled() ||
-      !ui::kSixPackKeyToSystemKeyMap.contains(accelerator.key_code())) {
-    return nullptr;
-  }
-  // Edge cases:
-  // 1. [Shift] + [Delete] should not be remapped to [Shift] + [Search] +
-  // [Back] (aka, Insert).
-  // 2. For [Insert], avoid remapping if [Shift] is part of original
-  // accelerator.
-  if (accelerator.IsShiftDown() &&
-      (accelerator.key_code() == ui::KeyboardCode::VKEY_DELETE ||
-       accelerator.key_code() == ui::KeyboardCode::VKEY_INSERT)) {
-    return nullptr;
-  }
-  // For Insert: [modifiers] = [Search] + [Shift] + [original_modifiers].
-  // For other six-pack-keys: [modifiers] = [Search] + [original_modifiers].
-  int updated_modifiers =
-      accelerator.key_code() == ui::KeyboardCode::VKEY_INSERT
-          ? accelerator.modifiers() | ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN
-          : accelerator.modifiers() | ui::EF_COMMAND_DOWN;
-  ui::Accelerator updated_accelerator =
-      ui::Accelerator(ui::kSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
-                      updated_modifiers, accelerator.key_state());
-
-  return CreateBaseAcceleratorInfo(updated_accelerator);
-}
-
-// Create alias accelerator infos when the accelerator contains a top row key
-// or six pack key. For |top_row_key|, replace the base accelerator with
-// top-row remapped accelerator, For |six_pack_key|, show both the base
-// accelerator and the six-pack remapped accelerator. Therefore, return a
-// vector here since it may display two accelerator infos for six pack
-// remapping case.
-std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfoVariants(
-    const ui::Accelerator& accelerator) {
-  std::vector<mojom::AcceleratorInfoPtr> alias_infos;
-
-  if (Shell::Get()->keyboard_capability()->IsTopRowKey(
-          accelerator.key_code())) {
-    // For |top_row_key|, replace the base accelerator info with top-row
-    // remapped accelerator info if remapping is done. Otherwise, only show base
-    // accelerator info.
-    if (auto result_ptr = CreateRemappedTopRowAcceleratorInfo(accelerator);
-        result_ptr) {
-      alias_infos.push_back(std::move(result_ptr));
-      return alias_infos;
-    }
-  }
-
-  if (Shell::Get()->keyboard_capability()->IsSixPackKey(
-          accelerator.key_code())) {
-    // For |six_pack_key|, show both the base accelerator info and the six-pack
-    // remapped accelerator info if remapping is done. Otherwise, only show base
-    // accelerator info.
-    if (auto result_ptr = CreateRemappedSixPackAcceleratorInfo(accelerator);
-        result_ptr) {
-      alias_infos.push_back(std::move(result_ptr));
-    }
-  }
-
-  // Add base accelerator info.
-  alias_infos.push_back(CreateBaseAcceleratorInfo(accelerator));
-  return alias_infos;
-}
-
-std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfos(
-    std::vector<ui::Accelerator> accelerators) {
-  std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
-  for (const auto& accelerator : accelerators) {
-    // Get the alias acceleratorInfos by doing F-keys remapping and
-    // six-pack-keys remapping if applicable.
-    std::vector<mojom::AcceleratorInfoPtr> infos =
-        CreateAcceleratorInfoVariants(accelerator);
-    for (auto& info : infos) {
-      infos_mojom.push_back(std::move(info));
-    }
-  }
-  return infos_mojom;
-}
-
 }  // namespace
 
 namespace shortcut_ui {
@@ -438,6 +335,22 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
     accelerators_updated_observers_->OnAcceleratorsUpdated(
         CreateConfigurationMap());
   }
+}
+
+std::vector<mojom::AcceleratorInfoPtr>
+AcceleratorConfigurationProvider::CreateAcceleratorInfos(
+    const std::vector<ui::Accelerator>& accelerators) const {
+  std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
+  for (const auto& accelerator : accelerators) {
+    // Get the alias accelerators by doing F-Keys remapping and
+    // six-pack-keys remapping if applicable.
+    std::vector<ui::Accelerator> accelerator_aliases =
+        accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+    for (const auto& accelerator_alias : accelerator_aliases) {
+      infos_mojom.push_back(CreateBaseAcceleratorInfo(accelerator_alias));
+    }
+  }
+  return infos_mojom;
 }
 
 mojom::TextAcceleratorPropertiesPtr

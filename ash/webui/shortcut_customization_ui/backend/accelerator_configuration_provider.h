@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
@@ -112,6 +113,9 @@ class AcceleratorConfigurationProvider
 
   void NotifyAcceleratorsUpdated();
 
+  std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfos(
+      const std::vector<ui::Accelerator>& accelerators) const;
+
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 
   std::map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
@@ -123,6 +127,8 @@ class AcceleratorConfigurationProvider
   std::vector<ui::InputDevice> connected_keyboards_;
 
   NonConfigurableActionsMap non_configurable_actions_mapping_;
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
 
   mojo::Receiver<
       shortcut_customization::mojom::AcceleratorConfigurationProvider>

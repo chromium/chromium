@@ -26,6 +26,8 @@ assert(use_ozone)
 # GN "public" section. See README.md for notes on dependencies.
 component("ash") {
   sources = [
+    "accelerators/accelerator_alias_converter.cc",
+    "accelerators/accelerator_alias_converter.h",
     "accelerators/accelerator_commands.cc",
     "accelerators/accelerator_commands.h",
     "accelerators/accelerator_controller_impl.cc",
@@ -2724,6 +2726,7 @@ test("ash_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "accelerators/accelerator_alias_converter_unittest.cc",
     "accelerators/accelerator_commands_unittest.cc",
     "accelerators/accelerator_controller_unittest.cc",
     "accelerators/accelerator_filter_unittest.cc",
@@ -3616,6 +3619,8 @@ test("ash_perftests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "accelerators/accelerator_alias_converter.cc",
+    "accelerators/accelerator_alias_converter.h",
     "accessibility/accessibility_controller_test_api_impl.cc",
     "accessibility/accessibility_controller_test_api_impl.h",
     "accessibility/test_accessibility_controller_client.cc",
