@@ -81,9 +81,11 @@ MediaRoute::MediaRoute(const MediaRoute::Id& media_route_id,
       description_(description),
       is_local_(is_local) {}
 
-MediaRoute::MediaRoute(const MediaRoute& other) = default;
-
 MediaRoute::MediaRoute() : media_source_("") {}
+MediaRoute::MediaRoute(const MediaRoute&) = default;
+MediaRoute& MediaRoute::operator=(const MediaRoute&) = default;
+MediaRoute::MediaRoute(MediaRoute&&) = default;
+MediaRoute& MediaRoute::operator=(MediaRoute&&) = default;
 
 MediaRoute::~MediaRoute() = default;
 

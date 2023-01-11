@@ -17,10 +17,8 @@ namespace media_router {
 // MediaRouterAndroid.
 enum class RouteControllerType { kNone, kGeneric, kMirroring };
 
-// MediaRoute objects contain the status and metadata of a routing
-// operation. The fields are immutable and reflect the route status
-// only at the time of object creation. Updated route statuses must
-// be retrieved as new MediaRoute objects from the Media Router.
+// MediaRoute objects contain the status and metadata of a media route, used by
+// Chrome to transmit and manage media on another device.
 //
 // TODO(mfoltz): Convert to a simple struct and remove uncommon parameters from
 // the ctor.
@@ -37,23 +35,25 @@ class MediaRoute {
   static std::string GetMediaSourceIdFromMediaRouteId(
       const MediaRoute::Id route_id);
 
+  // All hand-written code MUST use this constructor.
+  //
   // |media_route_id|: ID of the route.
   // |media_source|: Description of source of the route.
   // |media_sink|: The sink that is receiving the media.
   // |description|: Human readable description of the casting activity.
   // |is_local|: true if the route was created from this browser.
-  //     provider. empty otherwise.
   MediaRoute(const MediaRoute::Id& media_route_id,
              const MediaSource& media_source,
              const MediaSink::Id& media_sink_id,
              const std::string& description,
              bool is_local);
-  MediaRoute(const MediaRoute& other);
 
-  // TODO(crbug.com/1311341): Delete the default constructor and
-  // disallow passing in an empty string into the MediaSource ctor.
+  // DO NOT USE.  No-arg constructor only for use by mojo.
   MediaRoute();
-
+  MediaRoute(const MediaRoute&);
+  MediaRoute& operator=(const MediaRoute&);
+  MediaRoute(MediaRoute&&);
+  MediaRoute& operator=(MediaRoute&&);
   ~MediaRoute();
 
   void set_media_route_id(const MediaRoute::Id& media_route_id) {
