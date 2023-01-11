@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import 'chrome://file-manager/background/js/metrics_start.js';
 import './test_util_swa.js';
 
+import {background} from 'chrome://file-manager/background/js/file_manager_base.js';
+import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';
 import {GlitchType, reportGlitch} from 'chrome://file-manager/common/js/glitch.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 

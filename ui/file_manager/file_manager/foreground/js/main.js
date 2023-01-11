@@ -7,10 +7,7 @@
  */
 
 import '../../common/js/error_counter.js';
-import '../../background/js/metrics_start.js';
 import './metrics_start.js';
-import '../../background/js/file_manager_base.js';
-import '../../background/js/volume_manager_impl.js';
 
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 

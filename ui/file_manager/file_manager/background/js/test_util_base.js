@@ -4,6 +4,10 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+
 /**
  * Namespace for test related things.
  */
