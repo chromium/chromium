@@ -104,6 +104,11 @@ BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
              "AutofillConsiderPhoneNumberSeparatorsValidLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, local heuristics fall back to the fields placeholder attribute.
+BASE_FEATURE(kAutofillConsiderPlaceholderForParsing,
+             "AutofillConsiderPlaceholderForParsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, three address profiles are created for testing.
 BASE_FEATURE(kAutofillCreateDataForTest,
              "AutofillCreateDataForTest",
@@ -396,16 +401,6 @@ BASE_FEATURE(kAutofillParseAsync,
 // TODO(crbug.com/1345879) Remove once launched.
 BASE_FEATURE(kAutofillParseNameAsAutocompleteType,
              "AutofillParseNameAsAutocompleteType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the placeholder is not used as a fallback during label inference.
-// Instead, local heuristics treat it as a separate source in addition to the
-// label. The placeholder is matched against the same regex as the label.
-// Since placeholders are often used as example values, this should allow us to
-// extract a more appropriate label instead.
-// TODO(crbug.com/1317961): Remove once launched.
-BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
-             "AutofillAlwaysParsePlaceholders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If the feature is enabled, FormTracker's probable-form-submission detection

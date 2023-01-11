@@ -818,17 +818,15 @@ bool InferLabelForElement(const WebFormControlElement& element,
   if (InferLabelFromPrevious(element, label, label_source))
     return true;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAlwaysParsePlaceholders)) {
-    std::u16string inferred_label = InferLabelFromPlaceholder(element);
-    if (IsLabelValid(inferred_label)) {
-      label_source = FormFieldData::LabelSource::kPlaceHolder;
-      label = std::move(inferred_label);
-      return true;
-    }
+  // If we didn't find a label, check for placeholder text.
+  std::u16string inferred_label = InferLabelFromPlaceholder(element);
+  if (IsLabelValid(inferred_label)) {
+    label_source = FormFieldData::LabelSource::kPlaceHolder;
+    label = std::move(inferred_label);
+    return true;
   }
 
-  std::u16string inferred_label = InferLabelFromOverlayingSuccessor(element);
+  inferred_label = InferLabelFromOverlayingSuccessor(element);
   if (IsLabelValid(inferred_label)) {
     label_source = FormFieldData::LabelSource::kOverlayingLabel;
     label = std::move(inferred_label);
