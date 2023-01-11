@@ -885,7 +885,7 @@ bool operator==(const AttributionInfo& a, const AttributionInfo& b) {
 bool operator==(const AttributionStorageDelegate::FakeReport& a,
                 const AttributionStorageDelegate::FakeReport& b) {
   const auto tie = [](const AttributionStorageDelegate::FakeReport& r) {
-    return std::make_tuple(r.trigger_data, r.report_time);
+    return std::make_tuple(r.trigger_data, r.trigger_time, r.report_time);
   };
   return tie(a) == tie(b);
 }
@@ -893,7 +893,7 @@ bool operator==(const AttributionStorageDelegate::FakeReport& a,
 bool operator<(const AttributionStorageDelegate::FakeReport& a,
                const AttributionStorageDelegate::FakeReport& b) {
   const auto tie = [](const AttributionStorageDelegate::FakeReport& r) {
-    return std::make_tuple(r.trigger_data, r.report_time);
+    return std::make_tuple(r.trigger_data, r.trigger_time, r.report_time);
   };
   return tie(a) < tie(b);
 }
@@ -1160,6 +1160,7 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          const AttributionStorageDelegate::FakeReport& r) {
   return out << "{trigger_data=" << r.trigger_data
+             << ",trigger_time=" << r.trigger_time
              << ",report_time=" << r.report_time << "}";
 }
 

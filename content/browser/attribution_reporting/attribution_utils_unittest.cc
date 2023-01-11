@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -283,6 +284,11 @@ TEST(AttributionUtilsTest, AttributionFilterDataMatch_SourceType) {
                                          test_case.filters, test_case.negated))
         << test_case.description;
   }
+}
+
+TEST(AttributionUtilsTest, LastTriggerTimeForReportTime) {
+  const base::Time time = base::Time::Now();
+  EXPECT_EQ(LastTriggerTimeForReportTime(time), time - base::Hours(1));
 }
 
 }  // namespace

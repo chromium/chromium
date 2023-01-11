@@ -685,15 +685,17 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   absl::optional<base::Time> min_fake_report_time;
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
-    const base::Time trigger_time = common_info.source_time();
-
     for (const auto& fake_report : *randomized_response) {
       DCHECK_EQ(fake_report.trigger_data,
                 delegate_->SanitizeTriggerData(fake_report.trigger_data,
                                                common_info.source_type()));
 
+      DCHECK_LT(common_info.source_time(), fake_report.trigger_time);
+      DCHECK_LT(fake_report.trigger_time, fake_report.report_time);
+
       if (!StoreEventLevelReport(source_id, fake_report.trigger_data,
-                                 trigger_time, fake_report.report_time,
+                                 fake_report.trigger_time,
+                                 fake_report.report_time,
                                  /*priority=*/0, delegate_->NewReportID(),
                                  /*trigger_debug_key=*/absl::nullopt)) {
         return StoreSourceResult(StorableSource::Result::kInternalError);

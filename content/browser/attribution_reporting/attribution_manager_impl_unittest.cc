@@ -1741,6 +1741,7 @@ class AttributionManagerImplFakeReportTest : public AttributionManagerImplTest {
         std::vector<AttributionStorageDelegate::FakeReport>{
             {
                 .trigger_data = 0,
+                .trigger_time = base::Time::Now() + base::Hours(3),
                 .report_time = base::Time::Now() + base::Days(1),
             },
         });

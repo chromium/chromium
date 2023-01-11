@@ -218,9 +218,16 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     DCHECK_GE(trigger_data, 0);
     DCHECK_LT(trigger_data, trigger_data_cardinality);
 
+    base::Time report_time =
+        ReportTimeAtWindow(source, /*window_index=*/result.quot);
+    base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
+
+    DCHECK_EQ(ComputeReportTime(source, trigger_time), report_time);
+
     fake_reports.push_back({
         .trigger_data = static_cast<uint64_t>(trigger_data),
-        .report_time = ReportTimeAtWindow(source, /*window_index=*/result.quot),
+        .trigger_time = trigger_time,
+        .report_time = report_time,
     });
   }
   return fake_reports;

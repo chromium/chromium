@@ -109,6 +109,10 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
   return ReportTimeFromDeadline(source.source_time(), deadline);
 }
 
+base::Time LastTriggerTimeForReportTime(base::Time report_time) {
+  return report_time - kWindowDeadlineOffset;
+}
+
 std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
   int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;
 

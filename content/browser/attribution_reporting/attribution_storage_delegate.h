@@ -37,6 +37,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   struct FakeReport {
     uint64_t trigger_data;
+    // A placeholder time created to align with `report_time`.
+    base::Time trigger_time;
     base::Time report_time;
   };
 

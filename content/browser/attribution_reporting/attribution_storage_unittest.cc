@@ -1402,6 +1402,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   delegate()->set_max_attributions_per_source(1);
 
   const base::Time fake_report_time = base::Time::Now() + kReportDelay;
+  const base::Time fake_trigger_time = fake_report_time - base::Microseconds(1);
 
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
   builder.SetSourceEventId(4)
@@ -1409,13 +1410,13 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
       .SetPriority(100);
   delegate()->set_randomized_response(
       std::vector<AttributionStorageDelegate::FakeReport>{
-          {.trigger_data = 7, .report_time = fake_report_time}});
+          {.trigger_data = 7,
+           .trigger_time = fake_trigger_time,
+           .report_time = fake_report_time}});
   AttributionStorage::StoreSourceResult result =
       storage()->StoreSource(builder.Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
-
-  base::Time trigger_time = base::Time::Now();
 
   AttributionReport expected_event_level_report =
       ReportBuilder(
@@ -1425,7 +1426,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
                   .SetActiveState(StoredSource::ActiveState::
                                       kReachedEventLevelAttributionLimit)
                   .BuildStored())
-              .SetTime(trigger_time)
+              .SetTime(fake_trigger_time)
               .Build())
           .SetTriggerData(7)
           .SetReportTime(fake_report_time)
@@ -1464,7 +1465,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
                   .SetActiveState(StoredSource::ActiveState::
                                       kReachedEventLevelAttributionLimit)
                   .BuildStored())
-              .SetTime(trigger_time)
+              .SetTime(fake_trigger_time)
               .Build())
           .SetTriggerData(7)
           .SetReportTime(fake_report_time)
@@ -1492,9 +1493,15 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
       {absl::nullopt, absl::nullopt},
       {std::vector<AttributionStorageDelegate::FakeReport>(), absl::nullopt},
       {std::vector<AttributionStorageDelegate::FakeReport>{
-           {.trigger_data = 0, .report_time = now + base::Days(2)},
-           {.trigger_data = 0, .report_time = now + base::Days(1)},
-           {.trigger_data = 0, .report_time = now + base::Days(3)},
+           {.trigger_data = 0,
+            .trigger_time = now + base::Hours(1),
+            .report_time = now + base::Days(2)},
+           {.trigger_data = 0,
+            .trigger_time = now + base::Hours(1),
+            .report_time = now + base::Days(1)},
+           {.trigger_data = 0,
+            .trigger_time = now + base::Hours(1),
+            .report_time = now + base::Days(3)},
        },
        now + base::Days(1)},
   };
