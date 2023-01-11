@@ -334,9 +334,9 @@ TEST_P(TCPReadableStreamWrapperCloseTest, ResetCancelError) {
 
   stream_creator->ResetPipe();
 
+  // cancel() always has priority.
   ASSERT_EQ(tcp_readable_stream_wrapper->GetState(),
-            graceful ? StreamWrapper::State::kClosed
-                     : StreamWrapper::State::kAborted);
+            StreamWrapper::State::kClosed);
 }
 
 }  // namespace

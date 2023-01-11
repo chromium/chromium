@@ -56,6 +56,42 @@ class ForwardingUnderlyingSource : public UnderlyingSourceBase {
   const Member<ReadableStreamDefaultWrapper> readable_stream_wrapper_;
 };
 
+class ForwardingUnderlyingByteSource : public UnderlyingByteSourceBase {
+ public:
+  explicit ForwardingUnderlyingByteSource(
+      ReadableByteStreamWrapper* readable_stream_wrapper)
+      : readable_stream_wrapper_(readable_stream_wrapper) {}
+
+  ScriptPromise Pull(ReadableByteStreamController* controller,
+                     ExceptionState&) override {
+    DCHECK_EQ(readable_stream_wrapper_->Controller(), controller);
+    readable_stream_wrapper_->Pull();
+    return ScriptPromise::CastUndefined(GetScriptState());
+  }
+
+  ScriptPromise Cancel(ExceptionState&) override {
+    readable_stream_wrapper_->CloseStream();
+    return ScriptPromise::CastUndefined(GetScriptState());
+  }
+
+  ScriptPromise Cancel(v8::Local<v8::Value> reason,
+                       ExceptionState& exception_state) override {
+    return Cancel(exception_state);
+  }
+
+  ScriptState* GetScriptState() override {
+    return readable_stream_wrapper_->GetScriptState();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(readable_stream_wrapper_);
+    UnderlyingByteSourceBase::Trace(visitor);
+  }
+
+ private:
+  const Member<ReadableByteStreamWrapper> readable_stream_wrapper_;
+};
+
 class ForwardingUnderlyingSink : public UnderlyingSinkBase {
  public:
   explicit ForwardingUnderlyingSink(
@@ -172,8 +208,8 @@ void ReadableByteStreamWrapper::Trace(Visitor* visitor) const {
 UnderlyingByteSourceBase*
 ReadableByteStreamWrapper::MakeForwardingUnderlyingByteSource(
     ReadableByteStreamWrapper* readable_stream_wrapper) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return MakeGarbageCollected<ForwardingUnderlyingByteSource>(
+      readable_stream_wrapper);
 }
 
 WritableStreamWrapper::WritableStreamWrapper(ScriptState* script_state)

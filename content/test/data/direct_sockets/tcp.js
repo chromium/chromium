@@ -49,22 +49,28 @@ async function writeLargeTcpPacket(address, port, size) {
 }
 
 async function readLoop(reader, requiredBytes) {
-  if (!(reader instanceof ReadableStreamDefaultReader))
-    return 'read failed: reader is not a ReadableStreamDefaultReader';
+  if (!(reader instanceof ReadableStreamBYOBReader))
+    return 'read failed: reader is not a ReadableStreamBYOBReader';
   let bytesRead = 0;
+  let buffer = new ArrayBuffer(requiredBytes);
   while (bytesRead < requiredBytes) {
-    const { value, done } = await reader.read();
+    const {value: view, done} =
+        await reader.read(new Uint8Array(buffer, bytesRead));
     if (done)
       return 'read failed: unexpected stream close';
-    if (!value || value.length === 0)
+    if (!view || view.length === 0)
       return 'read failed: no data returned';
 
-    for (let index = 0; index < value.length; ++index) {
-      if (value[index] !== bytesRead % 256)
-        return 'read failed: bad data returned';
-      ++bytesRead;
-    }
+    bytesRead += view.byteLength;
+    buffer = view.buffer;
   }
+
+  const array = new Uint8Array(buffer);
+  for (let index = 0; index < bytesRead; ++index) {
+    if (array[index] !== index % 256)
+      return 'read failed: bad data returned';
+  }
+
   return 'read succeeded';
 }
 
@@ -72,7 +78,7 @@ async function readTcp(address, port, options, requiredBytes) {
   try {
     let tcpSocket = new TCPSocket(address, port, options);
     let { readable } = await tcpSocket.opened;
-    let reader = readable.getReader();
+    let reader = readable.getReader({mode: 'byob'});
     return await readLoop(reader, requiredBytes);
   } catch(error) {
     return ('readTcp failed: ' + error);
@@ -83,7 +89,7 @@ async function readWriteTcp(address, port, options, requiredBytes) {
   try {
     let tcpSocket = new TCPSocket(address, port, options);
     let { readable, writable } = await tcpSocket.opened;
-    let reader = readable.getReader();
+    let reader = readable.getReader({mode: 'byob'});
     let writer = writable.getWriter();
     let [readResult, writeResult] =
         await Promise.all([readLoop(reader, requiredBytes),

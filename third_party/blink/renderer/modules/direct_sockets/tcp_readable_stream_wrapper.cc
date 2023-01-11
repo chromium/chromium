@@ -11,12 +11,10 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
-#include "third_party/blink/renderer/core/streams/underlying_source_base.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -31,7 +29,7 @@ TCPReadableStreamWrapper::TCPReadableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
     mojo::ScopedDataPipeConsumerHandle handle)
-    : ReadableStreamDefaultWrapper(script_state),
+    : ReadableByteStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       data_pipe_(std::move(handle)),
       read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
@@ -51,18 +49,25 @@ TCPReadableStreamWrapper::TCPReadableStreamWrapper(
   ScriptState::Scope scope(script_state);
 
   auto* source =
-      ReadableStreamDefaultWrapper::MakeForwardingUnderlyingSource(this);
+      ReadableByteStreamWrapper::MakeForwardingUnderlyingByteSource(this);
   SetSource(source);
 
-  // Set queuing strategy of default behavior with a high water mark of 0.
-  auto* readable = ReadableStream::CreateWithCountQueueingStrategy(
-      script_state, source, /*high_water_mark=*/0);
+  auto* readable = ReadableStream::CreateByteStream(script_state, source);
   SetReadable(readable);
+
+  // UnderlyingByteSourceBase doesn't expose Controller() until the first call
+  // to Pull(); this becomes problematic if the socket is errored beforehand -
+  // calls to close() / error() will be invoked on a nullptr. Hence we obtain
+  // the controller directly.
+  auto* controller =
+      To<ReadableByteStreamController>(readable->GetController());
+  DCHECK(controller);
+  SetController(controller);
 }
 
 void TCPReadableStreamWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(pending_exception_);
-  ReadableStreamDefaultWrapper::Trace(visitor);
+  ReadableByteStreamWrapper::Trace(visitor);
 }
 
 void TCPReadableStreamWrapper::OnHandleReady(MojoResult result,
@@ -93,9 +98,27 @@ void TCPReadableStreamWrapper::Pull() {
                                           MOJO_BEGIN_READ_DATA_FLAG_NONE);
   switch (result) {
     case MOJO_RESULT_OK: {
-      auto* buffer = DOMUint8Array::Create(
-          static_cast<const uint8_t*>(data_buffer), data_length);
-      Controller()->Enqueue(buffer);
+      // respond() or enqueue() will only throw if their arguments are invalid
+      // or the stream is errored. The code below guarantees that the length is
+      // in range and the chunk is a valid view. If the stream becomes errored
+      // then this method cannot be called because the watcher is disarmed.
+      NonThrowableExceptionState exception_state;
+
+      auto* script_state = GetScriptState();
+      ScriptState::Scope scope(script_state);
+
+      if (ReadableStreamBYOBRequest* request = Controller()->byobRequest()) {
+        DOMArrayPiece view(request->view().Get());
+        data_length = std::min(
+            data_length, base::saturated_cast<uint32_t>(view.ByteLength()));
+        std::memcpy(view.Data(), data_buffer, data_length);
+        request->respond(script_state, data_length, exception_state);
+      } else {
+        auto buffer = NotShared(DOMUint8Array::Create(
+            static_cast<const uint8_t*>(data_buffer), data_length));
+        Controller()->enqueue(script_state, buffer, exception_state);
+      }
+
       result = data_pipe_->EndReadData(data_length);
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
@@ -117,23 +140,12 @@ void TCPReadableStreamWrapper::Pull() {
 }
 
 void TCPReadableStreamWrapper::CloseStream() {
-  if (GetState() != State::kOpen) {
+  // Even if we're in the process of graceful close, readable.cancel() has
+  // priority.
+  if (GetState() != State::kOpen && GetState() != State::kGracefullyClosing) {
     return;
   }
   SetState(State::kClosed);
-
-  // If close request came from reader.cancel(), the internal state of the
-  // stream is already set to closed. Therefore we don't have to do anything
-  // with the controller.
-  if (!data_pipe_) {
-    // This is a rare case indicating that reader.cancel() interrupted the
-    // OnReadError() call where the pipe already got reset, but the
-    // corresponding IPC hasn't yet arrived. The simplest way is to abort
-    // CloseStream by setting state to Open and allow the IPC to finish the
-    // job.
-    SetState(State::kOpen);
-    return;
-  }
 
   ResetPipe();
   std::move(on_close_).Run(ScriptValue());
@@ -146,21 +158,29 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   }
   graceful_peer_shutdown_ = (error_code == net::OK);
 
+  auto* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
   if (graceful_peer_shutdown_) {
-    SetState(State::kClosed);
-    if (!data_pipe_) {
-      Controller()->Close();
+    if (data_pipe_) {
+      // This is the case where OnReadError() arrived before pipe break.
+      // Set |state| to kGracefullyClosing and handle the rest in
+      // OnHandleReset().
+      SetState(State::kGracefullyClosing);
+    } else {
+      // This is the case where OnReadError() arrived after pipe break.
+      // Since all data has already been read, we can simply close the
+      // controller, set |state| to kClosed and invoke the closing callback.
+      SetState(State::kClosed);
+      DCHECK(ReadableStream::IsReadable(Readable()));
+      NonThrowableExceptionState exception_state;
+      Controller()->close(script_state, exception_state);
       std::move(on_close_).Run(ScriptValue());
     }
     return;
   }
 
   SetState(State::kAborted);
-
-  auto* script_state = GetScriptState();
-  // Scope is needed because there's no ScriptState* on the call stack for
-  // ScriptValue::From.
-  ScriptState::Scope scope{script_state};
 
   auto exception = ScriptValue::From(
       script_state,
@@ -174,7 +194,7 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
     return;
   }
 
-  Controller()->Error(exception);
+  Controller()->error(script_state, exception);
   std::move(on_close_).Run(exception);
 }
 
@@ -204,15 +224,25 @@ void TCPReadableStreamWrapper::OnHandleReset(MojoResult result,
 
   ResetPipe();
 
+  auto* script_state = GetScriptState();
+  // Happens in unit tests if V8TestingScope goes out before OnHandleReset
+  // propagates.
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  ScriptState::Scope scope(script_state);
   if (!pending_exception_.IsEmpty()) {
-    Controller()->Error(pending_exception_);
+    Controller()->error(script_state, pending_exception_);
 
     SetState(State::kAborted);
     std::move(on_close_).Run(pending_exception_);
 
     pending_exception_.Clear();
   } else if (graceful_peer_shutdown_) {
-    Controller()->Close();
+    DCHECK(ReadableStream::IsReadable(Readable()));
+    NonThrowableExceptionState exception_state;
+    Controller()->close(script_state, exception_state);
 
     SetState(State::kClosed);
     std::move(on_close_).Run(ScriptValue());

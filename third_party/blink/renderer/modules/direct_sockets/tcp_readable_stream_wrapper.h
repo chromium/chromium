@@ -25,7 +25,7 @@ namespace blink {
 // Helper class to read from a mojo consumer handle
 class MODULES_EXPORT TCPReadableStreamWrapper
     : public GarbageCollected<TCPReadableStreamWrapper>,
-      public ReadableStreamDefaultWrapper {
+      public ReadableByteStreamWrapper {
   USING_PRE_FINALIZER(TCPReadableStreamWrapper, Dispose);
 
  public:

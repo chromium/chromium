@@ -27,7 +27,7 @@ class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
  public:
   using CloseOnceCallback = base::OnceCallback<void(ScriptValue exception)>;
 
-  enum class State { kOpen, kAborted, kClosed };
+  enum class State { kOpen, kAborted, kClosed, kGracefullyClosing };
 
   explicit StreamWrapper(ScriptState*);
   virtual ~StreamWrapper();
