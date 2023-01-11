@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/global_media_controls/public/test/mock_media_session_notification_item_delegate.h"
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
@@ -24,25 +25,6 @@ using testing::NiceMock;
 namespace global_media_controls {
 
 namespace {
-
-class MockMediaSessionNotificationItemDelegate
-    : public MediaSessionNotificationItem::Delegate {
- public:
-  MockMediaSessionNotificationItemDelegate() = default;
-  MockMediaSessionNotificationItemDelegate(
-      const MockMediaSessionNotificationItemDelegate&) = delete;
-  MockMediaSessionNotificationItemDelegate& operator=(
-      const MockMediaSessionNotificationItemDelegate&) = delete;
-  ~MockMediaSessionNotificationItemDelegate() override = default;
-
-  MOCK_METHOD(void, ActivateItem, (const std::string&));
-  MOCK_METHOD(void, HideItem, (const std::string&));
-  MOCK_METHOD(void, RemoveItem, (const std::string&));
-  MOCK_METHOD(void, RefreshItem, (const std::string&));
-  MOCK_METHOD(void,
-              LogMediaSessionActionButtonPressed,
-              (const std::string&, MediaSessionAction));
-};
 
 const char kRequestId[] = "requestid";
 
@@ -70,7 +52,9 @@ class MediaSessionNotificationItemTest : public testing::Test {
     return view_;
   }
 
-  MockMediaSessionNotificationItemDelegate& delegate() { return delegate_; }
+  test::MockMediaSessionNotificationItemDelegate& delegate() {
+    return delegate_;
+  }
 
   media_session::test::TestMediaController& controller() { return controller_; }
 
@@ -82,7 +66,7 @@ class MediaSessionNotificationItemTest : public testing::Test {
 
  private:
   NiceMock<media_message_center::test::MockMediaNotificationView> view_;
-  NiceMock<MockMediaSessionNotificationItemDelegate> delegate_;
+  NiceMock<test::MockMediaSessionNotificationItemDelegate> delegate_;
   media_session::test::TestMediaController controller_;
   std::unique_ptr<MediaSessionNotificationItem> item_;
 

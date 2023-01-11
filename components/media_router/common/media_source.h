@@ -114,8 +114,7 @@ class MediaSource {
   // desktop/screen/window.
   static MediaSource ForUnchosenDesktop();
 
-  // Returns true if source outputs its content via tab mirroring and isn't a
-  // local file.
+  // Returns true if source outputs its content via tab mirroring.
   bool IsTabMirroringSource() const;
 
   // Returns true if source outputs its content via desktop mirroring.
@@ -129,9 +128,13 @@ class MediaSource {
 
   // Parses the ID and returns the SessionTabHelper tab ID referencing a source
   // tab.  Don't rely on this method returning something useful without first
-  // calling IsTabMirroringSource(); it will return 0 for for ForLocalFile()
-  // source and -1 for non-tab sources or the ForAnyTab() source.
-  int TabId() const;
+  // calling IsTabMirroringSource(); Returns absl::nullopt for non-tab sources
+  // or the ForAnyTab() source.
+  absl::optional<int> TabId() const;
+
+  // Parse the tab ID from the RemotePlayback source. Returns absl::nullopt for
+  // non-RemotePlayback sources or invalid formats.
+  absl::optional<int> TabIdFromRemotePlaybackSource() const;
 
   // When this source was created by ForDesktop(), returns the stream ID to pass
   // to content::DesktopStreamsRegistry::RequestMediaForStreamId(). Otherwise,

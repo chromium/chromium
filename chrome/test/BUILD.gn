@@ -8993,6 +8993,9 @@ test("unit_tests") {
     if (!is_chromeos) {
       sources += [ "../browser/ui/views/frame/opaque_browser_frame_view_layout_unittest.cc" ]
     }
+    if (is_linux || is_win || is_mac) {
+      sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc" ]
+    }
     if (use_aura) {
       sources += [
         "../browser/ui/views/apps/shaped_app_window_targeter_unittest.cc",

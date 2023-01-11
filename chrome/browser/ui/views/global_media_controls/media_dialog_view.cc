@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,9 +78,20 @@ std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
   return l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION);
 }
 
-const std::string GetRemotePlaybackRouteId(const std::string& item_id,
-                                           content::BrowserContext* context) {
-  if (!base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen)) {
+const std::string GetRemotePlaybackRouteId(
+    const std::string& item_id,
+    base::WeakPtr<media_message_center::MediaNotificationItem> item,
+    content::BrowserContext* context) {
+  // Return an empty string if the item is not a local media session or the
+  // media session doesn't have an associated Remote Playback route.
+  if (!base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) ||
+      !item ||
+      item->SourceType() !=
+          media_message_center::SourceType::kLocalMediaSession ||
+      !static_cast<global_media_controls::MediaSessionNotificationItem*>(
+           item.get())
+           ->GetRemotePlaybackMetadata()
+           ->remote_playback_started) {
     return "";
   }
 
@@ -89,27 +101,33 @@ const std::string GetRemotePlaybackRouteId(const std::string& item_id,
     return "";
   }
 
-  SessionID::id_type item_tab_id =
+  const int item_tab_id =
       sessions::SessionTabHelper::IdForTab(web_contents).id();
-  for (auto route :
+  for (const auto& route :
        media_router::MediaRouterFactory::GetApiForBrowserContext(context)
            ->GetCurrentRoutes()) {
-    if (!route.media_source().IsRemotePlaybackSource()) {
-      continue;
+    media_router::MediaSource media_source = route.media_source();
+    absl::optional<int> tab_id_from_route_id;
+    if (media_source.IsRemotePlaybackSource()) {
+      tab_id_from_route_id = media_source.TabIdFromRemotePlaybackSource();
+    } else if (media_source.IsTabMirroringSource()) {
+      tab_id_from_route_id = media_source.TabId();
     }
-    std::string media_source_tab_id;
-    net::GetValueForKeyInQuery(route.media_source().url(), "tab_id",
-                               &media_source_tab_id);
-    if (base::NumberToString(item_tab_id) == media_source_tab_id) {
+
+    if (tab_id_from_route_id.has_value() &&
+        tab_id_from_route_id.value() == item_tab_id) {
       return route.media_route_id();
     }
   }
+
   return "";
 }
 
-bool ShouldShowDeviceSelectorView(const std::string& item_id,
-                                  media_message_center::SourceType source_type,
-                                  Profile* profile) {
+bool ShouldShowDeviceSelectorView(
+    const std::string& item_id,
+    base::WeakPtr<media_message_center::MediaNotificationItem> item,
+    Profile* profile) {
+  auto source_type = item->SourceType();
   if (source_type == media_message_center::SourceType::kCast) {
     return false;
   }
@@ -123,7 +141,7 @@ bool ShouldShowDeviceSelectorView(const std::string& item_id,
   // Hide device selector view if the local media session has started Remote
   // Playback.
   if (source_type == media_message_center::SourceType::kLocalMediaSession &&
-      !GetRemotePlaybackRouteId(item_id, profile).empty()) {
+      !GetRemotePlaybackRouteId(item_id, item, profile).empty()) {
     return false;
   }
 
@@ -533,7 +551,7 @@ MediaDialogView::BuildFooterView(
       media_message_center::SourceType::kLocalMediaSession) {
     return nullptr;
   }
-  auto route_id = GetRemotePlaybackRouteId(id, profile_);
+  auto route_id = GetRemotePlaybackRouteId(id, item, profile_);
   if (route_id.empty()) {
     return nullptr;
   }
@@ -555,7 +573,7 @@ std::unique_ptr<MediaItemUIDeviceSelectorView>
 MediaDialogView::BuildDeviceSelector(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  if (!ShouldShowDeviceSelectorView(id, item->SourceType(), profile_)) {
+  if (!ShouldShowDeviceSelectorView(id, item, profile_)) {
     return nullptr;
   }
 

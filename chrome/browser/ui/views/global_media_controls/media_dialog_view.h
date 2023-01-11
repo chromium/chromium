@@ -106,6 +106,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
  private:
   friend class MediaDialogViewBrowserTest;
+  friend class MediaDialogViewWithRemotePlaybackTest;
+
   MediaDialogView(
       views::View* anchor_view,
       views::BubbleBorder::Arrow anchor_position,

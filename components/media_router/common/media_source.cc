@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h"
 #include "url/gurl.h"
 
@@ -129,7 +130,7 @@ MediaSource MediaSource::ForUnchosenDesktop() {
 }
 
 bool MediaSource::IsTabMirroringSource() const {
-  return id() == kAnyTabMediaUrn || TabId() > 0;
+  return id() == kAnyTabMediaUrn || TabId().has_value();
 }
 
 bool MediaSource::IsDesktopMirroringSource() const {
@@ -147,9 +148,28 @@ bool MediaSource::IsRemotePlaybackSource() const {
   return url_.SchemeIs(kRemotePlaybackPresentationUrlScheme);
 }
 
-int MediaSource::TabId() const {
-  int tab_id = -1;
-  sscanf(id_.c_str(), kTabMediaUrnFormat, &tab_id);
+absl::optional<int> MediaSource::TabId() const {
+  int tab_id;
+  if (sscanf(id_.c_str(), kTabMediaUrnFormat, &tab_id) != 1) {
+    return absl::nullopt;
+  }
+  return tab_id;
+}
+
+absl::optional<int> MediaSource::TabIdFromRemotePlaybackSource() const {
+  if (!IsRemotePlaybackSource()) {
+    return absl::nullopt;
+  }
+
+  std::string tab_id_str;
+  if (!net::GetValueForKeyInQuery(url(), "tab_id", &tab_id_str)) {
+    return absl::nullopt;
+  }
+
+  int tab_id;
+  if (!base::StringToInt(tab_id_str, &tab_id)) {
+    return absl::nullopt;
+  }
   return tab_id;
 }
 
@@ -184,10 +204,11 @@ std::string MediaSource::AppNameFromDialSource() const {
 
 std::string MediaSource::TruncateForLogging(size_t max_length) const {
   const std::string origin = url_.DeprecatedGetOriginAsURL().spec();
-  if (!origin.empty())
+  if (!origin.empty()) {
     return origin.substr(0, max_length);
-  // TODO(takumif): Keep the query string by redacting PII. The query string may
-  // contain info useful for debugging such as the required capabilities.
+  }
+  // TODO(takumif): Keep the query string by redacting PII. The query string
+  // may contain info useful for debugging such as the required capabilities.
   const size_t query_start_index = id_.find("?");
   const size_t length =
       query_start_index == std::string::npos ? max_length : query_start_index;
