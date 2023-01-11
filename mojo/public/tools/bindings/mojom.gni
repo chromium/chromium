@@ -1822,7 +1822,13 @@ template("mojom") {
         data_deps += [ "${full_name}_js_data_deps" ]
       }
     }
+  }
 
+  # js_library() closure compiler targets, primarily used on ChromeOS. Only
+  # generate these targets if the mojom target is not C++ only and is not using
+  # TypeScript.
+  if ((!defined(invoker.cpp_only) || !invoker.cpp_only) &&
+      !use_typescript_for_target) {
     js_library_target_name = "${target_name}_js_library"
     if (sources_list != []) {
       js_library(js_library_target_name) {
@@ -1870,34 +1876,6 @@ template("mojom") {
       }
     } else {
       group(js_library_for_compile_target_name) {
-      }
-    }
-
-    js_modules_target_name = "${target_name}_js_modules"
-    if (sources_list != []) {
-      js_library(js_modules_target_name) {
-        extra_public_deps = [ ":$generator_js_target_name" ]
-        sources = []
-        foreach(base_path, output_file_base_paths) {
-          sources += [ "$root_gen_dir/${base_path}.m.js" ]
-        }
-        externs_list = [
-          "${externs_path}/mojo_core.js",
-          "${externs_path}/pending.js",
-        ]
-        if (defined(invoker.disallow_native_types) &&
-            invoker.disallow_native_types) {
-          deps = []
-        } else {
-          deps = [ "//mojo/public/js:bindings_uncompiled" ]
-        }
-        foreach(d, all_deps) {
-          full_name = get_label_info(d, "label_no_toolchain")
-          deps += [ "${full_name}_js_modules" ]
-        }
-      }
-    } else {
-      group(js_modules_target_name) {
       }
     }
 
