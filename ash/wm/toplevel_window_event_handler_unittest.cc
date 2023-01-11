@@ -514,6 +514,8 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
   std::unique_ptr<aura::Window> target(CreateTestWindowInShellWithDelegate(
       new TestWindowDelegate(HTCAPTION), 0, gfx::Rect(0, 0, 100, 100)));
   WindowState* window_state = WindowState::Get(target.get());
+  EXPECT_EQ(WindowStateType::kDefault, window_state->GetStateType());
+  EXPECT_EQ(gfx::Rect(), window_state->GetRestoreBoundsInScreen());
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      target.get());
   gfx::Rect old_bounds = target->bounds();
@@ -531,6 +533,8 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
   // Verify that the window has moved after the gesture.
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state->GetStateType());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+            window_state->GetRestoreBoundsInScreen());
 
   old_bounds = target->bounds();
 
@@ -542,8 +546,12 @@ TEST_F(ToplevelWindowEventHandlerTest, GestureDrag) {
 
   EXPECT_NE(old_bounds.ToString(), target->bounds().ToString());
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+            window_state->GetRestoreBoundsInScreen());
 
   window_state->Restore();
+  EXPECT_EQ(WindowStateType::kNormal, window_state->GetStateType());
+  EXPECT_EQ(gfx::Rect(), window_state->GetRestoreBoundsInScreen());
   gfx::Rect bounds_before_maximization = target->bounds();
   bounds_before_maximization.Offset(0, 100);
   target->SetBounds(bounds_before_maximization);

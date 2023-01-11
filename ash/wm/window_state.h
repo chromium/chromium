@@ -6,6 +6,7 @@
 #define ASH_WM_WINDOW_STATE_H_
 
 #include <memory>
+#include <ostream>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -104,6 +105,28 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     // Bounds animation with zero tween. Updates the bounds once at the end of
     // the animation.
     kAnimateZero,
+  };
+
+  // Represents the state of a window relevant for restore.
+  struct RestoreState {
+    // The WindowStateType for which this RestoreState is applicable.
+    chromeos::WindowStateType window_state_type =
+        chromeos::WindowStateType::kDefault;
+
+    // The actual window bounds, in screen coordinates, during this
+    // window_state_type. If there was no explicit restore bounds property
+    // during this state, then the actual bounds here is used for restoring.
+    gfx::Rect actual_bounds_in_screen;
+
+    // The value of the restore bounds property, if any, in screen coordinates,
+    // during this window_state_type. This is separate from the actual bounds
+    // above, because some special cases, such as horizontal/vertical maximize,
+    // have different actual bounds and restore bounds.
+    absl::optional<gfx::Rect> restore_bounds_in_screen;
+
+    // TODO(aluh): Simplify to defaulted comparison operator once C++20 is
+    // supported.
+    bool operator==(const RestoreState&) const;
   };
 
   // The default duration for an animation between two sets of bounds.
@@ -210,6 +233,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // TODO(oshima): Try hiding these methods and making them accessible only to
   // state impl. State changes should happen through events (as much
   // as possible).
+
+  // Gets the current bounds in screen DIP coordinates.
+  gfx::Rect GetCurrentBoundsInScreen() const;
 
   // Saves the current bounds to be used as a restore bounds.
   void SaveCurrentBoundsForRestore();
@@ -396,7 +422,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Returns the Display that this WindowState is on.
   display::Display GetDisplay() const;
 
-  // Returns the window state to restore to from the current window state.
+  // Returns the WindowStateType to restore to from the current window state.
+  // TODO(aluh): Rename to GetWindowStateTypeForRestore() for clarity.
   chromeos::WindowStateType GetRestoreWindowState() const;
 
   // Called when `window_` is dragged to maximized to track if it's a
@@ -411,8 +438,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     snap_action_source_ = type;
   }
 
-  const std::vector<chromeos::WindowStateType>&
-  window_state_restore_history_for_testing() const {
+  const std::vector<RestoreState>& window_state_restore_history_for_testing()
+      const {
     return window_state_restore_history_;
   }
 
@@ -520,10 +547,17 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // window was not partial.
   void MaybeRecordPartialDuration();
 
-  // Called after the window state change to update the window state restore
-  // history stack.
-  void UpdateWindowStateRestoreHistoryStack(
-      chromeos::WindowStateType previous_state_type);
+  // Called before the window state change to push/pop the applicable window
+  // state to/from the restore history.
+  void UpdateRestoreHistory(chromeos::WindowStateType previous_state_type);
+
+  // Called after the window state change to update the various window restore
+  // properties from the restore history.
+  void UpdateRestorePropertiesFromRestoreHistory();
+
+  // Looks at the next RestoreState from the restore history without modifying
+  // the history. Returns nullptr if history is empty.
+  const RestoreState* PeekNextRestoreState() const;
 
   // Depending on the capabilities of the window we either return
   // |WindowStateType::kMaximized| or |WindowStateType::kNormal|.
@@ -639,14 +673,22 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   base::TimeTicks partial_start_time_;
 
   // Maintains the window state restore history that the current window state
-  // can restore back to. See kWindowStateRestoreHistoryLayerMap in the cc file
-  // for what window state types that can be put in the restore history stack.
-  std::vector<chromeos::WindowStateType> window_state_restore_history_;
+  // can restore back to, with relevant restore states.
+  // See `kWindowStateRestoreHistoryLayerMap` in the cc file for what window
+  // state types can be put in the restore history stack.
+  std::vector<RestoreState> window_state_restore_history_;
+
+  // Holds the current working restore state.
+  absl::optional<RestoreState> current_restore_state_;
 
   // This is used to record where the current snap window state change request
   // comes from.
   WindowSnapActionSource snap_action_source_ = WindowSnapActionSource::kOthers;
 };
+
+ASH_EXPORT
+std::ostream& operator<<(std::ostream& os,
+                         const WindowState::RestoreState& state);
 
 }  // namespace ash
 

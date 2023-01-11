@@ -62,10 +62,13 @@ gfx::Size GetWindowMaximumSize(aura::Window* window) {
                             : gfx::Size();
 }
 
-void MoveToDisplayForRestore(WindowState* window_state) {
-  if (!window_state->HasRestoreBounds())
-    return;
-  const gfx::Rect restore_bounds = window_state->GetRestoreBoundsInScreen();
+// Called to ensure the window is moved to the correct display when entering the
+// next state, taking into account whether it's restoring or not.
+void MoveWindowToDisplay(WindowState* window_state) {
+  const gfx::Rect window_bounds =
+      window_state->HasRestoreBounds()
+          ? window_state->GetRestoreBoundsInScreen()
+          : window_state->GetCurrentBoundsInScreen();
 
   // Move only if the restore bounds is outside of
   // the display. There is no information about in which
@@ -77,9 +80,9 @@ void MoveToDisplayForRestore(WindowState* window_state) {
                                ->GetDisplayNearestWindow(window_state->window())
                                .bounds();
 
-  if (!display_area.Intersects(restore_bounds)) {
+  if (!display_area.Intersects(window_bounds)) {
     const display::Display& display =
-        display::Screen::GetScreen()->GetDisplayMatching(restore_bounds);
+        display::Screen::GetScreen()->GetDisplayMatching(window_bounds);
     RootWindowController* new_root_controller =
         Shell::Get()->GetRootWindowControllerWithDisplayId(display.id());
     if (new_root_controller->GetRootWindow() !=
@@ -468,36 +471,21 @@ void DefaultState::EnterToNextState(WindowState* window_state,
   // TODO(oshima): This was added for DOCKED windows. Investigate if
   // we still need this.
   if (window_state->window()->parent()) {
-    if (!window_state->HasRestoreBounds() &&
-        IsNormalWindowStateType(previous_state_type) &&
-        !window_state->IsMinimized() && !window_state->IsNormalStateType()) {
-      window_state->SaveCurrentBoundsForRestore();
-    }
-
     // When restoring from a minimized state, we want to restore to the
     // previous bounds. However, we want to maintain the restore bounds.
     // (The restore bounds are set if a user maximized the window in one
     // axis by double clicking the window border for example).
-    gfx::Rect restore_bounds_in_screen;
     if (previous_state_type == WindowStateType::kMinimized &&
         window_state->IsNormalStateType() && window_state->HasRestoreBounds() &&
         !window_state->unminimize_to_restore_bounds()) {
-      restore_bounds_in_screen = window_state->GetRestoreBoundsInScreen();
       window_state->SaveCurrentBoundsForRestore();
     }
 
     if (window_state->IsMaximizedOrFullscreenOrPinned())
-      MoveToDisplayForRestore(window_state);
+      MoveWindowToDisplay(window_state);
 
     UpdateBoundsFromState(window_state, previous_state_type);
     UpdateMinimizedState(window_state, previous_state_type);
-
-    // Normal state should have no restore bounds unless it's
-    // unminimized.
-    if (!restore_bounds_in_screen.IsEmpty())
-      window_state->SetRestoreBoundsInScreen(restore_bounds_in_screen);
-    else if (window_state->IsNormalStateType())
-      window_state->ClearRestoreBounds();
   }
   window_state->NotifyPostStateTypeChange(previous_state_type);
 
