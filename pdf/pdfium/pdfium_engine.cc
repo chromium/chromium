@@ -254,10 +254,8 @@ void SetUpV8() {
     v8::V8::SetFlagsFromString(recommended, strlen(recommended));
 
     // The isolate holder is already initialized in the renderer process.
-    gin::IsolateHolder::Initialize(
-        gin::IsolateHolder::kNonStrictMode,
-        static_cast<v8::ArrayBuffer::Allocator*>(
-            FPDF_GetArrayBufferAllocatorSharedInstance()));
+    gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
+                                   gin::ArrayBufferAllocator::SharedInstance());
   }
 
   DCHECK(!g_isolate_holder);
