@@ -637,7 +637,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             RecordRegisterImpressionAllowed(allowed);
             if (!allowed) {
               this->OnSourceStored(
-                  std::move(source),
+                  source,
                   /*cleared_debug_key=*/absl::nullopt, is_debug_cookie_set,
                   AttributionStorage::StoreSourceResult(
                       StorableSource::Result::kProhibitedByBrowserPolicy));

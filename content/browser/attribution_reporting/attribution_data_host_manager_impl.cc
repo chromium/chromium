@@ -565,8 +565,8 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
 
 void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     const blink::AttributionSrcToken& attribution_src_token,
-    SuitableOrigin reporting_origin,
-    std::string header_value,
+    const SuitableOrigin& reporting_origin,
+    const std::string& header_value,
     AttributionNavigationType nav_type,
     data_decoder::DataDecoder::ValueOrError result) {
   auto it = redirect_registrations_.find(attribution_src_token);

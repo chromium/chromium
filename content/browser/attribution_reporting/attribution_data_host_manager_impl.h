@@ -102,8 +102,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   void OnRedirectSourceParsed(
       const blink::AttributionSrcToken& attribution_src_token,
-      attribution_reporting::SuitableOrigin reporting_origin,
-      std::string header_value,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      const std::string& header_value,
       blink::mojom::AttributionNavigationType nav_type,
       data_decoder::DataDecoder::ValueOrError result);
 
