@@ -354,6 +354,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
                     "Disable the per-domain blocking for 3D APIs after GPU reset. "
                             + "This switch is intended only for tests."),
+            Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
+                    "Controls whether a log is allowed to be closed when Chrome"
+                            + " is backgrounded/foregrounded early."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
