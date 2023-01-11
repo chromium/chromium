@@ -33,6 +33,7 @@ class MockAutofillClient : public autofill::TestAutofillClient {
  public:
   MOCK_METHOD(bool, AreServerCardsSupported, (), (const override));
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
+  MOCK_METHOD(bool, IsContextSecure, (), (const override));
 };
 
 class MockCapabilitiesFetcher : public FastCheckoutCapabilitiesFetcher {
@@ -120,6 +121,7 @@ class FastCheckoutTriggerValidatorTest
         .WillByDefault(Return(pdm()));
     ON_CALL(*pdm(), IsAutofillCreditCardEnabled).WillByDefault(Return(true));
     ON_CALL(*pdm(), IsAutofillProfileEnabled).WillByDefault(Return(true));
+    ON_CALL(*autofill_client(), IsContextSecure).WillByDefault(Return(true));
   }
 
   MockPersonalDataManager* pdm() { return pdm_.get(); }
@@ -159,14 +161,15 @@ class FastCheckoutTriggerValidatorTest
   std::unique_ptr<MockPersonalDataManager> pdm_;
 };
 
-TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun) {
+TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_AllChecksPass_ReturnsTrue) {
   EXPECT_TRUE(ShouldRun());
   histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
                                        FastCheckoutTriggerOutcome::kSuccess,
                                        1u);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, FeatureDisabled_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_FeatureDisabled_ReturnsFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kFastCheckout);
 
@@ -175,7 +178,8 @@ TEST_F(FastCheckoutTriggerValidatorTest, FeatureDisabled_NoRun) {
             0);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, AlreadyRunning_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_AlreadyRunning_ReturnsFalse) {
   is_running_ = true;
 
   EXPECT_FALSE(ShouldRun());
@@ -183,7 +187,16 @@ TEST_F(FastCheckoutTriggerValidatorTest, AlreadyRunning_NoRun) {
             0);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, NoTriggerForm_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_NotContextSecure_ReturnsFalse) {
+  ON_CALL(*autofill_client(), IsContextSecure).WillByDefault(Return(false));
+
+  EXPECT_FALSE(ShouldRun());
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
+            0);
+}
+
+TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_NoTriggerForm_ReturnsFalse) {
   ON_CALL(*capabilities_fetcher(), IsTriggerFormSupported)
       .WillByDefault(Return(false));
 
@@ -192,7 +205,7 @@ TEST_F(FastCheckoutTriggerValidatorTest, NoTriggerForm_NoRun) {
             0);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, UiIsShowing_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_UiIsShowing_ReturnsFalse) {
   ui_state_ = FastCheckoutUIState::kIsShowing;
 
   EXPECT_FALSE(ShouldRun());
@@ -201,7 +214,7 @@ TEST_F(FastCheckoutTriggerValidatorTest, UiIsShowing_NoRun) {
       FastCheckoutTriggerOutcome::kFailureShownBefore, 1u);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, UiWasShown_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_UiWasShown_ReturnsFalse) {
   ui_state_ = FastCheckoutUIState::kWasShown;
 
   EXPECT_FALSE(ShouldRun());
@@ -210,7 +223,8 @@ TEST_F(FastCheckoutTriggerValidatorTest, UiWasShown_NoRun) {
       FastCheckoutTriggerOutcome::kFailureShownBefore, 1u);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, FieldNotFocusable_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_FieldNotFocusable_ReturnsFalse) {
   field_.is_focusable = false;
 
   EXPECT_FALSE(ShouldRun());
@@ -219,7 +233,7 @@ TEST_F(FastCheckoutTriggerValidatorTest, FieldNotFocusable_NoRun) {
       FastCheckoutTriggerOutcome::kFailureFieldNotFocusable, 1u);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, FieldHasValue_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_FieldHasValue_ReturnsFalse) {
   field_.value = u"value";
 
   EXPECT_FALSE(ShouldRun());
@@ -228,7 +242,8 @@ TEST_F(FastCheckoutTriggerValidatorTest, FieldHasValue_NoRun) {
       FastCheckoutTriggerOutcome::kFailureFieldNotEmpty, 1u);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, CannotShowAutofillUi_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_CannotShowAutofillUi_ReturnsFalse) {
   ON_CALL(*autofill_driver(), CanShowAutofillUi).WillByDefault(Return(false));
 
   EXPECT_FALSE(ShouldRun());
@@ -237,7 +252,8 @@ TEST_F(FastCheckoutTriggerValidatorTest, CannotShowAutofillUi_NoRun) {
       FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi, 1u);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, AutofillProfileDisabled_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_AutofillProfileDisabled_ReturnsFalse) {
   ON_CALL(*pdm(), IsAutofillProfileEnabled).WillByDefault(Return(false));
 
   EXPECT_FALSE(ShouldRun());
@@ -245,7 +261,8 @@ TEST_F(FastCheckoutTriggerValidatorTest, AutofillProfileDisabled_NoRun) {
             0);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, CreditCardDisabled_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_CreditCardDisabled_ReturnsFalse) {
   ON_CALL(*pdm(), IsAutofillCreditCardEnabled).WillByDefault(Return(false));
 
   EXPECT_FALSE(ShouldRun());
@@ -253,7 +270,8 @@ TEST_F(FastCheckoutTriggerValidatorTest, CreditCardDisabled_NoRun) {
             0);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, NoValidAddressProfiles_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_NoValidAddressProfiles_ReturnsFalse) {
   ON_CALL(*personal_data_helper(), GetValidAddressProfiles)
       .WillByDefault(Return(std::vector<autofill::AutofillProfile*>{}));
 
@@ -263,7 +281,8 @@ TEST_F(FastCheckoutTriggerValidatorTest, NoValidAddressProfiles_NoRun) {
       FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
 }
 
-TEST_F(FastCheckoutTriggerValidatorTest, NoValidCreditCards_NoRun) {
+TEST_F(FastCheckoutTriggerValidatorTest,
+       ShouldRun_NoValidCreditCards_ReturnsFalse) {
   ON_CALL(*personal_data_helper(), GetValidCreditCards)
       .WillByDefault(Return(std::vector<autofill::CreditCard*>{}));
 

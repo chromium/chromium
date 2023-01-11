@@ -51,6 +51,15 @@ bool FastCheckoutTriggerValidatorImpl::ShouldRun(
     return false;
   }
 
+  // Trigger only if the URL scheme is cryptographic and security level is not
+  // dangerous.
+  if (!autofill_client_->IsContextSecure()) {
+    LogAutofillInternals(
+        "not triggered because context is not secure, e.g. not https or "
+        "dangerous security level.");
+    return false;
+  }
+
   // Trigger only if the form is a trigger form for Fast Checkout.
   if (!IsTriggerForm(form, field)) {
     return false;
