@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/test/test_desks_templates_delegate.h"
+#include "ash/public/cpp/test/test_saved_desk_delegate.h"
 
 #include "ash/public/cpp/desk_template.h"
 #include "base/containers/contains.h"
@@ -14,56 +14,54 @@
 
 namespace ash {
 
-TestDesksTemplatesDelegate::TestDesksTemplatesDelegate() = default;
+TestSavedDeskDelegate::TestSavedDeskDelegate() = default;
 
-TestDesksTemplatesDelegate::~TestDesksTemplatesDelegate() = default;
+TestSavedDeskDelegate::~TestSavedDeskDelegate() = default;
 
-void TestDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
+void TestSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     aura::Window* window,
     GetAppLaunchDataCallback callback) const {
   std::move(callback).Run({});
 }
 
-desks_storage::DeskModel* TestDesksTemplatesDelegate::GetDeskModel() {
+desks_storage::DeskModel* TestSavedDeskDelegate::GetDeskModel() {
   return desk_model_;
 }
 
-bool TestDesksTemplatesDelegate::IsIncognitoWindow(aura::Window* window) const {
+bool TestSavedDeskDelegate::IsIncognitoWindow(aura::Window* window) const {
   return false;
 }
 
 absl::optional<gfx::ImageSkia>
-TestDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
+TestSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const std::string& identifier,
     const ui::ColorProvider* color_provider) const {
   return absl::nullopt;
 }
 
-void TestDesksTemplatesDelegate::GetFaviconForUrl(
+void TestSavedDeskDelegate::GetFaviconForUrl(
     const std::string& page_url,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {}
 
-void TestDesksTemplatesDelegate::GetIconForAppId(
+void TestSavedDeskDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {}
 
-void TestDesksTemplatesDelegate::LaunchAppsFromTemplate(
-    std::unique_ptr<DeskTemplate> desk_template) {}
+void TestSavedDeskDelegate::LaunchAppsFromSavedDesk(
+    std::unique_ptr<DeskTemplate> saved_desk) {}
 
-bool TestDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
+bool TestSavedDeskDelegate::IsWindowSupportedForSavedDesk(
     aura::Window* window) const {
   return DeskTemplate::IsAppTypeSupported(window);
 }
 
-std::string TestDesksTemplatesDelegate::GetAppShortName(
-    const std::string& app_id) {
+std::string TestSavedDeskDelegate::GetAppShortName(const std::string& app_id) {
   return std::string();
 }
 
-bool TestDesksTemplatesDelegate::IsAppAvailable(
-    const std::string& app_id) const {
+bool TestSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
   return !base::Contains(unavailable_app_ids_, app_id);
 }
 

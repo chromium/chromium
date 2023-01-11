@@ -35,11 +35,11 @@ class AccessibilityDelegate;
 class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
-class DesksTemplatesDelegate;
 class GlanceablesController;
 class GlanceablesDelegate;
 class NearbyShareController;
 class NearbyShareDelegate;
+class SavedDeskDelegate;
 class SystemSoundsDelegate;
 
 // Delegate of the Shell.
@@ -71,7 +71,7 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const = 0;
 
-  virtual std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
+  virtual std::unique_ptr<SavedDeskDelegate> CreateSavedDeskDelegate()
       const = 0;
 
   // Creates and returns the delegate of the System Sounds feature.

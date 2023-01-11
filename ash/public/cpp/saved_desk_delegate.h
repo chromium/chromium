@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_DESKS_TEMPLATES_DELEGATE_H_
-#define ASH_PUBLIC_CPP_DESKS_TEMPLATES_DELEGATE_H_
+#ifndef ASH_PUBLIC_CPP_SAVED_DESK_DELEGATE_H_
+#define ASH_PUBLIC_CPP_SAVED_DESK_DELEGATE_H_
 
 #include <string>
 
@@ -41,20 +41,20 @@ namespace ash {
 class DeskTemplate;
 
 // This delegate is owned by Shell and used by ash/ to communicate with
-// DesksTemplatesClient in chrome/.
-class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
+// DesksClient in chrome/.
+class ASH_PUBLIC_EXPORT SavedDeskDelegate {
  public:
-  virtual ~DesksTemplatesDelegate() = default;
+  virtual ~SavedDeskDelegate() = default;
 
   using GetAppLaunchDataCallback =
       base::OnceCallback<void(std::unique_ptr<app_restore::AppLaunchInfo>)>;
   // Gathers the app launch data associated with `window` in order to construct
-  // a desk template.  The data is returned via the `callback` that can be
-  // called either synchronously or asynchronously, depending on the app.  The
-  // callback may receive nullptr if no such app launch data can be constructed,
-  // which can happen if the `window` does not have an app id associated with
-  // it, or we're not in the primary active user session.
-  virtual void GetAppLaunchDataForDeskTemplate(
+  // a saved desk.  The data is returned via the `callback` that can be called
+  // either synchronously or asynchronously, depending on the app.  The callback
+  // may receive nullptr if no such app launch data can be constructed, which
+  // can happen if the `window` does not have an app id associated with it, or
+  // we're not in the primary active user session.
+  virtual void GetAppLaunchDataForSavedDesk(
       aura::Window* window,
       GetAppLaunchDataCallback callback) const = 0;
 
@@ -88,22 +88,23 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) const = 0;
 
   // Launches apps into the active desk. Ran immediately after a desk is created
-  // for a template.
-  virtual void LaunchAppsFromTemplate(
-      std::unique_ptr<DeskTemplate> desk_template) = 0;
+  // for a saved desk.
+  virtual void LaunchAppsFromSavedDesk(
+      std::unique_ptr<DeskTemplate> saved_desk) = 0;
 
-  // Checks whether `window` is supported in the desks templates feature.
-  virtual bool IsWindowSupportedForDeskTemplate(aura::Window* window) const = 0;
+  // Checks whether `window` is supported in the desk templates feature or the
+  // save and recall feature.
+  virtual bool IsWindowSupportedForSavedDesk(aura::Window* window) const = 0;
 
   // Return the readable app name for this app id (i.e. "madfksjfasdfkjasdkf" ->
   // "Chrome").
   virtual std::string GetAppShortName(const std::string& app_id) = 0;
 
   // Return true if the app with the given `app_id` is available to launch from
-  // template.
+  // the saved desk.
   virtual bool IsAppAvailable(const std::string& app_id) const = 0;
 };
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_DESKS_TEMPLATES_DELEGATE_H_
+#endif  // ASH_PUBLIC_CPP_SAVED_DESK_DELEGATE_H_

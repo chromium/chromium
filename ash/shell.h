@@ -169,7 +169,6 @@ class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
 class MultitaskMenuNudgeController;
 class NearbyShareControllerImpl;
-class DesksTemplatesDelegate;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
 class OcclusionTrackerPauser;
@@ -196,6 +195,7 @@ class RefreshRateThrottleController;
 class ResizeShadowController;
 class ResolutionNotificationController;
 class RootWindowController;
+class SavedDeskDelegate;
 class ScreenLayoutObserver;
 class ScreenOrientationController;
 class ScreenPinningController;
@@ -427,8 +427,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   PersistentDesksBarController* persistent_desks_bar_controller() {
     return persistent_desks_bar_controller_.get();
   }
-  DesksTemplatesDelegate* desks_templates_delegate() {
-    return desks_templates_delegate_.get();
+  SavedDeskDelegate* saved_desk_delegate() {
+    return saved_desk_delegate_.get();
   }
   DetachableBaseHandler* detachable_base_handler() {
     return detachable_base_handler_.get();
@@ -874,7 +874,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       security_curtain_controller_;
   std::unique_ptr<DarkLightModeControllerImpl> dark_light_mode_controller_;
   std::unique_ptr<DesksController> desks_controller_;
-  std::unique_ptr<DesksTemplatesDelegate> desks_templates_delegate_;
+  std::unique_ptr<SavedDeskDelegate> saved_desk_delegate_;
   std::unique_ptr<DetachableBaseHandler> detachable_base_handler_;
   std::unique_ptr<DetachableBaseNotificationController>
       detachable_base_notification_controller_;

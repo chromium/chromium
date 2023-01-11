@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_test_helper.h"
 
-#include "ash/public/cpp/test/test_desks_templates_delegate.h"
+#include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "components/desks_storage/core/desk_test_util.h"
@@ -23,8 +23,7 @@ SavedDeskTestHelper::SavedDeskTestHelper()
       SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
 
   // Install desk model.
-  static_cast<TestDesksTemplatesDelegate*>(
-      Shell::Get()->desks_templates_delegate())
+  static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
       ->set_desk_model(desk_model_.get());
 
   // Setup app registry cache.
@@ -34,8 +33,7 @@ SavedDeskTestHelper::SavedDeskTestHelper()
 }
 
 SavedDeskTestHelper::~SavedDeskTestHelper() {
-  static_cast<TestDesksTemplatesDelegate*>(
-      Shell::Get()->desks_templates_delegate())
+  static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
       ->set_desk_model(nullptr);
 }
 

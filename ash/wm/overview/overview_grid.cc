@@ -12,8 +12,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
@@ -2580,8 +2580,9 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
   int addend = increment ? 1 : -1;
   if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id)
     num_unsupported_windows_ += addend;
-  else if (Shell::Get()->desks_templates_delegate()->IsIncognitoWindow(window))
+  else if (Shell::Get()->saved_desk_delegate()->IsIncognitoWindow(window)) {
     num_incognito_windows_ += addend;
+  }
 
   DCHECK_GE(num_unsupported_windows_, 0);
   DCHECK_GE(num_incognito_windows_, 0);

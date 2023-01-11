@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_TEST_TEST_DESKS_TEMPLATES_DELEGATE_H_
-#define ASH_PUBLIC_CPP_TEST_TEST_DESKS_TEMPLATES_DELEGATE_H_
+#ifndef ASH_PUBLIC_CPP_TEST_TEST_SAVED_DESK_DELEGATE_H_
+#define ASH_PUBLIC_CPP_TEST_TEST_SAVED_DESK_DELEGATE_H_
 
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/desks_templates_delegate.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 
 namespace aura {
 class Window;
@@ -26,13 +26,12 @@ namespace ash {
 
 class DeskTemplate;
 
-class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
-    : public DesksTemplatesDelegate {
+class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
  public:
-  TestDesksTemplatesDelegate();
-  TestDesksTemplatesDelegate(TestDesksTemplatesDelegate&) = delete;
-  TestDesksTemplatesDelegate& operator=(TestDesksTemplatesDelegate&) = delete;
-  ~TestDesksTemplatesDelegate() override;
+  TestSavedDeskDelegate();
+  TestSavedDeskDelegate(TestSavedDeskDelegate&) = delete;
+  TestSavedDeskDelegate& operator=(TestSavedDeskDelegate&) = delete;
+  ~TestSavedDeskDelegate() override;
 
   void set_desk_model(desks_storage::DeskModel* desk_model) {
     desk_model_ = desk_model;
@@ -43,8 +42,8 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
     unavailable_app_ids_ = unavailable_app_ids;
   }
 
-  // DesksTemplatesDelegate:
-  void GetAppLaunchDataForDeskTemplate(
+  // SavedDeskDelegate:
+  void GetAppLaunchDataForSavedDesk(
       aura::Window* window,
       GetAppLaunchDataCallback callback) const override;
   desks_storage::DeskModel* GetDeskModel() override;
@@ -60,9 +59,9 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
       const std::string& app_id,
       int desired_icon_size,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) const override;
-  void LaunchAppsFromTemplate(
-      std::unique_ptr<DeskTemplate> desk_template) override;
-  bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
+  void LaunchAppsFromSavedDesk(
+      std::unique_ptr<DeskTemplate> saved_desk) override;
+  bool IsWindowSupportedForSavedDesk(aura::Window* window) const override;
   std::string GetAppShortName(const std::string& app_id) override;
   bool IsAppAvailable(const std::string& app_id) const override;
 
@@ -73,4 +72,4 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_TEST_TEST_DESKS_TEMPLATES_DELEGATE_H_
+#endif  // ASH_PUBLIC_CPP_TEST_TEST_SAVED_DESK_DELEGATE_H_

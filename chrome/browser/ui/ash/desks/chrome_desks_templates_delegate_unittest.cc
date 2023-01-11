@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/desks/chrome_desks_templates_delegate.h"
+#include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/ash_public_export.h"
@@ -91,7 +91,7 @@ class ChromeDesksTemplatesDelegateTest : public testing::Test {
   ~ChromeDesksTemplatesDelegateTest() override = default;
 
   void SetUp() override {
-    // Create a test user and profile so the ChromeDesksTemplatesDelegate does
+    // Create a test user and profile so the ChromeSavedDeskDelegate does
     // not return empty result simply because of missing user profile.
     auto account_id = AccountId::FromUserEmail(kTestProfileEmail);
     const auto* user = GetFakeUserManager()->AddUser(account_id);
@@ -105,24 +105,23 @@ class ChromeDesksTemplatesDelegateTest : public testing::Test {
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
 
-    // Set up Full Restore Save Handler so that ChromeDesksTemplatesDelegate can
+    // Set up Full Restore Save Handler so that ChromeSavedDeskDelegate can
     // get launch info for a Lacros window.
     full_restore::FullRestoreSaveHandler* save_handler = GetSaveHandler();
     save_handler->SetPrimaryProfilePath(profile_dir_.GetPath());
 
-    chrome_desks_templates_delegate_ =
-        std::make_unique<ChromeDesksTemplatesDelegate>();
+    chrome_saved_desk_delegate_ = std::make_unique<ChromeSavedDeskDelegate>();
   }
 
-  void TearDown() override { chrome_desks_templates_delegate_.reset(); }
+  void TearDown() override { chrome_saved_desk_delegate_.reset(); }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
-  ChromeDesksTemplatesDelegate* chrome_desks_templates_delegate() {
-    return chrome_desks_templates_delegate_.get();
+  ChromeSavedDeskDelegate* chrome_saved_desk_delegate() {
+    return chrome_saved_desk_delegate_.get();
   }
 
   content::BrowserTaskEnvironment& task_environment() {
@@ -158,15 +157,14 @@ class ChromeDesksTemplatesDelegateTest : public testing::Test {
   testing::NiceMock<MockBrowserManager> mock_browser_manager_;
   testing::NiceMock<MockDesksClient> mock_desks_client_;
 
-  std::unique_ptr<ChromeDesksTemplatesDelegate>
-      chrome_desks_templates_delegate_;
+  std::unique_ptr<ChromeSavedDeskDelegate> chrome_saved_desk_delegate_;
 
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 
 TEST_F(ChromeDesksTemplatesDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
   base::RunLoop loop;
-  chrome_desks_templates_delegate()->GetAppLaunchDataForDeskTemplate(
+  chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
       /*window*/ nullptr,
       base::BindLambdaForTesting(
           [&](std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
@@ -194,7 +192,7 @@ TEST_F(ChromeDesksTemplatesDelegateTest,
   task_environment().RunUntilIdle();
 
   base::RunLoop loop;
-  chrome_desks_templates_delegate()->GetAppLaunchDataForDeskTemplate(
+  chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
       window.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {

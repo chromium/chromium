@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/desks/chrome_desks_templates_delegate.h"
+#include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
@@ -81,12 +81,13 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
   DCHECK(tab_strip_model);
 
   std::vector<GURL> urls;
-  for (int i = 0; i < tab_strip_model->count(); ++i)
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
     urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
+  }
   return urls;
 }
 
-// Return true if `app_id` is available to launch from template.
+// Return true if `app_id` is available to launch from saved desk.
 bool IsAppAvailable(const std::string& app_id,
                     apps::AppServiceProxy* app_service_proxy) {
   DCHECK(app_service_proxy);
@@ -98,8 +99,9 @@ bool IsAppAvailable(const std::string& app_id,
       app_id, [&](const apps::AppUpdate& app) {
         installed = apps_util::IsInstalled(app.Readiness());
       });
-  if (installed)
+  if (installed) {
     return true;
+  }
   const extensions::Extension* app =
       extensions::ExtensionRegistry::Get(app_profile)
           ->GetInstalledExtension(app_id);
@@ -109,19 +111,21 @@ bool IsAppAvailable(const std::string& app_id,
 // Returns a vector of human readable unavailable app names from
 // `desk_template`.
 std::vector<std::u16string> GetUnavailableAppNames(
-    const ash::DeskTemplate& desk_template) {
+    const ash::DeskTemplate& saved_desk) {
   const auto& launch_lists =
-      desk_template.desk_restore_data()->app_id_to_launch_list();
+      saved_desk.desk_restore_data()->app_id_to_launch_list();
   std::vector<std::u16string> app_names;
   auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile());
-  if (!app_service_proxy)
+  if (!app_service_proxy) {
     return app_names;
+  }
 
   // Return the human readable app names of the unavailable apps on this device.
   for (const auto& [app_id, launch_list] : launch_lists) {
-    if (launch_list.empty())
+    if (launch_list.empty()) {
       continue;
+    }
 
     if (!IsAppAvailable(app_id, app_service_proxy)) {
       // `launch_list` is a list of windows associated with `app_id`, so we only
@@ -200,11 +204,11 @@ AppIconResultToImageSkia(
 
 }  // namespace
 
-ChromeDesksTemplatesDelegate::ChromeDesksTemplatesDelegate() = default;
+ChromeSavedDeskDelegate::ChromeSavedDeskDelegate() = default;
 
-ChromeDesksTemplatesDelegate::~ChromeDesksTemplatesDelegate() = default;
+ChromeSavedDeskDelegate::~ChromeSavedDeskDelegate() = default;
 
-void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
+void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     aura::Window* window,
     GetAppLaunchDataCallback callback) const {
   DCHECK(callback);
@@ -219,7 +223,7 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     return;
   }
 
-  if (!IsWindowSupportedForDeskTemplate(window)) {
+  if (!IsWindowSupportedForSavedDesk(window)) {
     std::move(callback).Run({});
     return;
   }
@@ -319,7 +323,7 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     const std::string* lacros_window_id =
         window->GetProperty(app_restore::kLacrosWindowId);
     DCHECK(lacros_window_id);
-    const_cast<ChromeDesksTemplatesDelegate*>(this)->GetLacrosChromeInfo(
+    const_cast<ChromeSavedDeskDelegate*>(this)->GetLacrosChromeInfo(
         std::move(callback), *lacros_window_id, std::move(app_launch_info));
     return;
   }
@@ -327,19 +331,18 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   std::move(callback).Run(std::move(app_launch_info));
 }
 
-desks_storage::DeskModel* ChromeDesksTemplatesDelegate::GetDeskModel() {
+desks_storage::DeskModel* ChromeSavedDeskDelegate::GetDeskModel() {
   return DesksClient::Get()->GetDeskModel();
 }
 
-bool ChromeDesksTemplatesDelegate::IsIncognitoWindow(
-    aura::Window* window) const {
+bool ChromeSavedDeskDelegate::IsIncognitoWindow(aura::Window* window) const {
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
   return browser_view && browser_view->GetIncognito();
 }
 
 absl::optional<gfx::ImageSkia>
-ChromeDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
+ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const std::string& identifier,
     const ui::ColorProvider* color_provider) const {
   if (identifier == chrome::kChromeUINewTabURL) {
@@ -359,7 +362,7 @@ ChromeDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
   return absl::nullopt;
 }
 
-void ChromeDesksTemplatesDelegate::GetFaviconForUrl(
+void ChromeSavedDeskDelegate::GetFaviconForUrl(
     const std::string& page_url,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {
@@ -381,7 +384,7 @@ void ChromeDesksTemplatesDelegate::GetFaviconForUrl(
       GURL(page_url), ImageResultToImageSkia(std::move(callback)), tracker);
 }
 
-void ChromeDesksTemplatesDelegate::GetIconForAppId(
+void ChromeSavedDeskDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {
@@ -399,8 +402,7 @@ void ChromeDesksTemplatesDelegate::GetIconForAppId(
       AppIconResultToImageSkia(std::move(callback)));
 }
 
-bool ChromeDesksTemplatesDelegate::IsAppAvailable(
-    const std::string& app_id) const {
+bool ChromeSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
   Profile* app_profile = ProfileManager::GetActiveUserProfile();
   DCHECK(app_profile);
 
@@ -411,31 +413,33 @@ bool ChromeDesksTemplatesDelegate::IsAppAvailable(
   return ::IsAppAvailable(app_id, app_service_proxy);
 }
 
-void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(
-    std::unique_ptr<ash::DeskTemplate> desk_template) {
+void ChromeSavedDeskDelegate::LaunchAppsFromSavedDesk(
+    std::unique_ptr<ash::DeskTemplate> saved_desk) {
   std::vector<std::u16string> unavailable_apps =
-      GetUnavailableAppNames(*desk_template);
+      GetUnavailableAppNames(*saved_desk);
   // Show app unavailable toast.
-  if (!unavailable_apps.empty())
+  if (!unavailable_apps.empty()) {
     ShowUnavailableAppToast(unavailable_apps);
-  DesksClient::Get()->LaunchAppsFromTemplate(std::move(desk_template));
+  }
+  DesksClient::Get()->LaunchAppsFromTemplate(std::move(saved_desk));
 }
 
 // Returns true if `window` is supported in desk templates feature.
-bool ChromeDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
+bool ChromeSavedDeskDelegate::IsWindowSupportedForSavedDesk(
     aura::Window* window) const {
   if (!window) {
     return false;
   }
 
-  if (!ash::DeskTemplate::IsAppTypeSupported(window))
+  if (!ash::DeskTemplate::IsAppTypeSupported(window)) {
     return false;
+  }
 
   // Exclude incognito browser window.
   return !IsIncognitoWindow(window);
 }
 
-std::string ChromeDesksTemplatesDelegate::GetAppShortName(
+std::string ChromeSavedDeskDelegate::GetAppShortName(
     const std::string& app_id) {
   std::string name;
   auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
@@ -448,7 +452,7 @@ std::string ChromeDesksTemplatesDelegate::GetAppShortName(
   return name;
 }
 
-void ChromeDesksTemplatesDelegate::OnLacrosChromeInfoReturned(
+void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
     GetAppLaunchDataCallback callback,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
     crosapi::mojom::DeskTemplateStatePtr state) {
@@ -463,7 +467,7 @@ void ChromeDesksTemplatesDelegate::OnLacrosChromeInfoReturned(
   std::move(callback).Run(std::move(app_launch_info));
 }
 
-void ChromeDesksTemplatesDelegate::GetLacrosChromeInfo(
+void ChromeSavedDeskDelegate::GetLacrosChromeInfo(
     GetAppLaunchDataCallback callback,
     const std::string& window_unique_id,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
@@ -477,7 +481,7 @@ void ChromeDesksTemplatesDelegate::GetLacrosChromeInfo(
 
   browser_manager->GetBrowserInformation(
       window_unique_id,
-      base::BindOnce(&ChromeDesksTemplatesDelegate::OnLacrosChromeInfoReturned,
+      base::BindOnce(&ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(app_launch_info)));
 }

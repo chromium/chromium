@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/desks_templates_delegate.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -196,7 +196,7 @@ void SavedDeskIconContainer::PopulateIconContainerFromWindows(
   // Iterate through `windows`, counting the occurrences of each unique icon and
   // storing their lowest activation index.
   std::map<std::string, IconInfo> icon_identifier_to_icon_info;
-  auto* delegate = Shell::Get()->desks_templates_delegate();
+  auto* delegate = Shell::Get()->saved_desk_delegate();
   for (size_t i = 0; i < windows.size(); ++i) {
     auto* window = windows[i];
 
@@ -321,7 +321,7 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
   if (icon_identifier_to_icon_info.empty())
     return;
 
-  auto* delegate = Shell::Get()->desks_templates_delegate();
+  auto* delegate = Shell::Get()->saved_desk_delegate();
   uncreated_app_count_ = 0;
   for (size_t i = 0; i < icon_identifier_to_icon_info.size(); i++) {
     const auto& [icon_identifier, icon_info] = icon_identifier_to_icon_info[i];

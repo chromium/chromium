@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <utility>
 
-#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -206,7 +206,7 @@ void SavedDeskRegularIconView::CreateChildViews(
   // First check if the `icon_identifier_` is a special value, i.e. NTP url or
   // incognito window. If it is, use the corresponding icon for the special
   // value.
-  auto* delegate = Shell::Get()->desks_templates_delegate();
+  auto* delegate = Shell::Get()->saved_desk_delegate();
   absl::optional<gfx::ImageSkia> chrome_icon =
       delegate->MaybeRetrieveIconForSpecialIdentifier(
           icon_identifier_, incognito_window_color_provider);

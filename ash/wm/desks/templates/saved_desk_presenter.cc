@@ -7,7 +7,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/desks_templates_delegate.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
@@ -54,7 +54,7 @@ constexpr char kDuplicateNumberRegex[] = "\\(([0-9]+)\\)$";
 // Helper to get the desk model from the shell delegate. Should always return a
 // usable desk model, either from chrome sync, or a local storage.
 desks_storage::DeskModel* GetDeskModel() {
-  auto* desk_model = Shell::Get()->desks_templates_delegate()->GetDeskModel();
+  auto* desk_model = Shell::Get()->saved_desk_delegate()->GetDeskModel();
   DCHECK(desk_model);
   return desk_model;
 }
@@ -577,7 +577,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
   const int desk_index = DesksController::Get()->GetDeskIndex(new_desk);
   saved_desk->SetDeskIndex(desk_index);
 
-  Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
+  Shell::Get()->saved_desk_delegate()->LaunchAppsFromSavedDesk(
       std::move(saved_desk));
 
   if (!overview_controller->InOverviewSession()) {
@@ -592,8 +592,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
 
     // Bare minimum code to remove save & recall desks.
     if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
-      auto* desk_model =
-          Shell::Get()->desks_templates_delegate()->GetDeskModel();
+      auto* desk_model = Shell::Get()->saved_desk_delegate()->GetDeskModel();
       desk_model->DeleteEntry(uuid, base::DoNothing());
     }
 

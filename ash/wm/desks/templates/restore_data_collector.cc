@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/templates/restore_data_collector.h"
 
-#include "ash/public/cpp/desks_templates_delegate.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
@@ -49,14 +49,14 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  auto* delegate = shell->desks_templates_delegate();
+  auto* delegate = shell->saved_desk_delegate();
   bool has_supported_apps = false;
   for (auto* window : mru_windows) {
     // Skip transient windows without reporting.
     if (wm::GetTransientParent(window))
       continue;
 
-    if (!delegate->IsWindowSupportedForDeskTemplate(window)) {
+    if (!delegate->IsWindowSupportedForSavedDesk(window)) {
       call.unsupported_apps.push_back(window);
       if (delegate->IsIncognitoWindow(window))
         call.incognito_window_count++;
@@ -83,7 +83,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     window_info->desk_id.reset();
 
     ++call.pending_request_count;
-    delegate->GetAppLaunchDataForDeskTemplate(
+    delegate->GetAppLaunchDataForSavedDesk(
         window, base::BindOnce(&RestoreDataCollector::OnAppLaunchDataReceived,
                                base::Unretained(this), current_serial, app_id,
                                std::move(window_info)));

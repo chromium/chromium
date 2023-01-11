@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "ash/public/cpp/test/test_desks_templates_delegate.h"
+#include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"

@@ -93,9 +93,9 @@
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
-#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -683,7 +683,7 @@ Shell::~Shell() {
 
   ash_dbus_services_.reset();
 
-  desks_templates_delegate_.reset();
+  saved_desk_delegate_.reset();
   desks_controller_->Shutdown();
 
   user_metrics_recorder_->OnShellShuttingDown();
@@ -1267,7 +1267,7 @@ void Shell::Init(
   // present at all times. The desks controller also depends on the focus
   // controller.
   desks_controller_ = std::make_unique<DesksController>();
-  desks_templates_delegate_ = shell_delegate_->CreateDesksTemplatesDelegate();
+  saved_desk_delegate_ = shell_delegate_->CreateSavedDeskDelegate();
 
   Shell::SetRootWindowForNewWindows(GetPrimaryRootWindow());
 

@@ -33,7 +33,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       ash::BackGestureContextualNudgeController* controller) override;
   std::unique_ptr<ash::NearbyShareDelegate> CreateNearbyShareDelegate(
       ash::NearbyShareController* controller) const override;
-  std::unique_ptr<ash::DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
+  std::unique_ptr<ash::SavedDeskDelegate> CreateSavedDeskDelegate()
       const override;
   std::unique_ptr<ash::SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const override;

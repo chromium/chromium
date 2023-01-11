@@ -45,8 +45,7 @@ class TestShellDelegate : public ShellDelegate {
       BackGestureContextualNudgeController* controller) override;
   std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const override;
-  std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
-      const override;
+  std::unique_ptr<SavedDeskDelegate> CreateSavedDeskDelegate() const override;
   std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const override;
   scoped_refptr<network::SharedURLLoaderFactory>

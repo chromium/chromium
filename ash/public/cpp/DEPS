@@ -14,10 +14,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "desks_templates_delegate.h": [
+  "saved_desk_delegate.h": [
     "+components/favicon_base/favicon_callback.h"
   ],
-  "test_desks_templates_delegate.h": [
+  "test_saved_desk_delegate.h": [
     "+components/favicon_base/favicon_callback.h"
   ],
 }
