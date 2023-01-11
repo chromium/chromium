@@ -196,7 +196,7 @@ export class NudgeContainer {
         'blur', (_: Event) => this.closeNudge(this.currentNudgeType_), config);
 
     this.nudge_.anchor = anchor;
-    this.nudge_.content = info.content;
+    this.nudge_.content = info.content();
     this.nudge_.direction = info.direction;
 
     this.nudge_.show();
@@ -317,7 +317,7 @@ interface NudgeInfo {
   anchor: () => HTMLElement | null;
 
   // The string contents of the nudge.
-  content: string;
+  content: () => string;
 
   // The direction that nudge appears relative to the anchor. For more
   // explanation on the various `NudgeDirection`'s look in `xf_nudge.ts` file.
@@ -335,7 +335,7 @@ interface NudgeInfo {
 export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   [NudgeType['TEST_NUDGE']]: {
     anchor: () => document.querySelector<HTMLDivElement>('div#test'),
-    content: 'Test content',
+    content: () => 'Test content',
     direction: NudgeDirection.BOTTOM_ENDWARD,
     expiryDate: new Date(2999, 1, 1),
   },
@@ -343,7 +343,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   [NudgeType['TRASH_NUDGE']]: {
     anchor: () =>
         document.querySelector<HTMLSpanElement>('span[root-type-icon="trash"]'),
-    content: str('TRASH_NUDGE_LABEL'),
+    content: () => str('TRASH_NUDGE_LABEL'),
     direction: NudgeDirection.BOTTOM_ENDWARD,
     // Expire this after 4 releases (expires when M112 hits Stable).
     expiryDate: new Date(2023, 4, 6),
