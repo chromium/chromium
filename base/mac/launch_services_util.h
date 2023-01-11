@@ -35,9 +35,8 @@ using ApplicationOpenedCallback =
 //   - `callback`: the result callback
 //
 // When the launch is complete, `callback` is called on the main thread. If the
-// launch succeeded, it will be called with a non-nil `NSRunningApplication*`
-// and nil `NSError*`. If the launch failed, it will be called with a nil
-// `NSRunningApplication*` and non-nil `NSError*`.
+// launch succeeded, it will be called with an `NSRunningApplication*`. If the
+// launch failed, it will be called with an `NSError*`.
 BASE_EXPORT void OpenApplication(const FilePath& app_bundle_path,
                                  const CommandLine& command_line,
                                  const std::vector<std::string>& url_specs,
