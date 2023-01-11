@@ -292,10 +292,8 @@ class SSIMVideoFrameValidator : public VideoFrameValidator {
 // passes.
 class LogLikelihoodRatioVideoFrameValidator : public VideoFrameValidator {
  public:
-  // TODO (b/262772938): Find an actual tolerance value for this validator. This
-  // is just a placeholder until we get some results on the range of this
-  // metric.
-  constexpr static double kDefaultTolerance = 50.0;
+  // Default tolerance value chosen empirically.
+  constexpr static double kDefaultTolerance = 1.015;
 
   static std::unique_ptr<LogLikelihoodRatioVideoFrameValidator> Create(
       const GetModelFrameCB& get_model_frame_cb,
