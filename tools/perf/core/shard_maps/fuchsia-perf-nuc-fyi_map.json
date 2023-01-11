@@ -6,7 +6,7 @@
                     "--test-launcher-jobs=1",
                     "--test-launcher-retry-limit=0",
                     "-d",
-                    "--os-check=check",
+                    "--os-check=update",
                     "--system-image-dir=workstation_eng.x64"
                 ],
                 "path": "bin/run_base_perftests"
@@ -35,7 +35,7 @@
                     "--test-launcher-jobs=1",
                     "--test-launcher-retry-limit=0",
                     "-d",
-                    "--os-check=check",
+                    "--os-check=update",
                     "--system-image-dir=workstation_eng.x64"
                 ],
                 "path": "bin/run_sync_performance_tests"
