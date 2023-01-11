@@ -25,6 +25,8 @@ class AppServerPosix : public AppServer {
  protected:
   // Overrides of App.
   ~AppServerPosix() override;
+  // Overrides of AppServer.
+  void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
 
  private:
   base::TimeDelta ServerKeepAlive();
@@ -34,7 +36,6 @@ class AppServerPosix : public AppServer {
   void AcknowledgeTaskCompletion();
 
   // Overrides of AppServer.
-  void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapInNewVersion() override;

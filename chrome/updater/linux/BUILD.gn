@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/linux/pkg_config.gni")
 import("//chrome/updater/zip.gni")
 
 # This target builds the updater executable and unittests.
@@ -12,9 +13,14 @@ group("linux") {
   ]
 }
 
+pkg_config("libsystemd") {
+  packages = [ "libsystemd" ]
+}
+
 source_set("updater_executable") {
   sources = [ "main.cc" ]
   deps = [ "//chrome/updater:base" ]
+  public_configs = [ ":libsystemd" ]
 }
 
 executable("updater") {

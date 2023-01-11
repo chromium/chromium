@@ -6,7 +6,6 @@
 #define CHROME_UPDATER_LINUX_IPC_CONSTANTS_H_
 
 #include "chrome/updater/updater_scope.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -17,6 +16,10 @@ namespace updater {
 base::FilePath GetActiveDutySocketPath(UpdaterScope scope);
 
 base::FilePath GetActiveDutyInternalSocketPath(UpdaterScope scope);
+
+// The activation socket can be used by clients to request systemd to start the
+// update server.
+base::FilePath GetActivationSocketPath(UpdaterScope scope);
 
 }  // namespace updater
 

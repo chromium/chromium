@@ -7,6 +7,7 @@
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 

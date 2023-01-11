@@ -10,7 +10,6 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -36,6 +35,11 @@ base::FilePath GetActiveDutySocketPath(UpdaterScope scope) {
 base::FilePath GetActiveDutyInternalSocketPath(UpdaterScope scope) {
   return GetSocketsDir(scope).AppendASCII(
       base::StrCat({PRODUCT_FULLNAME_STRING, kUpdaterVersion, ".sk"}));
+}
+
+base::FilePath GetActivationSocketPath(UpdaterScope scope) {
+  return GetSocketsDir(scope).Append(
+      FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".activation.sk"));
 }
 
 }  // namespace updater

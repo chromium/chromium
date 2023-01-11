@@ -411,6 +411,10 @@ namespace ui {
 class WindowResizeHelperMac;
 }
 
+namespace updater {
+class SystemctlLauncherScopedAllowBaseSyncPrimitives;
+}
+
 namespace viz {
 class HostGpuMemoryBufferManager;
 class ClientGpuMemoryBufferManager;
@@ -744,6 +748,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class storage::ObfuscatedFileUtil;
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
+  friend class updater::SystemctlLauncherScopedAllowBaseSyncPrimitives;
   friend class viz::ClientGpuMemoryBufferManager;
   friend class webrtc::DesktopConfigurationMonitor;
   friend class ::tracing::FuchsiaPerfettoProducerConnector;

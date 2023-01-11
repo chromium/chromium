@@ -338,6 +338,8 @@ if (is_win || is_mac || is_linux) {
         "installer_linux.cc",
         "ipc/ipc_security_linux.cc",
         "linux/setup/setup.cc",
+        "linux/systemd_util.cc",
+        "linux/systemd_util.h",
         "net/network_fetcher_linux.cc",
         "prefs_linux.cc",
         "setup_linux.cc",
@@ -549,6 +551,7 @@ if (is_win || is_mac || is_linux) {
     if (is_linux) {
       sources += [
         "ipc/ipc_names_linux.cc",
+        "ipc/update_service_dialer_linux.cc",
         "linux/ipc_constants.cc",
         "linux/ipc_constants.h",
         "util/linux_util.cc",
@@ -559,6 +562,7 @@ if (is_win || is_mac || is_linux) {
     if (is_mac) {
       sources += [
         "ipc/ipc_names_mac.mm",
+        "ipc/update_service_dialer_mac.cc",
         "mac/privileged_helper/service_protocol.h",
         "util/mac_util.h",
         "util/mac_util.mm",
@@ -570,6 +574,7 @@ if (is_win || is_mac || is_linux) {
     if (is_posix) {
       sources += [
         "ipc/ipc_names.h",
+        "ipc/update_service_dialer.h",
         "ipc/update_service_proxy_posix.cc",
         "ipc/update_service_proxy_posix.h",
         "posix/setup.h",
@@ -880,6 +885,7 @@ if (is_win || is_mac || is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
       data_deps = [ "//chrome/updater/linux:updater_test" ]
+      public_configs = [ "linux:libsystemd" ]
     }
 
     if (is_posix) {

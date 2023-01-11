@@ -12,11 +12,9 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -28,6 +26,7 @@
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_names.h"
+#include "chrome/updater/ipc/update_service_dialer.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
@@ -38,12 +37,10 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -154,28 +151,10 @@ MakeStateChangeObserver(
 absl::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
                                                           int tries) {
   if (tries == 1) {
-    // Launch a server process.
-    absl::optional<base::FilePath> updater =
-        GetUpdateServiceLauncherPath(scope);
-    if (updater) {
-      if (!base::PathExists(*updater)) {
-        // If there's no updater present, abandon dialing.
-        return absl::nullopt;
-      }
-      base::CommandLine command(*updater);
-      command.AppendSwitch(kServerSwitch);
-      command.AppendSwitchASCII(kServerServiceSwitch,
-                                kServerUpdateServiceSwitchValue);
-      if (scope == UpdaterScope::kSystem) {
-        command.AppendSwitch(kSystemSwitch);
-      }
-      command.AppendSwitch(kEnableLoggingSwitch);
-      command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                kLoggingModuleSwitchValue);
-      base::LaunchProcess(command, {});
+    if (!DialUpdateService(scope)) {
+      return absl::nullopt;
     }
   }
-
   return named_mojo_ipc_server::ConnectToServer(
       GetUpdateServiceServerName(scope));
 }

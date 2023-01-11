@@ -12,9 +12,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/version.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/linux/ipc_constants.h"
+#include "chrome/updater/linux/systemd_util.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,7 +55,6 @@ int Setup(UpdaterScope scope) {
     return kErrorFailedToCopyBinary;
   }
 
-  // TODO(1276117): Install systemd units.
   return kErrorOk;
 }
 
@@ -74,8 +73,6 @@ int UninstallCandidate(UpdaterScope scope) {
   if (!versioned_socket || !base::DeleteFile(versioned_socket.value())) {
     error = kErrorFailedToDeleteSocket;
   }
-
-  // TODO(1276117): Remove systemd units.
 
   return error;
 }
@@ -102,6 +99,10 @@ int PromoteCandidate(UpdaterScope scope) {
     return kErrorFailedToRenameLauncher;
   }
 
+  if (!InstallSystemdUnits(scope)) {
+    return kErrorFailedToInstallSystemdUnit;
+  }
+
   return kErrorOk;
 }
 
@@ -110,12 +111,14 @@ int Uninstall(UpdaterScope scope) {
           << " : " << __func__;
   int error = kErrorOk;
 
+  if (!UninstallSystemdUnits(scope)) {
+    error = kErrorFailedToRemoveSystemdUnit;
+  }
+
   if (!DeleteFolder(GetBaseInstallDirectory(scope)) ||
       !DeleteFolder(GetBaseDataDirectory(scope))) {
     error = kErrorFailedToDeleteFolder;
   }
-
-  // TODO(1276117): Remove systemd units.
 
   return error;
 }

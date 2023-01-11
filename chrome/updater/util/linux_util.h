@@ -14,6 +14,10 @@ class FilePath;
 namespace updater {
 enum class UpdaterScope;
 
+// Filename of the non side-by-side launcher. The file is a hardlink to the
+// qualified version of the updater.
+constexpr char kLauncherName[] = "launcher";
+
 // For user installations returns a path to the "~/.local" for the logged in
 // user. For system installations returns "/opt/".
 absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope);

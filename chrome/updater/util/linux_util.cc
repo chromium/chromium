@@ -6,7 +6,6 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
@@ -62,7 +61,7 @@ absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
 absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
     UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetBaseInstallDirectory(scope);
-  return path ? absl::optional<base::FilePath>(path->AppendASCII("launcher"))
+  return path ? absl::optional<base::FilePath>(path->AppendASCII(kLauncherName))
               : absl::nullopt;
 }
 

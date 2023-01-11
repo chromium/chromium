@@ -81,8 +81,4 @@ bool AppServerPosix::SwapInNewVersion() {
   return PromoteCandidate(updater_scope()) == kErrorOk;
 }
 
-scoped_refptr<App> MakeAppServer() {
-  return base::MakeRefCounted<AppServerPosix>();
-}
-
 }  // namespace updater
