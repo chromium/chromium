@@ -3188,7 +3188,7 @@
     ],
 
     'msan_release_bot_blink_reclient': [
-      'msan_focal', 'release_bot_blink_reclient',
+      'msan', 'release_bot_blink_reclient',
     ],
 
     'msan_release_bot_reclient': [
