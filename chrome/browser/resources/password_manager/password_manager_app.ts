@@ -57,6 +57,14 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
         type: Boolean,
         observer: 'onNarrowChanged_',
       },
+
+      /*
+       * Mirroring the enum so that it can be used from HTML bindings.
+       */
+      pagesValueEnum_: {
+        type: Object,
+        value: Page,
+      },
     };
   }
 
@@ -98,6 +106,10 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   setNarrowForTesting(state: boolean) {
     this.narrow_ = state;
+  }
+
+  private showPage(currentPage: string, pageToShow: string): boolean {
+    return currentPage === pageToShow;
   }
 }
 declare global {
