@@ -171,8 +171,14 @@ enum class ModelDeliveryEvent {
   // model.
   kModelDownloadFailure = 10,
 
+  // Loading the model from store failed.
+  kModelLoadFailed = 11,
+
+  // Model download was attempted after the model load failed.
+  kModelDownloadDueToModelLoadFailure = 12,
+
   // Add new values above this line.
-  kMaxValue = kModelDownloadFailure,
+  kMaxValue = kModelDownloadDueToModelLoadFailure,
 };
 
 }  // namespace optimization_guide

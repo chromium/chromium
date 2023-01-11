@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -450,6 +451,44 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
         "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
         kSuccessfulModelVersion, 1);
   }
+}
+
+// Tests the case when local state is inconsistent with the model directory,
+// i.e., when model file does not exist but the local state entry is populated,
+// it will lead to redownloading of the model.
+IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
+                       TestInconsistentLocalState) {
+  ModelFileObserver model_file_observer;
+  RegisterAndWaitForModelUpdate(&model_file_observer);
+
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
+  EXPECT_EQ(model_file_observer.optimization_target(),
+            proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  EXPECT_TRUE(
+      model_file_observer.model_info()->GetModelFilePath().IsAbsolute());
+
+  // Remove the model file so that model directory is inconsistent with local
+  // state.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::DeleteFile(model_file_observer.model_info()->GetModelFilePath());
+  }
+
+  base::HistogramTester histogram_tester_foo;
+  ModelFileObserver model_file_observer_foo;
+  Profile* profile_foo = CreateProfile();
+  RegisterAndWaitForModelUpdate(&model_file_observer_foo, profile_foo);
+
+  // The model will be redownloaded.
+  histogram_tester_foo.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
+  EXPECT_EQ(model_file_observer_foo.optimization_target(),
+            proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  EXPECT_TRUE(
+      model_file_observer_foo.model_info()->GetModelFilePath().IsAbsolute());
 }
 
 }  // namespace optimization_guide

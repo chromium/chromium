@@ -264,6 +264,17 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // version already exists in the model store.
   bool ShouldDownloadNewModel(const proto::PredictionModel& model) const;
 
+  // Starts the model download for |optimization_target| from |download_url|.
+  void StartModelDownload(proto::OptimizationTarget optimization_target,
+                          const GURL& download_url);
+
+  // Start downloading the model if the load failed, or update the model if it
+  // is loaded fine.
+  void MaybeDownloadOrUpdatePredictionModel(
+      proto::OptimizationTarget optimization_target,
+      const proto::PredictionModel& get_models_response_model,
+      std::unique_ptr<proto::PredictionModel> loaded_model);
+
   void SetModelCacheKeyForTesting(const proto::ModelCacheKey& model_cache_key) {
     model_cache_key_ = model_cache_key;
   }

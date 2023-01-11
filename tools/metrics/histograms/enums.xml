@@ -75208,6 +75208,12 @@ Called by update_net_trust_anchors.py.-->
     Model download failed due to download service or verifying the downloaded
     model.
   </int>
+  <int value="11" label="ModelLoadFailed">
+    Loading the model from store failed.
+  </int>
+  <int value="12" label="ModelDownloadDueToModelLoadFailure">
+    Model download was attempted after the model load failed.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideNavigationHostCoveredStatus">

@@ -284,6 +284,7 @@ TEST_F(PredictionModelStoreTest, UpdateMetadataForExistingModel) {
 
 TEST_F(PredictionModelStoreTest, ModelStorageMetrics) {
   RunUntilIdle();
+
   base::HistogramTester histogram_tester;
 
   auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
@@ -293,6 +294,7 @@ TEST_F(PredictionModelStoreTest, ModelStorageMetrics) {
       kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
       model_detail.base_model_dir, base::DoNothing());
   RunUntilIdle();
+
   model_detail =
       CreateTestModelFiles(kTestOptimizationTargetBar, model_cache_key, {});
   prediction_model_store_->UpdateModel(
