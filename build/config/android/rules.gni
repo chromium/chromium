@@ -1272,10 +1272,24 @@ if (enable_java_templates && is_android) {
         asset_renaming_destinations = invoker.renaming_destinations
       }
     }
+    if (defined(invoker.renaming_sources)) {
+      action(target_name) {
+        forward_variables_from(invoker, [ "deps" ])
+        public_deps = [ ":$_build_config_target_name" ]
 
-    group(target_name) {
-      forward_variables_from(invoker, [ "deps" ])
-      public_deps = [ ":$_build_config_target_name" ]
+        script = "//build/android/gyp/validate_inputs.py"
+        inputs = invoker.renaming_sources
+        outputs = [ "$target_gen_dir/$target_name.stamp" ]
+        args = [
+                 "--stamp",
+                 rebase_path(outputs[0], root_build_dir),
+               ] + rebase_path(inputs, root_build_dir)
+      }
+    } else {
+      group(target_name) {
+        forward_variables_from(invoker, [ "deps" ])
+        public_deps = [ ":$_build_config_target_name" ]
+      }
     }
   }
 

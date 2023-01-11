@@ -617,6 +617,7 @@ if (!is_fuchsia) {
     repack("_cast_repack_${locale}") {
       visibility = [ ":chromecast_locales_pak" ]
       output = "$root_out_dir/chromecast_locales/${locale}.pak"
+      mark_as_data = true
       sources =
           [ "$root_gen_dir/chromecast/app/chromecast_settings_${locale}.pak" ]
       deps = [ "//chromecast/app:chromecast_settings" ]
@@ -637,9 +638,9 @@ if (!is_fuchsia) {
 
   # A meta-target which repacks resources by locale.
   group("chromecast_locales_pak") {
-    data_deps = []
+    public_deps = []
     foreach(locale, cast_locales) {
-      data_deps += [ ":_cast_repack_${locale}" ]
+      public_deps += [ ":_cast_repack_${locale}" ]
     }
   }
 }  # !is_fuchsia
