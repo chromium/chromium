@@ -6355,6 +6355,27 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Switch themes at sunrise and sunset
   </message>
 
+  <!-- Touchpad Scroll -->
+  <!-- TODO(b/265107054): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TITLE" desc="Title of the touchpad scroll direction screen." translateable="false">
+    Change touchpad scrolling direction
+  </message>
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_DESCRIPTION" desc="Description of the touchpad scroll direction screen." translateable="false">
+    Try it out. Turn the setting on or off, then scroll with two fingers on your touchpad in the test area.
+  </message>
+   <message name="IDS_OOBE_TOUCHPAD_SCROLL_DESCRIPTION_ADDITIONAL" desc="Additional description of the touchpad scroll direction screen." translateable="false">
+    You can also find this later in Settings > Device > Mouse and touchpad.
+  </message>
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_TITLE" desc="Title for a toggle that allows reversing the scrolling directions." translateable="false">
+    Reverse scrolling
+  </message>
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_DESC" desc="Description for a toggle that allows reversing the scrolling directions" translateable="false">
+    Swipe up to move the page down
+  </message>
+  <message name="IDS_OOBE_TOUCHPAD_SCROLL_AREA_DESC" desc="Description for a scroll area that allows user to try the selected scrolling directions" translateable="false">
+    Scroll with two fingers on your touchpad in this area
+  </message>
+
   <!-- Strings for the locale switch notification inside the OOBE. -->
   <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TITLE" desc="Title of the notification that is displayed at the bottom-right corner of the screen.">
     Switch device language?
