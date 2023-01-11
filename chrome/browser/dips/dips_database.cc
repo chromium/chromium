@@ -72,7 +72,10 @@ void BindTimesOrNull(sql::Statement& statement,
 // NOTE: When changing the version, add a new golden file for the new version
 // and a test to verify that Init() works with it.
 const int kCurrentVersionNumber = 2;
-const int kCompatibleVersionNumber = 1;
+
+// The lowest current version embedded in Chrome code that can use the current
+// version of this database.
+const int kCompatibleVersionNumber = 2;
 
 }  // namespace
 
@@ -299,6 +302,10 @@ sql::InitStatus DIPSDatabase::InitImpl() {
   }
 
   DCHECK(db_->is_open());
+
+  sql::MetaTable::RazeIfIncompatible(db_.get(),
+                                     sql::MetaTable::kNoLowestSupportedVersion,
+                                     kCurrentVersionNumber);
 
   // Scope initialization in a transaction so we can't be partially initialized.
   sql::Transaction transaction(db_.get());
