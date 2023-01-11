@@ -6235,6 +6235,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.RemotePlayback.SessionLoadTime" units="ms"
+    expires_after="2023-06-15">
+  <owner>muyaoxu@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Measures how long, from the start of a streaming session, until it switches
+    to Remoting for Remote Playback sessions. The start time is measured when
+    the streaming session has started and the end time is measured when the
+    remoting starts. The metric is recorded when both the start time and end
+    time are measured and duration time is calculated.
+  </summary>
+</histogram>
+
+<histogram name="MediaRouter.RemotePlayback.SessionStartsBeforeTimeout"
+    units="ms" expires_after="2023-06-15">
+  <owner>muyaoxu@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Whether Remoting starts before it timeouts for Remote Playback sessions.
+    Recorded when the timeout callback is fired and when Remoting starts.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.RemotePlayback.SinkCapability.SupportedAudioCodec"
     enum="AudioCodec" expires_after="2023-06-15">
   <owner>muyaoxu@google.com</owner>

@@ -34,6 +34,10 @@
 
 using openscreen::cast::capture_recommendations::Recommendations;
 
+namespace base {
+class OneShotTimer;
+}
+
 namespace media {
 class AudioInputDevice;
 
@@ -194,6 +198,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void InitMediaRemoter(
       const openscreen::cast::RemotingCapabilities& capabilities);
 
+  // Called 5 seconds after the `media_remoter_` is initialized for Remote
+  // Playabck sessions. It terminates the streaming session if remoting is not
+  // started when it's called.
+  void OnRemotingStartTimeout();
+
   // Called to provide Open Screen with access to this host's network proxy.
   network::mojom::NetworkContext* GetNetworkContext();
 
@@ -310,6 +319,13 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Indicate whether we're in the middle of switching tab sources.
   bool switching_tab_source_ = false;
+  // This timer is used to stop the session in case Remoting is not started
+  // before timeout. The timer is stopped when Remoting session successfully
+  // starts.
+  base::OneShotTimer remote_playback_start_timer_;
+  // Records the time when the streaming session is started and `media_remoter_`
+  // is initialized.
+  absl::optional<base::Time> remote_playback_start_time_;
 
   // Used in callbacks executed on task runners, such as by RtpStream.
   // TODO(https://crbug.com/1363503): determine if weak pointers can be removed.

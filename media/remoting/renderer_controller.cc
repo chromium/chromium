@@ -561,8 +561,10 @@ void RendererController::OnRendererFatalError(StopTrigger stop_trigger) {
 
   // MOJO_DISCONNECTED means the streaming session has stopped, which is not a
   // fatal error and should not prevent future sessions.
+  // Clean sinks so that `UpdateAndMaybeSwitch` will stop remoting.
   if (stop_trigger != StopTrigger::MOJO_DISCONNECTED) {
     encountered_renderer_fatal_error_ = true;
+    OnSinkGone();
   }
 
   UpdateAndMaybeSwitch(UNKNOWN_START_TRIGGER, stop_trigger);

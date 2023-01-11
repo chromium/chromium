@@ -14,7 +14,7 @@
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -75,6 +76,10 @@ namespace {
 
 // The time between updating the bandwidth estimates.
 constexpr base::TimeDelta kBandwidthUpdateInterval = base::Milliseconds(500);
+
+// The maximum time that Session will wait for Remoter to start Remoting. If
+// timeout occurs, the session is terminated.
+constexpr base::TimeDelta kStartRemotePlaybackTimeOut = base::Seconds(5);
 
 constexpr char kLogPrefix[] = "OpenscreenSessionHost: ";
 
@@ -168,6 +173,21 @@ const std::string ToString(const media::VideoCaptureParams& params) {
       media::VideoCaptureFormat::ToString(params.requested_format).c_str(),
       static_cast<int>(params.buffer_type),
       static_cast<int>(params.resolution_change_policy));
+}
+
+void RecordRemotePlaybackSessionLoadTime(
+    absl::optional<base::Time> start_time) {
+  if (!start_time) {
+    return;
+  }
+  base::TimeDelta time_delta = base::Time::Now() - start_time.value();
+  base::UmaHistogramTimes("MediaRouter.RemotePlayback.SessionLoadTime",
+                          time_delta);
+}
+
+void RecordRemotePlaybackSessionStartsBeforeTimeout(bool started) {
+  base::UmaHistogramBoolean(
+      "MediaRouter.RemotePlayback.SessionStartsBeforeTimeout", started);
 }
 
 }  // namespace
@@ -395,7 +415,11 @@ void OpenscreenSessionHost::OnNegotiated(
         cast_environment_, std::move(senders.audio_sender),
         std::move(senders.video_sender), std::move(audio_config),
         std::move(video_config));
-
+    if (session_params_.is_remote_playback) {
+      RecordRemotePlaybackSessionLoadTime(remote_playback_start_time_);
+      RecordRemotePlaybackSessionStartsBeforeTimeout(true);
+      remote_playback_start_timer_.Stop();
+    }
     return;
   }
 
@@ -489,14 +513,20 @@ void OpenscreenSessionHost::OnNegotiated(
   switching_tab_source_ = false;
 
   if (initially_starting_session) {
-    // We should only request capabilities once, in order to avoid instantiating
-    // the media remoter multiple times.
     if (session_params_.is_remote_playback) {
       // Initialize `media_remoter_` without capabilities for Remote Playback
       // Media Source.
       openscreen::cast::RemotingCapabilities capabilities;
       InitMediaRemoter(capabilities);
+      video_capture_client_->Pause();
+      remote_playback_start_time_ = base::Time::Now();
+      remote_playback_start_timer_.Start(
+          FROM_HERE, kStartRemotePlaybackTimeOut,
+          base::BindOnce(&OpenscreenSessionHost::OnRemotingStartTimeout,
+                         weak_factory_.GetWeakPtr()));
     } else {
+      // We should only request capabilities once, in order to avoid
+      // instantiating the media remoter multiple times.
       session_->RequestCapabilities();
     }
     if (observer_) {
@@ -699,7 +729,8 @@ void OpenscreenSessionHost::LogInfoMessage(const std::string& message) {
 
 void OpenscreenSessionHost::ReportAndLogError(SessionError error,
                                               const std::string& message) {
-  UMA_HISTOGRAM_ENUMERATION("MediaRouter.MirroringService.SessionError", error);
+  base::UmaHistogramEnumeration("MediaRouter.MirroringService.SessionError",
+                                error);
 
   if (observer_)
     observer_->LogErrorMessage(kLogPrefix + message);
@@ -1055,6 +1086,12 @@ void OpenscreenSessionHost::InitMediaRemoter(
       ToRemotingSinkMetadata(capabilities,
                              session_params_.receiver_friendly_name),
       *rpc_dispatcher_);
+}
+
+void OpenscreenSessionHost::OnRemotingStartTimeout() {
+  DCHECK(state_ != State::kRemoting);
+  StopSession();
+  RecordRemotePlaybackSessionStartsBeforeTimeout(false);
 }
 
 network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {

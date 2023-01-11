@@ -48,6 +48,16 @@ void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   OnStopped();
 }
 
+void FakeVideoCaptureHost::Pause(const base::UnguessableToken& device_id) {
+  paused_ = true;
+}
+
+void FakeVideoCaptureHost::Resume(const base::UnguessableToken& device_id,
+                                  const base::UnguessableToken& session_id,
+                                  const media::VideoCaptureParams& params) {
+  paused_ = false;
+}
+
 void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
                                         base::TimeTicks capture_time) {
   if (!observer_)
