@@ -412,7 +412,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
         process_return = self.process_and_upload_results()
 
         if (process_return != exit_codes.INTERRUPTED_EXIT_STATUS
-                and self.options.show_results):
+                and self.options.show_results and self.has_regressions()):
             self.show_results_in_browser()
 
     def show_results_in_browser(self):
@@ -420,6 +420,15 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                                     self.layout_test_results_subdir,
                                     'results.html')
         self.port.show_results_html_file(results_file)
+
+    def has_regressions(self):
+        full_results_file = self.fs.join(self.fs.dirname(self.wpt_output),
+                                         self.layout_test_results_subdir,
+                                         'full_results.json')
+        with self.fs.open_text_file_for_reading(
+                full_results_file) as full_results:
+            results = json.load(full_results)
+        return results["num_regressions"] > 0
 
     def clean_up_after_test_run(self):
         if self._include_filename:
