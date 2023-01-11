@@ -5,6 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+<!--
+TODO(crbug.com/1406154) - The layout may be simplified using
+TextViewWithCompoundDrawables.
+-->
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -27,10 +32,20 @@ found in the LICENSE file.
         android:layout_height="wrap_content" />
 
     <TextView
-        android:layout_marginTop="12dp"
         android:id="@+id/offline_text"
-        app:drawableStartCompat="@drawable/ic_offline_pin_24dp_on_light_bg"
+        android:layout_marginTop="12dp"
+        app:drawableStartCompat="@drawable/ic_offline_pin_24dp"
         android:drawablePadding="12dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/ad_personalization_text"
+        android:layout_marginTop="12dp"
+        android:text="@string/webstorage_clear_data_dialog_site_settings_remove_site_ad_personalization"
+        app:drawableStartCompat="@drawable/ic_data_personalization_20dp"
+        android:drawablePadding="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 </LinearLayout>

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -200,6 +201,10 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         TextView message = dialogView.findViewById(android.R.id.message);
         TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);
+        if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {
+            RelativeLayout adDataRow = dialogView.findViewById(R.id.ad_personalization);
+            adDataRow.setVisibility(View.VISIBLE);
+        }
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_all_message);
         offlineText.setText(R.string.webstorage_clear_data_dialog_offline_message);
         String dialogFormattedText =

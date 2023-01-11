@@ -290,6 +290,9 @@
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_ALL_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of all sites being cleared.">
     You'll be signed out of all sites.
   </message>
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SITE_SETTINGS_REMOVE_SITE_AD_PERSONALIZATION" translateable="false" desc="Text of the confirmation dialog, explaining that the user will be signed out of all sites being cleared.">
+    Cras in lectus mi ac magna dapibus
+  </message>
   <message name="IDS_STORAGE_CLEAR_SITE_STORAGE_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR_LIMIT=24]">
     Clear site data?
   </message>

@@ -351,7 +351,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 }
             };
             ClearWebsiteStorageDialog dialogFragment =
-                    ClearWebsiteStorageDialog.newInstance(preference, onDialogClosed);
+                    ClearWebsiteStorageDialog.newInstance(preference, onDialogClosed,
+                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled());
             dialogFragment.setTargetFragment(this, 0);
             dialogFragment.show(getFragmentManager(), ClearWebsiteStorageDialog.TAG);
         } else {

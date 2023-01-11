@@ -32,7 +32,7 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_person_24dp"
-            tools:ignore="ContentDescription" />
+            android:importantForAccessibility="no" />
         <TextView
             android:id="@+id/signed_out_text"
             android:layout_width="wrap_content"
@@ -44,6 +44,7 @@ found in the LICENSE file.
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/offline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/signed_out"
@@ -52,8 +53,8 @@ found in the LICENSE file.
             android:id="@+id/offline_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_offline_pin_24dp_on_light_bg"
-            tools:ignore="ContentDescription" />
+            android:src="@drawable/ic_offline_pin_24dp"
+            android:importantForAccessibility="no" />
         <TextView
             android:id="@+id/offline_text"
             android:layout_width="wrap_content"
@@ -61,5 +62,28 @@ found in the LICENSE file.
             android:layout_toEndOf="@id/offline_icon"
             android:layout_centerInParent="true"
             android:layout_marginStart="12dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/ad_personalization"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/offline"
+        android:layout_marginTop="12dp"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/ad_personalization_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_data_personalization_20dp"
+            android:importantForAccessibility="no" />
+        <TextView
+            android:id="@+id/ad_personalization_text"
+            android:text="@string/webstorage_clear_data_dialog_site_settings_remove_site_ad_personalization"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/ad_personalization_icon"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="16dp" />
     </RelativeLayout>
 </RelativeLayout>
