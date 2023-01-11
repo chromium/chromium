@@ -70,6 +70,8 @@ compile_js_files = [
   "sound.ts",
   "spoken_msg.ts",
   "state.ts",
+  "test/cca_test.ts",
+  "test/cca_type.ts",
   "test_bridge.ts",
   "thumbnailer.ts",
   "timer.ts",
