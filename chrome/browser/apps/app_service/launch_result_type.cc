@@ -76,20 +76,23 @@ LaunchResultToMojomLaunchResultCallback(LaunchCallback callback) {
 crosapi::mojom::LaunchResultPtr ConvertLaunchResultToMojomLaunchResult(
     LaunchResult&& launch_result) {
   auto mojom_launch_result = crosapi::mojom::LaunchResult::New();
-  if (!launch_result.instance_ids.empty()) {
-    mojom_launch_result->instance_ids = std::vector<base::UnguessableToken>();
-    for (auto& token : launch_result.instance_ids) {
-      if (!token.is_empty()) {
-        mojom_launch_result->instance_ids->push_back(token);
-      }
+  mojom_launch_result->instance_ids = std::vector<base::UnguessableToken>();
+  for (auto& token : launch_result.instance_ids) {
+    if (!token.is_empty()) {
+      mojom_launch_result->instance_ids->push_back(token);
     }
-    // This is a deprecated field, but unfortunately we cannot leave it blank,
-    // because the serialization code check-fails if an base::UnguessableToken
-    // is empty. So we just set it to the first of the `instance_ids`.
-    // Code will always use the `instance_ids` field over the `instance_id`, as
-    // demonstrated above, so this is safe.
+  }
+  // This is a deprecated field, but unfortunately we cannot leave it blank,
+  // because the serialization code check-fails if this field
+  // is not set. So we just set it to the first of the instance_ids or create
+  // a dummy value.
+  // Code will always use the instance_ids field over the instance_id, as
+  // demonstrated above, so this is safe.
+  if (!launch_result.instance_ids.empty()) {
     mojom_launch_result->instance_id =
         mojom_launch_result->instance_ids->front();
+  } else {
+    mojom_launch_result->instance_id = base::UnguessableToken::Create();
   }
   mojom_launch_result->state =
       ConvertLaunchResultStateToMojomLaunchResultState(launch_result.state);
