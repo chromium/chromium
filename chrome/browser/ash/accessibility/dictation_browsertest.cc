@@ -1433,7 +1433,7 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                        CursorPositionSmartDeletePhrase) {
   SendFinalResultAndWaitForEditableValue("This is a difficult test",
                                          "This is a difficult test");
-  SendFinalResultAndWaitForCaretBoundsChanged("delete difficult");
+  SendFinalResultAndWaitForEditableValue("delete difficult", "This is a test");
   SendFinalResultAndWaitForEditableValue("simple", "This is a simple test");
 }
 
@@ -1441,7 +1441,8 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                        CursorPositionSmartReplacePhrase) {
   SendFinalResultAndWaitForEditableValue("This is a difficult test",
                                          "This is a difficult test");
-  SendFinalResultAndWaitForCaretBoundsChanged("replace difficult with simple");
+  SendFinalResultAndWaitForEditableValue("replace difficult with simple",
+                                         "This is a simple test");
   SendFinalResultAndWaitForEditableValue("biology",
                                          "This is a simple biology test");
   SendFinalResultAndWaitForEditableValue(
@@ -1451,7 +1452,8 @@ IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
 IN_PROC_BROWSER_TEST_P(DictationRegexCommandsTest,
                        CursorPositionSmartInsertBefore) {
   SendFinalResultAndWaitForEditableValue("This is a test", "This is a test");
-  SendFinalResultAndWaitForCaretBoundsChanged("insert simple before test");
+  SendFinalResultAndWaitForEditableValue("insert simple before test",
+                                         "This is a simple test");
   SendFinalResultAndWaitForEditableValue("biology",
                                          "This is a simple biology test");
 }
