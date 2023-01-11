@@ -749,7 +749,6 @@
     'chromium.webkit': {
       'WebKit Linux Trusty ASAN': 'asan_lsan_release_bot',
       'WebKit Linux Trusty Leak': 'release_bot',
-      'WebKit Linux Trusty MSAN': 'msan_release_bot',
       'WebKit Mac Builder': 'release_bot',
       'WebKit Win Builder': 'release_bot_x86_minimal_symbols',
     },
@@ -3186,10 +3185,6 @@
 
     'msan_no_origins_release_bot_reclient': [
       'msan_no_origins', 'release_bot_reclient',
-    ],
-
-    'msan_release_bot': [
-      'msan', 'release_bot',
     ],
 
     'msan_release_bot_blink_reclient': [
