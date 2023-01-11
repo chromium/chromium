@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -155,7 +156,12 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
         task_runner->PostTask(
             current_notification->from_here,
             BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                     UnsafeDanglingUntriaged(observer),
+                     // While `observer` may be dangling, we pass it and
+                     // check it wasn't deallocated in NotifyWrapper() which can
+                     // check `observers_` to verify presence (the owner of the
+                     // observer is responsible for removing it from that list
+                     // before deallocation).
+                     UnsafeDangling(observer),
                      NotificationData(this, observer_id,
                                       current_notification->from_here,
                                       notification_data->method)));
@@ -201,7 +207,12 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       observer.second.task_runner->PostTask(
           from_here,
           BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                   base::UnsafeDanglingUntriaged(observer.first),
+                   // While `observer.first` may be dangling, we pass it and
+                   // check it wasn't deallocated in NotifyWrapper() which can
+                   // check `observers_` to verify presence (the owner of the
+                   // observer is responsible for removing it from that list
+                   // before deallocation).
+                   UnsafeDangling(observer.first),
                    NotificationData(this, observer.second.observer_id,
                                     from_here, method)));
     }
@@ -225,7 +236,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   ~ObserverListThreadSafe() override = default;
 
-  void NotifyWrapper(ObserverType* observer,
+  void NotifyWrapper(MayBeDangling<ObserverType> observer,
                      const NotificationData& notification) {
     {
       AutoLock auto_lock(lock_);
