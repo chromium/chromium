@@ -36,6 +36,7 @@ class CONTENT_EXPORT DirectUDPSocketImpl
   // blink::mojom::DirectUDPSocket:
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
+  void Close() override;
 
  private:
   void OnDisconnect();

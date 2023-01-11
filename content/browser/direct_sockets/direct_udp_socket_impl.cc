@@ -19,11 +19,7 @@ DirectUDPSocketImpl::DirectUDPSocketImpl(
       &DirectUDPSocketImpl::OnDisconnect, base::Unretained(this)));
 }
 
-DirectUDPSocketImpl::~DirectUDPSocketImpl() {
-  if (remote_.is_bound()) {
-    remote_->Close();
-  }
-}
+DirectUDPSocketImpl::~DirectUDPSocketImpl() = default;
 
 void DirectUDPSocketImpl::Connect(const net::IPEndPoint& remote_addr,
                                   network::mojom::UDPSocketOptionsPtr options,
@@ -48,6 +44,14 @@ void DirectUDPSocketImpl::Send(base::span<const uint8_t> data,
                 net::MutableNetworkTrafficAnnotationTag{
                     DirectSocketsServiceImpl::TrafficAnnotation()},
                 std::move(callback));
+}
+
+void DirectUDPSocketImpl::Close() {
+  if (!remote_.is_bound()) {
+    return;
+  }
+  remote_->Close();
+  remote_.reset();
 }
 
 void DirectUDPSocketImpl::OnDisconnect() {
