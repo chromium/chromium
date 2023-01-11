@@ -213,7 +213,8 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        RecyclerView recyclerView = cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view);
+        RecyclerView recyclerView =
+                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
         CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
         mRenderTestRule.render(recyclerView, "tabSwitcher_3tabs");
 
@@ -256,10 +257,11 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        RecyclerView recyclerView = cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view);
+        RecyclerView recyclerView =
+                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
         CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
         // TODO(crbug.com/1065314): Tab group cards should not have favicons.
-        mRenderTestRule.render(cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view),
+        mRenderTestRule.render(StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta),
                 "tabSwitcher_tabGroups_aspect_ratio_point85");
 
         // Resume native initialization and make sure the GTS looks the same.
@@ -314,9 +316,10 @@ public class InstantStartTabSwitcherTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 
-        RecyclerView recyclerView = cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view);
+        RecyclerView recyclerView =
+                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
         CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
-        mRenderTestRule.render(cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view),
+        mRenderTestRule.render(StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta),
                 "tabSwitcher_tabGroups_theme_enforcement");
     }
 
@@ -344,7 +347,8 @@ public class InstantStartTabSwitcherTest {
                              withId(org.chromium.chrome.test.R.id.carousel_tab_switcher_container)),
                        withId(org.chromium.chrome.test.R.id.tab_list_view)))
                 .check(matches(isDisplayed()));
-        RecyclerView tabListView = cta.findViewById(org.chromium.chrome.test.R.id.tab_list_view);
+        RecyclerView tabListView =
+                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> tabListView.getChildAt(0)

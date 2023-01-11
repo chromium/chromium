@@ -550,6 +550,14 @@ public class StartSurfaceTestUtils {
     }
 
     /**
+     * Gets the "tab_list_view" from the carousel tab switcher module on Start surface.
+     */
+    static View getCarouselTabSwitcherTabListView(ChromeTabbedActivity cta) {
+        return cta.findViewById(R.id.carousel_tab_switcher_container)
+                .findViewById(org.chromium.chrome.test.R.id.tab_list_view);
+    }
+
+    /**
      * Presses the back button and verifies that Chrome goes to the background.
      */
     public static void pressBackAndVerifyChromeToBackground(ChromeTabbedActivityTestRule testRule) {
