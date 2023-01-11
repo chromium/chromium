@@ -4399,6 +4399,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings",
       "//chrome/browser/ui/webui/tab_search:mojo_bindings",
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
+      "//chrome/browser/ui/webui/web_app_internals:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/adjustments",
       "//chrome/browser/web_applications/app_service",
@@ -7721,6 +7722,7 @@ grit("resources") {
     deps += [
       "//chrome/browser/resources/media_router/internals:build_ts",
       "//chrome/browser/share/core/resources:make_share_targets_protobuf",
+      "//chrome/browser/ui/webui/web_app_internals:mojo_bindings_js",
     ]
   }
   if (is_chromeos_ash) {

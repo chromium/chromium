@@ -55,6 +55,7 @@ group("resources") {
       "signin:resources",
       "support_tool:resources",
       "tab_search:resources",
+      "web_app_internals:resources",
       "webui_gallery:resources",
       "whats_new:resources",
     ]

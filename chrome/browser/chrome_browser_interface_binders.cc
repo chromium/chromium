@@ -155,6 +155,8 @@
 #include "chrome/browser/ui/webui/feed/feed_ui.h"
 #include "chrome/browser/ui/webui/image_editor/image_editor.mojom.h"
 #include "chrome/browser/ui/webui/image_editor/image_editor_untrusted_ui.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
@@ -1342,6 +1344,11 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ::app_home::mojom::PageHandlerFactory, webapps::AppHomeUI>(map);
   }
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  RegisterWebUIControllerInterfaceBinder<::mojom::WebAppInternalsHandler,
+                                         WebAppInternalsUI>(map);
 #endif
 }
 

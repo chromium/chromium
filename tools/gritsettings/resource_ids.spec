@@ -354,6 +354,10 @@
     "META": {"sizes": {"includes": [70]}},
     "includes": [2130],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/web_app_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2135],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/whats_new/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [2140],

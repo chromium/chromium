@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
-#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_source.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -127,11 +126,7 @@ WebAppUiManagerImpl* WebAppUiManagerImpl::Get(
 
 WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
     : dialog_manager_(std::make_unique<WebAppDialogManager>(profile)),
-      profile_(profile) {
-  // Register the source for the chrome://web-app-internals page.
-  content::URLDataSource::Add(
-      profile_, std::make_unique<WebAppInternalsSource>(profile_));
-}
+      profile_(profile) {}
 
 WebAppUiManagerImpl::~WebAppUiManagerImpl() = default;
 

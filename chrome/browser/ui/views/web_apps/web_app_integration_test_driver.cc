@@ -64,7 +64,7 @@
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
-#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_source.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
@@ -871,7 +871,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   if (testing::Test::HasFailure()) {
     for (auto* profile : GetAllProfiles()) {
       base::RunLoop debug_info_loop;
-      WebAppInternalsSource::BuildWebAppInternalsJson(
+      WebAppInternalsHandler::BuildDebugInfo(
           profile, base::BindLambdaForTesting([&](base::Value debug_info) {
             LOG(INFO) << "chrome://web-app-internals for profile "
                       << profile->GetDebugName() << ":";

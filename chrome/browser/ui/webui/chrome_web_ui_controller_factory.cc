@@ -172,6 +172,7 @@
 #include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
 #include "chrome/browser/ui/webui/system_info_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -940,8 +941,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (base::FeatureList::IsEnabled(features::kSupportTool) &&
       url.host_piece() == chrome::kChromeUISupportToolHost &&
-      SupportToolUI::IsEnabled(profile))
+      SupportToolUI::IsEnabled(profile)) {
     return &NewWebUI<SupportToolUI>;
+  }
+  if (url.host_piece() == chrome::kChromeUIWebAppInternalsHost) {
+    return &NewWebUI<WebAppInternalsUI>;
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
   if (url.host_piece() == chrome::kChromeUIConflictsHost)

@@ -1,18 +1,19 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_source.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
+
+#include <string>
+#include <vector>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/json/json_writer.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -110,8 +110,9 @@ base::Value::Dict BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
 
   base::Value::List& web_app_details =
       *installed_web_apps.EnsureList("Details");
-  for (const web_app::WebApp* web_app : web_apps)
+  for (const web_app::WebApp* web_app : web_apps) {
     web_app_details.Append(web_app->AsDebugValue());
+  }
 
   return root;
 }
@@ -132,8 +133,9 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
 
   base::Value::List& config_parse_errors =
       *preinstalled_web_app_configs.EnsureList("ConfigParseErrors");
-  for (const std::string& parse_error : debug_info->parse_errors)
+  for (const std::string& parse_error : debug_info->parse_errors) {
     config_parse_errors.Append(parse_error);
+  }
 
   base::Value::List& configs_enabled =
       *preinstalled_web_app_configs.EnsureList("ConfigsEnabled");
@@ -216,8 +218,9 @@ base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   }
 
   base::Value::List& icon_error_log = *root.EnsureList(kIconErrorLog);
-  for (const std::string& error : *error_log)
+  for (const std::string& error : *error_log) {
     icon_error_log.Append(error);
+  }
 
   return root;
 }
@@ -236,8 +239,9 @@ base::Value::Dict BuildInstallProcessErrorLogJson(
 
   base::Value::List& installation_process_error_log =
       *root.EnsureList(kInstallationProcessErrorLog);
-  for (const base::Value& error : *error_log)
+  for (const base::Value& error : *error_log) {
     installation_process_error_log.Append(error.Clone());
+  }
 
   return root;
 }
@@ -289,30 +293,10 @@ base::Value BuildWebAppDiskStateJson(base::FilePath root_directory,
   return base::Value(std::move(root));
 }
 
-void BuildResponse(Profile* profile,
-                   base::OnceCallback<void(base::Value root)> callback) {
-  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider) {
-    return std::move(callback).Run(
-        base::Value("Web app system not enabled for profile."));
-  }
-
-  provider->on_registry_ready().Post(
-      FROM_HERE,
-      base::BindOnce(&WebAppInternalsSource::BuildWebAppInternalsJson, profile,
-                     std::move(callback)));
-}
-
-void ConvertValueToJsonData(content::URLDataSource::GotDataCallback callback,
-                            base::Value value) {
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedString>(value.DebugString()));
-}
-
 }  // namespace
 
 // static
-void WebAppInternalsSource::BuildWebAppInternalsJson(
+void WebAppInternalsHandler::BuildDebugInfo(
     Profile* profile,
     base::OnceCallback<void(base::Value root)> callback) {
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
@@ -337,23 +321,25 @@ void WebAppInternalsSource::BuildWebAppInternalsJson(
       std::move(callback));
 }
 
-WebAppInternalsSource::WebAppInternalsSource(Profile* profile)
-    : profile_(profile) {}
+WebAppInternalsHandler::WebAppInternalsHandler(
+    Profile* profile,
+    mojo::PendingReceiver<mojom::WebAppInternalsHandler> receiver)
+    : profile_(profile), receiver_(this, std::move(receiver)) {}
 
-WebAppInternalsSource::~WebAppInternalsSource() = default;
+WebAppInternalsHandler::~WebAppInternalsHandler() = default;
 
-std::string WebAppInternalsSource::GetSource() {
-  return chrome::kChromeUIWebAppInternalsHost;
-}
+void WebAppInternalsHandler::GetDebugInfoAsJsonString(
+    GetDebugInfoAsJsonStringCallback callback) {
+  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  if (!provider) {
+    return std::move(callback).Run("Web app system not enabled for profile.");
+  }
 
-std::string WebAppInternalsSource::GetMimeType(const GURL& url) {
-  return "application/json";
-}
+  auto value_to_string =
+      base::BindOnce([](base::Value value) { return value.DebugString(); });
 
-void WebAppInternalsSource::StartDataRequest(
-    const GURL& url,
-    const content::WebContents::Getter& wc_getter,
-    content::URLDataSource::GotDataCallback callback) {
-  BuildResponse(profile_,
-                base::BindOnce(&ConvertValueToJsonData, std::move(callback)));
+  provider->on_registry_ready().Post(
+      FROM_HERE,
+      base::BindOnce(&WebAppInternalsHandler::BuildDebugInfo, profile_,
+                     std::move(value_to_string).Then(std::move(callback))));
 }
