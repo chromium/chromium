@@ -19,6 +19,7 @@ static_library("core") {
 
   public_deps = [
     ":proto",
+    "//components/power_bookmarks/common",
     "//components/sync/protocol",
   ]
 
