@@ -70,6 +70,39 @@ base::UnguessableToken DecodeToken(base::StringPiece input) {
   return base::UnguessableToken::Deserialize(data[0], data[1]);
 }
 
+base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port) {
+  base::Value::Dict value;
+  if (port.display_name && !port.display_name->empty()) {
+    value.Set(kPortNameKey, *port.display_name);
+  } else {
+    value.Set(kPortNameKey, port.path.LossyDisplayName());
+  }
+
+  if (!SerialChooserContext::CanStorePersistentEntry(port)) {
+    value.Set(kTokenKey, EncodeToken(port.token));
+    return base::Value(std::move(value));
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // Windows provides a handy device identifier which we can rely on to be
+  // sufficiently stable for identifying devices across restarts.
+  value.Set(kDeviceInstanceIdKey, port.device_instance_id);
+#else
+  DCHECK(port.has_vendor_id);
+  value.Set(kVendorIdKey, port.vendor_id);
+  DCHECK(port.has_product_id);
+  value.Set(kProductIdKey, port.product_id);
+  DCHECK(port.serial_number);
+  value.Set(kSerialNumberKey, *port.serial_number);
+
+#if BUILDFLAG(IS_MAC)
+  DCHECK(port.usb_driver_name && !port.usb_driver_name->empty());
+  value.Set(kUsbDriverKey, *port.usb_driver_name);
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+  return base::Value(std::move(value));
+}
+
 base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
                                        uint16_t product_id) {
   base::Value::Dict object;
@@ -132,41 +165,6 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
 }
 
 SerialChooserContext::~SerialChooserContext() = default;
-
-// static
-base::Value SerialChooserContext::PortInfoToValue(
-    const device::mojom::SerialPortInfo& port) {
-  base::Value::Dict value;
-  if (port.display_name && !port.display_name->empty()) {
-    value.Set(kPortNameKey, *port.display_name);
-  } else {
-    value.Set(kPortNameKey, port.path.LossyDisplayName());
-  }
-
-  if (!SerialChooserContext::CanStorePersistentEntry(port)) {
-    value.Set(kTokenKey, EncodeToken(port.token));
-    return base::Value(std::move(value));
-  }
-
-#if BUILDFLAG(IS_WIN)
-  // Windows provides a handy device identifier which we can rely on to be
-  // sufficiently stable for identifying devices across restarts.
-  value.Set(kDeviceInstanceIdKey, port.device_instance_id);
-#else
-  DCHECK(port.has_vendor_id);
-  value.Set(kVendorIdKey, port.vendor_id);
-  DCHECK(port.has_product_id);
-  value.Set(kProductIdKey, port.product_id);
-  DCHECK(port.serial_number);
-  value.Set(kSerialNumberKey, *port.serial_number);
-
-#if BUILDFLAG(IS_MAC)
-  DCHECK(port.usb_driver_name && !port.usb_driver_name->empty());
-  value.Set(kUsbDriverKey, *port.usb_driver_name);
-#endif  // BUILDFLAG(IS_MAC)
-#endif  // BUILDFLAG(IS_WIN)
-  return base::Value(std::move(value));
-}
 
 std::string SerialChooserContext::GetKeyForObject(const base::Value& object) {
   if (!IsValidObject(object))

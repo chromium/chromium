@@ -98,19 +98,7 @@ void AddManufacturerDataTo(
     manufacturer_data_list.Append(manufacturer_code);
 }
 
-}  // namespace
-
-BluetoothChooserContext::BluetoothChooserContext(
-    content::BrowserContext* browser_context)
-    : ObjectPermissionContextBase(
-          ContentSettingsType::BLUETOOTH_GUARD,
-          ContentSettingsType::BLUETOOTH_CHOOSER_DATA,
-          PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
-
-BluetoothChooserContext::~BluetoothChooserContext() = default;
-
-// static
-base::Value::Dict BluetoothChooserContext::DeviceInfoToValue(
+base::Value::Dict DeviceInfoToDeviceObject(
     const device::BluetoothDevice* device,
     const blink::mojom::WebBluetoothRequestDeviceOptions* options,
     const WebBluetoothDeviceId& device_id) {
@@ -127,6 +115,17 @@ base::Value::Dict BluetoothChooserContext::DeviceInfoToValue(
 
   return device_value;
 }
+
+}  // namespace
+
+BluetoothChooserContext::BluetoothChooserContext(
+    content::BrowserContext* browser_context)
+    : ObjectPermissionContextBase(
+          ContentSettingsType::BLUETOOTH_GUARD,
+          ContentSettingsType::BLUETOOTH_CHOOSER_DATA,
+          PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
+
+BluetoothChooserContext::~BluetoothChooserContext() = default;
 
 WebBluetoothDeviceId BluetoothChooserContext::GetWebBluetoothDeviceId(
     const url::Origin& origin,
@@ -239,7 +238,7 @@ WebBluetoothDeviceId BluetoothChooserContext::GrantServiceAccessPermission(
     device_id = WebBluetoothDeviceId::Create();
 
   base::Value::Dict permission_object =
-      DeviceInfoToValue(device, options, device_id);
+      DeviceInfoToDeviceObject(device, options, device_id);
   GrantObjectPermission(origin, base::Value(std::move(permission_object)));
   return device_id;
 }

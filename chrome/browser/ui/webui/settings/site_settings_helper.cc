@@ -907,7 +907,7 @@ void GetPolicyAllowedUrls(
   }
 }
 
-const ChooserTypeNameEntry* ChooserTypeFromGroupName(base::StringPiece name) {
+const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name) {
   for (const auto& chooser_type : kChooserTypeGroupNames) {
     if (chooser_type.name == name)
       return &chooser_type;

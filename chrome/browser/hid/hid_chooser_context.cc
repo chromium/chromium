@@ -50,6 +50,27 @@ bool IsPolicyGrantedObject(const base::Value& object) {
          object.FindStringKey(kHidDeviceNameKey);
 }
 
+base::Value DeviceInfoToValue(const device::mojom::HidDeviceInfo& device) {
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetStringKey(
+      kHidDeviceNameKey,
+      base::UTF16ToUTF8(HidChooserContext::DisplayNameFromDeviceInfo(device)));
+  value.SetIntKey(kHidVendorIdKey, device.vendor_id);
+  value.SetIntKey(kHidProductIdKey, device.product_id);
+  if (HidChooserContext::CanStorePersistentEntry(device)) {
+    // Use the USB serial number as a persistent identifier. If it is
+    // unavailable, only ephemeral permissions may be granted.
+    value.SetStringKey(kHidSerialNumberKey, device.serial_number);
+  } else {
+    // The GUID is a temporary ID created on connection that remains valid until
+    // the device is disconnected. Ephemeral permissions are keyed by this ID
+    // and must be granted again each time the device is connected.
+    value.SetStringKey(kHidGuidKey, device.guid);
+  }
+  DCHECK(!IsPolicyGrantedObject(value));
+  return value;
+}
+
 base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
                                        uint16_t product_id) {
   base::Value object(base::Value::Type::DICTIONARY);
@@ -127,29 +148,6 @@ HidChooserContext::~HidChooserContext() {
     DCHECK(!device_observer_list_.HasObserver(&observer));
   }
   DCHECK(permission_observer_list_.empty());
-}
-
-// static
-base::Value HidChooserContext::DeviceInfoToValue(
-    const device::mojom::HidDeviceInfo& device) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(
-      kHidDeviceNameKey,
-      base::UTF16ToUTF8(HidChooserContext::DisplayNameFromDeviceInfo(device)));
-  value.SetIntKey(kHidVendorIdKey, device.vendor_id);
-  value.SetIntKey(kHidProductIdKey, device.product_id);
-  if (HidChooserContext::CanStorePersistentEntry(device)) {
-    // Use the USB serial number as a persistent identifier. If it is
-    // unavailable, only ephemeral permissions may be granted.
-    value.SetStringKey(kHidSerialNumberKey, device.serial_number);
-  } else {
-    // The GUID is a temporary ID created on connection that remains valid until
-    // the device is disconnected. Ephemeral permissions are keyed by this ID
-    // and must be granted again each time the device is connected.
-    value.SetStringKey(kHidGuidKey, device.guid);
-  }
-  DCHECK(!IsPolicyGrantedObject(value));
-  return value;
 }
 
 // static

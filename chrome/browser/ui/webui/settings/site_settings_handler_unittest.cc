@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -20,16 +20,12 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
-#include "base/test/test_future.h"
-#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
@@ -41,7 +37,6 @@
 #include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -54,7 +49,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/browsing_data/content/browsing_data_model.h"
@@ -73,14 +67,12 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
-#include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/permissions/test/permission_test_util.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -91,30 +83,22 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
-#include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/test/mock_bluetooth_adapter.h"
-#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/account_id/account_id.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
@@ -122,32 +106,15 @@
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/hid/hid_chooser_context.h"
-#include "chrome/browser/hid/hid_chooser_context_factory.h"
-#include "chrome/browser/serial/serial_chooser_context.h"
-#include "chrome/browser/serial/serial_chooser_context_factory.h"
-#include "services/device/public/cpp/test/fake_hid_manager.h"
-#include "services/device/public/cpp/test/fake_serial_port_manager.h"
-#include "services/device/public/mojom/hid.mojom.h"
-#include "services/device/public/mojom/serial.mojom.h"
-#endif
+using ::testing::_;
+using ::testing::Return;
 
 namespace {
-
-using ::base::test::ParseJson;
-using ::base::test::RunClosure;
-using ::base::test::TestFuture;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::Return;
-using ::testing::UnorderedElementsAre;
 
 constexpr char kCallbackId[] = "test-callback-id";
 constexpr char kSetting[] = "setting";
 constexpr char kSource[] = "source";
 constexpr char kExtensionName[] = "Test Extension";
-constexpr char kTestUserEmail[] = "user@example.com";
 
 const struct PatternContentTypeTestCase {
   struct {
@@ -269,26 +236,26 @@ class ContentSettingSourceSetter {
   ContentSettingsType content_type_;
 };
 
-class SiteSettingsHandlerBaseTest : public testing::Test {
+class SiteSettingsHandlerTest : public testing::Test,
+                                public testing::WithParamInterface<bool> {
  public:
-  SiteSettingsHandlerBaseTest()
+  SiteSettingsHandlerTest()
       : kNotifications(site_settings::ContentSettingsTypeToGroupName(
             ContentSettingsType::NOTIFICATIONS)),
         kCookies(site_settings::ContentSettingsTypeToGroupName(
             ContentSettingsType::COOKIES)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<ash::MockUserManager>());
+#endif
+
     // Fully initialize |profile_| in the constructor since some children
     // classes need it right away for SetUp().
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    EXPECT_TRUE(testing_profile_manager_->SetUp());
-    profile_ = testing_profile_manager_->CreateTestingProfile(
-        kTestUserEmail, {{HistoryServiceFactory::GetInstance(),
-                          HistoryServiceFactory::GetDefaultFactory()}});
-    EXPECT_TRUE(profile_);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    SetUpUserManager(profile_.get());
-#endif
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
   }
 
   void SetUp() override {
@@ -329,25 +296,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpUserManager(TestingProfile* profile) {
-    // On ChromeOS a user account is needed in order to check whether the user
-    // account is affiliated with the device owner for the purposes of applying
-    // enterprise policy.
-    constexpr char kTestUserGaiaId[] = "1111111111";
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager_ptr = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    fake_user_manager_ptr->AddUserWithAffiliation(account_id,
-                                                  /*is_affiliated=*/true);
-    fake_user_manager_ptr->LoginUser(account_id);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   void RecordNotification(permissions::NotificationsEngagementService* service,
                           GURL url,
                           int daily_avarage_count) {
@@ -363,7 +311,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   TestingProfile* profile() { return profile_.get(); }
-  Profile* incognito_profile() { return incognito_profile_; }
+  TestingProfile* incognito_profile() { return incognito_profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SiteSettingsHandler* handler() { return handler_.get(); }
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
@@ -614,8 +562,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   void CreateIncognitoProfile() {
-    incognito_profile_ = profile_->GetOffTheRecordProfile(
-        Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
+    incognito_profile_ = TestingProfile::Builder().BuildIncognito(profile());
   }
 
   virtual void DestroyIncognitoProfile() {
@@ -810,21 +757,17 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile> profile_ = nullptr;
-  raw_ptr<Profile> incognito_profile_ = nullptr;
+  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> incognito_profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
   raw_ptr<browsing_topics::MockBrowsingTopicsService>
       mock_browsing_topics_service_;
   raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
 };
-
-class SiteSettingsHandlerTest : public SiteSettingsHandlerBaseTest,
-                                public testing::WithParamInterface<bool> {};
 
 // True if testing for handle clear unpartitioned usage with HTTPS scheme URL.
 // When set to true, the tests use HTTPS scheme as origin. When set to
@@ -1950,10 +1893,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    SetUpUserManager(profile());
-#endif
-
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
@@ -1992,25 +1931,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
     // BrowserWithTestWindowTest::TearDown()
     BrowserWithTestWindowTest::TearDown();
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpUserManager(TestingProfile* profile) {
-    // On ChromeOS a user account is needed in order to check whether the user
-    // account is affiliated with the device owner for the purposes of applying
-    // enterprise policy.
-    constexpr char kTestUserGaiaId[] = "1111111111";
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager_ptr = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    fake_user_manager_ptr->AddUserWithAffiliation(account_id,
-                                                  /*is_affiliated=*/true);
-    fake_user_manager_ptr->LoginUser(account_id);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   infobars::ContentInfoBarManager* GetInfoBarManagerForTab(Browser* browser,
                                                            int tab_index,
@@ -2556,23 +2476,26 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
 namespace {
 
-std::vector<std::string> GetExceptionDisplayNames(
-    const base::Value& exceptions) {
-  std::vector<std::string> display_names;
-  for (const base::Value& exception : exceptions.GetList()) {
-    const std::string* display_name =
-        exception.GetDict().FindString(site_settings::kDisplayName);
-    if (display_name) {
-      display_names.push_back(*display_name);
-    }
-  }
-  return display_names;
-}
+constexpr char kUsbPolicySetting[] = R"(
+    [
+      {
+        "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
+        "urls": ["https://chromium.org"]
+      }, {
+        "devices": [{ "vendor_id": 6353 }],
+        "urls": ["https://google.com,https://android.com"]
+      }, {
+        "devices": [{ "vendor_id": 6354 }],
+        "urls": ["https://android.com,"]
+      }, {
+        "devices": [{}],
+        "urls": ["https://google.com,https://google.com"]
+      }
+    ])";
 
 }  // namespace
 
-class SiteSettingsHandlerChooserExceptionTest
-    : public SiteSettingsHandlerBaseTest {
+class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
  protected:
   const GURL kAndroidUrl{"https://android.com"};
   const GURL kChromiumUrl{"https://chromium.org"};
@@ -2580,22 +2503,103 @@ class SiteSettingsHandlerChooserExceptionTest
   const GURL kWebUIUrl{"chrome://test"};
 
   void SetUp() override {
-    SiteSettingsHandlerBaseTest::SetUp();
-    SetUpChooserContext();
-    SetUpPolicyGrantedPermissions();
-
-    // Add the observer for permission changes.
-    GetChooserContext(profile())->AddObserver(&observer_);
+    // Set up UsbChooserContext first, since the granting of device permissions
+    // causes the WebUI listener callbacks for
+    // contentSettingSitePermissionChanged and
+    // contentSettingChooserPermissionChanged to be fired. The base class SetUp
+    // method reset the WebUI call data.
+    SetUpUsbChooserContext();
+    SiteSettingsHandlerTest::SetUp();
   }
 
   void TearDown() override {
-    GetChooserContext(profile())->RemoveObserver(&observer_);
-    SiteSettingsHandlerBaseTest::TearDown();
+    auto* chooser_context = UsbChooserContextFactory::GetForProfile(profile());
+    chooser_context->permissions::ObjectPermissionContextBase::RemoveObserver(
+        &observer_);
+  }
+
+  // Sets up the UsbChooserContext with two devices and permissions for these
+  // devices. It also adds three policy defined permissions. There are three
+  // devices that are granted user permissions. Two are covered by different
+  // policy permissions, while the third is not covered by policy at all. These
+  // unit tests will check that the WebUI is able to receive the exceptions and
+  // properly manipulate their permissions.
+  void SetUpUsbChooserContext() {
+    persistent_device_info_ = device_manager_.CreateAndAddDevice(
+        6353, 5678, "Google", "Gizmo", "123ABC");
+    ephemeral_device_info_ =
+        device_manager_.CreateAndAddDevice(6354, 0, "Google", "Gadget", "");
+    user_granted_device_info_ = device_manager_.CreateAndAddDevice(
+        6355, 0, "Google", "Widget", "789XYZ");
+
+    auto* chooser_context = UsbChooserContextFactory::GetForProfile(profile());
+    mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
+    device_manager_.AddReceiver(
+        device_manager.InitWithNewPipeAndPassReceiver());
+    chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
+    chooser_context->GetDevices(base::DoNothing());
+    base::RunLoop().RunUntilIdle();
+
+    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
+    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
+    const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
+    const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
+
+    // Add the user granted permissions for testing.
+    // These two persistent device permissions should be lumped together with
+    // the policy permissions, since they apply to the same device and URL.
+    chooser_context->GrantDevicePermission(kChromiumOrigin,
+                                           *persistent_device_info_);
+    chooser_context->GrantDevicePermission(kGoogleOrigin,
+                                           *persistent_device_info_);
+    chooser_context->GrantDevicePermission(kWebUIOrigin,
+                                           *persistent_device_info_);
+    chooser_context->GrantDevicePermission(kAndroidOrigin,
+                                           *ephemeral_device_info_);
+    chooser_context->GrantDevicePermission(kAndroidOrigin,
+                                           *user_granted_device_info_);
+
+    // Add the policy granted permissions for testing.
+    auto policy_value = base::JSONReader::ReadDeprecated(kUsbPolicySetting);
+    DCHECK(policy_value);
+    profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
+                               *policy_value);
+
+    // Add the observer for permission changes.
+    chooser_context->permissions::ObjectPermissionContextBase::AddObserver(
+        &observer_);
+  }
+
+  void SetUpOffTheRecordUsbChooserContext() {
+    off_the_record_device_ = device_manager_.CreateAndAddDevice(
+        6353, 8765, "Google", "Contraption", "A9B8C7");
+
+    CreateIncognitoProfile();
+    auto* chooser_context =
+        UsbChooserContextFactory::GetForProfile(incognito_profile());
+    mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
+    device_manager_.AddReceiver(
+        device_manager.InitWithNewPipeAndPassReceiver());
+    chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
+    chooser_context->GetDevices(base::DoNothing());
+    base::RunLoop().RunUntilIdle();
+
+    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
+    chooser_context->GrantDevicePermission(kChromiumOrigin,
+                                           *off_the_record_device_);
+
+    // Add the observer for permission changes.
+    chooser_context->permissions::ObjectPermissionContextBase::AddObserver(
+        &observer_);
   }
 
   void DestroyIncognitoProfile() override {
-    GetChooserContext(incognito_profile())->RemoveObserver(&observer_);
-    SiteSettingsHandlerBaseTest::DestroyIncognitoProfile();
+    auto* chooser_context =
+        UsbChooserContextFactory::GetForProfile(incognito_profile());
+    chooser_context->permissions::ObjectPermissionContextBase::RemoveObserver(
+        &observer_);
+
+    SiteSettingsHandlerTest::DestroyIncognitoProfile();
   }
 
   // Call SiteSettingsHandler::HandleGetChooserExceptionList for |chooser_type|
@@ -2635,7 +2639,7 @@ class SiteSettingsHandlerChooserExceptionTest
   // Iterate through the exception's sites array and return true if a site
   // exception matches |requesting_origin| and |embedding_origin|.
   bool ChooserExceptionContainsSiteException(const base::Value& exception,
-                                             base::StringPiece origin) {
+                                             const std::string& origin) {
     const base::Value* sites = exception.FindListKey(site_settings::kSites);
     if (!sites)
       return false;
@@ -2655,8 +2659,8 @@ class SiteSettingsHandlerChooserExceptionTest
   // chooser exception with |display_name| that contains a site exception for
   // |origin|.
   bool ChooserExceptionContainsSiteException(const base::Value& exceptions,
-                                             base::StringPiece display_name,
-                                             base::StringPiece origin) {
+                                             const std::string& display_name,
+                                             const std::string& origin) {
     if (!exceptions.is_list())
       return false;
 
@@ -2673,1404 +2677,210 @@ class SiteSettingsHandlerChooserExceptionTest
     return false;
   }
 
-  void TestHandleGetChooserExceptionList() {
-    AddPersistentDevice();
-    AddEphemeralDevice();
-    AddUserGrantedDevice();
-    base::RunLoop().RunUntilIdle();
-
-    SetUpUserGrantedPermissions();
-
-    base::RunLoop().RunUntilIdle();
-    web_ui()->ClearTrackedCalls();
-
-    const std::string group_name(
-        site_settings::ContentSettingsTypeToGroupName(content_type()));
-
-    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-        group_name, /*expected_total_calls=*/1u);
-
-    // There are 9 granted permissions:
-    // 1. Persistent permission for persistent-device on kChromiumOrigin
-    // 2. Persistent permission for persistent-device on kGoogleOrigin
-    // 3. Persistent permission for persistent-device on kWebUIOrigin
-    // 4. Persistent permission for user-granted-device on kAndroidOrigin
-    // 5. Ephemeral permission for ephemeral-device on kAndroidOrigin
-    // 6. Policy-granted permission for any device on kGoogleOrigin
-    // 7. Policy-granted permission for vendor 18D1 on kAndroidOrigin
-    // 8. Policy-granted permission for vendor 18D2 on kAndroidOrigin
-    // 9. Policy-granted permission for device 18D1:162E on kChromiumOrigin
-    //
-    // Permission 3 is ignored by GetChooserExceptionListFromProfile because its
-    // origin has a WebUI scheme (chrome://).
-    //
-    // Some of the user-granted permissions are redundant due to policy-granted
-    // permissions. Permission 1 is redundant due to permission 9; 2 is
-    // redundant due to 6; 5 is redundant due to 8. UsbChooserContext omits
-    // redundant items but other APIs do not. This causes
-    // GetChooserExceptionListForProfile to return a different number of
-    // exceptions depending on the API.
-    //
-    // UsbChooserContext also detects when a policy-granted permission refers to
-    // the same origin and device IDs as a user-granted permission. When
-    // deduplicating redundant exceptions, the user-granted exception display
-    // name is used because it contains the device name.
-    //
-    // TODO(https://crbug.com/1392442): Update SerialChooserContext and
-    // HidChooserContext to deduplicate redundant exceptions.
-    switch (content_type()) {
-      case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-        // BluetoothChooserContext creates a different permission object for
-        // each (device,origin) pair, so persistent-device shows up for each of
-        // kChromiumOrigin and kGoogleOrigin.
-        //
-        // TODO(https://crbug.com/1040174): No policy-granted exceptions are
-        // included because Web Bluetooth does not support granting device
-        // permissions by policy.
-        EXPECT_THAT(
-            GetExceptionDisplayNames(exceptions),
-            UnorderedElementsAre("persistent-device", "persistent-device",
-                                 "ephemeral-device", "user-granted-device"));
-        break;
-      case ContentSettingsType::HID_CHOOSER_DATA:
-      case ContentSettingsType::SERIAL_CHOOSER_DATA:
-        EXPECT_THAT(
-            GetExceptionDisplayNames(exceptions),
-            UnorderedElementsAre("persistent-device", "user-granted-device",
-                                 "ephemeral-device", GetAllDevicesDisplayName(),
-                                 GetDevicesFromGoogleDisplayName(),
-                                 GetDevicesFromVendor18D2DisplayName(),
-                                 GetUnknownProductDisplayName()));
-        break;
-      case ContentSettingsType::USB_CHOOSER_DATA:
-        EXPECT_THAT(
-            GetExceptionDisplayNames(exceptions),
-            UnorderedElementsAre("persistent-device", "user-granted-device",
-                                 GetAllDevicesDisplayName(),
-                                 GetDevicesFromGoogleDisplayName(),
-                                 GetDevicesFromVendor18D2DisplayName()));
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-
-    // Don't include WebUI schemes.
-    const std::string kWebUIOriginStr =
-        kWebUIUrl.DeprecatedGetOriginAsURL().spec();
-    EXPECT_FALSE(ChooserExceptionContainsSiteException(
-        exceptions, "persistent-device", kWebUIOriginStr));
-  }
-
-  void TestHandleGetChooserExceptionListForOffTheRecord() {
-    SetUpOffTheRecordChooserContext();
-    AddPersistentDevice();
-    AddEphemeralDevice();
-    AddUserGrantedDevice();
-    AddOffTheRecordDevice();
-    base::RunLoop().RunUntilIdle();
-
-    SetUpUserGrantedPermissions();
-
-    base::RunLoop().RunUntilIdle();
-    web_ui()->ClearTrackedCalls();
-
-    const std::string group_name(
-        site_settings::ContentSettingsTypeToGroupName(content_type()));
-
-    // The objects returned by GetChooserExceptionListFromProfile should also
-    // include the incognito permissions.
-    {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "persistent-device",
-                                   "ephemeral-device", "user-granted-device",
-                                   "off-the-record-device"));
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre(
-                  "persistent-device", "ephemeral-device",
-                  "user-granted-device", "off-the-record-device",
-                  GetAllDevicesDisplayName(), GetDevicesFromGoogleDisplayName(),
-                  GetDevicesFromVendor18D2DisplayName(),
-                  GetUnknownProductDisplayName()));
-          break;
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre(
-                          "persistent-device", "user-granted-device",
-                          "off-the-record-device", GetAllDevicesDisplayName(),
-                          GetDevicesFromGoogleDisplayName(),
-                          GetDevicesFromVendor18D2DisplayName(),
-                          GetUnknownProductDisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-    }
-
-    // Destroy the off the record profile and check that the objects returned do
-    // not include incognito permissions anymore. The destruction of the profile
-    // causes the "onIncognitoStatusChanged" WebUIListener callback to fire.
-    DestroyIncognitoProfile();
-    EXPECT_EQ(web_ui()->call_data().size(), 2u);
-
-    {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/3u);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "persistent-device",
-                                   "ephemeral-device", "user-granted-device"));
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre(
-                          "persistent-device", "ephemeral-device",
-                          "user-granted-device", GetAllDevicesDisplayName(),
-                          GetDevicesFromGoogleDisplayName(),
-                          GetDevicesFromVendor18D2DisplayName(),
-                          GetUnknownProductDisplayName()));
-          break;
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "user-granted-device",
-                                   GetAllDevicesDisplayName(),
-                                   GetDevicesFromGoogleDisplayName(),
-                                   GetDevicesFromVendor18D2DisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-    }
-  }
-
-  void TestHandleResetChooserExceptionForSite() {
-    AddPersistentDevice();
-    AddEphemeralDevice();
-    AddUserGrantedDevice();
-    base::RunLoop().RunUntilIdle();
-
-    SetUpUserGrantedPermissions();
-
-    base::RunLoop().RunUntilIdle();
-    web_ui()->ClearTrackedCalls();
-
-    const std::string group_name(
-        site_settings::ContentSettingsTypeToGroupName(content_type()));
-    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
-    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
-    const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
-    const std::string kAndroidOriginStr =
-        kAndroidUrl.DeprecatedGetOriginAsURL().spec();
-    const std::string kChromiumOriginStr =
-        kChromiumUrl.DeprecatedGetOriginAsURL().spec();
-    const std::string kGoogleOriginStr =
-        kGoogleUrl.DeprecatedGetOriginAsURL().spec();
-
-    {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "persistent-device",
-                                   "ephemeral-device", "user-granted-device"));
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre(
-                          "persistent-device", "ephemeral-device",
-                          "user-granted-device", GetAllDevicesDisplayName(),
-                          GetDevicesFromGoogleDisplayName(),
-                          GetDevicesFromVendor18D2DisplayName(),
-                          GetUnknownProductDisplayName()));
-          break;
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "user-granted-device",
-                                   GetAllDevicesDisplayName(),
-                                   GetDevicesFromGoogleDisplayName(),
-                                   GetDevicesFromVendor18D2DisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-    }
-
-    // User granted USB permissions for devices also containing policy
-    // permissions should be able to be reset without removing the chooser
-    // exception object from the list.
-    base::Value::List args;
-    args.Append(group_name);
-    args.Append(kGoogleOriginStr);
-    args.Append(GetPersistentDeviceValueForOrigin(kGoogleOrigin));
-
-    EXPECT_CALL(observer_,
-                OnObjectPermissionChanged({guard_type()}, content_type()));
-    EXPECT_CALL(observer_, OnPermissionRevoked(kGoogleOrigin));
-    handler()->HandleResetChooserExceptionForSite(args);
-    GetChooserContext(profile())->FlushScheduledSaveSettingsCalls();
-
-    // The HandleResetChooserExceptionForSite() method should have also caused
-    // the WebUIListenerCallbacks for contentSettingSitePermissionChanged and
-    // contentSettingChooserPermissionChanged to fire.
-    EXPECT_EQ(web_ui()->call_data().size(), 3u);
-    {
-      // The exception list size should not have been reduced since there is
-      // still a policy granted permission for "persistent-device".
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/4u);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "ephemeral-device",
-                                   "user-granted-device"));
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre(
-                          "persistent-device", "ephemeral-device",
-                          "user-granted-device", GetAllDevicesDisplayName(),
-                          GetDevicesFromGoogleDisplayName(),
-                          GetDevicesFromVendor18D2DisplayName(),
-                          GetUnknownProductDisplayName()));
-          break;
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "user-granted-device",
-                                   GetAllDevicesDisplayName(),
-                                   GetDevicesFromGoogleDisplayName(),
-                                   GetDevicesFromVendor18D2DisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-
-      // Ensure that the sites list does not contain the URLs of the removed
-      // permission.
-      EXPECT_FALSE(ChooserExceptionContainsSiteException(
-          exceptions, "persistent-device", kGoogleOriginStr));
-
-      // User granted exceptions that are also granted by policy are only
-      // displayed through the policy granted site exception, so ensure that the
-      // policy exception is present under "persistent-device".
-      if (content_type() != ContentSettingsType::BLUETOOTH_CHOOSER_DATA) {
-        EXPECT_TRUE(ChooserExceptionContainsSiteException(
-            exceptions, "persistent-device", kChromiumOriginStr));
-      }
-    }
-
-    // Try revoking the user-granted permission for persistent-device. There is
-    // also a policy-granted permission for the same device.
-    args.clear();
-    args.Append(group_name);
-    args.Append(kChromiumOriginStr);
-    args.Append(GetPersistentDeviceValueForOrigin(kChromiumOrigin));
-
-    EXPECT_CALL(observer_,
-                OnObjectPermissionChanged({guard_type()}, content_type()));
-    EXPECT_CALL(observer_, OnPermissionRevoked(kChromiumOrigin));
-    handler()->HandleResetChooserExceptionForSite(args);
-    GetChooserContext(profile())->FlushScheduledSaveSettingsCalls();
-
-    // The HandleResetChooserExceptionForSite() method should have also caused
-    // the WebUIListenerCallbacks for contentSettingSitePermissionChanged and
-    // contentSettingChooserPermissionChanged to fire.
-    EXPECT_EQ(web_ui()->call_data().size(), 6u);
-    {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/7u);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("ephemeral-device", "user-granted-device"));
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("ephemeral-device", "user-granted-device",
-                                   GetAllDevicesDisplayName(),
-                                   GetDevicesFromGoogleDisplayName(),
-                                   GetDevicesFromVendor18D2DisplayName(),
-                                   GetUnknownProductDisplayName()));
-          break;
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre(
-                          "user-granted-device", GetAllDevicesDisplayName(),
-                          GetDevicesFromGoogleDisplayName(),
-                          GetDevicesFromVendor18D2DisplayName(),
-                          GetUnknownProductDisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-
-      // Ensure that the sites list still displays a site exception entry for an
-      // origin of kGoogleOriginStr.  Since now the device has had its
-      // permission revoked, the policy-provided object will not be able to
-      // deduce the name "persistent-device" from the connected device. As such
-      // we check that the policy is still active by looking for the genericly
-      // constructed name.
-      if (content_type() != ContentSettingsType::BLUETOOTH_CHOOSER_DATA) {
-        EXPECT_TRUE(ChooserExceptionContainsSiteException(
-            exceptions, GetUnknownProductDisplayName(), kChromiumOriginStr));
-        EXPECT_FALSE(ChooserExceptionContainsSiteException(
-            exceptions, "persistent-device", kGoogleOriginStr));
-      }
-
-      // Ensure the exception for user-granted-device on kAndroidOrigin is
-      // present since we will try to revoke it.
-      EXPECT_TRUE(ChooserExceptionContainsSiteException(
-          exceptions, "user-granted-device", kAndroidOriginStr));
-    }
-
-    // User granted USB permissions that are not covered by policy should be
-    // able to be reset and the chooser exception entry should be removed from
-    // the list when the exception only has one site exception granted to it.
-    args.clear();
-    args.Append(group_name);
-    args.Append(kAndroidOriginStr);
-    args.Append(GetUserGrantedDeviceValueForOrigin(kAndroidOrigin));
-
-    EXPECT_CALL(observer_,
-                OnObjectPermissionChanged({guard_type()}, content_type()));
-    EXPECT_CALL(observer_, OnPermissionRevoked(kAndroidOrigin));
-    handler()->HandleResetChooserExceptionForSite(args);
-    GetChooserContext(profile())->FlushScheduledSaveSettingsCalls();
-
-    // The HandleResetChooserExceptionForSite() method should have also caused
-    // the WebUIListenerCallbacks for contentSettingSitePermissionChanged and
-    // contentSettingChooserPermissionChanged to fire.
-    EXPECT_EQ(web_ui()->call_data().size(), 9u);
-    {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/10u);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre("ephemeral-device"));
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre(
-                          "ephemeral-device", GetAllDevicesDisplayName(),
-                          GetDevicesFromGoogleDisplayName(),
-                          GetDevicesFromVendor18D2DisplayName(),
-                          GetUnknownProductDisplayName()));
-          break;
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre(GetAllDevicesDisplayName(),
-                                   GetDevicesFromGoogleDisplayName(),
-                                   GetDevicesFromVendor18D2DisplayName(),
-                                   GetUnknownProductDisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-      EXPECT_FALSE(ChooserExceptionContainsSiteException(
-          exceptions, "user-granted-device", kAndroidOriginStr));
-    }
-  }
-
-  void TestHandleSetOriginPermissions() {
-    constexpr base::StringPiece kYoutubeOriginStr = "https://youtube.com/";
-    const GURL kYoutubeUrl{kYoutubeOriginStr};
-    const auto kYoutubeOrigin = url::Origin::Create(kYoutubeUrl);
-
-    // Grant permissions for user-granted-device on `kYoutubeOrigin`.
-    AddUserGrantedDevice();
-    SetUpUserGrantedPermissionForOrigin(kYoutubeOrigin);
-
-    base::RunLoop().RunUntilIdle();
-    web_ui()->ClearTrackedCalls();
-
-    const std::string group_name(
-        site_settings::ContentSettingsTypeToGroupName(content_type()));
-
-    {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre("user-granted-device"));
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre(
-                          "user-granted-device", GetAllDevicesDisplayName(),
-                          GetDevicesFromGoogleDisplayName(),
-                          GetDevicesFromVendor18D2DisplayName(),
-                          GetUnknownProductDisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-      EXPECT_TRUE(ChooserExceptionContainsSiteException(
-          exceptions, "user-granted-device", kYoutubeOriginStr));
-    }
-
-    // Clear data for kYoutubeOrigin. The permission should be revoked.
-    base::Value::List args;
-    args.Append(kYoutubeOriginStr);
-    args.Append(base::Value());
-    args.Append(
-        content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT));
-
-    EXPECT_CALL(observer_,
-                OnObjectPermissionChanged({guard_type()}, content_type()));
-    EXPECT_CALL(observer_, OnPermissionRevoked(kYoutubeOrigin));
-    handler()->HandleSetOriginPermissions(args);
-    GetChooserContext(profile())->FlushScheduledSaveSettingsCalls();
-
-    // HandleSetOriginPermissions caused WebUIListenerCallbacks:
-    // * contentSettingsChooserPermissionChanged once
-    // * contentSettingsSitePermissionChanged for each visible content type
-    // * contentSettingsSitePermissionChanged again for `content_type()`
-    const size_t kContentSettingsTypeCount =
-        site_settings::GetVisiblePermissionCategories().size();
-    EXPECT_EQ(kContentSettingsTypeCount + 3, web_ui()->call_data().size());
-    {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/kContentSettingsTypeCount + 4);
-      switch (content_type()) {
-        case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_TRUE(exceptions.GetList().empty());
-          break;
-        case ContentSettingsType::HID_CHOOSER_DATA:
-        case ContentSettingsType::SERIAL_CHOOSER_DATA:
-        case ContentSettingsType::USB_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre(GetAllDevicesDisplayName(),
-                                   GetDevicesFromGoogleDisplayName(),
-                                   GetDevicesFromVendor18D2DisplayName(),
-                                   GetUnknownProductDisplayName()));
-          break;
-        default:
-          NOTREACHED();
-          break;
-      }
-      EXPECT_FALSE(ChooserExceptionContainsSiteException(
-          exceptions, "user-granted-device", kYoutubeOriginStr));
-    }
-  }
-
-  // Returns the ContentSettingsType for the chooser data (device permissions).
-  virtual ContentSettingsType content_type() = 0;
-
-  // Returns the ContentSettingsType for the guard permission.
-  virtual ContentSettingsType guard_type() = 0;
-
-  // Returns the chooser context for `profile`.
-  virtual permissions::ObjectPermissionContextBase* GetChooserContext(
-      Profile* profile) = 0;
-
-  // Sets up the chooser context.
-  virtual void SetUpChooserContext() = 0;
-
-  // Creates an incognito profile and sets up the chooser context for that
-  // profile. Tests must call DestroyIncognitoProfile before exiting.
-  virtual void SetUpOffTheRecordChooserContext() {}
-
-  // Grants permissions used by tests. There are four devices that are
-  // granted user permissions. Two (persistent-device and ephemeral-device) are
-  // covered by different policy permissions, while the third
-  // (user-granted-device) is not covered by policy at all. If the
-  // off-the-record-device is present, a user-granted permission is granted for
-  // the incognito profile.
-  virtual void SetUpUserGrantedPermissions() = 0;
-
-  // Configures policies to automatically grant device permissions.
-  virtual void SetUpPolicyGrantedPermissions() {}
-
-  // Grants device permissions for user-granted-device on `origin`.
-  virtual void SetUpUserGrantedPermissionForOrigin(
-      const url::Origin& origin) = 0;
-
-  // Create and add a device eligible for persistent permissions. The device
-  // name is "persistent-device".
-  virtual void AddPersistentDevice() = 0;
-
-  // Create and add a device ineligible for persistent permissions. The device
-  // name is "ephemeral-device".
-  virtual void AddEphemeralDevice() = 0;
-
-  // Create and add a device. The permission policies added in
-  // `SetUpPolicyGrantedPermissions` should not grant permissions for this
-  // device except for policies which affect all devices. The device name is
-  // "user-granted-device".
-  virtual void AddUserGrantedDevice() = 0;
-
-  // Create and add a device. Tests should only grant permissions for this
-  // device using the off the record profile. The device name is
-  // "off-the-record-device".
-  virtual void AddOffTheRecordDevice() = 0;
-
-  // Returns the permission object representing persistent-device granted to
-  // `origin`.
-  virtual base::Value GetPersistentDeviceValueForOrigin(
-      const url::Origin& origin) = 0;
-
-  // Returns the permission object representing user-granted-device granted to
-  // `origin`.
-  virtual base::Value GetUserGrantedDeviceValueForOrigin(
-      const url::Origin& origin) = 0;
-
-  // Returns the display name for a chooser exception that allows an origin to
-  // access any device.
-  virtual std::string GetAllDevicesDisplayName() { return {}; }
-
-  // Returns the display name for a chooser exception that allows an origin to
-  // access any device with the Google vendor ID.
-  virtual std::string GetDevicesFromGoogleDisplayName() { return {}; }
-
-  // Returns the display name for a chooser exception that allows an origin to
-  // access any device from vendor 0x18D2.
-  virtual std::string GetDevicesFromVendor18D2DisplayName() { return {}; }
-
-  // Returns the display name for a chooser exception that allows an origin to
-  // access a specific device by its vendor and product IDs.
-  virtual std::string GetUnknownProductDisplayName() { return {}; }
+  device::mojom::UsbDeviceInfoPtr ephemeral_device_info_;
+  device::mojom::UsbDeviceInfoPtr off_the_record_device_;
+  device::mojom::UsbDeviceInfoPtr persistent_device_info_;
+  device::mojom::UsbDeviceInfoPtr user_granted_device_info_;
 
   permissions::MockPermissionObserver observer_;
+
+ private:
+  device::FakeUsbDeviceManager device_manager_;
 };
 
-class SiteSettingsHandlerBluetoothTest
-    : public SiteSettingsHandlerChooserExceptionTest {
- protected:
-  SiteSettingsHandlerBluetoothTest()
-      : SiteSettingsHandlerChooserExceptionTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kWebBluetoothNewPermissionsBackend);
-  }
+TEST_F(SiteSettingsHandlerChooserExceptionTest,
+       HandleGetChooserExceptionListForUsb) {
+  const std::string kUsbChooserGroupName(
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::USB_CHOOSER_DATA));
 
-  permissions::ObjectPermissionContextBase* GetChooserContext(
-      Profile* profile) override {
-    return BluetoothChooserContextFactory::GetForProfile(profile);
-  }
+  const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
+      kUsbChooserGroupName, /*expected_total_calls=*/1u);
+  EXPECT_EQ(exceptions.GetList().size(), 5u);
 
-  void SetUpChooserContext() override {
-    adapter_ = base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
-    EXPECT_CALL(*adapter_, IsPresent).WillRepeatedly(Return(true));
-    EXPECT_CALL(*adapter_, IsPowered).WillRepeatedly(Return(true));
-    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
-    base::RunLoop().RunUntilIdle();
-  }
+  // Don't include WebUI schemes.
+  const std::string kWebUIOriginStr =
+      kWebUIUrl.DeprecatedGetOriginAsURL().spec();
+  EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                     kWebUIOriginStr));
+}
 
-  void SetUpOffTheRecordChooserContext() override {
-    CreateIncognitoProfile();
-    GetChooserContext(incognito_profile())->AddObserver(&observer_);
-  }
+TEST_F(SiteSettingsHandlerChooserExceptionTest,
+       HandleGetChooserExceptionListForUsbOffTheRecord) {
+  const std::string kUsbChooserGroupName(
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::USB_CHOOSER_DATA));
+  SetUpOffTheRecordUsbChooserContext();
+  web_ui()->ClearTrackedCalls();
 
-  void AddPersistentDevice() override {
-    persistent_device_ =
-        std::make_unique<NiceMock<device::MockBluetoothDevice>>(
-            adapter_.get(), /*bluetooth_class=*/0, /*name=*/"persistent-device",
-            /*address=*/"1", /*paired=*/false, /*connected=*/false);
-  }
-
-  void AddEphemeralDevice() override {
-    ephemeral_device_ = std::make_unique<NiceMock<device::MockBluetoothDevice>>(
-        adapter_.get(), /*bluetooth_class=*/0, /*name=*/"ephemeral-device",
-        /*address=*/"2", /*paired=*/false, /*connected=*/false);
-  }
-
-  void AddUserGrantedDevice() override {
-    user_granted_device_ =
-        std::make_unique<NiceMock<device::MockBluetoothDevice>>(
-            adapter_.get(), /*bluetooth_class=*/0,
-            /*name=*/"user-granted-device", /*address=*/"3", /*paired=*/false,
-            /*connected=*/false);
-  }
-
-  void AddOffTheRecordDevice() override {
-    off_the_record_device_ =
-        std::make_unique<NiceMock<device::MockBluetoothDevice>>(
-            adapter_.get(), /*bluetooth_class=*/0,
-            /*name=*/"off-the-record-device", /*address=*/"4", /*paired=*/false,
-            /*connected=*/false);
-  }
-
-  void SetUpUserGrantedPermissions() override {
-    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
-    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
-    const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
-    const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
-
-    auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
-    options->accept_all_devices = true;
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      auto* bluetooth_chooser_context =
-          BluetoothChooserContextFactory::GetForProfile(profile());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::BLUETOOTH_GUARD},
-                                 ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kChromiumOrigin, persistent_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kGoogleOrigin, persistent_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kWebUIOrigin, persistent_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kAndroidOrigin, ephemeral_device_.get(), options.get());
-      bluetooth_chooser_context->GrantServiceAccessPermission(
-          kAndroidOrigin, user_granted_device_.get(), options.get());
-      loop.Run();
-    }
-
-    if (off_the_record_device_) {
-      base::RunLoop loop;
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::BLUETOOTH_GUARD},
-                                 ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      BluetoothChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantServiceAccessPermission(
-              kChromiumOrigin, off_the_record_device_.get(), options.get());
-      loop.Run();
+  // The objects returned by GetChooserExceptionListFromProfile should also
+  // include the incognito permissions. The two extra objects represent the
+  // "Widget" device and the policy permission for "Unknown product 0x162E from
+  // Google Inc.". The policy granted permission shows up here because the off
+  // the record profile does not have a user granted permission for the
+  // |persistent_device_info_|, so it cannot use the name of that device.
+  {
+    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
+        kUsbChooserGroupName, /*expected_total_calls=*/1u);
+    EXPECT_EQ(exceptions.GetList().size(), 7u);
+    for (const auto& exception : exceptions.GetList()) {
+      LOG(INFO) << exception.FindKey(site_settings::kDisplayName)->GetString();
     }
   }
 
-  void SetUpUserGrantedPermissionForOrigin(const url::Origin& origin) override {
-    auto* bluetooth_chooser_context =
-        BluetoothChooserContextFactory::GetForProfile(profile());
-    base::RunLoop loop;
-    EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                               {ContentSettingsType::BLUETOOTH_GUARD},
-                               ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
-    options->accept_all_devices = true;
-    bluetooth_chooser_context->GrantServiceAccessPermission(
-        origin, user_granted_device_.get(), options.get());
-    loop.Run();
+  // Destroy the off the record profile and check that the objects returned do
+  // not include incognito permissions anymore. The destruction of the profile
+  // causes the "onIncognitoStatusChanged" WebUIListener callback to fire.
+  DestroyIncognitoProfile();
+  EXPECT_EQ(web_ui()->call_data().size(), 2u);
+
+  {
+    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
+        kUsbChooserGroupName, /*expected_total_calls=*/3u);
+    EXPECT_EQ(exceptions.GetList().size(), 5u);
   }
-
-  base::Value GetPersistentDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
-    options->accept_all_devices = true;
-    auto device_id =
-        BluetoothChooserContextFactory::GetForProfile(profile())
-            ->GetWebBluetoothDeviceId(origin, persistent_device_->GetAddress());
-    return base::Value(permissions::BluetoothChooserContext::DeviceInfoToValue(
-        persistent_device_.get(), options.get(), device_id));
-  }
-
-  base::Value GetUserGrantedDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
-    options->accept_all_devices = true;
-    auto device_id = BluetoothChooserContextFactory::GetForProfile(profile())
-                         ->GetWebBluetoothDeviceId(
-                             origin, user_granted_device_->GetAddress());
-    return base::Value(permissions::BluetoothChooserContext::DeviceInfoToValue(
-        user_granted_device_.get(), options.get(), device_id));
-  }
-
-  ContentSettingsType content_type() override {
-    return ContentSettingsType::BLUETOOTH_CHOOSER_DATA;
-  }
-
-  ContentSettingsType guard_type() override {
-    return ContentSettingsType::BLUETOOTH_GUARD;
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<NiceMock<device::MockBluetoothAdapter>> adapter_;
-  std::unique_ptr<NiceMock<device::MockBluetoothDevice>> ephemeral_device_;
-  std::unique_ptr<NiceMock<device::MockBluetoothDevice>> off_the_record_device_;
-  std::unique_ptr<NiceMock<device::MockBluetoothDevice>> persistent_device_;
-  std::unique_ptr<NiceMock<device::MockBluetoothDevice>> user_granted_device_;
-};
-
-TEST_F(SiteSettingsHandlerBluetoothTest, HandleGetChooserExceptionList) {
-  TestHandleGetChooserExceptionList();
 }
 
-TEST_F(SiteSettingsHandlerBluetoothTest,
-       HandleGetChooserExceptionListForOffTheRecord) {
-  TestHandleGetChooserExceptionListForOffTheRecord();
-}
+TEST_F(SiteSettingsHandlerChooserExceptionTest,
+       HandleResetChooserExceptionForSiteForUsb) {
+  const std::string kUsbChooserGroupName(
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::USB_CHOOSER_DATA));
+  const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
+  const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
+  const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
+  const std::string kAndroidOriginStr =
+      kAndroidUrl.DeprecatedGetOriginAsURL().spec();
+  const std::string kChromiumOriginStr =
+      kChromiumUrl.DeprecatedGetOriginAsURL().spec();
+  const std::string kGoogleOriginStr =
+      kGoogleUrl.DeprecatedGetOriginAsURL().spec();
 
-TEST_F(SiteSettingsHandlerBluetoothTest, HandleResetChooserExceptionForSite) {
-  TestHandleResetChooserExceptionForSite();
-}
-
-TEST_F(SiteSettingsHandlerBluetoothTest, HandleSetOriginPermissions) {
-  TestHandleSetOriginPermissions();
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-class SiteSettingsHandlerHidTest
-    : public SiteSettingsHandlerChooserExceptionTest {
- protected:
-  void SetUpChooserContext() override {
-    mojo::PendingRemote<device::mojom::HidManager> hid_manager;
-    hid_manager_.AddReceiver(hid_manager.InitWithNewPipeAndPassReceiver());
-    HidChooserContext* hid_chooser_context =
-        HidChooserContextFactory::GetForProfile(profile());
-    TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> get_devices_future;
-    hid_chooser_context->SetHidManagerForTesting(
-        std::move(hid_manager), get_devices_future.GetCallback());
-    EXPECT_TRUE(get_devices_future.Wait());
+  {
+    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
+        kUsbChooserGroupName, /*expected_total_calls=*/1u);
+    EXPECT_EQ(exceptions.GetList().size(), 5u);
   }
 
-  void SetUpPolicyGrantedPermissions() override {
-    auto* local_state = TestingBrowserProcess::GetGlobal()->local_state();
-    ASSERT_TRUE(local_state);
-    local_state->Set(prefs::kManagedWebHidAllowDevicesForUrls, ParseJson(R"(
-        [
-          {
-            "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
-            "urls": ["https://chromium.org"]
-          }, {
-            "devices": [{ "vendor_id": 6353 }],
-            "urls": ["https://android.com"]
-          }, {
-            "devices": [{ "vendor_id": 6354 }],
-            "urls": ["https://android.com"]
-          }
-        ])"));
-    local_state->Set(prefs::kManagedWebHidAllowAllDevicesForUrls,
-                     ParseJson(R"([ "https://google.com" ])"));
+  // User granted USB permissions for devices also containing policy permissions
+  // should be able to be reset without removing the chooser exception object
+  // from the list.
+  base::Value::List args;
+  args.Append(kUsbChooserGroupName);
+  args.Append(kGoogleOriginStr);
+  args.Append(UsbChooserContext::DeviceInfoToValue(*persistent_device_info_));
+
+  EXPECT_CALL(observer_,
+              OnObjectPermissionChanged(absl::optional<ContentSettingsType>(
+                                            ContentSettingsType::USB_GUARD),
+                                        ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(observer_, OnPermissionRevoked(kGoogleOrigin));
+  handler()->HandleResetChooserExceptionForSite(args);
+  auto* chooser_context = UsbChooserContextFactory::GetForProfile(profile());
+  chooser_context->FlushScheduledSaveSettingsCalls();
+
+  // The HandleResetChooserExceptionForSite() method should have also caused the
+  // WebUIListenerCallbacks for contentSettingSitePermissionChanged and
+  // contentSettingChooserPermissionChanged to fire.
+  EXPECT_EQ(web_ui()->call_data().size(), 3u);
+  {
+    // The exception list size should not have been reduced since there is still
+    // a policy granted permission for the "Gizmo" device.
+    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
+        kUsbChooserGroupName, /*expected_total_calls=*/4u);
+    EXPECT_EQ(exceptions.GetList().size(), 5u);
+
+    // Ensure that the sites list does not contain the URLs of the removed
+    // permission.
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                       kGoogleOriginStr));
   }
 
-  void SetUpOffTheRecordChooserContext() override {
-    CreateIncognitoProfile();
-    mojo::PendingRemote<device::mojom::HidManager> hid_manager;
-    hid_manager_.AddReceiver(hid_manager.InitWithNewPipeAndPassReceiver());
-    HidChooserContext* hid_chooser_context =
-        HidChooserContextFactory::GetForProfile(incognito_profile());
-    TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> get_devices_future;
-    hid_chooser_context->SetHidManagerForTesting(
-        std::move(hid_manager), get_devices_future.GetCallback());
-    EXPECT_TRUE(get_devices_future.Wait());
-    GetChooserContext(incognito_profile())->AddObserver(&observer_);
+  // User granted USB permissions that are also granted by policy should not
+  // be able to be reset.
+  args.clear();
+  args.Append(kUsbChooserGroupName);
+  args.Append(kChromiumOriginStr);
+  args.Append(UsbChooserContext::DeviceInfoToValue(*persistent_device_info_));
+
+  {
+    const base::Value& exceptions =
+        GetChooserExceptionListFromWebUiCallData(kUsbChooserGroupName, 5u);
+    EXPECT_EQ(exceptions.GetList().size(), 5u);
+
+    // User granted exceptions that are also granted by policy are only
+    // displayed through the policy granted site exception, so ensure that the
+    // policy exception is present under the "Gizmo" device.
+    EXPECT_TRUE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                      kChromiumOriginStr));
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                       kGoogleOriginStr));
   }
 
-  void AddPersistentDevice() override {
-    persistent_device_ = hid_manager_.CreateAndAddDevice(
-        /*physical_device_id=*/"1", /*vendor_id=*/6353, /*product_id=*/5678,
-        /*product_name=*/"persistent-device", /*serial_number=*/"123ABC",
-        device::mojom::HidBusType::kHIDBusTypeUSB);
+  EXPECT_CALL(observer_,
+              OnObjectPermissionChanged(absl::optional<ContentSettingsType>(
+                                            ContentSettingsType::USB_GUARD),
+                                        ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(observer_, OnPermissionRevoked(kChromiumOrigin));
+  handler()->HandleResetChooserExceptionForSite(args);
+  chooser_context->FlushScheduledSaveSettingsCalls();
+
+  // The HandleResetChooserExceptionForSite() method should have also caused the
+  // WebUIListenerCallbacks for contentSettingSitePermissionChanged and
+  // contentSettingChooserPermissionChanged to fire.
+  EXPECT_EQ(web_ui()->call_data().size(), 7u);
+  {
+    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
+        kUsbChooserGroupName, /*expected_total_calls=*/8u);
+    EXPECT_EQ(exceptions.GetList().size(), 5u);
+
+    // Ensure that the sites list still displays a site exception entry for an
+    // origin of kGoogleOriginStr.  Since now the device has had its
+    // permission revoked, the policy-provided object will not be able to deduce
+    // the name "Gizmo" from the connected device. As such we check that the
+    // policy is still active by looking for the genericly constructed name.
+    EXPECT_TRUE(ChooserExceptionContainsSiteException(
+        exceptions, "Unknown product 0x162E from Google Inc.",
+        kChromiumOriginStr));
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                       kGoogleOriginStr));
   }
 
-  void AddEphemeralDevice() override {
-    ephemeral_device_ = hid_manager_.CreateAndAddDevice(
-        /*physical_device_id=*/"2", /*vendor_id=*/6354, /*product_id=*/0,
-        /*product_name=*/"ephemeral-device", /*serial_number=*/"",
-        device::mojom::HidBusType::kHIDBusTypeUSB);
+  // User granted USB permissions that are not covered by policy should be able
+  // to be reset and the chooser exception entry should be removed from the list
+  // when the exception only has one site exception granted to it..
+  args.clear();
+  args.Append(kUsbChooserGroupName);
+  args.Append(kAndroidOriginStr);
+  args.Append(UsbChooserContext::DeviceInfoToValue(*user_granted_device_info_));
+
+  {
+    const base::Value& exceptions =
+        GetChooserExceptionListFromWebUiCallData(kUsbChooserGroupName, 9u);
+    EXPECT_EQ(exceptions.GetList().size(), 5u);
+    EXPECT_TRUE(ChooserExceptionContainsSiteException(exceptions, "Widget",
+                                                      kAndroidOriginStr));
   }
 
-  void AddUserGrantedDevice() override {
-    user_granted_device_ = hid_manager_.CreateAndAddDevice(
-        /*physical_device_id=*/"3", /*vendor_id=*/6355, /*product_id=*/0,
-        /*product_name=*/"user-granted-device", /*serial_number=*/"789XYZ",
-        device::mojom::HidBusType::kHIDBusTypeUSB);
+  EXPECT_CALL(observer_,
+              OnObjectPermissionChanged(absl::optional<ContentSettingsType>(
+                                            ContentSettingsType::USB_GUARD),
+                                        ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(observer_, OnPermissionRevoked(kAndroidOrigin));
+  handler()->HandleResetChooserExceptionForSite(args);
+  chooser_context->FlushScheduledSaveSettingsCalls();
+
+  // The HandleResetChooserExceptionForSite() method should have also caused the
+  // WebUIListenerCallbacks for contentSettingSitePermissionChanged and
+  // contentSettingChooserPermissionChanged to fire.
+  EXPECT_EQ(web_ui()->call_data().size(), 11u);
+  {
+    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
+        kUsbChooserGroupName, /*expected_total_calls=*/12u);
+    EXPECT_EQ(exceptions.GetList().size(), 4u);
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Widget",
+                                                       kAndroidOriginStr));
   }
-
-  void AddOffTheRecordDevice() override {
-    off_the_record_device_ = hid_manager_.CreateAndAddDevice(
-        /*physical_device_id=*/"4", /*vendor_id=*/6353,
-        /*product_id=*/8765, /*product_name=*/"off-the-record-device",
-        /*serial_number=*/"A9B8C7", device::mojom::HidBusType::kHIDBusTypeUSB);
-  }
-
-  void SetUpUserGrantedPermissions() override {
-    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
-    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
-    const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
-    const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
-
-    // Add the user granted permissions for testing.
-    // These two persistent device permissions should be lumped together
-    // with the policy permissions, since they apply to the same device and
-    // URL.
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::HID_GUARD},
-                                 ContentSettingsType::HID_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      auto* hid_chooser_context =
-          HidChooserContextFactory::GetForProfile(profile());
-      hid_chooser_context->GrantDevicePermission(kChromiumOrigin,
-                                                 *persistent_device_);
-      hid_chooser_context->GrantDevicePermission(kGoogleOrigin,
-                                                 *persistent_device_);
-      hid_chooser_context->GrantDevicePermission(kWebUIOrigin,
-                                                 *persistent_device_);
-      hid_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *ephemeral_device_);
-      hid_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *user_granted_device_);
-      loop.Run();
-    }
-
-    if (off_the_record_device_) {
-      base::RunLoop loop;
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::HID_GUARD},
-                                 ContentSettingsType::HID_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      HidChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantDevicePermission(kChromiumOrigin, *off_the_record_device_);
-      loop.Run();
-    }
-  }
-
-  void SetUpUserGrantedPermissionForOrigin(const url::Origin& origin) override {
-    auto* hid_chooser_context =
-        HidChooserContextFactory::GetForProfile(profile());
-    base::RunLoop loop;
-    EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                               {ContentSettingsType::HID_GUARD},
-                               ContentSettingsType::HID_CHOOSER_DATA))
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    hid_chooser_context->GrantDevicePermission(origin, *user_granted_device_);
-    loop.Run();
-  }
-
-  base::Value GetPersistentDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    return HidChooserContext::DeviceInfoToValue(*persistent_device_);
-  }
-
-  base::Value GetUserGrantedDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    return HidChooserContext::DeviceInfoToValue(*user_granted_device_);
-  }
-
-  std::string GetAllDevicesDisplayName() override { return "Any HID device"; }
-
-  std::string GetDevicesFromGoogleDisplayName() override {
-    return "HID devices from vendor 18D1";
-  }
-
-  std::string GetDevicesFromVendor18D2DisplayName() override {
-    return "HID devices from vendor 18D2";
-  }
-
-  std::string GetUnknownProductDisplayName() override {
-    return "HID device (18D1:162E)";
-  }
-
-  permissions::ObjectPermissionContextBase* GetChooserContext(
-      Profile* profile) override {
-    return HidChooserContextFactory::GetForProfile(profile);
-  }
-
-  ContentSettingsType content_type() override {
-    return ContentSettingsType::HID_CHOOSER_DATA;
-  }
-
-  ContentSettingsType guard_type() override {
-    return ContentSettingsType::HID_GUARD;
-  }
-
-  device::FakeHidManager hid_manager_;
-  device::mojom::HidDeviceInfoPtr ephemeral_device_;
-  device::mojom::HidDeviceInfoPtr off_the_record_device_;
-  device::mojom::HidDeviceInfoPtr persistent_device_;
-  device::mojom::HidDeviceInfoPtr user_granted_device_;
-};
-
-TEST_F(SiteSettingsHandlerHidTest, HandleGetChooserExceptionList) {
-  TestHandleGetChooserExceptionList();
-}
-
-TEST_F(SiteSettingsHandlerHidTest,
-       HandleGetChooserExceptionListForOffTheRecord) {
-  TestHandleGetChooserExceptionListForOffTheRecord();
-}
-
-TEST_F(SiteSettingsHandlerHidTest, HandleResetChooserExceptionForSite) {
-  TestHandleResetChooserExceptionForSite();
-}
-
-TEST_F(SiteSettingsHandlerHidTest, HandleSetOriginPermissions) {
-  TestHandleSetOriginPermissions();
-}
-
-class SiteSettingsHandlerSerialTest
-    : public SiteSettingsHandlerChooserExceptionTest {
- protected:
-  void SetUpChooserContext() override {
-    mojo::PendingRemote<device::mojom::SerialPortManager> serial_port_manager;
-    serial_port_manager_.AddReceiver(
-        serial_port_manager.InitWithNewPipeAndPassReceiver());
-    SerialChooserContext* serial_chooser_context =
-        SerialChooserContextFactory::GetForProfile(profile());
-    serial_chooser_context->SetPortManagerForTesting(
-        std::move(serial_port_manager));
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetUpPolicyGrantedPermissions() override {
-    auto* local_state = TestingBrowserProcess::GetGlobal()->local_state();
-    ASSERT_TRUE(local_state);
-    local_state->Set(prefs::kManagedSerialAllowUsbDevicesForUrls, ParseJson(R"(
-        [
-          {
-            "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
-            "urls": ["https://chromium.org"]
-          }, {
-            "devices": [{ "vendor_id": 6353 }],
-            "urls": ["https://android.com"]
-          }, {
-            "devices": [{ "vendor_id": 6354 }],
-            "urls": ["https://android.com"]
-          }
-        ])"));
-    local_state->Set(prefs::kManagedSerialAllowAllPortsForUrls,
-                     ParseJson(R"([ "https://google.com" ])"));
-  }
-
-  void SetUpOffTheRecordChooserContext() override {
-    CreateIncognitoProfile();
-    mojo::PendingRemote<device::mojom::SerialPortManager> serial_port_manager;
-    serial_port_manager_.AddReceiver(
-        serial_port_manager.InitWithNewPipeAndPassReceiver());
-    SerialChooserContext* serial_chooser_context =
-        SerialChooserContextFactory::GetForProfile(incognito_profile());
-    serial_chooser_context->SetPortManagerForTesting(
-        std::move(serial_port_manager));
-    base::RunLoop().RunUntilIdle();
-    GetChooserContext(incognito_profile())->AddObserver(&observer_);
-  }
-
-  void AddPersistentDevice() override {
-    persistent_port_ = device::mojom::SerialPortInfo::New();
-    persistent_port_->token = base::UnguessableToken::Create();
-    persistent_port_->display_name = "persistent-device";
-#if BUILDFLAG(IS_WIN)
-    persistent_port_->device_instance_id = "1";
-#else
-    persistent_port_->has_vendor_id = true;
-    persistent_port_->vendor_id = 6353;
-    persistent_port_->has_product_id = true;
-    persistent_port_->product_id = 5678;
-    persistent_port_->serial_number = "123ABC";
-#if BUILDFLAG(IS_MAC)
-    persistent_port_->usb_driver_name = "AppleUSBCDC";
-#endif
-#endif  // BUILDFLAG(IS_WIN)
-    serial_port_manager_.AddPort(persistent_port_.Clone());
-  }
-
-  void AddEphemeralDevice() override {
-    ephemeral_port_ = device::mojom::SerialPortInfo::New();
-    ephemeral_port_->token = base::UnguessableToken::Create();
-    ephemeral_port_->display_name = "ephemeral-device";
-#if BUILDFLAG(IS_WIN)
-    ephemeral_port_->device_instance_id = "2";
-#else
-    ephemeral_port_->has_vendor_id = true;
-    ephemeral_port_->vendor_id = 6354;
-    ephemeral_port_->has_product_id = true;
-    ephemeral_port_->product_id = 0;
-#if BUILDFLAG(IS_MAC)
-    ephemeral_port_->usb_driver_name = "AppleUSBCDC";
-#endif
-#endif  // BUILDFLAG(IS_WIN)
-    serial_port_manager_.AddPort(ephemeral_port_.Clone());
-  }
-
-  void AddUserGrantedDevice() override {
-    user_granted_port_ = device::mojom::SerialPortInfo::New();
-    user_granted_port_->token = base::UnguessableToken::Create();
-    user_granted_port_->display_name = "user-granted-device";
-#if BUILDFLAG(IS_WIN)
-    user_granted_port_->device_instance_id = "3";
-#else
-    user_granted_port_->has_vendor_id = true;
-    user_granted_port_->vendor_id = 6355;
-    user_granted_port_->has_product_id = true;
-    user_granted_port_->product_id = 0;
-    user_granted_port_->serial_number = "789XYZ";
-#if BUILDFLAG(IS_MAC)
-    user_granted_port_->usb_driver_name = "AppleUSBCDC";
-#endif
-#endif  // BUILDFLAG(IS_WIN)
-    serial_port_manager_.AddPort(user_granted_port_.Clone());
-  }
-
-  void AddOffTheRecordDevice() override {
-    off_the_record_port_ = device::mojom::SerialPortInfo::New();
-    off_the_record_port_->token = base::UnguessableToken::Create();
-    off_the_record_port_->display_name = "off-the-record-device";
-#if BUILDFLAG(IS_WIN)
-    off_the_record_port_->device_instance_id = "4";
-#else
-    off_the_record_port_->has_vendor_id = true;
-    off_the_record_port_->vendor_id = 6353;
-    off_the_record_port_->has_product_id = true;
-    off_the_record_port_->product_id = 8765;
-    off_the_record_port_->serial_number = "A9B8C7";
-#if BUILDFLAG(IS_MAC)
-    off_the_record_port_->usb_driver_name = "AppleUSBCDC";
-#endif
-#endif  // BUILDFLAG(IS_WIN)
-    serial_port_manager_.AddPort(off_the_record_port_.Clone());
-  }
-
-  void SetUpUserGrantedPermissions() override {
-    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
-    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
-    const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
-    const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
-
-    // Add the user granted permissions for testing.
-    // These two persistent device permissions should be lumped together
-    // with the policy permissions, since they apply to the same device and
-    // URL.
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::SERIAL_GUARD},
-                                 ContentSettingsType::SERIAL_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      auto* serial_chooser_context =
-          SerialChooserContextFactory::GetForProfile(profile());
-      serial_chooser_context->GrantPortPermission(kChromiumOrigin,
-                                                  *persistent_port_);
-      serial_chooser_context->GrantPortPermission(kGoogleOrigin,
-                                                  *persistent_port_);
-      serial_chooser_context->GrantPortPermission(kWebUIOrigin,
-                                                  *persistent_port_);
-      serial_chooser_context->GrantPortPermission(kAndroidOrigin,
-                                                  *ephemeral_port_);
-      serial_chooser_context->GrantPortPermission(kAndroidOrigin,
-                                                  *user_granted_port_);
-      loop.Run();
-    }
-
-    if (off_the_record_port_) {
-      base::RunLoop loop;
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::SERIAL_GUARD},
-                                 ContentSettingsType::SERIAL_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      SerialChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantPortPermission(kChromiumOrigin, *off_the_record_port_);
-      loop.Run();
-    }
-  }
-
-  void SetUpUserGrantedPermissionForOrigin(const url::Origin& origin) override {
-    auto* serial_chooser_context =
-        SerialChooserContextFactory::GetForProfile(profile());
-    base::RunLoop loop;
-    EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                               {ContentSettingsType::SERIAL_GUARD},
-                               ContentSettingsType::SERIAL_CHOOSER_DATA))
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    serial_chooser_context->GrantPortPermission(origin, *user_granted_port_);
-    loop.Run();
-  }
-
-  base::Value GetPersistentDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    return SerialChooserContext::PortInfoToValue(*persistent_port_);
-  }
-
-  base::Value GetUserGrantedDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    return SerialChooserContext::PortInfoToValue(*user_granted_port_);
-  }
-
-  std::string GetAllDevicesDisplayName() override { return "Any serial port"; }
-
-  std::string GetDevicesFromGoogleDisplayName() override {
-    return "USB devices from Google Inc.";
-  }
-
-  std::string GetDevicesFromVendor18D2DisplayName() override {
-    return "USB devices from vendor 18D2";
-  }
-
-  std::string GetUnknownProductDisplayName() override {
-    return "USB device from Google Inc. (product 162E)";
-  }
-
-  permissions::ObjectPermissionContextBase* GetChooserContext(
-      Profile* profile) override {
-    return SerialChooserContextFactory::GetForProfile(profile);
-  }
-
-  ContentSettingsType content_type() override {
-    return ContentSettingsType::SERIAL_CHOOSER_DATA;
-  }
-
-  ContentSettingsType guard_type() override {
-    return ContentSettingsType::SERIAL_GUARD;
-  }
-
-  device::FakeSerialPortManager serial_port_manager_;
-  device::mojom::SerialPortInfoPtr ephemeral_port_;
-  device::mojom::SerialPortInfoPtr off_the_record_port_;
-  device::mojom::SerialPortInfoPtr persistent_port_;
-  device::mojom::SerialPortInfoPtr user_granted_port_;
-};
-
-TEST_F(SiteSettingsHandlerSerialTest, HandleGetChooserExceptionList) {
-  TestHandleGetChooserExceptionList();
-}
-
-TEST_F(SiteSettingsHandlerSerialTest,
-       HandleGetChooserExceptionListForOffTheRecord) {
-  TestHandleGetChooserExceptionListForOffTheRecord();
-}
-
-TEST_F(SiteSettingsHandlerSerialTest, HandleResetChooserExceptionForSite) {
-  TestHandleResetChooserExceptionForSite();
-}
-
-TEST_F(SiteSettingsHandlerSerialTest, HandleSetOriginPermissions) {
-  TestHandleSetOriginPermissions();
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-class SiteSettingsHandlerUsbTest
-    : public SiteSettingsHandlerChooserExceptionTest {
- protected:
-  void SetUpChooserContext() override {
-    mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
-    usb_device_manager_.AddReceiver(
-        device_manager.InitWithNewPipeAndPassReceiver());
-    UsbChooserContext* usb_chooser_context =
-        UsbChooserContextFactory::GetForProfile(profile());
-    usb_chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
-    TestFuture<std::vector<device::mojom::UsbDeviceInfoPtr>> get_devices_future;
-    usb_chooser_context->GetDevices(get_devices_future.GetCallback());
-    EXPECT_TRUE(get_devices_future.Wait());
-  }
-
-  void SetUpPolicyGrantedPermissions() override {
-    profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                               ParseJson(R"(
-        [
-          {
-            "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
-            "urls": ["https://chromium.org"]
-          }, {
-            "devices": [{ "vendor_id": 6353 }],
-            "urls": ["https://google.com,https://android.com"]
-          }, {
-            "devices": [{ "vendor_id": 6354 }],
-            "urls": ["https://android.com,"]
-          }, {
-            "devices": [{}],
-            "urls": ["https://google.com,https://google.com"]
-          }
-        ])"));
-  }
-
-  void SetUpOffTheRecordChooserContext() override {
-    CreateIncognitoProfile();
-    mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
-    usb_device_manager_.AddReceiver(
-        device_manager.InitWithNewPipeAndPassReceiver());
-    UsbChooserContext* usb_chooser_context =
-        UsbChooserContextFactory::GetForProfile(incognito_profile());
-    usb_chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
-    TestFuture<std::vector<device::mojom::UsbDeviceInfoPtr>> get_devices_future;
-    usb_chooser_context->GetDevices(get_devices_future.GetCallback());
-    EXPECT_TRUE(get_devices_future.Wait());
-    GetChooserContext(incognito_profile())->AddObserver(&observer_);
-  }
-
-  void AddPersistentDevice() override {
-    persistent_device_ = usb_device_manager_.CreateAndAddDevice(
-        /*vendor_id=*/6353, /*product_id=*/5678,
-        /*manufacturer_string=*/"Google",
-        /*product_string=*/"persistent-device", /*serial_number=*/"123ABC");
-  }
-
-  void AddEphemeralDevice() override {
-    ephemeral_device_ = usb_device_manager_.CreateAndAddDevice(
-        /*vendor_id=*/6354, /*product_id=*/0,
-        /*manufacturer_string=*/"Google",
-        /*product_string=*/"ephemeral-device", /*serial_number=*/"");
-  }
-
-  void AddUserGrantedDevice() override {
-    user_granted_device_ = usb_device_manager_.CreateAndAddDevice(
-        /*vendor_id=*/6355, /*product_id=*/0,
-        /*manufacturer_string=*/"Google",
-        /*product_string=*/"user-granted-device",
-        /*serial_number=*/"789XYZ");
-  }
-
-  void AddOffTheRecordDevice() override {
-    off_the_record_device_ = usb_device_manager_.CreateAndAddDevice(
-        /*vendor_id=*/6353, /*product_id=*/8765,
-        /*manufacturer_string=*/"Google",
-        /*product_string=*/"off-the-record-device",
-        /*serial_number=*/"A9B8C7");
-  }
-
-  void SetUpUserGrantedPermissions() override {
-    const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
-    const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
-    const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
-    const auto kWebUIOrigin = url::Origin::Create(kWebUIUrl);
-
-    // Add the user granted permissions for testing.
-    // These two persistent device permissions should be lumped together
-    // with the policy permissions, since they apply to the same device and
-    // URL.
-    {
-      base::RunLoop loop;
-      auto barrier_closure = base::BarrierClosure(5, loop.QuitClosure());
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::USB_GUARD},
-                                 ContentSettingsType::USB_CHOOSER_DATA))
-          .Times(5)
-          .WillRepeatedly(RunClosure(barrier_closure));
-      auto* usb_chooser_context =
-          UsbChooserContextFactory::GetForProfile(profile());
-      usb_chooser_context->GrantDevicePermission(kChromiumOrigin,
-                                                 *persistent_device_);
-      usb_chooser_context->GrantDevicePermission(kGoogleOrigin,
-                                                 *persistent_device_);
-      usb_chooser_context->GrantDevicePermission(kWebUIOrigin,
-                                                 *persistent_device_);
-      usb_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *ephemeral_device_);
-      usb_chooser_context->GrantDevicePermission(kAndroidOrigin,
-                                                 *user_granted_device_);
-      loop.Run();
-    }
-
-    if (off_the_record_device_) {
-      base::RunLoop loop;
-      EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                                 {ContentSettingsType::USB_GUARD},
-                                 ContentSettingsType::USB_CHOOSER_DATA))
-          .WillOnce(RunClosure(loop.QuitClosure()));
-      UsbChooserContextFactory::GetForProfile(incognito_profile())
-          ->GrantDevicePermission(kChromiumOrigin, *off_the_record_device_);
-      loop.Run();
-    }
-  }
-
-  void SetUpUserGrantedPermissionForOrigin(const url::Origin& origin) override {
-    auto* usb_chooser_context =
-        UsbChooserContextFactory::GetForProfile(profile());
-    base::RunLoop loop;
-    EXPECT_CALL(observer_, OnObjectPermissionChanged(
-                               {ContentSettingsType::USB_GUARD},
-                               ContentSettingsType::USB_CHOOSER_DATA))
-        .WillOnce(RunClosure(loop.QuitClosure()));
-    usb_chooser_context->GrantDevicePermission(origin, *user_granted_device_);
-    loop.Run();
-  }
-
-  base::Value GetPersistentDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    return UsbChooserContext::DeviceInfoToValue(*persistent_device_);
-  }
-
-  base::Value GetUserGrantedDeviceValueForOrigin(
-      const url::Origin& origin) override {
-    return UsbChooserContext::DeviceInfoToValue(*user_granted_device_);
-  }
-
-  std::string GetAllDevicesDisplayName() override {
-    return "Devices from any vendor";
-  }
-
-  std::string GetDevicesFromGoogleDisplayName() override {
-    return "Devices from Google Inc.";
-  }
-
-  std::string GetDevicesFromVendor18D2DisplayName() override {
-    return "Devices from vendor 0x18D2";
-  }
-
-  std::string GetUnknownProductDisplayName() override {
-    return "Unknown product 0x162E from Google Inc.";
-  }
-
-  permissions::ObjectPermissionContextBase* GetChooserContext(
-      Profile* profile) override {
-    return UsbChooserContextFactory::GetForProfile(profile);
-  }
-
-  ContentSettingsType content_type() override {
-    return ContentSettingsType::USB_CHOOSER_DATA;
-  }
-
-  ContentSettingsType guard_type() override {
-    return ContentSettingsType::USB_GUARD;
-  }
-
-  device::FakeUsbDeviceManager usb_device_manager_;
-  device::mojom::UsbDeviceInfoPtr ephemeral_device_;
-  device::mojom::UsbDeviceInfoPtr off_the_record_device_;
-  device::mojom::UsbDeviceInfoPtr persistent_device_;
-  device::mojom::UsbDeviceInfoPtr user_granted_device_;
-};
-
-TEST_F(SiteSettingsHandlerUsbTest, HandleGetChooserExceptionList) {
-  TestHandleGetChooserExceptionList();
-}
-
-TEST_F(SiteSettingsHandlerUsbTest,
-       HandleGetChooserExceptionListForOffTheRecord) {
-  TestHandleGetChooserExceptionListForOffTheRecord();
-}
-
-TEST_F(SiteSettingsHandlerUsbTest, HandleResetChooserExceptionForSite) {
-  TestHandleResetChooserExceptionForSite();
-}
-
-TEST_F(SiteSettingsHandlerUsbTest, HandleSetOriginPermissions) {
-  TestHandleSetOriginPermissions();
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {

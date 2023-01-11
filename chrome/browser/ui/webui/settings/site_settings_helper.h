@@ -188,7 +188,7 @@ struct ContentSettingsTypeNameEntry {
   const char* name;
 };
 
-const ChooserTypeNameEntry* ChooserTypeFromGroupName(base::StringPiece name);
+const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name);
 
 // Creates a chooser exception object for the object with |display_name|. The
 // object contains the following properties
