@@ -254,7 +254,8 @@
   <template is="dom-if" if="[[isVisual(category)]]">
     <div class="left-column">
       <template is="dom-repeat" items="[[filterColumn(data, 'left')]]">
-        <img class="emoji-button"
+        <img data-index$="[[getIndex(item)]]"
+          class="emoji-button"
           is="cr-auto-img"
           auto-src$="[[getUrl(item)]]]"
           alt$="[[item.base.name]]">
@@ -262,7 +263,8 @@
     </div>
     <div class="right-column">
       <template is="dom-repeat" items="[[filterColumn(data, 'right')]]">
-        <img class="emoji-button"
+        <img data-index$="[[getIndex(item)]]"
+          class="emoji-button"
           is="cr-auto-img"
           auto-src$="[[getUrl(item)]]"
           alt$="[[item.base.name]]">

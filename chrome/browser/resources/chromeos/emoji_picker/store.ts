@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StoredItem} from './types.js';
+import {CategoryEnum, EmojiVariants} from './types.js';
 
-const MAX_RECENTS = 18;
+const MAX_TEXT_RECENTS = 18;
+const MAX_GIF_RECENTS = 10;
 
 /**
  * @param {string} keyName Keyname of the object stored in storage
- * @return {{history:!Array<StoredItem>, preference:Object<string,string>}}
+ * @return {{history:!Array<EmojiVariants>, preference:Object<string,string>}}
  *     recently used emoji, most recent first.
  */
 function load(keyName: string) {
@@ -22,18 +23,18 @@ function load(keyName: string) {
 }
 
 /**
- * @param {{history:!Array<StoredItem>, preference:Object<string,string>}} data
- *     recently used emoji, most recent first.
+ * @param {{history:!Array<EmojiVariants>, preference:Object<string,string>}}
+ *     data recently used emoji, most recent first.
  */
 function save(
     keyName: string,
-    data: {history: StoredItem[], preference: {[index: string]: string}}) {
+    data: {history: EmojiVariants[], preference: {[index: string]: string}}) {
   window.localStorage.setItem(keyName, JSON.stringify(data));
 }
 
 export class RecentlyUsedStore {
   storeName: string;
-  data: {history: StoredItem[], preference: {[index: string]: string}};
+  data: {history: EmojiVariants[], preference: {[index: string]: string}};
   constructor(name: string) {
     this.storeName = name;
     this.data = load(name);
@@ -77,11 +78,25 @@ export class RecentlyUsedStore {
    * Moves the given item to the front of the MRU list, inserting it if
    * it did not previously exist.
    */
-  bumpItem(newItem: StoredItem) {
+  bumpItem(category: CategoryEnum, newItem: EmojiVariants) {
     // Find and remove newItem from array if it previously existed.
     // Note, this explicitly allows for multiple recent item entries for the
     // same "base" emoji just with a different variant.
-    const oldIndex = this.data.history.findIndex(x => x.base === newItem.base);
+    let oldIndex;
+
+    // TODO(b/264931830): Change x.base.name to x.base.visualContent.id after id
+    // property is added to the visualContent interface.
+    if (category === CategoryEnum.GIF) {
+      oldIndex =
+          this.data.history.findIndex(x => x.base.name === newItem.base.name);
+    } else {
+      oldIndex = this.data.history.findIndex(
+          x => x.base.string === newItem.base.string);
+    }
+
+    const MAX_RECENTS =
+        category === CategoryEnum.GIF ? MAX_GIF_RECENTS : MAX_TEXT_RECENTS;
+
     if (oldIndex !== -1) {
       this.data.history.splice(oldIndex, 1);
     }

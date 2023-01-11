@@ -11,7 +11,7 @@ import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './emoji_group.html.js';
-import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_VARIANTS_SHOWN, EmojiButtonClickEvent, EmojiClearRecentClickEvent} from './events.js';
+import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
 
 // Note - grid-layout and flex-layout names are used directly in CSS.
@@ -157,15 +157,23 @@ export class EmojiGroupComponent extends PolymerElement {
       return;
     }
 
+    // Text-based emoji clicked
     if (emoji.base.string) {
       const text = this.getDisplayEmojiForEmoji(emoji.base.string);
 
-      this.dispatchEvent(createCustomEvent(EMOJI_BUTTON_CLICK, {
+      this.dispatchEvent(createCustomEvent(EMOJI_TEXT_BUTTON_CLICK, {
         text: text,
         isVariant: text !== emoji.base.string,
         baseEmoji: emoji.base.string,
         allVariants: emoji.alternates,
         name: emoji.base.name,
+        category: this.category,
+      }));
+    } else {
+      // Visual-based emoji clicked
+      this.dispatchEvent(createCustomEvent(EMOJI_IMG_BUTTON_CLICK, {
+        name: emoji.base.name,
+        visualContent: emoji.base.visualContent,
         category: this.category,
       }));
     }
@@ -293,7 +301,8 @@ export class EmojiGroupComponent extends PolymerElement {
       |undefined {
     const dataIndex = target?.getAttribute('data-index');
 
-    if (target?.nodeName !== 'BUTTON' || !dataIndex) {
+    if (!(target?.nodeName === 'BUTTON' || target?.nodeName === 'IMG') ||
+        !dataIndex) {
       return undefined;
     }
     return this.data[Number(dataIndex)];
@@ -354,6 +363,13 @@ export class EmojiGroupComponent extends PolymerElement {
   getUrl(item: EmojiVariants): string|undefined {
     return item.base.visualContent?.url.preview.url;
   }
+
+  /**
+   * Returns the index of a visual based EmojiVariant.
+   */
+  getIndex(item: EmojiVariants): number {
+    return this.data.indexOf(item);
+  }
 }
 
 declare global {
@@ -362,7 +378,7 @@ declare global {
   }
   interface HTMLElementEventMap {
     [EMOJI_CLEAR_RECENTS_CLICK]: EmojiClearRecentClickEvent;
-    [EMOJI_BUTTON_CLICK]: EmojiButtonClickEvent;
+    [EMOJI_TEXT_BUTTON_CLICK]: EmojiTextButtonClickEvent;
   }
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CategoryEnum, Emoji} from './types';
+import {CategoryEnum, Emoji, VisualContent} from './types';
 
 export type CategoryButtonClickEvent =
     CustomEvent<{categoryName: CategoryEnum}>;
@@ -13,7 +13,7 @@ export type GroupButtonClickEvent = CustomEvent<{group: string}>;
 
 export const GROUP_BUTTON_CLICK = 'group-button-click';
 
-export type EmojiButtonClickEvent = CustomEvent<{
+export type EmojiTextButtonClickEvent = CustomEvent<{
   emoji: string,
   isVariant: boolean,
   baseEmoji: string,
@@ -23,7 +23,15 @@ export type EmojiButtonClickEvent = CustomEvent<{
   category: CategoryEnum,
 }>;
 
-export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
+export const EMOJI_TEXT_BUTTON_CLICK = 'emoji-text-button-click';
+
+export type EmojiImgButtonClickEvent = CustomEvent<{
+  name: string,
+  visualContent: VisualContent,
+  category: CategoryEnum,
+}>;
+
+export const EMOJI_IMG_BUTTON_CLICK = 'emoji-img-button-click';
 
 /**
  * TODO(b/233130994): Update the type after removing emoji-button.

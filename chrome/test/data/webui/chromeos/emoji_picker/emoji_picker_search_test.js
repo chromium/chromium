@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
-import {EMOJI_BUTTON_CLICK, EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
+import {EMOJI_PICKER_READY, EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertGT} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {deepQuerySelector, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
@@ -99,8 +98,8 @@ suite('emoji-search', () => {
         const enterEvent = new KeyboardEvent(
             'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
         const buttonClickPromise = new Promise(
-            (resolve) =>
-                emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
+            (resolve) => emojiPicker.addEventListener(
+                EMOJI_TEXT_BUTTON_CLICK, (event) => {
                   assertEquals('🧟', event.detail.text);
                   assertEquals('zombie', event.detail.name.trim());
                   resolve();
@@ -122,8 +121,8 @@ suite('emoji-search', () => {
             'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
 
         const buttonClickPromise = new Promise(
-            (resolve) =>
-                emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
+            (resolve) => emojiPicker.addEventListener(
+                EMOJI_TEXT_BUTTON_CLICK, (event) => {
                   assertEquals('=^.^=', event.detail.text);
                   resolve();
                 }));

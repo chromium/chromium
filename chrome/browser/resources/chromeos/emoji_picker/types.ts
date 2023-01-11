@@ -43,12 +43,6 @@ export interface VisualContent {
   previewSize: Size;
 }
 
-export interface StoredItem {
-  base: string;
-  alternates: Emoji[];
-  name: string;
-}
-
 export interface SubcategoryData {
   name: string;
   icon?: string;
