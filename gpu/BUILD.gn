@@ -327,7 +327,6 @@ test("gl_tests") {
     "command_buffer/tests/gl_manager.cc",
     "command_buffer/tests/gl_manager.h",
     "command_buffer/tests/gl_map_buffer_range_unittest.cc",
-    "command_buffer/tests/gl_native_gmb_backbuffer_unittest.cc",
     "command_buffer/tests/gl_object_bindings_unittest.cc",
     "command_buffer/tests/gl_oes_egl_image_unittest.cc",
     "command_buffer/tests/gl_offscreen_surface_unittest.cc",
