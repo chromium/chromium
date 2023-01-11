@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -366,17 +367,23 @@ class PDFiumPageImageDataTest : public PDFiumPageImageTest {
   PDFiumPageImageDataTest& operator=(const PDFiumPageImageDataTest&) = delete;
   ~PDFiumPageImageDataTest() override = default;
 
+  void SetUp() override {
+    PDFiumPageImageTest::SetUp();
+    base::DiscardableMemoryAllocator::SetInstance(
+        &discardable_memory_allocator_);
+  }
+
+  void TearDown() override {
+    base::DiscardableMemoryAllocator::SetInstance(nullptr);
+    PDFiumPageImageTest::TearDown();
+  }
+
  private:
   base::test::ScopedFeatureList enable_pdf_ocr_;
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };
 
 TEST_P(PDFiumPageImageDataTest, ImageData) {
-  // TODO(crbug.com/1382257): This test currently crashes when using Skia
-  // renderer. Fix this issue and re-enable the test.
-  if (GetParam()) {
-    GTEST_SKIP() << "Skipping this test for Skia";
-  }
-
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
