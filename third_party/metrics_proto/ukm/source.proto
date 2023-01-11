@@ -23,6 +23,7 @@ enum SourceType {
   NO_URL_ID = 8;
   REDIRECT_ID = 9;
   WEB_IDENTITY_ID = 10;
+  CHROMEOS_WEBSITE_ID = 11;
 }
 
 // Android Activity Type defined by

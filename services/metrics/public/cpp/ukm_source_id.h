@@ -83,8 +83,12 @@ class METRICS_EXPORT SourceIdObj {
     // API, and hence do not follow a specific pattern. See
     // https://fedidcg.github.io/FedCM/#examples for examples.
     WEB_IDENTITY_ID = 10,
+    // Source ID for ChromeOS website stats. A new source of this type and
+    // associated events are expected to be recorded within the same report
+    // interval; it will not be kept in memory between different reports.
+    CHROMEOS_WEBSITE_ID = 11,
 
-    kMaxValue = WEB_IDENTITY_ID,
+    kMaxValue = CHROMEOS_WEBSITE_ID,
   };
 
   // Default constructor has the invalid value.

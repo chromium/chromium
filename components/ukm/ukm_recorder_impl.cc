@@ -56,7 +56,8 @@ bool IsAllowlistedSourceId(SourceId source_id) {
     case ukm::SourceIdObj::Type::PAYMENT_APP_ID:
     case ukm::SourceIdObj::Type::NO_URL_ID:
     case ukm::SourceIdObj::Type::REDIRECT_ID:
-    case ukm::SourceIdObj::Type::WEB_IDENTITY_ID: {
+    case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
+    case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID: {
       return true;
     }
     case ukm::SourceIdObj::Type::DEFAULT:
@@ -881,6 +882,7 @@ UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
     case SourceIdType::NO_URL_ID:
     case SourceIdType::REDIRECT_ID:
     case SourceIdType::WEB_IDENTITY_ID:
+    case SourceIdType::CHROMEOS_WEBSITE_ID:
       return UkmConsentType::MSBB;
   }
   return UkmConsentType::MSBB;
@@ -930,7 +932,8 @@ void UkmRecorderImpl::MaybeMarkForDeletion(SourceId source_id) {
     case ukm::SourceIdObj::Type::WEBAPK_ID:
     case ukm::SourceIdObj::Type::PAYMENT_APP_ID:
     case ukm::SourceIdObj::Type::NO_URL_ID:
-    case ukm::SourceIdObj::Type::WEB_IDENTITY_ID: {
+    case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
+    case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID: {
       // Don't keep sources of these types after current report because their
       // entries are logged only at source creation time.
       MarkSourceForDeletion(source_id);

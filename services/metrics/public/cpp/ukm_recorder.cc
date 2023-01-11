@@ -80,6 +80,14 @@ ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
                                                SourceIdType::REDIRECT_ID);
 }
 
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForChromeOSWebsiteURL(
+    base::PassKey<DIPSNavigationHandle>,
+    const GURL& redirect_url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(
+      redirect_url, SourceIdType::CHROMEOS_WEBSITE_ID);
+}
+
 void UkmRecorder::RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url) {
   UpdateSourceURL(source_id.ToInt64(), url);
 }

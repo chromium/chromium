@@ -61,6 +61,8 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::REDIRECT_ID;
     case SourceIdType::WEB_IDENTITY_ID:
       return SourceType::WEB_IDENTITY_ID;
+    case SourceIdType::CHROMEOS_WEBSITE_ID:
+      return SourceType::CHROMEOS_WEBSITE_ID;
   }
 }
 
