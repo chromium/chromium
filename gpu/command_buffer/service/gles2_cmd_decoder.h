@@ -107,6 +107,8 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
                               ContextGroup* group);
 
   // Allows to override ImageFactory for nacl swapchain.
+  // TODO(blundell): Update this flow as part of scoping down ImageFactory usage
+  // to ImageFactoryNativePixmap.
   static GLES2Decoder* CreateForTesting(
       DecoderClient* client,
       CommandBufferServiceBase* command_buffer_service,

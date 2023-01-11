@@ -36,7 +36,6 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
-#include "gpu/command_buffer/tests/image_factory_stub.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -349,17 +348,9 @@ void GLManager::InitializeWithWorkaroundsImpl(
   command_buffer_.reset(
       new CommandBufferCheckLostContext(options.context_lost_allowed));
 
-  std::unique_ptr<ImageFactoryStub> image_factory;
-  if (options.should_use_native_gmb_for_backbuffer) {
-    // If |should_use_native_gmb_for_backbuffer| is true, GLES2CmdDecoder
-    // requires a non-null ImageFactory instance in order to initialize
-    // successfully.
-    image_factory = std::make_unique<ImageFactoryStub>();
-  }
-
   decoder_.reset(::gpu::gles2::GLES2Decoder::CreateForTesting(
       command_buffer_.get(), command_buffer_->service(), &outputter_,
-      context_group, std::move(image_factory)));
+      context_group, /*image_factory_for_nacl_swapchain=*/nullptr));
   if (options.force_shader_name_hashing) {
     decoder_->SetForceShaderNameHashingForTest(true);
   }
