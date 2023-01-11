@@ -53,6 +53,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Gesture-navigation"/>
   <variant name="Guest-tos"/>
   <variant name="Hid-detection"/>
+  <variant name="Hw-data-collection"/>
   <variant name="Image"/>
   <variant name="Kiosk-enable"/>
   <variant name="Locale-switch"/>
@@ -146,6 +147,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Guest-Tos.Cancel"/>
   <variant name="Hid-detection.Next"/>
   <variant name="Hid-detection.StartDemo"/>
+  <variant name="Hw-data-collection.AcceptedWithHWDataUsage"/>
+  <variant name="Hw-data-collection.AcceptedWithoutHWDataUsage"/>
   <variant name="Kiosk-enable.Next"/>
   <variant name="Locale-switch.LocaleFetchFailed"/>
   <variant name="Locale-switch.LocaleFetchTimeout"/>
