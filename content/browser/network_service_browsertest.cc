@@ -1084,9 +1084,6 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       EXPECT_FALSE(base::PathExists(
           tempdir_two.Append(kNetworkSubpath).Append(kCheckpointFileName)));
       histogram_tester.ExpectUniqueSample(
-          "NetworkService.GrantSandboxToCacheResult", /*sample=kSuccess=*/0,
-          /*expected_bucket_count=*/1);
-      histogram_tester.ExpectUniqueSample(
           "NetworkService.GrantSandboxResult",
           /*sample=kFailedToCreateDataDirectory=*/2,
           /*expected_bucket_count=*/1);
@@ -1136,10 +1133,6 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       break;
 #endif  // BUILDFLAG(IS_WIN)
     case FailureType::kCacheDirIsAFile:
-      histogram_tester.ExpectUniqueSample(
-          "NetworkService.GrantSandboxToCacheResult",
-          /*sample=kFailedToCreateCacheDirectory=*/1,
-          /*expected_bucket_count=*/1);
       histogram_tester.ExpectUniqueSample("NetworkService.GrantSandboxResult",
                                           /*sample=kSuccess=*/0,
                                           /*expected_bucket_count=*/1);

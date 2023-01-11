@@ -3512,18 +3512,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.GrantSandboxToCacheResult"
-    enum="NetworkServiceSandboxGrantResult" expires_after="2023-02-19">
-  <owner>wfh@chromium.org</owner>
-  <owner>mmenke@chromium.org</owner>
-  <summary>
-    The result of the attempt to grant the sandbox access to a network context
-    HTTP cache files. This is reported each time a network context instance is
-    created on the network service and it has a valid HTTP cache path and HTTP
-    cache is enabled.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.MdnsResponder.ServiceError"
     enum="MdnsResponderServiceError" expires_after="M81">
   <owner>qingsi@chromium.org</owner>
