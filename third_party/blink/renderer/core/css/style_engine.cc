@@ -1160,6 +1160,23 @@ inline Element* SelfOrPreviousSibling(Node* node) {
 
 }  // namespace
 
+void PossiblyScheduleNthPseudoInvalidations(Node& node) {
+  if (!node.IsElementNode()) {
+    return;
+  }
+  ContainerNode* parent = node.parentNode();
+  if (parent == nullptr) {
+    return;
+  }
+
+  if ((parent->ChildrenAffectedByForwardPositionalRules() &&
+       node.nextSibling()) ||
+      (parent->ChildrenAffectedByBackwardPositionalRules() &&
+       node.previousSibling())) {
+    node.GetDocument().GetStyleEngine().ScheduleNthPseudoInvalidations(*parent);
+  }
+}
+
 void StyleEngine::InvalidateElementAffectedByHas(
     Element& element,
     bool for_element_affected_by_pseudo_in_has) {
@@ -1177,6 +1194,8 @@ void StyleEngine::InvalidateElementAffectedByHas(
         StyleChangeType::kLocalStyleChange,
         StyleChangeReasonForTracing::Create(
             blink::style_change_reason::kStyleInvalidator));
+
+    PossiblyScheduleNthPseudoInvalidations(element);
   }
 
   if (element.AffectedByNonSubjectHas()) {

@@ -117,6 +117,7 @@ void InvalidationSet::CacheTracingFlag() {
 InvalidationSet::InvalidationSet(InvalidationType type)
     : type_(static_cast<unsigned>(type)),
       invalidates_self_(false),
+      invalidates_nth_(false),
       is_alive_(true) {}
 
 bool InvalidationSet::InvalidatesElement(Element& element) const {

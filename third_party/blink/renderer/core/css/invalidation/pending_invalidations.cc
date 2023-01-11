@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -46,6 +47,10 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
                                      style_change_reason::kStyleInvalidator));
       }
 
+      if (invalidation_set->InvalidatesNth()) {
+        PossiblyScheduleNthPseudoInvalidations(node);
+      }
+
       if (!invalidation_set->IsEmpty()) {
         requires_descendant_invalidation = true;
       }
@@ -75,6 +80,9 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
     }
     if (pending_invalidations.Siblings().Contains(invalidation_set)) {
       continue;
+    }
+    if (invalidation_set->InvalidatesNth()) {
+      PossiblyScheduleNthPseudoInvalidations(node);
     }
     pending_invalidations.Siblings().push_back(invalidation_set);
     requires_sibling_invalidation = true;

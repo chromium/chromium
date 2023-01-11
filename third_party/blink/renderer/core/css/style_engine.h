@@ -1020,6 +1020,8 @@ inline bool HasFullNGFragmentationSupport() {
          RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled();
 }
 
+void PossiblyScheduleNthPseudoInvalidations(Node& node);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_ENGINE_H_

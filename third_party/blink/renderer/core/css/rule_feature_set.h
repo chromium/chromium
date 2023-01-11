@@ -53,6 +53,61 @@ class StyleScope;
 // in the class is about invalidation sets, and they are the primary
 // “features” being extracted from the selector now, the file does not
 // live in css/invalidation/. Perhaps this should be changed.
+//
+// In addition to complete invalidation (where we just throw up our
+// hands and invalidate everything) and :has() (which is described in
+// detail below), we have fundamentally four types of invalidation.
+// All will be described for a class selector, but apply equally to
+// id etc.:
+//
+//   - Self-invalidation: When an element gets or loses class .c,
+//     that element needs to be invalidated (.c exists as a subject in
+//     some selector). We represent this by a bit in .c's invalidation
+//     set (or by inserting the class name in a Bloom filter; see
+//     class_invalidation_sets_).
+//
+//   - Descendant invalidation: When an element gets or loses class .c,
+//     all of its children with class .d need to be invalidated
+//     (a selector of the form .c .d or .c > .d exists). We represent
+//     this by storing .d in .c's descendant invalidation set.
+//
+//   - Sibling invalidation: When an element gets or loses class .c,
+//     all of its _siblings_ with class .d need to be invalidated
+//     (a selector of the form .c ~ .d or .c + .d exists).
+//     We represent this by storing .d in c's sibling invalidation set.
+//
+//   - nth-child invalidation: Described immediately below.
+//
+// nth-child invalidation deals with peculiarities for :nth-child()
+// and related selectors (such as :only-of-type). We have a couple
+// of distinct strategies for dealing with them:
+//
+//   - When we add or insert a node in the DOM tree where any child
+//     of the parent has matched such a selector, we forcibly schedule
+//     the (global) NthSiblingInvalidationSet. In other words, this
+//     is hardly related to the normal invalidation mechanism at all.
+//
+//   - Finally, for :nth_child(... of :has()), we get a signal when
+//     a node is affected by :has() subject invalidation
+//     (in StyleEngine::InvalidateElementAffectedByHas()), and can
+//     forcibly schedule the NthSiblingInvalidationSet, much like
+//     the previous point.
+//
+//   - When we have :nth-child(... of S) as a subject (ie., not just
+//     pure :nth-child(), but anything with a selector), we set the
+//     invalidates_nth_ bit on all invalidation sets for S. This means
+//     that whenever we schedule invalidation sets for anything in S,
+//     and any child of the parent has matched any :nth-child() selector,
+//     we'll schedule the NthSiblingInvalidationSet.
+//
+//   - For all ancestors, we go through them recursively to find
+//     S within :nth-child(), and set their invalidates_nth_ similarly.
+//     This is conceptually the same thing as the previous point,
+//     but since we already handle subjects and ancestors differently,
+//     it was convenient with some mild code duplication here.
+//
+//   - When we have sibling selectors against :nth-child, special
+//     provisions apply; see comments NthSiblingInvalidationSet.
 class CORE_EXPORT RuleFeatureSet {
   DISALLOW_NEW();
 
@@ -528,6 +583,7 @@ class CORE_EXPORT RuleFeatureSet {
   // For top-level complex selectors, the PseudoType is kPseudoUnknown.
   FeatureInvalidationType UpdateInvalidationSetsForComplex(
       const CSSSelector&,
+      bool in_nth_child,
       const StyleScope*,
       InvalidationSetFeatures&,
       PositionType,
@@ -540,8 +596,10 @@ class CORE_EXPORT RuleFeatureSet {
       const CSSSelector&,
       InvalidationSetFeatures&,
       PositionType,
-      bool for_logical_combination_in_has);
+      bool for_logical_combination_in_has,
+      bool in_nth_child);
   void ExtractInvalidationSetFeaturesFromSelectorList(const CSSSelector&,
+                                                      bool in_nth_child,
                                                       InvalidationSetFeatures&,
                                                       PositionType);
   void UpdateFeaturesFromCombinator(
@@ -550,7 +608,8 @@ class CORE_EXPORT RuleFeatureSet {
       InvalidationSetFeatures& last_compound_in_adjacent_chain_features,
       InvalidationSetFeatures*& sibling_features,
       InvalidationSetFeatures& descendant_features,
-      bool for_logical_combination_in_has);
+      bool for_logical_combination_in_has,
+      bool in_nth_child);
   void UpdateFeaturesFromStyleScope(
       const StyleScope&,
       InvalidationSetFeatures& descendant_features);
@@ -559,19 +618,23 @@ class CORE_EXPORT RuleFeatureSet {
                                     const InvalidationSetFeatures&);
   void AddFeaturesToInvalidationSets(
       const CSSSelector&,
+      bool in_nth_child,
       InvalidationSetFeatures* sibling_features,
       InvalidationSetFeatures& descendant_features);
   const CSSSelector* AddFeaturesToInvalidationSetsForCompoundSelector(
       const CSSSelector&,
+      bool in_nth_child,
       InvalidationSetFeatures* sibling_features,
       InvalidationSetFeatures& descendant_features);
   void AddFeaturesToInvalidationSetsForSimpleSelector(
       const CSSSelector& simple_selector,
       const CSSSelector& compound,
+      bool in_nth_child,
       InvalidationSetFeatures* sibling_features,
       InvalidationSetFeatures& descendant_features);
   void AddFeaturesToInvalidationSetsForSelectorList(
       const CSSSelector&,
+      bool in_nth_child,
       InvalidationSetFeatures* sibling_features,
       InvalidationSetFeatures& descendant_features);
   void AddFeaturesToInvalidationSetsForStyleScope(
@@ -698,6 +761,13 @@ class CORE_EXPORT RuleFeatureSet {
       InvalidationSetFeatures& descendant_features,
       CSSSelector::RelationType previous_combinator,
       AddFeaturesMethodForLogicalCombinationInHas);
+
+  // Go recursively through everything in the given selector
+  // (which is typically an ancestor; see the class comment)
+  // and mark the invalidation sets of any simple selectors within it
+  // for Nth-child invalidation.
+  void MarkInvalidationSetsWithinNthChild(const CSSSelector& selector,
+                                          bool in_nth_child);
 
   // Make sure that the pointer in “invalidation_set” has a single
   // reference that can be modified safely. (This is done through

@@ -139,6 +139,9 @@ class CORE_EXPORT InvalidationSet
   void SetInvalidatesSelf() { invalidates_self_ = true; }
   bool InvalidatesSelf() const { return invalidates_self_; }
 
+  void SetInvalidatesNth() { invalidates_nth_ = true; }
+  bool InvalidatesNth() const { return invalidates_nth_; }
+
   void SetTreeBoundaryCrossing() {
     invalidation_flags_.SetTreeBoundaryCrossing(true);
   }
@@ -422,6 +425,12 @@ class CORE_EXPORT InvalidationSet
 
   // If true, the element or sibling itself is invalid.
   unsigned invalidates_self_ : 1;
+
+  // If true, scheduling this invalidation set on a node
+  // will also schedule nth-child invalidation on its parent
+  // (unless we know for sure no child can be affected by a
+  // selector of the :nth-child type).
+  unsigned invalidates_nth_ : 1;
 
   // If true, the instance is alive and can be used.
   unsigned is_alive_ : 1;

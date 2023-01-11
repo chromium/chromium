@@ -302,6 +302,40 @@ void ExtractInvalidationSets(InvalidationSet* invalidation_set,
 
 }  // anonymous namespace
 
+void RuleFeatureSet::MarkInvalidationSetsWithinNthChild(
+    const CSSSelector& selector,
+    bool in_nth_child) {
+  const CSSSelector* simple_selector = &selector;
+  for (; simple_selector; simple_selector = simple_selector->TagHistory()) {
+    if (in_nth_child) {
+      if (InvalidationSet* invalidation_set = InvalidationSetForSimpleSelector(
+              *simple_selector, InvalidationType::kInvalidateDescendants,
+              kAncestor)) {
+        // This is, strictly speaking, setting the bit on too many classes.
+        // If we have a selector like :nth-child(.a .b) .c, there's no reason
+        // to set the invalidates_nth_ bit on .a; what we need is that .b
+        // has the bit, and that the descendant invalidation set for .a
+        // contains .b (so that adding .a to some element causes us to go
+        // looking for .b elements in that element's subtree), and we've
+        // already done that in AddFeaturesToInvalidationSetsForSelectorList()
+        // -- setting the bit on .a is not really doing much. So that would be a
+        // potential future optimization if we find it useful. (We still need to
+        // traverse the ancestor selectors, though, in case they contain other
+        // :nth-child() selectors, recursively.)
+        invalidation_set->SetInvalidatesNth();
+      }
+    }
+    if (simple_selector->SelectorList()) {
+      bool sub_in_nth_child =
+          in_nth_child ||
+          simple_selector->GetPseudoType() == CSSSelector::kPseudoNthChild ||
+          simple_selector->GetPseudoType() == CSSSelector::kPseudoNthLastChild;
+      MarkInvalidationSetsWithinNthChild(
+          *simple_selector->SelectorList()->First(), sub_in_nth_child);
+    }
+  }
+}
+
 InvalidationSet& RuleFeatureSet::EnsureMutableInvalidationSet(
     InvalidationType type,
     PositionType position,
@@ -493,7 +527,8 @@ void RuleFeatureSet::UpdateFeaturesFromCombinator(
     InvalidationSetFeatures& last_compound_in_adjacent_chain_features,
     InvalidationSetFeatures*& sibling_features,
     InvalidationSetFeatures& descendant_features,
-    bool for_logical_combination_in_has) {
+    bool for_logical_combination_in_has,
+    bool in_nth_child) {
   if (CSSSelector::IsAdjacentRelation(combinator)) {
     if (!sibling_features) {
       sibling_features = &last_compound_in_adjacent_chain_features;
@@ -501,7 +536,7 @@ void RuleFeatureSet::UpdateFeaturesFromCombinator(
         ExtractInvalidationSetFeaturesFromCompound(
             *last_compound_in_adjacent_chain,
             last_compound_in_adjacent_chain_features, kAncestor,
-            for_logical_combination_in_has);
+            for_logical_combination_in_has, in_nth_child);
         if (!last_compound_in_adjacent_chain_features.HasFeatures()) {
           last_compound_in_adjacent_chain_features.invalidation_flags
               .SetWholeSubtreeInvalid(true);
@@ -551,7 +586,7 @@ void RuleFeatureSet::UpdateFeaturesFromStyleScope(
       InvalidationSetFeatures scope_features;
       ExtractInvalidationSetFeaturesFromCompound(
           *selector, scope_features, kSubject,
-          /* for_logical_combination_in_has */ false);
+          /* for_logical_combination_in_has */ false, /*in_nth_child=*/false);
       descendant_features.Merge(scope_features);
     }
   }
@@ -731,8 +766,9 @@ void RuleFeatureSet::UpdateInvalidationSets(const CSSSelector& selector,
                                             const StyleScope* style_scope) {
   InvalidationSetFeatures features;
   FeatureInvalidationType feature_invalidation_type =
-      UpdateInvalidationSetsForComplex(selector, style_scope, features,
-                                       kSubject, CSSSelector::kPseudoUnknown);
+      UpdateInvalidationSetsForComplex(selector, /*in_nth_child=*/false,
+                                       style_scope, features, kSubject,
+                                       CSSSelector::kPseudoUnknown);
   if (feature_invalidation_type ==
       FeatureInvalidationType::kRequiresSubtreeInvalidation) {
     features.invalidation_flags.SetWholeSubtreeInvalid(true);
@@ -750,6 +786,7 @@ void RuleFeatureSet::UpdateInvalidationSets(const CSSSelector& selector,
 RuleFeatureSet::FeatureInvalidationType
 RuleFeatureSet::UpdateInvalidationSetsForComplex(
     const CSSSelector& complex,
+    bool in_nth_child,
     const StyleScope* style_scope,
     InvalidationSetFeatures& features,
     PositionType position,
@@ -766,12 +803,13 @@ RuleFeatureSet::UpdateInvalidationSetsForComplex(
   InvalidationSetFeatures* sibling_features = nullptr;
 
   // Step 1. Note that this also, in passing, inserts self-invalidation
-  // InvalidationSets for the rightmost compound selector. This probably
-  // isn't the prettiest, but it's how the structure is at this point.
+  // and nth-child InvalidationSets for the rightmost compound selector.
+  // This probably isn't the prettiest, but it's how the structure is
+  // at this point.
   const CSSSelector* last_in_compound =
       ExtractInvalidationSetFeaturesFromCompound(
           complex, features, position,
-          /* for_logical_combination_in_has */ false);
+          /* for_logical_combination_in_has */ false, in_nth_child);
 
   bool was_whole_subtree_invalid =
       features.invalidation_flags.WholeSubtreeInvalid();
@@ -800,10 +838,14 @@ RuleFeatureSet::UpdateInvalidationSetsForComplex(
     if (last_in_compound) {
       UpdateFeaturesFromCombinator(last_in_compound->Relation(), nullptr,
                                    features, sibling_features, features,
-                                   /* for_logical_combination_in_has */ false);
+                                   /* for_logical_combination_in_has */ false,
+                                   in_nth_child);
     }
 
-    AddFeaturesToInvalidationSets(*next_compound, sibling_features, features);
+    AddFeaturesToInvalidationSets(*next_compound, in_nth_child,
+                                  sibling_features, features);
+
+    MarkInvalidationSetsWithinNthChild(*next_compound, in_nth_child);
   }
 
   if (style_scope) {
@@ -847,6 +889,7 @@ void RuleFeatureSet::UpdateRuleSetInvalidation(
 
 void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     const CSSSelector& simple_selector,
+    bool in_nth_child,
     InvalidationSetFeatures& features,
     PositionType position) {
   AutoRestoreMaxDirectAdjacentSelectors restore_max(&features);
@@ -865,6 +908,9 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     return;
   }
 
+  in_nth_child |= pseudo_type == CSSSelector::kPseudoNthChild;
+  in_nth_child |= pseudo_type == CSSSelector::kPseudoNthLastChild;
+
   DCHECK(SupportsInvalidationWithSelectorList(pseudo_type));
 
   bool all_sub_selectors_have_features = true;
@@ -874,8 +920,9 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   for (; sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
     InvalidationSetFeatures complex_features;
     if (UpdateInvalidationSetsForComplex(
-            *sub_selector, nullptr /* style_scope */, complex_features,
-            position, pseudo_type) == kRequiresSubtreeInvalidation) {
+            *sub_selector, in_nth_child, nullptr /* style_scope */,
+            complex_features, position,
+            pseudo_type) == kRequiresSubtreeInvalidation) {
       features.invalidation_flags.SetWholeSubtreeInvalid(true);
       continue;
     }
@@ -922,7 +969,8 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
     const CSSSelector& compound,
     InvalidationSetFeatures& features,
     PositionType position,
-    bool for_logical_combination_in_has) {
+    bool for_logical_combination_in_has,
+    bool in_nth_child) {
   // NOTE: Due to the check at the bottom of the loop, this loop stops
   // once we are at the end of the compound, ie., we see a relation that
   // is not a sub-selector. So for e.g. .a .b.c#d, we will see #d, .c, .b
@@ -950,11 +998,18 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
         features.has_nth_pseudo = true;
       } else if (position == kSubject) {
         invalidation_set->SetInvalidatesSelf();
+
+        // If we are within :nth-child(), it means we'll need nth-child
+        // invalidation for anything within this subject; see RuleFeatureSet
+        // class comment.
+        if (in_nth_child) {
+          invalidation_set->SetInvalidatesNth();
+        }
       }
     }
 
-    ExtractInvalidationSetFeaturesFromSelectorList(*simple_selector, features,
-                                                   position);
+    ExtractInvalidationSetFeaturesFromSelectorList(
+        *simple_selector, in_nth_child, features, position);
 
     if (features.invalidation_flags.InvalidatesParts()) {
       metadata_.invalidates_parts = true;
@@ -1130,8 +1185,8 @@ RuleFeatureSet::AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
         break;
       default:
         AddFeaturesToInvalidationSetsForSimpleSelector(
-            *simple, *compound_in_logical_combination, sibling_features,
-            descendant_features);
+            *simple, *compound_in_logical_combination, /*in_nth_child=*/false,
+            sibling_features, descendant_features);
         break;
     }
     if (descendant_features.has_features_for_rule_set_invalidation) {
@@ -1332,7 +1387,8 @@ void RuleFeatureSet::UpdateFeaturesFromCombinatorForLogicalCombinationInHas(
   UpdateFeaturesFromCombinator(combinator, last_compound_in_adjacent_chain,
                                last_compound_in_adjacent_chain_features,
                                sibling_features, descendant_features,
-                               /* for_logical_combination_in_has */ true);
+                               /* for_logical_combination_in_has */ true,
+                               /*in_nth_child=*/false);
 }
 
 void RuleFeatureSet::AddValuesInComplexSelectorInsideIsWhereNot(
@@ -1449,6 +1505,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSet(
 
 void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
     const CSSSelector& simple_selector,
+    bool in_nth_child,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features) {
   if (!simple_selector.SelectorListOrParent()) {
@@ -1462,6 +1519,10 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
   bool selector_list_contains_universal =
       simple_selector.GetPseudoType() == CSSSelector::kPseudoNot ||
       simple_selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
+  in_nth_child |=
+      simple_selector.GetPseudoType() == CSSSelector::kPseudoNthChild;
+  in_nth_child |=
+      simple_selector.GetPseudoType() == CSSSelector::kPseudoNthLastChild;
 
   for (const CSSSelector* sub_selector = simple_selector.SelectorListOrParent();
        sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
@@ -1478,7 +1539,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
 
     descendant_features.has_features_for_rule_set_invalidation = false;
 
-    AddFeaturesToInvalidationSets(*sub_selector, sibling_features,
+    AddFeaturesToInvalidationSets(*sub_selector, in_nth_child, sibling_features,
                                   descendant_features);
 
     if (!descendant_features.has_features_for_rule_set_invalidation) {
@@ -1499,8 +1560,8 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForStyleScope(
                              InvalidationSetFeatures& features) {
     for (const CSSSelector* selector = selector_list.First(); selector;
          selector = CSSSelectorList::Next(*selector)) {
-      AddFeaturesToInvalidationSets(*selector, nullptr /* sibling_features */,
-                                    features);
+      AddFeaturesToInvalidationSets(*selector, /*in_nth_child=*/false,
+                                    nullptr /* sibling_features */, features);
     }
   };
 
@@ -1516,6 +1577,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForStyleScope(
 void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
     const CSSSelector& simple_selector,
     const CSSSelector& compound,
+    bool in_nth_child,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features) {
   if (simple_selector.IsIdClassOrAttributeSelector()) {
@@ -1558,6 +1620,9 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
     AddFeaturesToInvalidationSet(*invalidation_set, *sibling_features);
     if (sibling_features == &descendant_features) {
       sibling_invalidation_set->SetInvalidatesSelf();
+      if (in_nth_child) {
+        sibling_invalidation_set->SetInvalidatesNth();
+      }
     } else {
       AddFeaturesToInvalidationSet(
           sibling_invalidation_set->EnsureSiblingDescendants(),
@@ -1578,12 +1643,13 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
   }
 
   AddFeaturesToInvalidationSetsForSelectorList(
-      simple_selector, sibling_features, descendant_features);
+      simple_selector, in_nth_child, sibling_features, descendant_features);
 }
 
 const CSSSelector*
 RuleFeatureSet::AddFeaturesToInvalidationSetsForCompoundSelector(
     const CSSSelector& compound,
+    bool in_nth_child,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features) {
   bool compound_has_features_for_rule_set_invalidation = false;
@@ -1592,7 +1658,8 @@ RuleFeatureSet::AddFeaturesToInvalidationSetsForCompoundSelector(
     base::AutoReset<bool> reset_has_features(
         &descendant_features.has_features_for_rule_set_invalidation, false);
     AddFeaturesToInvalidationSetsForSimpleSelector(
-        *simple_selector, compound, sibling_features, descendant_features);
+        *simple_selector, compound, in_nth_child, sibling_features,
+        descendant_features);
     if (descendant_features.has_features_for_rule_set_invalidation) {
       compound_has_features_for_rule_set_invalidation = true;
     }
@@ -1616,10 +1683,11 @@ RuleFeatureSet::AddFeaturesToInvalidationSetsForCompoundSelector(
 
 void RuleFeatureSet::AddFeaturesToInvalidationSets(
     const CSSSelector& selector,
+    bool in_nth_child,
     InvalidationSetFeatures* sibling_features,
     InvalidationSetFeatures& descendant_features) {
   // selector is the selector immediately to the left of the rightmost
-  // combinator. descendantFeatures has the features of the rightmost compound
+  // combinator. descendant_features has the features of the rightmost compound
   // selector.
 
   InvalidationSetFeatures last_compound_in_sibling_chain_features;
@@ -1627,12 +1695,13 @@ void RuleFeatureSet::AddFeaturesToInvalidationSets(
   while (compound) {
     const CSSSelector* last_in_compound =
         AddFeaturesToInvalidationSetsForCompoundSelector(
-            *compound, sibling_features, descendant_features);
+            *compound, in_nth_child, sibling_features, descendant_features);
     DCHECK(last_in_compound);
     UpdateFeaturesFromCombinator(last_in_compound->Relation(), compound,
                                  last_compound_in_sibling_chain_features,
                                  sibling_features, descendant_features,
-                                 /* for_logical_combination_in_has */ false);
+                                 /* for_logical_combination_in_has */ false,
+                                 in_nth_child);
     compound = last_in_compound->TagHistory();
   }
 }

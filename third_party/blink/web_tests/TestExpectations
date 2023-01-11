@@ -1775,15 +1775,6 @@ crbug.com/248894 external/wpt/css/css-typed-om/the-stylepropertymap/properties/t
 crbug.com/248894 external/wpt/css/css-typed-om/the-stylepropertymap/properties/text-justify.html [ Failure ]
 crbug.com/248894 external/wpt/web-animations/responsive/textIndent.html [ Failure ]
 
-# nth-* selectors
-crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-containing-ancestor.html [ Failure ]
-crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-in-shadow-root.html [ Failure ]
-crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-attr.html [ Failure ]
-crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-class.html [ Failure ]
-crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-has.html [ Failure ]
-crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-in-ancestor.html [ Failure ]
-crbug.com/304163 external/wpt/css/selectors/invalidation/nth-child-of-sibling.html [ Failure ]
-
 crbug.com/1377648 external/wpt/css/selectors/media/media-loading-state.html [ Skip Timeout ]
 crbug.com/1377648 external/wpt/css/selectors/media/media-playback-state.html [ Timeout ]
 crbug.com/1383480 external/wpt/css/selectors/invalidation/media-pseudo-classes-in-has.html [ Timeout ]
