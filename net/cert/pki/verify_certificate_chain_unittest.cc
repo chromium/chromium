@@ -20,15 +20,16 @@ class VerifyCertificateChainTestDelegate {
     SimplePathBuilderDelegate delegate(1024, test.digest_policy);
 
     CertPathErrors errors;
-    // TODO(eroman): Check user_constrained_policy_set.
+    std::set<der::Input> user_constrained_policy_set;
     VerifyCertificateChain(
         test.chain, test.last_cert_trust, &delegate, test.time,
         test.key_purpose, test.initial_explicit_policy,
         test.user_initial_policy_set, test.initial_policy_mapping_inhibit,
-        test.initial_any_policy_inhibit,
-        nullptr /*user_constrained_policy_set*/, &errors);
+        test.initial_any_policy_inhibit, &user_constrained_policy_set, &errors);
     VerifyCertPathErrors(test.expected_errors, errors, test.chain,
                          test_file_path);
+    VerifyUserConstrainedPolicySet(test.expected_user_constrained_policy_set,
+                                   user_constrained_policy_set, test_file_path);
   }
 };
 

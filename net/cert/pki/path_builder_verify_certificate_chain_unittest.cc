@@ -37,6 +37,12 @@ class PathBuilderTestDelegate {
 
     CertPathBuilder::Result result = path_builder.Run();
     EXPECT_EQ(!test.HasHighSeverityErrors(), result.HasValidPath());
+    if (result.HasValidPath()) {
+      VerifyUserConstrainedPolicySet(
+          test.expected_user_constrained_policy_set,
+          result.GetBestValidPath()->user_constrained_policy_set,
+          test_file_path);
+    }
   }
 };
 

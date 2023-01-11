@@ -109,6 +109,9 @@ struct VerifyCertChainTest {
   // The expected errors/warnings from verification (as a string).
   std::string expected_errors;
 
+  // Expected user_constrained_policy_set, as a set of numeric OID strings.
+  std::set<std::string> expected_user_constrained_policy_set;
+
   SimplePathBuilderDelegate::DigestPolicy digest_policy =
       SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1;
 
@@ -152,6 +155,13 @@ void VerifyCertPathErrors(const std::string& expected_errors_str,
 void VerifyCertErrors(const std::string& expected_errors_str,
                       const CertErrors& actual_errors,
                       const std::string& errors_file_path);
+
+// Asserts that |actual_user_constrained_policy_set| matches
+// |expected_user_constrained_policy_set|.
+void VerifyUserConstrainedPolicySet(
+    const std::set<std::string>& expected_user_constrained_policy_str_set,
+    const std::set<der::Input>& actual_user_constrained_policy_set,
+    const std::string& errors_file_path);
 
 }  // namespace net
 

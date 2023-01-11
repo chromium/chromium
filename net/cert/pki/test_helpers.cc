@@ -14,6 +14,8 @@
 #include "net/cert/pki/string_util.h"
 #include "net/der/parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 #include <sstream>
@@ -37,6 +39,66 @@ bool GetValue(std::string_view prefix,
   *has_value = true;
   *value = std::string(line.substr(prefix.size()));
   return true;
+}
+
+// Returns a string containing the dotted numeric form of |oid|, or a
+// hex-encoded string on error.
+std::string OidToString(der::Input oid) {
+  CBS cbs;
+  CBS_init(&cbs, oid.UnsafeData(), oid.Length());
+  bssl::UniquePtr<char> text(CBS_asn1_oid_to_text(&cbs));
+  if (!text) {
+    return "invalid:" +
+           net::string_util::HexEncode(oid.UnsafeData(), oid.Length());
+  }
+  return text.get();
+}
+
+std::string StrSetToString(const std::set<std::string>& str_set) {
+  std::string out;
+  for (const auto& s : str_set) {
+    EXPECT_FALSE(s.empty());
+    if (!out.empty()) {
+      out += ", ";
+    }
+    out += s;
+  }
+  return out;
+}
+
+std::string_view StripString(std::string_view str) {
+  size_t start = str.find_first_not_of(' ');
+  if (start == str.npos) {
+    return std::string_view();
+  }
+  str = str.substr(start);
+  size_t end = str.find_last_not_of(' ');
+  if (end != str.npos) {
+    ++end;
+  }
+  return str.substr(0, end);
+}
+
+std::vector<std::string_view> SplitString(std::string_view str) {
+  std::vector<std::string_view> out;
+
+  while (!str.empty()) {
+    // Find end of current token
+    size_t i = str.find(',');
+
+    // Add current token
+    std::string_view token = str.substr(0, i);
+    out.push_back(StripString(token));
+
+    if (i == str.npos) {
+      // That was the last token
+      break;
+    }
+    // Continue to next
+    str = str.substr(i + 1);
+  }
+
+  return out;
 }
 
 }  // namespace
@@ -194,6 +256,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
   bool has_errors = false;
   bool has_key_purpose = false;
   bool has_digest_policy = false;
+  bool has_user_constrained_policy_set = false;
 
   std::string kExpectedErrors = "expected_errors:";
 
@@ -283,6 +346,11 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
         ADD_FAILURE() << "Unrecognized digest_policy: " << value;
         return false;
       }
+    } else if (GetValue("expected_user_constrained_policy_set: ", line_piece,
+                        &value, &has_user_constrained_policy_set)) {
+      std::vector<std::string_view> split_value(SplitString(value));
+      test->expected_user_constrained_policy_set =
+          std::set<std::string>(split_value.begin(), split_value.end());
     } else if (net::string_util::StartsWith(line_piece, "#")) {
       // Skip comments.
       continue;
@@ -329,6 +397,10 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
     ADD_FAILURE() << "Missing errors:";
     return false;
   }
+
+  // `has_user_constrained_policy_set` is intentionally not checked here. Not
+  // specifying expected_user_constrained_policy_set means the expected policy
+  // set is empty.
 
   return true;
 }
@@ -383,6 +455,27 @@ void VerifyCertErrors(const std::string& expected_errors_str,
                   << "===> Use "
                      "net/data/parse_certificate_unittest/"
                      "rebase-errors.py to rebaseline.\n";
+  }
+}
+
+void VerifyUserConstrainedPolicySet(
+    const std::set<std::string>& expected_user_constrained_policy_str_set,
+    const std::set<der::Input>& actual_user_constrained_policy_set,
+    const std::string& errors_file_path) {
+  std::set<std::string> actual_user_constrained_policy_str_set;
+  for (const auto der_oid : actual_user_constrained_policy_set) {
+    actual_user_constrained_policy_str_set.insert(OidToString(der_oid));
+  }
+  if (expected_user_constrained_policy_str_set !=
+      actual_user_constrained_policy_str_set) {
+    ADD_FAILURE() << "user_constrained_policy_set doesn't match expectations ("
+                  << errors_file_path << ")\n\n"
+                  << "EXPECTED: "
+                  << StrSetToString(expected_user_constrained_policy_str_set)
+                  << "\n"
+                  << "ACTUAL: "
+                  << StrSetToString(actual_user_constrained_policy_str_set)
+                  << "\n";
   }
 }
 
