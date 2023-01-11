@@ -762,7 +762,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
 
     private void searchTabInfo() {
         ThreadPool.execute(() -> {
-            List<ITab> all = TabListManager.getInstance().getCurrentTabList().getTabInfoList();
+            List<ITab> all = TabListManager.getInstance().getCurrentTabList().getTabList();
             List<ITab> tabList = new ArrayList<>();
             if (TextUtils.isEmpty(keyword)) {
                 tabList.addAll(all);

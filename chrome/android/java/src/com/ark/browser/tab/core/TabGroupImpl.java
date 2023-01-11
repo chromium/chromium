@@ -1,20 +1,15 @@
 package com.ark.browser.tab.core;
 
-import androidx.annotation.NonNull;
-
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
-import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -228,7 +223,7 @@ public class TabGroupImpl implements ITabGroup {
     }
 
     @Override
-    public List<ITab> getTabInfoList() {
+    public List<ITab> getTabList() {
         return mTabList;
     }
 
@@ -371,16 +366,16 @@ public class TabGroupImpl implements ITabGroup {
     @Override
     public boolean moveToNewTab(IPage page) {
         ArkLogger.d(TAG, "moveToNewTab");
-        ITab tabInfo = getTabById(page.getPageInfo().getTabId());
-        if (tabInfo != null && tabInfo.removePage(page)) {
+        ITab tab = getTabById(page.getPageInfo().getTabId());
+        if (tab != null && tab.removePage(page)) {
             TabInfo newTabInfo = TabInfo.create();
             ITab newTab = new TabImpl(newTabInfo);
             page.getPageInfo().setTabId(newTabInfo.getId());
             newTab.getPages().add(page);
 
-            int index = indexOf(tabInfo) + 1;
-            int position = tabInfo.getTabInfo().getPosition() + 1;
-            getTabInfoList().add(index, newTab);
+            int index = indexOf(tab) + 1;
+            int position = tab.getTabInfo().getPosition() + 1;
+            getTabList().add(index, newTab);
             newTabInfo.setPosition(position);
             newTab.saveTabInfo();
 
@@ -464,11 +459,13 @@ public class TabGroupImpl implements ITabGroup {
         }
         ArkLogger.d(TAG, "saveTabPosition dt=" + (System.currentTimeMillis() - start) + " size=" + changes.size());
 
+        saveGroupFile();
+
         if (changes.isEmpty()) {
             return;
         }
 
-        saveGroupFile();
+
 
         start = System.currentTimeMillis();
         for (ITab tab : changes) {

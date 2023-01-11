@@ -806,7 +806,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         return mTabVisible;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Nullable
     public ViewGroup getContentView() {
         Tab tab = getCurrentTab();
         return tab != null ? tab.getContentView() : null;
@@ -1402,9 +1402,13 @@ public class ArkCompositorViewHolder extends FrameLayout
                 setFocusableInTouchMode(mCanBeFocusable);
 
                 if (webContents != null && !webContents.isDestroyed()) {
-                    getContentView().setVisibility(View.INVISIBLE);
+                    View contentView = getContentView();
+                    if (contentView != null) {
+                        contentView.setVisibility(INVISIBLE);
+                    }
                 }
                 removeView(mView);
+                mView = null;
             }
         }
     }

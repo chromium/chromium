@@ -42,10 +42,10 @@ public interface ITabGroup {
     public int getIndex();
 
     default int getCount() {
-        return getTabInfoList().size();
+        return getTabList().size();
     }
 
-    List<ITab> getTabInfoList();
+    List<ITab> getTabList();
 
     ObserverList<TabInfoObserver> getObservers();
 
@@ -220,7 +220,7 @@ public interface ITabGroup {
     }
 
     default boolean selectTab(ITab iTab, IPage page) {
-        ArkLogger.e(this, "selectTabInfo tabInfo=" + iTab + " pageInfo=" + page);
+        ArkLogger.e(this, "selectTabInfo tabInfo=" + iTab + " page=" + page);
         if (page == null) {
             return false;
         }
@@ -409,12 +409,12 @@ public interface ITabGroup {
         ArkLogger.d(getClass().getSimpleName(), "closeTab manager.getPageSize()=" + manager.getPageSize());
         if (nextPage == null) {
             removeTab(manager);
-            result = getTabInfoList().remove(manager);
+            result = getTabList().remove(manager);
             int index = getIndex();
-            if (getTabInfoList().isEmpty()) {
+            if (getTabList().isEmpty()) {
                 index = ITab.INVALID_TAB_INDEX;
-            } else if (index > getTabInfoList().size() - 1) {
-                index = getTabInfoList().size() - 1;
+            } else if (index > getTabList().size() - 1) {
+                index = getTabList().size() - 1;
             }
             onIndexChanged(index);
         } else {
@@ -440,12 +440,12 @@ public interface ITabGroup {
             return false;
         }
         removeTab(manager);
-        boolean result = getTabInfoList().remove(manager);
+        boolean result = getTabList().remove(manager);
         int index = getIndex();
-        if (getTabInfoList().isEmpty()) {
+        if (getTabList().isEmpty()) {
             index = ITab.INVALID_TAB_INDEX;
-        } else if (getIndex() > getTabInfoList().size() - 1) {
-            index = getTabInfoList().size() - 1;
+        } else if (getIndex() > getTabList().size() - 1) {
+            index = getTabList().size() - 1;
         }
         onIndexChanged(index);
         return result;
@@ -509,7 +509,7 @@ public interface ITabGroup {
             os.writeInt(getIndex());
             os.writeBoolean(isIncognito());
             os.writeInt(getCount());
-            for (ITab tab : getTabInfoList()) {
+            for (ITab tab : getTabList()) {
                 os.writeInt(tab.getId());
             }
             os.close();

@@ -23,13 +23,10 @@ import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.EmptyTabInfoObserver;
 import com.ark.browser.tab.TabCacheManager;
-import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
-import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.tab.core.PageImpl;
 import com.ark.browser.tab.core.TabGroupImpl;
 import com.ark.browser.tab.core.TabImpl;
 import com.ark.browser.utils.ArkLogger;
@@ -705,7 +702,7 @@ public class SmartSearchPanel extends FrameLayout {
             }
         };
 
-        mFloatTabList.getTabInfoList().add(newTab);
+        mFloatTabList.getTabList().add(newTab);
 
         newTabInfo.setLaunchType(TabLaunchType.FROM_CHROME_UI);
         ArkTabImpl tab = ArkTabImpl.create(newTab, null);
