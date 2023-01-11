@@ -90,7 +90,7 @@ void AXScreenAIAnnotator::AnnotateScreenshot(Browser* browser) {
   if (!web_contents->GetPrimaryMainFrame())
     return;
 
-  base::Time start_time = base::Time::Now();
+  base::TimeTicks start_time = base::TimeTicks::Now();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/1278249): Need to run GrabViewSnapshot() in a
   // thread that is not the main UI thread.
@@ -110,11 +110,12 @@ void AXScreenAIAnnotator::AnnotateScreenshot(Browser* browser) {
 #endif
 }
 
-void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
-                                               const base::Time& start_time,
-                                               gfx::Image snapshot) {
+void AXScreenAIAnnotator::OnScreenshotReceived(
+    const ui::AXTreeID& ax_tree_id,
+    const base::TimeTicks& start_time,
+    gfx::Image snapshot) {
   DCHECK(screen_ai_annotator_.is_bound());
-  base::TimeDelta elapsed_time = base::Time::Now() - start_time;
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
   if (snapshot.IsEmpty()) {
     VLOG(1) << "AxScreenAIAnnotator could not grab snapshot.";
     base::UmaHistogramTimes(

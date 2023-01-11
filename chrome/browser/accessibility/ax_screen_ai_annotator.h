@@ -61,7 +61,7 @@ class AXScreenAIAnnotator : public KeyedService,
   // snapshot at the time of triggering the request. `start_time` represents
   // the time when the screenshot is requested.
   virtual void OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
-                                    const base::Time& start_time,
+                                    const base::TimeTicks& start_time,
                                     gfx::Image snapshot);
 
   // Informs this instance that the Screen AI Service has finished creating the

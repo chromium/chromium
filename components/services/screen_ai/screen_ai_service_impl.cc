@@ -446,11 +446,17 @@ void ScreenAIService::ExtractMainContentInternal(
 
   int32_t* node_ids = nullptr;
   uint32_t nodes_count = 0;
-  if (!CallLibraryExtractMainContentFunction(serialized_snapshot.c_str(),
-                                             serialized_snapshot.length(),
-                                             node_ids, nodes_count)) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  bool success = CallLibraryExtractMainContentFunction(
+      serialized_snapshot.c_str(), serialized_snapshot.length(), node_ids,
+      nodes_count);
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  if (!success) {
     VLOG(1) << "Screen2x did not return main content.";
     DCHECK(content_node_ids->empty());
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.Screen2xDistillationTime.Failure",
+        elapsed_time);
     return;
   }
 
@@ -462,6 +468,8 @@ void ScreenAIService::ExtractMainContentInternal(
   VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids:";
   for (int32_t i : *content_node_ids)
     VLOG(2) << i;
+  base::UmaHistogramTimes(
+      "Accessibility.ScreenAI.Screen2xDistillationTime.Success", elapsed_time);
 }
 
 NO_SANITIZE("cfi-icall")

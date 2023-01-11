@@ -1734,6 +1734,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Screen2xDistillationTime.{Result}"
+    units="ms" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>rhalavati@google.com</owner>
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the time taken to distill a web page for cases where the action
+    {Result}. It's being emitted each time whenever it distills or fails to
+    distill a page. for Screen2x. Refer to
+    ScreenAIService::ExtractMainContentInternal for details.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="has failed"/>
+    <variant name="Success" summary="has succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.VisualAnnotator.NodesCount"
     units="count" expires_after="2023-11-30">
   <owner>kyungjunlee@google.com</owner>
