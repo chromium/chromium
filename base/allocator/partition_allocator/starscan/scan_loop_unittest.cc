@@ -10,7 +10,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
 
 namespace partition_alloc::internal {
 
@@ -140,7 +140,7 @@ TEST(PartitionAllocScanLoopTest, VectorizedAVX2) {
 }
 #endif  // defined(ARCH_CPU_X86_64)
 
-#if defined(PA_STARSCAN_NEON_SUPPORTED)
+#if PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 TEST(PartitionAllocScanLoopTest, VectorizedNEON) {
   {
     TestScanLoop sl(SimdSupport::kNEON);
@@ -164,8 +164,8 @@ TEST(PartitionAllocScanLoopTest, VectorizedNEON) {
     TestOnRangeWithAlignment<16>(sl, 1u, kInvalidPtr, kValidPtr, kZeroPtr);
   }
 }
-#endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
+#endif  // PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 
 }  // namespace partition_alloc::internal
 
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)

@@ -6,7 +6,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 
-#if defined(PA_HAS_ALLOCATION_GUARD)
+#if PA_CONFIG(HAS_ALLOCATION_GUARD)
 
 namespace partition_alloc {
 
@@ -38,4 +38,4 @@ ScopedAllowAllocations::~ScopedAllowAllocations() {
 
 }  // namespace partition_alloc
 
-#endif  // defined(PA_HAS_ALLOCATION_GUARD)
+#endif  // PA_CONFIG(HAS_ALLOCATION_GUARD)

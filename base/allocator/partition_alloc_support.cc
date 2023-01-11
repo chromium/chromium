@@ -48,14 +48,14 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
 #include "base/memory/nonscannable_memory.h"
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
@@ -74,13 +74,13 @@ namespace {
 namespace switches {
 [[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
 constexpr char kZygoteProcess[] = "zygote";
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 constexpr char kGpuProcess[] = "gpu-process";
 constexpr char kUtilityProcess[] = "utility";
 #endif
 }  // namespace switches
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 constexpr const char* ScannerIdToTracingString(
@@ -181,11 +181,11 @@ class StatsReporterImpl final : public partition_alloc::StatsReporter {
   static constexpr char kTraceCategory[] = "partition_alloc";
 };
 
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 }  // namespace
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 void RegisterPCScanStatsReporter() {
   static StatsReporterImpl s_reporter;
   static bool registered = false;
@@ -195,7 +195,7 @@ void RegisterPCScanStatsReporter() {
   partition_alloc::internal::PCScan::RegisterStatsReporter(&s_reporter);
   registered = true;
 }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 namespace {
 
@@ -302,7 +302,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   }
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   [[maybe_unused]] bool pcscan_enabled =
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
       FeatureList::IsEnabled(features::kPartitionAllocPCScanBrowserOnly);
 #else
       false;
@@ -378,7 +378,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   // fully controlled by Finch and thus have identical population sizes.
   std::string pcscan_group_name = "Unavailable";
   std::string pcscan_group_name_fallback = "Unavailable";
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
   if (brp_truly_enabled) {
     // If BRP protection is enabled, just ignore the population. Check
     // brp_truly_enabled, not brp_finch_enabled, because there are certain modes
@@ -395,7 +395,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   } else {
     pcscan_group_name_fallback = (pcscan_enabled ? "Enabled" : "Disabled");
   }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
   trials.emplace("PCScan_Effective", pcscan_group_name);
   trials.emplace("PCScan_Effective_Fallback", pcscan_group_name_fallback);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -632,7 +632,7 @@ void InstallUnretainedDanglingRawPtrChecks() {
 
 namespace {
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 void SetProcessNameForPCScan(const std::string& process_type) {
   const char* name = [&process_type] {
     if (process_type.empty()) {
@@ -680,7 +680,7 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
         base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan)
             ? Config::WantedWriteProtectionMode::kEnabled
             : Config::WantedWriteProtectionMode::kDisabled;
-#if !defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+#if !PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
@@ -702,7 +702,7 @@ bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
         base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan)
             ? Config::WantedWriteProtectionMode::kEnabled
             : Config::WantedWriteProtectionMode::kDisabled;
-#if !defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+#if !PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
@@ -713,7 +713,7 @@ bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return false;
 }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 }  // namespace
 
@@ -933,7 +933,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   // If BRP is not enabled, check if any of PCScan flags is enabled.
   [[maybe_unused]] bool scan_enabled = false;
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
   if (!enable_brp) {
     scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
     // No specified process type means this is the Browser process.
@@ -967,10 +967,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       SetProcessNameForPCScan(process_type);
     }
   }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
   // Non-quarantinable partition is dealing with hot V8's zone allocations.
   // In case PCScan is enabled in Renderer, enable thread cache on this
   // partition. At the same time, thread cache on the main(malloc) partition
@@ -980,7 +980,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         .root()
         ->EnableThreadCacheIfSupported();
   } else
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
   {
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->EnableThreadCacheIfSupported();
@@ -1024,7 +1024,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     called_after_thread_pool_init_ = true;
   }
 
-#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // This should be called in specific processes, as the main thread is
   // initialized later.
@@ -1059,10 +1059,10 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
     ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
   }
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanMUAwareScheduler)) {
     // Assign PCScan a task-based scheduling backend.
@@ -1074,7 +1074,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     partition_alloc::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
   }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::StartMemoryReclaimer(
@@ -1089,7 +1089,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 }
 
 void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
-#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     base::AutoLock scoped_lock(lock_);
@@ -1103,12 +1103,12 @@ void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
       has_main_frame) {
     ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
   }
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void PartitionAllocSupport::OnBackgrounded() {
-#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     base::AutoLock scoped_lock(lock_);
@@ -1136,7 +1136,7 @@ void PartitionAllocSupport::OnBackgrounded() {
       }),
       base::Seconds(10));
 
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 

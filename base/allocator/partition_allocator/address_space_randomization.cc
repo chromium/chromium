@@ -20,7 +20,7 @@ namespace partition_alloc {
 uintptr_t GetRandomPageBase() {
   uintptr_t random = static_cast<uintptr_t>(internal::RandomValue());
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   random <<= 32ULL;
   random |= static_cast<uintptr_t>(internal::RandomValue());
 
@@ -44,7 +44,7 @@ uintptr_t GetRandomPageBase() {
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
 #endif  // BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-#else   // defined(PA_HAS_64_BITS_POINTERS)
+#else   // PA_CONFIG(HAS_64_BITS_POINTERS)
 #if BUILDFLAG(IS_WIN)
   // On win32 host systems the randomization plus huge alignment causes
   // excessive fragmentation. Plus most of these systems lack ASLR, so the
@@ -58,7 +58,7 @@ uintptr_t GetRandomPageBase() {
 #endif  // BUILDFLAG(IS_WIN)
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
   PA_DCHECK(!(random & internal::PageAllocationGranularityOffsetMask()));
   return random;

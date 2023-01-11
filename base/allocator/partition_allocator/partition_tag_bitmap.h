@@ -13,7 +13,7 @@
 
 namespace partition_alloc::internal {
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 namespace tag_bitmap {
 // kPartitionTagSize should be equal to sizeof(PartitionTag).
@@ -140,7 +140,7 @@ constexpr PA_ALWAYS_INLINE size_t ReservedTagBitmapSize() {
   return 0;
 }
 
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 }  // namespace partition_alloc::internal
 

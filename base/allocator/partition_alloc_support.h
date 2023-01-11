@@ -19,7 +19,7 @@
 
 namespace base::allocator {
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 BASE_EXPORT void RegisterPCScanStatsReporter();
 #endif
 
@@ -90,7 +90,7 @@ class BASE_EXPORT PartitionAllocSupport {
   bool called_after_thread_pool_init_ GUARDED_BY(lock_) = false;
   std::string established_process_type_ GUARDED_BY(lock_) = "INVALID";
 
-#if defined(PA_THREAD_CACHE_SUPPORTED) && \
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   size_t largest_cached_size_ =
       ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;

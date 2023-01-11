@@ -713,7 +713,7 @@ void ConfigurePartitions(
   }
 }
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   partition_alloc::internal::base::PlatformThread::SetThreadNameHook(
       &::base::PlatformThread::SetName);
@@ -730,7 +730,7 @@ void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   base::internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
   base::internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
 }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 #if BUILDFLAG(IS_WIN)
 // Call this as soon as possible during startup.

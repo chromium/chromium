@@ -289,7 +289,7 @@ class HeapDumper {
     return super_pages_value;
   }
 
-#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
   base::Value DumpAllocatedSizes() {
     // Note: Here and below, it is safe to follow pointers into the super page,
     // or to the root or buckets, since they share the same address in the this
@@ -377,7 +377,7 @@ class HeapDumper {
 
     return ret;
   }
-#endif  // defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
 
   base::Value DumpBuckets() {
     auto ret = base::Value(base::Value::Type::LIST);
@@ -461,10 +461,10 @@ int main(int argc, char** argv) {
   auto dump = dumper.Dump();
   overall_dump.SetKey("superpages", std::move(dump));
 
-#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
   auto allocated_sizes = dumper.DumpAllocatedSizes();
   overall_dump.SetKey("allocated_sizes", std::move(allocated_sizes));
-#endif  // defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
 
   auto buckets = dumper.DumpBuckets();
   overall_dump.SetKey("buckets", std::move(buckets));

@@ -248,7 +248,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // PA `free` on such a slot. GWP-ASan takes the extra reference into account
   // when determining whether the slot can be reused.
   PA_ALWAYS_INLINE void InitalizeForGwpAsan() {
-#if defined(PA_REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
     brp_cookie_ = CalculateCookie();
 #endif
     count_.store(kPtrInc | kMemoryHeldByAllocatorBit,
@@ -266,12 +266,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
            kNeedsMac11MallocSizeHackBit;
   }
 
-#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
   PA_ALWAYS_INLINE void SetRequestedSize(size_t size) {
     requested_size_ = static_cast<uint32_t>(size);
   }
   PA_ALWAYS_INLINE uint32_t requested_size() const { return requested_size_; }
-#endif  // defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#endif  // PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
 
  private:
   // The common parts shared by Release() and ReleaseFromUnprotectedPtr().
@@ -306,23 +306,23 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // 1) The reference count pointer calculation is correct.
   // 2) The returned allocation slot is not freed.
   PA_ALWAYS_INLINE void CheckCookieIfSupported() {
-#if defined(PA_REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
     PA_CHECK(brp_cookie_ == CalculateCookie());
 #endif
   }
 
   PA_ALWAYS_INLINE void ClearCookieIfSupported() {
-#if defined(PA_REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
     brp_cookie_ = 0;
 #endif
   }
 
-#if defined(PA_REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
   PA_ALWAYS_INLINE uint32_t CalculateCookie() {
     return static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) ^
            kCookieSalt;
   }
-#endif  // defined(PA_REF_COUNT_CHECK_COOKIE)
+#endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
 
   [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void
   DoubleFreeOrCorruptionDetected(CountType count) {
@@ -338,12 +338,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // this class, to preserve this functionality.
   std::atomic<CountType> count_;
 
-#if defined(PA_REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
   static constexpr uint32_t kCookieSalt = 0xc01dbeef;
   volatile uint32_t brp_cookie_;
 #endif
 
-#if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
   uint32_t requested_size_;
 #endif
 };
@@ -351,7 +351,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
 PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount(bool use_mac11_hack)
     : count_(kMemoryHeldByAllocatorBit |
              (use_mac11_hack ? kNeedsMac11MallocSizeHackBit : 0))
-#if defined(PA_REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
       ,
       brp_cookie_(CalculateCookie())
 #endif
@@ -371,28 +371,26 @@ constexpr size_t kPartitionPastAllocationAdjustment = 0;
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
-#if defined(PA_REF_COUNT_CHECK_COOKIE) || \
-    defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE) || \
+    PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
 static constexpr size_t kPartitionRefCountSizeShift = 4;
-#else   //  defined(PA_REF_COUNT_CHECK_COOKIE) ||
-        //  defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#else
 static constexpr size_t kPartitionRefCountSizeShift = 3;
-#endif  //  defined(PA_REF_COUNT_CHECK_COOKIE) ||
-        //  defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#endif
 
 #else  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
-#if defined(PA_REF_COUNT_CHECK_COOKIE) && \
-    defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE) && \
+    PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
 static constexpr size_t kPartitionRefCountSizeShift = 4;
-#elif defined(PA_REF_COUNT_CHECK_COOKIE) || \
-    defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
+#elif PA_CONFIG(REF_COUNT_CHECK_COOKIE) || \
+    PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE)
 static constexpr size_t kPartitionRefCountSizeShift = 3;
 #else
 static constexpr size_t kPartitionRefCountSizeShift = 2;
 #endif
 
-#endif  // defined(PA_REF_COUNT_CHECK_COOKIE)
+#endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
 static_assert((1 << kPartitionRefCountSizeShift) == sizeof(PartitionRefCount));
 
 // We need one PartitionRefCount for each system page in a super page. They take

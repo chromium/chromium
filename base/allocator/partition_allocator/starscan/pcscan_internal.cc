@@ -51,7 +51,7 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "build/build_config.h"
 
-#if defined(PA_STARSCAN_NOINLINE_SCAN_FUNCTIONS)
+#if PA_CONFIG(STARSCAN_NOINLINE_SCAN_FUNCTIONS)
 #define PA_SCAN_INLINE PA_NOINLINE
 #else
 #define PA_SCAN_INLINE PA_ALWAYS_INLINE
@@ -66,7 +66,7 @@ namespace partition_alloc::internal {
 
 namespace {
 
-#if defined(PA_HAS_ALLOCATION_GUARD)
+#if PA_CONFIG(HAS_ALLOCATION_GUARD)
 // Currently, check reentracy only on Linux. On Android TLS is emulated by the
 // runtime lib, which can allocate and therefore cause reentrancy.
 struct ReentrantScannerGuard final {
@@ -85,7 +85,7 @@ struct ReentrantScannerGuard final {
 thread_local size_t ReentrantScannerGuard::guard_ = 0;
 #else
 struct [[maybe_unused]] ReentrantScannerGuard final {};
-#endif  // defined(PA_HAS_ALLOCATION_GUARD)
+#endif  // PA_CONFIG(HAS_ALLOCATION_GUARD)
 
 // Scope that disables MTE checks. Only used inside scanning to avoid the race:
 // a slot tag is changed by the mutator, while the scanner sees an old value.
@@ -104,7 +104,7 @@ struct DisableMTEScope final {
       ::partition_alloc::internal::GetMemoryTaggingModeForCurrentThread();
 };
 
-#if PA_STARSCAN_USE_CARD_TABLE
+#if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
 // Bytemap that represent regions (cards) that contain quarantined slots.
 // A single PCScan cycle consists of the following steps:
 // 1) clearing (memset quarantine + marking cards that contain quarantine);
@@ -169,7 +169,7 @@ class QuarantineCardTable final {
 static_assert(kSuperPageSize >= sizeof(QuarantineCardTable),
               "Card table size must be less than kSuperPageSize, since this is "
               "what is committed");
-#endif  // PA_STARSCAN_USE_CARD_TABLE
+#endif  // PA_CONFIG(STARSCAN_USE_CARD_TABLE)
 
 template <typename T>
 using MetadataVector = std::vector<T, MetadataAllocator<T>>;
@@ -255,7 +255,7 @@ bool IsQuarantineEmptyOnSuperPage(uintptr_t super_page) {
 #endif
 
 SimdSupport DetectSimdSupport() {
-#if defined(PA_STARSCAN_NEON_SUPPORTED)
+#if PA_CONFIG(STARSCAN_NEON_SUPPORTED)
   return SimdSupport::kNEON;
 #else
   const base::CPU& cpu = base::CPU::GetInstanceNoAllocation();
@@ -266,11 +266,11 @@ SimdSupport DetectSimdSupport() {
     return SimdSupport::kSSE41;
   }
   return SimdSupport::kUnvectorized;
-#endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
+#endif  // PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 }
 
 void CommitCardTable() {
-#if PA_STARSCAN_USE_CARD_TABLE
+#if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   RecommitSystemPages(PartitionAddressSpace::RegularPoolBase(),
                       sizeof(QuarantineCardTable),
                       PageAccessibilityConfiguration(
@@ -613,8 +613,8 @@ PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
   PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(maybe_ptr));
   // First, check if |maybe_ptr| points to a valid super page or a quarantined
   // card.
-#if defined(PA_HAS_64_BITS_POINTERS)
-#if PA_STARSCAN_USE_CARD_TABLE
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
+#if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   // Check if |maybe_ptr| points to a quarantined card.
   if (PA_LIKELY(
           !QuarantineCardTable::GetFrom(maybe_ptr).IsQuarantined(maybe_ptr))) {
@@ -633,12 +633,12 @@ PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
                 kOffsetTagNormalBuckets)) {
     return nullptr;
   }
-#endif
-#else   // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(STARSCAN_USE_CARD_TABLE)
+#else   // PA_CONFIG(HAS_64_BITS_POINTERS)
   if (PA_LIKELY(!IsManagedByPartitionAllocRegularPool(maybe_ptr))) {
     return nullptr;
   }
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
   // We are certain here that |maybe_ptr| points to an allocated super-page.
   return StateBitmapFromAddr(maybe_ptr);
@@ -667,7 +667,7 @@ PCScanTask::TryMarkSlotInNormalBuckets(uintptr_t maybe_ptr) const {
   // normal-bucket super page.
   PA_SCAN_DCHECK(IsManagedByNormalBuckets(maybe_ptr));
 
-#if !PA_STARSCAN_USE_CARD_TABLE
+#if !PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   // Pointer from a normal bucket is always in the first superpage.
   auto* root = Root::FromAddrInFirstSuperpage(maybe_ptr);
   // Without the card table, we must make sure that |maybe_ptr| doesn't point to
@@ -682,7 +682,7 @@ PCScanTask::TryMarkSlotInNormalBuckets(uintptr_t maybe_ptr) const {
   if (PA_UNLIKELY(!root || !root->IsQuarantineEnabled())) {
     return 0;
   }
-#endif
+#endif  // !PA_CONFIG(STARSCAN_USE_CARD_TABLE)
 
   // Check if pointer was in the quarantine bitmap.
   const GetSlotStartResult slot_start_result =
@@ -718,7 +718,7 @@ PCScanTask::TryMarkSlotInNormalBuckets(uintptr_t maybe_ptr) const {
 void PCScanTask::ClearQuarantinedSlotsAndPrepareCardTable() {
   const PCScan::ClearType clear_type = pcscan_.clear_type_;
 
-#if !PA_STARSCAN_USE_CARD_TABLE
+#if !PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   if (clear_type == PCScan::ClearType::kEager) {
     return;
   }
@@ -737,7 +737,7 @@ void PCScanTask::ClearQuarantinedSlotsAndPrepareCardTable() {
         void* object = root->SlotStartToObject(slot_start);
         memset(object, 0, size);
       }
-#if PA_STARSCAN_USE_CARD_TABLE
+#if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
       // Set card(s) for this quarantined slot.
       QuarantineCardTable::GetFrom(slot_start).Quarantine(slot_start, size);
 #endif
@@ -777,14 +777,14 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   size_t quarantine_size() const { return quarantine_size_; }
 
  private:
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   PA_ALWAYS_INLINE static uintptr_t RegularPoolBase() {
     return PartitionAddressSpace::RegularPoolBase();
   }
   PA_ALWAYS_INLINE static uintptr_t RegularPoolMask() {
     return PartitionAddressSpace::RegularPoolBaseMask();
   }
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
   PA_SCAN_INLINE void CheckPointer(uintptr_t maybe_ptr_maybe_tagged) {
     // |maybe_ptr| may have an MTE tag, so remove it first.
@@ -936,14 +936,14 @@ struct SweepStat {
 
 void UnmarkInCardTable(uintptr_t slot_start,
                        SlotSpanMetadata<ThreadSafe>* slot_span) {
-#if PA_STARSCAN_USE_CARD_TABLE
+#if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   // Reset card(s) for this quarantined slot. Please note that the cards may
   // still contain quarantined slots (which were promoted in this scan cycle),
   // but ClearQuarantinedSlotsAndPrepareCardTable() will set them again in the
   // next PCScan cycle.
   QuarantineCardTable::GetFrom(slot_start)
       .Unquarantine(slot_start, slot_span->GetUtilizedSlotSize());
-#endif
+#endif  // PA_CONFIG(STARSCAN_USE_CARD_TABLE)
 }
 
 [[maybe_unused]] size_t FreeAndUnmarkInCardTable(
@@ -1083,14 +1083,14 @@ void PCScanTask::SweepQuarantine() {
   stats_.IncreaseSweptSize(stat.swept_bytes);
   stats_.IncreaseDiscardedQuarantineSize(stat.discarded_bytes);
 
-#if defined(PA_THREAD_CACHE_SUPPORTED)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
   // Sweeping potentially frees into the current thread's thread cache. Purge
   // releases the cache back to the global allocator.
   auto* current_thread_tcache = ThreadCache::Get();
   if (ThreadCache::IsValid(current_thread_tcache)) {
     current_thread_tcache->Purge();
   }
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED)
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
 void PCScanTask::FinishScanner() {
@@ -1289,12 +1289,12 @@ PCScanInternal::~PCScanInternal() = default;
 
 void PCScanInternal::Initialize(PCScan::InitConfig config) {
   PA_DCHECK(!is_initialized_);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   // Make sure that pools are initialized.
   PartitionAddressSpace::Init();
 #endif
   CommitCardTable();
-#if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+#if PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
   if (config.write_protection ==
       PCScan::InitConfig::WantedWriteProtectionMode::kEnabled) {
     write_protector_ = std::make_unique<UserFaultFDWriteProtector>();
@@ -1303,7 +1303,7 @@ void PCScanInternal::Initialize(PCScan::InitConfig config) {
   }
 #else
   write_protector_ = std::make_unique<NoWriteProtector>();
-#endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+#endif  // PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
   PCScan::SetClearType(write_protector_->SupportedClearType());
 
   if (config.safepoint == PCScan::InitConfig::SafepointMode::kEnabled) {

@@ -43,7 +43,7 @@ bool NoWriteProtector::IsEnabled() const {
   return false;
 }
 
-#if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+#if PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 class UserFaultFDWriteProtector final : public WriteProtector {
  public:
   UserFaultFDWriteProtector();
@@ -68,8 +68,7 @@ class UserFaultFDWriteProtector final : public WriteProtector {
 bool UserFaultFDWriteProtector::IsEnabled() const {
   return IsSupported();
 }
-
-#endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+#endif  // PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
 }  // namespace partition_alloc::internal
 

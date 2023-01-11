@@ -25,7 +25,7 @@
 //
 // Finally, the thread cache is not supported on all platforms.
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
-    defined(PA_THREAD_CACHE_SUPPORTED)
+    PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 namespace partition_alloc {
 
@@ -116,11 +116,11 @@ class PartitionAllocThreadCacheTest
         break;
     }
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
     // Another test can uninitialize the pools, so make sure they are
     // initialized.
     internal::PartitionAddressSpace::Init();
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
     ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
         ThreadCache::kDefaultMultiplier);
     ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
@@ -309,7 +309,7 @@ TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
 }
 
 // Required to record hits and misses.
-#if defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
+#if PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 TEST_P(PartitionAllocThreadCacheTest, LargeAllocationsAreNotCached) {
   auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
@@ -325,7 +325,7 @@ TEST_P(PartitionAllocThreadCacheTest, LargeAllocationsAreNotCached) {
   EXPECT_EQ(1u, cache_fill_counter.Delta());
   EXPECT_EQ(1u, cache_fill_misses_counter.Delta());
 }
-#endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
+#endif  // PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 
 TEST_P(PartitionAllocThreadCacheTest, DirectMappedAllocationsAreNotCached) {
   FillThreadCacheAndReturnIndex(1024 * 1024);
@@ -344,12 +344,12 @@ TEST_P(PartitionAllocThreadCacheTest, DirectMappedReallocMetrics) {
             root_->get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_allocated_size, root_->get_max_size_of_allocated_bytes());
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // One extra byte for beyond-the-end pointers: crbug.com/1364476
   constexpr size_t kExtrasSize = 1ull;
 #else
   constexpr size_t kExtrasSize = 0ull;
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   void* ptr = root_->Alloc(10 * internal::kMaxBucketed - kExtrasSize, "");
 
   EXPECT_EQ(expected_allocated_size + 10 * internal::kMaxBucketed,
@@ -545,7 +545,7 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   EXPECT_EQ(parent_thread_tcache->next_, nullptr);
 }
 
-#if defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
+#if PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 TEST_P(PartitionAllocThreadCacheTest, RecordStats) {
   auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_counter{tcache->stats_.alloc_count};
@@ -649,7 +649,7 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
   internal::base::PlatformThreadForTesting::Join(thread_handle);
 }
 
-#endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
+#endif  // PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 
 // TODO(https://crbug.com/1287799): Flaky on IOS.
 #if BUILDFLAG(IS_IOS)
@@ -1063,14 +1063,14 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {
 
   // Default threshold at first.
   ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
-#if !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if !PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold);
 #else
   // When MTECheckedPtr is in play, adjust the testing threshold down
   // one byte to account for the extra byte for beyond-the-end
   // pointers. See also: crbug.com/1364476
   FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold - 1);
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
   EXPECT_EQ(0u, alloc_miss_too_large_counter.Delta());
   EXPECT_EQ(1u, cache_fill_counter.Delta());
@@ -1509,4 +1509,4 @@ TEST(AlternateBucketDistributionTest, SwitchAfterAlloc) {
 }  // namespace partition_alloc
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
-        // defined(PA_THREAD_CACHE_SUPPORTED)
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED)

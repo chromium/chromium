@@ -42,7 +42,7 @@ uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
 namespace internal {
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
-#if defined(PA_THREAD_CACHE_FAST_TLS)
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 thread_local ThreadCache* g_thread_cache;
 #endif
@@ -460,7 +460,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
 
   // This may allocate.
   internal::PartitionTlsSet(internal::g_thread_cache_key, tcache);
-#if defined(PA_THREAD_CACHE_FAST_TLS)
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
   // |thread_local| variables with destructors cause issues on some platforms.
   // Since we need a destructor (to empty the thread cache), we cannot use it
   // directly. However, TLS accesses with |thread_local| are typically faster,
@@ -471,7 +471,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   // To still get good performance, use |thread_local| to store a raw pointer,
   // and rely on the platform TLS to call the destructor.
   internal::g_thread_cache = tcache;
-#endif  // defined(PA_THREAD_CACHE_FAST_TLS)
+#endif  // PA_CONFIG(THREAD_CACHE_FAST_TLS)
 
   return tcache;
 }
@@ -515,7 +515,7 @@ void ThreadCache::Delete(void* tcache_ptr) {
   if (!IsValid(tcache))
     return;
 
-#if defined(PA_THREAD_CACHE_FAST_TLS)
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
   internal::g_thread_cache = nullptr;
 #else
   internal::PartitionTlsSet(internal::g_thread_cache_key, nullptr);
@@ -536,7 +536,7 @@ void ThreadCache::Delete(void* tcache_ptr) {
   // TODO(lizeb): Investigate whether this is needed on POSIX as well.
   internal::PartitionTlsSet(internal::g_thread_cache_key,
                             reinterpret_cast<void*>(kTombstone));
-#if defined(PA_THREAD_CACHE_FAST_TLS)
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
   internal::g_thread_cache = reinterpret_cast<ThreadCache*>(kTombstone);
 #endif
 
@@ -737,10 +737,10 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
 
   stats->batch_fill_count += stats_.batch_fill_count;
 
-#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   for (size_t i = 0; i < internal::kNumBuckets + 1; i++)
     stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
-#endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
+#endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 
   // cached_memory_ is not necessarily equal to |CachedMemory()| here, since
   // this function can be called racily from another thread, to collect

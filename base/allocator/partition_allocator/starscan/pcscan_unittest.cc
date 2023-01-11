@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 
 namespace partition_alloc::internal {
 
@@ -817,7 +817,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerOutsideUsablePart) {
   TestDanglingReference(*this, source, value, root());
 }
 
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
 TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
   using ListType = List<64>;
 
@@ -858,9 +858,9 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
 
   EXPECT_FALSE(true && "Should never be reached");
 }
-#endif  // defined(PA_HAS_MEMORY_TAGGING)
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
 }  // namespace partition_alloc::internal
 
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

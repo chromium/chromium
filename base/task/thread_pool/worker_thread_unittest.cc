@@ -41,10 +41,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED)
+    PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // defined(PA_THREAD_CACHE_SUPPORTED)
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 using testing::_;
 using testing::Mock;
@@ -881,7 +881,7 @@ TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED)
+    PA_CONFIG(THREAD_CACHE_SUPPORTED)
 namespace {
 NOINLINE void FreeForTest(void* data) {
   free(data);
@@ -957,7 +957,7 @@ TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // defined(PA_THREAD_CACHE_SUPPORTED) &&
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 }  // namespace internal
 }  // namespace base

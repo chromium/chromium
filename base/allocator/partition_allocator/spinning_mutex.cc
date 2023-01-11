@@ -16,14 +16,14 @@
 #include <pthread.h>
 #endif
 
-#if defined(PA_HAS_LINUX_KERNEL)
+#if PA_CONFIG(HAS_LINUX_KERNEL)
 #include <errno.h>
 #include <linux/futex.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-#endif  // defined(PA_HAS_LINUX_KERNEL)
+#endif  // PA_CONFIG(HAS_LINUX_KERNEL)
 
-#if !defined(PA_HAS_FAST_MUTEX)
+#if !PA_CONFIG(HAS_FAST_MUTEX)
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -37,7 +37,7 @@
 #define PA_YIELD_THREAD ((void)0)
 #endif
 
-#endif  // !defined(PA_HAS_FAST_MUTEX)
+#endif  // !PA_CONFIG(HAS_FAST_MUTEX)
 
 namespace partition_alloc::internal {
 
@@ -81,9 +81,9 @@ void SpinningMutex::AcquireSpinThenBlock() {
   LockSlow();
 }
 
-#if defined(PA_HAS_FAST_MUTEX)
+#if PA_CONFIG(HAS_FAST_MUTEX)
 
-#if defined(PA_HAS_LINUX_KERNEL)
+#if PA_CONFIG(HAS_LINUX_KERNEL)
 
 void SpinningMutex::FutexWait() {
   // Save and restore errno.
@@ -162,7 +162,7 @@ void SpinningMutex::LockSlow() {
 
 #endif
 
-#else  // defined(PA_HAS_FAST_MUTEX)
+#else  // PA_CONFIG(HAS_FAST_MUTEX)
 
 void SpinningMutex::LockSlowSpinLock() {
   int yield_thread_count = 0;
@@ -180,6 +180,6 @@ void SpinningMutex::LockSlowSpinLock() {
   } while (!TrySpinLock());
 }
 
-#endif  // defined(PA_HAS_FAST_MUTEX)
+#endif  // PA_CONFIG(HAS_FAST_MUTEX)
 
 }  // namespace partition_alloc::internal

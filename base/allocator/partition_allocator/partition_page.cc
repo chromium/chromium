@@ -323,7 +323,7 @@ void UnmapNow(uintptr_t reservation_start,
     // In 32-bit mode, the beginning of a reservation may be excluded from the
     // BRP pool, so shift the pointer. Other pools don't have this logic.
     PA_DCHECK(IsManagedByPartitionAllocBRPPool(
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
         reservation_start
 #else
         reservation_start +
@@ -365,7 +365,7 @@ void UnmapNow(uintptr_t reservation_start,
     *offset_ptr++ = kOffsetTagNotAllocated;
   }
 
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
   AddressPoolManager::GetInstance().MarkUnused(pool, reservation_start,
                                                reservation_size);
 #endif

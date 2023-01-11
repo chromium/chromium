@@ -26,7 +26,7 @@
 #include "build/build_config.h"
 
 // The feature is not applicable to 32-bit address space.
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
 
 namespace partition_alloc {
 
@@ -36,7 +36,7 @@ namespace internal {
 // See `glossary.md`.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   static PA_ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
   }
@@ -125,7 +125,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   static PA_ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
 #else
     constexpr uintptr_t regular_pool_base_mask = kRegularPoolBaseMask;
@@ -140,7 +140,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   static PA_ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
 #else
     constexpr uintptr_t brp_pool_base_mask = kBRPPoolBaseMask;
@@ -148,33 +148,33 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
 
-#if defined(PA_GLUE_CORE_POOLS)
+#if PA_CONFIG(GLUE_CORE_POOLS)
   // Checks whether the address belongs to either regular or BRP pool.
   // Returns false for nullptr.
   static PA_ALWAYS_INLINE bool IsInCorePools(uintptr_t address) {
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t core_pools_base_mask = setup_.core_pools_base_mask_;
 #else
     // When PA_GLUE_CORE_POOLS is on, the BRP pool is placed at the end of the
     // regular pool, effectively forming one virtual pool of a twice bigger
     // size. Adjust the mask appropriately.
     constexpr uintptr_t core_pools_base_mask = kRegularPoolBaseMask << 1;
-#endif
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     bool ret =
         (address & core_pools_base_mask) == setup_.regular_pool_base_address_;
     PA_DCHECK(ret == (IsInRegularPool(address) || IsInBRPPool(address)));
     return ret;
   }
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   static PA_ALWAYS_INLINE size_t CorePoolsSize() {
     return RegularPoolSize() * 2;
   }
-#else   // !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#else
   static PA_ALWAYS_INLINE constexpr size_t CorePoolsSize() {
     return RegularPoolSize() * 2;
   }
-#endif  // !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
-#endif  // defined(PA_GLUE_CORE_POOLS)
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // PA_CONFIG(GLUE_CORE_POOLS)
 
   static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
@@ -198,7 +198,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif
 
-#if defined(PA_ENABLE_SHADOW_METADATA)
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
   static PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
     if (pool == kRegularPoolHandle) {
       return regular_pool_shadow_offset_;
@@ -221,7 +221,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   void* operator new(size_t, void*) = delete;
 
  private:
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   static PA_ALWAYS_INLINE size_t RegularPoolSize();
   static PA_ALWAYS_INLINE size_t BRPPoolSize();
 #else
@@ -232,7 +232,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   constexpr static PA_ALWAYS_INLINE size_t BRPPoolSize() {
     return kBRPPoolSize;
   }
-#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if BUILDFLAG(ENABLE_PKEYS)
   constexpr static PA_ALWAYS_INLINE size_t PkeyPoolSize() {
@@ -267,7 +267,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kPkeyPoolSize = kGiB / 4;
   static_assert(base::bits::IsPowerOfTwo(kPkeyPoolSize));
 #endif
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   // We can't afford pool sizes as large as kPoolMaxSize on Windows <8.1 (see
   // crbug.com/1101421 and crbug.com/1217759).
   static constexpr size_t kRegularPoolSizeForLegacyWindows = 4 * kGiB;
@@ -276,7 +276,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static_assert(kBRPPoolSizeForLegacyWindows < kBRPPoolSize);
   static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForLegacyWindows));
   static_assert(base::bits::IsPowerOfTwo(kBRPPoolSizeForLegacyWindows));
-#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
   static_assert(kConfigurablePoolMinSize <= kConfigurablePoolMaxSize);
@@ -285,7 +285,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
 #if BUILDFLAG(IS_IOS)
 
-#if !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error iOS is only supported with a dynamically sized GigaCase.
 #endif
 
@@ -300,7 +300,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static_assert(base::bits::IsPowerOfTwo(kBRPPoolSizeForIOSTestProcess));
 #endif  // BUILDFLAG(IOS_IOS)
 
-#if !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   // Masks used to easy determine belonging to a pool.
   static constexpr uintptr_t kRegularPoolOffsetMask =
       static_cast<uintptr_t>(kRegularPoolSize) - 1;
@@ -308,7 +308,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
-#endif  // !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if BUILDFLAG(ENABLE_PKEYS)
   static constexpr uintptr_t kPkeyPoolOffsetMask =
@@ -332,13 +332,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if BUILDFLAG(ENABLE_PKEYS)
           pkey_pool_base_address_(kUninitializedPoolBaseAddress),
 #endif
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
           regular_pool_base_mask_(0),
           brp_pool_base_mask_(0),
-#if defined(PA_GLUE_CORE_POOLS)
+#if PA_CONFIG(GLUE_CORE_POOLS)
           core_pools_base_mask_(0),
 #endif
-#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
           configurable_pool_base_mask_(0)
 #if BUILDFLAG(ENABLE_PKEYS)
           ,
@@ -356,13 +356,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if BUILDFLAG(ENABLE_PKEYS)
         uintptr_t pkey_pool_base_address_;
 #endif
-#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t regular_pool_base_mask_;
         uintptr_t brp_pool_base_mask_;
-#if defined(PA_GLUE_CORE_POOLS)
+#if PA_CONFIG(GLUE_CORE_POOLS)
         uintptr_t core_pools_base_mask_;
 #endif
-#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t configurable_pool_base_mask_;
 #if BUILDFLAG(ENABLE_PKEYS)
         int pkey_;
@@ -399,7 +399,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
       static PoolSetup setup_ PA_CONSTINIT;
 
-#if defined(PA_ENABLE_SHADOW_METADATA)
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
   static std::ptrdiff_t regular_pool_shadow_offset_;
   static std::ptrdiff_t brp_pool_shadow_offset_;
 #endif
@@ -424,7 +424,7 @@ PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
   return PartitionAddressSpace::OffsetInBRPPool(address);
 }
 
-#if defined(PA_ENABLE_SHADOW_METADATA)
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
 PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
   return PartitionAddressSpace::ShadowPoolOffset(pool);
 }
@@ -458,13 +458,13 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
 
-#if defined(PA_GLUE_CORE_POOLS)
+#if PA_CONFIG(GLUE_CORE_POOLS)
 // Checks whether the address belongs to either regular or BRP pool.
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocCorePools(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInCorePools(address);
 }
-#endif  // defined(PA_GLUE_CORE_POOLS)
+#endif  // PA_CONFIG(GLUE_CORE_POOLS)
 
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
@@ -485,6 +485,6 @@ PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
 
 }  // namespace partition_alloc
 
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_

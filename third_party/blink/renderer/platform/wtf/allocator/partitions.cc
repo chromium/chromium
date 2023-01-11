@@ -55,7 +55,7 @@ namespace WTF {
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 // Runs PCScan on WTF partitions.
 BASE_FEATURE(kPCScanBlinkPartitions,
              "PartitionAllocPCScanBlinkPartitions",
@@ -114,7 +114,7 @@ bool Partitions::InitializeOnce() {
           : partition_alloc::PartitionOptions::AddDummyRefCount::kDisabled;
   scan_is_enabled_ =
       !enable_brp &&
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
       (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
        base::FeatureList::IsEnabled(kPCScanBlinkPartitions));
 #else
@@ -169,7 +169,7 @@ bool Partitions::InitializeOnce() {
   });
   buffer_root_ = buffer_allocator->root();
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
   if (scan_is_enabled_) {
     if (!partition_alloc::internal::PCScan::IsInitialized()) {
       partition_alloc::internal::PCScan::Initialize(
@@ -181,7 +181,7 @@ bool Partitions::InitializeOnce() {
     partition_alloc::internal::PCScan::RegisterScannableRoot(fast_malloc_root_);
     // Ignore other partitions for now.
   }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
   if (!base::FeatureList::IsEnabled(
           base::features::kPartitionAllocUseAlternateDistribution)) {
@@ -223,14 +223,14 @@ void Partitions::InitializeArrayBufferPartition() {
 
   array_buffer_root_ = array_buffer_allocator->root();
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
   // PCScan relies on the fact that quarantinable allocations go to PA's
   // regular pool. This is not the case if configurable pool is available.
   if (scan_is_enabled_ && !array_buffer_root_->uses_configurable_pool()) {
     partition_alloc::internal::PCScan::RegisterNonScannableRoot(
         array_buffer_root_);
   }
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
   if (!base::FeatureList::IsEnabled(
           base::features::kPartitionAllocUseAlternateDistribution)) {
     array_buffer_root_->SwitchToDenserBucketDistribution();

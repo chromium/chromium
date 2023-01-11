@@ -31,7 +31,7 @@
 // clang-format on
 #endif
 
-#if defined(PA_STARSCAN_NEON_SUPPORTED)
+#if PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 #include <arm_neon.h>
 #endif
 
@@ -63,7 +63,7 @@ class ScanLoop {
   __attribute__((target("avx2"))) void RunAVX2(uintptr_t, uintptr_t);
   __attribute__((target("sse4.1"))) void RunSSE4(uintptr_t, uintptr_t);
 #endif
-#if defined(PA_STARSCAN_NEON_SUPPORTED)
+#if PA_CONFIG(STARSCAN_NEON_SUPPORTED)
   void RunNEON(uintptr_t, uintptr_t);
 #endif
 
@@ -82,10 +82,10 @@ void ScanLoop<Derived>::Run(uintptr_t begin, uintptr_t end) {
     return RunAVX2(begin, end);
   if (simd_type_ == SimdSupport::kSSE41)
     return RunSSE4(begin, end);
-#elif defined(PA_STARSCAN_NEON_SUPPORTED)
+#elif PA_CONFIG(STARSCAN_NEON_SUPPORTED)
   if (simd_type_ == SimdSupport::kNEON)
     return RunNEON(begin, end);
-#endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
+#endif  // PA_CONFIG(STARSCAN_NEON_SUPPORTED)
   return RunUnvectorized(begin, end);
 }
 
@@ -93,7 +93,7 @@ template <typename Derived>
 void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
   PA_SCAN_DCHECK(!(begin % sizeof(uintptr_t)));
   PA_SCAN_DCHECK(!(end % sizeof(uintptr_t)));
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   // If the read value is a pointer into the PA region, it's likely
   // MTE-tagged. Piggyback on |mask| to untag, for efficiency.
   const uintptr_t mask = Derived::RegularPoolMask() & kPtrUntagMask;
@@ -106,7 +106,7 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
     //
     // Keep it MTE-untagged. See DisableMTEScope for details.
     const uintptr_t maybe_ptr = *reinterpret_cast<uintptr_t*>(begin);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
     if (PA_LIKELY((maybe_ptr & mask) != base))
       continue;
 #else
@@ -202,7 +202,7 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
 }
 #endif  // defined(ARCH_CPU_X86_64)
 
-#if defined(PA_STARSCAN_NEON_SUPPORTED)
+#if PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 template <typename Derived>
 void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
   static constexpr size_t kAlignmentRequirement = 16;
@@ -233,7 +233,7 @@ void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
   // Run unvectorized on the remainder of the region.
   RunUnvectorized(begin, end);
 }
-#endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
+#endif  // PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 
 }  // namespace partition_alloc::internal
 

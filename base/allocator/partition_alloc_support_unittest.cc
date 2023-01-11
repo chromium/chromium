@@ -34,7 +34,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
         features::kPartitionAllocPCScanBrowserOnly};
     pcscan_scope.InitWithFeatures(pcscan_enabled ? pcscan_list : empty_list,
                                   pcscan_enabled ? empty_list : pcscan_list);
-#if !defined(PA_ALLOW_PCSCAN)
+#if !PA_CONFIG(ALLOW_PCSCAN)
     pcscan_enabled = false;
 #endif
 
@@ -50,7 +50,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
       brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Ignore_NoGroup";
 #endif
       pcscan_expectation = "Unavailable";
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
       pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif
 
@@ -91,13 +91,13 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
         // (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       pcscan_expectation = "Unavailable";
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       pcscan_expectation = "Ignore_BRPIsOn";
 #else
       pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
       auto trials = ProposeSyntheticFinchTrials();
       auto group_iter = trials.find("BackupRefPtr_Effective");
@@ -149,14 +149,14 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
         }
         pcscan_expectation = "Unavailable";
         std::string pcscan_expectation_fallback = "Unavailable";
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
         pcscan_expectation = brp_truly_enabled
                                  ? "Ignore_BRPIsOn"
                                  : (pcscan_enabled ? "Enabled" : "Disabled");
         pcscan_expectation_fallback =
             brp_nondefault_behavior ? "Ignore_BRPIsOn"
                                     : (pcscan_enabled ? "Enabled" : "Disabled");
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
         auto trials = ProposeSyntheticFinchTrials();
         auto group_iter = trials.find("BackupRefPtr_Effective");

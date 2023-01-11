@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
 #error "pkey support requires 64 bit pointers"
 #endif
 

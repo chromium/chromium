@@ -67,7 +67,7 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 //    granularity is kSuperPageSize.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
  public:
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   // There is one reservation offset table per Pool in 64-bit mode.
   static constexpr size_t kReservationOffsetTableCoverage = kPoolMaxSize;
   static constexpr size_t kReservationOffsetTableLength =
@@ -95,7 +95,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
         offset = kOffsetTagNotAllocated;
     }
   };
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   // If pkey support is enabled, we need to pkey-tag the tables of the pkey
   // pool. For this, we need to pad the tables so that the pkey ones start on a
   // page boundary.
@@ -112,7 +112,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
 #endif
 };
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
 PA_ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
   PA_DCHECK(0 < handle && handle <= kNumPools);
   return ReservationOffsetTable::padded_reservation_offset_tables_
@@ -157,7 +157,7 @@ PA_ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(
 #endif
 
 PA_ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   // In 64-bit mode, find the owning Pool and compute the offset from its base.
   auto [pool, offset] = GetPoolAndOffset(address);
   return ReservationOffsetPointer(pool, offset);
@@ -200,13 +200,13 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // MSVC workaround: the preprocessor seems to choke on an `#if` embedded
   // inside another macro (PA_DCHECK).
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
   constexpr size_t kBRPOffset =
       AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
       AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap;
 #else
   constexpr size_t kBRPOffset = 0ull;
-#endif  // !defined(PA_HAS_64_BITS_POINTERS)
+#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
   // Make sure the reservation start is in the same pool as |address|.
   // In the 32-bit mode, the beginning of a reservation may be excluded
   // from the BRP pool, so shift the pointer. The other pools don't have
@@ -227,7 +227,7 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
   return reservation_start;
 }
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.
 // This variant has better performance than the regular one on 64-bit builds if
@@ -247,7 +247,7 @@ GetDirectMapReservationStart(uintptr_t address,
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
   return reservation_start;
 }
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
 // Returns true if |address| is the beginning of the first super page of a
 // reservation, i.e. either a normal bucket super page, or the first super page

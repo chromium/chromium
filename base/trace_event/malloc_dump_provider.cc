@@ -40,7 +40,7 @@
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
-#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #endif
 
@@ -269,7 +269,7 @@ void ReportPartitionAllocThreadCacheStats(
         "Memory.PartitionAlloc.ThreadCache.BatchFillRate" + metrics_suffix,
         batch_fill_rate_percent);
 
-#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
     if (detailed) {
       partition_alloc::internal::BucketIndexLookup lookup{};
       std::string name = dump->absolute_name();
@@ -287,7 +287,7 @@ void ReportPartitionAllocThreadCacheStats(
                                       stats.allocs_per_bucket_[i]);
       }
     }
-#endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
+#endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   }
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)

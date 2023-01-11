@@ -27,7 +27,7 @@
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "build/build_config.h"
 
-#if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
+#if defined(ARCH_CPU_X86_64) && PA_CONFIG(HAS_64_BITS_POINTERS)
 #include <algorithm>
 #endif
 
@@ -43,7 +43,7 @@ namespace tools {
 //
 // These two values were chosen randomly, and in particular neither is a valid
 // pointer on most 64 bit architectures.
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
 constexpr uintptr_t kNeedle1 = 0xe69e32f3ad9ea63;
 constexpr uintptr_t kNeedle2 = 0x9615ee1c5eb14caf;
 #else
@@ -71,7 +71,7 @@ namespace internal {
 
 extern PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
 
-#if defined(PA_THREAD_CACHE_FAST_TLS)
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
 extern PA_COMPONENT_EXPORT(
     PARTITION_ALLOC) thread_local ThreadCache* g_thread_cache;
 #endif
@@ -173,13 +173,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
 
-#if defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
+#if PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 #define PA_INCREMENT_COUNTER(counter) ++counter
 #else
 #define PA_INCREMENT_COUNTER(counter) \
   do {                                \
   } while (0)
-#endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
+#endif  // PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
 
@@ -240,7 +240,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static void EnsureThreadSpecificDataInitialized();
 
   static ThreadCache* Get() {
-#if defined(PA_THREAD_CACHE_FAST_TLS)
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
     return internal::g_thread_cache;
 #else
     // This region isn't MTE-tagged.
@@ -514,7 +514,7 @@ PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
 
 PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
                                                      size_t* slot_size) {
-#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
 
@@ -547,7 +547,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   internal::PartitionFreelistEntry* entry = bucket.freelist_head;
   // TODO(lizeb): Consider removing once crbug.com/1382658 is fixed.
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) && \
-    defined(PA_HAS_64_BITS_POINTERS)
+    PA_CONFIG(HAS_64_BITS_POINTERS)
   // x86_64 architecture now supports 57 bits of address space, as of Ice Lake
   // for Intel. However Chrome OS systems do not ship with kernel support for
   // it, but with 48 bits, so all canonical addresses have the upper 16 bits
@@ -577,8 +577,8 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
 PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
                                                uintptr_t slot_start) {
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) && \
-    defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) && \
+    PA_CONFIG(HAS_64_BITS_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
   // due to out-of-bounds accesses in the previous slot, or to a Use-After-Free
   // somewhere in the code.
@@ -629,8 +629,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
     memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes));
     address_aligned += 4;
   }
-#endif  // defined(PA_HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) &&
-        // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) &&
+        // PA_CONFIG(HAS_64_BITS_POINTERS)
 
   auto* entry = internal::PartitionFreelistEntry::EmplaceAndInitForThreadCache(
       slot_start, bucket.freelist_head);

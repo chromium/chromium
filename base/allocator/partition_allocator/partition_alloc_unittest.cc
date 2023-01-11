@@ -222,11 +222,11 @@ const size_t kTestAllocSize = 16;
 
 // Add one extra byte to each slot's end to allow beyond-the-end
 // pointers (crbug.com/1364476).
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 const size_t kMTECheckedPtrExtrasAdjustment = 1;
 #else
 const size_t kMTECheckedPtrExtrasAdjustment = 0;
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if !BUILDFLAG(PA_DCHECK_IS_ON)
 const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
@@ -1361,7 +1361,7 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, predicted_capacity);
 }
 
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
 TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // This test checks that Arm's memory tagging extension (MTE) is correctly
   // protecting freed pointers.
@@ -1397,7 +1397,7 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   EXPECT_NE(ptr1, ptr3);
   EXPECT_NE(ptr2, ptr3);
 }
-#endif  // defined(PA_HAS_MEMORY_TAGGING)
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 TEST_P(PartitionAllocTest, IsValidPtrDelta) {
@@ -1422,7 +1422,7 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
                            kMaxBucketed + SystemPageSize(),
                            kMaxBucketed + PartitionPageSize(),
                            kSuperPageSize};
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   constexpr size_t kFarFarAwayDelta = 512 * kGiB;
 #else
   constexpr size_t kFarFarAwayDelta = kGiB;
@@ -1462,7 +1462,7 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
                 PtrPosWithinAlloc::kInBounds);
       EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, requested_size / 2),
                 PtrPosWithinAlloc::kInBounds);
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
       EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, requested_size),
                 PtrPosWithinAlloc::kAllocEnd);
 #else
@@ -1485,7 +1485,7 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
                 PtrPosWithinAlloc::kFarOOB);
       EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size, 1),
                 PtrPosWithinAlloc::kFarOOB);
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
       EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size, 0),
                 PtrPosWithinAlloc::kAllocEnd);
 #else
@@ -2407,7 +2407,7 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
                "Passed DoReturnNullTest");
 }
 
-#if defined(PA_HAS_MEMORY_TAGGING)
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
 // Check that Arm's memory tagging extension (MTE) is correctly protecting
 // freed pointers. Writes to a free pointer should result in a crash.
 TEST_P(PartitionAllocDeathTest, MTEProtectsFreedPtr) {
@@ -2440,7 +2440,7 @@ TEST_P(PartitionAllocDeathTest, MTEProtectsFreedPtr) {
       },
       testing::KilledBySignal(SIGSEGV), "");
 }
-#endif  // defined(PA_HAS_MEMORY_TAGGING)
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to
@@ -2463,7 +2463,7 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
 // is reached.
 // TODO(bartekn): Enable in the BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) case.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    (defined(PA_HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
+    (PA_CONFIG(HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that our immediate double-free detection works.
 TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
@@ -2504,7 +2504,7 @@ TEST_P(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
 }
 
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-        // (defined(PA_HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
+        // (PA_CONFIG(HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that guard pages are present where expected.
 TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
@@ -2535,7 +2535,7 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
 
 // These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
-    defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+    PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 
 TEST_P(PartitionAllocDeathTest, UseAfterFreeDetection) {
   base::CPU cpu;
@@ -2574,7 +2574,7 @@ TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
 // With MTECheckedPtr enabled, an extra byte is present to allow an off-by-one
 // (crbug.com/1364476).
 #if !BUILDFLAG(PA_DCHECK_IS_ON) && \
-    !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+    !PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 TEST_P(PartitionAllocDeathTest, OffByOneDetection) {
   base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
@@ -2617,10 +2617,10 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
   }
 }
 #endif  // !BUILDFLAG(PA_DCHECK_IS_ON) &&
-        // !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+        // !PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
-        // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+        // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 
 #endif  // !defined(PA_HAS_DEATH_TESTS)
 
@@ -3720,7 +3720,7 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
     size_t usable_size = PartitionRoot<ThreadSafe>::GetUsableSize(ptr);
     size_t usable_size_with_hack =
         PartitionRoot<ThreadSafe>::GetUsableSizeWithMac11MallocSizeHack(ptr);
-#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
     if (size != 32)
 #endif
       EXPECT_EQ(usable_size_with_hack, usable_size);
@@ -3731,7 +3731,7 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
   }
 }
 
-#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
   allocator.root()->EnableMac11MallocSizeHackForTesting();
   size_t size = internal::kMac11MallocSizeHackRequestedSize;
@@ -3742,7 +3742,7 @@ TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
   EXPECT_EQ(usable_size, internal::kMac11MallocSizeHackUsableSize);
   EXPECT_EQ(usable_size_with_hack, size);
 }
-#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 
 TEST_P(PartitionAllocTest, Bookkeeping) {
   auto& root = *allocator.root();
@@ -4181,7 +4181,7 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
   EXPECT_TRUE(ref_count->Release());
 }
 
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
 TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
   if (!UseBRPPool()) {
     return;
@@ -4205,7 +4205,7 @@ TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
     FreePages(allocated_address, alignment);
   }
 }
-#endif  // !defined(PA_HAS_64_BITS_POINTERS)
+#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
@@ -4869,7 +4869,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // defined(PA_HAS_DEATH_TESTS) &&  !BUILDFLAG(PA_IS_CASTOS)
+        // PA_CONFIG(HAS_DEATH_TESTS) && !BUILDFLAG(PA_IS_CASTOS)
 
 // Checks the bucket index logic.
 TEST_P(PartitionAllocTest, GetIndex) {
@@ -5093,7 +5093,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
             kMaxFreeableSpans * bucket_size);
 }
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 // Verifies basic PA support for `MTECheckedPtr`.
 TEST_P(PartitionAllocTest, PartitionTagBasic) {
@@ -5191,7 +5191,7 @@ TEST_P(PartitionAllocTest, PartitionTagDirectMapBasic) {
   allocator.root()->Free(object);
 }
 
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(PA_IS_CAST_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern "C" {

@@ -109,11 +109,11 @@ void PartitionAllocGlobalUninitForTesting() {
   internal::PCScan::UninitForTesting();  // IN-TEST
 #endif                                   // BUILDFLAG(STARSCAN)
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   internal::PartitionAddressSpace::UninitForTesting();
 #else
   internal::AddressPoolManager::GetInstance().ResetForTesting();
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::g_oom_handling_function = nullptr;
 }

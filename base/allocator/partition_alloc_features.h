@@ -46,9 +46,9 @@ enum class DanglingPtrMode {
 extern const BASE_EXPORT base::FeatureParam<DanglingPtrMode>
     kDanglingPtrModeParam;
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanBrowserOnly);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanRendererOnly);

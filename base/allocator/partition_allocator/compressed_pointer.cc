@@ -4,7 +4,7 @@
 
 #include "base/allocator/partition_allocator/compressed_pointer.h"
 
-#if defined(PA_POINTER_COMPRESSION)
+#if PA_CONFIG(POINTER_COMPRESSION)
 
 namespace partition_alloc::internal {
 
@@ -25,4 +25,4 @@ void CompressedPointerBaseGlobal::ResetBaseForTesting() {
 
 }  // namespace partition_alloc::internal
 
-#endif  // defined(PA_POINTER_COMPRESSION)
+#endif  // PA_CONFIG(POINTER_COMPRESSION)

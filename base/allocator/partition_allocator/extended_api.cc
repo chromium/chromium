@@ -11,7 +11,7 @@
 
 namespace partition_alloc::internal {
 
-#if defined(PA_THREAD_CACHE_SUPPORTED)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 namespace {
 
@@ -51,10 +51,10 @@ void DisablePartitionAllocThreadCacheForProcess() {
 
 }  // namespace
 
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED)
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 void SwapOutProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
-#if defined(PA_THREAD_CACHE_SUPPORTED)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   DisablePartitionAllocThreadCacheForProcess();
@@ -65,11 +65,11 @@ void SwapOutProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
   ThreadCache::SwapForTesting(root);
   EnablePartitionAllocThreadCacheForRootIfDisabled(root);
 
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED)
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
 void SwapInProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
-#if defined(PA_THREAD_CACHE_SUPPORTED)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
   // First, disable the test thread cache we have.
   DisableThreadCacheForRootIfEnabled(root);
@@ -84,7 +84,7 @@ void SwapInProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
   ThreadCache::SwapForTesting(nullptr);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED)
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
 ThreadAllocStats GetAllocStatsForCurrentThread() {

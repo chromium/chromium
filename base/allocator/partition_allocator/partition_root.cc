@@ -29,9 +29,9 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
-#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
-#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
@@ -63,7 +63,7 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
 
 namespace partition_alloc {
 
-#if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
+#if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
 namespace {
 
@@ -165,7 +165,7 @@ class PartitionRootEnumerator {
 
 namespace {
 
-#if defined(PA_HAS_ATFORK_HANDLER)
+#if PA_CONFIG(HAS_ATFORK_HANDLER)
 
 void LockRoot(PartitionRoot<internal::ThreadSafe>* root,
               bool) PA_NO_THREAD_SAFETY_ANALYSIS {
@@ -229,7 +229,7 @@ void AfterForkInChild() {
   // exec() right away, which is discouraged.
   ThreadCacheRegistry::Instance().ForcePurgeAllThreadAfterForkUnsafe();
 }
-#endif  // defined(PA_HAS_ATFORK_HANDLER)
+#endif  // PA_CONFIG(HAS_ATFORK_HANDLER)
 
 std::atomic<bool> g_global_init_called;
 void PartitionAllocMallocInitOnce() {
@@ -694,7 +694,7 @@ template <bool thread_safe>
   // - Excessive allocations in the current process
   //
   // Saving these values make it easier to distinguish between these. See the
-  // documentation in PA_DEBUG_DATA_ON_STACK() on how to get these from
+  // documentation in PA_CONFIG(DEBUG_DATA_ON_STACK) on how to get these from
   // minidumps.
   PA_DEBUG_DATA_ON_STACK("va_size", virtual_address_space_size);
   PA_DEBUG_DATA_ON_STACK("alloc", get_total_size_of_allocated_bytes());
@@ -726,7 +726,7 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
     uintptr_t address = SuperPagesBeginFromExtent(curr);
     size_t size =
         internal::kSuperPageSize * curr->number_of_consecutive_super_pages;
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
     internal::AddressPoolManager::GetInstance().MarkUnused(pool_handle, address,
                                                            size);
 #endif
@@ -736,15 +736,14 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
   }
 }
 
-#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::EnableMac11MallocSizeHackForTesting() {
   flags.mac11_malloc_size_hack_enabled_ = true;
 }
-#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
-    !defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && !PA_CONFIG(HAS_64_BITS_POINTERS)
 namespace {
 std::atomic<bool> g_reserve_brp_guard_region_called;
 // An address constructed by repeating `kQuarantinedByte` shouldn't never point
@@ -779,7 +778,7 @@ void ReserveBackupRefPtrGuardRegionIfNeeded() {
 }
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
-        // !defined(PA_HAS_64_BITS_POINTERS)
+        // !PA_CONFIG(HAS_64_BITS_POINTERS)
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
@@ -807,13 +806,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     // running on the right hardware.
     ::partition_alloc::internal::InitializeMTESupportIfNeeded();
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
     // Reserve address space for partition alloc.
     internal::PartitionAddressSpace::Init();
 #endif
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
-    !defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && !PA_CONFIG(HAS_64_BITS_POINTERS)
     ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 
@@ -827,10 +825,10 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
         opts.backup_ref_ptr_zapping ==
         PartitionOptions::BackupRefPtrZapping::kEnabled;
     PA_CHECK(!flags.brp_zapping_enabled_ || flags.brp_enabled_);
-#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
     flags.mac11_malloc_size_hack_enabled_ =
         flags.brp_enabled_ && internal::base::mac::IsOS11();
-#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
 #else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -860,7 +858,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     PA_CHECK(!flags.allow_aligned_alloc || !flags.brp_enabled_);
 #endif
 
-#if defined(PA_EXTRAS_REQUIRED)
+#if PA_CONFIG(EXTRAS_REQUIRED)
     flags.extras_size = 0;
     flags.extras_offset = 0;
 
@@ -882,12 +880,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       PA_CHECK(!brp_enabled());
       flags.extras_size += internal::kPartitionRefCountSizeAdjustment;
     }
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
     // Add one extra byte to each slot's end to allow beyond-the-end
     // pointers (crbug.com/1364476).
     flags.extras_size += 1;
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-#endif  //  defined(PA_EXTRAS_REQUIRED)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
     // Re-confirm the above PA_CHECKs, by making sure there are no
     // pre-allocation extras when AlignedAlloc is allowed. Post-allocation
@@ -931,7 +929,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       PA_DCHECK(!buckets[index].is_valid());
     }
 
-#if !defined(PA_THREAD_CACHE_SUPPORTED)
+#if !PA_CONFIG(THREAD_CACHE_SUPPORTED)
     // TLS in ThreadCache not supported on other OSes.
     flags.with_thread_cache = false;
 #else
@@ -941,9 +939,9 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
     if (flags.with_thread_cache)
       ThreadCache::Init(this);
-#endif  // !defined(PA_THREAD_CACHE_SUPPORTED)
+#endif  // !PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
-#if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
+#if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
     internal::PartitionRootEnumerator::Instance().Register(this);
 #endif
 
@@ -969,15 +967,15 @@ PartitionRoot<thread_safe>::~PartitionRoot() {
       << "Must not destroy a partition with a thread cache";
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
+#if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
   if (initialized)
     internal::PartitionRootEnumerator::Instance().Unregister(this);
-#endif  // defined(PA_USE_PARTITION_ALLOC_ENUMERATOR)
+#endif  // PA_CONFIG(USE_PARTITION_ALLOC_ENUMERATOR)
 }
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
-#if defined(PA_THREAD_CACHE_SUPPORTED)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
   ::partition_alloc::internal::ScopedGuard guard{lock_};
   PA_CHECK(!flags.with_thread_cache);
   // By the time we get there, there may be multiple threads created in the
@@ -995,7 +993,7 @@ void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
   ThreadCache::Init(this);
   thread_caches_being_constructed_.fetch_sub(1, std::memory_order_release);
   flags.with_thread_cache = true;
-#endif  // defined(PA_THREAD_CACHE_SUPPORTED)
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
 template <bool thread_safe>

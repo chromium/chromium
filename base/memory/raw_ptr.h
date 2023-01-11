@@ -22,21 +22,21 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_types.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+    PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
 // allocator/partition_allocator/ to be built.
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+        // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/allocator/partition_allocator/partition_alloc_base/win/win_handle_types.h"
@@ -47,7 +47,7 @@
 // Live implementation of MiraclePtr being built.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||       \
-    defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+    PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #define PA_RAW_PTR_CHECK(condition) PA_BASE_CHECK(condition)
 #else
 // No-op implementation of MiraclePtr being built.
@@ -55,9 +55,9 @@
 // minimizing impact of generated code.
 #define PA_RAW_PTR_CHECK(condition) PA_BASE_DCHECK(condition)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-        // || defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-#else   // BUILDFLAG(USE_PARTITION_ALLOC
+        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||
+        // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#else   // BUILDFLAG(USE_PARTITION_ALLOC)
 // Without PartitionAlloc, there's no `PA_BASE_D?CHECK()` implementation
 // available.
 #define PA_RAW_PTR_CHECK(condition)
@@ -187,7 +187,7 @@ struct RawPtrNoOpImpl {
   static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
 };
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 constexpr int kValidAddressBits = 48;
 constexpr uintptr_t kAddressMask = (1ull << kValidAddressBits) - 1;
@@ -386,7 +386,7 @@ struct MTECheckedPtrImpl {
   }
 };
 
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
@@ -452,7 +452,7 @@ struct BackupRefPtrImpl {
     return is_in_brp_pool;
   }
 
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
   // Out-Of-Bounds (OOB) poison bit is set when the pointer has overflowed by
   // one byte.
 #if defined(ARCH_CPU_X86_64)
@@ -499,7 +499,7 @@ struct BackupRefPtrImpl {
 #endif
       AcquireInternal(address);
     } else {
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
 #if PA_HAS_BUILTIN(__builtin_constant_p)
       // Similarly to `IsSupportedAndNotNull` above, elide the
       // `BanSuperPageFromBRPPool` call if the compiler can prove that `address`
@@ -514,7 +514,7 @@ struct BackupRefPtrImpl {
         partition_alloc::internal::AddressPoolManagerBitmap::
             BanSuperPageFromBRPPool(address);
       }
-#endif  // !defined(PA_HAS_64_BITS_POINTERS)
+#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
     }
 
     return ptr;
@@ -544,7 +544,7 @@ struct BackupRefPtrImpl {
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
     PA_BASE_CHECK(!IsPtrOOB(wrapped_ptr));
 #endif
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
@@ -552,7 +552,8 @@ struct BackupRefPtrImpl {
       PA_BASE_CHECK(wrapped_ptr != nullptr);
       PA_BASE_CHECK(IsPointeeAlive(address));
     }
-#endif
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON) ||
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     return wrapped_ptr;
   }
 
@@ -561,7 +562,7 @@ struct BackupRefPtrImpl {
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
     // Some code uses invalid pointer values as indicators, so those values must
     // be passed through unchanged during extraction. The following check will
     // pass invalid values through if those values do not fall within the BRP
@@ -574,7 +575,7 @@ struct BackupRefPtrImpl {
     // OOB conditions, e.g., in code that extracts an end-of-allocation pointer
     // for use in a loop termination condition. The poison bit would make that
     // pointer appear to reference a very high address.
-#endif
+#endif  // PA_CONFIG(USE_OOB_POISON)
     return unpoisoned_ptr;
   }
 
@@ -629,7 +630,7 @@ struct BackupRefPtrImpl {
       // checks that it's within the same allocation, so must be the same pool.
       PA_BASE_CHECK(ptr_pos_within_alloc !=
                     partition_alloc::PtrPosWithinAlloc::kFarOOB);
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
       if (ptr_pos_within_alloc == partition_alloc::PtrPosWithinAlloc::kAllocEnd)
         new_ptr = PoisonOOBPtr(new_ptr);
 #endif
@@ -1218,7 +1219,7 @@ struct RawPtrTypeToImpl<RawPtrMayDangle> {
   // No special bookkeeping required for this case, just treat these
   // as ordinary pointers.
   using Impl = internal::RawPtrNoOpImpl;
-#elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#elif PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   using Impl = internal::MTECheckedPtrImpl<
       internal::MTECheckedPtrImplPartitionAllocSupport>;
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
@@ -1241,7 +1242,7 @@ struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
   using Impl = internal::AsanBackupRefPtrImpl;
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
   using Impl = internal::AsanUnownedPtrImpl;
-#elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#elif PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   using Impl = internal::MTECheckedPtrImpl<
       internal::MTECheckedPtrImplPartitionAllocSupport>;
 #elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
@@ -1842,7 +1843,7 @@ using MayBeDangling = base::raw_ptr<T, base::RawPtrMayDangle>;
 // When `MTECheckedPtr` is in play, we need to augment this
 // implementation setting with another layer that allows the `raw_ptr`
 // to degrade into the no-op version.
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 // Direct pass-through to no-op implementation.
 using DegradeToNoOpWhenMTE = base::RawPtrNoOp;
@@ -1866,7 +1867,7 @@ using DanglingUntriagedDegradeToNoOpWhenMTE = DanglingUntriaged;
 using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
     DisableDanglingPtrDetection;
 
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 namespace std {
 

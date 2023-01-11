@@ -26,7 +26,7 @@
 
 namespace partition_alloc {
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 static_assert(
     sizeof(PartitionTag) == internal::tag_bitmap::kPartitionTagSize,
@@ -137,7 +137,7 @@ PA_ALWAYS_INLINE void PartitionTagIncrementValue(uintptr_t slot_start,
 
 }  // namespace internal
 
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 }  // namespace partition_alloc
 

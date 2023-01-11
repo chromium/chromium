@@ -15,7 +15,7 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
@@ -208,7 +208,7 @@ BASE_EXPORT void ConfigurePartitions(
     AddDummyRefCount add_dummy_ref_count,
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

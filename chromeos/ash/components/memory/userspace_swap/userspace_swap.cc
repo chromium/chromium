@@ -417,7 +417,7 @@ std::ostream& operator<<(std::ostream& out, const UserspaceSwapConfig& c) {
 // userspace swap.
 COMPONENT_EXPORT(USERSPACE_SWAP) bool KernelSupportsUserspaceSwap() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
-    !defined(PA_HAS_64_BITS_POINTERS)
+    !PA_CONFIG(HAS_64_BITS_POINTERS)
   // We currently only support 64bit partition alloc.
   return false;
 #else
@@ -450,7 +450,7 @@ COMPONENT_EXPORT(USERSPACE_SWAP) bool KernelSupportsUserspaceSwap() {
 
   return userfault_fd_supported && mremap_dontunmap_supported;
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
-        // !defined(PA_HAS_64_BITS_POINTERS)
+        // !PA_CONFIG(HAS_64_BITS_POINTERS)
 }
 
 RendererSwapData::RendererSwapData() = default;
@@ -489,7 +489,7 @@ bool GetPartitionAllocSuperPagesInUse(
     std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions) {
   regions.clear();
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
-    !defined(PA_HAS_64_BITS_POINTERS)
+    !PA_CONFIG(HAS_64_BITS_POINTERS)
   return false;
 #else
 
@@ -539,7 +539,7 @@ bool GetPartitionAllocSuperPagesInUse(
 
   return true;
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
-        // !defined(PA_HAS_64_BITS_POINTERS)
+        // !PA_CONFIG(HAS_64_BITS_POINTERS)
 }
 
 COMPONENT_EXPORT(USERSPACE_SWAP) uint64_t GetGlobalMemoryReclaimed() {

@@ -47,14 +47,14 @@ std::unique_ptr<T[], PADeleter> make_pa_array_unique(PAAllocator& alloc,
 }
 
 // Test that pointer types are trivial.
-#if defined(PA_POINTER_COMPRESSION)
+#if PA_CONFIG(POINTER_COMPRESSION)
 static_assert(
     std::is_trivially_default_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_copy_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_move_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_copy_assignable_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_move_assignable_v<CompressedPointer<Base>>);
-#endif  // if defined(PA_POINTER_COMPRESSION)
+#endif  // PA_CONFIG(POINTER_COMPRESSION)
 static_assert(
     std::is_trivially_default_constructible_v<UncompressedPointer<Base>>);
 static_assert(
@@ -72,16 +72,16 @@ struct CompressedTypeTag {};
 template <typename TagType>
 class CompressedPointerTest : public ::testing::Test {
  public:
-#if defined(PA_POINTER_COMPRESSION)
+#if PA_CONFIG(POINTER_COMPRESSION)
   template <typename T>
   using PointerType =
       std::conditional_t<std::is_same_v<TagType, CompressedTypeTag>,
                          CompressedPointer<T>,
                          UncompressedPointer<T>>;
-#else
+#else   // PA_CONFIG(POINTER_COMPRESSION)
   template <typename T>
   using PointerType = UncompressedPointer<T>;
-#endif
+#endif  // PA_CONFIG(POINTER_COMPRESSION)
 
   CompressedPointerTest() {
     allocator_.init({PartitionOptions::AlignedAlloc::kDisallowed,
@@ -97,11 +97,11 @@ class CompressedPointerTest : public ::testing::Test {
   internal::PartitionAllocator<internal::ThreadSafe> allocator_;
 };
 
-#if defined(PA_POINTER_COMPRESSION)
+#if PA_CONFIG(POINTER_COMPRESSION)
 using ObjectTypes = ::testing::Types<UncompressedTypeTag, CompressedTypeTag>;
-#else   // !defined(PA_POINTER_COMPRESSION)
+#else
 using ObjectTypes = ::testing::Types<UncompressedTypeTag>;
-#endif  // !defined(PA_POINTER_COMPRESSION)
+#endif
 
 TYPED_TEST_SUITE(CompressedPointerTest, ObjectTypes);
 

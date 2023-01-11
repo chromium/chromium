@@ -37,9 +37,9 @@ struct ThreadCacheStats {
   uint32_t bucket_total_memory;
   uint32_t metadata_overhead;
 
-#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   uint64_t allocs_per_bucket_[internal::kNumBuckets + 1];
-#endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
+#endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 };
 
 // Per-thread allocation statistics. Only covers allocations made through the

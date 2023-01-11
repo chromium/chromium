@@ -37,7 +37,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag_types.h"
 #endif
 
@@ -1540,7 +1540,7 @@ void RunBackupRefPtrImplAdvanceTest(
   // end-of-allocation address should not cause an error immediately, but it may
   // result in the pointer being poisoned.
   protected_ptr = protected_ptr + requested_size / 2;
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr = ' ', "");
   protected_ptr -= 1;  // This brings the pointer back within
                        // bounds, which causes the poison to be removed.
@@ -1711,7 +1711,7 @@ TEST_F(BackupRefPtrTest, Bind) {
   EXPECT_TRUE(IsQuarantineEmpty(allocator_));
 }
 
-#if defined(PA_REF_COUNT_CHECK_COOKIE)
+#if PA_CONFIG(REF_COUNT_CHECK_COOKIE)
 TEST_F(BackupRefPtrTest, ReinterpretCast) {
   void* ptr = allocator_.root()->Alloc(16, "");
   allocator_.root()->Free(ptr);
@@ -1908,7 +1908,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   CountingRawPtr<int> protected_ptr = ptr;
   CountingRawPtr<int> protected_ptr_end = protected_ptr + requested_elements;
 
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr_end = 1, "");
 #endif
 
@@ -1986,7 +1986,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   allocator_.root()->Free(ptr);
 }
 
-#if defined(PA_USE_OOB_POISON)
+#if PA_CONFIG(USE_OOB_POISON)
 TEST_F(BackupRefPtrTest, Duplicate) {
   size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
   char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size, ""));
@@ -2434,7 +2434,7 @@ TEST_F(AsanBackupRefPtrTest, AccessOnThreadPoolThread) {
 
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 static constexpr size_t kTagOffsetForTest = 2;
 
@@ -2660,7 +2660,7 @@ TEST(MTECheckedPtrImpl, PointerBeyondAllocationCanBeExtracted) {
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 class CountingHooks {

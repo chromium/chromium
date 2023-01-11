@@ -11,7 +11,7 @@
 
 namespace partition_alloc {
 
-#if defined(PA_HAS_ALLOCATION_GUARD)
+#if PA_CONFIG(HAS_ALLOCATION_GUARD)
 
 // Disallow allocations in the scope. Does not nest.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedDisallowAllocations {
@@ -35,7 +35,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedAllowAllocations {
 struct [[maybe_unused]] ScopedDisallowAllocations{};
 struct [[maybe_unused]] ScopedAllowAllocations{};
 
-#endif  // defined(PA_HAS_ALLOCATION_GUARD)
+#endif  // PA_CONFIG(HAS_ALLOCATION_GUARD)
 
 }  // namespace partition_alloc
 

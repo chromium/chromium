@@ -41,7 +41,7 @@ bool IsOutOfMemory(DWORD error) {
     case ERROR_COMMITMENT_MINIMUM:
       // Page file is too small.
     case ERROR_COMMITMENT_LIMIT:
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
     // Not enough memory resources are available to process this command.
     //
     // It is not entirely clear whether this error pertains to out of address

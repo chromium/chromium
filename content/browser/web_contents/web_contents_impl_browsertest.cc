@@ -5830,7 +5830,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
     test_recorder_.ExpectEntryMetric(entry, UkmEntry::kIsTopFrameName, false);
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
 
 namespace {
 
@@ -5955,6 +5955,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
   EXPECT_TRUE(partition_alloc::internal::PCScan::IsEnabled());
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
 
 }  // namespace content

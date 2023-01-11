@@ -92,7 +92,7 @@ class PartitionFreelistEntry {
  private:
   explicit constexpr PartitionFreelistEntry(std::nullptr_t)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(nullptr))
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(encoded_next_.Inverted())
 #endif
@@ -100,7 +100,7 @@ class PartitionFreelistEntry {
   }
   explicit PartitionFreelistEntry(PartitionFreelistEntry* next)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(next))
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(encoded_next_.Inverted())
 #endif
@@ -109,7 +109,7 @@ class PartitionFreelistEntry {
   // For testing only.
   PartitionFreelistEntry(void* next, bool make_shadow_match)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(next))
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(make_shadow_match ? encoded_next_.Inverted() : 12345)
 #endif
@@ -199,7 +199,7 @@ class PartitionFreelistEntry {
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
     encoded_next_ = EncodedPartitionFreelistEntryPtr(entry);
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = encoded_next_.Inverted();
 #endif
   }
@@ -209,7 +209,7 @@ class PartitionFreelistEntry {
   // data.
   PA_ALWAYS_INLINE uintptr_t ClearForAllocation() {
     encoded_next_.Override(0);
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = 0;
 #endif
     return SlotStartPtr2Addr(this);
@@ -239,7 +239,7 @@ class PartitionFreelistEntry {
     uintptr_t here_address = SlotStartPtr2Addr(here);
     uintptr_t next_address = SlotStartPtr2Addr(next);
 
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     bool shadow_ptr_ok = here->encoded_next_.Inverted() == here->shadow_;
 #else
     bool shadow_ptr_ok = true;
@@ -273,7 +273,7 @@ class PartitionFreelistEntry {
   // This is intended to detect unintentional corruptions of the freelist.
   // These can happen due to a Use-after-Free, or overflow of the previous
   // allocation in the slot span.
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
   uintptr_t shadow_;
 #endif
 };
@@ -311,7 +311,7 @@ PartitionFreelistEntry::GetNextInternal(size_t extra,
       // about what kind of corruption that was.
       PA_DEBUG_DATA_ON_STACK("first",
                              static_cast<size_t>(encoded_next_.encoded_));
-#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
       PA_DEBUG_DATA_ON_STACK("second", static_cast<size_t>(shadow_));
 #endif
       FreelistCorruptionDetected(extra);

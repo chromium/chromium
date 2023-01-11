@@ -155,7 +155,7 @@ class UnretainedWrapper {
   }
 
  private:
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // When `MTECheckedPtr` is enabled as the backing implementation of
   // `raw_ptr`, there are too many different types that immediately
   // cause Chrome to crash. Some of these are inutterable as forward
@@ -166,7 +166,7 @@ class UnretainedWrapper {
   // As a compromise, we decay the wrapper to use `T*` only (rather
   // than `raw_ptr`) when `raw_ptr` is `MTECheckedPtr`.
   using StorageType = T*;
-#else   // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#else   // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // `Unretained()` arguments often dangle by design (a common design pattern
   // is to manage an object's lifetime inside the callback itself, using
   // stateful information), so disable direct dangling pointer detection
@@ -184,7 +184,7 @@ class UnretainedWrapper {
                   DanglingUntriaged,
                   DisableDanglingPtrDetection>>,
       T*>;
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // Avoid converting between different `raw_ptr` types when calling `get()`.
   // See the comment by `GetPtrType` describing why this wouldn't be good.
   static_assert(std::is_pointer_v<GetPtrType> ||
@@ -222,7 +222,7 @@ class UnretainedRefWrapper {
   T& ref_;
 };
 
-#if !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if !PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 // Implementation of UnretainedRefWrapper for `T` where raw_ref<T> is supported.
 template <typename T, typename Trait>
 class UnretainedRefWrapper<T, Trait, true> {
@@ -261,7 +261,7 @@ class UnretainedRefWrapper<T, Trait, true> {
   // invoked, by using `ReportIfDangling`.
   const raw_ref<T, DisableDanglingPtrDetection> ref_;
 };
-#endif  // !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // !PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 // The class is used to wrap `UnretainedRefWrapper` when the latter is used as
 // a method receiver (a reference on `this` argument). This is needed because
@@ -932,8 +932,9 @@ struct InvokeHelper<true, ReturnType, indices...> {
   static inline void MakeItSo(Functor&& functor,
                               BoundArgsTuple&& bound,
                               RunArgs&&... args) {
-    if (!std::get<0>(bound))
+    if (!std::get<0>(bound)) {
       return;
+    }
     using Traits = MakeFunctorTraits<Functor>;
     Traits::Invoke(
         std::forward<Functor>(functor),

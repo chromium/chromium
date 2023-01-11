@@ -44,13 +44,13 @@ const base::FeatureParam<DanglingPtrMode> kDanglingPtrModeParam{
     &kDanglingPtrModeOption,
 };
 
-#if defined(PA_ALLOW_PCSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 // If enabled, PCScan is turned on by default for all partitions that don't
 // disable it explicitly.
 BASE_FEATURE(kPartitionAllocPCScan,
              "PartitionAllocPCScan",
              FEATURE_DISABLED_BY_DEFAULT);
-#endif  // defined(PA_ALLOW_PCSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // If enabled, PCScan is turned on only for the browser's malloc partition.

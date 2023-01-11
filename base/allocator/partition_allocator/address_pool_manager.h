@@ -53,7 +53,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   AddressPoolManager(const AddressPoolManager&) = delete;
   AddressPoolManager& operator=(const AddressPoolManager&) = delete;
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   void Add(pool_handle handle, uintptr_t address, size_t length);
   void Remove(pool_handle handle);
 
@@ -63,7 +63,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
 
   // Return the base address of a pool.
   uintptr_t GetPoolBaseAddress(pool_handle handle);
-#endif
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
   // Reserves address space from the pool.
   uintptr_t Reserve(pool_handle handle,
@@ -76,7 +76,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
                             size_t length);
   void ResetForTesting();
 
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
   void MarkUsed(pool_handle handle, uintptr_t address, size_t size);
   void MarkUnused(pool_handle handle, uintptr_t address, size_t size);
 
@@ -87,7 +87,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   static bool IsManagedByBRPPool(uintptr_t address) {
     return AddressPoolManagerBitmap::IsManagedByBRPPool(address);
   }
-#endif  // !defined(PA_HAS_64_BITS_POINTERS)
+#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
 
   void DumpStats(AddressSpaceStatsDumper* dumper);
 
@@ -107,7 +107,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   // if PartitionAlloc is wholly unused in this process.)
   bool GetStats(AddressSpaceStats* stats);
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   class Pool {
    public:
     constexpr Pool() = default;
@@ -168,7 +168,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
     char pad_after_[PA_PKEY_FILL_PAGE_SZ(sizeof(Pool))] = {};
   } aligned_pools_ PA_PKEY_ALIGN;
 
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
   static PA_CONSTINIT AddressPoolManager singleton_;
 };

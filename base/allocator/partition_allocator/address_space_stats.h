@@ -20,9 +20,9 @@ struct PoolStats {
   // On 32-bit, pools are mainly logical entities, intermingled with
   // allocations not managed by PartitionAlloc. The "largest available
   // reservation" is not possible to measure in that case.
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   size_t largest_available_reservation = 0;
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 };
 
 struct AddressSpaceStats {
@@ -30,14 +30,14 @@ struct AddressSpaceStats {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PoolStats brp_pool_stats;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
   PoolStats configurable_pool_stats;
 #else
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   size_t blocklist_size;  // measured in super pages
   size_t blocklist_hit_count;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 #if BUILDFLAG(ENABLE_PKEYS)
   PoolStats pkey_pool_stats;
 #endif

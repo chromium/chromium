@@ -1040,7 +1040,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     SharedStorageBudgetCharger::CreateForWebContents(this);
   }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
   // TODO(1231679): Remove or move to another place after finishing the PCScan
   // experiment.
   if (partition_alloc::internal::PCScan::IsInitialized()) {

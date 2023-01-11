@@ -21,7 +21,7 @@ namespace {
 
 // Death tests misbehave on Android, crbug.com/1240184
 #if !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) && \
-    defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+    PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 
 TEST(HardeningTest, PartialCorruption) {
   std::string important_data("very important");
@@ -110,7 +110,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
-        // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
+        // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 
 // Below test also misbehaves on Android; as above, death tests don't
 // quite work (crbug.com/1240184), and having free slot bitmaps enabled

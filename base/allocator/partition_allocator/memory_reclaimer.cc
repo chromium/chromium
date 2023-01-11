@@ -66,7 +66,7 @@ void MemoryReclaimer::Reclaim(int flags) {
   //
   // Lastly decommit empty slot spans and lastly try to discard unused pages at
   // the end of the remaining active slots.
-#if PA_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM && BUILDFLAG(STARSCAN)
+#if PA_CONFIG(STARSCAN_ENABLE_STARSCAN_ON_RECLAIM) && BUILDFLAG(STARSCAN)
   {
     using PCScan = internal::PCScan;
     const auto invocation_mode = flags & PurgeFlags::kAggressiveReclaim
@@ -74,15 +74,16 @@ void MemoryReclaimer::Reclaim(int flags) {
                                      : PCScan::InvocationMode::kBlocking;
     PCScan::PerformScanIfNeeded(invocation_mode);
   }
-#endif
+#endif  // PA_CONFIG(STARSCAN_ENABLE_STARSCAN_ON_RECLAIM) &&
+        // BUILDFLAG(STARSCAN)
 
-#if defined(PA_THREAD_CACHE_SUPPORTED)
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED)
   // Don't completely empty the thread cache outside of low memory situations,
   // as there is periodic purge which makes sure that it doesn't take too much
   // space.
   if (flags & PurgeFlags::kAggressiveReclaim)
     ThreadCacheRegistry::Instance().PurgeAll();
-#endif
+#endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
   for (auto* partition : partitions_)
     partition->PurgeMemory(flags);

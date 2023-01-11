@@ -24,15 +24,13 @@ class AddressSpaceStatsDumperForTesting final : public AddressSpaceStatsDumper {
   void DumpStats(
       const partition_alloc::AddressSpaceStats* address_space_stats) override {
     regular_pool_usage_ = address_space_stats->regular_pool_stats.usage;
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
     regular_pool_largest_reservation_ =
         address_space_stats->regular_pool_stats.largest_available_reservation;
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
-#if !defined(PA_HAS_64_BITS_POINTERS) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif
+#if !PA_CONFIG(HAS_64_BITS_POINTERS) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     blocklist_size_ = address_space_stats->blocklist_size;
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif
   }
 
   size_t regular_pool_usage_ = 0;
@@ -40,7 +38,7 @@ class AddressSpaceStatsDumperForTesting final : public AddressSpaceStatsDumper {
   size_t blocklist_size_ = 0;
 };
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
 
 class AddressPoolManagerForTesting : public AddressPoolManager {
  public:
@@ -279,7 +277,7 @@ TEST_F(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   ASSERT_EQ(dumper.regular_pool_largest_reservation_, kPageCnt);
 }
 
-#else   // defined(PA_HAS_64_BITS_POINTERS)
+#else  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
 TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
   constexpr size_t kAllocCount = 8;
@@ -402,6 +400,6 @@ TEST(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   EXPECT_EQ(dumper.regular_pool_usage_, usage_before);
 }
 
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
 }  // namespace partition_alloc::internal

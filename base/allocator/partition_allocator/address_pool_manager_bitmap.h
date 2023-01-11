@@ -19,7 +19,7 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
 
-#if !defined(PA_HAS_64_BITS_POINTERS)
+#if !PA_CONFIG(HAS_64_BITS_POINTERS)
 
 namespace partition_alloc {
 
@@ -185,6 +185,6 @@ PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
 
 }  // namespace partition_alloc
 
-#endif  // !defined(PA_HAS_64_BITS_POINTERS)
+#endif  // !PA_CONFIG(HAS_64_BITS_POINTERS)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_POOL_MANAGER_BITMAP_H_

@@ -75,11 +75,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   // and aborts. Failure to clear would be indicated by the related death tests
   // not CHECKing appropriately.
   static constexpr bool need_clear_after_move =
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
       std::is_same_v<Impl,
                      internal::MTECheckedPtrImpl<
                          internal::MTECheckedPtrImplPartitionAllocSupport>> ||
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
       std::is_same_v<Impl, internal::AsanBackupRefPtrImpl> ||
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

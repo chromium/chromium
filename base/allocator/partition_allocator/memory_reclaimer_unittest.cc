@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED)
+    PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif
 
@@ -105,7 +105,7 @@ TEST_F(MemoryReclaimerTest, Reclaim) {
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED)
+    PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 namespace {
 // malloc() / free() pairs can be removed by the compiler, this is enough (for
@@ -149,7 +149,7 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-        // defined(PA_THREAD_CACHE_SUPPORTED)
+        // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 }  // namespace partition_alloc
 

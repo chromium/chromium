@@ -39,13 +39,13 @@ constexpr size_t OrderSubIndexMask(uint8_t order) {
          (kNumBucketsPerOrderBits + 1);
 }
 
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_CONFIG(HAS_64_BITS_POINTERS)
 #define PA_BITS_PER_SIZE_T 64
 static_assert(kBitsPerSizeT == 64, "");
 #else
 #define PA_BITS_PER_SIZE_T 32
 static_assert(kBitsPerSizeT == 32, "");
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
 inline constexpr uint8_t kOrderIndexShift[PA_BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
