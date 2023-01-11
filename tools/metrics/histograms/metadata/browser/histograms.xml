@@ -204,11 +204,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion{Phase}" units="janks"
-    expires_after="2023-03-15">
-<!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
     there is user activity. Each 30 second duration is divided into 100ms
