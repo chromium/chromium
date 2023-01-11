@@ -213,9 +213,11 @@ v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
   v8::Local<v8::Value> object;
   v8::Local<v8::Value> method;
   if (!GetProperty(context, context->Global(), object_name).ToLocal(&object) ||
-      !GetProperty(context, object, method_name).ToLocal(&method)) {
+      !GetProperty(context, object, method_name).ToLocal(&method) ||
+      !method->IsFunction()) {
     return v8::MaybeLocal<v8::Value>();
   }
+  CHECK(method->IsFunction());
 
   return local_frame->DomWindow()
       ->GetScriptController()
