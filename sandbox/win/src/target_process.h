@@ -55,6 +55,11 @@ class TargetProcess {
                     base::win::ScopedProcessInformation* target_info,
                     DWORD* win_error);
 
+  // Assign a new lowbox token to the process post creation. The process
+  // must still be in its initial suspended state, however this still
+  // might fail in the presence of third-party software.
+  ResultCode AssignLowBoxToken(const base::win::ScopedHandle& token);
+
   // Destroys the target process.
   void Terminate();
 

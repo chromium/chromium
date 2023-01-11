@@ -162,7 +162,13 @@ typedef NTSTATUS(WINAPI* NtSetInformationThreadFunction)(
     IN PVOID ThreadInformation,
     IN ULONG ThreadInformationLength);
 
+typedef struct _PROCESS_ACCESS_TOKEN {
+  HANDLE token;
+  HANDLE thread;
+} PROCESS_ACCESS_TOKEN;
+
 // Partial definition only for values not in PROCESS_INFO_CLASS.
+constexpr auto ProcessInformationAccessToken = static_cast<PROCESSINFOCLASS>(9);
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wenum-constexpr-conversion"
 // constexpr auto ProcessExecuteFlags = static_cast<PROCESSINFOCLASS>(34);

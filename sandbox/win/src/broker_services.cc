@@ -497,9 +497,11 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // with the soon to be created target process.
   base::win::ScopedHandle initial_token;
   base::win::ScopedHandle lockdown_token;
+  base::win::ScopedHandle lowbox_token;
   ResultCode result = SBOX_ALL_OK;
 
-  result = policy_base->MakeTokens(&initial_token, &lockdown_token);
+  result =
+      policy_base->MakeTokens(&initial_token, &lockdown_token, &lowbox_token);
   if (SBOX_ALL_OK != result)
     return result;
 
@@ -576,6 +578,15 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
       target->Terminate();
       return result;
     }
+  }
+
+  if (lowbox_token.IsValid()) {
+    *last_warning = target->AssignLowBoxToken(lowbox_token);
+    // If this fails we continue, but report the error as a warning.
+    // This is due to certain configurations causing the setting of the
+    // token to fail post creation, and we'd rather continue if possible.
+    if (*last_warning != SBOX_ALL_OK)
+      *last_error = ::GetLastError();
   }
 
   // Now the policy is the owner of the target. TargetProcess will terminate

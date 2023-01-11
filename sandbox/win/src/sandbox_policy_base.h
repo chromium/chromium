@@ -190,9 +190,11 @@ class PolicyBase final : public TargetPolicy {
   ResultCode DropActiveProcessLimit();
 
   // Creates the two tokens with the levels specified in a previous call to
-  // SetTokenLevel().
+  // SetTokenLevel(). Also creates a lowbox token if specified based on the
+  // lowbox SID.
   ResultCode MakeTokens(base::win::ScopedHandle* initial,
-                        base::win::ScopedHandle* lockdown);
+                        base::win::ScopedHandle* lockdown,
+                        base::win::ScopedHandle* lowbox);
 
   // Applies the sandbox to |target| and takes ownership. Internally a
   // call to TargetProcess::Init() is issued.
