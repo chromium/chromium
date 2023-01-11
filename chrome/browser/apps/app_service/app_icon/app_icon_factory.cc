@@ -158,18 +158,6 @@ gfx::ImageSkia ExtractSubsetForArcImage(const gfx::ImageSkia& image_skia) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size) {
-  base::AssertLongCPUWorkAllowed();
-  SkBitmap decoded;
-  bool success = gfx::PNGCodec::Decode(data, size, &decoded);
-  LOG_IF(ERROR, !success) << "Failed to decode icon data as PNG";
-  return decoded;
-}
-
-gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale) {
-  return gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale);
-}
-
 // Calls |callback| with the compressed icon |data|.
 void CompleteIconWithCompressed(apps::LoadIconCallback callback,
                                 std::vector<uint8_t> data) {
@@ -227,6 +215,18 @@ apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
     }
   }
   return scale_to_size;
+}
+
+SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size) {
+  base::AssertLongCPUWorkAllowed();
+  SkBitmap decoded;
+  bool success = gfx::PNGCodec::Decode(data, size, &decoded);
+  LOG_IF(ERROR, !success) << "Failed to decode icon data as PNG";
+  return decoded;
+}
+
+gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale) {
+  return gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale);
 }
 
 base::OnceCallback<void(std::vector<uint8_t> compressed_data)>

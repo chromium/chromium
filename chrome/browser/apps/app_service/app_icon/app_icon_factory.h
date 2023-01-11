@@ -27,6 +27,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace gfx {
+class ImageSkia;
+}
+
 class SkBitmap;
 
 namespace apps {
@@ -43,6 +47,13 @@ gfx::ImageSkia CreateResizedResourceImage(int icon_resource,
                                           int32_t size_in_dip);
 
 apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia);
+
+// Decodes `data` to a SkBitmap. The decode happens in-process, so must only be
+// done with trusted data.
+SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size);
+
+// Creates an ImageSkia for the given `bitmap` and `icon_scale`;
+gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale);
 
 // Returns a callback that converts compressed data to an ImageSkia.
 base::OnceCallback<void(std::vector<uint8_t> compressed_data)>

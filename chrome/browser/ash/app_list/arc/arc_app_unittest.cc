@@ -35,6 +35,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
@@ -949,6 +950,9 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   void SetUp() override {
     ArcAppModelBuilderRecreate::SetUp();
 
+    scoped_decode_request_for_testing_ =
+        std::make_unique<apps::ScopedDecodeRequestForTesting>();
+
     std::vector<ui::ResourceScaleFactor> supported_scale_factors;
     supported_scale_factors.push_back(ui::k100Percent);
     supported_scale_factors.push_back(ui::k200Percent);
@@ -1218,6 +1222,8 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   }
 
  private:
+  std::unique_ptr<apps::ScopedDecodeRequestForTesting>
+      scoped_decode_request_for_testing_;
   std::unique_ptr<ui::test::ScopedSetSupportedResourceScaleFactors>
       scoped_supported_scale_factors_;
   std::unique_ptr<base::RunLoop> run_loop_;

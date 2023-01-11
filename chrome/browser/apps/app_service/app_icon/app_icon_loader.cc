@@ -79,6 +79,55 @@ std::vector<uint8_t> ReadFileAsCompressedData(const base::FilePath path) {
   return std::vector<uint8_t>(data.begin(), data.end());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::vector<uint8_t> ReadFileAndMaybeResize(const base::FilePath path,
+                                            float icon_scale,
+                                            int icon_size_in_px) {
+  std::vector<uint8_t> data = ReadFileAsCompressedData(path);
+  if (data.empty()) {
+    return data;
+  }
+
+  SkBitmap bitmap = apps::DecompressToSkBitmap(data.data(), data.size());
+
+  // Resize `bitmap` to match `icon_size_in_px`.
+  if (bitmap.width() != icon_size_in_px) {
+    bitmap = skia::ImageOperations::Resize(
+        bitmap, skia::ImageOperations::RESIZE_LANCZOS3, icon_size_in_px,
+        icon_size_in_px);
+  }
+
+  return apps::EncodeImageToPngBytes(
+      apps::SkBitmapToImageSkia(bitmap, icon_scale), icon_scale);
+}
+
+// Reads the raw icon data for the foreground and the background icon file. For
+// the icon data from `icon_path`, we might resize it if the icon size doesn't
+// match, because it could be shown as the compress icon directly, without
+// calling the adaptive icon Composite function to chop and resize.
+apps::IconValuePtr ReadFilesForDefaultAppAndMaybeResize(
+    apps::AdaptiveIconPaths icon_paths,
+    float icon_scale,
+    int icon_size_in_px) {
+  auto iv = std::make_unique<apps::IconValue>();
+  iv->icon_type = apps::IconType::kCompressed;
+
+  // Save the raw icon for the non-adaptive icon, or the generated standard icon
+  // done by the ARC side for the adaptive icon if missing the foreground and
+  // background icon data.
+  iv->compressed =
+      ReadFileAndMaybeResize(icon_paths.icon_path, icon_scale, icon_size_in_px);
+
+  // For the adaptive icon, save the foreground and background icon data.
+  iv->foreground_icon_png_data =
+      ReadFileAsCompressedData(icon_paths.foreground_icon_path);
+  iv->background_icon_png_data =
+      ReadFileAsCompressedData(icon_paths.background_icon_path);
+
+  return iv;
+}
+#endif
+
 // Returns a callback that converts a gfx::Image to an ImageSkia.
 base::OnceCallback<void(const gfx::Image&)> ImageToImageSkia(
     base::OnceCallback<void(gfx::ImageSkia)> callback) {
@@ -187,6 +236,11 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
 }  // namespace
 
 namespace apps {
+
+bool AdaptiveIconPaths::IsEmpty() {
+  return icon_path.empty() && foreground_icon_path.empty() &&
+         background_icon_path.empty();
+}
 
 AppIconLoader::AppIconLoader(IconType icon_type,
                              int size_hint_in_dip,
@@ -629,10 +683,28 @@ void AppIconLoader::GetArcAppCompressedIconData(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc_prefs);
 
+  icon_scale_ = ui::GetScaleForResourceScaleFactor(scale_factor);
+  icon_size_in_px_ =
+      apps_util::ConvertDipToPxForScale(size_hint_in_dip_, icon_scale_);
+
+  // Get the icon paths for the default apps. If we can't fetch the raw icon
+  // data from the ARC side, the icon paths for the default apps are used to get
+  // the icon data.
+  AdaptiveIconPaths default_app_paths;
+  const ArcAppIconDescriptor descriptor(size_hint_in_dip_, scale_factor);
+  if (arc_prefs->IsDefault(app_id)) {
+    default_app_paths.icon_path =
+        arc_prefs->MaybeGetIconPathForDefaultApp(app_id, descriptor);
+    default_app_paths.foreground_icon_path =
+        arc_prefs->MaybeGetForegroundIconPathForDefaultApp(app_id, descriptor);
+    default_app_paths.background_icon_path =
+        arc_prefs->MaybeGetBackgroundIconPathForDefaultApp(app_id, descriptor);
+  }
+
   arc_prefs->RequestRawIconData(
       app_id, ArcAppIconDescriptor(size_hint_in_dip_, scale_factor),
       base::BindOnce(&AppIconLoader::OnGetArcAppCompressedIconData,
-                     base::WrapRefCounted(this)));
+                     base::WrapRefCounted(this), std::move(default_app_paths)));
 }
 
 void AppIconLoader::GetGuestOSAppCompressedIconData(
@@ -666,10 +738,23 @@ void AppIconLoader::GetGuestOSAppCompressedIconData(
 }
 
 void AppIconLoader::OnGetArcAppCompressedIconData(
+    AdaptiveIconPaths default_app_paths,
     arc::mojom::RawIconPngDataPtr icon) {
   auto iv = std::make_unique<IconValue>();
-  if (!icon) {
-    std::move(callback_).Run(std::move(iv));
+  if (!icon || !icon->icon_png_data.has_value()) {
+    // If the app is not a default app, return the empty icon value.
+    if (default_app_paths.IsEmpty()) {
+      std::move(callback_).Run(std::move(iv));
+      return;
+    }
+
+    // Get the raw icon data from the icon files for the default app.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&ReadFilesForDefaultAppAndMaybeResize,
+                       std::move(default_app_paths), icon_scale_,
+                       icon_size_in_px_),
+        std::move(callback_));
     return;
   }
 

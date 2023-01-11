@@ -51,6 +51,19 @@ namespace apps {
 
 class SvgIconTranscoder;
 
+// This struct is used to record the icon paths for the adaptive icon.
+struct AdaptiveIconPaths {
+  // Returns true when all paths are empty. Otherwise, returns false.
+  bool IsEmpty();
+
+  // The raw icon path for the non-adaptive icon.
+  base::FilePath icon_path;
+  // The foreground icon path for the adaptive icon.
+  base::FilePath foreground_icon_path;
+  // The background icon path for the adaptive icon.
+  base::FilePath background_icon_path;
+};
+
 // This class is meant to:
 // * Simplify loading icons, as things like effects and type are common
 //   to all loading.
@@ -154,7 +167,8 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   ~AppIconLoader();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnGetArcAppCompressedIconData(arc::mojom::RawIconPngDataPtr icon);
+  void OnGetArcAppCompressedIconData(AdaptiveIconPaths default_app_paths,
+                                     arc::mojom::RawIconPngDataPtr icon);
 
   void OnGetGuestOSAppCompressedIconData(base::FilePath png_path,
                                          base::FilePath svg_path,

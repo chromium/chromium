@@ -2105,11 +2105,13 @@ void ArcAppListPrefs::OnIcon(
   if (!icon || !icon->icon_png_data.has_value() ||
       icon->icon_png_data->empty()) {
     LOG(WARNING) << "Cannot fetch icon for " << app_id;
+    std::move(callback).Run(nullptr);
     return;
   }
 
   if (!IsRegistered(app_id)) {
     VLOG(2) << "Request to update icon for non-registered app: " << app_id;
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -2314,6 +2316,10 @@ base::Time ArcAppListPrefs::GetInstallTime(const std::string& app_id) const {
 void ArcAppListPrefs::InstallIcon(const std::string& app_id,
                                   const ArcAppIconDescriptor& descriptor,
                                   arc::mojom::RawIconPngDataPtr icon) {
+  if (!icon) {
+    return;
+  }
+
   const base::FilePath icon_path = GetIconPath(app_id, descriptor);
   const base::FilePath foreground_icon_path =
       GetForegroundIconPath(app_id, descriptor);
