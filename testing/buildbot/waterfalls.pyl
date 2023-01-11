@@ -5940,6 +5940,22 @@
           ]
         },
       },
+      'win10-updater-tester-rel-uac': {
+        'mixins': [
+          'win10-any',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_win_uac',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.win.uac',
+            }
+          ]
+        },
+      },
       'win11-updater-tester-dbg-uac': {
         'mixins': [
           'win11',
