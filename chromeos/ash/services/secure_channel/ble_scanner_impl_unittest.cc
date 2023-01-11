@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

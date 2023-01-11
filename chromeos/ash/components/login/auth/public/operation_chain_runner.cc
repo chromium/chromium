@@ -7,9 +7,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/stack.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 

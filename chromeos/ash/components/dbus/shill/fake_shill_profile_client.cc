@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"

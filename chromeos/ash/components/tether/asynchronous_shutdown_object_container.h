@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace ash {
 

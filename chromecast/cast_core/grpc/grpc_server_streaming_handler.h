@@ -7,7 +7,7 @@
 
 #include <grpcpp/grpcpp.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromecast/cast_core/grpc/cancellable_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"

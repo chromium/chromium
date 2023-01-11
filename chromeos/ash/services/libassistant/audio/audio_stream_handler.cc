@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/audio/audio_stream_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/audio/audio_media_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

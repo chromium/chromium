@@ -12,10 +12,10 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"

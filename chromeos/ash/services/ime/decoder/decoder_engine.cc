@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/services/ime/constants.h"
 
 namespace ash {

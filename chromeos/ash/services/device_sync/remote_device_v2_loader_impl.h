@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_registry.h"

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/login/auth/login_performer.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"

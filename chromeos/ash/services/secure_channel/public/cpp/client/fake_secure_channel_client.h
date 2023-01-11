@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"

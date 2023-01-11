@@ -4,7 +4,7 @@
 
 #include "chromeos/components/cdm_factory_daemon/stable_cdm_context_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "media/base/bind_to_current_loop.h"

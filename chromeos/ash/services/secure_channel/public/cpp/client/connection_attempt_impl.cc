@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel_impl.h"
 

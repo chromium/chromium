@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/token.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

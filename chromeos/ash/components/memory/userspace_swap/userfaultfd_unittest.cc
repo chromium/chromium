@@ -12,8 +12,8 @@
 
 #include <atomic>
 
-#include "base/bind.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/rand_util.h"

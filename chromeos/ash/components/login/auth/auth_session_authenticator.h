@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"

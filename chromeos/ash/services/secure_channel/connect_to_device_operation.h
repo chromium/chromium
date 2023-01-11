@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"

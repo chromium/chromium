@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include "ash/quick_pair/common/logging.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"

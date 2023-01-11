@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_CMA_PIPELINE_DECRYPT_UTIL_H_
 #define CHROMECAST_MEDIA_CMA_PIPELINE_DECRYPT_UTIL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 

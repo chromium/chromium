@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 

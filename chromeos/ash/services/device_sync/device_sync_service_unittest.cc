@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"

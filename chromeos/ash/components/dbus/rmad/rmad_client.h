@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_RMAD_RMAD_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_RMAD_RMAD_CLIENT_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"

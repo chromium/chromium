@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "dbus/bus.h"

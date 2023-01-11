@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_bundle.h"

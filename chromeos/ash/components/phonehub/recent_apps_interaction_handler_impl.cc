@@ -8,8 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

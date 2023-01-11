@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/services/recording/recording_encoder_muxer.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"

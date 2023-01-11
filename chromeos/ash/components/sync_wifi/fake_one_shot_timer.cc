@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/sync_wifi/fake_one_shot_timer.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 

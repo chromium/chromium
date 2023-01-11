@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_H_
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"

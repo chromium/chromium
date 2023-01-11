@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_PAIRING_HANDLER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_PAIRING_HANDLER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/device_pairing_handler.h"

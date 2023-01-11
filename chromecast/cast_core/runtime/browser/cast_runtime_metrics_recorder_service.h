@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_METRICS_RECORDER_SERVICE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_METRICS_RECORDER_SERVICE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.pb.h"

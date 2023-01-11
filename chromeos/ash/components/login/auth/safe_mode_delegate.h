@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_SAFE_MODE_DELEGATE_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_SAFE_MODE_DELEGATE_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

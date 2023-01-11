@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/nearby_initiator_operation.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel.h"

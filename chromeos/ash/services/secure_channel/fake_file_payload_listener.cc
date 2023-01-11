@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

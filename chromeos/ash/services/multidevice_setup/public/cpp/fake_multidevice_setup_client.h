@@ -10,7 +10,7 @@
 #include <string>
 #include <tuple>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"

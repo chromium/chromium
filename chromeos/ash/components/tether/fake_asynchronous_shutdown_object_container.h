@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/tether/asynchronous_shutdown_object_container.h"
 
 namespace ash {

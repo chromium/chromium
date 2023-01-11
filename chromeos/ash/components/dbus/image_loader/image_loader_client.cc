@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/image_loader/fake_image_loader_client.h"
 #include "dbus/bus.h"

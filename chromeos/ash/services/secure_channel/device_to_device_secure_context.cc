@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"

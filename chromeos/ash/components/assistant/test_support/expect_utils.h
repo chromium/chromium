@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_
 #define CHROMEOS_ASH_COMPONENTS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"

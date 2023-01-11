@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/network_test_helper_base.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/run_loop.h"

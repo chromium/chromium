@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/network/profile_policies.h"
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"

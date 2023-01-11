@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/constants/dbus_switches.h"

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

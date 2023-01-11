@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"

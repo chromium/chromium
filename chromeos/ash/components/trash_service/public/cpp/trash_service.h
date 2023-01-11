@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
 #define CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_SERVICE_H_
 
-#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

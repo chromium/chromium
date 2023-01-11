@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "courgette/assembly_program.h"
 #include "courgette/courgette.h"

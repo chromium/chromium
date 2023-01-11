@@ -4,7 +4,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromecast/app/cast_main_delegate.h"
 #include "chromecast/cast_shell_jni_registration_generated.h"
 #include "content/public/app/content_jni_onload.h"

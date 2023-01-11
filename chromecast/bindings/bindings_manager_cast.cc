@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
 
 namespace chromecast {

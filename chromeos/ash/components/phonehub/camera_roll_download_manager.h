@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_DOWNLOAD_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_DOWNLOAD_MANAGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/quick_pair/quick_pair_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

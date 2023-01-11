@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "base/base64url.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/services/secure_channel/device_to_device_initiator_helper.h"
 #include "chromeos/ash/services/secure_channel/device_to_device_responder_operations.h"

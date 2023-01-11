@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

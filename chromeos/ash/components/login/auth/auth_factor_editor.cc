@@ -5,8 +5,8 @@
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_input.h"

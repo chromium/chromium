@@ -8,7 +8,7 @@
 #include <memory>
 #include <ostream>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"

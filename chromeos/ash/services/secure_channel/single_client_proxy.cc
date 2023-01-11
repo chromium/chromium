@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/single_client_proxy.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"

@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/public/media/cast_key_system.h"
 #include "chromecast/public/media/decrypt_context.h"
 

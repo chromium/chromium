@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_key_creator_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"

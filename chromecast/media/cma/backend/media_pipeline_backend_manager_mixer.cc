@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chromecast/media/audio/mixer_service/control_connection.h"
 
 namespace chromecast {

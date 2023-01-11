@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"

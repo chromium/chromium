@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/recording/recording_service_test_api.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"
 

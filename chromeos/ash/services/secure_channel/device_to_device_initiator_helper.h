@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/session_keys.h"
 #include "third_party/ukey2/proto/device_to_device_messages.pb.h"

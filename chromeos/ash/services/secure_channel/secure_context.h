@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_SECURE_CONTEXT_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_SECURE_CONTEXT_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 
 namespace ash::secure_channel {
 

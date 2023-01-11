@@ -8,7 +8,7 @@
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"

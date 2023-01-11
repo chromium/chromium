@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

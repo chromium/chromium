@@ -8,8 +8,8 @@
 #include <deque>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 

@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"

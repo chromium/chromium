@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"

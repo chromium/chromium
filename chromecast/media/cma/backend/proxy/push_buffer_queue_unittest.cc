@@ -7,7 +7,7 @@
 #include <atomic>
 #include <sstream>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"

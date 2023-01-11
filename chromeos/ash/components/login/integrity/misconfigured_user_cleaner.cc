@@ -5,7 +5,7 @@
 #include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
 
 #include "ash/public/cpp/session/session_controller.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"

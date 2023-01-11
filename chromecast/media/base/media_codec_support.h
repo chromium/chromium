@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_BASE_MEDIA_CODEC_SUPPORT_H_
 #define CHROMECAST_MEDIA_BASE_MEDIA_CODEC_SUPPORT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/mime_util.h"

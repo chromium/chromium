@@ -5,8 +5,8 @@
 #include "chromeos/ash/services/device_sync/remote_device_provider_impl.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"

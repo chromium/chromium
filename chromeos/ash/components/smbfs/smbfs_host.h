@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/disks/mount_point.h"
 #include "chromeos/ash/components/smbfs/mojom/smbfs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

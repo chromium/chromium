@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/presence_monitor.h"

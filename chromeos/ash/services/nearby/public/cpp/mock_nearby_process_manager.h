@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_PROCESS_MANAGER_H_
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

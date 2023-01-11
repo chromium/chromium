@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"

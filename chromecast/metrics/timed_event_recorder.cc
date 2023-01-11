@@ -4,8 +4,8 @@
 
 #include "chromecast/metrics/timed_event_recorder.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/metrics/cast_event_builder.h"

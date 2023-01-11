@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "chromeos/printing/printer_configuration.h"

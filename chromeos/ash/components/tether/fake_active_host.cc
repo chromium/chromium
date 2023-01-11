@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

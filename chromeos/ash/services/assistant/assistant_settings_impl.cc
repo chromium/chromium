@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/ash/services/assistant/service_context.h"

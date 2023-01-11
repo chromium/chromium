@@ -7,8 +7,8 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"

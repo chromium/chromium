@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_ICON_DECODER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_ICON_DECODER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "ui/gfx/image/image.h"
 

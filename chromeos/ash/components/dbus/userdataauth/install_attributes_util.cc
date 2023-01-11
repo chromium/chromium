@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

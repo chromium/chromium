@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"

@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace dbus {

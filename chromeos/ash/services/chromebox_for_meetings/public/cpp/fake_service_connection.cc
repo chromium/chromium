@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
 
-#include "base/bind.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "mojo/public/cpp/bindings/remote.h"

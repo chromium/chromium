@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cups_proxy/fake_cups_proxy_client.h"
 #include "dbus/bus.h"

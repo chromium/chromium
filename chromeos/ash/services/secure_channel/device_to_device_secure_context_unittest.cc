@@ -7,8 +7,8 @@
 #include <list>
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"

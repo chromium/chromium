@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"

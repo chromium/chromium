@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 namespace device_sync {

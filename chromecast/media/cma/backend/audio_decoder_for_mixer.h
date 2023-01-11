@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromecast/media/api/cast_audio_decoder.h"
 #include "chromecast/media/audio/mixer_service/output_stream_connection.h"
 #include "chromecast/public/media/decoder_config.h"

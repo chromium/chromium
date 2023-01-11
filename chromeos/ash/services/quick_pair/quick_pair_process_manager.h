@@ -8,7 +8,7 @@
 #include <memory>
 #include <ostream>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom-forward.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"

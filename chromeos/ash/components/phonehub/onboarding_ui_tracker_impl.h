@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_ONBOARDING_UI_TRACKER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_ONBOARDING_UI_TRACKER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"

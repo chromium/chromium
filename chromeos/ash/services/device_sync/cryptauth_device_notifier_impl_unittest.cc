@@ -8,9 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"

@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/tick_clock.h"

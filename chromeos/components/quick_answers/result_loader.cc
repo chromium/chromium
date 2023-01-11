@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "chromeos/components/quick_answers/result_loader.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_loader.h"
 #include "chromeos/components/quick_answers/translation_result_loader.h"

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/fake_error_tolerant_ble_advertisement.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace ash::secure_channel {
 

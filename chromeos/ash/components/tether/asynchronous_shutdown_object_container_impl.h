@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/tether/asynchronous_shutdown_object_container.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
 

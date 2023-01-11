@@ -4,7 +4,7 @@
 
 #include "chromecast/browser/cast_browser_interface_binders.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/application_media_info_manager.h"
 #include "chromecast/browser/audio_socket_broker.h"

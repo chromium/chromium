@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"

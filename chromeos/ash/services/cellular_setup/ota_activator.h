@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_OTA_ACTIVATOR_H_
 #define CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_OTA_ACTIVATOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

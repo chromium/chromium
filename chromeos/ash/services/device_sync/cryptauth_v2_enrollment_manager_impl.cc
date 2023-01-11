@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"

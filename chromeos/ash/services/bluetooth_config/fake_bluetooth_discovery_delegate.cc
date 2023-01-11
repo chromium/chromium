@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 
 namespace ash::bluetooth_config {

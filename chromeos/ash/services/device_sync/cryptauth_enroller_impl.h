@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enroller.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"

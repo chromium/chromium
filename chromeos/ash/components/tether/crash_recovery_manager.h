@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_CRASH_RECOVERY_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_CRASH_RECOVERY_MANAGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

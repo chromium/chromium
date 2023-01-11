@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE_HIBERNATE_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE_HIBERNATE_MANAGER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"

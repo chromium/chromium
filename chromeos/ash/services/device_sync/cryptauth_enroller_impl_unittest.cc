@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"

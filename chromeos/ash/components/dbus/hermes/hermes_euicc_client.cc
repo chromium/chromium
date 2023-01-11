@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/constants.h"

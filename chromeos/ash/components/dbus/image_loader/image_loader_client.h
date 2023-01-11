@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 

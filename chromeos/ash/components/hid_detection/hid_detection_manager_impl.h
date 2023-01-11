@@ -7,7 +7,7 @@
 
 #include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

@@ -5,8 +5,8 @@
 #include "chromeos/ash/components/network/auto_connect_handler.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

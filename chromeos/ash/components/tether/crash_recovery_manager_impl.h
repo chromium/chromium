@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/crash_recovery_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

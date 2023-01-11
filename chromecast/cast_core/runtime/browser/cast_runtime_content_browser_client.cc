@@ -4,8 +4,8 @@
 
 #include "chromecast/cast_core/runtime/browser/cast_runtime_content_browser_client.h"
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/service/cast_service_simple.h"

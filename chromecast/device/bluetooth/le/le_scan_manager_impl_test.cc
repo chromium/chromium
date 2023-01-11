@@ -4,8 +4,8 @@
 
 #include "chromecast/device/bluetooth/le/le_scan_manager_impl.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"

@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

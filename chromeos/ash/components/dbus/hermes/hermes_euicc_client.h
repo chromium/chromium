@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"

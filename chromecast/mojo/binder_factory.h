@@ -9,10 +9,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

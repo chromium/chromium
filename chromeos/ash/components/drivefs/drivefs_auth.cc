@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_auth.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

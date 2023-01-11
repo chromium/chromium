@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace dbus {

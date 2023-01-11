@@ -6,9 +6,9 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 

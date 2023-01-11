@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"

@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/services/secure_channel/authenticated_channel_impl.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

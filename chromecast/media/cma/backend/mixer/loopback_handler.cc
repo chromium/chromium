@@ -7,9 +7,9 @@
 #include <limits>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"

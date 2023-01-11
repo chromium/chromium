@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FEDERATED_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_FEDERATED_FEDERATED_CLIENT_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
 
 namespace dbus {
 class Bus;

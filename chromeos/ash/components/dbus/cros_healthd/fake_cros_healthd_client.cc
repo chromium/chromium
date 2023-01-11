@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 
 namespace ash::cros_healthd {

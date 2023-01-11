@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"

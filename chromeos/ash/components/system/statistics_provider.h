@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_SYSTEM_STATISTICS_PROVIDER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/phonehub/camera_roll_thumbnail_decoder_impl.h"
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/camera_roll_item.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"

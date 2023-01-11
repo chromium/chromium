@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/sync_wifi/fake_local_network_collector.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 
 namespace ash::sync_wifi {

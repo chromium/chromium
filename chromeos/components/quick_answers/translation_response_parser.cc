@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/search_result_parsers/result_parser.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"

@@ -7,7 +7,7 @@
 
 #include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash::hid_detection {
 

@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "courgette/assembly_program.h"
 #include "courgette/courgette.h"

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"

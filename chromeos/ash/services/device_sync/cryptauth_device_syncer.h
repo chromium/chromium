@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNCER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNCER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 

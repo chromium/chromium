@@ -11,10 +11,10 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"

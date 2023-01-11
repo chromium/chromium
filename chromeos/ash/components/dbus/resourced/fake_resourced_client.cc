@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace ash {

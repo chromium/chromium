@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

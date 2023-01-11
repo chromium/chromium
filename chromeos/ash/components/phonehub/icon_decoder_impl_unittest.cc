@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

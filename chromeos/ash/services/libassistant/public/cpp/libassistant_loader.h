@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_
 
-#include "base/callback_helpers.h"
 #include "base/component_export.h"
+#include "base/functional/callback_helpers.h"
 
 namespace ash::libassistant {
 

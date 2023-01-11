@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"

@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
 #include "dbus/object_proxy.h"
 

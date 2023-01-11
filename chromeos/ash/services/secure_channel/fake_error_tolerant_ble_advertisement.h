@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/error_tolerant_ble_advertisement.h"

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CUPS_PROXY_FAKE_CUPS_PROXY_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_CUPS_PROXY_FAKE_CUPS_PROXY_CLIENT_H_
 
-#include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "dbus/object_proxy.h"
 

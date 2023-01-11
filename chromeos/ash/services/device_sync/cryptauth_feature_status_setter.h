@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/feature_status_change.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"

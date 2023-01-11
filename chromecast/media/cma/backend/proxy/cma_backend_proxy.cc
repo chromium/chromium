@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chromecast/media/cma/backend/proxy/media_pipeline_buffer_extension.h"

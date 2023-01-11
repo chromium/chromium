@@ -7,7 +7,7 @@
 #include <iterator>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"

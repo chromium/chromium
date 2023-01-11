@@ -8,7 +8,7 @@
 #include <memory>
 #include <queue>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/pipeline/stream_decryptor.h"

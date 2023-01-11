@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/smbprovider/directory_entry.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"

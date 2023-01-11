@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"

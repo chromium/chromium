@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "dbus/bus.h"

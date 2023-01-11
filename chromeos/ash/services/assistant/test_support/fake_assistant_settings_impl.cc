@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/assistant/public/proto/get_settings_ui.pb.h"
 #include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 

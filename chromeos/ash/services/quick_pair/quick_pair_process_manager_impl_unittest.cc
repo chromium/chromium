@@ -6,8 +6,8 @@
 #include <memory>
 
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"

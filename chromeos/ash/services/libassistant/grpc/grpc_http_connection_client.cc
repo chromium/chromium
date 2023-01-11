@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/grpc/grpc_http_connection_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_client_thread.h"

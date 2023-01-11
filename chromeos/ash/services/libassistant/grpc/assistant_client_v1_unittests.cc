@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"

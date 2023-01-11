@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/dbus/hiberman/fake_hiberman_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "testing/gtest/include/gtest/gtest.h"

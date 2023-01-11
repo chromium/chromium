@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_USERSPACE_SWAP_RENDERER_INITIALIZATION_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_USERSPACE_SWAP_RENDERER_INITIALIZATION_IMPL_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace ash {

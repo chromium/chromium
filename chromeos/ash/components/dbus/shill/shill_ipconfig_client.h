@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
 
 namespace base {

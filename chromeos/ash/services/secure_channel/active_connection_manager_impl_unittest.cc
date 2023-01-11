@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"

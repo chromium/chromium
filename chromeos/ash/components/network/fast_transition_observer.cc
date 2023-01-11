@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_state_handler.h"

@@ -7,7 +7,7 @@
 
 #include <list>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromecast/media/cma/base/demuxer_stream_adapter.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/network_connection_tracker.h"

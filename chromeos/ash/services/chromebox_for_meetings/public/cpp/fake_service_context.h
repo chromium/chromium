@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
 #define CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

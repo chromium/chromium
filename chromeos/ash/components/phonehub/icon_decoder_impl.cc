@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/smartlock_state.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 

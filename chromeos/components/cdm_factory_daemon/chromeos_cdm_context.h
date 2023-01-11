@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
 #include "ui/gfx/geometry/size.h"

@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 

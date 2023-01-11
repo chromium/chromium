@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/tether/network_connection_handler_tether_delegate.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/tether_connector.h"

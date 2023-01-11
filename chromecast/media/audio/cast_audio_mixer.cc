@@ -4,8 +4,8 @@
 
 #include "chromecast/media/audio/cast_audio_mixer.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_stream.h"

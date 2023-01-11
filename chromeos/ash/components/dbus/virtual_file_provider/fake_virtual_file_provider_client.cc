@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 

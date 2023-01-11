@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel_impl.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

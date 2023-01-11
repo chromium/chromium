@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_DBUS_U2F_U2F_CLIENT_H_
 #define CHROMEOS_DBUS_U2F_U2F_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/u2f/u2f_interface.pb.h"
 

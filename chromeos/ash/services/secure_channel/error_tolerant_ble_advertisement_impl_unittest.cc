@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/secure_channel/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/fake_ble_synchronizer.h"

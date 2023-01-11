@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_MEDIA_ANALYTICS_FAKE_MEDIA_ANALYTICS_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"

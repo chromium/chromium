@@ -4,7 +4,7 @@
 
 #include "chromeos/dbus/u2f/fake_u2f_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_INFO_PARSER_H_
 #define CHROMEOS_ASH_COMPONENTS_TRASH_SERVICE_PUBLIC_CPP_TRASH_INFO_PARSER_H_
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"

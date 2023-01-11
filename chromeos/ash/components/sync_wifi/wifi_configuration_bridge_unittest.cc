@@ -10,10 +10,10 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

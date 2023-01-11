@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_TETHER_CONNECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_TETHER_CONNECTOR_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/tether/tether_connector.h"
 

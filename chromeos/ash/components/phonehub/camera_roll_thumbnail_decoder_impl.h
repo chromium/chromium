@@ -7,7 +7,7 @@
 
 #include "chromeos/ash/components/phonehub/camera_roll_thumbnail_decoder.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

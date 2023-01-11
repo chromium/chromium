@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

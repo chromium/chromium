@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/federated/fake_federated_client.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/ash/services/assistant/libassistant_service_host.h"

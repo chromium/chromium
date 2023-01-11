@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/feature_status_change.h"

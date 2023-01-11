@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SERVER_SOCKET_H_
 #define CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SERVER_SOCKET_H_
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"

@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FILE_TRANSFER_UPDATE_CALLBACK_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FILE_TRANSFER_UPDATE_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace ash::secure_channel {

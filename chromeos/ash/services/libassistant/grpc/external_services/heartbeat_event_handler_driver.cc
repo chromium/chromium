@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/libas_server_status.pb.h"

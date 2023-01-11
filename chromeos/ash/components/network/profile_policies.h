@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

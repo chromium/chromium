@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_WIFI_HOTSPOT_DISCONNECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_WIFI_HOTSPOT_DISCONNECTOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector.h"
 
 namespace ash {

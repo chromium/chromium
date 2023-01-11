@@ -169,8 +169,8 @@ for details.
 ### Important Include Files
 
 ```cpp
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 ```
 
 ### More Information

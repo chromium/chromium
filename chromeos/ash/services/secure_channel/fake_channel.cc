@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/fake_channel.h"
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"

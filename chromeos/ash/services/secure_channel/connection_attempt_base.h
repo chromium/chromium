@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"

@@ -5,7 +5,7 @@
 #include "chromeos/ash/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"

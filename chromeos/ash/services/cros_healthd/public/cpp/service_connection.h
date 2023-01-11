@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/cros_healthd/private/mojom/cros_healthd_internal.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"

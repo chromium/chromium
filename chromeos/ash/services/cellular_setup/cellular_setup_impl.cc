@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/services/cellular_setup/ota_activator_impl.h"

@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/login/auth/public/sync_trusted_vault_keys.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

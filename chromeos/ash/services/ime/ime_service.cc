@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"

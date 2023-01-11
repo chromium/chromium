@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/network_config_service.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"

@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromecast/media/cma/base/buffering_defs.h"
 #include "chromecast/media/cma/base/coded_frame_provider.h"

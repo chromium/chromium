@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/network/cellular_connection_handler.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"

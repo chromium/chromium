@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/services/libassistant/power_manager_provider_impl.h"

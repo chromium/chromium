@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace chromeos {

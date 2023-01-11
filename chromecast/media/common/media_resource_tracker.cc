@@ -4,9 +4,9 @@
 
 #include "chromecast/media/common/media_resource_tracker.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/public/cast_media_shlib.h"

@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"

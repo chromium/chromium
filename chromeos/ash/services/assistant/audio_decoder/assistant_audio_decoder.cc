@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "chromeos/ash/services/assistant/audio_decoder/ipc_data_source.h"

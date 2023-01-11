@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.grpc.pb.h"

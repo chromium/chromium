@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

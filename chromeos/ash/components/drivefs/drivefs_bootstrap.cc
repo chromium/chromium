@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"

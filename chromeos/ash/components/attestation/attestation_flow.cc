@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"

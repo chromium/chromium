@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "chromecast/media/api/audio_clock_simulator.h"
 #include "chromecast/media/api/audio_provider.h"
 #include "media/base/audio_bus.h"

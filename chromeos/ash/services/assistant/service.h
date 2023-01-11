@@ -10,9 +10,9 @@
 
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
-#include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"

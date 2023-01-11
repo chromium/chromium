@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/tether/connection_preserver_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

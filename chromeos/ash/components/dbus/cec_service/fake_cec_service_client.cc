@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/cec_service/fake_cec_service_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 

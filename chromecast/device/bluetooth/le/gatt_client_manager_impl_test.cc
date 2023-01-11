@@ -4,7 +4,7 @@
 
 #include "chromecast/device/bluetooth/le/gatt_client_manager_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"

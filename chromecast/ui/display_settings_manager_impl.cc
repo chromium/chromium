@@ -4,9 +4,9 @@
 
 #include "chromecast/ui/display_settings_manager_impl.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chromecast/graphics/cast_window_manager.h"

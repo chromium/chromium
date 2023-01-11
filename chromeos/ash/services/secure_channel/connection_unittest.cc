@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/connection.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"

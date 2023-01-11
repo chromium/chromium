@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 

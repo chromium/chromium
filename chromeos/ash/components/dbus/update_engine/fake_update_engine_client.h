@@ -8,9 +8,9 @@
 #include <map>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"

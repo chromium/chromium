@@ -7,8 +7,8 @@
 #include <cstring>
 #include <string>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "chromecast/net/fake_stream_socket.h"

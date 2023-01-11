@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_PROXY_MULTIZONE_AUDIO_DECODER_PROXY_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_MULTIZONE_AUDIO_DECODER_PROXY_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/proxy/audio_decoder_pipeline_node.h"

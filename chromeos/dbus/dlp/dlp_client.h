@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"

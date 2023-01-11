@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"

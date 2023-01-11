@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/remote_device_cache.h"

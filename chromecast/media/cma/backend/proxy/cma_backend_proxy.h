@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy.h"
 

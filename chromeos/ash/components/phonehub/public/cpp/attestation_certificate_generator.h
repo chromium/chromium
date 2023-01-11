@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PUBLIC_CPP_ATTESTATION_CERTIFICATE_GENERATOR_H_
 
 #include <vector>
-#include "base/callback.h"
+#include "base/functional/callback.h"
 namespace ash::phonehub {
 
 // Generates attestation certificates for cross-device communication.

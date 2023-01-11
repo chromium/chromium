@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/pipeline/backend_decryptor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

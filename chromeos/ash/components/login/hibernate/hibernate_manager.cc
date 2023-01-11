@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 

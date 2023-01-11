@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/dbus/arc/fake_arcvm_data_migrator_client.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace ash {

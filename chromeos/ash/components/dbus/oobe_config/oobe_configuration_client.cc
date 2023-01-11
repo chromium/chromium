@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_config.pb.h"

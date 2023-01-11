@@ -4,7 +4,7 @@
 
 #include "chromecast/media/base/media_codec_support.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 

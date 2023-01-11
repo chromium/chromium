@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/enum_set.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

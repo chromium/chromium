@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_UPSTART_FAKE_UPSTART_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_UPSTART_FAKE_UPSTART_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 
 namespace ash {

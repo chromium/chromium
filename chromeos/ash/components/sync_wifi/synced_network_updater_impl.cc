@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/sync_wifi/synced_network_updater_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"

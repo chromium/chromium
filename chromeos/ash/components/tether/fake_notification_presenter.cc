@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/tether/fake_notification_presenter.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

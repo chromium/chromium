@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_H_
 
-#include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/authenticator.h"

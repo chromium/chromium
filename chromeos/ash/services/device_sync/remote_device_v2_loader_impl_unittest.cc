@@ -6,7 +6,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"

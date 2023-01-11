@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/device_sync/cryptauth_scheduler.h"

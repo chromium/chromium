@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"

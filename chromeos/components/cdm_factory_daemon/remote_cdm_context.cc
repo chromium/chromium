@@ -4,7 +4,7 @@
 
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/callback_registry.h"

@@ -4,8 +4,8 @@
 
 #include "chromecast/browser/cast_feature_update_observer.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"

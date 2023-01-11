@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

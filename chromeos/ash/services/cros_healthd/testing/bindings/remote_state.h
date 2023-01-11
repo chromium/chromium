@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/cros_healthd/testing/bindings/mojom/state.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

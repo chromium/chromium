@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

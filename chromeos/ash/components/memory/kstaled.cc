@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/memory/kstaled.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"

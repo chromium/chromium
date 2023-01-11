@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_FAKE_ONE_SHOT_TIMER_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_FAKE_ONE_SHOT_TIMER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-forward.h"

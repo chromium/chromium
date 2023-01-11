@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

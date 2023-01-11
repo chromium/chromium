@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_ATTESTATION_CERTIFICATES_SYNCER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_ATTESTATION_CERTIFICATES_SYNCER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"

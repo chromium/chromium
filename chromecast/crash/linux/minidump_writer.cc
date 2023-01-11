@@ -4,8 +4,8 @@
 
 #include "chromecast/crash/linux/minidump_writer.h"
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromecast/base/path_utils.h"
 #include "chromecast/base/process_utils.h"

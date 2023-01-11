@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/base/bind_to_task_runner.h"

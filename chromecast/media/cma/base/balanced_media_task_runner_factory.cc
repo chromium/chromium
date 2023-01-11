@@ -7,8 +7,8 @@
 #include <map>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/cma/base/media_task_runner.h"
 #include "media/base/timestamp_constants.h"

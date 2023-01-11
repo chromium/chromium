@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"

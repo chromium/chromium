@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "dbus/object_proxy.h"
 
 namespace dbus {

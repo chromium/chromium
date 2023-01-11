@@ -9,9 +9,9 @@
 
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"

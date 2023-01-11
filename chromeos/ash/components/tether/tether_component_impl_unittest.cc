@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/tether/asynchronous_shutdown_object_container_impl.h"
 #include "chromeos/ash/components/tether/crash_recovery_manager_impl.h"

@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 
 namespace base {

@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/services/secure_channel/nearby_connection.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

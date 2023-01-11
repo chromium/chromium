@@ -10,7 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/base64url.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/multidevice/expiring_remote_device_cache.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

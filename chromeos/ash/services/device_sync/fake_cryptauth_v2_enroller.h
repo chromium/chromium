@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_V2_ENROLLER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_V2_ENROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_result.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_enroller.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"

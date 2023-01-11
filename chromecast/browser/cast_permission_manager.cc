@@ -4,7 +4,7 @@
 
 #include "chromecast/browser/cast_permission_manager.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_permission_user_data.h"

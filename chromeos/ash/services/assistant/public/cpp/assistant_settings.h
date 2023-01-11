@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

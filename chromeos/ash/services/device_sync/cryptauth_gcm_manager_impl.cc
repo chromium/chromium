@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"

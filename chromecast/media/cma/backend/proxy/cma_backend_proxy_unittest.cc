@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/backend/proxy/cma_backend_proxy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"

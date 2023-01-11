@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"

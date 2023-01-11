@@ -4,8 +4,8 @@
 
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"

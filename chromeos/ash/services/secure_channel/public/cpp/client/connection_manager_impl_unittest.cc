@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/test/bind.h"

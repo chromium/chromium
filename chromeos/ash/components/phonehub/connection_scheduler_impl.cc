@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/connection_scheduler_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"

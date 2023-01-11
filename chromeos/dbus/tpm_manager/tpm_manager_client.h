@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_DBUS_TPM_MANAGER_TPM_MANAGER_CLIENT_H_
 #define CHROMEOS_DBUS_TPM_MANAGER_TPM_MANAGER_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 

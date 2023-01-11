@@ -4,8 +4,8 @@
 
 #include "chromecast/shared/platform_info_serializer.h"
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromecast/bindings/shared/proto_serializer.h"
 

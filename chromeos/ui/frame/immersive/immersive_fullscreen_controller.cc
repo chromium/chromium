@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/immersive/immersive_context.h"
 #include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"

@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "chromecast/media/api/cast_audio_resampler.h"
 #include "media/base/sinc_resampler.h"
 

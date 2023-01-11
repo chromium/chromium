@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_HIBERMAN_HIBERMAN_CLIENT_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 

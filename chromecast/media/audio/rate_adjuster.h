@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromecast/base/statistics/weighted_moving_linear_regression.h"
 

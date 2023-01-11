@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/containers/queue.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/feature_status_change.h"

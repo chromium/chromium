@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_QUICK_PAIR_QUICK_PAIR_PROCESS_SHUTDOWN_CONTROLLER_H_
 #define CHROMEOS_ASH_SERVICES_QUICK_PAIR_QUICK_PAIR_PROCESS_SHUTDOWN_CONTROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 
 namespace ash {

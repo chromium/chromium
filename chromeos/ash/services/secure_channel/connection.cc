@@ -7,7 +7,7 @@
 #include <sstream>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/connection_observer.h"

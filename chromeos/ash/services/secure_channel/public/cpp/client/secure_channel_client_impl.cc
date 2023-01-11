@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"

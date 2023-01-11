@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"

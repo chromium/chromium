@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"

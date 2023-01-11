@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_THUMBNAIL_DECODER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_THUMBNAIL_DECODER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace ash {

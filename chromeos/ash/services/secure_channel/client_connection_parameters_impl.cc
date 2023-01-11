@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/client_connection_parameters_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 
 namespace ash::secure_channel {

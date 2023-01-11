@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

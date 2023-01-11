@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"

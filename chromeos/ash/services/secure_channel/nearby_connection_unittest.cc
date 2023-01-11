@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/services/secure_channel/nearby_connection.h"
 
-#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"

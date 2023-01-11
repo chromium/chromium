@@ -8,8 +8,8 @@
 #include <ostream>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 
 namespace chromecast {

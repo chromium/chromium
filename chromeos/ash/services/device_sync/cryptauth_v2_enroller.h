@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {

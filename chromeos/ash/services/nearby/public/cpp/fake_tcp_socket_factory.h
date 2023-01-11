@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SOCKET_FACTORY_H_
 #define CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SOCKET_FACTORY_H_
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "net/base/ip_address.h"

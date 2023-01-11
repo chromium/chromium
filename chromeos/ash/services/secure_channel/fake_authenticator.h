@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_AUTHENTICATOR_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_AUTHENTICATOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/authenticator.h"
 
 namespace ash::secure_channel {

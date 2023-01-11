@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/camera_roll_manager_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

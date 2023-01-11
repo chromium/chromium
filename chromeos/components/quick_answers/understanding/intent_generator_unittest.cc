@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"

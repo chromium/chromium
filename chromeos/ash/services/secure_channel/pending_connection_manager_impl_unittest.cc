@@ -7,9 +7,9 @@
 #include <memory>
 #include <sstream>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_connection_attempt.h"

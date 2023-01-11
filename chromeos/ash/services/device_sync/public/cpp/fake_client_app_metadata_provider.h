@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/device_sync/public/cpp/client_app_metadata_provider.h"
 
 namespace ash {

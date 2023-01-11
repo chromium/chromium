@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"

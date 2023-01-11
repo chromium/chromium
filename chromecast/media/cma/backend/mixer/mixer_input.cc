@@ -10,9 +10,9 @@
 #include <cmath>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"

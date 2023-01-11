@@ -4,7 +4,7 @@
 
 #include "chromecast/browser/service_connector.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chromecast/browser/system_connector.h"
 #include "chromecast/common/mojom/constants.mojom.h"

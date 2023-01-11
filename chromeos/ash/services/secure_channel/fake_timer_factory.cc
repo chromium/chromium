@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/fake_timer_factory.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/fake_one_shot_timer.h"
 
 namespace ash::secure_channel {

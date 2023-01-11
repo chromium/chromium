@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/feature_setup_response_processor.h"

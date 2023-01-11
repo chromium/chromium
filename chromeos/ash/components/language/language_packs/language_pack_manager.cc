@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/components/language/language_packs/language_pack_manager.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"

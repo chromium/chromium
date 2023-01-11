@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_initializer.h"

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/fake_network_activation_handler.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

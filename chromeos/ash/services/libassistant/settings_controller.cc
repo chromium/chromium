@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/proto/assistant_device_settings_ui.pb.h"

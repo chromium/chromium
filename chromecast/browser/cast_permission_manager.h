@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_BROWSER_CAST_PERMISSION_MANAGER_H_
 #define CHROMECAST_BROWSER_CAST_PERMISSION_MANAGER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"

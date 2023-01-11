@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 

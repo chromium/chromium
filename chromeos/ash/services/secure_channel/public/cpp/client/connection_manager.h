@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"

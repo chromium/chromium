@@ -4,7 +4,7 @@
 
 #include "chromeos/dbus/machine_learning/fake_machine_learning_client.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace chromeos {
 

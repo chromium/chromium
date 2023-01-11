@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 

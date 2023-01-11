@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::multidevice {

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"

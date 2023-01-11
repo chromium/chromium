@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 
 namespace ash {

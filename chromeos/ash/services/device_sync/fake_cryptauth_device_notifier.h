@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_notifier.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_notifier_impl.h"

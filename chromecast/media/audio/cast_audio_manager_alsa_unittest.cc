@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_message_loop.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"

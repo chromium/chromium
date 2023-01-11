@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/multidevice_setup/fake_host_backend_delegate.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

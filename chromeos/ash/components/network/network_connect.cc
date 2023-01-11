@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"

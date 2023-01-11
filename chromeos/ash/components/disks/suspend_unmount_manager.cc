@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/disks/disk.h"

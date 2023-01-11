@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"

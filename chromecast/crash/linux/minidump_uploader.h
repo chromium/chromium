@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/crash/linux/synchronized_minidump_manager.h"
 
 class PrefService;

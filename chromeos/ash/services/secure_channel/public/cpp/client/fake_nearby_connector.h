@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/nearby_connector.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"

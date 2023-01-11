@@ -8,7 +8,7 @@
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/support/client_callback.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/cast_core/grpc/grpc_call.h"
 #include "chromecast/cast_core/grpc/grpc_client_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"

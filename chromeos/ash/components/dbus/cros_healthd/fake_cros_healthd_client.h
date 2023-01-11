@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

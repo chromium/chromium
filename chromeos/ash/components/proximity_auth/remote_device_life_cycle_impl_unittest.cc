@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"

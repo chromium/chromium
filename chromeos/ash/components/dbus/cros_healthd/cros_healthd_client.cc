@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "dbus/bus.h"

@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"

@@ -8,7 +8,7 @@
 #include <queue>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 

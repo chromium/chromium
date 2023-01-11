@@ -5,9 +5,9 @@
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

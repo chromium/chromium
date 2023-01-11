@@ -7,7 +7,7 @@
 #include <sys/mman.h>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "chromeos/ash/components/memory/aligned_memory.h"

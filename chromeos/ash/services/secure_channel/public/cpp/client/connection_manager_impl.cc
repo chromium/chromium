@@ -5,8 +5,8 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/clock.h"

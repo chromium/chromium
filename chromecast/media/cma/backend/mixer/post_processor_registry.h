@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 
 namespace chromecast {
 namespace media {

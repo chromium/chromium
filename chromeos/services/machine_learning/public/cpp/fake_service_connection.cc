@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

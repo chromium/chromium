@@ -8,7 +8,7 @@
 #include <sstream>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"

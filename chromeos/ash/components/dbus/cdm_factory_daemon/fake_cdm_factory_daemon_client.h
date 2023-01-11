@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
 
-#include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "dbus/object_proxy.h"
 

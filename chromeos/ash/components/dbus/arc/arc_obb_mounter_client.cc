@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/dbus/arc/fake_arc_obb_mounter_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

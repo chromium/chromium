@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"

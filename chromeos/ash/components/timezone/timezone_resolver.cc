@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"

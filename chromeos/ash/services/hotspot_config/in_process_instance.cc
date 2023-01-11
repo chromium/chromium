@@ -5,8 +5,8 @@
 #include "chromeos/ash/services/hotspot_config/in_process_instance.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 #include "components/device_event_log/device_event_log.h"

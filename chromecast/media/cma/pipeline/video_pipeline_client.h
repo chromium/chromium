@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_CMA_PIPELINE_VIDEO_PIPELINE_CLIENT_H_
 #define CHROMECAST_MEDIA_CMA_PIPELINE_VIDEO_PIPELINE_CLIENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/media/cma/pipeline/av_pipeline_client.h"
 
 namespace gfx {

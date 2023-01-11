@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/memory/swap_configuration.h"
 
-#include "base/bind.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"

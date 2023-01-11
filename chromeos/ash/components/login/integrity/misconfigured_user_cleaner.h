@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_INTEGRITY_MISCONFIGURED_USER_CLEANER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_INTEGRITY_MISCONFIGURED_USER_CLEANER_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"

@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_CMA_PIPELINE_MEDIA_PIPELINE_CLIENT_H_
 #define CHROMECAST_MEDIA_CMA_PIPELINE_MEDIA_PIPELINE_CLIENT_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"
 #include "media/base/pipeline_status.h"

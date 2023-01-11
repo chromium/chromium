@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/ble_characteristics_finder.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/background_eid_generator.h"

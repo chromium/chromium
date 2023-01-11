@@ -7,7 +7,7 @@
 #include <memory>
 #include <sstream>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/network/network_state_handler.h"

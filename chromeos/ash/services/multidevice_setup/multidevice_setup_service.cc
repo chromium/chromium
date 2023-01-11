@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "chromeos/ash/services/multidevice_setup/android_sms_app_installing_status_observer.h"

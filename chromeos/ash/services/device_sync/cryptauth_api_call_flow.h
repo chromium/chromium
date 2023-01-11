@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/device_sync/network_request_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

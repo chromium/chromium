@@ -7,8 +7,8 @@
 #include <memory>
 #include <set>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/timer_factory.h"

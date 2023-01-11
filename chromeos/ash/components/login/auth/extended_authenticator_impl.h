@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

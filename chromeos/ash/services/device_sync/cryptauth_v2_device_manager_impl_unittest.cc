@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"

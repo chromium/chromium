@@ -4,7 +4,7 @@
 
 #include "chromeos/lacros/crosapi_pref_observer.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/lacros/lacros_service.h"
 
 CrosapiPrefObserver::CrosapiPrefObserver(crosapi::mojom::PrefPath path,

@@ -9,7 +9,7 @@
 #include <limits>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"

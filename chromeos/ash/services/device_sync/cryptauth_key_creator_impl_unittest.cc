@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_constants.h"

@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/connection_details.h"
 #include "chromeos/ash/services/secure_channel/multiplexed_channel.h"

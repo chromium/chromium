@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/logging.h"

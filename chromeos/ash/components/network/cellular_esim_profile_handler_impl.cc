@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_
 #define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_
 
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/ash/services/recording/recording_service.h"
 #include "media/base/video_frame.h"

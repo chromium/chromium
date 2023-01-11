@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"

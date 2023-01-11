@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CLIENT_CHANNEL_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CLIENT_CHANNEL_IMPL_H_
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"

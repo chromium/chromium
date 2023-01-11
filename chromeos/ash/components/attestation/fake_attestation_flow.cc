@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"

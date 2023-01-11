@@ -5,8 +5,8 @@
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/services/bluetooth_config/cros_bluetooth_config.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/initializer_impl.h"

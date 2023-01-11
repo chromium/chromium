@@ -11,8 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"

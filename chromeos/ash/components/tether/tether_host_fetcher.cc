@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {

@@ -5,7 +5,7 @@
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer_impl.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/device_sync/attestation_certificates_syncer.h"

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"

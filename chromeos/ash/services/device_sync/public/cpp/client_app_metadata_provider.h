@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_CLIENT_APP_METADATA_PROVIDER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_PUBLIC_CPP_CLIENT_APP_METADATA_PROVIDER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {

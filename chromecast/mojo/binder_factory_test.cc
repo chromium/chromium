@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "chromecast/mojo/test/test_interfaces.test-mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

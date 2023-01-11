@@ -9,9 +9,9 @@
 #include <ostream>
 #include <string>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_notifier.h"

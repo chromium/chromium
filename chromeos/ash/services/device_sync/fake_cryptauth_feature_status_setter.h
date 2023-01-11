@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/cryptauth_feature_status_setter.h"

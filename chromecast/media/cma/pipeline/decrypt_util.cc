@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "media/base/decoder_buffer.h"

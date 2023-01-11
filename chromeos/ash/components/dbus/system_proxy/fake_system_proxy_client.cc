@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/system_proxy/fake_system_proxy_client.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_status_reporter.h"
 

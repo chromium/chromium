@@ -4,7 +4,7 @@
 
 #include "chromeos/services/tts/tts_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromecast/public/reboot_shlib.h"
 
 namespace chromecast {

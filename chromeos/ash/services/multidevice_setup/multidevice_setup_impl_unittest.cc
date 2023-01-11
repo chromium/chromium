@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

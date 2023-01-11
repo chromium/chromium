@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_CRASH_RECOVERY_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_FAKE_CRASH_RECOVERY_MANAGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "chromeos/ash/components/tether/crash_recovery_manager.h"
 
 namespace ash {

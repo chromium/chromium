@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TPM_PREPARE_TPM_H_
 #define CHROMEOS_ASH_COMPONENTS_TPM_PREPARE_TPM_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 
 namespace ash {
 

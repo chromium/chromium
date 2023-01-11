@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 

@@ -4,8 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/ble_advertiser_impl.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"

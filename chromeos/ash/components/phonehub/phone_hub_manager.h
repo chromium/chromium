@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"

@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "courgette/image_utils.h"
 #include "courgette/memory_allocator.h"
 
