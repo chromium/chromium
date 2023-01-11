@@ -423,6 +423,17 @@ void BindCommerceHintObserver(
     return;
   }
 
+// Check if features require CommerceHint are enabled.
+#if !BUILDFLAG(IS_ANDROID)
+  if (!IsCartModuleEnabled()) {
+    return;
+  }
+#else
+  if (!base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid)) {
+    return;
+  }
+#endif
+
 // On Android, commerce hint observer is enabled for all users with the feature
 // enabled since the observer is only used for collecting metrics for now, and
 // we want to maximize the user population exposed; on Desktop, ChromeCart is
@@ -689,18 +700,8 @@ void PopulateChromeFrameBinders(
   map->Add<image_annotation::mojom::Annotator>(
       base::BindRepeating(&BindImageAnnotator));
 
-  // We should not request this mojo interface's binding for the subframes in
-  // the renderer.
-#if !BUILDFLAG(IS_ANDROID)
-  if (IsCartModuleEnabled() &&
-#else
-  if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid) &&
-#endif
-      !render_frame_host->GetParent() &&
-      !render_frame_host->IsFencedFrameRoot()) {
-    map->Add<cart::mojom::CommerceHintObserver>(
-        base::BindRepeating(&BindCommerceHintObserver));
-  }
+  map->Add<cart::mojom::CommerceHintObserver>(
+      base::BindRepeating(&BindCommerceHintObserver));
 
   map->Add<blink::mojom::AnchorElementMetricsHost>(
       base::BindRepeating(&NavigationPredictor::Create));
