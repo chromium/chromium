@@ -113,9 +113,9 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
 
   // TODO(mcnee): Speculation rules initially shipped with a bug where a policy
   // of "no-referrer" would be assumed and the referrer policy restriction was
-  // not enforced. We emulate that behaviour here as sites don't currently have
-  // a means of specifying a suitable policy. Once
-  // SpeculationRulesReferrerPolicyKey ships, this workaround should be removed.
+  // not enforced. We emulate that behaviour here as sites did not have a means
+  // of specifying a suitable policy. SpeculationRulesReferrerPolicyKey shipped
+  // in M111. This workaround should be removed when the flag is removed.
   // See https://crbug.com/1398772.
   if (!RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
           execution_context) &&

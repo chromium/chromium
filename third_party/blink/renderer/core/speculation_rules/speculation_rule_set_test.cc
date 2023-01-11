@@ -345,9 +345,6 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
-  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
-      true};
-
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
@@ -501,9 +498,6 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_CaseInsensitive) {
 }
 
 TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
-  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
-      true};
-
   auto* rule_set =
       CreateRuleSet(R"({
         "prefetch": [{
@@ -527,9 +521,6 @@ TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
 }
 
 TEST_F(SpeculationRuleSetTest, EmptyReferrerPolicy) {
-  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
-      true};
-
   // If an empty string is used for referrer_policy, treat this as if the key
   // were omitted.
   auto* rule_set = CreateRuleSet(
@@ -1923,9 +1914,6 @@ TEST_F(DocumentRulesTest, DisconnectedLinkInShadowTree) {
 
 // Tests that a document rule's specified referrer policy is used.
 TEST_F(DocumentRulesTest, ReferrerPolicy) {
-  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
-      true};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   Document& document = page_holder.GetDocument();
@@ -1954,12 +1942,6 @@ TEST_F(DocumentRulesTest, ReferrerPolicy) {
 // Tests that a link's referrer-policy value is used if one is not specified
 // in the document rule.
 TEST_F(DocumentRulesTest, LinkReferrerPolicy) {
-  // This test does not use the "referrer_policy" key itself. This is used to
-  // disable a temporary workaround related to the use of a lax policy. See
-  // https://crbug.com/1398772.
-  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
-      true};
-
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   Document& document = page_holder.GetDocument();
