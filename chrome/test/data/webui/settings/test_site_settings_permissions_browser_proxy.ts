@@ -27,11 +27,8 @@ export class TestSiteSettingsPermissionsBrowserProxy extends TestBrowserProxy
     ]);
   }
 
-  acknowledgeRevokedUnusedSitePermissionsList(unusedSitePermissionList:
-                                                  UnusedSitePermissions[]) {
-    this.methodCalled(
-        'acknowledgeRevokedUnusedSitePermissionsList',
-        [unusedSitePermissionList]);
+  acknowledgeRevokedUnusedSitePermissionsList() {
+    this.methodCalled('acknowledgeRevokedUnusedSitePermissionsList');
   }
 
   allowPermissionsAgainForUnusedSite(origin: string) {

@@ -247,7 +247,7 @@ export class SettingsUnusedSitePermissionsElement extends
     this.lastUserAction_ = Action.GOT_IT;
     this.lastUnusedSitePermissionsListAcknowledged_ = this.sites_;
 
-    this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList(this.sites_);
+    this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList();
     const toastText = await PluralStringProxyImpl.getInstance().getPluralString(
         'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
     this.showUndoToast_(toastText);
