@@ -76,7 +76,9 @@ mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
       "Blink.NotificationManager.GetPermissionStatusTime");
   mojom::blink::PermissionStatus permission_status;
   if (!GetNotificationService()->GetPermissionStatus(&permission_status)) {
-    NOTREACHED();
+    // The browser-side Mojo connection was closed, disabling notifications.
+    // Hitting this code path means the mojo call is no longer bound to the
+    // browser process.
     return mojom::blink::PermissionStatus::DENIED;
   }
 
