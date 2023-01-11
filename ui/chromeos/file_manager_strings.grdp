@@ -432,8 +432,11 @@
     Recovered files from Google Drive
   </message>
 
-  <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_MESSAGE" desc="Message of the conflict dialog shown when a file transfer operation is conflicted.">
+  <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_MESSAGE" desc="Message shown in the conflict dialog when a file transfer operation is conflicted.">
     A file named "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>" already exists. Do you want to replace it with the one you're moving?
+  </message>
+  <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_FOLDER_MESSAGE" desc="Message shown in the conflict dialog when a folder transfer operation is conflicted.">
+    A folder named "<ph name="FILENAME">$1<ex>Downloads</ex></ph>" already exists. Do you want to replace it with the one you're moving?
   </message>
   <message name="IDS_FILE_BROWSER_CONFLICT_DIALOG_KEEP_BOTH" desc="Label of a button to keep both entries after the file transfer operation.">
     Keep both
