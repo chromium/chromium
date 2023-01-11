@@ -63,9 +63,6 @@ class SyncedNetworkUpdaterImpl
   chromeos::network_config::mojom::NetworkStatePropertiesPtr FindMojoNetwork(
       const NetworkIdentifier& id);
 
-  absl::optional<base::DictionaryValue> ConvertToDictionary(
-      const sync_pb::WifiConfigurationSpecifics& specifics,
-      const std::string& guid);
   void OnGetNetworkList(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);

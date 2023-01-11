@@ -13,10 +13,6 @@
 
 class PrefService;
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -74,8 +70,6 @@ class ProximityAuthProfilePrefManager
           feature_states_map) override;
 
  private:
-  const base::DictionaryValue* GetRemoteBleDevices() const;
-
   void SyncPrefsToLocalState();
 
   // Contains perferences that outlive the lifetime of this object and across
