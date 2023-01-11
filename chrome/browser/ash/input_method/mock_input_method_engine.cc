@@ -38,9 +38,6 @@ void MockInputMethodEngine::SetSurroundingText(const std::u16string& text,
                                                uint32_t anchor_pos,
                                                uint32_t offset_pos) {}
 
-void MockInputMethodEngine::SetCompositionBounds(
-    const std::vector<gfx::Rect>& bounds) {}
-
 void MockInputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds) {}
 
 ui::VirtualKeyboardController*

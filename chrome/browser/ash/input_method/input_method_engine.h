@@ -227,7 +227,6 @@ class InputMethodEngine : virtual public TextInputMethod,
                           uint32_t cursor_pos,
                           uint32_t anchor_pos,
                           uint32_t offset_pos) override;
-  void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) override;
   void SetCaretBounds(const gfx::Rect& caret_bounds) override;
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;

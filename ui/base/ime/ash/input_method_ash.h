@@ -182,10 +182,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
 
   bool IsPasswordOrNoneInputFieldFocused();
 
-  // Gets the bounds of the composition text or cursor in |client|.
-  std::vector<gfx::Rect> GetCompositionBounds(
-      const ui::TextInputClient* client);
-
   // Sends a fake key event for IME composing without physical key events.
   // Returns true if the faked key event is stopped propagation.
   bool SendFakeProcessKeyEvent(bool pressed) const;

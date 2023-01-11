@@ -623,9 +623,6 @@ void InputMethodEngine::SetSurroundingText(const std::u16string& text,
       static_cast<int>(anchor_pos), static_cast<int>(offset_pos));
 }
 
-void InputMethodEngine::SetCompositionBounds(
-    const std::vector<gfx::Rect>& bounds) {}
-
 void InputMethodEngine::SetCaretBounds(const gfx::Rect& caret_bounds) {
   observer_->OnCaretBoundsChanged(caret_bounds);
 }

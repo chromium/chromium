@@ -271,7 +271,6 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
 
   TextInputMethod* engine = GetEngine();
   if (engine) {
-    engine->SetCompositionBounds(GetCompositionBounds(client));
     engine->SetCaretBounds(client->GetCaretBounds());
   }
 
@@ -1067,23 +1066,6 @@ ukm::SourceId InputMethodAsh::GetClientSourceForMetrics() {
 
 ui::InputMethod* InputMethodAsh::GetInputMethod() {
   return this;
-}
-
-std::vector<gfx::Rect> InputMethodAsh::GetCompositionBounds(
-    const TextInputClient* client) {
-  std::vector<gfx::Rect> bounds;
-  if (client->HasCompositionText()) {
-    uint32_t i = 0;
-    gfx::Rect rect;
-    while (client->GetCompositionCharacterBounds(i++, &rect))
-      bounds.push_back(rect);
-  } else {
-    // For case of no composition at present, use caret bounds which is required
-    // by the IME extension for certain features (e.g. physical keyboard
-    // auto-correct).
-    bounds.push_back(client->GetCaretBounds());
-  }
-  return bounds;
 }
 
 bool InputMethodAsh::SendFakeProcessKeyEvent(bool pressed) const {

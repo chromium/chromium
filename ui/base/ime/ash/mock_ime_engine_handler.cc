@@ -50,9 +50,6 @@ void MockIMEEngineHandler::ProcessKeyEvent(const ui::KeyEvent& key_event,
   last_passed_callback_ = std::move(callback);
 }
 
-void MockIMEEngineHandler::SetCompositionBounds(
-    const std::vector<gfx::Rect>& bounds) {}
-
 void MockIMEEngineHandler::SetCaretBounds(
     const gfx::Rect& caret_bounds) {}
 
