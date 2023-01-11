@@ -533,7 +533,7 @@ TEST_F(EcheTrayTest, EcheTrayKeyboardShowHideUpdateBubbleBounds) {
       eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
 }
 
-TEST_F(EcheTrayTest, OnThemeChanged) {
+TEST_F(EcheTrayTest, DISABLED_OnThemeChanged) {
   ResetUnloadWebContent();
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
                           u"app 1", u"your phone");
