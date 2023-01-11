@@ -14,12 +14,6 @@ const FILTER_CONTAINER_ID = 'logFilters';
 /** Class to manage the log page. */
 export class LogPage {
   constructor() {
-    /**
-     * Store whether each log type is enabled.
-     * @private {Object<!LogType, boolean>}
-     */
-    this.isLogEnabled_ = {};
-
     this.initPage_();
   }
 
@@ -39,14 +33,17 @@ export class LogPage {
 
   /**
    * @param {!LogType} type
+   * @param {boolean} checked
    * @private
    */
-  createFilterCheckbox_(type) {
+  createFilterCheckbox_(type, checked) {
     const label = document.createElement('label');
     const input = document.createElement('input');
     input.id = this.checkboxId_(type);
     input.type = 'checkbox';
     input.classList.add(FILTER_CLASS);
+    input.checked = checked;
+    input.addEventListener('click', () => this.updateUrlParams_());
     label.appendChild(input);
 
     const span = document.createElement('span');
@@ -58,33 +55,26 @@ export class LogPage {
 
   /** @private */
   initPage_() {
+    const params = new URLSearchParams(location.search);
     for (const type of Object.values(LogType)) {
-      this.createFilterCheckbox_(type);
+      const enabled =
+          (params.get(type) === String(true) || params.get(type) === null);
+      this.createFilterCheckbox_(type, enabled);
     }
 
     const clearLogButton = document.getElementById('clearLog');
     clearLogButton.onclick = () => this.onClear_();
 
-    // Set whether the checkboxes are enabled/disabled.
-    const params = new URLSearchParams(location.search);
-    for (const type of Object.values(LogType)) {
-      LogPage.setFilterTypeEnabled(type, params.get(type));
-    }
-
     const saveLogButton = document.getElementById('saveLog');
     saveLogButton.onclick = event => this.onSaveLog_(event);
+  }
 
-    // Add click listeners to the checkboxes.
-    const checkboxes = document.getElementsByClassName(FILTER_CLASS);
-    const filterEventListener = function(event) {
-      const target = event.target;
-      LogPage.setFilterTypeEnabled(
-          logTypeFromId(target.id), String(target.checked));
-      location.search = LogPage.createUrlParams();
-    };
-    for (let i = 0; i < checkboxes.length; i++) {
-      checkboxes[i].onclick = filterEventListener;
-    }
+  /**
+   * @param {!LogType} type
+   * @private
+   */
+  isEnabled_(type) {
+    return document.getElementById(this.checkboxId_(type)).checked;
   }
 
   /** @private */
@@ -126,46 +116,44 @@ export class LogPage {
     a.click();
   }
 
-  /** Update the states of checkboxes and update logs. */
+  /** Update the logs. */
   async update() {
-    for (const type of Object.values(LogType)) {
-      const element = document.getElementById(checkboxId(type));
-      element.checked = this.isLogEnabled_[type];
-    }
-
     const log = await BackgroundBridge.LogStore.getLogs();
     this.updateLog_(log, document.getElementById('logList'));
   }
 
   /**
    * Updates the log section.
-   * @param {Array<!SerializableLog>} log Array of logs to record.
+   * @param {Array<!SerializableLog>} logs Array of logs to record.
    * @param {Element} div
    * @private
    */
-  updateLog_(log, div) {
-    for (let i = 0; i < log.length; i++) {
-      if (!LogPage.instance.isLogEnabled_[log[i].logType]) {
+  updateLog_(logs, div) {
+    if (!logs) {
+      return;
+    }
+    for (const log of logs) {
+      if (!this.isEnabled_(log.logType)) {
         continue;
       }
 
       const p = document.createElement('p');
       const typeName = document.createElement('span');
-      typeName.textContent = log[i].logType;
+      typeName.textContent = log.logType;
       typeName.className = 'log-type-tag';
       const timeStamp = document.createElement('span');
-      timeStamp.textContent = LogPage.formatTimeStamp(log[i].date);
+      timeStamp.textContent = LogPage.formatTimeStamp(log.date);
       timeStamp.className = 'log-time-tag';
       /** textWrapper should be in block scope, not function scope. */
       const textWrapper = document.createElement('pre');
-      textWrapper.textContent = log[i].value;
+      textWrapper.textContent = log.value;
       textWrapper.className = 'log-text';
 
       p.appendChild(typeName);
       p.appendChild(timeStamp);
 
       /** Add hide tree button when logType is tree. */
-      if (log[i].logType === LogType.TREE) {
+      if (log.logType === LogType.TREE) {
         const toggle = document.createElement('label');
         const toggleCheckbox = document.createElement('input');
         toggleCheckbox.type = 'checkbox';
@@ -186,25 +174,15 @@ export class LogPage {
   }
 
   /**
-   * Update isLogEnabled_. Set true if checked is null.
-   * @param {!LogType} type
-   * @param {?string} checked
+   * Update the URL parameter based on the checkboxes.
+   * @private
    */
-  static setFilterTypeEnabled(type, checked) {
-    LogPage.instance.isLogEnabled_[type] =
-        (checked === null || checked === String(true));
-  }
-
-  /**
-   * Create URL parameter based on LogPage.instance.isLogEnabled_.
-   * @return {string}
-   */
-  static createUrlParams() {
+  updateUrlParams_() {
     const urlParams = [];
     for (const type of Object.values(LogType)) {
-      urlParams.push(type + 'Filter=' + LogPage.instance.isLogEnabled_[type]);
+      urlParams.push(type + 'Filter=' + LogPage.instance.isEnabled_(type));
     }
-    return '?' + urlParams.join('&');
+    location.search = '?' + urlParams.join('&');
   }
 
   /**
