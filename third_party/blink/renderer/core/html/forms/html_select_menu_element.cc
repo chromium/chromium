@@ -356,7 +356,8 @@ void HTMLSelectMenuElement::CloseListbox() {
       // We will handle focus directly.
       listbox_part_->HidePopoverInternal(
           HidePopoverFocusBehavior::kNone,
-          HidePopoverForcingLevel::kHideAfterAnimations);
+          HidePopoverForcingLevel::kHideAfterAnimations,
+          /*exception_state=*/nullptr);
     }
     if (button_part_) {
       button_part_->Focus();

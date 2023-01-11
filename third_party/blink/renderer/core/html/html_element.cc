@@ -1206,7 +1206,8 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
     // If the popover type is changing, hide it.
     if (popoverOpen()) {
       HidePopoverInternal(HidePopoverFocusBehavior::kFocusPreviousElement,
-                          HidePopoverForcingLevel::kHideAfterAnimations);
+                          HidePopoverForcingLevel::kHideAfterAnimations,
+                          /*exception_state=*/nullptr);
       // Event handlers could have changed the popover, including by removing
       // the popover attribute, or changing its value. If that happened, defer
       // to the change that already happened, and don't reset it again here.
@@ -1247,49 +1248,70 @@ bool HTMLElement::popoverOpen() const {
   return false;
 }
 
-const char* HTMLElement::IsPopoverNotReady(
-    PopoverTriggerAction action,
-    DOMExceptionCode& exception_code) const {
+bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
+                                 ExceptionState* exception_state,
+                                 bool include_event_handler_text) const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   DCHECK_NE(action, PopoverTriggerAction::kNone);
   DCHECK_NE(action, PopoverTriggerAction::kToggle);
+
+  auto maybe_throw_exception = [&exception_state, &include_event_handler_text](
+                                   DOMExceptionCode code, const char* msg) {
+    if (exception_state) {
+      String error_message =
+          String(msg) +
+          (include_event_handler_text
+               ? " This might have been the result of the \"beforetoggle\" "
+                 "event handler changing the state of this popover."
+               : "");
+      exception_state->ThrowDOMException(code, error_message);
+    }
+  };
+
   if (!HasPopoverAttribute()) {
-    exception_code = DOMExceptionCode::kNotSupportedError;
-    return "Not supported on elements that do not have a valid value for the "
-           "'popover' attribute";
+    maybe_throw_exception(DOMExceptionCode::kNotSupportedError,
+                          "Not supported on elements that do not have a valid "
+                          "value for the 'popover' attribute.");
+    return false;
   }
-  exception_code = DOMExceptionCode::kInvalidStateError;
   if (!isConnected()) {
-    return "Invalid on disconnected popover elements";
+    maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
+                          "Invalid on disconnected popover elements.");
+    return false;
   }
   if (action == PopoverTriggerAction::kShow &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
-    return "Invalid on popover elements which aren't hidden";
+    maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
+                          "Invalid on popover elements which aren't hidden.");
+    return false;
   }
   if (action == PopoverTriggerAction::kHide &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kShowing) {
     // Important to check that visibility is not kShowing (rather than
     // popoverOpen()), because a hide transition might have been started on this
     // popover already, and we don't want to allow a double-hide.
-    return "Invalid on popover elements that aren't already showing";
+    maybe_throw_exception(
+        DOMExceptionCode::kInvalidStateError,
+        "Invalid on popover elements that aren't already showing.");
+    return false;
   }
   if (action == PopoverTriggerAction::kShow && IsA<HTMLDialogElement>(this) &&
       hasAttribute(html_names::kOpenAttr)) {
-    return "The dialog is already open as a dialog, and therefore cannot be "
-           "opened as a popover.";
+    maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
+                          "The dialog is already open as a dialog, and "
+                          "therefore cannot be opened as a popover.");
+    return false;
   }
   if (action == PopoverTriggerAction::kShow &&
       Fullscreen::IsFullscreenElement(*this)) {
-    return "This element is already in fullscreen mode, and therefore cannot "
-           "be opened as a popover.";
+    maybe_throw_exception(
+        DOMExceptionCode::kInvalidStateError,
+        "This element is already in fullscreen mode, and therefore cannot be "
+        "opened as a popover.");
+    return false;
   }
-  return nullptr;
-}
-
-bool HTMLElement::IsPopoverReady(PopoverTriggerAction action) const {
-  DOMExceptionCode exception_code;
-  return !IsPopoverNotReady(action, exception_code);
+  return true;
 }
 
 void HTMLElement::togglePopover(ExceptionState& exception_state) {
@@ -1321,12 +1343,18 @@ void HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
 // 3. Set the `:open` pseudo class.
 // 4. Update style. (Animations/transitions happen here.)
 void HTMLElement::showPopover(ExceptionState& exception_state) {
+  ShowPopoverInternal(&exception_state);
+}
+
+void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DOMExceptionCode exception_code;
-  if (auto* error =
-          IsPopoverNotReady(PopoverTriggerAction::kShow, exception_code)) {
-    return exception_state.ThrowDOMException(exception_code, error);
+  if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state)) {
+    DCHECK(exception_state)
+        << " Callers which aren't supposed to throw exceptions should not call "
+           "ShowPopoverInternal when the Popover isn't in a valid state to be "
+           "shown.";
+    return;
   }
 
   // Fire the "opening" beforetoggle event.
@@ -1343,8 +1371,10 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
 
   // The 'beforetoggle' event handler could have changed this popover, e.g. by
   // changing its type, removing it from the document, or calling showPopover().
-  if (!HasPopoverAttribute() || !isConnected() || popoverOpen())
+  if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
+                      /*include_event_handler_text=*/true)) {
     return;
+  }
 
   bool should_restore_focus = false;
   auto& document = GetDocument();
@@ -1360,9 +1390,19 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
     // The 'beforetoggle' event handlers could have changed this popover, e.g.
     // by changing its type, removing it from the document, or calling
     // showPopover().
-    if (!HasPopoverAttribute() || !isConnected() || popoverOpen() ||
-        PopoverType() != original_type)
+    if (PopoverType() != original_type) {
+      if (exception_state) {
+        exception_state->ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "The value of the popover attribute was changed while hiding the "
+            "popover.");
+      }
       return;
+    }
+    if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
+                        /*include_event_handler_text=*/true)) {
+      return;
+    }
 
     // We only restore focus for popover=auto, and only for the first popover in
     // the stack. If there's nothing showing, restore focus.
@@ -1421,7 +1461,10 @@ void HTMLElement::HideAllPopoversUntil(const HTMLElement* endpoint,
   auto close_all_open_popovers = [&document, &focus_behavior,
                                   &forcing_level]() {
     while (auto* popover = document.TopmostPopover()) {
-      popover->HidePopoverInternal(focus_behavior, forcing_level);
+      // We never throw exceptions from HideAllPopoversUntil, since it is always
+      // used to close other popovers that are already showing.
+      popover->HidePopoverInternal(focus_behavior, forcing_level,
+                                   /*exception_state=*/nullptr);
     }
   };
 
@@ -1445,21 +1488,20 @@ void HTMLElement::HideAllPopoversUntil(const HTMLElement* endpoint,
     return close_all_open_popovers();
   while (last_to_hide && last_to_hide->popoverOpen() &&
          !document.PopoverStack().empty()) {
-    document.PopoverStack().back()->HidePopoverInternal(focus_behavior,
-                                                        forcing_level);
+    // We never throw exceptions from HideAllPopoversUntil, since it is always
+    // used to close other popovers that are already showing.
+    document.PopoverStack().back()->HidePopoverInternal(
+        focus_behavior, forcing_level,
+        /*exception_state=*/nullptr);
   }
 }
 
 void HTMLElement::hidePopover(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DOMExceptionCode exception_code;
-  if (auto* error =
-          IsPopoverNotReady(PopoverTriggerAction::kHide, exception_code)) {
-    return exception_state.ThrowDOMException(exception_code, error);
-  }
   HidePopoverInternal(HidePopoverFocusBehavior::kFocusPreviousElement,
-                      HidePopoverForcingLevel::kHideAfterAnimations);
+                      HidePopoverForcingLevel::kHideAfterAnimations,
+                      &exception_state);
 }
 
 // Hiding a popover happens in phases, to facilitate animations and
@@ -1477,10 +1519,15 @@ void HTMLElement::hidePopover(ExceptionState& exception_state) {
 // 5. Remove the popover from the top layer, and add the UA display:none style.
 // 6. Update style.
 void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
-                                      HidePopoverForcingLevel forcing_level) {
+                                      HidePopoverForcingLevel forcing_level,
+                                      ExceptionState* exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DCHECK(HasPopoverAttribute());
+
+  if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state)) {
+    return;
+  }
+
   auto& document = GetDocument();
   if (PopoverType() == PopoverValueType::kAuto) {
     // Hide any popovers above us in the stack.
@@ -1491,6 +1538,12 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
     // hidePopover().
     auto& stack = document.PopoverStack();
     if (!stack.Contains(this)) {
+      if (exception_state) {
+        exception_state->ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "This popover's \"beforetoggle\" event handler caused it to be "
+            "hidden (e.g. by calling hidePopover()).");
+      }
       return;
     }
 
@@ -1537,7 +1590,8 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
 
   // The 'beforetoggle' event handler could have changed this popover, e.g. by
   // changing its type, removing it from the document, or calling showPopover().
-  if (!isConnected() || !popoverOpen()) {
+  if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
+                      /*include_event_handler_text=*/true)) {
     return;
   }
 
@@ -1816,7 +1870,8 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
       // Escape key just pops the topmost popover off the stack.
       document.TopmostPopover()->HidePopoverInternal(
           HidePopoverFocusBehavior::kFocusPreviousElement,
-          HidePopoverForcingLevel::kHideAfterAnimations);
+          HidePopoverForcingLevel::kHideAfterAnimations,
+          /*exception_state=*/nullptr);
     }
   }
 }
@@ -1827,7 +1882,7 @@ void HTMLElement::InvokePopover(Element* invoker) {
       GetDocument().GetExecutionContext()));
   DCHECK(HasPopoverAttribute());
   GetPopoverData()->setInvoker(invoker);
-  showPopover(ASSERT_NO_EXCEPTION);
+  ShowPopoverInternal(/*exception_state=*/nullptr);
 }
 
 Element* HTMLElement::anchorElement() const {
@@ -2312,7 +2367,8 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
     if (was_in_document) {
       // We can't run focus event handlers while removing elements.
       HidePopoverInternal(HidePopoverFocusBehavior::kNone,
-                          HidePopoverForcingLevel::kHideImmediately);
+                          HidePopoverForcingLevel::kHideImmediately,
+                          /*exception_state=*/nullptr);
     }
   }
 

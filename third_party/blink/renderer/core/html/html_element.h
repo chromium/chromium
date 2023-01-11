@@ -213,15 +213,20 @@ class CORE_EXPORT HTMLElement : public Element {
   bool HasPopoverAttribute() const;
   PopoverValueType PopoverType() const;
   bool popoverOpen() const;
-  const char* IsPopoverNotReady(PopoverTriggerAction action,
-                                DOMExceptionCode& exception_code) const;
-  bool IsPopoverReady(PopoverTriggerAction action) const;
+  bool IsPopoverReady(PopoverTriggerAction action,
+                      ExceptionState* exception_state,
+                      bool include_event_handler_text = false) const;
   void togglePopover(ExceptionState& exception_state);
   void togglePopover(bool force, ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
   void hidePopover(ExceptionState& exception_state);
+  // |exception_state| can be nullptr when exceptions can't be thrown, such as
+  // when the browser hides a popover during light dismiss or shows a popover in
+  // response to clicking a button with popovershowtarget.
+  void ShowPopoverInternal(ExceptionState* exception_state);
   void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
-                           HidePopoverForcingLevel forcing_level);
+                           HidePopoverForcingLevel forcing_level,
+                           ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded();
   static const HTMLElement* FindTopmostPopoverAncestor(const HTMLElement&);
 
