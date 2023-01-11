@@ -1,0 +1,10 @@
+Tests request body blobs support.
+Data included: false, has post data: true
+------boundary
+Content-Disposition: form-data; name="file"; filename="file.txt"
+Content-Type: text/plain
+
+
+------boundary--
+
+

@@ -2158,6 +2158,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
     request->SetUrlFragment(url_fragment);
 
   if (common_params.post_data) {
+    request->SetHasPostData(true);
     std::string post_data;
     auto data_entries =
         std::make_unique<protocol::Array<protocol::Network::PostDataEntry>>();
@@ -2166,7 +2167,6 @@ void NetworkHandler::NavigationRequestWillBeSent(
         request->SetPostData(post_data);
       if (data_entries->size())
         request->SetPostDataEntries(std::move(data_entries));
-      request->SetHasPostData(true);
     }
   }
   // TODO(caseq): report potentially blockable types
