@@ -11,11 +11,15 @@
 
 class Browser;
 class PageSwitcherView;
+class ExtensionsContainer;
+class ExtensionsMenuMainPageView;
+class ToolbarActionsModel;
 
 class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
                                      public TabStripModelObserver {
  public:
   ExtensionsMenuViewController(Browser* browser,
+                               ExtensionsContainer* extensions_container,
                                PageSwitcherView* contents_view);
   ExtensionsMenuViewController(const ExtensionsMenuViewController&) = delete;
   const ExtensionsMenuViewController& operator=(
@@ -39,9 +43,14 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // Accessors used by tests:
+  ExtensionsMenuMainPageView* GetMainPageViewForTesting();
+
  private:
   const raw_ptr<Browser> browser_;
+  const raw_ptr<ExtensionsContainer> extensions_container_;
   const raw_ptr<PageSwitcherView> contents_view_;
+  const raw_ptr<ToolbarActionsModel> toolbar_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_

@@ -23,7 +23,9 @@ ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
   Hide();
 }
 
-void ExtensionsMenuCoordinator::Show(views::View* anchor_view) {
+void ExtensionsMenuCoordinator::Show(
+    views::View* anchor_view,
+    ExtensionsContainer* extensions_container) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
@@ -43,8 +45,8 @@ void ExtensionsMenuCoordinator::Show(views::View* anchor_view) {
   contents_view->View::AddObserver(this);
   bubble_tracker_.SetView(contents_view);
 
-  controller_ =
-      std::make_unique<ExtensionsMenuViewController>(browser_, contents_view);
+  controller_ = std::make_unique<ExtensionsMenuViewController>(
+      browser_, extensions_container, contents_view);
   controller_->OpenMainPage();
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();

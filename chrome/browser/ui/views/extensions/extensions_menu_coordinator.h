@@ -10,6 +10,7 @@
 
 class Browser;
 class ExtensionsMenuViewController;
+class ExtensionsContainer;
 
 // Handles the lifetime and showing/hidden state of the extensions menu bubble.
 class ExtensionsMenuCoordinator : public views::ViewObserver {
@@ -21,7 +22,8 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   ~ExtensionsMenuCoordinator() override;
 
   // Displays the extensions menu under `anchor_view`.
-  void Show(views::View* anchor_view);
+  void Show(views::View* anchor_view,
+            ExtensionsContainer* extensions_container);
 
   // Hides the currently-showing extensions menu, if it exists.
   void Hide();
@@ -31,6 +33,11 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
 
   // Returns the currently-showing extensions menu widget, if it exists.
   views::Widget* GetExtensionsMenuWidget();
+
+  // Accessors used by tests:
+  ExtensionsMenuViewController* GetControllerForTesting() {
+    return controller_.get();
+  }
 
  private:
   // views::ViewObserver

@@ -128,7 +128,7 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    extensions_menu_coordinator_->Show(this);
+    extensions_menu_coordinator_->Show(this, extensions_container_);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {
     menu =

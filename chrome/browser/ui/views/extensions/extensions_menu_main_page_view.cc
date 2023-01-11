@@ -11,9 +11,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
@@ -31,6 +33,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -70,6 +73,15 @@ bool IsSiteSettingsToggleVisible(
     const raw_ptr<ToolbarActionsModel> toolbar_model,
     content::WebContents* web_contents) {
   return !toolbar_model->IsRestrictedUrl(web_contents->GetLastCommittedURL());
+}
+
+// Converts a view to a InstalledExtensionsMenuItemView. This cannot
+// be used to *determine* if a view is an InstalledExtensionMenuItemView (it
+// should only be used when the view is known to be one). It is only used as an
+// extra measure to prevent bad static casts.
+InstalledExtensionMenuItemView* GetAsMenuItem(views::View* view) {
+  DCHECK(views::IsViewClass<InstalledExtensionMenuItemView>(view));
+  return views::AsViewClass<InstalledExtensionMenuItemView>(view);
 }
 
 }  // namespace
@@ -135,7 +147,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
       // TODO(crbug.com/1390952): Add margins after adding the menu
       // items, to make sure all items are aligned.
       .AddChildren(
-          // Subheader.
+          // Subheader section.
           views::Builder<views::FlexLayoutView>()
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
               .SetProperty(views::kFlexBehaviorKey, stretch_specification)
@@ -190,10 +202,28 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetText(u"Site Permissions")
               .SetCallback(base::BindRepeating(
                   &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
-                  base::Unretained(navigation_handler_))))
+                  base::Unretained(navigation_handler_))),
+          // Menu items section.
+          views::Builder<views::BoxLayoutView>()
+              .CopyAddressTo(&menu_items_)
+              .SetOrientation(views::BoxLayout::Orientation::kVertical))
       .BuildChildren();
 
   // Update toggle button text after it's build, as it depends on its state.
+  UpdateSiteSettingToggleText(site_settings_toggle_);
+}
+
+void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
+    std::unique_ptr<ExtensionActionViewController> action_controller,
+    bool allow_pinning,
+    int index) {
+  auto item = std::make_unique<InstalledExtensionMenuItemView>(
+      browser_, std::move(action_controller), allow_pinning);
+  menu_items_->AddChildViewAt(std::move(item), index);
+}
+
+void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
+  // TODO(crbug.com/1390952): Update user site setting and add test.
   UpdateSiteSettingToggleText(site_settings_toggle_);
 }
 
@@ -210,9 +240,13 @@ void ExtensionsMenuMainPageView::Update() {
   }
 }
 
-void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
-  // TODO(crbug.com/1390952): Update user site setting and add test.
-  UpdateSiteSettingToggleText(site_settings_toggle_);
+std::vector<InstalledExtensionMenuItemView*>
+ExtensionsMenuMainPageView::GetMenuItemsForTesting() const {
+  std::vector<InstalledExtensionMenuItemView*> menu_item_views;
+  for (views::View* view : menu_items_->children()) {
+    menu_item_views.push_back(GetAsMenuItem(view));
+  }
+  return menu_item_views;
 }
 
 content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
