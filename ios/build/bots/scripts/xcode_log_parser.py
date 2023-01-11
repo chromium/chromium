@@ -251,9 +251,17 @@ class Xcode11LogParser(object):
           # If a test case was executed multiple times, there will be multiple
           # |test| objects of it. Each |test| corresponds to an execution of the
           # test case.
-          if test['testStatus']['_value'] == 'Success':
+          test_status_value = test['testStatus']['_value']
+          if test_status_value == 'Success':
             result.add_test_result(
                 TestResult(test_name, TestStatus.PASS, duration=duration))
+          elif test_status_value == 'Expected Failure':
+            result.add_test_result(
+                TestResult(
+                    test_name,
+                    TestStatus.FAIL,
+                    expected_status=TestStatus.FAIL,
+                    duration=duration))
           else:
             # Parse data for failed test by its id. See SINGLE_TEST_SUMMARY_REF
             # in xcode_log_parser_test.py for an example of |summary_ref|.
@@ -390,10 +398,10 @@ class Xcode11LogParser(object):
           for test_suite in all_tests.get('subtests', {}).get('_values', []):
             for test_case in test_suite.get('subtests', {}).get('_values', []):
               for test in test_case.get('subtests', {}).get('_values', []):
-                if test['testStatus']['_value'] != 'Success':
-                  test_summary_refs[
-                      test['identifier']
-                      ['_value']] = test['summaryRef']['id']['_value']
+                test_status_value = test['testStatus']['_value']
+                if test_status_value not in ['Success', 'Expected Failure']:
+                  summary_ref = test['summaryRef']['id']['_value']
+                  test_summary_refs[test['identifier']['_value']] = summary_ref
 
     for test, summary_ref_id in test_summary_refs.items():
       # See SINGLE_TEST_SUMMARY_REF in xcode_log_parser_test.py for an example
@@ -574,9 +582,16 @@ class XcodeLogParser(object):
         continue
       for test_suite in summary['Tests'][0]['Subtests'][0]['Subtests']:
         for test in test_suite['Subtests']:
-          if test['TestStatus'] == 'Success':
+          test_status = test['TestStatus']
+          if test_status == 'Success':
             result.add_test_result(
                 TestResult(test['TestIdentifier'], TestStatus.PASS))
+          elif test_status == 'Expected Failure':
+            result.add_test_result(
+                TestResult(
+                    test['TestIdentifier'],
+                    TestStatus.FAIL,
+                    expected_status=TestStatus.FAIL))
           else:
             message = ''
             for failure_summary in test['FailureSummaries']:

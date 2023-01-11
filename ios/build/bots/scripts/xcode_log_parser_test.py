@@ -174,7 +174,7 @@ TESTS_REF = """
                           },
                           {
                             "testStatus": {
-                              "_value": "Success"
+                              "_value": "Expected Failure"
                             },
                             "duration" : {
                               "_type" : {
