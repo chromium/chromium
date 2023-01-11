@@ -150,7 +150,7 @@ TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
                        matrix);
   provider.GetRasterContent(draw_image);
   ASSERT_TRUE(cache.last_image().paint_image());
-  ASSERT_EQ(cache.last_image().paint_image(), image);
+  ASSERT_TRUE(cache.last_image().paint_image().IsSameForTesting(image));
   ASSERT_EQ(cache.last_image().frame_index(), 1u);
 }
 

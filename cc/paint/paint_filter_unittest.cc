@@ -178,7 +178,7 @@ TEST_P(PaintFilterTest, SnapshotWithImages) {
     EXPECT_GT(image_provider.image_count_, 0)
         << PaintFilter::TypeToString(GetParamType());
   }
-  EXPECT_EQ(*filter, *snapshot_filter)
+  EXPECT_TRUE(filter->EqualsForTesting(*snapshot_filter))
       << PaintFilter::TypeToString(GetParamType());
 }
 

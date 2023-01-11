@@ -68,17 +68,27 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
 
   auto bounds = VisualRect();
   const auto& other_bounds = other.VisualRect();
-  if (bounds != other_bounds)
+  if (bounds != other_bounds) {
     return false;
+  }
 
   const auto& record = GetPaintRecord();
   const auto& other_record = other.GetPaintRecord();
-  if (record == other_record) {
+  if (record.empty() && other_record.empty()) {
     return true;
   }
-
-  // Sometimes the client may produce different records for the same visual
-  // result, which should be treated as equal.
+  // memcmp() may touch uninitialized gaps in PaintRecord, so skip this check
+  // for MSAN.
+#if !defined(MEMORY_SANITIZER)
+  if (record.buffer().next_op_offset() ==
+          other_record.buffer().next_op_offset() &&
+      memcmp(&record.GetFirstOp(), &other_record.GetFirstOp(),
+             record.buffer().next_op_offset()) == 0) {
+    return true;
+  }
+#endif
+  // By checking equality of bitmaps, different records for the same visual
+  // result are also treated as equal.
   return BitmapsEqual(record, other_record, bounds);
 }
 

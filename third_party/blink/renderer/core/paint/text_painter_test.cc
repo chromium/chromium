@@ -201,7 +201,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
   ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
-  EXPECT_NE(flags, op->flags);
+  EXPECT_FALSE(flags.EqualsForTesting(op->flags));
   flags = op->flags;
   EXPECT_EQ(blob, op->blob);
 
@@ -215,7 +215,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
   ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
-  EXPECT_EQ(flags, op->flags);
+  EXPECT_TRUE(flags.EqualsForTesting(op->flags));
   EXPECT_NE(blob, op->blob);
   blob = op->blob;
 
@@ -228,7 +228,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
   ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
-  EXPECT_EQ(flags, op->flags);
+  EXPECT_TRUE(flags.EqualsForTesting(op->flags));
   EXPECT_NE(blob, op->blob);
 
   // In dark mode, the text should be drawn with dark mode flags.
@@ -240,7 +240,7 @@ TEST_F(TextPainterTest, CachedTextBlob) {
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
   ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
-  EXPECT_NE(flags, op->flags);
+  EXPECT_FALSE(flags.EqualsForTesting(op->flags));
 }
 
 }  // namespace

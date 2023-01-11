@@ -164,7 +164,8 @@ void ExpectEqual(const cc::FilterOperation& input,
     case cc::FilterOperation::REFERENCE: {
       ASSERT_EQ(!!input.image_filter(), !!output.image_filter());
       if (input.image_filter()) {
-        EXPECT_EQ(*input.image_filter(), *output.image_filter());
+        EXPECT_TRUE(
+            input.image_filter()->EqualsForTesting(*output.image_filter()));
       }
       break;
     }

@@ -6219,7 +6219,7 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
   EXPECT_EQ(active_layer()->GetPaintWorkletRecordMap().size(), 2u);
   auto it = active_layer()->GetPaintWorkletRecordMap().find(input1);
   ASSERT_NE(it, active_layer()->GetPaintWorkletRecordMap().end());
-  EXPECT_EQ(it->second.second, record1);
+  EXPECT_TRUE(it->second.second->EqualsForTesting(record1));
   EXPECT_TRUE(active_layer()->GetPaintWorkletRecordMap().contains(input2));
 
   // Committing new PaintWorkletInputs (in a new raster source) should replace

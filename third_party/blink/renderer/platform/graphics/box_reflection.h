@@ -65,7 +65,9 @@ class PLATFORM_EXPORT BoxReflection {
 
 inline bool operator==(const BoxReflection& a, const BoxReflection& b) {
   return a.Direction() == b.Direction() && a.Offset() == b.Offset() &&
-         a.Mask() == b.Mask() && a.MaskBounds() == b.MaskBounds();
+         // False negatives are allowed, but not false positives.
+         a.Mask().empty() && b.Mask().empty() &&
+         a.MaskBounds() == b.MaskBounds();
 }
 
 inline bool operator!=(const BoxReflection& a, const BoxReflection& b) {

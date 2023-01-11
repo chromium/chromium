@@ -27,11 +27,11 @@ MATCHER_P(PaintOpEq,
           op,
           base::StringPrintf("%s equal to %s",
                              negation ? "isn't" : "is",
-                             PaintOpHelper::ToString(&op).c_str())) {
-  *result_listener << "\n    Expected: " << PaintOpHelper::ToString(&op)
-                   << "\n    Actual: " << PaintOpHelper::ToString(&arg);
+                             PaintOpHelper::ToString(op).c_str())) {
+  *result_listener << "\n    Expected: " << PaintOpHelper::ToString(op)
+                   << "\n    Actual: " << PaintOpHelper::ToString(arg);
   const PaintOp& op_ref = op;  // To unpack std::reference_wrapper, if needed.
-  return op_ref == arg;
+  return op_ref.EqualsForTesting(arg);
 }
 
 // Matcher checking that a PaintOpBuffer contains the specified PaintOps.
@@ -54,7 +54,7 @@ auto PaintOpsAreEq(OpType... op) {
 // Example use:
 //   PaintOpBuffer buffer = ...;
 //   EXPECT_THAT(buffer,
-//               ElementsAre(PaintOpIs<SaveOp>(), PaintOpIs<SetMatrixOp()));
+//               ElementsAre(PaintOpIs<SaveOp>(), PaintOpIs<SetMatrixOp>()));
 template <typename OpT>
 class PaintOpIs {
  public:

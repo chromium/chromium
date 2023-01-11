@@ -22,6 +22,9 @@
         // terminate before the final window decoration is added.
         // See <https://bugs.webkit.org/show_bug.cgi?id=21531>.
         window.testIsAsync = true;
+        // Under-invalidation checking is slow for this test.
+        if (window.internals)
+            internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
 
         var numberOfWindows = 7;
         var createCalls = 0;

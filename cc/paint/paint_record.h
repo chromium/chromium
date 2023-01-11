@@ -30,11 +30,9 @@ class CC_PAINT_EXPORT PaintRecord {
   PaintRecord(const PaintRecord&);
   PaintRecord& operator=(const PaintRecord&);
 
-  bool operator==(const PaintRecord& other) const {
-    return buffer_ == other.buffer_ ||
-           (buffer_ && other.buffer_ && *buffer_ == *other.buffer_);
+  bool EqualsForTesting(const PaintRecord& other) const {
+    return buffer_->EqualsForTesting(*other.buffer_);
   }
-  bool operator!=(const PaintRecord& other) const { return !(*this == other); }
 
   const PaintOpBuffer& buffer() const { return *buffer_; }
 

@@ -113,7 +113,8 @@ TEST(PaintShaderTest, DecodePaintRecord) {
   surface->getCanvas()->drawPaint(canvas.paint_);
 
   // Using the shader requests decode for images at the correct scale.
-  EXPECT_EQ(image_provider.draw_image().paint_image(), paint_image);
+  EXPECT_TRUE(
+      image_provider.draw_image().paint_image().IsSameForTesting(paint_image));
   EXPECT_EQ(image_provider.draw_image().scale().width(), 0.25f);
   EXPECT_EQ(image_provider.draw_image().scale().height(), 0.25f);
 }
