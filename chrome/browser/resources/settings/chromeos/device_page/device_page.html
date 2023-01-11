@@ -7,19 +7,25 @@
                                    hasTouchpad_)]]"
         on-click="onPointersTap_"
         role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
+    <template is="dom-if"
+        if="[[showPerDeviceMouseRow_(hasMouse_,
+                                     isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
           on-click="onPerDeviceMouseTap_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
-    <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
+    <template is="dom-if"
+        if="[[showPerDeviceTouchpadRow_(hasTouchpad_,
+                                        isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDeviceTouchpadRow"
           label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadTap_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
     </template>
-    <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
+    <template is="dom-if"
+        if="[[showPerDevicePointingStickRow_(hasPointingStick_,
+                                             isDeviceSettingsSplitEnabled_)]]">
       <cr-link-row class="hr" id="perDevicePointingStickRow"
           label="$i18n{pointingStickTitle}"
           on-click="onPerDevicePointingStickTap_"

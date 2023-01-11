@@ -521,6 +521,41 @@ suite('SettingsDevicePage', function() {
         isVisible(devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
   });
 
+  test(
+      'navigate back to device page when per-device-mouse is detached',
+      async function() {
+        // Tests with flag on.
+        setDeviceSplitEnabled(true);
+        webUIListenerCallback('has-mouse-changed', true);
+
+        await init();
+        assertTrue(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
+
+        webUIListenerCallback('has-mouse-changed', false);
+        await flushTasks();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
+
+        webUIListenerCallback('has-mouse-changed', true);
+        await flushTasks();
+        assertTrue(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
+
+        // Tests with flag off.
+        setDeviceSplitEnabled(false);
+        webUIListenerCallback('has-mouse-changed', true);
+
+        await init();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
+
+        webUIListenerCallback('has-mouse-changed', false);
+        await flushTasks();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceMouseRow')));
+      });
+
   test('per-device-touchpad row visibility', async function() {
     setDeviceSplitEnabled(false);
     await init();
@@ -528,12 +563,82 @@ suite('SettingsDevicePage', function() {
         devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
   });
 
+  test(
+      'navigate back to device page when per-device-touchpad is detached',
+      async function() {
+        // Tests with flag on.
+        setDeviceSplitEnabled(true);
+        webUIListenerCallback('has-touchpad-changed', true);
+
+        await init();
+        assertTrue(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
+
+        webUIListenerCallback('has-touchpad-changed', false);
+        await flushTasks();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
+
+        webUIListenerCallback('has-touchpad-changed', true);
+        await flushTasks();
+        assertTrue(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
+
+        // Tests with flag off.
+        setDeviceSplitEnabled(false);
+        webUIListenerCallback('has-touchpad-changed', true);
+
+        await init();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
+
+        webUIListenerCallback('has-touchpad-changed', false);
+        await flushTasks();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDeviceTouchpadRow')));
+      });
+
   test('per-device-pointing-stick row visibility', async function() {
     setDeviceSplitEnabled(false);
     await init();
     assertFalse(isVisible(
         devicePage.shadowRoot.querySelector('#perDevicePointingStickRow')));
   });
+
+  test(
+      'navigate back to device page when per-device-pointing-stick is detached',
+      async function() {
+        // Tests with flag on.
+        setDeviceSplitEnabled(true);
+        webUIListenerCallback('has-pointing-stick-changed', true);
+
+        await init();
+        assertTrue(isVisible(
+            devicePage.shadowRoot.querySelector('#perDevicePointingStickRow')));
+
+        webUIListenerCallback('has-pointing-stick-changed', false);
+        await flushTasks();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDevicePointingStickRow')));
+
+        webUIListenerCallback('has-pointing-stick-changed', true);
+        await flushTasks();
+        assertTrue(isVisible(
+            devicePage.shadowRoot.querySelector('#perDevicePointingStickRow')));
+
+        // Tests with flag off.
+        setDeviceSplitEnabled(false);
+        webUIListenerCallback('has-pointing-stick-stick-changed', true);
+
+        await init();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDevicePointingStickRow')));
+
+        webUIListenerCallback('has-pointing-stick-changed', false);
+        await flushTasks();
+        assertFalse(isVisible(
+            devicePage.shadowRoot.querySelector('#perDevicePointingStickRow')));
+      });
 
   test('per-device-keyboard row visibility', async function() {
     setDeviceSplitEnabled(false);
