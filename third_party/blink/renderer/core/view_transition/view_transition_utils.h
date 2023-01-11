@@ -119,6 +119,17 @@ class CORE_EXPORT ViewTransitionUtils {
       return supplement->TakePendingRequests();
     return {};
   }
+
+  static PseudoElement* GetRootPseudo(const Document& document) {
+    if (!document.documentElement()) {
+      return nullptr;
+    }
+
+    PseudoElement* view_transition_pseudo =
+        document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
+    DCHECK(!view_transition_pseudo || GetActiveTransition(document));
+    return view_transition_pseudo;
+  }
 };
 
 }  // namespace blink

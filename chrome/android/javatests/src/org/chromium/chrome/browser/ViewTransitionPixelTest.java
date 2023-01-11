@@ -89,7 +89,7 @@ public class ViewTransitionPixelTest {
         }
     }
 
-    private void startTest(@VirtualKeyboardMode.EnumType int vkMode) throws Throwable {
+    private void startKeyboardTest(@VirtualKeyboardMode.EnumType int vkMode) throws Throwable {
         mVirtualKeyboardMode = vkMode;
         String url = "/chrome/test/data/android/view_transition.html";
 
@@ -247,7 +247,7 @@ public class ViewTransitionPixelTest {
                 getWebContents(), "startTransitionAnimation();");
     }
 
-    // Sets  animation times to the final "incoming" state. Animations remain paused.
+    // Sets animation times to the final "incoming" state. Animations remain paused.
     private void animateToEndState() throws Throwable {
         JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), "animateToEndState();");
     }
@@ -290,7 +290,7 @@ public class ViewTransitionPixelTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testVirtualKeyboardResizesVisual() throws Throwable {
-        startTest(VirtualKeyboardMode.RESIZES_VISUAL);
+        startKeyboardTest(VirtualKeyboardMode.RESIZES_VISUAL);
 
         showAndWaitForKeyboard();
 
@@ -332,7 +332,7 @@ public class ViewTransitionPixelTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testVirtualKeyboardResizesContent() throws Throwable {
-        startTest(VirtualKeyboardMode.RESIZES_CONTENT);
+        startKeyboardTest(VirtualKeyboardMode.RESIZES_CONTENT);
 
         showAndWaitForKeyboard();
 
@@ -360,6 +360,35 @@ public class ViewTransitionPixelTest {
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "new_state_keyboard_resizes_content");
+
+        finishAnimations();
+    }
+
+    /**
+     * Test view transitions when into a <dialog> element.
+     *
+     * Tested here to ensure snapshot viewport positioning behavior with respect to top-layer
+     * objects like <dialog>.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testDialog() throws Throwable {
+        String url = "/chrome/test/data/android/view_transition_dialog.html";
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        createTransitionAndWaitUntilDomUpdateDispatched();
+
+        // Start the animation. The "animation" simply displays the old transition for the full
+        // duration of the test. This test is interested in how the <dialog> element is positioned.
+        // Since that's in the end-state, skip straight to that.
+        startTransitionAnimation();
+        animateToEndState();
+        waitForFramePresented();
+
+        Bitmap newState = takeScreenshot();
+        mRenderTestRule.compareForResult(newState, "incoming_dialog_element");
 
         finishAnimations();
     }

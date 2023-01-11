@@ -2899,12 +2899,30 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   // up and left to be at the origin "as-if all viewport-insetting UI were
   // hidden". This is done so that the transition container is stable across
   // navigations where the state of such UI can change (e.g. URL bar hidden ->
-  // shown). Offset painting of content so that it paints at the fixed viewport
-  // origin rather than behind the UI.
-  if (auto* transition =
-          ViewTransitionUtils::GetActiveTransition(object_.GetDocument());
-      transition && transition->IsRootTransitioning()) {
-    if (object_.IsDocumentElement()) {
+  // shown). Offset painting of all other content so that it paints at the
+  // fixed viewport origin rather than behind the UI. Non-root transitions
+  // paint at their layer's origin and the layer is positioned with this offset
+  // included.
+  Document& document = object_.GetDocument();
+  ViewTransition* transition =
+      ViewTransitionUtils::GetActiveTransition(document);
+  PseudoElement* view_transition_pseudo =
+      ViewTransitionUtils::GetRootPseudo(document);
+  // We may have a transition but not yet have setup the pseudo element tree.
+  // This can happen in view-transition-on-navigation where a transition is
+  // created waiting for rendering to unblock but pre-paint can still be
+  // triggered in this state.
+  DCHECK(!view_transition_pseudo || transition);
+  if (view_transition_pseudo && transition->IsRootTransitioning()) {
+    DCHECK(document.documentElement());
+    DCHECK(view_transition_pseudo->GetLayoutObject());
+    DCHECK(view_transition_pseudo->GetLayoutObject()->Parent()->IsLayoutView());
+
+    bool is_child_of_root =
+        object_.Parent() && object_.Parent()->IsLayoutView();
+    bool is_view_transition_pseudo =
+        object_.GetNode() == view_transition_pseudo;
+    if (is_child_of_root && !is_view_transition_pseudo) {
       PhysicalOffset offset =
           PhysicalOffset(transition->GetRootSnapshotPaintOffset());
       context_.current.paint_offset += offset;

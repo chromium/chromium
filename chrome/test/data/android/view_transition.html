@@ -17,6 +17,7 @@
       meta.content = metaTagContent;
       document.head.appendChild(meta);
     </script>
+    <script src="view_transition_util.js"></script>
     <style>
       body {
         margin: 0;
@@ -81,67 +82,10 @@
       }
     </style>
     <script>
-      let transition = null;
-
-      // Allow tests to control when the transition starts.
-      let startTransitionAnimation = null;
-      let startPromise = new Promise(resolve => {startTransitionAnimation = resolve;});
-
-      // Allow tests to wait until the snapshot has been taken and is ready to
-      // start transitioning.
-      let readyToStartResolve = null;
-      let readyToStartPromise = new Promise(resolve => {readyToStartResolve = resolve;});
-
-      function updateDOM() {
+      updateDOM = function() {
         document.getElementById("inflow").style.transform = "translateX(100px)";
         document.getElementById("bottomfixed").style.transform = "translateX(100px)";
         document.getElementById("topfixed").style.transform = "translateX(100px)";
-      }
-
-      // Sets the animation time to just before the end (not the end itself) to
-      // prevent finishing the animation. Since the animations have steps timing
-      // function the state is equivalent to the end state itself.
-      function animateToEndState() {
-        if (transition == null)
-          throw new Error('Transition was already finished or never started.');
-
-        for (const anim of document.getAnimations())
-          anim.currentTime = anim.effect.getTiming().duration - 1;
-      }
-
-      // Finishes animations, and thus the view transition.
-      function finishAnimations() {
-        if (transition == null)
-          throw new Error('Transition was already finished or never started.');
-
-        for (const anim of document.getAnimations())
-          anim.finish();
-      }
-
-      function createTransition() {
-        if (transition != null)
-          throw new Error('In-progress transition already exists.');
-
-        transition = document.startViewTransition(() => {
-          updateDOM();
-
-          readyToStartResolve();
-
-          return startPromise;
-        });
-
-        // Initially pause the animation at the old state so the test can take a
-        // screenshot. Tests can then use moveAnimationToNewState() to play the
-        // animation forward to the new state.
-        transition.ready.then(() => {
-          for (const anim of document.getAnimations()) {
-            anim.pause();
-          }
-        });
-
-        transition.finished.then( () => {
-          transition = null;
-        });
       }
     </script>
   </head>
