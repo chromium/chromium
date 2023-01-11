@@ -3597,9 +3597,6 @@ extern const char kRevampedPasswordManagementBubbleDescription[];
 extern const char kSideSearchName[];
 extern const char kSideSearchDescription[];
 
-extern const char kSideSearchDSESupportName[];
-extern const char kSideSearchDSESupportDescription[];
-
 extern const char kSearchWebInSidePanelName[];
 extern const char kSearchWebInSidePanelDescription[];
 #endif  // defined(TOOLKIT_VIEWS)

@@ -252,38 +252,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ReopenTab) {
   ShowAndVerifyUi();
 }
 
-// Need a separate fixture to override the feature flag.
-class FeaturePromoDialogSideSearchTest : public FeaturePromoDialogTest {
- public:
-  FeaturePromoDialogSideSearchTest() {
-    // Currently the IPH is only supported for the Google ChromeOS
-    // configuration.
-    feature_list_.InitWithFeatures({features::kSideSearch},
-                                   {features::kSideSearchDSESupport});
-  }
-
-  void SetUpOnMainThread() override {
-    FeaturePromoDialogTest::SetUpOnMainThread();
-  }
-
-  ~FeaturePromoDialogSideSearchTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogSideSearchTest,
-                       InvokeUi_IPH_SideSearch) {
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->toolbar()
-      ->left_side_panel_button()
-      ->SetVisible(true);
-  RunScheduledLayouts();
-
-  set_baseline("3187662");
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_TabSearch) {
   set_baseline("2991858");
   ShowAndVerifyUi();

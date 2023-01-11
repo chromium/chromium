@@ -6240,10 +6240,6 @@ const char kSideSearchDescription[] =
     "Enables an easily accessible way to access your most recent Google search "
     "results page embedded in a browser side panel";
 
-const char kSideSearchDSESupportName[] = "Side search DSE support";
-const char kSideSearchDSESupportDescription[] =
-    "Side search with support for participating chrome search engines.";
-
 const char kSearchWebInSidePanelName[] = "Search web in side panel";
 const char kSearchWebInSidePanelDescription[] =
     "Displays right-click search results of a highlighted text in side panel";

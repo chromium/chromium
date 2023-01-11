@@ -69,10 +69,6 @@ bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
   views::View::ConvertPointToTarget(src, dst, point);
   return dst->HitTestPoint(*point);
 }
-
-bool IsSideSearchRightAligned() {
-  return base::FeatureList::IsEnabled(features::kSideSearchDSESupport);
-}
 }  // namespace
 
 constexpr int BrowserViewLayout::kMainBrowserContentsMinimumWidth;
@@ -577,9 +573,8 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
   // separator visibility back into LayoutSidePanelView().
   if (left_aligned_side_panel_separator_) {
     const bool any_left_side_panel_visible =
-        (side_search_visible && !IsSideSearchRightAligned()) ||
-        (side_panel_visible &&
-         !views::AsViewClass<SidePanel>(unified_side_panel_)->IsRightAligned());
+        side_panel_visible &&
+        !views::AsViewClass<SidePanel>(unified_side_panel_)->IsRightAligned();
 
     SetViewVisibility(left_aligned_side_panel_separator_,
                       any_left_side_panel_visible);
@@ -587,7 +582,7 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
 
   if (right_aligned_side_panel_separator_) {
     const bool any_right_side_panel_visible =
-        (side_search_visible && IsSideSearchRightAligned()) ||
+        side_search_visible ||
         (side_panel_visible &&
          views::AsViewClass<SidePanel>(unified_side_panel_)->IsRightAligned());
 

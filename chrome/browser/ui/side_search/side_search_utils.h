@@ -53,9 +53,6 @@ bool IsEnabledForBrowser(const Browser* browser);
 // search engine (e.g. Google) supports search in side panel.
 bool IsSearchWebInSidePanelSupported(const Browser* browser);
 
-// Returns true if side search should use the unified side panel implementation.
-bool ShouldUseUnifiedSidePanel();
-
 }  // namespace side_search
 
 bool IsSideSearchEnabled(const Profile* profile);
