@@ -21,13 +21,19 @@ found in the LICENSE file.
         <org.chromium.components.browser_ui.settings.TextMessagePreference
             android:key="ad_measurement_enabled_bullet_one"
             android:summary="@string/settings_ad_measurement_page_enabled_bullet_1"
-            android:icon="@drawable/ic_spam_reduction_24dp"
+            android:icon="@drawable/ic_bar_chart_24dp"
             app:allowDividerBelow="false" />
 
         <org.chromium.components.browser_ui.settings.TextMessagePreference
             android:key="ad_measurement_enabled_bullet_two"
             android:summary="@string/settings_ad_measurement_page_enabled_bullet_2"
-            android:icon="@drawable/ic_performance_max_24dp"
+            android:icon="@drawable/ic_auto_delete_24dp"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="ad_measurement_enabled_bullet_three"
+            android:summary="@string/settings_ad_measurement_page_enabled_bullet_3"
+            android:icon="@drawable/ic_background_replace_24dp"
             app:allowDividerBelow="false" />
 
     </PreferenceCategory>
@@ -37,9 +43,21 @@ found in the LICENSE file.
         android:title="@string/settings_ad_measurement_page_consider_heading">
 
         <org.chromium.components.browser_ui.settings.TextMessagePreference
-            android:key="ad_measurement_enabled_bullet_one"
+            android:key="ad_measurement_consider_bullet_one"
             android:summary="@string/settings_ad_measurement_page_consider_bullet_1"
-            android:icon="@drawable/ic_tune_24dp"
+            android:icon="@drawable/ic_delete_24dp"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="ad_measurement_consider_bullet_two"
+            android:summary="@string/settings_ad_measurement_page_consider_bullet_2"
+            android:icon="@drawable/ic_filter_list_24dp"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:key="ad_measurement_consider_bullet_three"
+            android:summary="@string/settings_ad_measurement_page_consider_bullet_3"
+            android:icon="@drawable/ic_devices_24dp"
             app:allowDividerBelow="false" />
 
     </PreferenceCategory>

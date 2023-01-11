@@ -95,7 +95,8 @@ public final class AdMeasurementFragmentV4Test {
 
     private void startAdMeasuremenSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
-        ViewUtils.onViewWaiting(withText(R.string.settings_ad_measurement_page_title));
+        ViewUtils.onViewWaiting(allOf(withText(R.string.settings_ad_measurement_page_title),
+                withParent(withId(R.id.action_bar))));
     }
 
     private Matcher<View> getAdMeasurementToggleMatcher() {
@@ -127,7 +128,7 @@ public final class AdMeasurementFragmentV4Test {
     public void testRenderAdMeasurement() throws IOException {
         setAdMeasurementPrefEnabled(true);
         startAdMeasuremenSettings();
-        mRenderTestRule.render(getRootView(R.string.settings_ad_measurement_page_title),
+        mRenderTestRule.render(getRootView(R.string.settings_ad_measurement_page_toggle_sub_label),
                 "ad_measurement_page_toggle_on");
     }
 
