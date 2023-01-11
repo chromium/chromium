@@ -915,16 +915,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.UserSubdirHasCorrectGroup" enum="BooleanCorrect"
-    expires_after="2023-01-15">
-  <owner>austinct@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Records whether the user's profile directory (/home/chronos/u-{hash}) is
-    owned by group chronos-access. This is recorded once per log-in.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigRetries"
     units="retries" expires_after="2023-07-02">
   <owner>hcyang@google.com</owner>
