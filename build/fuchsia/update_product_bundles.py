@@ -244,7 +244,7 @@ def get_current_signature(ffx_runner):
   """
   product_bundles = get_product_bundles(ffx_runner)
   if not product_bundles:
-    logging.warning('No product bundles - signature will default to None')
+    logging.info('No product bundles - signature will default to None')
     return None
   product_bundle_urls = get_product_bundle_urls(ffx_runner)
 
