@@ -54,14 +54,6 @@ export class OutputInterface {
    * @param {!OutputFormatTree} tree
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
-  formatCustomFunction_(data, token, tree, options) {}
-
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
   formatMessage_(data, token, tree, options) {}
 
   /**
