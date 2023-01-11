@@ -63,7 +63,8 @@ class ASH_EXPORT NotificationCenterView
     : public views::View,
       public MessageCenterScrollBar::Observer,
       public views::FocusChangeListener,
-      public gfx::AnimationDelegate {
+      public gfx::AnimationDelegate,
+      public views::ViewObserver {
  public:
   METADATA_HEADER(NotificationCenterView);
 
@@ -150,6 +151,9 @@ class ASH_EXPORT NotificationCenterView
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
   // MessageCenterScrollBar::Observer:
   void OnMessageCenterScrolled() override;
 
@@ -171,6 +175,10 @@ class ASH_EXPORT NotificationCenterView
   friend class NotificationCenterTestApi;
   friend class NotificationCenterViewTest;
   friend class UnifiedMessageCenterBubbleTest;
+
+  // Callback for whenever the scroll view contained in this view receives a
+  // scroll event.
+  void OnContentsScrolled();
 
   // Starts the animation to hide the `StackedNotificationBar`.
   void StartHideStackingBarAnimation();
@@ -225,6 +233,8 @@ class ASH_EXPORT NotificationCenterView
   const std::unique_ptr<views::FocusSearch> focus_search_;
 
   views::FocusManager* focus_manager_ = nullptr;
+
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
 };
 
 }  // namespace ash
