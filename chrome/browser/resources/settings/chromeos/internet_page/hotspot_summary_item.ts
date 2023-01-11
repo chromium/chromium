@@ -11,18 +11,25 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
+import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_policy_indicator_behavior.js';
 import {getHotspotConfig} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {HotspotAllowStatus, HotspotInfo, HotspotState} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Constructor} from '../common/types.js';
 import {routes} from '../os_route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './hotspot_summary_item.html.js';
 
-const HotspotSummaryItemElementBase = I18nMixin(PolymerElement);
+const HotspotSummaryItemElementBase =
+    mixinBehaviors([CrPolicyNetworkBehaviorMojo], I18nMixin(PolymerElement)) as
+    Constructor<PolymerElement&I18nMixinInterface&
+                CrPolicyNetworkBehaviorMojoInterface>;
 
 class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   static get is() {
@@ -52,23 +59,45 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     };
   }
 
-  hotspotInfo: HotspotInfo|undefined;
+  hotspotInfo: HotspotInfo;
   private isHotspotToggleOn_: boolean;
 
-  private onHotspotInfoChanged_(
-      newValue: HotspotInfo, _oldValue: HotspotInfo|undefined): void {
+  private onHotspotInfoChanged_(newValue: HotspotInfo, _oldValue: HotspotInfo):
+      void {
     this.isHotspotToggleOn_ = newValue.state === HotspotState.kEnabled ||
         newValue.state === HotspotState.kEnabling;
   }
 
-
   private navigateToDetailPage_(): void {
+    if (!this.shouldShowArrowButton_(this.hotspotInfo.allowStatus)) {
+      return;
+    }
+
     Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
   }
 
-  private getSecondaryLabel_(isHotspotToggleOn: boolean): string {
+  private getHotspotStateSublabel_(isHotspotToggleOn: boolean): string {
     return isHotspotToggleOn ? this.i18n('hotspotSummaryStateOn') :
                                this.i18n('hotspotSummaryStateOff');
+  }
+
+  private shouldHideHotspotStateSublabel_(allowStatus: HotspotAllowStatus):
+      boolean {
+    return allowStatus === HotspotAllowStatus.kDisallowedReadinessCheckFail ||
+        allowStatus === HotspotAllowStatus.kDisallowedNoMobileData;
+  }
+
+  private getHotspotDisabledSublabelLink_(allowStatus: HotspotAllowStatus):
+      string {
+    if (allowStatus === HotspotAllowStatus.kDisallowedNoMobileData) {
+      return this.i18nAdvanced('hotspotNoMobileDataSublabelWithLink')
+          .toString();
+    }
+    if (allowStatus === HotspotAllowStatus.kDisallowedReadinessCheckFail) {
+      return this.i18nAdvanced('hotspotMobileDataNotSupportedSublabelWithLink')
+          .toString();
+    }
+    return '';
   }
 
   /**
@@ -99,15 +128,16 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   }
 
   private isToggleDisabled_(): boolean {
-    if (!this.hotspotInfo) {
+    if (!this.shouldShowArrowButton_(this.hotspotInfo.allowStatus)) {
       return true;
     }
-    if (this.hotspotInfo.allowStatus ===
-        HotspotAllowStatus.kDisallowedByPolicy) {
-      return true;
-    }
+
     return this.hotspotInfo.state === HotspotState.kEnabling ||
         this.hotspotInfo.state === HotspotState.kDisabling;
+  }
+
+  private shouldShowArrowButton_(allowStatus: HotspotAllowStatus): boolean {
+    return allowStatus === HotspotAllowStatus.kAllowed;
   }
 
   private getIconClass_(isHotspotToggleOn: boolean): string {
@@ -115,6 +145,14 @@ class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
       return 'os-settings:hotspot-enabled';
     }
     return 'os-settings:hotspot-disabled';
+  }
+
+  private shouldShowPolicyIndicator_(allowStatus: HotspotAllowStatus): boolean {
+    return allowStatus === HotspotAllowStatus.kDisallowedByPolicy;
+  }
+
+  private getPolicyIndicatorType_(): CrPolicyIndicatorType {
+    return this.getIndicatorTypeForSource(OncSource.kDevicePolicy);
   }
 
   private announceHotspotToggleChange_(): void {

@@ -387,7 +387,9 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
     return this.hotspotInfo.allowStatus !==
         HotspotAllowStatus.kDisallowedNoCellularUpstream &&
         this.hotspotInfo.allowStatus !==
-        HotspotAllowStatus.kDisallowedNoWiFiDownstream;
+        HotspotAllowStatus.kDisallowedNoWiFiDownstream &&
+        this.hotspotInfo.allowStatus !==
+        HotspotAllowStatus.kDisallowedNoWiFiSecurityModes;
   }
 }
 

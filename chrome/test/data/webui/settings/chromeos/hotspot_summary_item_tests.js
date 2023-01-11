@@ -27,7 +27,7 @@ suite('HotspotSummaryItemTest', function() {
     setHotspotConfigForTesting(hotspotConfig_);
   });
 
-  setup(function() {
+  setup(async function() {
     PolymerTest.clearBody();
 
     hotspotSummaryItem = document.createElement('hotspot-summary-item');
@@ -46,13 +46,9 @@ suite('HotspotSummaryItemTest', function() {
 
     hotspotConfig_.setFakeHotspotInfo({
       state: HotspotState.kDisabled,
-      allowStatus: HotspotAllowStatus.kDisallowedNoCellularUpstream,
-      clientCount: 0,
-      config: {
-        ssid: 'test_ssid',
-        passphrase: 'test_passphrase',
-      },
+      allowStatus: HotspotAllowStatus.kAllowed,
     });
+    await flushAsync();
   });
 
   teardown(function() {
@@ -68,88 +64,212 @@ suite('HotspotSummaryItemTest', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  test('clicking on subpage arrow routes to hotspot subpage', async function() {
-    const subpageArrow = hotspotSummaryItem.shadowRoot.querySelector(
-        '#hotspotSummaryItemRowArrowIcon');
-    assertTrue(!!subpageArrow);
-    subpageArrow.click();
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.HOTSPOT_DETAIL);
-  });
-
   test(
-      'clicking on hotspot summary row routes to hotspot subpage',
+      'clicking on subpage arrow routes to hotspot subpage when allowed',
       async function() {
         const subpageArrow = hotspotSummaryItem.shadowRoot.querySelector(
-            '#hotspotSummaryItemRow');
-        assertTrue(!!subpageArrow);
+            '#hotspotSummaryItemRowArrowIcon');
+        assertTrue(!!subpageArrow, 'Subpage arrow should exist');
         subpageArrow.click();
         assertEquals(
-            Router.getInstance().getCurrentRoute(), routes.HOTSPOT_DETAIL);
+            routes.HOTSPOT_DETAIL, Router.getInstance().getCurrentRoute());
       });
 
-  test('UI state test', async function() {
-    // Simulate hotspot state is disabled.
-    const hotspotSecondaryLabel =
-        hotspotSummaryItem.shadowRoot.querySelector('#hotspotSecondaryLabel');
+  test(
+      'clicking on hotspot summary row routes to hotspot subpage when allowed',
+      async function() {
+        const hotspotSummaryRow = hotspotSummaryItem.shadowRoot.querySelector(
+            '#hotspotSummaryItemRow');
+        assertTrue(!!hotspotSummaryRow, 'Hotspot summary row should exist');
+        hotspotSummaryRow.click();
+        assertEquals(
+            routes.HOTSPOT_DETAIL, Router.getInstance().getCurrentRoute());
+      });
+
+  test('UI state when hotspot is allowed and state is off', async function() {
+    const hotspotStateSublabel =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotStateSublabel');
+    const hotspotDisabledSublabelLink =
+        hotspotSummaryItem.shadowRoot.querySelector(
+            '#hotspotDisabledSublabelLink');
     const enableToggle =
         hotspotSummaryItem.shadowRoot.querySelector('#enableHotspotToggle');
     const hotspotIcon =
         hotspotSummaryItem.shadowRoot.querySelector('#hotspotIcon');
-    await flushAsync();
+    const subpageArrow = hotspotSummaryItem.shadowRoot.querySelector(
+        '#hotspotSummaryItemRowArrowIcon');
+    const policyIndicator =
+        hotspotSummaryItem.shadowRoot.querySelector('#policyIndicator');
+
+    assertFalse(enableToggle.disabled, 'Toggle should be enabled');
+    assertTrue(!!subpageArrow, 'Subpage arrow should exist');
+    assertFalse(!!policyIndicator, 'Policy indicator should not exist');
+    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
-        hotspotSecondaryLabel.textContent.trim());
-    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+        hotspotStateSublabel.textContent.trim());
+    assertTrue(
+        hotspotDisabledSublabelLink.hidden,
+        'Disabled sublabel link should hide');
+  });
 
-    // Simulate turning on hotspot.
-    hotspotConfig_.setFakeEnableHotspotResult(HotspotControlResult.kSuccess);
-    hotspotConfig_.enableHotspot();
+  test('UI state when hotspot is allowed and state is on', async function() {
+    hotspotConfig_.setFakeHotspotState(HotspotState.kEnabled);
     await flushAsync();
+
+    const hotspotStateSublabel =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotStateSublabel');
+    const hotspotDisabledSublabelLink =
+        hotspotSummaryItem.shadowRoot.querySelector(
+            '#hotspotDisabledSublabelLink');
+    const enableToggle =
+        hotspotSummaryItem.shadowRoot.querySelector('#enableHotspotToggle');
+    const hotspotIcon =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotIcon');
+    const subpageArrow = hotspotSummaryItem.shadowRoot.querySelector(
+        '#hotspotSummaryItemRowArrowIcon');
+    const policyIndicator =
+        hotspotSummaryItem.shadowRoot.querySelector('#policyIndicator');
+
+    assertFalse(enableToggle.disabled, 'Toggle should be enabled');
+    assertTrue(!!subpageArrow, 'Subpage arrow should exist');
+    assertFalse(!!policyIndicator, 'Policy indicator should not exist');
+    assertEquals('os-settings:hotspot-enabled', hotspotIcon.icon);
+    assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
-        hotspotSecondaryLabel.textContent.trim());
-    assertEquals('os-settings:hotspot-enabled', hotspotIcon.icon);
-    assertTrue(enableToggle.checked);
+        hotspotStateSublabel.textContent.trim());
+    assertTrue(
+        hotspotDisabledSublabelLink.hidden,
+        'Disabled sublabel link should hide');
+  });
 
-    // Simulate turning off hotspot.
-    hotspotConfig_.setFakeDisableHotspotResult(HotspotControlResult.kSuccess);
-    hotspotConfig_.disableHotspot();
-    await flushAsync();
-    assertEquals(
-        hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
-        hotspotSecondaryLabel.textContent.trim());
-    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
-    assertFalse(enableToggle.checked);
-
-    // Verify toggle is able to turn on/off by CrosHotspotConfig even when it is
-    // disabled by policy.
+  test('UI state when disallowed by policy', async function() {
     hotspotConfig_.setFakeHotspotAllowStatus(
         HotspotAllowStatus.kDisallowedByPolicy);
     await flushAsync();
-    // Toggle should be disabled.
-    assertTrue(enableToggle.disabled);
 
+    const hotspotStateSublabel =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotStateSublabel');
+    const hotspotDisabledSublabelLink =
+        hotspotSummaryItem.shadowRoot.querySelector(
+            '#hotspotDisabledSublabelLink');
+    const enableToggle =
+        hotspotSummaryItem.shadowRoot.querySelector('#enableHotspotToggle');
+    const hotspotIcon =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotIcon');
+    const subpageArrow = hotspotSummaryItem.shadowRoot.querySelector(
+        '#hotspotSummaryItemRowArrowIcon');
+    const policyIndicator =
+        hotspotSummaryItem.shadowRoot.querySelector('#policyIndicator');
+
+    // Toggle should be disabled, subpage arrow should not show.
+    assertTrue(enableToggle.disabled, 'Toggle should be disabled');
+    assertFalse(!!subpageArrow, 'Subpage arrow should not exist');
+    assertTrue(!!policyIndicator, 'Policy indicator should exist');
+    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
+    assertEquals(
+        hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
+        hotspotStateSublabel.textContent.trim());
+    assertTrue(
+        hotspotDisabledSublabelLink.hidden,
+        'Disabled sublabel link should hide');
+
+    // Verify toggle is able to turn on/off by CrosHotspotConfig even when it is
+    // disabled by policy.
     hotspotConfig_.setFakeHotspotState(HotspotState.kEnabled);
     await flushAsync();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
-        hotspotSecondaryLabel.textContent.trim());
+        hotspotStateSublabel.textContent.trim());
     assertEquals('os-settings:hotspot-enabled', hotspotIcon.icon);
-    assertTrue(enableToggle.checked);
 
     hotspotConfig_.setFakeHotspotState(HotspotState.kDisabled);
     await flushAsync();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
-        hotspotSecondaryLabel.textContent.trim());
+        hotspotStateSublabel.textContent.trim());
     assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
-    assertFalse(enableToggle.checked);
+  });
+
+  test(
+      'UI state when mobile data plan doesn\'t support hotspot',
+      async function() {
+        hotspotConfig_.setFakeHotspotAllowStatus(
+            HotspotAllowStatus.kDisallowedReadinessCheckFail);
+        await flushAsync();
+
+        const hotspotStateSublabel =
+            hotspotSummaryItem.shadowRoot.querySelector(
+                '#hotspotStateSublabel');
+        const hotspotDisabledSublabelLink =
+            hotspotSummaryItem.shadowRoot.querySelector(
+                '#hotspotDisabledSublabelLink');
+        const enableToggle =
+            hotspotSummaryItem.shadowRoot.querySelector('#enableHotspotToggle');
+        const hotspotIcon =
+            hotspotSummaryItem.shadowRoot.querySelector('#hotspotIcon');
+        const subpageArrow = hotspotSummaryItem.shadowRoot.querySelector(
+            '#hotspotSummaryItemRowArrowIcon');
+        const policyIndicator =
+            hotspotSummaryItem.shadowRoot.querySelector('#policyIndicator');
+
+        // Toggle should be disabled, subpage arrow should not show.
+        assertTrue(enableToggle.disabled, 'Toggle should be disabled');
+        assertFalse(!!subpageArrow, 'Subpage arrow should not exist');
+        assertFalse(!!policyIndicator, 'Policy indicator should not exist');
+        assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+        assertTrue(hotspotStateSublabel.hidden, 'State sublabel should hide');
+        assertFalse(
+            hotspotDisabledSublabelLink.hidden,
+            'Disabled sublabel link should show');
+        assertEquals(
+            hotspotSummaryItem
+                .i18nAdvanced('hotspotMobileDataNotSupportedSublabelWithLink')
+                .toString(),
+            hotspotDisabledSublabelLink.localizedString);
+      });
+
+  test('UI state when no mobile data connection', async function() {
+    hotspotConfig_.setFakeHotspotAllowStatus(
+        HotspotAllowStatus.kDisallowedNoMobileData);
+    await flushAsync();
+
+    const hotspotStateSublabel =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotStateSublabel');
+    const hotspotDisabledSublabelLink =
+        hotspotSummaryItem.shadowRoot.querySelector(
+            '#hotspotDisabledSublabelLink');
+    const enableToggle =
+        hotspotSummaryItem.shadowRoot.querySelector('#enableHotspotToggle');
+    const hotspotIcon =
+        hotspotSummaryItem.shadowRoot.querySelector('#hotspotIcon');
+    const subpageArrow = hotspotSummaryItem.shadowRoot.querySelector(
+        '#hotspotSummaryItemRowArrowIcon');
+    const policyIndicator =
+        hotspotSummaryItem.shadowRoot.querySelector('#policyIndicator');
+
+    // Toggle should be disabled, subpage arrow should not show.
+    assertTrue(enableToggle.disabled, 'Toggle should be disabled');
+    assertFalse(!!subpageArrow, 'Subpage arrow should not exist');
+    assertFalse(!!policyIndicator, 'Policy indicator should not exist');
+    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    assertTrue(hotspotStateSublabel.hidden, 'State sublabel should hide');
+    assertFalse(
+        hotspotDisabledSublabelLink.hidden,
+        'Disabled sublabel link should show');
+    assertEquals(
+        hotspotSummaryItem.i18nAdvanced('hotspotNoMobileDataSublabelWithLink')
+            .toString(),
+        hotspotDisabledSublabelLink.localizedString);
   });
 
   test('Toggle button state', async function() {
     const enableHotspotToggle =
         hotspotSummaryItem.shadowRoot.querySelector('#enableHotspotToggle');
-    assertTrue(!!enableHotspotToggle);
+    assertTrue(!!enableHotspotToggle, 'Hotspot enable toggl should exist');
     assertFalse(enableHotspotToggle.checked);
 
     // Simulate clicking toggle to turn on hotspot and fail.
