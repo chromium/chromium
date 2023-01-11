@@ -42,9 +42,6 @@ class CORE_EXPORT MessageChannel final : public ScriptWrappable {
 
  public:
   static MessageChannel* Create(ExecutionContext* execution_context) {
-    // https://linear.app/replay/issue/RUN-1043
-    recordreplay::Assert("[RUN-1043] MessageChannel::Create");
-
     return MakeGarbageCollected<MessageChannel>(execution_context);
   }
 
