@@ -972,6 +972,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowPageWithIDBConnectionInBFCache);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseBlinkSchedulerTaskRunnerWithCustomDeleter);
 
+// Extend ScriptResource's lifetime to match its payload's lifetime.
+// See https://crbug.com/1393246.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExtendScriptResourceLifetime);
+
 }  // namespace features
 }  // namespace blink
 

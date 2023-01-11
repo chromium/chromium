@@ -166,7 +166,9 @@ void ScriptCacheConsumer::NotifyClientWaiting(
     v8::ScriptOrigin origin = classic_script->CreateScriptOrigin(isolate);
     if (consume_task_) {
       consume_task_->SourceTextAvailable(
-          isolate, V8String(isolate, source_text), origin);
+          isolate,
+          V8String(isolate, source_text, classic_script->ResourceKeepAlive()),
+          origin);
     }
   }
 

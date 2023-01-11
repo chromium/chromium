@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<title>Tests for script resources' keep-alive behavior https://crbug.com/1393246</title>
+<body>
+<script>
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+  }
+
+  async function addScriptAndWaitForLoad(src) {
+    return new Promise((resolve) => {
+      let script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.addEventListener('load', () => {
+        resolve(script);
+      });
+      document.body.appendChild(script);
+    });
+  }
+
+  async function runGcAsynchronously() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        gc();
+        resolve();
+      }, 0);
+    });
+  }
+
+  function report(s) {
+    document.getElementById('result').innerText += s + '\n';
+  }
+
+  function checkMemoryCache(url) {
+    if (internals.isLoadingFromMemoryCache(url)) {
+      report(url + ': in memory cache');
+    } else {
+      report(url + ': not in memory cache');
+    }
+  }
+
+  async function testSimple() {
+    await addScriptAndWaitForLoad('../resources/dummy.js');
+    await runGcAsynchronously();
+    checkMemoryCache('../resources/dummy.js');
+  }
+
+  async function testTwoScriptsWithSameText() {
+    await addScriptAndWaitForLoad('../resources/dummy.js?1');
+    await addScriptAndWaitForLoad('../resources/dummy.js?2');
+    await runGcAsynchronously();
+    checkMemoryCache('../resources/dummy.js?1');
+    checkMemoryCache('../resources/dummy.js?2');
+  }
+
+  async function testLoadSameScriptTwice() {
+    await addScriptAndWaitForLoad('../resources/dummy.js?twice');
+    await addScriptAndWaitForLoad('../resources/dummy.js?twice');
+    await runGcAsynchronously();
+    checkMemoryCache('../resources/dummy.js?twice');
+  }
+
+  async function testRevalidation() {
+    await addScriptAndWaitForLoad('resources/must-revalidate-script.php');
+    let id1 = must_revalidate_script_id;
+    await addScriptAndWaitForLoad('resources/must-revalidate-script.php');
+    let id2 = must_revalidate_script_id;
+    if (id1 !== id2) {
+      report('PASS: must-revalidate-script.php revalidated');
+    } else {
+      report('FAIL: must-revalidate-script.php not revalidated');
+    }
+    await runGcAsynchronously();
+    checkMemoryCache('resources/must-revalidate-script.php');
+  }
+
+  window.onload = async function() {
+    await testSimple();
+    await testTwoScriptsWithSameText();
+    await testLoadSameScriptTwice();
+    await testRevalidation();
+    if (window.testRunner) {
+      testRunner.notifyDone();
+    }
+  };
+</script>
+<pre id="result"></pre>
+</body>
+</html>

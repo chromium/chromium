@@ -1,0 +1,7 @@
+../resources/dummy.js: not in memory cache
+../resources/dummy.js?1: not in memory cache
+../resources/dummy.js?2: not in memory cache
+../resources/dummy.js?twice: not in memory cache
+PASS: must-revalidate-script.php revalidated
+resources/must-revalidate-script.php: not in memory cache
+
