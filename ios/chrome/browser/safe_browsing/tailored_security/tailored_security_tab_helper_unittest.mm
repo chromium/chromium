@@ -115,6 +115,7 @@ TEST_F(TailoredSecurityTabHelperTest,
   InfoBarManagerImpl::CreateForWebState(&web_state_);
   TailoredSecurityTabHelper* tab_helper =
       TailoredSecurityTabHelper::FromWebState(&web_state_);
+  web_state_.WasShown();
 
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Enhanced Protection.
@@ -142,16 +143,18 @@ TEST_F(TailoredSecurityTabHelperTest,
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 }
 
-// Tests that method early returns if the WebState is null and doesn't change
-// the SafeBrowsingState.
+// Tests that method early returns if the WebState is hidden and doesn't change
+// the SafeBrowsingState for sync notifications.
 TEST_F(TailoredSecurityTabHelperTest, OnSyncNotificationRequestEarlyReturn) {
   MockTailoredSecurityService mock_service;
-  TailoredSecurityTabHelper tab_helper =
-      TailoredSecurityTabHelper(nullptr, &mock_service);
+  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
+  TailoredSecurityTabHelper* tab_helper =
+      TailoredSecurityTabHelper::FromWebState(&web_state_);
+  web_state_.WasHidden();
 
   // When a sync notification request is sent and the user is synced, the
   // SafeBrowsingState should automatically change to Standard Protection.
-  tab_helper.OnSyncNotificationMessageRequest(/*is_enabled=*/true);
+  tab_helper->OnSyncNotificationMessageRequest(/*is_enabled=*/true);
   EXPECT_TRUE(
       safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
