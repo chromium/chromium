@@ -10,8 +10,8 @@
 #include "ash/ash_export.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "base/containers/enum_set.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -30,12 +30,10 @@ class ASH_EXPORT PrivacyHubNotificationController {
   using SensorEnumSet = base::EnumSet<Sensor, Sensor::kMin, Sensor::kMax>;
 
   PrivacyHubNotificationController();
-
   PrivacyHubNotificationController(const PrivacyHubNotificationController&) =
       delete;
   PrivacyHubNotificationController& operator=(
       const PrivacyHubNotificationController&) = delete;
-
   ~PrivacyHubNotificationController();
 
   // Called by any sensor system when a notification for `sensor`
@@ -54,25 +52,6 @@ class ASH_EXPORT PrivacyHubNotificationController {
   static void OpenPrivacyHubSettingsPage();
 
  private:
-  // Display the camera disabled by software switch notification.
-  void ShowCameraDisabledNotification() const;
-
-  // TODO(b/242684137) Location is a WIP and doesn't have notifications yet but
-  // will get them in future CLs.
-  void ShowLocationDisabledNotification() const;
-
-  // Display the microphone is disabled notification.
-  void ShowMicrophoneDisabledNotification() const;
-
-  // Constructs the notification message for the combined notification,
-  // containing the app names that use mic and camera sensors. The notification
-  // has different format, depending on the number of the apps.
-  std::u16string GenerateMicrophoneAndCameraDisabledNotificationMessage();
-
-  // Display a combined notification when camera software switch and
-  // microphone are disabled.
-  void ShowMicrophoneAndCameraDisabledNotification();
-
   // Show all notifications that are currently active and combine them if
   // necessary. From the `changed_sensor` in combination with `sensors_`,
   // `combinable_sensors_` and `ignore_new_combinable_notifications_` the
@@ -80,7 +59,7 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // removed if necessary.
   void ShowAllActiveNotifications(Sensor changed_sensor);
 
-  void HandleNotificationClicked(absl::optional<int> button_index);
+  void HandleNotificationMessageClicked();
 
   const SensorEnumSet combinable_sensors_{Sensor::kMicrophone, Sensor::kCamera};
   // Flag to keep track if the user opened the settings page and don't show
@@ -88,7 +67,8 @@ class ASH_EXPORT PrivacyHubNotificationController {
   // notification until the number of active uses falls to 0.
   bool ignore_new_combinable_notifications_{false};
   SensorEnumSet sensors_;
-  std::unique_ptr<PrivacyHubNotification> microphone_notification_;
+  std::unique_ptr<PrivacyHubNotification> combined_notification_;
+  base::flat_map<Sensor, PrivacyHubNotification> sw_notifications_;
   base::WeakPtrFactory<PrivacyHubNotificationController> weak_ptr_factory_{
       this};
 };
