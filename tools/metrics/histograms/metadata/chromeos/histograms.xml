@@ -22,6 +22,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="AllCertProvisioningScopes">
+<!-- The variants are scopes for which a client certificate can be provisioned.
+They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
+  between provisioning a device-wide and a user-specific client certificate. -->
+
+  <variant name="Device"/>
+  <variant name="User"/>
+</variants>
+
 <variants name="FeaturesLoggingUsageEvents">
 <!-- The variants are names of Chrome OS features. These are used for the
   ChromeOS.FeatureUsage.* histograms to record different events related to the
@@ -544,55 +553,64 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records the session duration in Chrome OS camera service.</summary>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.CsrSignTime" units="ms"
-    expires_after="2024-02-01">
+<histogram name="ChromeOS.CertProvisioning.CsrSignTime.{CertProvisioningScope}"
+    units="ms" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
-    The amount of time it took the certificate provisioning worker to sign a
-    CSR. Emitted after the sign is complete.
+    The amount of time it took the certificate provisioning worker with scope
+    {CertProvisioningScope} to sign a CSR. Emitted after the sign is complete.
   </summary>
+  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.Event" enum="CertProvisioningEvent"
-    expires_after="2024-02-01">
+<histogram name="ChromeOS.CertProvisioning.Event.{CertProvisioningScope}"
+    enum="CertProvisioningEvent" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
     Number of times each event is reached during the certificate provisioning
-    flow.
+    flow with scope {CertProvisioningScope}.
   </summary>
+  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.KeypairGenerationTime" units="ms"
-    expires_after="2024-02-01">
+<histogram
+    name="ChromeOS.CertProvisioning.KeypairGenerationTime.{CertProvisioningScope}"
+    units="ms" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
-    The amount of time it took the certificate provisioning worker to generate
-    one key pair. Emitted after the generation is complete.
+    The amount of time it took the certificate provisioning worker with scope
+    {CertProvisioningScope} to generate one key pair. Emitted after the
+    generation is complete.
   </summary>
+  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.Result"
+<histogram name="ChromeOS.CertProvisioning.Result.{CertProvisioningScope}"
     enum="CertProvisioningWorkerState" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
     For final states (see the list in cert_provisioning::IsFinalState): number
-    of times the certificate provisioning worker finished on every state. For
-    other states: number of times the worker failed on every state.
+    of times the certificate provisioning worker with scope
+    {CertProvisioningScope} finished on every state. For other states: number of
+    times the worker failed on every state.
   </summary>
+  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
 </histogram>
 
-<histogram name="ChromeOS.CertProvisioning.VaTime" units="ms"
-    expires_after="2024-02-01">
+<histogram name="ChromeOS.CertProvisioning.VaTime.{CertProvisioningScope}"
+    units="ms" expires_after="2024-02-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
-    The amount of time it took the certificate provisioning worker to build one
-    Verified Access response. Emitted after the response is built.
+    The amount of time it took the certificate provisioning worker with scope
+    {CertProvisioningScope} to build one Verified Access response. Emitted after
+    the response is built.
   </summary>
+  <token key="CertProvisioningScope" variants="AllCertProvisioningScopes"/>
 </histogram>
 
 <histogram name="ChromeOS.CWP.CollectPerf"

@@ -930,16 +930,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CertificateType2.NonBR"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CertProvisioningScope" separator=".">
-  <suffix name="Device" label=""/>
-  <suffix name="User" label=""/>
-  <affected-histogram name="ChromeOS.CertProvisioning.CsrSignTime"/>
-  <affected-histogram name="ChromeOS.CertProvisioning.Event"/>
-  <affected-histogram name="ChromeOS.CertProvisioning.KeypairGenerationTime"/>
-  <affected-histogram name="ChromeOS.CertProvisioning.Result"/>
-  <affected-histogram name="ChromeOS.CertProvisioning.VaTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CertVerifyProcImpl" separator=".">
   <suffix name="Android" label="CertVerifyProcAndroid"/>
   <suffix name="Builtin" label="CertVerifyProcBuiltin"/>
