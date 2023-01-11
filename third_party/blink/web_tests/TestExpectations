@@ -3365,8 +3365,6 @@ crbug.com/626703 external/wpt/css/CSS2/text/text-decoration-va-length-001.xht [ 
 crbug.com/626703 external/wpt/css/CSS2/text/text-decoration-va-length-002.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/white-space-collapsing-bidi-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/white-space-mixed-001.xht [ Failure ]
-crbug.com/626703 external/wpt/css/css-tables/floats/floats-wrap-bfc-006b.xht [ Failure ]
-crbug.com/626703 external/wpt/css/css-tables/floats/floats-wrap-bfc-006c.xht [ Failure ]
 crbug.com/626703 external/wpt/media-source/mediasource-avtracks.html [ Crash Failure ]
 crbug.com/626703 external/wpt/media-source/mediasource-getvideoplaybackquality.html [ Failure Timeout ]
 crbug.com/958104 external/wpt/presentation-api/controlling-ua/getAvailability.https.html [ Failure ]
@@ -6371,7 +6369,7 @@ crbug.com/1396422 [ Mac11-arm64 ] inspector-protocol/css/css-get-media-queries.j
 crbug.com/1403736 [ Mac11-arm64 ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Timeout ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
 crbug.com/1395840 [ Mac ] http/tests/accessibility/slow-document-load.html [ Failure ]
-crbug.com/1404767 [ Debug Linux ] external/wpt/css/css-cascade/all-prop-revert-layer-noop.html [ Timeout Failure ]
+crbug.com/1404767 [ Debug Linux ] external/wpt/css/css-cascade/all-prop-revert-layer-noop.html [ Failure Timeout ]
 crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
 
 # Sheriff 2022-10-07

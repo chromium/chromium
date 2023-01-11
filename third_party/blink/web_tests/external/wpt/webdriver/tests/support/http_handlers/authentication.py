@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 def basic_authentication(url, username=None, password=None, protocol="http"):
     query = {}
 
-    return url("/webdriver/tests/support/authentication.py",
+    return url("/webdriver/tests/support/http_handlers/authentication.py",
                query=urlencode(query),
                protocol=protocol)
 
