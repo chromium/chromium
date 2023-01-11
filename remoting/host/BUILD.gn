@@ -9,6 +9,8 @@ import("//remoting/build/config/remoting_build.gni")
 import("//remoting/build/config/remoting_features.gni")
 import("//remoting/build/config/remoting_logging.gni")
 
+assert(!remoting_use_x11 || is_linux, "X11 is only supported on Linux")
+
 group("all_tests") {
   testonly = true
 
