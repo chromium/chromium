@@ -10,6 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/pki/path_builder.h"
 #include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/pki/signature_verify_cache.h"
 
 namespace net {
 
@@ -57,6 +58,9 @@ class NET_EXPORT SimplePathBuilderDelegate : public CertPathBuilderDelegate {
 
   // No-op implementation.
   bool IsDeadlineExpired() override;
+
+  // No-op implementation.
+  SignatureVerifyCache* GetVerifyCache() override;
 
  private:
   const size_t min_rsa_modulus_length_bits_;

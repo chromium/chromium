@@ -7,6 +7,7 @@
 #include "crypto/openssl_util.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/pki/signature_verify_cache.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
@@ -14,8 +15,54 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace net {
+
+namespace {
+
+bool SHA256UpdateWithLengthPrefixedData(SHA256_CTX* s_ctx,
+                                        const uint8_t* data,
+                                        uint64_t length) {
+  return (SHA256_Update(s_ctx, reinterpret_cast<uint8_t*>(&length),
+                        sizeof(length)) &&
+          SHA256_Update(s_ctx, data, length));
+}
+
+// Increase to make incompatible changes in the computation of the
+// cache key.
+constexpr uint32_t VerifyCacheKeyVersion = 1;
+
+std::string SignatureVerifyCacheKey(std::string_view algorithm_name,
+                                    const der::Input& signed_data,
+                                    const der::Input& signature_value_bytes,
+                                    EVP_PKEY* public_key) {
+  SHA256_CTX s_ctx;
+  bssl::ScopedCBB public_key_cbb;
+  uint8_t digest[SHA256_DIGEST_LENGTH];
+  uint32_t version = VerifyCacheKeyVersion;
+  if (CBB_init(public_key_cbb.get(), 128) &&
+      EVP_marshal_public_key(public_key_cbb.get(), public_key) &&
+      SHA256_Init(&s_ctx) &&
+      SHA256_Update(&s_ctx, reinterpret_cast<uint8_t*>(&version),
+                    sizeof(version)) &&
+      SHA256UpdateWithLengthPrefixedData(
+          &s_ctx, reinterpret_cast<const uint8_t*>(algorithm_name.data()),
+          algorithm_name.length()) &&
+      SHA256UpdateWithLengthPrefixedData(&s_ctx, CBB_data(public_key_cbb.get()),
+                                         CBB_len(public_key_cbb.get())) &&
+      SHA256UpdateWithLengthPrefixedData(&s_ctx,
+                                         signature_value_bytes.UnsafeData(),
+                                         signature_value_bytes.Length()) &&
+      SHA256UpdateWithLengthPrefixedData(&s_ctx, signed_data.UnsafeData(),
+                                         signed_data.Length()) &&
+      SHA256_Final(digest, &s_ctx)) {
+    return std::string(reinterpret_cast<char*>(digest), sizeof(digest));
+  }
+  return std::string();
+}
+
+}  // namespace
 
 // Parses an RSA public key or EC public key from SPKI to an EVP_PKEY. Returns
 // true on success.
@@ -100,58 +147,71 @@ bool ParsePublicKey(const der::Input& public_key_spki,
 bool VerifySignedData(SignatureAlgorithm algorithm,
                       const der::Input& signed_data,
                       const der::BitString& signature_value,
-                      EVP_PKEY* public_key) {
+                      EVP_PKEY* public_key,
+                      SignatureVerifyCache* cache) {
   int expected_pkey_id = 1;
   const EVP_MD* digest = nullptr;
   bool is_rsa_pss = false;
+  std::string_view cache_algorithm_name;
   switch (algorithm) {
     case SignatureAlgorithm::kRsaPkcs1Sha1:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha1();
+      cache_algorithm_name = "RsaPkcs1Sha1";
       break;
     case SignatureAlgorithm::kRsaPkcs1Sha256:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha256();
+      cache_algorithm_name = "RsaPkcs1Sha256";
       break;
     case SignatureAlgorithm::kRsaPkcs1Sha384:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha384();
+      cache_algorithm_name = "RsaPkcs1Sha384";
       break;
     case SignatureAlgorithm::kRsaPkcs1Sha512:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha512();
+      cache_algorithm_name = "RsaPkcs1Sha512";
       break;
 
     case SignatureAlgorithm::kEcdsaSha1:
       expected_pkey_id = EVP_PKEY_EC;
       digest = EVP_sha1();
+      cache_algorithm_name = "EcdsaSha1";
       break;
     case SignatureAlgorithm::kEcdsaSha256:
       expected_pkey_id = EVP_PKEY_EC;
       digest = EVP_sha256();
+      cache_algorithm_name = "EcdsaSha256";
       break;
     case SignatureAlgorithm::kEcdsaSha384:
       expected_pkey_id = EVP_PKEY_EC;
       digest = EVP_sha384();
+      cache_algorithm_name = "EcdsaSha384";
       break;
     case SignatureAlgorithm::kEcdsaSha512:
       expected_pkey_id = EVP_PKEY_EC;
       digest = EVP_sha512();
+      cache_algorithm_name = "EcdsaSha512";
       break;
 
     case SignatureAlgorithm::kRsaPssSha256:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha256();
+      cache_algorithm_name = "RsaPssSha256";
       is_rsa_pss = true;
       break;
     case SignatureAlgorithm::kRsaPssSha384:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha384();
+      cache_algorithm_name = "RsaPssSha384";
       is_rsa_pss = true;
       break;
     case SignatureAlgorithm::kRsaPssSha512:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha512();
+      cache_algorithm_name = "RsaPssSha512";
       is_rsa_pss = true;
       break;
   }
@@ -164,6 +224,22 @@ bool VerifySignedData(SignatureAlgorithm algorithm,
   if (signature_value.unused_bits() != 0)
     return false;
   const der::Input& signature_value_bytes = signature_value.bytes();
+
+  std::string cache_key;
+  if (cache) {
+    cache_key = SignatureVerifyCacheKey(cache_algorithm_name, signed_data,
+                                        signature_value_bytes, public_key);
+    if (!cache_key.empty()) {
+      switch (cache->Check(cache_key)) {
+        case SignatureVerifyCache::Value::kValid:
+          return true;
+        case SignatureVerifyCache::Value::kInvalid:
+          return false;
+        case SignatureVerifyCache::Value::kUnknown:
+          break;
+      }
+    }
+  }
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
@@ -188,20 +264,27 @@ bool VerifySignedData(SignatureAlgorithm algorithm,
     return false;
   }
 
-  return 1 == EVP_DigestVerifyFinal(ctx.get(),
-                                    signature_value_bytes.UnsafeData(),
-                                    signature_value_bytes.Length());
+  bool ret =
+      1 == EVP_DigestVerifyFinal(ctx.get(), signature_value_bytes.UnsafeData(),
+                                 signature_value_bytes.Length());
+  if (!cache_key.empty()) {
+    cache->Store(cache_key, ret ? SignatureVerifyCache::Value::kValid
+                                : SignatureVerifyCache::Value::kInvalid);
+  }
+
+  return ret;
 }
 
 bool VerifySignedData(SignatureAlgorithm algorithm,
                       const der::Input& signed_data,
                       const der::BitString& signature_value,
-                      const der::Input& public_key_spki) {
+                      const der::Input& public_key_spki,
+                      SignatureVerifyCache* cache) {
   bssl::UniquePtr<EVP_PKEY> public_key;
   if (!ParsePublicKey(public_key_spki, &public_key))
     return false;
   return VerifySignedData(algorithm, signed_data, signature_value,
-                          public_key.get());
+                          public_key.get(), cache);
 }
 
 }  // namespace net

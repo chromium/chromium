@@ -971,7 +971,8 @@ void PathVerifier::BasicCertificateProcessing(
     // 5280 section 6.1.3 step a.1).
     if (!VerifySignedData(*cert.signature_algorithm(),
                           cert.tbs_certificate_tlv(), cert.signature_value(),
-                          working_public_key_.get())) {
+                          working_public_key_.get(),
+                          delegate_->GetVerifyCache())) {
       *shortcircuit_chain_validation = true;
       errors->AddError(cert_errors::kVerifySignedDataFailed);
     }

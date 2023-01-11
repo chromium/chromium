@@ -596,7 +596,8 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
     // 6.3.3 (g) Validate the signature on the complete CRL using the public
     //           key validated in step (f).
     if (!VerifySignedData(*signature_algorithm, tbs_cert_list_tlv,
-                          signature_value, issuer_cert->tbs().spki_tlv)) {
+                          signature_value, issuer_cert->tbs().spki_tlv,
+                          /*cache=*/nullptr)) {
       continue;
     }
 

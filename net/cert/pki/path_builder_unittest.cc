@@ -14,6 +14,7 @@
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
 #include "net/cert/pki/common_cert_errors.h"
+#include "net/cert/pki/mock_signature_verify_cache.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/test_helpers.h"
@@ -42,10 +43,10 @@ using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
 
-class DeadlineTestingPathBuilderDelegate : public SimplePathBuilderDelegate {
+class TestPathBuilderDelegate : public SimplePathBuilderDelegate {
  public:
-  DeadlineTestingPathBuilderDelegate(size_t min_rsa_modulus_length_bits,
-                                     DigestPolicy digest_policy)
+  TestPathBuilderDelegate(size_t min_rsa_modulus_length_bits,
+                          DigestPolicy digest_policy)
       : SimplePathBuilderDelegate(min_rsa_modulus_length_bits, digest_policy) {}
 
   bool IsDeadlineExpired() override { return deadline_is_expired_; }
@@ -54,8 +55,20 @@ class DeadlineTestingPathBuilderDelegate : public SimplePathBuilderDelegate {
     deadline_is_expired_ = deadline_is_expired;
   }
 
+  SignatureVerifyCache* GetVerifyCache() override {
+    return use_signature_cache_ ? &cache_ : nullptr;
+  }
+
+  void ActivateCache() { use_signature_cache_ = true; }
+
+  void DeActivateCache() { use_signature_cache_ = false; }
+
+  MockSignatureVerifyCache* GetMockVerifyCache() { return &cache_; }
+
  private:
   bool deadline_is_expired_ = false;
+  bool use_signature_cache_ = false;
+  MockSignatureVerifyCache cache_;
 };
 
 // AsyncCertIssuerSourceStatic always returns its certs asynchronously.
@@ -191,9 +204,8 @@ TEST(PathBuilderResultUserDataTest, ModifyUserDataInConstructor) {
 class PathBuilderMultiRootTest : public ::testing::Test {
  public:
   PathBuilderMultiRootTest()
-      : delegate_(
-            1024,
-            DeadlineTestingPathBuilderDelegate::DigestPolicy::kWeakAllowSha1) {}
+      : delegate_(1024, TestPathBuilderDelegate::DigestPolicy::kWeakAllowSha1) {
+  }
 
   void SetUp() override {
     ASSERT_TRUE(ReadTestCert("multi-root-A-by-B.pem", &a_by_b_));
@@ -210,7 +222,7 @@ class PathBuilderMultiRootTest : public ::testing::Test {
   std::shared_ptr<const ParsedCertificate> a_by_b_, b_by_c_, b_by_f_, c_by_d_,
       c_by_e_, d_by_d_, e_by_e_, f_by_e_;
 
-  DeadlineTestingPathBuilderDelegate delegate_;
+  TestPathBuilderDelegate delegate_;
   der::GeneralizedTime time_ = {2017, 3, 1, 0, 0, 0};
 
   const InitialExplicitPolicy initial_explicit_policy_ =
@@ -738,6 +750,51 @@ TEST_F(PathBuilderMultiRootTest, TestTrivialDeadline) {
       EXPECT_EQ(b_by_c_, result.paths[0]->certs[1]);
       EXPECT_EQ(c_by_d_, result.paths[0]->certs[2]);
     }
+  }
+}
+
+TEST_F(PathBuilderMultiRootTest, TestVerifyCache) {
+  // C(D) is the trust root.
+  TrustStoreInMemory trust_store;
+  trust_store.AddTrustAnchor(c_by_d_);
+
+  // Cert B(C) is supplied.
+  CertIssuerSourceStatic sync_certs;
+  sync_certs.AddCert(b_by_c_);
+
+  // Test Activation / DeActivation of the cache.
+  EXPECT_FALSE(delegate_.GetVerifyCache());
+  delegate_.ActivateCache();
+  EXPECT_TRUE(delegate_.GetVerifyCache());
+  delegate_.DeActivateCache();
+  EXPECT_FALSE(delegate_.GetVerifyCache());
+  delegate_.ActivateCache();
+  EXPECT_TRUE(delegate_.GetVerifyCache());
+  for (size_t i = 0; i < 3; i++) {
+    SCOPED_TRACE(i);
+
+    CertPathBuilder path_builder(
+        a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
+        initial_explicit_policy_, user_initial_policy_set_,
+        initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+    path_builder.AddCertIssuerSource(&sync_certs);
+
+    auto result = path_builder.Run();
+
+    ASSERT_EQ(1U, result.paths.size());
+    EXPECT_TRUE(result.paths[0]->IsValid());
+    ASSERT_EQ(3U, result.paths[0]->certs.size());
+    EXPECT_EQ(a_by_b_, result.paths[0]->certs[0]);
+    EXPECT_EQ(b_by_c_, result.paths[0]->certs[1]);
+    EXPECT_EQ(c_by_d_, result.paths[0]->certs[2]);
+
+    // The path is 3 certificates long, so requires 2 distinct signature
+    // verifications. The first time through the loop will cause 2 cache misses
+    // and stores, subsequent iterations will repeat the same verifications,
+    // causing 2 cache hits.
+    EXPECT_EQ(delegate_.GetMockVerifyCache()->CacheHits(), i * 2);
+    EXPECT_EQ(delegate_.GetMockVerifyCache()->CacheMisses(), 2U);
+    EXPECT_EQ(delegate_.GetMockVerifyCache()->CacheStores(), 2U);
   }
 }
 

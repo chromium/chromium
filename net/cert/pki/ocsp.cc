@@ -587,7 +587,8 @@ std::shared_ptr<const ParsedCertificate> OCSPParseCertificate(
       !VerifySignedData(*responder_certificate->signature_algorithm(),
                         responder_certificate->tbs_certificate_tlv(),
                         responder_certificate->signature_value(),
-                        issuer_certificate->tbs().spki_tlv)) {
+                        issuer_certificate->tbs().spki_tlv,
+                        /*cache=*/nullptr)) {
     return false;
   }
 
@@ -609,7 +610,8 @@ std::shared_ptr<const ParsedCertificate> OCSPParseCertificate(
     const ParsedCertificate* cert) {
   // TODO(eroman): Must check the signature algorithm against policy.
   return VerifySignedData(response.signature_algorithm, response.data,
-                          response.signature, cert->tbs().spki_tlv);
+                          response.signature, cert->tbs().spki_tlv,
+                          /*cache=*/nullptr);
 }
 
 // Verifies that the OCSP response has a valid signature using

@@ -8,6 +8,7 @@
 #include <set>
 
 #include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/mock_signature_verify_cache.h"
 #include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/pki/test_helpers.h"
 #include "net/der/input.h"
@@ -33,7 +34,9 @@ enum VerifyResult {
 //
 // If expected_result was FAILURE then the test will only succeed if
 // VerifySignedData() returns false.
-void RunTestCase(VerifyResult expected_result, const char* file_name) {
+void RunTestCase(VerifyResult expected_result,
+                 const char* file_name,
+                 SignatureVerifyCache* cache) {
   std::string path =
       std::string("net/data/verify_signed_data_unittest/") + file_name;
 
@@ -65,9 +68,13 @@ void RunTestCase(VerifyResult expected_result, const char* file_name) {
 
   bool result = VerifySignedData(*signature_algorithm, der::Input(&signed_data),
                                  signature_value_bit_string.value(),
-                                 der::Input(&public_key));
+                                 der::Input(&public_key), cache);
 
   EXPECT_EQ(expected_result_bool, result);
+}
+
+void RunTestCase(VerifyResult expected_result, const char* file_name) {
+  RunTestCase(expected_result, file_name, /*cache=*/nullptr);
 }
 
 // Read the descriptions in the test files themselves for details on what is
@@ -182,6 +189,52 @@ TEST(VerifySignedDataTest, Ecdsa384) {
   // Using the regular policy both secp384r1 and secp256r1 should be accepted.
   RunTestCase(SUCCESS, "ecdsa-secp384r1-sha256.pem");
   RunTestCase(SUCCESS, "ecdsa-prime256v1-sha512.pem");
+}
+
+TEST(VerifySignedDataTestWithCache, TestVerifyCache) {
+  MockSignatureVerifyCache verify_cache;
+  // Trivially, with no cache, all stats should be 0.
+  RunTestCase(SUCCESS, "rsa-pss-sha256.pem", /*cache=*/nullptr);
+  EXPECT_EQ(verify_cache.CacheHits(), 0U);
+  EXPECT_EQ(verify_cache.CacheMisses(), 0U);
+  EXPECT_EQ(verify_cache.CacheStores(), 0U);
+  // Use the cache, with a successful verification should see a miss and a
+  // store.
+  RunTestCase(SUCCESS, "rsa-pss-sha256.pem", &verify_cache);
+  EXPECT_EQ(verify_cache.CacheHits(), 0U);
+  EXPECT_EQ(verify_cache.CacheMisses(), 1U);
+  EXPECT_EQ(verify_cache.CacheStores(), 1U);
+  // Repeating the previous successful verification should show cache hits.
+  RunTestCase(SUCCESS, "rsa-pss-sha256.pem", &verify_cache);
+  RunTestCase(SUCCESS, "rsa-pss-sha256.pem", &verify_cache);
+  RunTestCase(SUCCESS, "rsa-pss-sha256.pem", &verify_cache);
+  EXPECT_EQ(verify_cache.CacheHits(), 3U);
+  EXPECT_EQ(verify_cache.CacheMisses(), 1U);
+  EXPECT_EQ(verify_cache.CacheStores(), 1U);
+  // Failures which are not due to a failed signature check should have no
+  // effect as they must not be cached.
+  RunTestCase(FAILURE, "ecdsa-prime256v1-sha512-using-ecdh-key.pem",
+              &verify_cache);
+  EXPECT_EQ(verify_cache.CacheHits(), 3U);
+  EXPECT_EQ(verify_cache.CacheMisses(), 1U);
+  EXPECT_EQ(verify_cache.CacheStores(), 1U);
+  // Failures which are due to a failed signature check should see a miss and a
+  // store.
+  RunTestCase(FAILURE, "ecdsa-secp384r1-sha256-corrupted-data.pem",
+              &verify_cache);
+  EXPECT_EQ(verify_cache.CacheHits(), 3U);
+  EXPECT_EQ(verify_cache.CacheMisses(), 2U);
+  EXPECT_EQ(verify_cache.CacheStores(), 2U);
+  // Repeating the previous failed verification should show cache hits.
+  RunTestCase(FAILURE, "ecdsa-secp384r1-sha256-corrupted-data.pem",
+              &verify_cache);
+  RunTestCase(FAILURE, "ecdsa-secp384r1-sha256-corrupted-data.pem",
+              &verify_cache);
+  RunTestCase(FAILURE, "ecdsa-secp384r1-sha256-corrupted-data.pem",
+              &verify_cache);
+  EXPECT_EQ(verify_cache.CacheHits(), 6U);
+  EXPECT_EQ(verify_cache.CacheMisses(), 2U);
+  EXPECT_EQ(verify_cache.CacheStores(), 2U);
 }
 
 }  // namespace

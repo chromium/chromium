@@ -7,6 +7,7 @@
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/pki/signature_verify_cache.h"
 #include "net/cert/pki/verify_signed_data.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -54,6 +55,10 @@ void SimplePathBuilderDelegate::CheckPathAfterVerification(
 
 bool SimplePathBuilderDelegate::IsDeadlineExpired() {
   return false;
+}
+
+SignatureVerifyCache* SimplePathBuilderDelegate::GetVerifyCache() {
+  return nullptr;
 }
 
 bool SimplePathBuilderDelegate::IsSignatureAlgorithmAcceptable(

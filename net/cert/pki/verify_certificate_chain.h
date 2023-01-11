@@ -10,6 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/signature_verify_cache.h"
 #include "net/der/input.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
@@ -67,6 +68,11 @@ class NET_EXPORT VerifyCertificateChainDelegate {
   // |public_key| can be assumed to be non-null.
   virtual bool IsPublicKeyAcceptable(EVP_PKEY* public_key,
                                      CertErrors* errors) = 0;
+
+  // This is called during verification to obtain a pointer to a signature
+  // verification cache if one exists. nullptr may be returned indicating there
+  // is no verification cache.
+  virtual SignatureVerifyCache* GetVerifyCache() = 0;
 
   virtual ~VerifyCertificateChainDelegate();
 };

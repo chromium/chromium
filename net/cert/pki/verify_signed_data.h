@@ -8,6 +8,7 @@
 #include "crypto/openssl_util.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/pki/signature_verify_cache.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace net {
@@ -30,7 +31,8 @@ class Input;
     SignatureAlgorithm algorithm,
     const der::Input& signed_data,
     const der::BitString& signature_value,
-    EVP_PKEY* public_key);
+    EVP_PKEY* public_key,
+    SignatureVerifyCache* cache);
 
 // Same as above overload, only the public key is inputted as an SPKI and will
 // be parsed internally.
@@ -38,7 +40,8 @@ class Input;
     SignatureAlgorithm algorithm,
     const der::Input& signed_data,
     const der::BitString& signature_value,
-    const der::Input& public_key_spki);
+    const der::Input& public_key_spki,
+    SignatureVerifyCache* cache);
 
 [[nodiscard]] NET_EXPORT bool ParsePublicKey(
     const der::Input& public_key_spki,

@@ -751,7 +751,7 @@ bool X509Certificate::IsSelfSigned(const CRYPTO_BUFFER* cert_buffer) {
   // Don't enforce any minimum key size or restrict the algorithm, since when
   // self signed not very relevant.
   return VerifySignedData(*signature_algorithm, tbs_certificate_tlv,
-                          signature_value, tbs.spki_tlv);
+                          signature_value, tbs.spki_tlv, /*cache=*/nullptr);
 }
 
 X509Certificate::X509Certificate(
