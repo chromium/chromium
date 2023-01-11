@@ -374,19 +374,20 @@ DictationE2ETestBase = class extends E2ETestBase {
    * @return {!Promise}
    */
   async waitForUIProperties(targetProps) {
-    // Poll until the updateDictationBubble() API gets called with
-    // `targetProps`.
-    return new Promise(resolve => {
-      const printErrorMessageTimeoutId = setTimeout(() => {
-        this.printErrorMessage_(targetProps);
-      }, 3.5 * 1000);
-      const intervalId = setInterval(() => {
+    if (this.uiPropertiesMatch_(targetProps)) {
+      return;
+    }
+
+    await new Promise(resolve => {
+      const onUpdateDictationBubble = () => {
         if (this.uiPropertiesMatch_(targetProps)) {
-          clearTimeout(printErrorMessageTimeoutId);
-          clearInterval(intervalId);
+          this.mockAccessibilityPrivate.removeUpdateDictationBubbleListener();
           resolve();
         }
-      }, 100);
+      };
+
+      this.mockAccessibilityPrivate.addUpdateDictationBubbleListener(
+          onUpdateDictationBubble);
     });
   }
 
@@ -424,18 +425,6 @@ DictationE2ETestBase = class extends E2ETestBase {
     }
 
     return true;
-  }
-
-  /**
-   * @param {DictationBubbleProperties} props
-   * @private
-   */
-  printErrorMessage_(props) {
-    console.error(`Still waiting for UI properties
-      visible: ${props.visible}
-      icon: ${props.icon}
-      text: ${props.text}
-      hints: ${props.hints}`);
   }
 
   /**
