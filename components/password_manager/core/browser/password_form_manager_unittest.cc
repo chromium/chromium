@@ -2390,6 +2390,76 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
   }
 }
 
+// Tests that if username matches with single username from previous form, vote
+// is set.
+TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
+      /*disabled_features=*/{});
+
+  CreateFormManager(submitted_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data.
+  PossibleUsernameData possible_username_data(
+      saved_match_.signon_realm, kSingleUsernameFieldRendererId,
+      u"username_field", submitted_form_.fields[kUsernameFieldIndex].value,
+      base::Time::Now(), 0 /* driver_id */);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager)
+      .WillByDefault(Return(&mock_field_manager));
+
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                               &possible_username_data));
+
+  // Check that uploads for both single username and sign-up form happen.
+  testing::InSequence in_sequence;
+
+  // Upload username first flow vote on the single username form.
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(mock_autofill_download_manager_,
+              StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
+                                 false, ServerFieldTypeSet{SINGLE_USERNAME}, _,
+                                 true, nullptr));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Upload username first flow vote on the sign-up form.
+  autofill::AutofillUploadContents::SingleUsernameData
+      expected_single_username_data;
+  expected_single_username_data.set_username_form_signature(
+      kSingleUsernameFormSignature.value());
+  expected_single_username_data.set_username_field_signature(
+      kSingleUsernameFieldSignature.value());
+  expected_single_username_data.set_value_type(
+      autofill::AutofillUploadContents::VALUE_WITH_NO_WHITESPACE);
+// As Android does not allow username editing, |NO_INFORMATION| about prompt
+// edits is uploaded.
+#if !BUILDFLAG(IS_ANDROID)
+  expected_single_username_data.set_prompt_edit(
+      autofill::AutofillUploadContents::NOT_EDITED_POSITIVE);
+#else
+  expected_single_username_data.set_prompt_edit(
+      autofill::AutofillUploadContents::EDIT_UNSPECIFIED);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(
+          AllOf(SignatureIs(CalculateFormSignature(submitted_form_)),
+                UploadedSingleUsernameDataIs(expected_single_username_data)),
+          _, _, _, _, _));
+
+  // Simulate showing the prompt and saving the suggested value.
+  form_manager_->SaveSuggestedUsernameValueToVotesUploader();
+
+  form_manager_->Save();
+
+  Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+}
+
 // Tests that a negative vote is sent when a single username candidate is
 // populated in a prompt, but then is removed by the user in the prompt.
 TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {

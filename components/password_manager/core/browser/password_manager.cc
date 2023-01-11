@@ -824,6 +824,14 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
     return nullptr;
   }
 
+  // |matched_manager->ProvisionallySave| returning true means that there is a
+  // nonempty password field. If such |matched_manager| contains
+  // |possible_username|, reset and do not consider for single username.
+  if (possible_username &&
+      matched_manager->FormHasPossibleUsername(possible_username)) {
+    possible_username_.reset();
+  }
+
   // Set all other form managers to no submission state.
   for (const auto& manager : form_managers_) {
     if (manager.get() != matched_manager)

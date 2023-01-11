@@ -95,6 +95,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // If as a result of the parsing the username is not found, the
   // |possible_username->value| is chosen as username if it looks like an
   // username and came from the same domain as |submitted_form|.
+  // If |possible_username->value| matches username field value, try sending
+  // single username vote to the form |possible_username| belongs to.
   bool ProvisionallySave(const autofill::FormData& submitted_form,
                          const PasswordManagerDriver* driver,
                          const PossibleUsernameData* possible_username);
@@ -144,6 +146,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Sets |was_unblocklisted_while_on_page| to true.
   void MarkWasUnblocklisted();
+
+  // Check if the |possible_username| field is present in the |observed_form()|.
+  bool FormHasPossibleUsername(
+      const PossibleUsernameData* possible_username) const;
 
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
@@ -323,6 +329,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // flow.
   bool IsPossibleSingleUsernameAvailable(
       const PossibleUsernameData* possible_username) const;
+
+  // Returns true if the form is a candidate to send single username vote.
+  bool IsPasswordFormAfterSingleUsernameForm(
+      const PossibleUsernameData* possible_username);
 
   // Updates the predictions stored in |parser_| with predictions relevant for
   // |observed_form_or_digest_|.

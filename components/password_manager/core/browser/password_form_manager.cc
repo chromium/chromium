@@ -787,8 +787,7 @@ bool PasswordFormManager::ProvisionallySave(
   votes_uploader_.clear_single_username_vote_data();
 
   // TODO(crbug.com/959776): Reset possible username after it's used.
-  if (parsed_submitted_form_->username_value.empty() &&
-      !parsed_submitted_form_->password_value.empty()) {
+  if (IsPasswordFormAfterSingleUsernameForm(possible_username)) {
     if (IsPossibleSingleUsernameAvailable(possible_username)) {
       // Suggest the possible username value in a prompt if the server confirmed
       // it is a single username field. Otherwise, |possible_username| is used
@@ -957,6 +956,22 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
 
 void PasswordFormManager::MarkWasUnblocklisted() {
   was_unblocklisted_while_on_page_ = true;
+}
+
+bool PasswordFormManager::FormHasPossibleUsername(
+    const PossibleUsernameData* possible_username) const {
+  if (!possible_username) {
+    return false;
+  }
+  if (possible_username->driver_id == driver_id_) {
+    for (const auto& field : observed_form()->fields) {
+      if (field.unique_renderer_id == possible_username->renderer_id) {
+        LogUsingPossibleUsername(client_, /*is_used*/ false, "Same form");
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 PasswordFormManager::PasswordFormManager(
@@ -1146,16 +1161,24 @@ bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
 
   // The username candidate field should not be in |observed_form()|, otherwise
   // that is a task of FormParser to choose it from |observed_form()|.
-  if (possible_username->driver_id == driver_id_) {
-    for (const auto& field : observed_form()->fields) {
-      if (field.unique_renderer_id == possible_username->renderer_id) {
-        LogUsingPossibleUsername(client_, /*is_used*/ false, "Same form");
-        return false;
-      }
-    }
+  if (FormHasPossibleUsername(possible_username)) {
+    return false;
   }
 
   return true;
+}
+
+// |possible_username| is considered for single username vote in 2 cases:
+// 1) There is a password field and no username field in the current form.
+// 2) There is a password field and username value matches username value in the
+// single username form.
+bool PasswordFormManager::IsPasswordFormAfterSingleUsernameForm(
+    const PossibleUsernameData* possible_username) {
+  return !parsed_submitted_form_->password_value.empty() &&
+         (parsed_submitted_form_->username_value.empty() ||
+          (possible_username && base::EqualsCaseInsensitiveASCII(
+                                    possible_username->value,
+                                    parsed_submitted_form_->username_value)));
 }
 
 void PasswordFormManager::UpdatePredictionsForObservedForm(
