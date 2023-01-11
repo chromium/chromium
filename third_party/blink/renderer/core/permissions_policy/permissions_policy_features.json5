@@ -326,7 +326,9 @@
       name: "PrivateAggregation",
       permissions_policy_name: "private-aggregation",
       feature_default: "EnableForAll",
-      depends_on: ["SharedStorageAPI", "Fledge"],
+      // TODO(yaoxia): add "Fledge" to the `depends_on` list and implement their
+      // permission checks.
+      depends_on: ["SharedStorageAPI"],
     },
     {
       name: "PublicKeyCredentialsGet",

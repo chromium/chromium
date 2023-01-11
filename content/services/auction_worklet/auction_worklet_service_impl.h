@@ -63,7 +63,6 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const absl::optional<GURL>& wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
       const url::Origin& top_window_origin,
-      mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       bool has_experiment_group_id,
       uint16_t experiment_group_id) override;
   void LoadSellerWorklet(
@@ -74,7 +73,6 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
-      mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       bool has_experiment_group_id,
       uint16_t experiment_group_id) override;
 

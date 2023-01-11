@@ -228,11 +228,8 @@ ParseForEventContribution(v8::Isolate* isolate,
 }  // namespace
 
 PrivateAggregationBindings::PrivateAggregationBindings(
-    AuctionV8Helper* v8_helper,
-    bool private_aggregation_permissions_policy_allowed)
-    : v8_helper_(v8_helper),
-      private_aggregation_permissions_policy_allowed_(
-          private_aggregation_permissions_policy_allowed) {}
+    AuctionV8Helper* v8_helper)
+    : v8_helper_(v8_helper) {}
 
 PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 
@@ -332,10 +329,11 @@ void PrivateAggregationBindings::SendHistogramReport(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
+  // TODO(crbug.com/1403364): pass the correct permissions policy state.
   content::mojom::AggregatableReportHistogramContributionPtr contribution =
       worklet_utils::ParseSendHistogramReportArguments(
           gin::Arguments(args),
-          bindings->private_aggregation_permissions_policy_allowed_);
+          /*private_aggregation_permissions_policy_allowed=*/true);
   if (contribution.is_null()) {
     // Indicates an exception was thrown.
     return;
@@ -393,9 +391,10 @@ void PrivateAggregationBindings::EnableDebugMode(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
+  // TODO(crbug.com/1403364): pass the correct permissions policy state.
   worklet_utils::ParseAndApplyEnableDebugModeArguments(
       gin::Arguments(args),
-      bindings->private_aggregation_permissions_policy_allowed_,
+      /*private_aggregation_permissions_policy_allowed=*/true,
       bindings->debug_mode_details_);
 }
 

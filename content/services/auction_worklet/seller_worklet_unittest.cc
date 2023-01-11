@@ -218,9 +218,6 @@ class SellerWorkletTest : public testing::Test {
         blink::AuctionConfig::NonSharedParams();
 
     top_window_origin_ = url::Origin::Create(GURL("https://window.test/"));
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true);
     experiment_group_id_ = absl::nullopt;
     browser_signals_other_seller_.reset();
     browser_signal_interest_group_owner_ =
@@ -623,7 +620,7 @@ class SellerWorkletTest : public testing::Test {
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
         v8_helper_, pause_for_debugger_on_start, std::move(url_loader_factory),
         decision_logic_url_, trusted_scoring_signals_url_, top_window_origin_,
-        permissions_policy_state_.Clone(), experiment_group_id_);
+        experiment_group_id_);
     auto* seller_worklet_ptr = seller_worklet_impl.get();
     mojo::ReceiverId receiver_id =
         seller_worklets_.Add(std::move(seller_worklet_impl),
@@ -689,7 +686,6 @@ class SellerWorkletTest : public testing::Test {
   absl::optional<GURL> direct_from_seller_seller_signals_;
   absl::optional<GURL> direct_from_seller_auction_signals_;
   url::Origin top_window_origin_;
-  mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
   absl::optional<uint16_t> experiment_group_id_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
   url::Origin browser_signal_interest_group_owner_;
@@ -3846,38 +3842,13 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         CreateScoreAdScript("5",
                             "privateAggregation.sendHistogramReport({bucket: "
                             "123n, value: 45})"),
-        5, /*expected_errors=*/
-        {}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
-        std::move(expected_pa_requests));
-  }
-
-  // Set the private-aggregation permissions policy to disallowed.
-  {
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/false);
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript("5",
-                            "privateAggregation.sendHistogramReport({bucket: "
-                            "123n, value: 45})"),
-        /*expected_score=*/0, /*expected_errors=*/
-        {"https://url.test/:4 Uncaught TypeError: The \"private-aggregation\" "
-         "Permissions Policy denied the method on privateAggregation."},
+        5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
         /*expected_data_version=*/absl::nullopt,
         /*expected_debug_loss_report_url=*/absl::nullopt,
         /*expected_debug_win_report_url=*/absl::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
-        /*expected_pa_requests=*/{});
-
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true);
+        std::move(expected_pa_requests));
   }
 
   // Large bucket
@@ -4022,27 +3993,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
-  }
-
-  // Set the private-aggregation permissions policy to disallowed.
-  {
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/false);
-
-    RunReportResultCreatedScriptExpectingResult(
-        R"(5)",
-        R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
-        /*expected_signals_for_winner=*/absl::nullopt,
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
-        /*expected_pa_requests=*/{},
-        /*expected_errors=*/
-        {"https://url.test/:10 Uncaught TypeError: The \"private-aggregation\" "
-         "Permissions Policy denied the method on privateAggregation."});
-
-    permissions_policy_state_ =
-        mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true);
   }
 
   // BigInt bucket

@@ -86,17 +86,15 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // occurred.
   //
   // Data is cached and will be reused by ReportWin().
-  BidderWorklet(
-      scoped_refptr<AuctionV8Helper> v8_helper,
-      bool pause_for_debugger_on_start,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          pending_url_loader_factory,
-      const GURL& script_source_url,
-      const absl::optional<GURL>& bidding_wasm_helper_url,
-      const absl::optional<GURL>& trusted_bidding_signals_url,
-      const url::Origin& top_window_origin,
-      mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-      absl::optional<uint16_t> experiment_group_id);
+  BidderWorklet(scoped_refptr<AuctionV8Helper> v8_helper,
+                bool pause_for_debugger_on_start,
+                mojo::PendingRemote<network::mojom::URLLoaderFactory>
+                    pending_url_loader_factory,
+                const GURL& script_source_url,
+                const absl::optional<GURL>& bidding_wasm_helper_url,
+                const absl::optional<GURL>& trusted_bidding_signals_url,
+                const url::Origin& top_window_origin,
+                absl::optional<uint16_t> experiment_group_id);
   explicit BidderWorklet(const BidderWorklet&) = delete;
   ~BidderWorklet() override;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
@@ -262,15 +260,13 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // on the v8 thread --- everything except the constructor must be run there.
   class V8State {
    public:
-    V8State(
-        scoped_refptr<AuctionV8Helper> v8_helper,
-        scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-        const GURL& script_source_url,
-        const url::Origin& top_window_origin,
-        mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-        const absl::optional<GURL>& wasm_helper_url,
-        const absl::optional<GURL>& trusted_bidding_signals_url,
-        base::WeakPtr<BidderWorklet> parent);
+    V8State(scoped_refptr<AuctionV8Helper> v8_helper,
+            scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+            const GURL& script_source_url,
+            const url::Origin& top_window_origin,
+            const absl::optional<GURL>& wasm_helper_url,
+            const absl::optional<GURL>& trusted_bidding_signals_url,
+            base::WeakPtr<BidderWorklet> parent);
 
     void SetWorkletScript(WorkletLoader::Result worklet_script);
     void SetWasmHelper(WorkletWasmLoader::Result wasm_helper);
@@ -430,7 +426,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
     const GURL script_source_url_;
     const url::Origin top_window_origin_;
-    mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const absl::optional<GURL> wasm_helper_url_;
     const absl::optional<GURL> trusted_bidding_signals_url_;
 
