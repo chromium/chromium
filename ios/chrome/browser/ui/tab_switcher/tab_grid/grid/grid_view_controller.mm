@@ -1219,7 +1219,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSUInteger fromIndex = [self indexOfItemWithID:itemID];
   // If this move would be a no-op, early return and avoid spurious UI updates.
-  if (fromIndex == toIndex) {
+  if (fromIndex == toIndex || toIndex == NSNotFound ||
+      fromIndex == NSNotFound) {
     return;
   }
   auto modelUpdates = ^{

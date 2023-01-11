@@ -255,7 +255,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
   NSUInteger fromIndex = [self indexOfItemWithID:itemID];
-  if (fromIndex == toIndex || fromIndex == NSNotFound) {
+  if (fromIndex == toIndex || toIndex == NSNotFound ||
+      fromIndex == NSNotFound) {
     return;
   }
 
