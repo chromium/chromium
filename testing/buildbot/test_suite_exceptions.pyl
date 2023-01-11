@@ -852,6 +852,8 @@
       'Mac10.15 Tests', # https://crbug.com/1042757
       'Mac12 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
+      'mac11-arm64-rel-tests', # https://crbug.com/1406364
+      'mac12-arm64-rel-tests', # https://crbug.com/1406364
       'Linux TSan Tests',  # https://crbug.com/368525
       'Win10 Tests x64 (dbg)',
     ],
@@ -1095,25 +1097,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter;../../testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter',
         ],
-      },
-      'mac11-arm64-rel-tests': {
-        'args': [
-          # crbug.com/1262402
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac11-arm64-rel.browser_tests.filter',
-        ],
-        'swarming': {
-          'shards': 30,
-        },
-      },
-      'mac12-arm64-rel-tests': {
-        'ci_only': False,  # https://crbug.com/1234525
-        'args': [
-          # crbug.com/1262402
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac12-arm64-rel.browser_tests.filter',
-        ],
-        'swarming': {
-          'shards': 30,
-        },
       },
       'win-asan': {
         # These are very slow on the ASAN trybot for some reason.
