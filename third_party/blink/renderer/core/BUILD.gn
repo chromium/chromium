@@ -385,8 +385,16 @@ blink_core_sources("core_hot") {
   # TODO(ajwong) this is of mirror
   # https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/core.gni;l=26
   # to undo the configs which is fragile. Find a better way.
-  if (!is_debug && optimize_for_size) {
-    configs -= [ "//build/config/compiler:default_optimization" ]
+  #
+  # 'Hot' code should always be compiled for speed in non-debug builds.
+  if (!is_debug) {
+    # Only attempt to remove the 'default_optimization' label if it is already
+    # present in 'configs'.
+    if (filter_include(configs,
+                       [ "//build/config/compiler:default_optimization" ]) !=
+        []) {
+      configs -= [ "//build/config/compiler:default_optimization" ]
+    }
     configs += [ "//build/config/compiler:optimize_speed" ]
   }
 
