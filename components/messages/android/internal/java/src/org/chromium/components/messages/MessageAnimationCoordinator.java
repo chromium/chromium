@@ -159,7 +159,12 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
     public void updateWithStacking(
             @NonNull List<MessageState> candidates, boolean isSuspended, Runnable onFinished) {
         // Wait until the current animation is done, unless we need to hide them immediately.
-        if (!isSuspended && mAnimatorSet.isStarted()) {
+        if (mAnimatorSet.isStarted()) {
+            if (isSuspended) {
+                // crbug.com/1405389: Force animation to end in order to trigger callbacks.
+                mAnimatorSet.end();
+                onFinished.run();
+            }
             return;
         }
         var currentFront = mCurrentDisplayedMessages.get(0); // Currently front.
@@ -372,5 +377,9 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
             super.onEnd(animator);
             mOnFinished.run();
         }
+    }
+
+    AnimatorSet getAnimatorSetForTesting() {
+        return mAnimatorSet;
     }
 }
