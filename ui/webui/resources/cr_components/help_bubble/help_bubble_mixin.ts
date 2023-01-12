@@ -102,8 +102,10 @@ export const HelpBubbleMixin = dedupingMixin(
 
         /**
          * Maps `nativeId`, which should be the name of a ui::ElementIdentifier
-         * referenced by the WebUIController, with either an `htmlId` of
-         * an element in this component or an arbitrary HTMLElement.
+         * referenced by the WebUIController, with either:
+         * - a selector
+         * - an array of selectors (will traverse shadow DOM elements)
+         * - an arbitrary HTMLElement
          *
          * Example:
          *   registerHelpBubbleIdentifier(
@@ -113,8 +115,12 @@ export const HelpBubbleMixin = dedupingMixin(
          * Example:
          *   registerHelpBubbleIdentifier(
          *       'kMyComponentTitleLabelElementIdentifier',
-         *       this.$.list.childNodes[0]);
+         *       ['#child-component', '#child-component-button']);
          *
+         * Example:
+         *   registerHelpBubbleIdentifier(
+         *       'kMyComponentTitleLabelElementIdentifier',
+         *       this.$.list.childNodes[0]);
          *
          * See README.md for full instructions.
          *

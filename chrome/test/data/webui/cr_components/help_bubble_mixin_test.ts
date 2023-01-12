@@ -22,6 +22,7 @@ const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
 const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
 const SPAN_NATIVE_ID: string = 'kHelpBubbleMixinTestSpanElementId';
 const LIST_ITEM_NATIVE_ID: string = 'kHelpBubbleMixinTestListItemElementId';
+const NESTED_CHILD_NATIVE_ID: string = 'kHelpBubbleMixinTestChildElementId';
 const EVENT1_NAME: string = 'kFirstExampleCustomEvent';
 const EVENT2_NAME: string = 'kSecondExampleCustomEvent';
 const CLOSE_BUTTON_ALT_TEXT: string = 'Close help bubble.';
@@ -45,7 +46,9 @@ let titleBubble: HelpBubbleController;
 let p1Bubble: HelpBubbleController;
 let bulletListBubble: HelpBubbleController;
 let spanBubble: HelpBubbleController;
+let nestedChildBubble: HelpBubbleController;
 
+// HelpBubbleMixinTestElement
 export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
   static get is() {
     return 'help-bubble-mixin-test-element';
@@ -61,6 +64,7 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
         <li>List item 2</li>
       </ul>
       <span>Span text</span>
+      <container-element id='container-element'></container-element>
     </div>`;
   }
 
@@ -74,17 +78,40 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
     p1Bubble = this.registerHelpBubble(PARAGRAPH_NATIVE_ID, '#p1')!;
     bulletListBubble = this.registerHelpBubble(LIST_NATIVE_ID, '#bulletList')!;
     spanBubble = this.registerHelpBubble(SPAN_NATIVE_ID, spanEl)!;
-  }
-}
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'help-bubble-mixin-test-element': HelpBubbleMixinTestElement;
+    // using different types of selectors to test query mechanism
+    nestedChildBubble = this.registerHelpBubble(
+        NESTED_CHILD_NATIVE_ID, ['#container-element', '.child-element'])!;
   }
 }
 
 customElements.define(
     HelpBubbleMixinTestElement.is, HelpBubbleMixinTestElement);
+
+// HelpBubbleMixinTestContainerElement
+export class HelpBubbleMixinTestContainerElement extends PolymerElement {
+  static get is() {
+    return 'container-element';
+  }
+
+  static get template() {
+    return html`
+    <div>
+      <div class='child-element'></div>
+    </div>`;
+  }
+}
+
+customElements.define(
+    HelpBubbleMixinTestContainerElement.is,
+    HelpBubbleMixinTestContainerElement);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'help-bubble-mixin-test-element': HelpBubbleMixinTestElement;
+    'container-element': HelpBubbleMixinTestContainerElement;
+  }
+}
 
 class TestHelpBubbleHandler extends TestBrowserProxy implements
     HelpBubbleHandlerInterface {
@@ -258,6 +285,33 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         assertTrue(spanBubble.isShowing());
       });
 
+  test(
+      'help bubble mixin can pierce shadow dom to anchor to deep query', () => {
+        const containerElement =
+            container.shadowRoot!.querySelector('#container-element');
+        let childElement =
+            container.shadowRoot!.querySelector('.child-element');
+
+        assertTrue(containerElement !== null, 'container element is found');
+        assertTrue(
+            childElement === null, 'child element is isolated from container');
+
+        childElement =
+            containerElement.shadowRoot!.querySelector('.child-element');
+        assertTrue(
+            childElement !== null, 'child element is rendered in shadow dom');
+
+        assertTrue(
+            childElement === nestedChildBubble.getAnchor(),
+            'help bubble anchors to correct element in shadow dom');
+
+        assertFalse(container.isHelpBubbleShowing());
+        assertFalse(nestedChildBubble.isShowing());
+        container.showHelpBubble(nestedChildBubble, defaultParams);
+        assertTrue(container.isHelpBubbleShowing());
+        assertTrue(nestedChildBubble.isShowing());
+      });
+
   test('help bubble mixin reports not open for other elements', () => {
     // Valid but not open.
     assertFalse(container.isHelpBubbleShowingForTesting('title'));
@@ -413,7 +467,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     await waitAfterNextRender(container);
     // Since we're watching four elements, we get events for all four.
     assertEquals(
-        4,
+        5,
         testProxy.getHandler().getCallCount(
             'helpBubbleAnchorVisibilityChanged'));
     assertDeepEquals(
@@ -422,6 +476,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           [PARAGRAPH_NATIVE_ID, true],
           [LIST_NATIVE_ID, true],
           [SPAN_NATIVE_ID, true],
+          [NESTED_CHILD_NATIVE_ID, true],
         ],
         testProxy.getHandler().getArgs('helpBubbleAnchorVisibilityChanged'));
   });
@@ -430,7 +485,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     container.style.display = 'none';
     await waitForVisibilityEvents();
     assertEquals(
-        8,
+        10,
         testProxy.getHandler().getCallCount(
             'helpBubbleAnchorVisibilityChanged'));
     assertDeepEquals(
@@ -439,10 +494,12 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
           [PARAGRAPH_NATIVE_ID, true],
           [LIST_NATIVE_ID, true],
           [SPAN_NATIVE_ID, true],
+          [NESTED_CHILD_NATIVE_ID, true],
           [TITLE_NATIVE_ID, false],
           [PARAGRAPH_NATIVE_ID, false],
           [LIST_NATIVE_ID, false],
           [SPAN_NATIVE_ID, false],
+          [NESTED_CHILD_NATIVE_ID, false],
         ],
         testProxy.getHandler().getArgs('helpBubbleAnchorVisibilityChanged'));
   });

@@ -2,6 +2,7 @@
   :host {
     border-radius: 8px;
     box-shadow: 0 6px 10px 4px rgba(60, 64, 67, 0.15), 0 2px 3px rgba(60, 64, 67, 0.3);
+    box-sizing: border-box;
     position: absolute;
     z-index: 1;
   }
@@ -140,17 +141,14 @@
     --help-bubble-text-color: var(--google-grey-200);
     background-color: var(--help-bubble-background);
     border-radius: 8px;
+    box-sizing: border-box;
     color: var(--help-bubble-text-color);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 16px 20px;
     position: relative;
-    /*
-     * actual width is 340px when adding padding
-     * cannot use 'box-sizing: border-box' here because size calculation in js
-     */
-    width: 300px;
+    width: 340px;
   }
 
   #main {
@@ -265,7 +263,7 @@
     <p id="mainBody">[[bodyText]]</p>
   </div>
   <div id="buttons" hidden$="[[!buttons.length]]">
-    <template is="dom-repeat" items="[[buttons]]" sort="buttonSortFunc_">
+    <template is="dom-repeat" id="buttonlist"  items="[[buttons]]" sort="buttonSortFunc_">
       <cr-button id$="[[getButtonId_(itemsIndex)]]"
         tabindex$="[[getButtonTabIndex_(itemsIndex, item.isDefault)]]"
         class$="[[getButtonClass_(item.isDefault)]]"
