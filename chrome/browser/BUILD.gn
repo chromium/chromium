@@ -4424,7 +4424,6 @@ static_library("browser") {
       "//components/live_caption:live_translate",
       "//components/memory_pressure",
       "//components/omnibox/browser:mojo_bindings",
-      "//components/services/app_service:lib",
       "//components/services/app_service/public/cpp:app_file_handling",
       "//components/services/app_service/public/cpp:app_share_target",
       "//components/services/app_service/public/cpp:app_types",

@@ -69,7 +69,6 @@ source_set("app_service") {
     "//components/crx_file",
     "//components/favicon/core",
     "//components/keyed_service/content",
-    "//components/services/app_service:lib",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:icon_loader",
@@ -284,6 +283,8 @@ source_set("app_service") {
       "publishers/extension_apps_base.cc",
       "publishers/extension_apps_base.h",
     ]
+
+    deps += [ "//components/services/app_service/public/cpp:preferred_app" ]
   }
 }
 
