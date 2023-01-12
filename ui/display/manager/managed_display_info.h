@@ -446,6 +446,10 @@ void DISPLAY_MANAGER_EXPORT ResetDisplayIdForTest();
 // |kInvalidDisplayId| is passed to |ManagedDisplayInfo| constructor.
 int64_t DISPLAY_MANAGER_EXPORT GetNextSynthesizedDisplayId(int64_t id);
 
+// Generates the next fake connector index for displays who's ID was generated
+// by hashing their EDIDs.
+int64_t DISPLAY_MANAGER_EXPORT GetNextSynthesizedEdidDisplayConnectorIndex();
+
 }  // namespace display
 
 #endif  //  UI_DISPLAY_MANAGER_MANAGED_DISPLAY_INFO_H_

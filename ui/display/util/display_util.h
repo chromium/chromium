@@ -90,6 +90,16 @@ DISPLAY_UTIL_EXPORT gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+DISPLAY_UTIL_EXPORT int ConnectorIndex8(int device_index, int display_index);
+
+// A connector's index is a combination of:
+// 1) |display_index| the display's index in DRM       bits 0-7
+// 2) |device_index| the display's DRM's index         bits 8-15
+// e.g. - A 3rd display in a 2nd DRM would produce a connector index == 0x0102
+//        (since display index == 2 and DRM index == 1)
+DISPLAY_UTIL_EXPORT uint16_t ConnectorIndex16(uint8_t device_index,
+                                              uint8_t display_index);
+
 }  // namespace display
 
 #endif  // UI_DISPLAY_UTIL_DISPLAY_UTIL_H_

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
@@ -23,6 +22,7 @@
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager_utilities.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -38,6 +38,8 @@ namespace {
 const int64_t kSynthesizedDisplayIdStart = 2200000000LL;
 
 int64_t next_synthesized_display_id = kSynthesizedDisplayIdStart;
+uint8_t device_index = 0;
+uint8_t display_index = 0;
 
 const float kDpi96 = 96.0;
 
@@ -281,9 +283,8 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
           highest_refresh_rate = refresh_rate;
           native_mode = i;
         }
-        display_modes.push_back(
-            ManagedDisplayMode(size, refresh_rate, is_interlaced, false,
-                               device_scale_factor_for_mode));
+        display_modes.emplace_back(size, refresh_rate, is_interlaced, false,
+                                   device_scale_factor_for_mode);
       }
       ManagedDisplayMode dm = display_modes[native_mode];
       display_modes[native_mode] =
@@ -294,13 +295,22 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
 
   if (id == kInvalidDisplayId) {
     id = next_synthesized_display_id;
-    next_synthesized_display_id = GetNextSynthesizedDisplayId(id);
+    if (features::IsEdidBasedDisplayIdsEnabled()) {
+      next_synthesized_display_id += 0x100;
+    } else {
+      next_synthesized_display_id = GetNextSynthesizedDisplayId(id);
+    }
   }
   ManagedDisplayInfo display_info(
       id, base::StringPrintf("Display-%d", static_cast<int>(id)), has_overscan);
-  // Output index is stored in the first 8 bits.
-  const uint8_t connector_index = id & 0xFF;
-  display_info.set_connector_index(connector_index);
+
+  if (features::IsEdidBasedDisplayIdsEnabled()) {
+    display_info.set_connector_index(
+        GetNextSynthesizedEdidDisplayConnectorIndex());
+  } else {
+    // Output index is stored in the first 8 bits.
+    display_info.set_connector_index(id & 0xFF);
+  }
   display_info.set_device_scale_factor(device_scale_factor);
   display_info.SetRotation(rotation, Display::RotationSource::ACTIVE);
   display_info.SetRotation(rotation, Display::RotationSource::USER);
@@ -309,9 +319,9 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   display_info.set_rounded_corners_radii(rounded_corners_radii);
 
   if (!display_modes.size()) {
-    display_modes.push_back(ManagedDisplayMode(
-        display_info.size_in_pixel(), 60.0f,
-        /*interlace=*/false, /*native=*/true, device_scale_factor));
+    display_modes.emplace_back(display_info.size_in_pixel(), 60.0f,
+                               /*interlace=*/false, /*native=*/true,
+                               device_scale_factor);
   }
 
   display_info.SetManagedDisplayModes(display_modes);
@@ -584,16 +594,32 @@ Display::Rotation ManagedDisplayInfo::GetRotationWithPanelOrientation(
 
 void ResetDisplayIdForTest() {
   next_synthesized_display_id = kSynthesizedDisplayIdStart;
+  device_index = 0;
+  display_index = 0;
 }
 
 int64_t GetNextSynthesizedDisplayId(int64_t id) {
   int next_output_index = id & 0xFF;
   next_output_index++;
   DCHECK_GT(0x100, next_output_index);
-  int64_t base = GetDisplayIdWithoutOutputIndex(id);
+  const int64_t base = GetDisplayIdWithoutOutputIndex(id);
   if (id == kSynthesizedDisplayIdStart)
     return id + 0x100 + next_output_index;
   return base + next_output_index;
+}
+
+int64_t GetNextSynthesizedEdidDisplayConnectorIndex() {
+  if (display_index == 255) {
+    display_index = 0;
+    device_index++;
+  } else {
+    display_index++;
+  }
+  // Synthesized IDs are limited to 256^2 unique IDs.
+  DCHECK_LT(device_index, 255) << "Connector index exceeded 65536. Cannot "
+                                  "synthesize any more unique display IDs.";
+
+  return ConnectorIndex16(device_index, display_index);
 }
 
 }  // namespace display

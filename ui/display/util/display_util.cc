@@ -322,4 +322,14 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+int ConnectorIndex8(int device_index, int display_index) {
+  DCHECK_LT(device_index, 16);
+  DCHECK_LT(display_index, 16);
+  return ((device_index << 4) + display_index) & 0xFF;
+}
+
+uint16_t ConnectorIndex16(uint8_t device_index, uint8_t display_index) {
+  return ((device_index << 8) + display_index) & 0xFFFF;
+}
+
 }  // namespace display
