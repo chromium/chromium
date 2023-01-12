@@ -394,58 +394,62 @@ bool ValidateProperties(const base::Value& properties,
 // attribute and keys for 'patternProperties' are not checked for valid regulax
 // expression syntax. Invalid regular expressions will cause a value validation
 // error.
-bool IsValidSchema(const base::Value& dict, int options, std::string* error) {
-  DCHECK(dict.is_dict());
+bool IsValidSchema(const base::Value& dict_val,
+                   int options,
+                   std::string* error) {
+  DCHECK(dict_val.is_dict());
+  const base::Value::Dict& dict = dict_val.GetDict();
   // Validate '$ref'.
-  const base::Value* ref_id = dict.FindKey(schema::kRef);
-  if (ref_id)
-    return ValidateAttributesAndTypes(dict, schema::kRef, options, error);
+  if (dict.contains(schema::kRef)) {
+    return ValidateAttributesAndTypes(dict_val, schema::kRef, options, error);
+  }
 
   // Validate 'type'.
-  const base::Value* type = dict.FindKey(schema::kType);
-  if (!type) {
+  if (!dict.contains(schema::kType)) {
     *error = "Each schema must have a 'type' or '$ref'.";
     return false;
   }
-  if (type->type() != base::Value::Type::STRING) {
+
+  const std::string* type = dict.FindString(schema::kType);
+  if (!type) {
     *error = "Attribute 'type' must be a string.";
     return false;
   }
-  const std::string type_string = type->GetString();
+  const std::string& type_string = *type;
   if (!IsValidType(type_string)) {
     *error = base::StringPrintf("Unknown type '%s'.", type_string.c_str());
     return false;
   }
 
   // Validate attributes and expected types.
-  if (!ValidateAttributesAndTypes(dict, type_string, options, error))
+  if (!ValidateAttributesAndTypes(dict_val, type_string, options, error)) {
     return false;
+  }
 
   // Validate 'enum' attribute.
   if (type_string == schema::kString || type_string == schema::kInteger) {
-    const base::Value* enum_list = dict.FindKey(schema::kEnum);
+    const base::Value* enum_list = dict.Find(schema::kEnum);
     if (enum_list && !ValidateEnum(enum_list, type_string, error))
       return false;
   }
 
   if (type_string == schema::kInteger) {
     // Validate 'minimum' > 'maximum'.
-    const base::Value* minimum_value = dict.FindKey(schema::kMinimum);
-    const base::Value* maximum_value = dict.FindKey(schema::kMaximum);
+    const absl::optional<double> minimum_value =
+        dict.FindDouble(schema::kMinimum);
+    const absl::optional<double> maximum_value =
+        dict.FindDouble(schema::kMaximum);
     if (minimum_value && maximum_value) {
-      double minimum = minimum_value->is_int() ? minimum_value->GetInt()
-                                               : minimum_value->GetDouble();
-      double maximum = maximum_value->is_int() ? maximum_value->GetInt()
-                                               : maximum_value->GetDouble();
-      if (minimum > maximum) {
-        *error = base::StringPrintf("Invalid range specified [%f;%f].", minimum,
-                                    maximum);
+      if (minimum_value.value() > maximum_value.value()) {
+        *error =
+            base::StringPrintf("Invalid range specified [%f;%f].",
+                               minimum_value.value(), maximum_value.value());
         return false;
       }
     }
   } else if (type_string == schema::kArray) {
     // Validate type 'array'.
-    const base::Value* items = dict.FindKey(schema::kItems);
+    const base::Value* items = dict.Find(schema::kItems);
     if (!items) {
       *error = "Schema of type 'array' must have a schema in 'items'.";
       return false;
@@ -454,33 +458,33 @@ bool IsValidSchema(const base::Value& dict, int options, std::string* error) {
       return false;
   } else if (type_string == schema::kObject) {
     // Validate type 'object'.
-    const base::Value* properties = dict.FindKey(schema::kProperties);
+    const base::Value* properties = dict.Find(schema::kProperties);
     if (properties && !ValidateProperties(*properties, options, error))
       return false;
 
     const base::Value* pattern_properties =
-        dict.FindKey(schema::kPatternProperties);
+        dict.Find(schema::kPatternProperties);
     if (pattern_properties &&
         !ValidateProperties(*pattern_properties, options, error)) {
       return false;
     }
 
     const base::Value* additional_properties =
-        dict.FindKey(schema::kAdditionalProperties);
+        dict.Find(schema::kAdditionalProperties);
     if (additional_properties) {
       if (!IsValidSchema(*additional_properties, options, error))
         return false;
     }
 
-    const base::Value* required = dict.FindKey(schema::kRequired);
+    const base::Value::List* required = dict.FindList(schema::kRequired);
     if (required) {
-      for (const base::Value& item : required->GetList()) {
+      for (const base::Value& item : *required) {
         if (!item.is_string()) {
           *error = "Attribute 'required' may only contain strings.";
           return false;
         }
         const std::string property_name = item.GetString();
-        if (!properties || !properties->FindKey(property_name)) {
+        if (!properties || !properties->GetDict().contains(property_name)) {
           *error = base::StringPrintf(
               "Attribute 'required' contains unknown property '%s'.",
               property_name.c_str());
@@ -739,20 +743,22 @@ re2::RE2* Schema::InternalStorage::CompileRegex(
 }
 
 // static
-void Schema::InternalStorage::DetermineStorageSizes(const base::Value& schema,
-                                                    StorageSizes* sizes) {
-  if (!schema.is_dict()) {
+void Schema::InternalStorage::DetermineStorageSizes(
+    const base::Value& schema_val,
+    StorageSizes* sizes) {
+  const base::Value::Dict& schema = schema_val.GetDict();
+  if (!schema_val.is_dict()) {
     // Schemas need to be a dictionary type.
     return;
   }
 
-  if (schema.FindStringKey(schema::kRef)) {
+  if (schema.FindString(schema::kRef)) {
     // Schemas with a "$ref" attribute don't take additional storage.
     return;
   }
 
   base::Value::Type type = base::Value::Type::NONE;
-  const std::string* type_string = schema.FindStringKey(schema::kType);
+  const std::string* type_string = schema.FindString(schema::kType);
   if (!type_string || !SchemaTypeToValueType(*type_string, &type)) {
     // This schema is invalid.
     return;
@@ -761,45 +767,46 @@ void Schema::InternalStorage::DetermineStorageSizes(const base::Value& schema,
   sizes->schema_nodes++;
 
   if (type == base::Value::Type::LIST) {
-    const base::Value* items = schema.FindDictKey(schema::kItems);
+    const base::Value* items = schema.Find(schema::kItems);
     if (items)
       DetermineStorageSizes(*items, sizes);
   } else if (type == base::Value::Type::DICTIONARY) {
     sizes->properties_nodes++;
 
     const base::Value* additional_properties =
-        schema.FindDictKey(schema::kAdditionalProperties);
+        schema.Find(schema::kAdditionalProperties);
     if (additional_properties)
       DetermineStorageSizes(*additional_properties, sizes);
 
-    const base::Value* properties = schema.FindDictKey(schema::kProperties);
+    const base::Value::Dict* properties = schema.FindDict(schema::kProperties);
     if (properties) {
-      for (auto property : properties->DictItems()) {
+      for (auto property : *properties) {
         DetermineStorageSizes(property.second, sizes);
         sizes->strings++;
         sizes->property_nodes++;
       }
     }
 
-    const base::Value* pattern_properties =
-        schema.FindDictKey(schema::kPatternProperties);
+    const base::Value::Dict* pattern_properties =
+        schema.FindDict(schema::kPatternProperties);
     if (pattern_properties) {
-      for (auto pattern_property : pattern_properties->DictItems()) {
+      for (auto pattern_property : *pattern_properties) {
         DetermineStorageSizes(pattern_property.second, sizes);
         sizes->strings++;
         sizes->property_nodes++;
       }
     }
 
-    const base::Value* required_properties = schema.FindKey(schema::kRequired);
+    const base::Value::List* required_properties =
+        schema.FindList(schema::kRequired);
     if (required_properties) {
-      sizes->strings += required_properties->GetList().size();
-      sizes->required_properties += required_properties->GetList().size();
+      sizes->strings += required_properties->size();
+      sizes->required_properties += required_properties->size();
     }
-  } else if (schema.FindKey(schema::kEnum)) {
-    const base::Value* possible_values = schema.FindListKey(schema::kEnum);
+  } else if (schema.FindList(schema::kEnum)) {
+    const base::Value::List* possible_values = schema.FindList(schema::kEnum);
     if (possible_values) {
-      size_t num_possible_values = possible_values->GetList().size();
+      size_t num_possible_values = possible_values->size();
       if (type == base::Value::Type::INTEGER) {
         sizes->int_enums += num_possible_values;
       } else if (type == base::Value::Type::STRING) {
@@ -809,10 +816,12 @@ void Schema::InternalStorage::DetermineStorageSizes(const base::Value& schema,
       sizes->restriction_nodes++;
     }
   } else if (type == base::Value::Type::INTEGER) {
-    if (schema.FindKey(schema::kMinimum) || schema.FindKey(schema::kMaximum))
+    if (schema.contains(schema::kMinimum) ||
+        schema.contains(schema::kMaximum)) {
       sizes->restriction_nodes++;
+    }
   } else if (type == base::Value::Type::STRING) {
-    if (schema.FindKey(schema::kPattern)) {
+    if (schema.contains(schema::kPattern)) {
       sizes->strings++;
       sizes->string_enums++;
       sizes->restriction_nodes++;
@@ -820,13 +829,14 @@ void Schema::InternalStorage::DetermineStorageSizes(const base::Value& schema,
   }
 }
 
-bool Schema::InternalStorage::Parse(const base::Value& schema,
+bool Schema::InternalStorage::Parse(const base::Value& schema_val,
                                     short* index,
                                     ReferencesAndIDs* references_and_ids,
                                     std::string* error) {
-  const std::string* ref = schema.FindStringKey(schema::kRef);
+  const base::Value::Dict& schema = schema_val.GetDict();
+  const std::string* ref = schema.FindString(schema::kRef);
   if (ref) {
-    if (schema.FindStringKey(schema::kId)) {
+    if (schema.FindString(schema::kId)) {
       *error = "Schemas with a $ref can't have an id";
       return false;
     }
@@ -834,7 +844,7 @@ bool Schema::InternalStorage::Parse(const base::Value& schema,
     return true;
   }
 
-  const std::string* type_string = schema.FindStringKey(schema::kType);
+  const std::string* type_string = schema.FindString(schema::kType);
   if (!type_string) {
     *error = "The schema type must be declared.";
     return false;
@@ -860,32 +870,37 @@ bool Schema::InternalStorage::Parse(const base::Value& schema,
   schema_node->is_sensitive_value = false;
 
   absl::optional<bool> is_sensitive_value =
-      schema.FindBoolKey(schema::kSensitiveValue);
+      schema.FindBool(schema::kSensitiveValue);
   if (is_sensitive_value)
     schema_node->is_sensitive_value = *is_sensitive_value;
 
   if (type == base::Value::Type::DICTIONARY) {
-    if (!ParseDictionary(schema, schema_node, references_and_ids, error))
+    if (!ParseDictionary(schema_val, schema_node, references_and_ids, error)) {
       return false;
+    }
   } else if (type == base::Value::Type::LIST) {
-    if (!ParseList(schema, schema_node, references_and_ids, error))
+    if (!ParseList(schema_val, schema_node, references_and_ids, error)) {
       return false;
-  } else if (schema.FindKey(schema::kEnum)) {
-    if (!ParseEnum(schema, type, schema_node, error))
+    }
+  } else if (schema.contains(schema::kEnum)) {
+    if (!ParseEnum(schema_val, type, schema_node, error)) {
       return false;
-  } else if (schema.FindKey(schema::kPattern)) {
-    if (!ParseStringPattern(schema, schema_node, error))
+    }
+  } else if (schema.contains(schema::kPattern)) {
+    if (!ParseStringPattern(schema_val, schema_node, error)) {
       return false;
-  } else if (schema.FindKey(schema::kMinimum) ||
-             schema.FindKey(schema::kMaximum)) {
+    }
+  } else if (schema.contains(schema::kMinimum) ||
+             schema.contains(schema::kMaximum)) {
     if (type != base::Value::Type::INTEGER) {
       *error = "Only integers can have minimum and maximum";
       return false;
     }
-    if (!ParseRangedInt(schema, schema_node, error))
+    if (!ParseRangedInt(schema_val, schema_node, error)) {
       return false;
+    }
   }
-  const std::string* id = schema.FindStringKey(schema::kId);
+  const std::string* id = schema.FindString(schema::kId);
   if (id) {
     auto& id_map = references_and_ids->id_map;
     if (base::Contains(id_map, *id)) {
@@ -979,9 +994,10 @@ bool Schema::InternalStorage::ParseDictionary(
   }
 
   properties_nodes_[extra].required_begin = required_properties_.size();
-  const base::Value* required_properties = schema.FindKey(schema::kRequired);
+  const base::Value::List* required_properties =
+      schema.GetDict().FindList(schema::kRequired);
   if (required_properties) {
-    for (const base::Value& val : required_properties->GetList()) {
+    for (const base::Value& val : *required_properties) {
       strings_.push_back(val.GetString());
       required_properties_.push_back(strings_.back().c_str());
     }
@@ -1457,8 +1473,8 @@ Schema Schema::Parse(const std::string& content, std::string* error) {
   }
 
   // Checks for invalid attributes at the top-level.
-  if (dict.value().FindKey(schema::kAdditionalProperties) ||
-      dict.value().FindKey(schema::kPatternProperties)) {
+  if (dict.value().GetDict().contains(schema::kAdditionalProperties) ||
+      dict.value().GetDict().contains(schema::kPatternProperties)) {
     *error =
         "\"additionalProperties\" and \"patternProperties\" are not "
         "supported at the main schema.";
