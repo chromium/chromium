@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -73,7 +72,7 @@ enum NonConfigurableActions {
 };
 
 // Contains details for UI styling of an accelerator.
-struct ASH_EXPORT AcceleratorLayoutDetails {
+struct AcceleratorLayoutDetails {
   // The accelerator action id associated for a source. Concat `source` and
   // `action_id` to get a unique identifier for an accelerator action.
   uint32_t action_id;
@@ -102,7 +101,7 @@ struct ASH_EXPORT AcceleratorLayoutDetails {
 // A map between browser action id and accelerator description ID.
 // TODO(longbowei): Remove this map after browser accelerators are added to the
 // kAcceleratorLayouts table.
-ASH_EXPORT constexpr auto kBrowserActionToStringIdMap = base::MakeFixedFlatMap<
+constexpr auto kBrowserActionToStringIdMap = base::MakeFixedFlatMap<
     NonConfigurableActions,
     int>({
     {NonConfigurableActions::kBrowserCloseTab,
@@ -193,7 +192,7 @@ ASH_EXPORT constexpr auto kBrowserActionToStringIdMap = base::MakeFixedFlatMap<
 // Contains the text to display as well as its type (Modifier, Key, Plain Text)
 // which is needed to determine how to display the text in the shortcut
 // customization app.
-class ASH_EXPORT TextAcceleratorPart : public mojom::TextAcceleratorPart {
+class TextAcceleratorPart : public mojom::TextAcceleratorPart {
  public:
   explicit TextAcceleratorPart(ui::EventFlags modifier);
   explicit TextAcceleratorPart(ui::KeyboardCode key_code);
@@ -210,7 +209,7 @@ class ASH_EXPORT TextAcceleratorPart : public mojom::TextAcceleratorPart {
 // and message_id/replacements should not have any value set.
 // AcceleratorConfigurationProvider uses this struct to create a list of
 // AcceleratorInfo struct's for each non-configurable action.
-struct ASH_EXPORT NonConfigurableAcceleratorDetails {
+struct NonConfigurableAcceleratorDetails {
   NonConfigurableAcceleratorDetails(
       int message_id,
       std::vector<TextAcceleratorPart> replacements);
@@ -236,7 +235,7 @@ struct ASH_EXPORT NonConfigurableAcceleratorDetails {
 using NonConfigurableActionsMap =
     std::map<NonConfigurableActions, NonConfigurableAcceleratorDetails>;
 
-const ASH_EXPORT NonConfigurableActionsMap& GetNonConfigurableActionsMap();
+const NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 
 // A fixed array of accelerator layouts used for categorization and styling of
 // accelerator actions. The ordering of the array is important and is used
@@ -245,7 +244,7 @@ const ASH_EXPORT NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 // app.
 // TODO(jimmyxgong): This is a stub map with stub details, replace with real
 // one when categorization is available.
-ASH_EXPORT constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
+constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
     // Tab & Windows.
     {DESKS_ACTIVATE_DESK_LEFT,
      IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE_DESK_LEFT,
