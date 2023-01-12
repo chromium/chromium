@@ -9,8 +9,6 @@ import("//ui/webui/webui_features.gni")
 
 assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
 
-import("//chrome/browser/resources/tools/build_webui.gni")
-
 preprocess_folder = "preprocessed"
 
 build_webui("build") {
