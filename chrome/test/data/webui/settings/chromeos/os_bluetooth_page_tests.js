@@ -4,13 +4,14 @@
 
 import 'chrome://os-settings/strings.m.js';
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {BluetoothSystemState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
 
 suite('OsBluetoothPageTest', function() {
   /** @type {!FakeBluetoothConfig} */
@@ -19,12 +20,19 @@ suite('OsBluetoothPageTest', function() {
   /** @type {!SettingsBluetoothPageElement|undefined} */
   let bluetoothPage;
 
+  /** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
+  let browserProxy = null;
+
   function flushAsync() {
     flush();
     return new Promise(resolve => setTimeout(resolve));
   }
 
   setup(function() {
+    browserProxy = new TestOsBluetoothDevicesSubpageBrowserProxy();
+    OsBluetoothDevicesSubpageBrowserProxyImpl.setInstanceForTesting(
+        browserProxy);
+
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
     bluetoothPage = document.createElement('os-settings-bluetooth-page');
@@ -43,11 +51,15 @@ suite('OsBluetoothPageTest', function() {
 
     assertTrue(!!bluetoothSummary);
     assertFalse(!!getBluetoothPairingUi());
+    assertEquals(0, browserProxy.getShowBluetoothRevampHatsSurveyCount());
 
     bluetoothSummary.dispatchEvent(new CustomEvent('start-pairing'));
 
     await flushAsync();
     assertTrue(!!getBluetoothPairingUi());
+    assertEquals(
+        1, browserProxy.getShowBluetoothRevampHatsSurveyCount(),
+        'Count failed to increase');
 
     getBluetoothPairingUi().dispatchEvent(new CustomEvent('close'));
 

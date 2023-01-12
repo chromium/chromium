@@ -24,6 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
+import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_bluetooth_page.html.js';
 
 const SettingsBluetoothPageElementBase = PrefsMixin(I18nMixin(PolymerElement));
@@ -54,6 +55,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
     };
   }
 
+  private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
   private showSavedDevicesLoadingIndicators_: boolean;
   private shouldShowPairingDialog_: boolean;
   private systemProperties_: BluetoothSystemProperties;
@@ -64,6 +66,8 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
     this.systemPropertiesObserverReceiver_ =
         new SystemPropertiesObserverReceiver(this);
+    this.browserProxy_ =
+        OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
   override ready(): void {
@@ -81,6 +85,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   private onStartPairing_(): void {
     this.shouldShowPairingDialog_ = true;
+    this.browserProxy_.showBluetoothRevampHatsSurvey();
   }
 
   private onClosePairingDialog_(): void {

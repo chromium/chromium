@@ -18,11 +18,16 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends
     super([
       'requestFastPairSavedDevices',
       'deleteFastPairSavedDevice',
+      'requestFastPairDeviceSupport',
     ]);
     this.savedDevices = [];
     this.optInStatus = FastPairSavedDevicesOptInStatus.STATUS_OPTED_IN;
     this.showBluetoothRevampHatsSurveyCount = 0;
   }
+
+  /** @override */
+  requestFastPairDeviceSupport() {}
+
   /** @override */
   requestFastPairSavedDevices() {
     this.methodCalled('requestFastPairSavedDevices');
