@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Küsi enne saitidele loa andmist mind ümbritsevast 3D-kaardi loomiseks või kaamera asendi jälgimiseks (soovitatav)</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2238944249568001759">Soovitatud otsingud teie viimase vahelehe põhjal</translation>
 <translation id="2241634353105152135">Ainult ühe korra</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Eemalda</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Kaamera on Androidi seadetes välja lülitatud</translation>
 <translation id="5706552988683188916">See kustutab saidi <ph name="WEBSITE" /> puhul küpsisefailid ja muud saidiandmed</translation>
 <translation id="5719847187258001597">See kustutab saidi <ph name="ORIGIN" /> või selle rakenduse salvestatud kõik andmed ja küpsisefailid teie avakuvalt.</translation>
+<translation id="5723967018671998714">Kolmanda osapoole küpsisefailid on inkognito režiimis blokeeritud</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> on keelatud</translation>
 <translation id="5804241973901381774">Load</translation>
 <translation id="5860033963881614850">Väljas</translation>

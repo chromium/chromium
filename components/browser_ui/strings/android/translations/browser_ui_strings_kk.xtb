@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Cайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат беру алдында сізден сұраy (ұсынылады)</translation>
 <translation id="2212565012507486665">Cookie файлдарына рұқсат беру</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> браузері камераны пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
+<translation id="2235344399760031203">Үшінші тараптың cookie файлдары бөгелді</translation>
 <translation id="2238944249568001759">Соңғы ашылған қойындыға негізделіп ұсынылатын іздеу сұраулары</translation>
 <translation id="2241634353105152135">Бір-ақ рет</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> элементін жою</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Камера Android параметрлерінде өшірілген.</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5719847187258001597">Негізгі экрандағы <ph name="ORIGIN" /> сайты мен қолданбада сақталған барлық деректер мен cookie файлдары өшіріледі.</translation>
+<translation id="5723967018671998714">Үшінші тараптың cookie файлдары инкогнито режимінде бөгелген.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5860033963881614850">Өшірулі</translation>

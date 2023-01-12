@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">შეკითხვა საიტებისთვის თქვენი გარემოს 3-განზომილებიანი რუკის შექმნის ან კამერის პოზიციისთვის თვალის მიდევნების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="2212565012507486665">ქუქი-ჩანაწერების დაშვება</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />-მა კამერით რომ ისარგებლოს, გაააქტიურეთ კამერაზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
 <translation id="2238944249568001759">თქვენი ბოლო ჩანართის მიხედვით შემოთავაზებული ძიებები</translation>
 <translation id="2241634353105152135">მხოლოდ ერთხელ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> — ამოშლა</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">კამერა გამორთულია Android-ის პარამეტრებში</translation>
 <translation id="5706552988683188916">ეს მოქმედება წაშლის ქუქი-ჩანაწერებსა და საიტის სხვა მონაცემებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="5719847187258001597">ამ მოქმედებით გასუფთავდება <ph name="ORIGIN" />-ის ან მისი აპის მიერ თქვენს მთავარ ეკრანზე შენახული ყველა მონაცემი.</translation>
+<translation id="5723967018671998714">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია ინკოგნიტო რეჟიმში</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> დაბლოკილია</translation>
 <translation id="5804241973901381774">ნებართვები</translation>
 <translation id="5860033963881614850">გამორთვა</translation>

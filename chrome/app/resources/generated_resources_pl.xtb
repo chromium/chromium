@@ -4889,7 +4889,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5493792505296048976">ekran włączony</translation>
 <translation id="5494016731375030300">Ostatnio zamknięte karty</translation>
 <translation id="5494362494988149300">Otwórz po &amp;zakończeniu</translation>
-<translation id="5494752089476963479">Blokuj reklamy na stronach, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
 <translation id="5495466433285976480">To spowoduje usunięcie wszystkich lokalnych użytkowników, plików, danych i innych ustawień po ponownym uruchomieniu. Wszyscy użytkownicy będą musieli zalogować się od nowa.</translation>
 <translation id="5495597166260341369">Nie wyłączaj ekranu</translation>
 <translation id="5496587651328244253">Organizuj</translation>
@@ -5794,7 +5793,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6335920438823100346">Przed uruchomieniem Linuksa <ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych oraz przywrócenia na tym Chromebooku ustawień fabrycznych.</translation>
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB. W związku z tym za 24 godziny Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie zresetowane. Utwórz kopie zapasowe plików, które chcesz zachować.</translation>
 <translation id="6338968693068997776">Dodaj urządzenie USB</translation>
-<translation id="6338981933082930623">Wszystkie strony mogą wyświetlać wszystkie reklamy</translation>
 <translation id="6339668969738228384">Utwórz nowy profil dla adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Personalizacja</translation>

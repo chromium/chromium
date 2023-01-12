@@ -3214,6 +3214,7 @@
 <translation id="3898233949376129212">آلے کی زبان</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> کو درکار ہے: <ph name="FIRST_PERMISSION" /> اور <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">‏<ph name="WEBSITE" /> کیلئے آپ کا پاس ورڈ اس آلے پر اور آپ کے Google اکاؤنٹ میں محفوظ ہے۔ آپ کسے حذف کرنا چاہتے ہیں؟</translation>
+<translation id="3898768766145818464">ویڈیو چلائیں یا موقوف کریں</translation>
 <translation id="389901847090970821">کی بورڈ منتخب کریں</translation>
 <translation id="3900966090527141178">پاس ورڈز برآمد کریں</translation>
 <translation id="3902789559055749153">منتخب کریں کہ آپ <ph name="APP_NAME" /> کے لئے کس طرح پاس کی تخلیق کرنا چاہتے ہیں</translation>
@@ -4897,7 +4898,6 @@
 <translation id="5493792505296048976">اسکرین آن ہے</translation>
 <translation id="5494016731375030300">حال ہی میں بند کئے گئے ٹیبز</translation>
 <translation id="5494362494988149300">&amp;مکمل ہو جانے پر کھولیں</translation>
-<translation id="5494752089476963479">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر اشتہارات کو مسدود کریں</translation>
 <translation id="5495466433285976480">اس سے آپ کی جانب سے اگلی بار دوبارہ شروع کرنے کے بعد سبھی مقامی صارفین، فائلیں، ڈیٹا اور دیگر ترتیبات ہٹ جائیں گی۔ سبھی صارفین کو دوبارہ سائن ان کرنے کی ضرورت ہوگی۔</translation>
 <translation id="5495597166260341369">ڈسپلے آن رکھیں</translation>
 <translation id="5496587651328244253">منظم کریں</translation>
@@ -5802,7 +5802,6 @@
 <translation id="6335920438823100346">‏Linux شروع کرنے کے لیے <ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ لیں اور اس Chromebook کو فیکٹری کی ترتیبات پر ری سیٹ کریں۔</translation>
 <translation id="6336038146639916978">‏<ph name="MANAGER" /> نے ADB ڈیبگنگ کو غیر فعال کر دیا ہے۔ یہ آپ کے <ph name="DEVICE_TYPE" /> کو 24 گھنٹوں میں ری سیٹ کر دے گا۔ کوئی بھی فائل کا بیک اپ لیں جسے آپ رکھنا چاہتے ہیں۔</translation>
 <translation id="6338968693068997776">‏USB آلہ شامل کریں</translation>
-<translation id="6338981933082930623">سبھی سائٹس آپ کو کوئی اشتہار دکھا سکتی ہیں</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> کیلئے ایک نیا پروفائل بنائیں</translation>
 <translation id="6340071272923955280">‏انٹرنیٹ پرنٹنگ پروٹوکول (IPPS)</translation>
 <translation id="6340526405444716530">ذاتی نوعیت سازی</translation>

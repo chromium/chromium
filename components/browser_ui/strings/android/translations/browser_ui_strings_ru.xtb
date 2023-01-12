@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры (рекомендуется)</translation>
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
 <translation id="2238944249568001759">Варианты поисковых запросов, основанные на данных последней вкладки</translation>
 <translation id="2241634353105152135">Однократно</translation>
 <translation id="2253414712144136228">Удалить пункт "<ph name="NAME_OF_LIST_ITEM" />"</translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">Фоновая синхронизация</translation>
 <translation id="3763247130972274048">Чтобы пропустить 10 секунд, дважды нажмите слева или справа.</translation>
 <translation id="3797520601150691162">Не использовать тёмную тему для конкретного сайта</translation>
+<translation id="3803367742635802571">Посещаемые сайты могут перестать работать должным образом</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Номера телефонов</translation>
 <translation id="3826050100957962900">Предложения войти в аккаунт от третьих сторон</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к микрофону, предоставьте разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Отключить микрофон</translation>
 <translation id="4570913071927164677">Подробнее…</translation>
+<translation id="4598549027014564149">В режиме инкогнито сайты не могут отслеживать ваши действия с помощью файлов cookie, даже на связанных сайтах. Информация о действиях в браузере не используется, например, для показа персонализированной рекламы. Из-за этого функции некоторых сайтов могут стать недоступными.</translation>
 <translation id="4645575059429386691">Управляется вашими родителями</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
 <translation id="5706552988683188916">Будут удалены файлы cookie и другие данные сайта <ph name="WEBSITE" />.</translation>
 <translation id="5719847187258001597">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" /> или его приложением, добавленным на главный экран.</translation>
+<translation id="5723967018671998714">Сторонние файлы cookie заблокированы в режиме инкогнито.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />: заблокировано</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">Блокировать всплывающие окна и переадресацию на сайтах (рекомендуется)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Обновить</translation>
+<translation id="7188508872042490670">Данные сайтов, сохраненные на устройстве</translation>
 <translation id="7203150201908454328">Развернуто</translation>
 <translation id="723171743924126238">Выберите изображения</translation>
 <translation id="7243308994586599757">Доступные параметры указаны в нижней части экрана</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
 <translation id="848952951823693243">Всегда запрашивать мобильную версию</translation>
 <translation id="8499083585497694743">Включить микрофон</translation>
+<translation id="8514955299594277296">Запретить сайтам сохранять данные на устройстве (не рекомендуется)</translation>
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}one{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}few{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}many{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}other{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}}</translation>

@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Magtanong bago payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera (inirerekomenda)</translation>
 <translation id="2212565012507486665">Payagan ang cookies</translation>
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
 <translation id="2238944249568001759">Mga iminumungkahing paghahanap batay sa iyong huling tab</translation>
 <translation id="2241634353105152135">Isang beses lang</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Alisin</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Naka-off ang camera sa mga setting ng Android</translation>
 <translation id="5706552988683188916">Dine-delete nito ang cookies at iba pang data ng site para sa <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Iki-clear nito ang lahat ng data at cookies na na-store ng <ph name="ORIGIN" /> o ng app nito sa iyong Home screen.</translation>
+<translation id="5723967018671998714">Bina-block ang third-party na cookies sa Incognito mode</translation>
 <translation id="5771720122942595109">Naka-block ang <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5860033963881614850">Naka-off</translation>

@@ -581,6 +581,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo dentro de um dia}other{Atualize o dispositivo dentro de # dias}}</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4192112279662688596">Ou</translation>
+<translation id="4193857202545160520">Mostrar cliques e teclas</translation>
 <translation id="4195814663415092787">Continuar onde deixou</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
 <translation id="4197790712631116042">Desativado</translation>
@@ -761,6 +762,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Mostrar mês seguinte</translation>
+<translation id="5127986747308934633">O administrador está a controlar o seu dispositivo</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Definições de privacidade</translation>
@@ -989,6 +991,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="639644700271529076">CAPS LOCK está desativado</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
+<translation id="641867537956679916">O administrador iniciou sessão para analisar um problema. Pode continuar a usar o dispositivo após o administrador lhe voltar a dar o controlo.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Limpar todas as notificações</translation>
 <translation id="643147933154517414">Tudo concluído</translation>

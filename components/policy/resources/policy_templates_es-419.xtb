@@ -417,6 +417,7 @@ En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instan
       En <ph name="PRODUCT_OS_NAME" />, esta política solo se aplica a los usuarios afiliados.
 
       Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, y las preferencias del usuario.</translation>
+<translation id="1413768951234456918">Borrar el historial de navegación</translation>
 <translation id="1413936351612032792">Informar datos sobre el uso de las apps de Linux</translation>
 <translation id="1417888712677507140">Bloquea los diálogos de JavaScript que se envían desde un submarco de otro origen</translation>
 <translation id="1418387035898607074">Omite las verificaciones de la Navegación segura en archivos descargados de fuentes de confianza</translation>
@@ -2768,6 +2769,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Si no estableces la política, no se aplicarán restricciones.</translation>
 <translation id="3531084733660068324">Configuración de la supervisión parental</translation>
+<translation id="3532827558833318911">Borrar el acceso mediante contraseña</translation>
 <translation id="353611922042274900">Mostrar siempre la información del sistema en la pantalla de acceso</translation>
 <translation id="3536263244905016305">Inhabilitar la optimización de detección automática de proxy web (WPAD)</translation>
 <translation id="3538869107794555625">Habilitar el teclado en pantalla en el modo de tablet</translation>
@@ -4268,6 +4270,7 @@ Si inhabilitas esta política o no la estableces, la API de window.webkitStorage
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> dejará de enviar estas consultas.</translation>
 <translation id="5033070732967197381">Permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="5034504101537897433">Habilitar los informes de fallos del dispositivo</translation>
+<translation id="5036013147560568855">Versión del protocolo de provisión de certificados. La configuración predeterminada es 1. 1 es el protocolo "estático". 2 es el protocolo "dinámico".</translation>
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
 <translation id="5055474681190962362">El día del mes [1-31] en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es mensual ("MONTHLY"). Si se supera el número máximo de días de un mes, se elegirá el último día.</translation>
@@ -4422,6 +4425,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> es una política relacionada que también puede inhabilitar las revisiones de intercepción de DNS. Esta política es una versión más flexible que puede controlar por separado las barras de información de redirección de intranet y se puede expandir en el futuro.
       Si <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> o esta política solicitan inhabilitar las revisiones de intercepción, se desactivarán las revisiones.</translation>
+<translation id="5210133032276211845">Borrar imágenes y archivos almacenados en caché</translation>
 <translation id="5212118847531454979">Te permite establecer el período, en milisegundos, en el que se notifica a los usuarios que deben reiniciar <ph name="PRODUCT_NAME" /> o un dispositivo <ph name="PRODUCT_OS_NAME" /> para aplicar una actualización pendiente.
 
       En este período, se le informará reiteradamente al usuario acerca de la necesidad de la actualización. En dispositivos <ph name="PRODUCT_OS_NAME" />, se muestra una notificación de reinicio en la bandeja del sistema, en conformidad con la política <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. En navegadores <ph name="PRODUCT_NAME" />, el menú de la app indica que se debe reiniciar después de transcurrido un tercio del período de la notificación. Esta notificación cambia de color tras dos tercios del período de la notificación y una vez más cuando finaliza este período. Las notificaciones adicionales que habilita la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> siguen el mismo patrón.
@@ -4783,6 +4787,7 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
       Si esta lista está vacía, no se definirán etapas y se aplicarán las actualizaciones conforme a otras políticas de dispositivo.
 
       No se aplica esta política para los cambios de canales.</translation>
+<translation id="5517825566262498086">Borrar los datos de apps alojadas</translation>
 <translation id="5519331583722582543">Función experimental booleana que indica si el teclado en pantalla puede proporcionar entradas mediante el reconocimiento de escritura a mano.</translation>
 <translation id="5519619299971727565">Inhabilitar los informes de uso de las apps de Linux</translation>
 <translation id="5521035900165046997">Habilitar los informes de Bluetooth del dispositivo</translation>
@@ -5058,6 +5063,7 @@ Si no estableces la política, ningún dominio podrá acceder a las URLs de file
 
       No se activará este comportamiento si la Navegación segura está inhabilitada (ya sea por la política o el usuario). Si quieres forzar la Navegación segura, usa la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Configuración de Captura de pantalla</translation>
+<translation id="5835674781974810379">Borrar cookies y otros datos de sitios</translation>
 <translation id="5836064773277134605">Restringir el intervalo de puertos UDP que utiliza el host de acceso remoto</translation>
 <translation id="583627479140113555">Habilitar la importación de contraseñas guardadas en la primera ejecución</translation>
 <translation id="5837898601525273156">Si estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> y habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />, se mantendrá activada la política para administrar la energía en el modo avanzado de carga de la batería (cuando lo admita el dispositivo). Gracias a un algoritmo para la carga estándar y otras técnicas durante las horas en que no se utilice el dispositivo, este modo permite que los usuarios optimicen el estado de la batería. Durante las horas de funcionamiento, el sistema utiliza una carga rápida, la cual permite que la batería se cargue en menos tiempo. Debes especificar el período en que el sistema tendrá más actividad cada día, mediante la hora de inicio y la duración.
@@ -5208,6 +5214,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="5997543603646547632">Utilizar reloj con formato de 24 horas de forma predeterminada</translation>
 <translation id="5997846976342452720">Indicar si el buscador de complementos se debe inhabilitar (obsoleto)</translation>
 <translation id="5998198091336830580">Esta política es parte del siguiente grupo atómico (solo se aplican las políticas que provengan de la fuente de mayor prioridad del grupo):</translation>
+<translation id="6001621991816939414">Borrar el historial de descargas</translation>
 <translation id="600402562436559989">Permitir sincronizar la configuración de la red Wi-Fi entre dispositivos <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado</translation>
 <translation id="6004575267180297869">
       Especifica si los módulos de WebAssembly se pueden enviar a otra ventana o trabajador de origen cruzado. El uso compartido de módulos de WebAssembly entre orígenes cruzados dejará de estar disponible como parte de las medidas para dar de baja document.domain; consulta https://github.com/mikewest/deprecating-document-domain. Esta política permite volver a habilitar el uso compartido de módulos de WebAssembly entre orígenes cruzados para ofrecer un período de transición más largo en el proceso hasta lograr que se dé de baja.
@@ -6841,6 +6848,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7519218194072744342">La URL del controlador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir la generación de claves en estos sitios</translation>
 <translation id="7521864460386999758">Impedir que se inserte código de terceros en Chrome</translation>
+<translation id="7524983116584990314">Borrar los datos de Autocompletar</translation>
 <translation id="7529144158022474049">Actualizar de forma automática el factor de dispersión</translation>
 <translation id="7529332889403151669">Especifica si debe mostrarse la alerta de pantalla completa cuando el dispositivo salga de un modo de suspensión o pantalla oscura.
 
@@ -8040,6 +8048,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="8657543427358173663">Permitir la recopilación de registros de eventos de WebRTC de los servicios de Google</translation>
 <translation id="8659843732895043951">Permitir el portapapeles en estos sitios</translation>
 <translation id="8661297125441579970">No permitir la migración de datos y ARC</translation>
+<translation id="8661538142776716004">Borrar la configuración de sitios</translation>
 <translation id="8661980316738569557">Habilitar el contraste alto</translation>
 <translation id="8664285601317301180">Esta política controla el valor de <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" /> en los trabajos de impresión.
 
@@ -8291,6 +8300,21 @@ VM. Se pueden instalar varias VMs desde la misma configuración en el mismo disp
 <translation id="8882307005437314052">Habilitar el teclado en pantalla en la pantalla de acceso y permitir que el usuario lo inhabilite temporalmente</translation>
 <translation id="8883577480680089760">Inhabilitar el servicio de <ph name="PRODUCT_NAME" /> V2 y no abrir el escritorio remoto al acceder</translation>
 <translation id="8887709920496070892">El período sin intervención del usuario después del cual se muestra un diálogo de advertencia (en milisegundos).</translation>
+<translation id="8887847586787956456">Lista de acciones para ejecutar cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Si no estableces la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, esta política no tendrá efecto.
+
+      Cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> ejecuta las acciones configuradas en esta política.
+
+      Si la dejas vacía o no la estableces, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
+
+      Se admiten las siguientes acciones:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": cierra todas las ventanas del navegador y las AWP de este perfil.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": muestra la ventana del Selector de perfiles.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" , "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" , "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": borran los datos de navegación correspondientes. Para obtener más información, consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8890438048579188548">Oculta las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Inhabilitar los informes del sistema del dispositivo</translation>
 <translation id="8892286064305622118">Espacio libre en disco que se requiere para <ph name="PLUGIN_VM_NAME" /></translation>

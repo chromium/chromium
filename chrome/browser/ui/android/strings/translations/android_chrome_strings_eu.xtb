@@ -729,7 +729,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4991110219272367918">Webgune bat onartzeko edo ez onartzeko aukera itxita dago</translation>
 <translation id="499724277181351974">Nabigatu: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Jarraitu webguneari hemen</translation>
-<translation id="500351648694011114">Arakatu erraztasun handiagoz</translation>
 <translation id="5004416275253351869">Google-ko jarduerak kontrolatzeko aukerak</translation>
 <translation id="5005498671520578047">Kopiatu pasahitza</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> webguneak konektatu egin nahi du</translation>
@@ -882,7 +881,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5864419784173784555">Beste deskarga bat amaitzeko zain…</translation>
 <translation id="5865733239029070421">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri</translation>
 <translation id="5869522115854928033">Gordetako pasahitzak</translation>
-<translation id="5869789175361934029">Egin aurrera beste gailu batetik</translation>
 <translation id="5876496397064130037">Berrekin zaio zereginari</translation>
 <translation id="587735546353481577">Webgune bati jarraitzeko, joan bertara, ireki Chrome-ko menua eta sakatu Jarraitu.</translation>
 <translation id="5879072387416556377">Lortu iradokizunak hobeak</translation>
@@ -946,6 +944,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6277722725779679269">Ezin izan da eguneratu prezioen jarraipena</translation>
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6294610283659775533">Google-ko kontu berean saioa hasita daukaten gailuen artean fitxak bidal ditzakezu</translation>
+<translation id="6295158916970320988">Webgune guztiak</translation>
 <translation id="6297765934698848803">Gailua kudeatzen duen erakundeak kamera desaktibatu du.</translation>
 <translation id="6301525844455696527">Ekin zain daukazun irakurketa-zerrendari</translation>
 <translation id="6303969859164067831">Amaitu saioa eta desaktibatu sinkronizazioa</translation>
@@ -1516,7 +1515,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="96681097142096641">Orri sinplifikatua ikusi nahi duzu?</translation>
 <translation id="968900484120156207">Hemen agertuko dira bisitatzen dituzun orriak</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min gelditzen dira</translation>
-<translation id="978443947993957527">Ikusi zuretzako edukia</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="983192555821071799">Itxi fitxa guztiak</translation>
 <translation id="987264212798334818">Orokorra</translation>

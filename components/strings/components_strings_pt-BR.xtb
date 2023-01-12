@@ -402,7 +402,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="191374271204266022">Copiar como JSON</translation>
 <translation id="1914326953223720820">Serviço Descompactar</translation>
 <translation id="1916770123977586577">Para aplicar as configurações atualizadas a este site, recarregue a página</translation>
-<translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
@@ -801,6 +800,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2986368408720340940">Esse método de retirada não está disponível. Tente um método diferente.</translation>
 <translation id="2987034854559945715">Nenhum recurso correspondente</translation>
 <translation id="2989742184762224133">Dois grampos na parte superior</translation>
+<translation id="2990882401221831923">A lista de cartões de crédito está fechada.</translation>
 <translation id="2991174974383378012">Compartilhar com websites</translation>
 <translation id="299122504639061328">Gerencie a pesquisa no site e o mecanismo de pesquisa padrão</translation>
 <translation id="2991571918955627853">Você não pode visitar <ph name="SITE" /> agora, porque o site usa HSTS. Erros de rede e ataques são geralmente temporários. Esta página provavelmente funcionará mais tarde.</translation>
@@ -924,7 +924,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas recomenda que você a mude imediatamente.</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
-<translation id="3308738399950580893">anúncios</translation>
 <translation id="3320021301628644560">Adicionar endereço de faturamento</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmim</translation>
@@ -1586,6 +1585,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Erro de validação de esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Usar o microfone?</translation>
+<translation id="4988822846878841743">Lista de cartões de crédito a serem preenchidos com um toque aberta na metade da altura.</translation>
 <translation id="4989163558385430922">Ver tudo</translation>
 <translation id="4989542687859782284">Indisponível</translation>
 <translation id="4989809363548539747">Este plug-in não é compatível</translation>
@@ -1934,6 +1934,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5863847714970149516">A página que você está prestes a acessar pode tentar cobrar pagamentos</translation>
 <translation id="5866257070973731571">Adicione um Número de Telefone</translation>
 <translation id="5866898949289125849">Você está vendo uma página de ferramentas para desenvolvedores</translation>
+<translation id="5868548454963263350">Lista de cartões de crédito a serem preenchidos com um toque aberta no tamanho máximo.</translation>
 <translation id="5869405914158311789">Não é possível acessar esse site</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
 <translation id="5873013647450402046">O banco precisa confirmar sua identidade.</translation>
@@ -2646,6 +2647,7 @@ Mais detalhes:
 <translation id="7653957176542370971">A página do gerenciador de pagamento está fechada</translation>
 <translation id="7654909834015434372">Quando você editar as anotações, este documento voltará à rotação original</translation>
 <translation id="765676359832457558">Ocultar configurações avançadas...</translation>
+<translation id="7656935528854393684">Lista de cartões de crédito a serem preenchidos com um toque.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">Lágrimas de alegria</translation>

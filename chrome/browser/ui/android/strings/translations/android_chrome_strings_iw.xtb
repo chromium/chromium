@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">האפשרות לאשר או לא לאשר אתר נסגרה</translation>
 <translation id="499724277181351974">ניווט: <ph name="WEBSITE_TITLE" />:‏ <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">כאן ניתן לעקוב אחר האתר הזה</translation>
-<translation id="500351648694011114">גלישה קלה יותר</translation>
 <translation id="5004416275253351869">‏בקרת הפעילות בחשבון Google</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> מבקש להתחבר אל</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">בהמתנה להורדה נוספת…</translation>
 <translation id="5865733239029070421">‏שליחת דוחות קריסה וסטטיסטיקת שימוש אל Google באופן אוטומטי</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
-<translation id="5869789175361934029">המשך הפעילות במכשיר אחר</translation>
 <translation id="5876496397064130037">הפעלת המשימה המשיכה</translation>
 <translation id="587735546353481577">‏כדי לעקוב אחר אתר כלשהו, עוברים אליו, פותחים את תפריט Chrome ומקישים על 'מעקב'.</translation>
 <translation id="5879072387416556377">קבלת הצעות טובות יותר</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">לא ניתן היה לעדכן את המחיר שבמעקב</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6294610283659775533">‏אפשר לשלוח כרטיסיות ממכשיר למכשיר, כל עוד נכנסת במכשירים לאותו חשבון Google.</translation>
+<translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6297765934698848803">המצלמה הושבתה במכשיר, בהתאם להגדרות שנקבעו על ידי הארגון שמנהל את המכשיר.</translation>
 <translation id="6301525844455696527">רוצה להתקדם ברשימת הקריאה שלך?</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">להציג דף פשוט?</translation>
 <translation id="968900484120156207">הדפים שבהם ביקרת מופיעים כאן</translation>
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
-<translation id="978443947993957527">הצגת תוכן שרלוונטי לך</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
 <translation id="987264212798334818">כללי</translation>

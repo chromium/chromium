@@ -146,6 +146,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3533694711092285624">Nėra išsaugotų slaptažodžių. „Chrome“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
 <translation id="3541482654983822893">„Chrome“ negali patikrinti jūsų slaptažodžių. Bandykite dar kartą po 24 val.</translation>
 <translation id="3576528680708590453">Sistemos administratorius sukonfigūravo „Google Chrome“ atidaryti alternatyvią naršyklę, norint pasiekti <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3579965087968408543">Visada išvalyti svetainių duomenis iš įrenginio uždarius „Chrome“</translation>
 <translation id="3582972582564653026">Sinchronizuokite ir suasmeninkite „Chrome“ skirtinguose įrenginiuose</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorius reikalauja paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį}=1{Administratorius reikalauja paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. Inkognito langas nebus atidarytas iš naujo.}one{Administratorius reikalauja paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito langas nebus atidarytas iš naujo.}few{Administratorius reikalauja paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito langai nebus atidaryti iš naujo.}many{Administratorius reikalauja paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito lango nebus atidaryta iš naujo.}other{Administratorius reikalauja paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti naujinį. # inkognito langų nebus atidaryta iš naujo.}}</translation>
 <translation id="3622797965165704966">Dabar galite lengviau naudoti „Chrome“ naudodami „Google“ paskyrą ir bendrinamus kompiuterius.</translation>
@@ -351,6 +352,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7917876797003313048">Galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Jūsų „Google“ paskyros naudojamos naršyklei „Chrome“, „Play“ parduotuvei, „Gmail“ ir kt. Jei norite kam nors pridėti paskyrą, pvz., šeimos grupės nariui, pridėkite naują asmenį prie „<ph name="DEVICE_TYPE" />“ įrenginio. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">„Google Chrome“ bando kopijuoti slaptažodžius.</translation>
 <translation id="7951272445806340501">Kad būtų galima pritaikyti naujinį, „ChromeOS Flex“ reikia paleisti iš naujo.</translation>
+<translation id="7962368738413920945">Svetainės tikriausiai veiks taip, kaip tikitės, bet jos neįsimins jūsų duomenų, kai uždarysite visus „Chrome“ langus</translation>
 <translation id="7962410387636238736">Šiame kompiuteryje nebebus gaunami „Google Chrome“ naujiniai, nes „Windows XP“ ir „Windows Vista“ nebepalaikomos.</translation>
 <translation id="8005666035647241369">„Google“ slaptažodžių tvarkytuvė šiame įrenginyje</translation>
 <translation id="8008534537613507642">Iš naujo įdiegti „Chrome“</translation>

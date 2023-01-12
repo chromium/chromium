@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Запитувати, перш ніж дозволяти сайтам створювати 3D-карту вашого оточення або відстежувати положення камери (рекомендовано)</translation>
 <translation id="2212565012507486665">Дозволити файли cookie</translation>
 <translation id="2228071138934252756">Щоб надати додатку <ph name="APP_NAME" /> доступ до камери, також увімкніть її в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Файли cookie третіх сторін блокуються</translation>
 <translation id="2238944249568001759">Рекомендовані пошукові запити на основі вмісту останньої вкладки</translation>
 <translation id="2241634353105152135">Лише цього разу</translation>
 <translation id="2253414712144136228">Видалити <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Камеру вимкнено в налаштуваннях Android</translation>
 <translation id="5706552988683188916">Буде видалено файли cookie й інші дані сайту <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Буде видалено всі дані й файли cookie сайту <ph name="ORIGIN" /> або його додатка на головному екрані.</translation>
+<translation id="5723967018671998714">Файли cookie третіх сторін блокуються в режимі анонімного перегляду</translation>
 <translation id="5771720122942595109">Заблоковано: "<ph name="PERMISSION_1" />"</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5860033963881614850">Вимк.</translation>

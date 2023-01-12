@@ -250,6 +250,7 @@
 <translation id="6598877126913850652">‏رفتن به تنظیمات اعلان Chromium</translation>
 <translation id="6613594504749178791">‏دفعه بعدی که Chromium را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
 <translation id="665732753414869868">‏Chromium برای ایجاد نقشه سه‌بعدی از محیط اطراف شما به اجازه دوربین نیاز دارد</translation>
+<translation id="6663852025006259149">‏سایت‌ها احتمالاً عملکردی مطابق انتظار شما خواهند داشت اما بعداز بسته شدن همه پنجره‌های Chromium، شما را به‌یاد نخواهند داشت</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="668175097507315160">‏به‌دلیل بروز خطا هنگام ورود به سیستم، ChromiumOS نتوانست داده‌های شما را همگام‌سازی کند.</translation>
 <translation id="6709350901466051922">‏Chromium برای این سایت به اجازه میکروفون نیاز دارد</translation>
@@ -379,5 +380,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="945990405696787151">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید macOS نسخه ۱۰.۱۳ یا بالاتر داشته باشید. این رایانه از OS X نسخه ۱۰.۱۱ استفاده می‌کند.</translation>
 <translation id="965162752251293939">‏چه‌کسی از Chromium استفاده می‌کند؟</translation>
 <translation id="967427899662692980">‏دریافت قوی‌ترین امنیت Chromium</translation>
+<translation id="9792300276217204">‏داده‌های سایت همواره بعداز بستن Chromium از دستگاه پاک شود</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

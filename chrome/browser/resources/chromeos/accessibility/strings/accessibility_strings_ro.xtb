@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Nu există un buton următor</translation>
 <translation id="2911433807131383493">Deschideți programul de instruire ChromeVox</translation>
 <translation id="2912405967290226587">Glisează cu trei degete la dreapta</translation>
+<translation id="2919107550468490321">Modul persistent inteligent este activat</translation>
 <translation id="2937799153569150791">Nu există un titlu de nivel 3 următor</translation>
 <translation id="2942710183375260152">Albastru ardezie închis</translation>
 <translation id="2943596527105977722">Galben auriu închis</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Scădeți înălțimea sunetului</translation>
 <translation id="3009352964623081324">Tasta de căutare + O, apoi S. Folosește opțiunea pentru a instala, a gestiona și a personaliza voci.</translation>
 <translation id="3014130421870723208">@ed 8pct</translation>
+<translation id="3018210433491759145">ChromeVox se încarcă</translation>
 <translation id="3030432017085518523">Buton radio pentru element de meniu</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}few{# apostrofuri}other{# de apostrofuri}}</translation>
 <translation id="3040901448410802366">Indicator de progres</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Corai deschis</translation>
 <translation id="3816633764618089385">Conținut media următor</translation>
+<translation id="3821689185319271077">Nu a fost indicat niciun articol relevant</translation>
 <translation id="3840823741487267909">Abreviere</translation>
 <translation id="3841319830220785495">Voce naturală prestabilită</translation>
 <translation id="385383972552776628">Deschideți pagina de opțiuni</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formular</translation>
 <translation id="4601367666219428522">tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Se ignoră următoarea apăsare de tastă</translation>
+<translation id="4617384941327705512">Modul persistent inteligent este dezactivat</translation>
 <translation id="4623097797855662355">Colofon</translation>
 <translation id="4624970070706497034">TalkBack nu mai oferă personalizare pentru Chromebookuri. Îl poți folosi în continuare, dar alături de comenzile rapide de la tastatură TalkBack prestabilite. Apasă Search+A, apoi K pentru a vedea comenzile rapide disponibile. Dacă tot mai vrei să folosești TalkBack, apasă comanda din nou.</translation>
 <translation id="463135993322337640">Apasă pe ChromeVox o, n pentru a afla noutățile</translation>

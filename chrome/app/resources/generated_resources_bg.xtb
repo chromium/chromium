@@ -4910,7 +4910,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5493792505296048976">екранът е включен</translation>
 <translation id="5494016731375030300">Наскоро затворени раздели</translation>
 <translation id="5494362494988149300">Отваряне &amp;след изтегляне</translation>
-<translation id="5494752089476963479">Блокиране на рекламите от сайтове, на които се показват натрапчиви или подвеждащи реклами</translation>
 <translation id="5495466433285976480">По този начин при следващото рестартиране ще се премахнат всички локални потребители, файлове, данни и други настройки. Всички потребители ще трябва да влязат отново.</translation>
 <translation id="5495597166260341369">Без изключване на екрана</translation>
 <translation id="5496587651328244253">Организиране</translation>
@@ -5816,7 +5815,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6335920438823100346">За да стартирате Linux, <ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да възстановите фабричните настройки на този Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> деактивира отстраняването на грешки през ADB. Това действие ще нулира устройството ви <ph name="DEVICE_TYPE" /> след 24 часа. Създайте резервно копие на файловете, които искате да запазите.</translation>
 <translation id="6338968693068997776">Добавяне на USB устройство</translation>
-<translation id="6338981933082930623">Всички сайтове могат да ви показват всякакви реклами</translation>
 <translation id="6339668969738228384">Създаване на нов потребителски профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Персонализиране</translation>

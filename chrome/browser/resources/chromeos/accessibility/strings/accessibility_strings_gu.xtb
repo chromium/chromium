@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">કોઈ આગલું બટન નથી</translation>
 <translation id="2911433807131383493">ChromeVox ટ્યૂટોરિયલ ખોલો</translation>
 <translation id="2912405967290226587">ત્રણ આંગળી જમણી બાજુ સ્વાઇપ કરો</translation>
+<translation id="2919107550468490321">સ્માર્ટ સ્ટીકી મોડ ચાલુ છે</translation>
 <translation id="2937799153569150791">કોઈ આગલું 'લેવલ 3' મથાળું નથી</translation>
 <translation id="2942710183375260152">ઘાટો સ્લેટ વાદળી</translation>
 <translation id="2943596527105977722">ઘેરો સોનેરી રૉડ</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">પિચ ઘટાડો</translation>
 <translation id="3009352964623081324">Search + O, પછી S. વૉઇસને ઇન્સ્ટૉલ, મેનેજ અને કસ્ટમાઇઝ કરવા માટે આ શૉર્ટકટનો ઉપયોગ કરો.</translation>
 <translation id="3014130421870723208">8 ડોટનું @ બનાવ્યું</translation>
+<translation id="3018210433491759145">ChromeVox લોડ થઈ રહ્યું છે</translation>
 <translation id="3030432017085518523">મેનૂ આઇટમ રેડિયો બટન</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{અપૉસ્ટ્રફી}one{# અપૉસ્ટ્રોફી}other{# અપૉસ્ટ્રોફી}}</translation>
 <translation id="3040901448410802366">પ્રગતિ સૂચક</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">વીડિયો</translation>
 <translation id="3813387282697781382">આછો લાલ</translation>
 <translation id="3816633764618089385">આગલું મીડિયા</translation>
+<translation id="3821689185319271077">કોઈ પૉઇન્ટર એન્કર નથી</translation>
 <translation id="3840823741487267909">સંક્ષેપ</translation>
 <translation id="3841319830220785495">ડિફૉલ્ટ તરીકે સેટ કરેલો સાહજિક અવાજ</translation>
 <translation id="385383972552776628">વિકલ્પોનું પેજ ખોલો</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ફોર્મ</translation>
 <translation id="4601367666219428522">કોષ્ટક <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">આગલા કી દબાણને અવગણે છે</translation>
+<translation id="4617384941327705512">સ્માર્ટ સ્ટીકી મોડ બંધ છે</translation>
 <translation id="4623097797855662355">પુષ્પિકા</translation>
 <translation id="4624970070706497034">TalkBack હવે Chromebooks પર કસ્ટમાઇઝેશનની સુવિધા આપતું નથી. તેમ છતાં તમે તેનો ઉપયોગ કરી શકો છો, પરંતુ તેના માટે TalkBackના ડિફૉલ્ટ કીબોર્ડ શૉર્ટકટનો ઉપયોગ કરો. ઉપલબ્ધ શૉર્ટકટ જોવા માટે કૃપા કરીને Search+A અને પછી K દબાવો. આમ છતાં જો તમે TalkBackનો ઉપયોગ કરવા માગતા હો, તો ફરી કમાંડ દબાવો.</translation>
 <translation id="463135993322337640">નવું શું છે તે શોધવા માટે ChromeVox o, n દબાવો</translation>

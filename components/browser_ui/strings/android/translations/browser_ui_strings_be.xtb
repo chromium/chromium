@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Пытацца, перш чым дазволіць сайтам ствараць 3D-карту вашага асяроддзя і адсочваць становішча камеры (рэкамендуецца)</translation>
 <translation id="2212565012507486665">Дазволіць файлы cookie</translation>
 <translation id="2228071138934252756">Каб праграма "<ph name="APP_NAME" />" атрымала доступ да камеры, уключыце камеру таксама ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
 <translation id="2238944249568001759">Пошукавыя запыты, прапанаваныя на падставе змесціва апошняй укладкі</translation>
 <translation id="2241634353105152135">Толькі адзін раз</translation>
 <translation id="2253414712144136228">Выдаліць: <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -230,6 +231,7 @@
 <translation id="5690795753582697420">Камера выключана ў наладах Android</translation>
 <translation id="5706552988683188916">Будуць выдалены файлы cookie і іншыя даныя сайта <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Будуць выдалены ўсе файлы cookie і даныя, захаваныя сайтам <ph name="ORIGIN" /> і яго праграмай, размешчанай на галоўным экране.</translation>
+<translation id="5723967018671998714">У рэжыме інкогніта староннія файлы cookie блакіруюцца</translation>
 <translation id="5771720122942595109">Заблакіравана: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5860033963881614850">Выключана</translation>

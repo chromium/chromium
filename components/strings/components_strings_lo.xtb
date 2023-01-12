@@ -402,7 +402,6 @@
 <translation id="191374271204266022">ສຳເນົາເປັນ JSON</translation>
 <translation id="1914326953223720820">ການບໍລິການແຕກໄຟລ໌</translation>
 <translation id="1916770123977586577">ເພື່ອນຳໃຊ້ການຕັ້ງຄ່າທີ່ອັບເດດແລ້ວຂອງທ່ານຕໍ່ກັບເວັບໄຊນີ້, ກະລຸນາໂຫຼດໜ້ານີ້ຄືນໃໝ່</translation>
-<translation id="1919345977826869612">ໂຄສະນາ</translation>
 <translation id="1919367280705858090">ຂໍຄວາມຊ່ວຍເຫຼືອເລື່ອງຂໍ້ຄວາມສະແດງຂໍ້ຜິດພາດສະເພາະ</translation>
 <translation id="1919526244108283799">400 x 600 ມມ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ເວັບໄຊ}other{# ເວັບໄຊ}}</translation>
@@ -924,7 +923,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">ພົບລະຫັດຜ່ານທີ່ທ່ານຫາກໍໃຊ້ນັ້ນໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານນີ້ດຽວນີ້.</translation>
 <translation id="3308006649705061278">ໜ່ວຍງານການຈັດຕັ້ງ (OU)</translation>
-<translation id="3308738399950580893">ໂຄສະນາ</translation>
 <translation id="3320021301628644560">ເພີ່ມທີ່ຢູ່ການຮຽກເກັບເງິນ</translation>
 <translation id="3324687287337751929">4 x 6 ນິ້ວ</translation>
 <translation id="3324983252691184275">ສີ​ແດງ​</translation>
@@ -1154,6 +1152,7 @@
 <translation id="3872834068356954457">ວິທະຍາສາດ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
 <translation id="3881478300875776315">ສະແດງແຖວໜ້ອຍລົງ</translation>
+<translation id="3883500545751229739">ໂຄສະນາແບບບຸກລຸກ</translation>
 <translation id="3884278016824448484">ຕົວລະບຸອຸປະກອນທີ່ຂັດກັນ</translation>
 <translation id="388632593194507180">ກວດພົບການຕິດຕາມເບິ່ງ</translation>
 <translation id="3886948180919384617">ສະແຕັກເກີ້ 3</translation>
@@ -3116,6 +3115,7 @@
 <translation id="8891727572606052622">ໂໝດພຣັອກຊີໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="8894794286471754040">ດ້ານຂອບຍາວກ່ອນ</translation>
 <translation id="8897428486789851669">ລອຍນໍ້າ</translation>
+<translation id="8899807382908246773">ໂຄສະນາແບບບຸກລຸກ</translation>
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
 <translation id="890493561996401738">ລຶບປຸ່ມການແນະນຳອອກ, ກົດ Enter ເພື່ອລຶບອອກ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8912362522468806198">ບັນຊີ Google</translation>

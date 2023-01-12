@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Hỏi trước khi cho phép các trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh (khuyên dùng)</translation>
 <translation id="2212565012507486665">Cho phép cookie</translation>
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Đã chặn các cookie bên thứ ba</translation>
 <translation id="2238944249568001759">Cụm từ tìm kiếm đề xuất dựa trên thẻ gần đây nhất của bạn</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Xoá</translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
 <translation id="3797520601150691162">Không áp dụng giao diện tối cho một trang web cụ thể</translation>
+<translation id="3803367742635802571">Các trang web bạn truy cập có thể không còn hoạt động như dự kiến</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Số điện thoại</translation>
 <translation id="3826050100957962900">Đăng nhập qua bên thứ ba</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">Để cho phép <ph name="APP_NAME" /> truy cập vào micrô của bạn, hãy bật cả micrô trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Tắt micrô</translation>
 <translation id="4570913071927164677">Chi tiết</translation>
+<translation id="4598549027014564149">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web, ngay cả các trang web có liên quan. Hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
 <translation id="4670064810192446073">Thực tế ảo</translation>
 <translation id="4751476147751820511">Cảm biến chuyển động hoặc ánh sáng</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">Bạn đã tắt máy ảnh trong phần cài đặt của Android</translation>
 <translation id="5706552988683188916">Thao tác này sẽ xoá cookie và dữ liệu khác của trang web <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính.</translation>
+<translation id="5723967018671998714">Đã chặn các cookie bên thứ ba ở Chế độ ẩn danh</translation>
 <translation id="5771720122942595109">Đã chặn <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5860033963881614850">Tắt</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">Chặn trang web hiển thị cửa sổ bật lên và liên kết chuyển hướng (khuyên dùng)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Làm mới</translation>
+<translation id="7188508872042490670">Dữ liệu trang web trên thiết bị</translation>
 <translation id="7203150201908454328">Được mở rộng</translation>
 <translation id="723171743924126238">Chọn hình ảnh</translation>
 <translation id="7243308994586599757">Có các tùy chọn ở gần cuối màn hình</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="848952951823693243">Luôn yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="8499083585497694743">Bật micrô</translation>
+<translation id="8514955299594277296">Không cho phép các trang web lưu dữ liệu trên thiết bị của bạn (không khuyến nghị)</translation>
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Đã cho phép cookie cho trang web của <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />}other{Đã cho phép cookie cho các trang web của <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />}}</translation>

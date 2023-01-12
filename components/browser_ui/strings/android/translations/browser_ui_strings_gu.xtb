@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">કોઈ સાઇટને તમારી આજુબાજુનો 3D નકશો બનાવતા અથવા કૅમેરાના સ્ટેટસને ટ્રૅક કરવાની મંજૂરી આપતા પહેલાં પૂછો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="2212565012507486665">કુકીને મંજૂરી આપો</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> તમારો કૅમેરા ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ કૅમેરા ચાલુ કરો.</translation>
+<translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2238944249568001759">તમારા છેલ્લા ટૅબ પર આધારિત સૂચવેલી શોધ</translation>
 <translation id="2241634353105152135">માત્ર એક વખત</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> કાઢી નાખો</translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">બૅકગ્રાઉન્ડ સિંક</translation>
 <translation id="3763247130972274048">10 સેકન્ડ છોડવા માટે ડાબે અથવા જમણે બે વાર ટૅપ કરો</translation>
 <translation id="3797520601150691162">કોઈ ચોક્કસ સાઇટ માટે ઘેરી થીમ લાગુ કરશો નહીં</translation>
+<translation id="3803367742635802571">તમે મુલાકાત લો છો તે સાઇટ જે હેતુ માટે તૈયાર કરવામાં આવી છે તે મુજબ કામ કરવાનું બંધ કરી શકે છે</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">ફોન નંબર</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> તમારું માઇક્રોફોન ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ માઇક્રોફોન ચાલુ કરો.</translation>
 <translation id="4566417217121906555">માઇક્રોફોન મ્યૂટ કરો</translation>
 <translation id="4570913071927164677">વિગતો</translation>
+<translation id="4598549027014564149">જ્યારે છૂપા મોડમાં હો, ત્યારે સમગ્ર સાઇટ કે સંબંધિત સાઇટ પર પણ તમારી બ્રાઉઝિંગ પ્રવૃત્તિને જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં. તમારી બ્રાઉઝિંગ પ્રવૃત્તિનો ઉપયોગ જાહેરાતોને મનગમતી બનાવવા જેવી વસ્તુઓ માટે કરવામાં આવતો નથી. અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં.</translation>
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
 <translation id="4751476147751820511">મોશન અથવા લાઇટ સેન્સર</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">Android સેટિંગમાંથી કૅમેરા બંધ કરવામાં આવ્યો છે</translation>
 <translation id="5706552988683188916">આમ કરવાથી <ph name="WEBSITE" /> માટેના કુકી અને સાઇટનો અન્ય ડેટા ડિલીટ થઈ જશે</translation>
 <translation id="5719847187258001597">આમ કરવાથી તમારી હોમ સ્ક્રીન પર <ph name="ORIGIN" /> અથવા તેની ઍપ દ્વારા સ્ટોર કરવામાં આવેલો બધો ડેટા અને કૂકી સાફ કરવામાં આવશે.</translation>
+<translation id="5723967018671998714">છૂપા મોડમાં ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> બ્લૉક કરી</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="5860033963881614850">બંધ</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">સાઇટને પૉપ-અપ અને રીડાયરેક્ટ બતાવવા દેવાથી બ્લૉક કરો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
+<translation id="7188508872042490670">ડિવાઇસ પર સાઇટનો ડેટા</translation>
 <translation id="7203150201908454328">વિસ્તૃત કરેલ</translation>
 <translation id="723171743924126238">છબીઓ પસંદ કરો</translation>
 <translation id="7243308994586599757">સ્ક્રીનના તળિયા નજીક વિકલ્પો ઉપલબ્ધ છે</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="848952951823693243">હંમેશાં મોબાઇલ સાઇટની વિનંતી કરો</translation>
 <translation id="8499083585497694743">માઇક્રોફોન અનમ્યૂટ કરો</translation>
+<translation id="8514955299594277296">સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપશો નહીં (સુઝાવ આપવામાં આવતો નથી)</translation>
 <translation id="851751545965956758">સાઇટને ડિવાઇસ સાથે કનેક્ટ થવાથી બ્લૉક કરો</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />ની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}one{<ph name="FPS_OWNER" />ની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}other{<ph name="FPS_OWNER" />ની <ph name="FPS_MEMBERS_COUNT" /> સાઇટ માટે કુકીને મંજૂરી આપી}}</translation>

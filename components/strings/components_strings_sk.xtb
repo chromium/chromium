@@ -402,7 +402,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="191374271204266022">Skopírovať ako JSON</translation>
 <translation id="1914326953223720820">Rozbaliť službu</translation>
 <translation id="1916770123977586577">Ak chcete na webe uplatniť aktualizované nastavenia, znova načítajte túto stránku</translation>
-<translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919367280705858090">Pomoc s konkrétnym chybovým hlásením</translation>
 <translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Žiadne}=1{1 web}few{# weby}many{# webu}other{# webov}}</translation>
@@ -801,6 +800,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2986368408720340940">Tento spôsob vyzdvihnutia nie je k dispozícii. Skúste iný spôsob.</translation>
 <translation id="2987034854559945715">Žiadne zodpovedajúce funkcie</translation>
 <translation id="2989742184762224133">Dve spinky hore</translation>
+<translation id="2990882401221831923">Zoznam kreditných kariet je zatvorený.</translation>
 <translation id="2991174974383378012">Zdieľanie s webmi</translation>
 <translation id="299122504639061328">Spravujte svoj predvolený vyhľadávač a vyhľadávanie na webe</translation>
 <translation id="2991571918955627853">Web <ph name="SITE" /> momentálne nemôžete navštíviť, pretože používa certifikát HSTS. Chyby siete a útoky sú zvyčajne dočasné, takže by táto stránka mala neskôr pravdepodobne fungovať.</translation>
@@ -921,7 +921,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3304777285002411338">A2×3</translation>
 <translation id="33073482541490531">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Správca hesiel ho odporúča okamžite zmeniť.</translation>
 <translation id="3308006649705061278">Organizačná jednotka (OU)</translation>
-<translation id="3308738399950580893">reklamy</translation>
 <translation id="3320021301628644560">Pridanie fakturačnej adresy</translation>
 <translation id="3324687287337751929">4 × 6 palcov</translation>
 <translation id="3324983252691184275">Karmínová</translation>
@@ -1582,6 +1581,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4976702386844183910">Naposledy navštívené <ph name="DATE" /></translation>
 <translation id="498323057460789381">Chyba overenia schémy: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Chcete používať mikrofón?</translation>
+<translation id="4988822846878841743">Zoznam kreditných kariet na vyplnenie po klepnutí je otvorený na polovičnú výšku.</translation>
 <translation id="4989163558385430922">Zobraziť všetko</translation>
 <translation id="4989542687859782284">Nedostupné</translation>
 <translation id="4989809363548539747">Tento doplnok nie je podporovaný</translation>
@@ -1930,6 +1930,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5863847714970149516">Stránka, na ktorú sa chystáte prejsť, vám môže účtovať poplatky</translation>
 <translation id="5866257070973731571">Pridanie telefónneho čísla</translation>
 <translation id="5866898949289125849">Prezeráte si stránku s nástrojmi pre vývojárov</translation>
+<translation id="5868548454963263350">Zoznam kreditných kariet na vyplnenie po klepnutí je otvorený na úplnú výšku.</translation>
 <translation id="5869405914158311789">Tento web je nedostupný</translation>
 <translation id="5869522115854928033">Uložené heslá</translation>
 <translation id="5873013647450402046">Vaša banka chce overiť, že ste to vy.</translation>
@@ -2641,6 +2642,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7653957176542370971">Hárok obslužného nástroja platieb je zatvorený</translation>
 <translation id="7654909834015434372">Keď upravíte poznámky, tento dokument sa vráti do pôvodného otočenia</translation>
 <translation id="765676359832457558">Skryť rozšírené nastavenia...</translation>
+<translation id="7656935528854393684">Zoznam kreditných kariet na vyplnenie po klepnutí.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7659327900411729175">Obálka Kaku 8</translation>
 <translation id="7659878911471462949">Slzy šťastia</translation>

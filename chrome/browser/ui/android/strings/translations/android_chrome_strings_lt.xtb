@@ -729,7 +729,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4991110219272367918">Uždaryta svetainės patvirtinimo arba nepatvirtinimo parinktis</translation>
 <translation id="499724277181351974">Rodyti kelią: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Stebėkite šią svetainę čia</translation>
-<translation id="500351648694011114">Naršykite lengviau</translation>
 <translation id="5004416275253351869">„Google“ veiklos valdikliai</translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> nori prisijungti</translation>
@@ -882,7 +881,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5864419784173784555">Laukiama kito atsisiuntimo…</translation>
 <translation id="5865733239029070421">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“</translation>
 <translation id="5869522115854928033">Išsaugoti slaptažodžiai</translation>
-<translation id="5869789175361934029">Tęsti kitu įrenginiu</translation>
 <translation id="5876496397064130037">Užduotis atnaujinta</translation>
 <translation id="587735546353481577">Jei norite stebėti svetainę, eikite į svetainę, atidarykite „Chrome“ meniu ir palieskite „Stebėti“.</translation>
 <translation id="5879072387416556377">Gaukite geresnių pasiūlymų</translation>
@@ -946,6 +944,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6277722725779679269">Nepavyko atnaujinti stebimos kainos</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Galite siųsti skirtukus iš vieno įrenginio į kitą, kuriuose prisijungta prie tos pačios „Google“ paskyros</translation>
+<translation id="6295158916970320988">Visos svetainės</translation>
 <translation id="6297765934698848803">Jūsų įrenginį tvarkanti organizacija išjungė kamerą.</translation>
 <translation id="6301525844455696527">Skaitymo sąrašo peržiūra</translation>
 <translation id="6303969859164067831">Atsijungti ir išjungti sinchronizavimą</translation>
@@ -1516,7 +1515,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="96681097142096641">Peržiūrėti supaprastintą puslapį?</translation>
 <translation id="968900484120156207">Jūsų aplankomi puslapiai rodomi čia</translation>
 <translation id="970715775301869095">Liko <ph name="MINUTES" /> min.</translation>
-<translation id="978443947993957527">Jums skirto turinio peržiūra</translation>
 <translation id="981121421437150478">Neprisijungus</translation>
 <translation id="983192555821071799">Uždar. visų skirtukų lapus</translation>
 <translation id="987264212798334818">Bendra</translation>

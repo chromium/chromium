@@ -251,6 +251,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6598877126913850652">Zu Chromium-Benachrichtigungseinstellungen wechseln</translation>
 <translation id="6613594504749178791">Deine Änderungen werden beim nächsten Neustart von Chromium wirksam.</translation>
 <translation id="665732753414869868">Chromium benötigt die Kameraberechtigung, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
+<translation id="6663852025006259149">Websites funktionieren wahrscheinlich erwartungsgemäß, sie werden sich aber nach dem Schließen aller Chromium-Fenster nicht mehr an dich erinnern</translation>
 <translation id="6676384891291319759">Internetzugriff</translation>
 <translation id="668175097507315160">Chromium OS konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
 <translation id="6709350901466051922">Chromium benötigt die Mikrofonberechtigung für diese Website</translation>
@@ -380,5 +381,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="945990405696787151">Du benötigst macOS 10.13 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird OS X 10.11 ausgeführt.</translation>
 <translation id="965162752251293939">Wer verwendet gerade Chromium?</translation>
 <translation id="967427899662692980">Höchste Sicherheit in Chromium erhalten</translation>
+<translation id="9792300276217204">Beim Schließen von Chromium immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
 </translationbundle>

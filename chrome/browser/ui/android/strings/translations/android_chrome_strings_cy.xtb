@@ -729,7 +729,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4991110219272367918">Opsiwn i gymeradwyo neu beidio â chymeradwyo gwefan wedi'i chloi</translation>
 <translation id="499724277181351974">Llywio: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dilyn y wefan hon yma</translation>
-<translation id="500351648694011114">Pori'n haws</translation>
 <translation id="5004416275253351869">Rheolaethau gweithgarwch Google</translation>
 <translation id="5005498671520578047">Copïo'r cyfrinair</translation>
 <translation id="5011311129201317034">Mae <ph name="SITE" /> eisiau cysylltu</translation>
@@ -882,7 +881,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5864419784173784555">Wrthi'n aros am lawrlwythiad arall…</translation>
 <translation id="5865733239029070421">Yn anfon ystadegau defnydd ac adroddiadau toriadau at Google yn awtomatig</translation>
 <translation id="5869522115854928033">Cyfrineiriau sydd wedi'u cadw</translation>
-<translation id="5869789175361934029">Parhau o ddyfais arall</translation>
 <translation id="5876496397064130037">Ailddechreuodd y dasg</translation>
 <translation id="587735546353481577">I ddilyn gwefan, ewch i'r wefan, agorwch ddewislen Chrome, a thapiwch Dilyn.</translation>
 <translation id="5879072387416556377">Cael awgrymiadau gwell</translation>
@@ -946,6 +944,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6277722725779679269">Ni fu modd diweddaru'r Pris sy'n cael ei ddilyn</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6294610283659775533">Gallwch anfon tabiau rhwng dyfeisiau sydd wedi'u mewngofnodi gyda'r un Cyfrif Google</translation>
+<translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6297765934698848803">Mae'r sefydliad sy'n rheoli eich dyfais wedi diffodd eich camera.</translation>
 <translation id="6301525844455696527">Daliwch i fyny gyda'ch rhestr ddarllen</translation>
 <translation id="6303969859164067831">Allgofnodi a diffodd cysoni</translation>
@@ -1516,7 +1515,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="96681097142096641">Gweld tudalen sydd wedi'i symleiddio?</translation>
 <translation id="968900484120156207">Mae'r tudalennau yr ymwelwch â nhw yn ymddangos yma</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> o funudau ar ôl</translation>
-<translation id="978443947993957527">Gweld cynnwys i chi</translation>
 <translation id="981121421437150478">All-lein</translation>
 <translation id="983192555821071799">Cau pob tab</translation>
 <translation id="987264212798334818">Cyffredinol</translation>

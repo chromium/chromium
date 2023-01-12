@@ -918,6 +918,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1819721979226826163">Touchez Notifications de l'application &gt; Services Google Play.</translation>
 <translation id="1820028137326691631">Entrez le mot de passe fourni par l'administrateur</translation>
 <translation id="1822140782238030981">Vous utilisez déjà Chrome? Connectez-vous à votre compte</translation>
+<translation id="1823781806707127806">Ajouter des données de navigation existantes au profil géré</translation>
 <translation id="18245044880483936">Les données des sauvegardes ne sont pas prises en compte dans le quota de stockage Google Disque de votre enfant.</translation>
 <translation id="1825565032302550710">Le numéro de port doit se trouver entre 1 024 et 65 535</translation>
 <translation id="182577151972096764">recettes récemment consultées</translation>
@@ -1078,6 +1079,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="1965624977906726414">Cette application fonctionne sans autorisation spéciale.</translation>
 <translation id="1966649499058910679">Mettre chaque mot en surbrillance lorsqu'il est prononcé</translation>
+<translation id="1967970931040389207">Activer le point d'accès sans fil</translation>
 <translation id="1969654639948595766">Journaux de texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement parce que le contenu sera chargé à l'avance en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="197288927597451399">Garder</translation>
@@ -1166,6 +1168,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2048554637254265991">Une erreur s'est produite lors du démarrage du gestionnaire de conteneur. Veuillez réessayer.</translation>
 <translation id="2048653237708779538">Action non disponible</translation>
 <translation id="2050339315714019657">Portrait</translation>
+<translation id="2051555741181591333">Désactiver automatiquement le point d'accès sans fil</translation>
 <translation id="2052572566310583903">Installée sur vos autres appareils</translation>
 <translation id="2053105195397337973">Nous étudions les moyens de limiter le suivi tout en permettant aux sites d'arrêter les pourriels publicitaires et la fraude.</translation>
 <translation id="2053312383184521053">Données sur l'état de veille</translation>
@@ -1274,6 +1277,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2137128126782078222">Ne pas autoriser les notifications provenant de <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Bouton de configuration</translation>
 <translation id="2140788884185208305">État de la pile</translation>
+<translation id="2140902257485550046">Sélectionner pour bloquer toutes les extensions sur ce site</translation>
 <translation id="2142328300403846845">Ouvrir le lien en tant que</translation>
 <translation id="2142582065325732898">Activez la <ph name="LINK1_BEGIN" />synchronisation Chrome<ph name="LINK1_END" /> pour afficher les onglets Chrome récents. <ph name="LINK2_BEGIN" />En savoir plus<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Toujours afficher la barre d'outils en plein écran</translation>
@@ -2007,6 +2011,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2778471504622896352">Ajouter des applications distantes au lanceur ChromeOS</translation>
 <translation id="2781120507965857989">Activez la synchronisation pour accéder à vos favoris, à vos mots de passe, à votre historique et à plus encore sur cet appareil, et sur tous les autres appareils que vous synchronisez. Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Les extensions sont autorisées sur ce site</translation>
 <translation id="2782104745158847185">Erreur lors de l'installation de l'application Linux</translation>
 <translation id="2783298271312924866">Téléchargé</translation>
 <translation id="2783321960289401138">Créer un raccourci...</translation>
@@ -3834,6 +3839,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="449232563137139956">Les sites affichent généralement des images à des fins d'illustration, par exemple des photos dans les boutiques en ligne ou dans les articles d'actualités</translation>
 <translation id="4492698018379445570">Voyez ce que vous avez ajouté à vos paniers d'achats et passez à la caisse lorsque vous êtes prêt</translation>
+<translation id="4493167769966437077">Retirer <ph name="LANGUAGE_NAME" /> des langues pour lesquelles ne jamais proposer de traduction</translation>
 <translation id="4493468155686877504">Recommandé (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Autoriser cette extension sur <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Ne pas afficher sur cette page</translation>
@@ -4406,6 +4412,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5026874946691314267">Ne plus afficher ce message</translation>
 <translation id="5027550639139316293">Certificat de courrier électronique</translation>
 <translation id="5027562294707732951">Ajouter une extension</translation>
+<translation id="5028445315206872221">Les extensions sont bloquées sur ce site</translation>
 <translation id="5029568752722684782">Effacer la copie</translation>
 <translation id="5029873138381728058">Échec de la vérification des MV</translation>
 <translation id="503155457707535043">Téléchargement des applications en cours…</translation>
@@ -4898,7 +4905,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5493792505296048976">écran activé</translation>
 <translation id="5494016731375030300">Onglets récemment fermés</translation>
 <translation id="5494362494988149300">Ouvrir une fois le téléchargement &amp;terminé</translation>
-<translation id="5494752089476963479">Bloquer les annonces sur les sites qui diffusent des annonces intrusives ou trompeuses</translation>
 <translation id="5495466433285976480">Cette fonctionnalité a pour effet de supprimer tous les utilisateurs, les fichiers, les données et les autres paramètres locaux au prochain redémarrage. Tous les utilisateurs devront se reconnecter.</translation>
 <translation id="5495597166260341369">Maintenir l'écran activé</translation>
 <translation id="5496587651328244253">Organiser</translation>
@@ -4970,6 +4976,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5554866693883022680">Sélectionnez une application sur votre <ph name="DEVICE_TYPE" /> pour ouvrir ce lien</translation>
 <translation id="5555363196923735206">Changer d'appareil photo</translation>
 <translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>
+<translation id="5555639311269196631">Désactiver le point d'accès sans fil</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5558129378926964177">Zoom &amp;avant</translation>
 <translation id="55601339223879446">Ajustez les limites de votre bureau dans l'affichage</translation>
@@ -5802,7 +5809,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6335920438823100346">Pour démarrer Linux, <ph name="MANAGER" /> vous demande de sauvegarder vos données et de réinitialiser ce Chromebook à ses paramètres par défaut.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a désactivé le débogage PDA. Cela entraînera la réinitialisation de votre <ph name="DEVICE_TYPE" /> dans 24 heures. Sauvegardez tout fichier que vous souhaitez garder.</translation>
 <translation id="6338968693068997776">Ajouter un périphérique USB</translation>
-<translation id="6338981933082930623">Tous les sites peuvent afficher n'importe quelle annonce</translation>
 <translation id="6339668969738228384">Créer un autre profil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocole IPPS d'impression Internet</translation>
 <translation id="6340526405444716530">Personnalisation</translation>
@@ -6633,6 +6639,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7089253021944603172">Onglet à nouveau actif</translation>
 <translation id="7090160970140261931">Vous pouvez ajouter des comptes supplémentaires à votre <ph name="DEVICE_TYPE" /> pour les utiliser avec les sites Web et les applications Android. Vous pouvez également définir quels comptes sont utilisés avec les applications Android.</translation>
+<translation id="7090714929377281710">Désactiver automatiquement le point d'accès sans fil</translation>
 <translation id="7093220653036489319">Réponses rapides</translation>
 <translation id="7093416310351037609">Pour assurer la sécurité des données, votre organisation exige que tous les téléchargements admissibles soient enregistrés dans le compte <ph name="WEB_DRIVE" /> de votre organisation.</translation>
 <translation id="7093866338626856921">Échanger des données avec les appareils : <ph name="HOSTNAMES" /></translation>
@@ -7256,6 +7263,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez le pont de débogage Android (PDA). Prenez note que cette action permet d'installer des applications Android qui n'ont pas été vérifiées par Google. Pour désactiver cette fonctionnalité, vous devrez réinitialiser l'appareil.</translation>
 <translation id="7685049629764448582">Mémoire pour JavaScript</translation>
 <translation id="7685087414635069102">NIP requis</translation>
+<translation id="7686581688229391955">Sélectionner pour autoriser les extensions sur ce site</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirmez le nouveau mot de passe</translation>
 <translation id="7690378713476594306">Choisir dans la liste</translation>
@@ -8068,6 +8076,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
 <translation id="8417548266957501132">Mot de passe du parent</translation>
 <translation id="8418445294933751433">Afficher dan&amp;s un onglet</translation>
+<translation id="8418675848396538775">Ajouter <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Résultats de recherche pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="8420308167132684745">Modifier les entrées du dictionnaire</translation>
 <translation id="8421361468937925547">Sous-titres instantanés (en anglais seulement)</translation>
@@ -8841,6 +8850,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9121814364785106365">Ouvrir dans un onglet épinglé</translation>
 <translation id="9123287046453017203">Votre appareil n'est pas à jour</translation>
 <translation id="9124003689441359348">Les mots de passe enregistrés s'afficheront ici</translation>
+<translation id="9125910124977405374">Retirer <ph name="LANGUAGE_NAME" /> des langues traduites automatiquement</translation>
 <translation id="9126149354162942022">Couleur du curseur</translation>
 <translation id="9128317794749765148">Impossible de terminer la configuration</translation>
 <translation id="9128335130883257666">Accéder à la page des paramètres pour <ph name="INPUT_METHOD_NAME" /></translation>

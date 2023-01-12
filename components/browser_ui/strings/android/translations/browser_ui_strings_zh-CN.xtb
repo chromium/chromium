@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">需先询问，得到许可后才允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置（推荐）</translation>
 <translation id="2212565012507486665">允许使用 Cookie</translation>
 <translation id="2228071138934252756">若要允许 <ph name="APP_NAME" /> 使用您的摄像头，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
+<translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2238944249568001759">根据您上次浏览的标签页建议的搜索</translation>
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2253414712144136228">移除“<ph name="NAME_OF_LIST_ITEM" />”</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
 <translation id="5706552988683188916">此操作会删除 <ph name="WEBSITE" /> 的 Cookie 和其他网站数据</translation>
 <translation id="5719847187258001597">此操作会清除 <ph name="ORIGIN" /> 或其在主屏幕中安装的应用所存储的全部数据和 Cookie。</translation>
+<translation id="5723967018671998714">已阻止无痕模式下的第三方 Cookie</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5860033963881614850">关闭</translation>

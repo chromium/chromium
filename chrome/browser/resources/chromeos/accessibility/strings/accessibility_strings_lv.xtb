@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Nav nākamās pogas.</translation>
 <translation id="2911433807131383493">Atvērt ChromeVox mācības</translation>
 <translation id="2912405967290226587">Velciet ar trim pirkstiem pa labi</translation>
+<translation id="2919107550468490321">Viedais saistošais režīms ir ieslēgts</translation>
 <translation id="2937799153569150791">Nav nākamā 3. līmeņa virsraksta.</translation>
 <translation id="2942710183375260152">Tumši pelēkzila</translation>
 <translation id="2943596527105977722">Tumši zeltgalvīšu dzeltena</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Samazināt augstumu</translation>
 <translation id="3009352964623081324">Search+O, pēc tam S. Izmantojiet, lai instalētu, pārvaldītu un pielāgotu balsis.</translation>
 <translation id="3014130421870723208">@red. 8 p-tu rakstu</translation>
+<translation id="3018210433491759145">Notiek ChromeVox ielāde</translation>
 <translation id="3030432017085518523">Izvēlnes vienuma radiopoga</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrofs}zero{# apostrofu}one{# apostrofs}other{# apostrofi}}</translation>
 <translation id="3040901448410802366">Norises indikators</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Gaiša koraļļu</translation>
 <translation id="3816633764618089385">Nākamais multivides vienums</translation>
+<translation id="3821689185319271077">Nav rādītāja enkura</translation>
 <translation id="3840823741487267909">Abreviatūra</translation>
 <translation id="3841319830220785495">Noklusējuma, dabiska balss</translation>
 <translation id="385383972552776628">Atvērt opciju lapu</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">veidlapa</translation>
 <translation id="4601367666219428522">tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Tiek ignorēta nākamā taustiņa nospiešana</translation>
+<translation id="4617384941327705512">Viedais saistošais režīms ir izslēgts</translation>
 <translation id="4623097797855662355">Izdošanas ziņas</translation>
 <translation id="4624970070706497034">Funkcija TalkBack vairs neatbalsta pielāgošanu Chromebook datoriem. Jūs joprojām varat to izmantot, taču ir pieejami tikai TalkBack noklusējuma īsinājumtaustiņi. Nospiediet taustiņu kombināciju Search+A un pēc tam — taustiņu K, lai skatītu pieejamos īsinājumtaustiņus. Ja joprojām vēlaties izmantot funkciju TalkBack, vēlreiz nospiediet šo taustiņu kombināciju.</translation>
 <translation id="463135993322337640">Nospiediet ChromeVox “o”, “n”, lai uzzinātu par jaunajām funkcijām.</translation>

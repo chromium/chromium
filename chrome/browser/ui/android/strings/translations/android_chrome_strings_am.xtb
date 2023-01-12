@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">ድር ጣቢያን የማጽደቅ ወይም ያለማጽደቅ አማራጭ ተዘግቷል</translation>
 <translation id="499724277181351974">ይዳስሱ፦ <ph name="WEBSITE_TITLE" />፦ <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ይህንን ጣቢያ እዚህ ይከተሉ</translation>
-<translation id="500351648694011114">ይበልጥ በቀላሉ ያስሱ</translation>
 <translation id="5004416275253351869">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> መገናኘት ይፈልጋል</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">ሌላ ውርድን በመጠበቅ ላይ…</translation>
 <translation id="5865733239029070421">የአጠቃቀም ስታስቲክስን እና የብልሽት ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል</translation>
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
-<translation id="5869789175361934029">ከሌላ መሣሪያ ላይ ይቀጥሉ</translation>
 <translation id="5876496397064130037">ተግባር ከቆመበት ቀጥሏል</translation>
 <translation id="587735546353481577">አንድን ጣቢያ ለመከተል ወደ ጣቢያው ይሂዱ፣ የChrome ምናሌውን ይክፈቱ እና ይከተሉን መታ ያድርጉ።</translation>
 <translation id="5879072387416556377">የተሻሉ ጥቆማዎችን ያግኙ</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">ዋጋ ተከታተልን ማዘመን አልተቻለም</translation>
 <translation id="6278428485366576908">ገጽታ</translation>
 <translation id="6294610283659775533">በተመሳሳዩ Google መለያ በገቡባቸው መሣሪያዎች መካከል ትሮችን መላክ ይችላሉ</translation>
+<translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
 <translation id="6297765934698848803">የእርስዎን መሣሪያ የሚያስተዳድረው ድርጅት ካሜራዎን አጥፍቶታል።</translation>
 <translation id="6301525844455696527">በንባብ ዝርዝርዎ ላይ ተከታትለው ይድረሱባቸው</translation>
 <translation id="6303969859164067831">ዘግተው ይውጡ እና ስምረትን ያጥፉ</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">ቀለል ያለ ገጽ ይታይ?</translation>
 <translation id="968900484120156207">እርስዎ የሚጎበኟቸው ገጾች እዚህ ላይ ብቅ ይላሉ</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ደቂቃዎች ይቀራሉ</translation>
-<translation id="978443947993957527">ለእርስዎ የሚሆን ይዘት ይመልከቱ</translation>
 <translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="983192555821071799">ሁሉንም ትሮች ይዝጉ</translation>
 <translation id="987264212798334818">አጠቃላይ</translation>

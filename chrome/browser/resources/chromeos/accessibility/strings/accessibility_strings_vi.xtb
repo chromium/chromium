@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Không có nút nào tiếp theo</translation>
 <translation id="2911433807131383493">Mở hướng dẫn ChromeVox</translation>
 <translation id="2912405967290226587">Vuốt sang phải bằng ba ngón tay</translation>
+<translation id="2919107550468490321">Chế độ phím dính thông minh đang bật</translation>
 <translation id="2937799153569150791">Không có tiêu đề cấp 3 nào tiếp theo</translation>
 <translation id="2942710183375260152">Màu lam xám đen đậm</translation>
 <translation id="2943596527105977722">Màu vàng nghệ đậm</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Giảm độ cao</translation>
 <translation id="3009352964623081324">Nhấn tổ hợp phím Tìm kiếm + O, sau đó nhấn S. Dùng để cài đặt, quản lý và tùy chỉnh giọng nói.</translation>
 <translation id="3014130421870723208">@sửa trường 8 chấm</translation>
+<translation id="3018210433491759145">ChromeVox đang tải</translation>
 <translation id="3030432017085518523">Nút radio mục menu</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{dấu nháy đơn}other{# dấu nháy đơn}}</translation>
 <translation id="3040901448410802366">Chỉ báo tiến trình</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Màu san hô nhạt</translation>
 <translation id="3816633764618089385">Phương tiện tiếp theo</translation>
+<translation id="3821689185319271077">Không có neo con trỏ</translation>
 <translation id="3840823741487267909">Từ viết tắt</translation>
 <translation id="3841319830220785495">Giọng nói tự nhiên mặc định</translation>
 <translation id="385383972552776628">Mở trang tùy chọn</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">biểu mẫu</translation>
 <translation id="4601367666219428522">bảng <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Bỏ qua nhấn phím tiếp theo</translation>
+<translation id="4617384941327705512">Chế độ phím dính thông minh đang tắt</translation>
 <translation id="4623097797855662355">Lời ghi cuối sách</translation>
 <translation id="4624970070706497034">TalkBack không còn hỗ trợ chế độ tuỳ chỉnh trên Chromebook nữa. Bạn vẫn có thể sử dụng tính năng này nhưng hãy sử dụng phím tắt mặc định của TalkBack. Nhấn tổ hợp phím Search+A, rồi nhấn phím K để xem các phím tắt hiện có. Nếu bạn vẫn muốn dùng TalkBack, hãy nhấn lại lệnh này.</translation>
 <translation id="463135993322337640">Bạn có thể tìm hiểu tính năng mới bằng cách nhấn ChromeVox, o, n</translation>

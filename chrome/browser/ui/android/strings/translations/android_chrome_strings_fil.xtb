@@ -729,7 +729,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4991110219272367918">Opsyong aprubahan o huwag aprubahan ang isang website na isinara</translation>
 <translation id="499724277181351974">Mag-navigate: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Subaybayan ang site na ito dito</translation>
-<translation id="500351648694011114">Mag-browse nang mas madali</translation>
 <translation id="5004416275253351869">Mga kontrol ng aktibidad sa Google</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
@@ -882,7 +881,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5864419784173784555">Naghihintay ng isa pang download…</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
-<translation id="5869789175361934029">Magpatuloy mula sa ibang device</translation>
 <translation id="5876496397064130037">Ipinagpatuloy ang gawain</translation>
 <translation id="587735546353481577">Para subaybayan ang isang site, pumunta sa site, buksan ang menu ng Chrome, at i-tap ang Subaybayan.</translation>
 <translation id="5879072387416556377">Makakuha ng mas magagandang suhestyon</translation>
@@ -946,6 +944,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6277722725779679269">Hindi ma-update ang Subaybayan ang presyo</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Puwede kang magpadala ng mga tab sa pagitan ng mga device na naka-sign in gamit ang iisang Google Account</translation>
+<translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="6297765934698848803">Na-off ang iyong camera ng organisasyong namamahala sa device mo.</translation>
 <translation id="6301525844455696527">Balikan ang iyong listahan ng babasahin</translation>
 <translation id="6303969859164067831">Mag-sign out at i-off ang pag-sync</translation>
@@ -1516,7 +1515,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="96681097142096641">Tingnan ang pinasimpleng page?</translation>
 <translation id="968900484120156207">Lalabas dito ang mga page na binibisita mo</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> (na) minuto na lang ang natitira</translation>
-<translation id="978443947993957527">Makakita ng content na para sa iyo</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Isara ang lahat ng tab</translation>
 <translation id="987264212798334818">Pangkalahatan</translation>

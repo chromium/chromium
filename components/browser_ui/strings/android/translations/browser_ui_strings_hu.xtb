@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára 3D-s térkép létrehozását az Ön környezetéről, valamint a kamera pozíciójának követését (ajánlott)</translation>
 <translation id="2212565012507486665">Cookie-k engedélyezése</translation>
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
 <translation id="2238944249568001759">Javasolt keresések a legutóbbi lap alapján</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> eltávolítása</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
 <translation id="5706552988683188916">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat és egyéb webhelyadatokat</translation>
 <translation id="5719847187258001597">Ezzel törli a(z) <ph name="ORIGIN" /> vagy az alkalmazása által tárolt összes adatot és cookie-t a kezdőképernyőn.</translation>
+<translation id="5723967018671998714">A harmadik felektől származó cookie-k le vannak tiltva Inkognitó módban</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>

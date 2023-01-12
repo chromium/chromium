@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Следующей кнопки нет</translation>
 <translation id="2911433807131383493">Открыть руководство ChromeVox</translation>
 <translation id="2912405967290226587">Проведите тремя пальцами вправо</translation>
+<translation id="2919107550468490321">Умный режим залипания клавиш включен</translation>
 <translation id="2937799153569150791">Следующего заголовка третьего уровня нет</translation>
 <translation id="2942710183375260152">Темный аспидно-синий</translation>
 <translation id="2943596527105977722">Темный золотарник</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Понизить тон</translation>
 <translation id="3009352964623081324">Поиск + O, затем S (используется для установки и настройки голосов, а также управления ими)</translation>
 <translation id="3014130421870723208">@ред. 8точ.</translation>
+<translation id="3018210433491759145">ChromeVox загружается</translation>
 <translation id="3030432017085518523">Пункт меню переключатель</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{апостроф}one{# апостроф}few{# апострофа}many{# апострофов}other{# apostrophes}}</translation>
 <translation id="3040901448410802366">Индикатор выполнения</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3813387282697781382">Светло-коралловый</translation>
 <translation id="3816633764618089385">Перейти к следующему файлу мультимедиа</translation>
+<translation id="3821689185319271077">Нет анкера курсора</translation>
 <translation id="3840823741487267909">Сокращение</translation>
 <translation id="3841319830220785495">Естественный голос по умолчанию</translation>
 <translation id="385383972552776628">Открыть страницу параметров</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">форма</translation>
 <translation id="4601367666219428522">тбл <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Игнорировать нажатие следующей клавиши.</translation>
+<translation id="4617384941327705512">Умный режим залипания клавиш отключен</translation>
 <translation id="4623097797855662355">Выпускные данные</translation>
 <translation id="4624970070706497034">TalkBack больше не поддерживает персонализацию на устройствах Chromebook. Программой все еще можно пользоваться, но в ней теперь доступны только сочетания клавиш по умолчанию. Чтобы открыть список со всеми сочетаниями, нажмите Поиск + A, затем K. Если вы по-прежнему хотите использовать TalkBack, нажмите эти сочетания клавиш ещё раз.</translation>
 <translation id="463135993322337640">Чтобы узнать об изменениях в новой версии, нажмите клавишу ChromeVox, а затем Щ и Т.</translation>

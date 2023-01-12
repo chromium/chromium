@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">ไม่มีปุ่มถัดไป</translation>
 <translation id="2911433807131383493">เปิดบทแนะนำ ChromeVox</translation>
 <translation id="2912405967290226587">เลื่อน 3 นิ้วไปทางขวา</translation>
+<translation id="2919107550468490321">โหมดกดค้างอัจฉริยะเปิดอยู่</translation>
 <translation id="2937799153569150791">ไม่มีส่วนหัวระดับ 3 ถัดไป</translation>
 <translation id="2942710183375260152">สีน้ำเงินอมเทาเข้ม</translation>
 <translation id="2943596527105977722">สีเหลืองโกลเด้นร็อดเข้ม</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">ลดระดับเสียง</translation>
 <translation id="3009352964623081324">ค้นหา + O ตามด้วย S ใช้เพื่อติดตั้ง จัดการ และปรับแต่งเสียง</translation>
 <translation id="3014130421870723208">@แก้ไขช่อง 8 จุด</translation>
+<translation id="3018210433491759145">กำลังโหลด ChromeVox</translation>
 <translation id="3030432017085518523">ปุ่มตัวเลือกรายการเมนู</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{อะโพสโทรฟี}other{# อะโพสโทรฟี}}</translation>
 <translation id="3040901448410802366">ตัวบอกสถานะความคืบหน้า</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">วิดีโอ</translation>
 <translation id="3813387282697781382">สีส้มอมชมพูอ่อน</translation>
 <translation id="3816633764618089385">สื่อถัดไป</translation>
+<translation id="3821689185319271077">ไม่มี Anchor ตัวชี้</translation>
 <translation id="3840823741487267909">ตัวย่อ</translation>
 <translation id="3841319830220785495">เสียงตามธรรมชาติเริ่มต้น</translation>
 <translation id="385383972552776628">เปิดหน้าตัวเลือก</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ฟอร์ม</translation>
 <translation id="4601367666219428522">ตร.<ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">เพิกเฉยการกดแป้นครั้งถัดไป</translation>
+<translation id="4617384941327705512">โหมดกดค้างอัจฉริยะปิดอยู่</translation>
 <translation id="4623097797855662355">ข้อมูลทางบรรณานุกรม</translation>
 <translation id="4624970070706497034">TalkBack ไม่มีการปรับแต่งสำหรับ Chromebook แล้ว แต่คุณจะยังใช้งานแป้นพิมพ์ลัดเริ่มต้นของ TalkBack ได้อยู่ กด Search+A จากนั้น K เพื่อดูแป้นพิมพ์ลัดที่มี หากยังต้องการใช้ TalkBack ให้กดคำสั่งอีกครั้ง</translation>
 <translation id="463135993322337640">กด ChromeVox o, n เพื่อดูเวอร์ชันใหม่</translation>

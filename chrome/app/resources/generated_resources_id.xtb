@@ -1447,6 +1447,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2280486287150724112">Batas kanan</translation>
 <translation id="2281863813036651454">Klik kiri mouse</translation>
 <translation id="2282146716419988068">Proses GPU</translation>
+<translation id="228293613124499805">Sebagian besar situs yang Anda buka mungkin menyimpan data ke perangkat, sering kali untuk meningkatkan pengalaman Anda dengan menyimpan preferensi atau informasi yang Anda bagikan ke situs. Sebaiknya tetap aktifkan setelan ini.</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Buka semua di &amp;grup tab baru}=1{Buka di &amp;grup tab baru}other{Buka semua ({COUNT}) di &amp;grup tab baru}}</translation>
 <translation id="2285942871162473373">Sidik jari Anda tidak dapat dikenali. Coba lagi.</translation>
 <translation id="2287944065963043964">Layar login</translation>
@@ -2889,6 +2890,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3603622770190368340">Mendapatkan sertifikat jaringan</translation>
 <translation id="3605780360466892872">Pria Berdasi</translation>
 <translation id="3609277884604412258">Penelusuran cepat</translation>
+<translation id="3610241585790874201">Tidak diizinkan menyimpan data di perangkat Anda</translation>
 <translation id="3610369246614755442">Kipas dok perlu diperbaiki</translation>
 <translation id="361106536627977100">Data Flash</translation>
 <translation id="3611655097742243705">Buka Play Store untuk menemukan aplikasi lainnya</translation>
@@ -3112,6 +3114,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3802486193901166966">Ekstensi ini tidak memerlukan izin khusus dan tidak memiliki akses situs tambahan</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803345858388753269">Kualitas Video</translation>
+<translation id="3803367742635802571">Situs yang Anda buka mungkin tidak berfungsi sebagaimana mestinya</translation>
 <translation id="380408572480438692">Mengaktifkan koleksi data kinerja akan membantu meningkatkan sistem sepanjang waktu. Tidak ada data yang terkirim hingga mengajukan laporan masukan (Alt-Shift-I) dan menyertakan data kinerja. Anda dapat kembali ke layar ini untuk menonaktifkan koleksi kapan saja.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID ekstensi "<ph name="EXTENSION_ID" />") tidak diizinkan di layar login.</translation>
 <translation id="3807747707162121253">&amp;Batal</translation>
@@ -3972,6 +3975,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4595560905247879544">Aplikasi dan ekstensi hanya dapat diubah oleh pengelola (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Anda memiliki sertifikat pada file yang mengidentifikasi server ini</translation>
 <translation id="4598345735110653698">Kelola kunci sandi</translation>
+<translation id="4598549027014564149">Selama dalam mode Samaran, situs tidak dapat menggunakan cookie Anda untuk melihat aktivitas penjelajahan Anda di seluruh situs, bahkan situs yang terkait. Aktivitas penjelajahan Anda tidak digunakan untuk hal-hal seperti mempersonalisasi iklan. Fitur tertentu di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="4598556348158889687">Pengelolaan penyimpanan</translation>
 <translation id="4598776695426288251">Wi-Fi tersedia melalui beberapa perangkat</translation>
 <translation id="4600071396330666617">Jumlah saran</translation>
@@ -4137,6 +4141,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4750185073185658673">Buka ponsel untuk meninjau beberapa izin lain. Pastikan Bluetooth dan Wi-Fi ponsel Anda sudah diaktifkan.</translation>
 <translation id="4750394297954878236">Saran</translation>
 <translation id="475088594373173692">Pengguna pertama</translation>
+<translation id="4756302371612574303">Situs yang Anda buka dapat menyimpan info tentang hal-hal yang Anda lakukan agar situs tersebut berfungsi seperti yang Anda harapkan — misalnya, untuk membuat Anda tetap login ke situs atau menyimpan item di keranjang belanja. Situs sering kali menyimpan info ini untuk sementara di perangkat Anda.</translation>
 <translation id="4756378406049221019">Hentikan/Muat Ulang</translation>
 <translation id="4756388243121344051">&amp;Riwayat</translation>
 <translation id="4756671452988984333">Teks untuk audio</translation>
@@ -4477,6 +4482,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="508059534790499809">Perbarui tiket Kerberos</translation>
 <translation id="5081960376148623587">Pilih apakah akan melakukan pramuat halaman</translation>
 <translation id="5084328598860513926">Alur penyediaan terganggu. Coba lagi atau hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
+<translation id="5084622689760736648">Situs biasanya berfungsi seperti yang Anda harapkan</translation>
 <translation id="5085162214018721575">Memeriksa pembaruan</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Catatan berisi lebih dari 1.000 karakter</translation>
@@ -4913,7 +4919,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5493792505296048976">layar aktif</translation>
 <translation id="5494016731375030300">Tab yang Baru Ditutup</translation>
 <translation id="5494362494988149300">Buka Setelah &amp;Selesai</translation>
-<translation id="5494752089476963479">Blokir iklan di situs yang menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="5495466433285976480">Hal ini akan menghapus semua pengguna lokal, file, data, dan setelan lain setelah Anda memulai ulang lagi. Semua pengguna perlu masuk kembali.</translation>
 <translation id="5495597166260341369">Biarkan layar tetap menyala</translation>
 <translation id="5496587651328244253">Atur</translation>
@@ -5818,7 +5823,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6335920438823100346">Untuk memulai Linux, <ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mereset Chromebook ini ke setelan pabrik.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> telah menonaktifkan proses debug ADB. Ini akan mereset <ph name="DEVICE_TYPE" /> Anda setelah 24 jam. Cadangkan file yang ingin Anda simpan.</translation>
 <translation id="6338968693068997776">Tambahkan perangkat USB</translation>
-<translation id="6338981933082930623">Semua situs dapat menampilkan iklan apa pun kepada Anda</translation>
 <translation id="6339668969738228384">Buat profil baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokol Pencetakan Internet (IPPS)</translation>
 <translation id="6340526405444716530">Personalisasi</translation>
@@ -5883,6 +5887,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6406303162637086258">Simulasikan mulai ulang browser</translation>
 <translation id="6406506848690869874">Sinkronisasi</translation>
 <translation id="6406708970972405507">Setelan - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">Diizinkan menyimpan data di perangkat Anda</translation>
 <translation id="6408118934673775994">Membaca dan mengubah data Anda di <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, dan <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">File Gambar</translation>
 <translation id="6410328738210026208">Ganti saluran dan Powerwash</translation>
@@ -6696,6 +6701,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7141105143012495934">Proses masuk gagal karena detail akun Anda tidak dapat diambil. Hubungi administrator Anda atau coba lagi.</translation>
 <translation id="7141844554192012199">Pemeriksaan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
+<translation id="7148426638542880639">Situs mungkin tidak berfungsi seperti yang Anda harapkan. Pilih opsi ini jika Anda tidak ingin meninggalkan informasi di perangkat tentang situs yang dibuka.</translation>
 <translation id="7149839598364933473">Ubah perangkat ini menjadi perangkat <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 jam terakhir</translation>
 <translation id="7152478047064750137">Ekstensi ini tidak memerlukan izin khusus</translation>
@@ -6728,6 +6734,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7186088072322679094">Tetap sematkan di Bilah Alat</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> tidak dapat membuka folder ini karena berisi file sistem</translation>
 <translation id="7187428571767585875">Entri registry yang akan dihapus atau diubah:</translation>
+<translation id="7188508872042490670">Data situs di perangkat</translation>
 <translation id="7189234443051076392">Pastikan ruang di perangkat Anda mencukupi</translation>
 <translation id="7189451821249468368">Anda tidak memiliki cukup upgrade untuk mendaftarkan perangkat ini. Hubungi pihak penjualan untuk membeli yang lainnya. Jika Anda yakin Anda tidak seharusnya mendapatkan pesan ini, hubungi dukungan.</translation>
 <translation id="7189965711416741966">Sidik jari ditambahkan.</translation>
@@ -7001,6 +7008,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7444970023873202833">Jelajahi kenangan Anda yang lain di Google Foto</translation>
 <translation id="7444983668544353857">Nonaktifkan <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Otomatis menginstal aplikasi</translation>
+<translation id="7448664748118305024">Hapus data yang telah disimpan oleh situs ke perangkat saat Anda menutup semua jendela</translation>
 <translation id="7449381494541372002">memulai ...</translation>
 <translation id="7449752890690775568">Hapus sandi?</translation>
 <translation id="7450761244949417357">Membuka di <ph name="ALTERNATIVE_BROWSER_NAME" /> sekarang</translation>
@@ -8179,6 +8187,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="851263357009351303">Selalu izinkan <ph name="HOST" /> menampilkan gambar</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>
 <translation id="8514746246728959655">Coba kunci keamanan lain</translation>
+<translation id="8514955299594277296">Jangan izinkan situs menyimpan data di perangkat Anda (tidak direkomendasikan)</translation>
 <translation id="8519895319663397036">Tidak dapat mengimpor sandi. Ukuran file tidak boleh lebih dari 150 KB.</translation>
 <translation id="8523493869875972733">Simpan Perubahan</translation>
 <translation id="8523849605371521713">Ditambahkan sesuai kebijakan</translation>
@@ -8623,6 +8632,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8925458182817574960">&amp;Setelan</translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="892706138619340876">Beberapa setelan telah direset</translation>
+<translation id="8927438609932588163">Izinkan situs menyimpan data di perangkat Anda</translation>
 <translation id="8929696694736010839">Sesi Samaran saat ini saja</translation>
 <translation id="8930351635855238750">Setelan cookie baru akan berlaku setelah halaman dimuat ulang</translation>
 <translation id="8930622219860340959">Nirkabel</translation>

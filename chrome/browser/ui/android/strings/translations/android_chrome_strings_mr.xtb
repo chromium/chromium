@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">वेबसाइटला मंजुरी द्यायची की नाही यासाठीचा पर्याय बंद आहे</translation>
 <translation id="499724277181351974">नेव्हिगेट करा: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">या साइटला येथे फॉलो करा</translation>
-<translation id="500351648694011114">अधिक सहजपणे ब्राउझ करा</translation>
 <translation id="5004416275253351869">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करू इच्छिते</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">दुसर्‍या डाउनलोडची वाट पाहत आहे…</translation>
 <translation id="5865733239029070421">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते</translation>
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>
-<translation id="5869789175361934029">दुसर्‍या डिव्हाइसवरून पुढे सुरू ठेवा</translation>
 <translation id="5876496397064130037">टास्क पुन्हा सुरू केली</translation>
 <translation id="587735546353481577">साइटला फॉलो करण्यासाठी, साइटवर जा, Chrome मेनू उघडा आणि फॉलो करा वर टॅप करा.</translation>
 <translation id="5879072387416556377">आणखी चांगल्या सूचना मिळवा</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">माग ठेवलेली किंमत अपडेट करता आली नाही</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6294610283659775533">तुम्ही हेच Google खाते वापरून साइन केलेल्या डिव्हाइस दरम्यान टॅब पाठवू शकता</translation>
+<translation id="6295158916970320988">सर्व साइट</translation>
 <translation id="6297765934698848803">तुमचे डिव्हाइस व्यवस्थापित करणार्‍या संस्थेने तुमचा कॅमेरा बंद केला आहे.</translation>
 <translation id="6301525844455696527">वाचन सूचीसह, तुमच्या राहून गेलेल्या वाचनाची भरपाई करा</translation>
 <translation id="6303969859164067831">साइन आउट करा आणि सिंक बंद करा</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">सरलीकृत पेज पाहायचे आहे का?</translation>
 <translation id="968900484120156207">तुम्ही भेट देता ती पेज येथे दिसतील</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनिटे शिल्लक</translation>
-<translation id="978443947993957527">तुमच्यासाठीचा आशय पहा</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>
 <translation id="987264212798334818">सामान्य</translation>

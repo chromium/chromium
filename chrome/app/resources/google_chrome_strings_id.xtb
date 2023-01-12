@@ -142,6 +142,7 @@
 <translation id="3533694711092285624">Tidak ada sandi yang tersimpan. Chrome dapat memeriksa sandi Anda saat menyimpannya.</translation>
 <translation id="3541482654983822893">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam.</translation>
 <translation id="3576528680708590453">Administrator sistem Anda telah mengonfigurasi Google Chrome untuk membuka browser alternatif guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3579965087968408543">Selalu menghapus data situs dari perangkat saat Anda menutup Chrome</translation>
 <translation id="3582972582564653026">Menyinkronkan dan mempersonalisasi Chrome di perangkat Anda</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="3622797965165704966">Kini, menggunakan Chrome dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
@@ -343,6 +344,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7917876797003313048">Anda dapat mengelola Akun Google yang Anda gunakan untuk login. Akun Google Anda digunakan untuk browser Chrome, Play Store, Gmail, dan lainnya. Jika Anda ingin menambahkan akun untuk orang lain, seperti anggota keluarga, tambahkan pengguna baru ke <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome mencoba menyalin sandi.</translation>
 <translation id="7951272445806340501">ChromeOS Flex perlu dimulai ulang untuk menerapkan update.</translation>
+<translation id="7962368738413920945">Situs mungkin akan berfungsi seperti yang Anda harapkan, tetapi tidak akan mengingat Anda setelah Anda menutup semua jendela Chrome</translation>
 <translation id="7962410387636238736">Komputer ini tidak akan menerima update Google Chrome lagi karena Windows XP dan Windows Vista sudah tidak didukung</translation>
 <translation id="8005666035647241369">Ke Pengelola Sandi Google di perangkat ini</translation>
 <translation id="8008534537613507642">Instal Ulang Chrome</translation>

@@ -146,6 +146,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3533694711092285624">Ni shranjenih gesel. Chrome lahko preveri gesla, če jih shranite.</translation>
 <translation id="3541482654983822893">Chrome ne more preveriti vaših gesel. Poskusite znova čez 24 ur.</translation>
 <translation id="3576528680708590453">Skrbnik sistema je Google Chrome nastavil tako, da za dostop do <ph name="TARGET_URL_HOSTNAME" /> odpre drug brskalnik.</translation>
+<translation id="3579965087968408543">Podatki o spletnem mestu se vedno izbrišejo iz naprave, ko zaprete Chrome</translation>
 <translation id="3582972582564653026">V vseh svojih napravah sinhronizirajte in prilagodite Chrome</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="3622797965165704966">Zdaj je Chrome lažje uporabljati z Google Računom in v računalnikih, ki so v skupni rabi.</translation>
@@ -351,6 +352,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7917876797003313048">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chrome, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome poskuša kopirati gesla.</translation>
 <translation id="7951272445806340501">Za uveljavitev posodobitve je treba znova zagnati ChromeOS Flex.</translation>
+<translation id="7962368738413920945">Spletna mesta bodo verjetno delovala po pričakovanjih, vendar si vas ne bodo zapomnila, ko zaprete vsa Chromova okna.</translation>
 <translation id="7962410387636238736">Ta računalnik ne bo več prejemal posodobitev za Google Chrome, ker sistema Windows XP in Windows Vista nista več podprta.</translation>
 <translation id="8005666035647241369">V Googlov upravitelj gesel v tej napravi</translation>
 <translation id="8008534537613507642">Vnovična namestitev Chroma</translation>

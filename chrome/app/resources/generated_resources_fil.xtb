@@ -4920,7 +4920,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5493792505296048976">naka-on ang screen</translation>
 <translation id="5494016731375030300">Mga Kamakailang Isinarang Tab</translation>
 <translation id="5494362494988149300">Buksan Kapag &amp;Tapos Na</translation>
-<translation id="5494752089476963479">I-block ang mga ad sa mga site na nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>
 <translation id="5495466433285976480">Tatanggalin nito ang lahat ng lokal na user, file, data, at iba pang mga setting sa iyong susunod na pag-restart. Kakailanganing mag-sign in muli ng lahat ng user.</translation>
 <translation id="5495597166260341369">Panatilihing naka-on ang display</translation>
 <translation id="5496587651328244253">Isaayos</translation>
@@ -5825,7 +5824,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6335920438823100346">Para simulan ang Linux, hihilingin sa iyo ng <ph name="MANAGER" /> na i-back up ang iyong data at i-reset ang Chromebook na ito sa mga factory setting.</translation>
 <translation id="6336038146639916978">Na-disable ng <ph name="MANAGER" /> ang pag-debug ng ADB. Ire-reset nito ang iyong <ph name="DEVICE_TYPE" /> pagkalipas ng 24 na oras. I-back up ang anumang file na gusto mong panatilihin.</translation>
 <translation id="6338968693068997776">Magdagdag ng USB device</translation>
-<translation id="6338981933082930623">Puwedeng magpakita sa iyo ng anumang ad ang lahat ng site</translation>
 <translation id="6339668969738228384">Gumawa ng bagong profile para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Pag-personalize</translation>

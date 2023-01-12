@@ -402,7 +402,6 @@
 <translation id="191374271204266022">複製為 JSON 格式</translation>
 <translation id="1914326953223720820">解壓縮服務</translation>
 <translation id="1916770123977586577">如要將你更新過的設定套用到這個網站，請重新載入這個網頁</translation>
-<translation id="1919345977826869612">廣告</translation>
 <translation id="1919367280705858090">瞭解如何修正特定錯誤訊息指出的錯誤</translation>
 <translation id="1919526244108283799">400 x 600 公釐</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
@@ -801,6 +800,7 @@
 <translation id="2986368408720340940">不支援所選的取件方式，請改選其他方式。</translation>
 <translation id="2987034854559945715">找不到相符的功能</translation>
 <translation id="2989742184762224133">雙釘 (頂端)</translation>
+<translation id="2990882401221831923">信用卡清單已關閉。</translation>
 <translation id="2991174974383378012">與網站分享</translation>
 <translation id="299122504639061328">管理預設搜尋引擎和站內搜尋</translation>
 <translation id="2991571918955627853">目前無法造訪 <ph name="SITE" />，因為這個網站使用 HSTS。網路錯誤和攻擊行為通常是暫時性的，因此這個網頁可能稍後就會恢復正常狀態。</translation>
@@ -923,7 +923,6 @@
 <translation id="3304777285002411338">A2 x 3</translation>
 <translation id="33073482541490531">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="3308006649705061278">組織單位 (OU)</translation>
-<translation id="3308738399950580893">廣告</translation>
 <translation id="3320021301628644560">新增帳單地址</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">深紅色</translation>
@@ -1585,6 +1584,7 @@
 <translation id="4976702386844183910">上次造訪日期：<ph name="DATE" /></translation>
 <translation id="498323057460789381">結構定義驗證錯誤：<ph name="ERROR" /></translation>
 <translation id="4984088539114770594">要使用麥克風嗎？</translation>
+<translation id="4988822846878841743">信用卡清單已開啟並顯示在畫面下半部，輕觸即可填入。</translation>
 <translation id="4989163558385430922">查看全部</translation>
 <translation id="4989542687859782284">尚未支援</translation>
 <translation id="4989809363548539747">這是不支援的外掛程式</translation>
@@ -1933,6 +1933,7 @@
 <translation id="5863847714970149516">你要瀏覽的網頁可能會向你收取費用</translation>
 <translation id="5866257070973731571">新增電話號碼</translation>
 <translation id="5866898949289125849">目前查看的是開發人員工具頁面</translation>
+<translation id="5868548454963263350">信用卡清單已開啟並顯示在整個畫面上，輕觸即可填入。</translation>
 <translation id="5869405914158311789">無法連上這個網站</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5873013647450402046">銀行希望確認你的身分。</translation>
@@ -2645,6 +2646,7 @@
 <translation id="7653957176542370971">已關閉付款處理常式工作表</translation>
 <translation id="7654909834015434372">這份文件會在你編輯註解時重設為原始顯示方向</translation>
 <translation id="765676359832457558">隱藏進階設定...</translation>
+<translation id="7656935528854393684">信用卡清單，輕觸即可填入。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="7659878911471462949">喜極而泣</translation>

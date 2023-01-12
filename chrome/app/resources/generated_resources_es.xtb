@@ -4897,7 +4897,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5493792505296048976">pantalla encendida</translation>
 <translation id="5494016731375030300">Pestañas cerradas recientemente</translation>
 <translation id="5494362494988149300">Abrir al &amp;finalizar</translation>
-<translation id="5494752089476963479">Bloquea anuncios invasivos o engañosos en los sitios que los muestran</translation>
 <translation id="5495466433285976480">Esta acción eliminará todos los archivos, datos y usuarios locales, entre otras opciones, la próxima vez que reinicies. Todos los usuarios deberán volver a iniciar sesión.</translation>
 <translation id="5495597166260341369">Mantener la pantalla activada</translation>
 <translation id="5496587651328244253">Organizar</translation>
@@ -5802,7 +5801,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6335920438823100346">Para iniciar Linux, <ph name="MANAGER" /> necesita que crees una copia de seguridad de tus datos y restablezcas los ajustes de fábrica de este Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Se restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
 <translation id="6338968693068997776">Añadir dispositivo USB</translation>
-<translation id="6338981933082930623">Todos los sitios pueden mostrarte cualquier anuncio</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión en Internet (IPPS)</translation>
 <translation id="6340526405444716530">Personalización</translation>

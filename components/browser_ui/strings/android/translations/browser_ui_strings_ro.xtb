@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Întreabă înainte de a permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video (recomandat)</translation>
 <translation id="2212565012507486665">Permite cookie-urile</translation>
 <translation id="2228071138934252756">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze camera, activează camera și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
 <translation id="2238944249568001759">Căutări sugerate pe baza ultimei file</translation>
 <translation id="2241634353105152135">Numai o singură dată</translation>
 <translation id="2253414712144136228">Elimină <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
 <translation id="3797520601150691162">Nu aplica tema întunecată pentru un anumit site</translation>
+<translation id="3803367742635802571">Este posibil ca site-urile pe care le accesezi să nu mai funcționeze așa cum au fost proiectate</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Numere de telefon</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
 <translation id="4570913071927164677">Detalii</translation>
+<translation id="4598549027014564149">În modul incognito, site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe site-uri, inclusiv site-urile conexe. Activitatea ta de navigare nu este folosită pentru acțiuni precum personalizarea anunțurilor. Este posibil ca funcțiile de pe anumite site-uri să nu ruleze.</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
 <translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">Camera foto este dezactivată în setările Android</translation>
 <translation id="5706552988683188916">Astfel, se șterg cookie-urile și alte date privind site-urile pentru <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="ORIGIN" /> sau de aplicația asociată de pe ecranul de pornire.</translation>
+<translation id="5723967018671998714">Cookie-urile terță parte sunt blocate în modul Incognito</translation>
 <translation id="5771720122942595109">S-a blocat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">Împiedică site-urile să afișeze ferestre pop-up și redirecționări (recomandat)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Actualizați</translation>
+<translation id="7188508872042490670">Date privind site-urile pe dispozitiv</translation>
 <translation id="7203150201908454328">Extins</translation>
 <translation id="723171743924126238">Selectează imagini</translation>
 <translation id="7243308994586599757">Opțiuni disponibile în partea de jos a ecranului</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="848952951823693243">Solicită întotdeauna site-ul mobil</translation>
 <translation id="8499083585497694743">Activează sunetul microfonului</translation>
+<translation id="8514955299594277296">Nu permite site-urilor să salveze date pe dispozitiv (nu se recomandă)</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}few{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site-uri <ph name="FPS_OWNER" />}other{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> de site-uri <ph name="FPS_OWNER" />}}</translation>

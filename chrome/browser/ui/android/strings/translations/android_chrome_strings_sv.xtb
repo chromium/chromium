@@ -730,7 +730,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4991110219272367918">Alternativ för att godkänna eller inte godkänna en webbplats har stängts</translation>
 <translation id="499724277181351974">Navigera till: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Följ denna webbplats här</translation>
-<translation id="500351648694011114">Surfa enklare</translation>
 <translation id="5004416275253351869">Googles aktivitetsinställningar</translation>
 <translation id="5005498671520578047">Kopiera lösenord</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vill ansluta</translation>
@@ -883,7 +882,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5864419784173784555">Väntar på nästa nedladdning …</translation>
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
-<translation id="5869789175361934029">Fortsätt på en annan enhet</translation>
 <translation id="5876496397064130037">Uppgiften har återupptagits</translation>
 <translation id="587735546353481577">Om du vill följa en webbplats besöker du den, öppnar Chrome-menyn och trycker på Följ.</translation>
 <translation id="5879072387416556377">Få bättre förslag</translation>
@@ -947,6 +945,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6277722725779679269">Det gick inte att uppdatera Bevaka pris</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Du kan skicka flikar mellan enheter som är inloggade på samma Google-konto</translation>
+<translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6297765934698848803">Organisationen som hanterar din enhet har inaktiverat kameran.</translation>
 <translation id="6301525844455696527">Läs ikapp i läslistan</translation>
 <translation id="6303969859164067831">Logga ut och inaktivera synkronisering</translation>
@@ -1517,7 +1516,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="96681097142096641">Vill du öppna en förenklad sida?</translation>
 <translation id="968900484120156207">Sidor som du besöker visas här</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuter kvar</translation>
-<translation id="978443947993957527">Se innehåll för dig</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Stäng alla flikar</translation>
 <translation id="987264212798334818">Allmänt</translation>

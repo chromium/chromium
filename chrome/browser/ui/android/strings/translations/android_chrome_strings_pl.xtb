@@ -729,7 +729,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4991110219272367918">Opcja zatwierdzenia lub odrzucenia witryny zamknięta</translation>
 <translation id="499724277181351974">Wejdź na stronę <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dodaj stronę do obserwowanych tutaj</translation>
-<translation id="500351648694011114">Przeglądaj wygodniej</translation>
 <translation id="5004416275253351869">Zarządzanie aktywnością w Google</translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> chce się połączyć</translation>
@@ -882,7 +881,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5864419784173784555">Czekam na inny plik do pobrania…</translation>
 <translation id="5865733239029070421">Automatycznie przesyła do Google statystyki użytkowania i raporty o awariach</translation>
 <translation id="5869522115854928033">Zapisane hasła</translation>
-<translation id="5869789175361934029">Kontynuuj przeglądanie zaczęte na innym urządzeniu</translation>
 <translation id="5876496397064130037">Zadanie wznowione</translation>
 <translation id="587735546353481577">Aby obserwować stronę, otwórz ją, otwórz menu Chrome i kliknij Obserwuj.</translation>
 <translation id="5879072387416556377">Otrzymuj lepsze sugestie</translation>
@@ -946,6 +944,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6277722725779679269">Nie udało się zaktualizować monitorowanej ceny</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6294610283659775533">Możesz przesyłać karty między urządzeniami zalogowanymi na to samo konto Google</translation>
+<translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6297765934698848803">Organizacja, która zarządza Twoim urządzeniem, wyłączyła aparat.</translation>
 <translation id="6301525844455696527">Nadrób zaległości w czytaniu</translation>
 <translation id="6303969859164067831">Wyloguj się i wyłącz synchronizację</translation>
@@ -1516,7 +1515,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="96681097142096641">Pokazać uproszczoną stronę?</translation>
 <translation id="968900484120156207">Tutaj pojawią się strony, które odwiedzisz</translation>
 <translation id="970715775301869095">Pozostało: <ph name="MINUTES" /> min</translation>
-<translation id="978443947993957527">Zobacz treści dla siebie</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zamknij wszystkie karty</translation>
 <translation id="987264212798334818">Ogólne</translation>

@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">Κλείσιμο επιλογής για να εγκρίνετε ή να μην εγκρίνετε έναν ιστότοπο</translation>
 <translation id="499724277181351974">Πλοήγηση: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Ακολουθήστε αυτόν τον ιστότοπο εδώ</translation>
-<translation id="500351648694011114">Περιηγηθείτε πιο εύκολα</translation>
 <translation id="5004416275253351869">Στοιχεία ελέγχου δραστηριότητας Google</translation>
 <translation id="5005498671520578047">Αντιγραφή κωδικού πρόσβασης</translation>
 <translation id="5011311129201317034">Ο ιστότοπος <ph name="SITE" /> επιθυμεί σύνδεση</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">Αναμονή για άλλη λήψη…</translation>
 <translation id="5865733239029070421">Αποστέλλει αυτόματα στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων στην Google</translation>
 <translation id="5869522115854928033">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
-<translation id="5869789175361934029">Συνέχεια από άλλη συσκευή</translation>
 <translation id="5876496397064130037">Η εργασία συνεχίστηκε</translation>
 <translation id="587735546353481577">Για να ακολουθήσετε έναν ιστότοπο, μεταβείτε στον ιστότοπο, ανοίξτε το μενού Chrome και πατήστε Παρακολούθηση.</translation>
 <translation id="5879072387416556377">Δείτε καλύτερες προτάσεις</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">Δεν ήταν δυνατή η ενημέρωση της Παρακολούθησης τιμής</translation>
 <translation id="6278428485366576908">Θέμα</translation>
 <translation id="6294610283659775533">Μπορείτε να στέλνετε καρτέλες μεταξύ συσκευών οι οποίες έχουν συνδεθεί με τον ίδιο Λογαριασμό Google.</translation>
+<translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
 <translation id="6297765934698848803">Ο οργανισμός που διαχειρίζεται τη συσκευή σας απενεργοποίησε την κάμερά σας.</translation>
 <translation id="6301525844455696527">Μη αναγνωσμένο περιεχόμενο στη λίστα ανάγνωσης</translation>
 <translation id="6303969859164067831">Αποσύνδεση και απενεργοποίηση συγχρονισμού</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">Προβολή απλοποιημένης σελίδας;</translation>
 <translation id="968900484120156207">Εδώ εμφανίζονται οι σελίδες που επισκέπτεστε</translation>
 <translation id="970715775301869095">Απομένουν <ph name="MINUTES" /> λεπτά</translation>
-<translation id="978443947993957527">Εμφάνιση περιεχομένου για εσάς</translation>
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="983192555821071799">Κλείσιμο όλων των καρτελών</translation>
 <translation id="987264212798334818">Γενικά</translation>

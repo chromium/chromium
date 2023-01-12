@@ -728,7 +728,6 @@
 <translation id="4991110219272367918">ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ಅನುಮೋದಿಸುವ ಅಥವಾ ಅನುಮೋದಿಸದಿರುವ ಕುರಿತ ಆಯ್ಕೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="499724277181351974">ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ಇಲ್ಲಿ ಈ ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಿ</translation>
-<translation id="500351648694011114">ಹೆಚ್ಚು ಸುಲಭವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="5004416275253351869">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
@@ -881,7 +880,6 @@
 <translation id="5864419784173784555">ಇನ್ನೊಂದು ಡೌನ್‌ಲೋಡ್‌ಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="5865733239029070421">ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="5869522115854928033">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
-<translation id="5869789175361934029">ಬೇರೆ ಸಾಧನದಿಂದ ಮುಂದುವರಿಸಿ</translation>
 <translation id="5876496397064130037">ಕಾರ್ಯವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲಾಗಿದೆ</translation>
 <translation id="587735546353481577">ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಲು, ಸೈಟ್‌ಗೆ ಹೋಗಿ, Chrome ಮೆನುವನ್ನು ತೆರೆಯಿರಿ, ಹಾಗೂ ಫಾಲೋ ಮಾಡಿ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5879072387416556377">ಉತ್ತಮ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -945,6 +943,7 @@
 <translation id="6277722725779679269">ಟ್ರ್ಯಾಕ್ ಬೆಲೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="6278428485366576908">ಥೀಮ್</translation>
 <translation id="6294610283659775533">ಒಂದೇ Google ಖಾತೆಯನ್ನು ಬಳಸಿಕೊಂಡು ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಸಾಧನಗಳ ನಡುವೆ ನೀವು ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕಳುಹಿಸಬಹುದು</translation>
+<translation id="6295158916970320988">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6297765934698848803">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನಿರ್ವಹಿಸುವ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಆಫ್ ಮಾಡಿದೆ.</translation>
 <translation id="6301525844455696527">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ನೋಡಿ</translation>
 <translation id="6303969859164067831">ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಸಿಂಕ್ ಆಫ್ ಮಾಡಿ</translation>
@@ -1515,7 +1514,6 @@
 <translation id="96681097142096641">ಸರಳೀಕೃತ ಪುಟವನ್ನು ವೀಕ್ಷಿಸಬೇಕೆ?</translation>
 <translation id="968900484120156207">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
-<translation id="978443947993957527">ನಿಮಗಾಗಿ ವಿಷಯವನ್ನು ನೋಡಿ</translation>
 <translation id="981121421437150478">ಆಫ್‌ಲೈನ್</translation>
 <translation id="983192555821071799">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="987264212798334818">ಸಾಮಾನ್ಯ</translation>

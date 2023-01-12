@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Pyet përpara se të lejosh krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës (rekomandohet)</translation>
 <translation id="2212565012507486665">Lejo kukit</translation>
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="2238944249568001759">Kërkimet e sugjeruara bazuar në skedën tënde të fundit</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> - Hiq</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Kamera është çaktivizuar në cilësimet e Android</translation>
 <translation id="5706552988683188916">Kjo fshin kukit dhe të dhënat e tjera të sajtit për <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Kjo do të pastrojë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" /> ose nga aplikacioni i tij në ekranin bazë.</translation>
+<translation id="5723967018671998714">Kukit e palëve të treta janë bllokuar në modalitetin "i fshehtë"</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> është bllokuar</translation>
 <translation id="5804241973901381774">Lejet</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>

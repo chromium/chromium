@@ -1447,6 +1447,7 @@
 <translation id="2280486287150724112">오른쪽 여백</translation>
 <translation id="2281863813036651454">마우스 왼쪽 버튼 클릭</translation>
 <translation id="2282146716419988068">GPU 프로세스</translation>
+<translation id="228293613124499805">내가 방문하는 대부분의 사이트에서는 기기에 데이터를 저장하며, 사이트에 공유한 환경설정이나 정보를 저장하여 사용자 환경을 개선하는 경우가 많습니다. 이 설정을 유지하는 것이 좋습니다.</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{새 탭 그룹에서 모두 열기(&amp;N)}=1{새 탭 그룹에서 열기(&amp;N)}other{새 탭 그룹에서 {COUNT}개 모두 열기(&amp;N)}}</translation>
 <translation id="2285942871162473373">지문을 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2287944065963043964">로그인 화면</translation>
@@ -2890,6 +2891,7 @@
 <translation id="3603622770190368340">네트워크 인증서 받기</translation>
 <translation id="3605780360466892872">와이셔츠</translation>
 <translation id="3609277884604412258">빠른 검색</translation>
+<translation id="3610241585790874201">기기에 데이터를 저장하도록 허용되지 않음</translation>
 <translation id="3610369246614755442">도크 팬 서비스 필요</translation>
 <translation id="361106536627977100">Flash 데이터</translation>
 <translation id="3611655097742243705">Play 스토어에 방문하여 더 많은 앱을 찾아보세요.</translation>
@@ -3113,6 +3115,7 @@
 <translation id="3802486193901166966">이 확장 프로그램은 추가적인 사이트 액세스 권한이 없고 특별한 권한이 필요하지 않습니다.</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803345858388753269">동영상 품질</translation>
+<translation id="3803367742635802571">방문한 사이트가 정상적으로 작동하지 않을 수 있음</translation>
 <translation id="380408572480438692">성능 데이터를 수집하도록 설정하면 시간이 지남에 따라 Google에서 시스템을 개선하는 데 도움이 됩니다. 데이터는 사용자가 피드백 보고서를 제출하고(Alt-Shift-I) 성능 데이터를 포함할 때까지 전송되지 않습니다. 언제든지 이 화면으로 돌아와 데이터 수집을 중지할 수 있습니다.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" />(확장 프로그램 ID: '<ph name="EXTENSION_ID" />')은(는) 로그인 화면에서 허용되지 않습니다.</translation>
 <translation id="3807747707162121253">취소(&amp;C)</translation>
@@ -3971,6 +3974,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4595560905247879544">앱 및 확장 프로그램은 관리자(<ph name="CUSTODIAN_NAME" />)만 수정할 수 있습니다.</translation>
 <translation id="4596295440756783523">다음 서버를 식별하는 인증서가 등록되어 있습니다.</translation>
 <translation id="4598345735110653698">패스키 관리</translation>
+<translation id="4598549027014564149">시크릿 모드인 경우 사이트에서 쿠키를 사용해 관련 사이트 등 사용자의 사이트 탐색 활동을 볼 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="4598556348158889687">저장용량 관리</translation>
 <translation id="4598776695426288251">여러 기기를 통해 Wi-Fi 사용 가능</translation>
 <translation id="4600071396330666617">추천 수</translation>
@@ -4136,6 +4140,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4750185073185658673">휴대전화에서 몇 가지 권한을 추가로 검토하세요. 휴대전화의 블루투스 및 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="4750394297954878236">추천</translation>
 <translation id="475088594373173692">첫 번째 사용자</translation>
+<translation id="4756302371612574303">내가 방문하는 사이트에서 나의 로그인 상태를 유지하거나 장바구니에 담아 둔 항목을 저장하는 등 사이트의 정상적인 작동을 위하여 내 활동 정보를 저장할 수 있습니다. 사이트에서는 이 정보를 주로 기기에 임시로 저장합니다.</translation>
 <translation id="4756378406049221019">중지/새로고침</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4756671452988984333">오디오 스크립트</translation>
@@ -4476,6 +4481,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="508059534790499809">Kerberos 티켓 새로고침</translation>
 <translation id="5081960376148623587">페이지 미리 로드 여부 선택</translation>
 <translation id="5084328598860513926">프로비저닝 흐름이 중단되었습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
+<translation id="5084622689760736648">사이트가 제대로 작동할 가능성이 높습니다.</translation>
 <translation id="5085162214018721575">업데이트를 확인하는 중</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">메모가 1,000자(영문 기준)를 초과합니다.</translation>
@@ -4912,7 +4918,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5493792505296048976">화면 켜짐</translation>
 <translation id="5494016731375030300">최근에 닫은 탭</translation>
 <translation id="5494362494988149300">완료되면 열기(&amp;D)</translation>
-<translation id="5494752089476963479">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트의 광고 차단</translation>
 <translation id="5495466433285976480">다음에 다시 시작할 때 모든 로컬 사용자, 파일, 데이터 및 기타 설정이 삭제됩니다. 모든 사용자는 다시 로그인해야 합니다.</translation>
 <translation id="5495597166260341369">디스플레이를 켜진 상태로 유지</translation>
 <translation id="5496587651328244253">정리</translation>
@@ -5817,7 +5822,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6335920438823100346">Linux를 시작하려면 <ph name="MANAGER" />의 요건에 따라 데이터를 백업하고 이 Chromebook을 초기화해야 합니다.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />(으)로 인해 ADB 디버깅이 사용 중지되었습니다. 24시간 후 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 유지하고 싶은 파일이 있으면 백업해 주세요.</translation>
 <translation id="6338968693068997776">USB 기기 추가</translation>
-<translation id="6338981933082930623">모든 사이트에서 광고를 표시할 수 있음</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />의 새 프로필을 만드세요.</translation>
 <translation id="6340071272923955280">인터넷 인쇄 프로토콜(IPPS)</translation>
 <translation id="6340526405444716530">맞춤설정</translation>
@@ -5882,6 +5886,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6406303162637086258">브라우저 다시 시작 시뮬레이션</translation>
 <translation id="6406506848690869874">동기화</translation>
 <translation id="6406708970972405507">설정 - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">기기에 데이터를 저장하도록 허용됨</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />의 데이터를 읽고 변경</translation>
 <translation id="6410257289063177456">이미지 파일</translation>
 <translation id="6410328738210026208">채널 변경 및 Powerwash</translation>
@@ -6695,6 +6700,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="7141844554192012199">진단</translation>
 <translation id="7144878232160441200">다시 시도</translation>
+<translation id="7148426638542880639">사이트가 제대로 작동하지 않을 수 있습니다. 방문하는 사이트에 관한 정보를 기기에 저장하지 않으려면 이 옵션을 선택하세요.</translation>
 <translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
@@ -6727,6 +6733,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7186088072322679094">툴바에 보관</translation>
 <translation id="7186303001964993981">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 열 수 없습니다.</translation>
 <translation id="7187428571767585875">삭제 또는 변경할 레지스트리 항목:</translation>
+<translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7189234443051076392">기기 저장용량이 충분한지 확인합니다.</translation>
 <translation id="7189451821249468368">기기를 등록하는 데 필요한 업그레이드가 부족합니다. 판매처에 문의하여 추가로 구매하시기 바랍니다. 이 메시지가 잘못 표시되었다고 판단되는 경우 지원팀에 문의하세요.</translation>
 <translation id="7189965711416741966">지문이 추가되었습니다.</translation>
@@ -7000,6 +7007,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7444970023873202833">Google 포토에서 더 많은 추억을 살펴보세요.</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> 사용 중지</translation>
 <translation id="7448430327655618736">앱 자동 설치</translation>
+<translation id="7448664748118305024">창을 전부 닫으면 사이트에서 기기에 저장한 데이터 삭제</translation>
 <translation id="7449381494541372002">시작 중...</translation>
 <translation id="7449752890690775568">비밀번호를 삭제할까요?</translation>
 <translation id="7450761244949417357">지금 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 여는 중</translation>
@@ -8179,6 +8187,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="851263357009351303"><ph name="HOST" />에서 이미지 표시 항상 허용</translation>
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="8514746246728959655">다른 보안 키를 사용해 보세요</translation>
+<translation id="8514955299594277296">사이트에서 기기에 데이터를 저장하도록 허용하지 않음(권장하지 않음)</translation>
 <translation id="8519895319663397036">비밀번호를 가져올 수 없습니다. 파일 크기가 150KB 미만이어야 합니다.</translation>
 <translation id="8523493869875972733">변경사항 유지</translation>
 <translation id="8523849605371521713">정책에 의해 추가</translation>
@@ -8623,6 +8632,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8925458182817574960">설정(&amp;S)</translation>
 <translation id="8926389886865778422">이 메시지 그만 보기</translation>
 <translation id="892706138619340876">일부 설정이 재설정됨</translation>
+<translation id="8927438609932588163">사이트에서 기기에 데이터를 저장하도록 허용</translation>
 <translation id="8929696694736010839">현재 시크릿 세션에만</translation>
 <translation id="8930351635855238750">새 쿠키 설정은 페이지를 새로고침한 다음에 적용됩니다</translation>
 <translation id="8930622219860340959">무선</translation>

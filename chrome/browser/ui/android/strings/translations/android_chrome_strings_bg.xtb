@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">Опцията за одобряване или отхвърляне на уебсайт бе затворена</translation>
 <translation id="499724277181351974">Навигиране: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Следене на този сайт тук</translation>
-<translation id="500351648694011114">Сърфирайте по-лесно</translation>
 <translation id="5004416275253351869">Контроли за активността в Google</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> иска да се свърже</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">Изчаква се друго изтегляне…</translation>
 <translation id="5865733239029070421">Автоматично изпраща до Google статистически данни за използването на Chrome и сигнали за сривове</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
-<translation id="5869789175361934029">Продължаване от друго устройство</translation>
 <translation id="5876496397064130037">Задачата е възобновена</translation>
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5879072387416556377">Получавайте по-добри предложения</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">Проследяваните цени не бяха актуализирани</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6294610283659775533">Можете да изпращате раздели до други устройства, на които сте влезли в един и същ профил в Google</translation>
+<translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6297765934698848803">Организацията, която управлява устройството ви, е изключила камерата.</translation>
 <translation id="6301525844455696527">Не забравяйте списъка си за четене</translation>
 <translation id="6303969859164067831">Изход от профила и изключване на синхронизирането</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">Да се покаже ли опростена страница?</translation>
 <translation id="968900484120156207">Посетените от вас страници се показват тук</translation>
 <translation id="970715775301869095">Остават <ph name="MINUTES" /> мин</translation>
-<translation id="978443947993957527">Разглеждайте съдържание за вас</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Затваряне на всички раздели</translation>
 <translation id="987264212798334818">Общи</translation>

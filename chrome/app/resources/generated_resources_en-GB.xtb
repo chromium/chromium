@@ -60,6 +60,7 @@
 <translation id="1054153489933238809">Open Original &amp;Image in New Tab</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> within 1 week}other{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
 <translation id="1056898198331236512">Warning</translation>
+<translation id="1056980582064308040">Changing settings will restart the hotspot. Devices using the hotspot will disconnect.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Enter your new PIN. A PIN must be at least one character long and can contain letters, numbers and other characters.}other{Enter your new PIN. A PIN must be at least # characters long and can contain letters, numbers and other characters.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol Secure (HTTPS)</translation>
@@ -357,6 +358,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1327495825214193325">To enable ADB debugging, a restart of this <ph name="DEVICE_TYPE" /> is required. Disabling it requires a reset to factory settings.</translation>
 <translation id="1327527584824210101">Use your passkey</translation>
 <translation id="1327794256477341646">Features that need your location won't work</translation>
+<translation id="1329466763986822896">Improve privacy for this hotspot</translation>
 <translation id="1331977651797684645">This was me.</translation>
 <translation id="1333489022424033687">Some features on <ph name="ORIGIN" /> might not work until you clear data that other sites have stored on your device</translation>
 <translation id="1333965224356556482">Don't allow sites to see your location</translation>
@@ -3737,6 +3739,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4385146930797718821">Screenshot copied to clipboard</translation>
 <translation id="4385905942116811558">Searching for Bluetooth and USB devices</translation>
 <translation id="4387890294700445764">Compromised passwords</translation>
+<translation id="4388650384344483842">Use at least eight characters</translation>
 <translation id="4389091756366370506">User <ph name="VALUE" /></translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and <ph name="NUMBER_OF_OTHER_SWITCHES" /> more switches</translation>
 <translation id="439266289085815679">Bluetooth configuration is controlled by <ph name="USER_EMAIL" />.</translation>
@@ -4252,6 +4255,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="485480310608090163">More settings and permissions</translation>
 <translation id="4858913220355269194">Footy</translation>
 <translation id="4862642413395066333">Signing OCSP Responses</translation>
+<translation id="4863702650881330715">Extend compatibility</translation>
 <translation id="4863769717153320198">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
 <translation id="4864805589453749318">Select the parent who is granting permission to add a school account.</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
@@ -4681,6 +4685,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5275352920323889391">Dog</translation>
 <translation id="527605719918376753">Mute tab</translation>
 <translation id="527605982717517565">Always allow JavaScript on <ph name="HOST" /></translation>
+<translation id="5276357196618041410">Cannot save configuration without login first</translation>
 <translation id="5277127016695466621">Show side panel</translation>
 <translation id="5278823018825269962">Status ID</translation>
 <translation id="5279600392753459966">Block all</translation>
@@ -4919,7 +4924,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5493792505296048976">screen on</translation>
 <translation id="5494016731375030300">Recently closed tabs</translation>
 <translation id="5494362494988149300">Open When &amp;Finished</translation>
-<translation id="5494752089476963479">Block ads on sites that show intrusive or misleading ads</translation>
 <translation id="5495466433285976480">This will remove all local users, files, data and other settings after your next restart. All users will need to sign in again.</translation>
 <translation id="5495597166260341369">Keep display on</translation>
 <translation id="5496587651328244253">Organise</translation>
@@ -5824,7 +5828,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6335920438823100346">To start Linux, <ph name="MANAGER" /> requires you to back up your data and reset this Chromebook to factory settings.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> has disabled ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
 <translation id="6338968693068997776">Add USB device</translation>
-<translation id="6338981933082930623">All sites can show any ads to you</translation>
 <translation id="6339668969738228384">Create a new profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Personalisation</translation>
@@ -6262,6 +6265,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>
 <translation id="6756157672127672536">The Files app provides Quick access to files that you've saved on Google Drive, external storage or your Chrome OS device.</translation>
 <translation id="6756643207511618722">Speech engines</translation>
+<translation id="6757431299485455321">Help other devices find this hotspot.</translation>
 <translation id="6758056191028427665">Let us know how we’re doing.</translation>
 <translation id="6759193508432371551">Factory reset</translation>
 <translation id="6761431452438552910">Make sure that your Bluetooth device is in pairing mode and nearby. Only pair with devices that you trust.</translation>
@@ -6361,6 +6365,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6833479554815567477">Tab removed from group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
 <translation id="6833996806551876956">Privacy sandbox trial</translation>
+<translation id="6835712061486505758">Create a Wi-Fi hotspot to provide Internet to other devices. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
@@ -6614,6 +6619,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7047059339731138197">Pick a background</translation>
 <translation id="7048457618657122233">Share link to <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Keep file?</translation>
+<translation id="7050037487872780845">Invalid hotspot configuration</translation>
 <translation id="7052237160939977163">Send performance trace data</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
@@ -6962,6 +6968,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7406912950279255498">Colour inversion mode</translation>
 <translation id="7407430846095439694">Import and Bind</translation>
 <translation id="7407504355934009739">Most people block notifications from this site</translation>
+<translation id="7408080603962564527">This will be visible to others</translation>
 <translation id="740810853557944681">Add a print server</translation>
 <translation id="7409549334477097887">Extra large</translation>
 <translation id="7409599290172516453">Recent photos</translation>
@@ -7298,6 +7305,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7704317875155739195">Auto-complete searches and URLs</translation>
 <translation id="7704521324619958564">Open Play Store</translation>
 <translation id="7705276765467986571">Could not load bookmark model.</translation>
+<translation id="7705334495398865155">Randomise your hardware's ID (BSSID) to prevent others from tracking this device.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">This site has been blocked from using motion sensors.</translation>
 <translation id="7707922173985738739">Use mobile data</translation>
@@ -7492,6 +7500,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7881483672146086348">View Account</translation>
 <translation id="7883792253546618164">Unsubscribe at any time.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Review 1 site that sent a lot of notifications}other{Review {NUM_SITES} sites that sent a lot of notifications}}</translation>
+<translation id="7884446017008693258">Hotspot settings</translation>
 <translation id="788453346724465748">Loading account information…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{an item}other{# items}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
@@ -7717,6 +7726,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
     <ph name="BEGIN_PARAGRAPH3" />You can turn this service off in Settings.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8076835018653442223">Access to local files on your device is disabled by your administrator</translation>
+<translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>
 <translation id="80798452873915119">Sites can ask to manage windows on all your displays</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Your session is managed by <ph name="MANAGER_NAME" />. Administrators can delete your profile and also monitor your network traffic.</translation>
@@ -8371,6 +8381,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8678933587484842200">How would you like this application to launch?</translation>
 <translation id="8680251145628383637">Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.</translation>
 <translation id="8681614230122836773">Chrome found harmful software on your computer</translation>
+<translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is connected and ready</translation>
 <translation id="8687103160920393343">Cancel <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Available</translation>

@@ -729,7 +729,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4991110219272367918">Opció per aprovar o no aprovar un lloc web tancat</translation>
 <translation id="499724277181351974">Navega: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Segueix aquest lloc web aquí</translation>
-<translation id="500351648694011114">Navega més fàcilment</translation>
 <translation id="5004416275253351869">Controls d'activitat de Google</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> es vol connectar</translation>
@@ -882,7 +881,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5864419784173784555">S'està esperant que finalitzi una altra baixada…</translation>
 <translation id="5865733239029070421">Envia automàticament a Google estadístiques d'ús i informes d'error</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
-<translation id="5869789175361934029">Continua des d'un altre dispositiu</translation>
 <translation id="5876496397064130037">La tasca s'ha reprès</translation>
 <translation id="587735546353481577">Per seguir un lloc web, ves al lloc web, obre el menú de Chrome i toca Segueix.</translation>
 <translation id="5879072387416556377">Obtén suggeriments millors</translation>
@@ -946,6 +944,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6277722725779679269">No s'ha pogut actualitzar el seguiment del preu</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Pots enviar pestanyes entre dispositius en què tinguis la sessió iniciada al mateix Compte de Google</translation>
+<translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6297765934698848803">L'organització que gestiona el dispositiu ha desactivat la càmera.</translation>
 <translation id="6301525844455696527">Posa't al dia de la teva llista de lectura</translation>
 <translation id="6303969859164067831">Tanca la sessió i desactiva la sincronització</translation>
@@ -1516,7 +1515,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="96681097142096641">Vols mostrar la pàgina simplificada?</translation>
 <translation id="968900484120156207">Les pàgines que visitis es mostraran aquí</translation>
 <translation id="970715775301869095">Queden <ph name="MINUTES" /> minuts</translation>
-<translation id="978443947993957527">Contingut per a tu</translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="983192555821071799">Tanca totes les pestanyes</translation>
 <translation id="987264212798334818">General</translation>

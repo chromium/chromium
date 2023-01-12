@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Vragen voordat sites een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen (aanbevolen)</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238944249568001759">Voorgestelde zoekopdrachten op basis van je laatste tabblad</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> verwijderen</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Camera staat uit in de Android-instellingen</translation>
 <translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
 <translation id="5719847187258001597">Hiermee wis je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" /> of de bijbehorende app op je startscherm.</translation>
+<translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
 <translation id="5860033963881614850">Uit</translation>

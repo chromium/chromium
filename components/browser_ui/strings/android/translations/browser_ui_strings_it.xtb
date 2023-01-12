@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Chiedi conferma prima di consentire ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera (opzione consigliata)</translation>
 <translation id="2212565012507486665">Consenti cookie</translation>
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2238944249568001759">Ricerche suggerite in base all'ultima scheda</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2253414712144136228">Rimuovi <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">La fotocamera è disattivata nelle impostazioni di Android</translation>
 <translation id="5706552988683188916">Vengono eliminati i cookie e altri dati dei siti per <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Verranno cancellati tutti i dati e i cookie memorizzati dal sito <ph name="ORIGIN" /> o dalla relativa app nella schermata Home.</translation>
+<translation id="5723967018671998714">I cookie di terze parti sono bloccati in Modalità di navigazione in incognito</translation>
 <translation id="5771720122942595109">Autorizzazione <ph name="PERMISSION_1" /> bloccata</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5860033963881614850">Off</translation>

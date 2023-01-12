@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Pytaj, zanim zezwolisz stronom na tworzenie mapy 3D Twojego otoczenia lub śledzenie pozycji kamery (zalecane)</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2238944249568001759">Sugerowane wyszukiwania na podstawie ostatnio otwartej karty</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2253414712144136228">Usuń <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Kamera jest wyłączona w ustawieniach Androida</translation>
 <translation id="5706552988683188916">Spowoduje to usunięcie plików cookie i innych danych witryny <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym.</translation>
+<translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
 <translation id="5771720122942595109">Zablokowane: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5860033963881614850">Wyłączone</translation>

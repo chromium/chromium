@@ -729,7 +729,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4991110219272367918">Suljetun verkkosivuston hyväksymisen tai hyväksymättä jättämisen vaihtoehto</translation>
 <translation id="499724277181351974">Siirry: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seuraa sivustoa valitsemalla tämä</translation>
-<translation id="500351648694011114">Selaa helpommin</translation>
 <translation id="5004416275253351869">Google-toimintojen hallinta</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> haluaa muodostaa yhteyden</translation>
@@ -882,7 +881,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5864419784173784555">Odottaa toista latausta…</translation>
 <translation id="5865733239029070421">Lähettää automaattisesti käyttötilastoja ja virheraportteja Googlelle</translation>
 <translation id="5869522115854928033">Tallennetut salasanat</translation>
-<translation id="5869789175361934029">Jatka toisella laitteella</translation>
 <translation id="5876496397064130037">Tehtävää jatkettu</translation>
 <translation id="587735546353481577">Jos haluat seurata sivustoa, siirry sille, avaa Chrome-valikko ja valitse Seuraa.</translation>
 <translation id="5879072387416556377">Parempia ehdotuksia</translation>
@@ -946,6 +944,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6277722725779679269">Hinnan seurantaa ei voitu päivittää</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6294610283659775533">Voit lähettää välilehtiä laitteiden välillä, jos olet kirjautuneena niillä samalle Google-tilille</translation>
+<translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6297765934698848803">Laitettasi ylläpitävä organisaatio on poistanut kamerasi käytöstä.</translation>
 <translation id="6301525844455696527">Katso, mitä lukulistaltasi löytyy</translation>
 <translation id="6303969859164067831">Kirjaudu ulos ja poista synkronointi käytöstä</translation>
@@ -1516,7 +1515,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="96681097142096641">Näytetäänkö yksinkertaistettu sivu?</translation>
 <translation id="968900484120156207">Avaamasi sivut näkyvät tässä</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuuttia jäljellä</translation>
-<translation id="978443947993957527">Katso sinulle tarkoitettua sisältöä</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Sulje kaikki välilehdet</translation>
 <translation id="987264212798334818">Yleistä</translation>

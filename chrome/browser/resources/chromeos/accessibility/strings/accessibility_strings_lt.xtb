@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Nėra kito mygtuko</translation>
 <translation id="2911433807131383493">Atidaryti „ChromeVox“ mokymo programą</translation>
 <translation id="2912405967290226587">Perbraukite trim pirštais dešinėn</translation>
+<translation id="2919107550468490321">Išmanusis atmenusis režimas įjungtas</translation>
 <translation id="2937799153569150791">Nėra kitos 3 lygio antraštės</translation>
 <translation id="2942710183375260152">Tamsiai mėlyna su pilkšvu atspalviu</translation>
 <translation id="2943596527105977722">Tamsi ryškiai geltona spalva</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Sumažinti aukštį</translation>
 <translation id="3009352964623081324">Paieškos klavišas + O, tada S. Naudokite, kad galėtumėte įdiegti, tvarkyti ir tinkinti balsus.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">„ChromeVox“ įkeliama</translation>
 <translation id="3030432017085518523">Meniu elemento akutė</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrofas}one{# apostrofas}few{# apostrofai}many{# apostrophes}other{# apostrofų}}</translation>
 <translation id="3040901448410802366">Eigos indikatorius</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3813387282697781382">Šviesi koralų spalva</translation>
 <translation id="3816633764618089385">Kitas medijų raktas</translation>
+<translation id="3821689185319271077">Nėra žymeklio prieraišo</translation>
 <translation id="3840823741487267909">Santrumpa</translation>
 <translation id="3841319830220785495">Numatytasis natūralus balsas</translation>
 <translation id="385383972552776628">Atidaryti parinkčių puslapį</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">forma</translation>
 <translation id="4601367666219428522"><ph name="TABLENAME" /> (<ph name="TABLEROWS" />:<ph name="TABLECOLS" />)</translation>
 <translation id="4615592953348396470">Ignoruojamas kitas klavišo paspaudimas</translation>
+<translation id="4617384941327705512">Išmanusis atmenusis režimas išjungtas</translation>
 <translation id="4623097797855662355">Informacija apie leidimą</translation>
 <translation id="4624970070706497034">Naudojant „TalkBack“ nebeteikiama tinkinimo funkcija „Chromebook“ įrenginiuose. Vis tiek galite ją naudoti, bet turite naudoti numatytuosius „TalkBack“ sparčiuosius klavišus. Paspauskite paieškos klavišą ir A, tada K, kad peržiūrėtumėte pasiekiamus sparčiuosius klavišus. Jei vis tiek norite naudoti „TalkBack“, dar kartą paspauskite komandą.</translation>
 <translation id="463135993322337640">Paspauskite „ChromeVox“ o, n ir sužinokite, kas nauja</translation>

@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Прашувај пред да им дозволиш на сајтовите да создадат 3D-карта на опкружувањето или да ја следат позицијата на камерата (препорачано)</translation>
 <translation id="2212565012507486665">Дозволи колачиња</translation>
 <translation id="2228071138934252756">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата камера, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Блокирани се колачиња од трети страни</translation>
 <translation id="2238944249568001759">Предложени пребарувања според вашата последна картичка</translation>
 <translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2253414712144136228">Отстранете <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Камерата е исклучена во поставките за Android</translation>
 <translation id="5706552988683188916">Ова ги брише колачињата и другите податоците од сајтот за <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Ова ќе ги избрише сите податоци и колачиња складирани од сајтот <ph name="ORIGIN" /> или од неговата апликација на почетниот екран.</translation>
+<translation id="5723967018671998714">Колачињата од трети страни се блокирани во режим инкогнито</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> е блокирана</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5860033963881614850">Исклучено</translation>

@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Demander avant d'autoriser les sites à créer une carte 3D de votre environnement ou à faire le suivi de la position de l'appareil photo (recommandé)</translation>
 <translation id="2212565012507486665">Autoriser les témoins</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre appareil photo, activez aussi celui-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2238944249568001759">Recherches suggérées en fonction de votre dernier onglet</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2253414712144136228">Retirer l'élément suivant : <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">L'appareil photo est désactivé dans les paramètres d'Android</translation>
 <translation id="5706552988683188916">Cette opération supprime les témoins et les autres données relatives aux sites pour <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Cette action entraînera la suppression de l'ensemble des données et des témoins stockés par <ph name="ORIGIN" /> ou son application installée sur votre écran d'accueil.</translation>
+<translation id="5723967018671998714">Les témoins tiers sont bloqués en mode de navigation privée</translation>
 <translation id="5771720122942595109">Autorisation <ph name="PERMISSION_1" /> bloquée</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5860033963881614850">Désactivé</translation>

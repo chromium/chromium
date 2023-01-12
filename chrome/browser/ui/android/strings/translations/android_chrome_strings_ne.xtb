@@ -728,7 +728,6 @@
 <translation id="4991110219272367918">कुनै वेबसाइट अनुमोदन गर्ने वा नगर्ने विकल्प बन्द गरिएको छ</translation>
 <translation id="499724277181351974">नेभिगेट गर्नुहोस्: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">यहाँ क्लिक गरी यो साइट फलो गर्नुहोस्</translation>
-<translation id="500351648694011114">अझ सजिलैसँग ब्राउज गर्नुहोस्</translation>
 <translation id="5004416275253351869">Google का क्रियाकलापसम्बन्धी नियन्त्रणहरू</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> जडान गर्न चाहन्छ</translation>
@@ -881,7 +880,6 @@
 <translation id="5864419784173784555">अर्को डाउनलोडको प्रतीक्षा गर्दै…</translation>
 <translation id="5865733239029070421">प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः Google मा पठाउँछ</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
-<translation id="5869789175361934029">अर्को डिभाइसमार्फत जारी राख्नुहोस्</translation>
 <translation id="5876496397064130037">कार्य सुचारु गरिएको छ</translation>
 <translation id="587735546353481577">आफूले चाहेको साइट फलो गर्न उक्त साइटमा जानुहोस्, Chrome मेनु खोल्नुहोस् र 'फलो गर्नुहोस्' मा ट्याप गर्नुहोस्।</translation>
 <translation id="5879072387416556377">अझ राम्रा सुझावहरू प्राप्त गर्नुहोस्</translation>
@@ -945,6 +943,7 @@
 <translation id="6277722725779679269">ट्रयाक गरिएको मूल्य बदल्न सकिएन</translation>
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6294610283659775533">तपाईं उही Google खातामार्फत साइन इन गरिएका एउटा डिभाइसबाट अर्को डिभाइसमा ट्याबहरू पठाउन सक्नुहुन्छ</translation>
+<translation id="6295158916970320988">सबै साइटहरू</translation>
 <translation id="6297765934698848803">तपाईंको डिभाइसको व्यवस्थापन गर्ने सङ्गठनले तपाईंको डिभाइसको क्यामेरा निष्क्रिय पारेको छ।</translation>
 <translation id="6301525844455696527">आफ्नो अध्ययन सूची हेर्न नभुल्नुहोस्</translation>
 <translation id="6303969859164067831">साइन आउट गरी सिंक प्रक्रिया निष्क्रिय पार्नुहोस्</translation>
@@ -1515,7 +1514,6 @@
 <translation id="96681097142096641">सरलीकृत पेज हेर्ने हो?</translation>
 <translation id="968900484120156207">तपाईंले हेर्नुभएका पृष्ठहरू यहाँ देखिन्छन्</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनेट बाँकी छ</translation>
-<translation id="978443947993957527">सबैभन्दा सान्दर्भिक सामग्री हेर्नुहोस्</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="983192555821071799">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="987264212798334818">सामान्य</translation>

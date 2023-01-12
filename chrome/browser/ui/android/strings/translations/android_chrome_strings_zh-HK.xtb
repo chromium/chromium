@@ -729,7 +729,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4991110219272367918">核准或者唔核准網站嘅選項閂咗</translation>
 <translation id="499724277181351974">導覽：<ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">按一下這裡追蹤此網站</translation>
-<translation id="500351648694011114">讓瀏覽變得更輕鬆</translation>
 <translation id="5004416275253351869">Google 活動控制項</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
@@ -882,7 +881,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5864419784173784555">正在等待其他下載程序完成…</translation>
 <translation id="5865733239029070421">自動將使用情況統計和當機報告傳送給 Google</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
-<translation id="5869789175361934029">透過其他裝置繼續瀏覽</translation>
 <translation id="5876496397064130037">工作階段已重新啟用</translation>
 <translation id="587735546353481577">如要追蹤網站，只要前往該網站並開啟 Chrome 選單，然後輕按 [追蹤] 即可。</translation>
 <translation id="5879072387416556377">取得更切題的建議</translation>
@@ -946,6 +944,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6277722725779679269">無法更新追蹤價格</translation>
 <translation id="6278428485366576908">主題背景</translation>
 <translation id="6294610283659775533">您可在已登入同一個 Google 帳戶的裝置之間傳送分頁</translation>
+<translation id="6295158916970320988">所有網站</translation>
 <translation id="6297765934698848803">管理您裝置的機構已關閉攝錄機。</translation>
 <translation id="6301525844455696527">追上您的閱讀清單</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
@@ -1516,7 +1515,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>
 <translation id="968900484120156207">您瀏覽的網頁會在這裡顯示</translation>
 <translation id="970715775301869095">尚餘 <ph name="MINUTES" /> 分鐘</translation>
-<translation id="978443947993957527">查看為您精選的內容</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="987264212798334818">一般</translation>

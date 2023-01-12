@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Сайтуудад таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянахыг зөвшөөрөхийн өмнө асуух (санал болгосон)</translation>
 <translation id="2212565012507486665">Күүкиг зөвшөөрөх</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />-д камертаа хандахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
+<translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="2238944249568001759">Таны сүүлийн табд тулгуурласан санал болгосон хайлтууд</translation>
 <translation id="2241634353105152135">Ганц удаа</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />-г хасах</translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">Дэвсгэрт синк хийх</translation>
 <translation id="3763247130972274048">10 секунд алгасахын тулд видеоны зүүн эсвэл баруун талд хоёр товшино уу</translation>
 <translation id="3797520601150691162">Тодорхой сайтад бараан загварыг бүү ашигла</translation>
+<translation id="3803367742635802571">Таны зочилсон сайтууд зориулалтынхаа дагуу ажиллахаа больж магадгүй</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Утасны дугаар</translation>
 <translation id="3826050100957962900">Гуравдагч талын нэвтрэлт</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" />-д таны микрофонд хандахыг зөвшөөрөхийн тулд микрофоныг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="4566417217121906555">Микрофоны дууг хаах</translation>
 <translation id="4570913071927164677">Дэлгэрэнгүй</translation>
+<translation id="4598549027014564149">Нууцлалтай горимд байх үед сайтууд таны күүкиг сайтууд, тэр байтугай холбогдох сайтууд дээрх хөтчийн үйл ажиллагааг тань харахад ашиглах боломжгүй. Таны хөтчийн үйл ажиллагааг зар хувийн болгох зэрэг зүйлсэд ашигладаггүй. Зарим сайтын онцлогууд ажиллахгүй байж магадгүй.</translation>
 <translation id="4645575059429386691">Эцэг, эх нь хариуцаж байна</translation>
 <translation id="4670064810192446073">Виртуал бодит байдал</translation>
 <translation id="4751476147751820511">Хөдөлгөөн эсвэл гэрэл мэдрэгч</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">Камерыг Android тохиргоо хэсэгт унтраасан байна</translation>
 <translation id="5706552988683188916">Энэ нь <ph name="WEBSITE" />-н күүки болон сайтын бусад өгөгдлийг устгана</translation>
 <translation id="5719847187258001597">Энэ нь <ph name="ORIGIN" /> эсвэл таны Үндсэн нүүрэн дээрх үүний аппаас хадгалсан бүх өгөгдөл болон күүкиг арилгана.</translation>
+<translation id="5723967018671998714">Гуравдагч талын күүкиг нууцлалтай горимд блоклодог</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />-г блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">Сайтыг попап болон дахин чиглүүлэлтийг харуулахаас блоклох (санал болгосон)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> килобайт</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
+<translation id="7188508872042490670">Төхөөрөмж дээрх сайтын өгөгдөл</translation>
 <translation id="7203150201908454328">Өргөтгөсөн</translation>
 <translation id="723171743924126238">Зураг сонгох</translation>
 <translation id="7243308994586599757">Дэлгэцийн доод хэсэгт сонголт боломжтой</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="848952951823693243">Үргэлж мобайл сайтын хүсэлт тавих</translation>
 <translation id="8499083585497694743">Микрофоны дууг нээх</translation>
+<translation id="8514955299594277296">Сайтуудад таны төхөөрөмж дээр өгөгдөл хадгалахыг бүү зөвшөөр (санал болгодоггүй)</translation>
 <translation id="851751545965956758">Сайтуудыг төхөөрөмжүүдэд холбогдохыг нь блоклох</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}other{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}}</translation>

@@ -4903,7 +4903,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5493792505296048976">ekraan on sees</translation>
 <translation id="5494016731375030300">Hiljuti suletud vahelehed</translation>
 <translation id="5494362494988149300">Ava, kui on &amp;valmis</translation>
-<translation id="5494752089476963479">Blokeeri reklaamid saitidel, mis kuvavad sekkuvaid või eksitavaid reklaame</translation>
 <translation id="5495466433285976480">See eemaldab pärast taaskäivitamist kõik kohalikud kasutajad, failid, andmed ja muud seaded. Kõik kasutajad peavad uuesti sisse logima.</translation>
 <translation id="5495597166260341369">Ära lülita ekraani välja</translation>
 <translation id="5496587651328244253">Korraldamine</translation>
@@ -5808,7 +5807,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6335920438823100346">Linuxi käivitamiseks nõuab <ph name="MANAGER" />, et varundaksite oma andmed ja lähtestaksite selle Chromebooki tehaseseadetele.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> keelas ADB silumise. See lähtestab 24 tunni jooksul teie seadme <ph name="DEVICE_TYPE" />. Varundage kõik failid, mille soovite säilitada.</translation>
 <translation id="6338968693068997776">USB-seadme lisamine</translation>
-<translation id="6338981933082930623">Kõik saidid saavad teile kuvada mis tahes reklaame</translation>
 <translation id="6339668969738228384">Loo e-posti aadressile <ph name="USER_EMAIL_ADDRESS" /> uus profiil</translation>
 <translation id="6340071272923955280">Interneti prindiprotokoll (IPPS)</translation>
 <translation id="6340526405444716530">Isikupärastamine</translation>

@@ -1447,6 +1447,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2280486287150724112">Lề phải</translation>
 <translation id="2281863813036651454">Nhấn chuột trái</translation>
 <translation id="2282146716419988068">Quá trình GPU</translation>
+<translation id="228293613124499805">Hầu hết trang web bạn truy cập có thể sẽ lưu dữ liệu vào thiết bị, thường là để cải thiện trải nghiệm của bạn bằng cách lưu các lựa chọn ưu tiên hoặc thông tin mà bạn chia sẻ với trang web. Chúng tôi khuyên bạn luôn bật chế độ cài đặt này.</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Mở tất cả trong &amp;nhóm thẻ mới}=1{Mở trong &amp;nhóm thẻ mới}other{Mở tất cả ({COUNT}) trong &amp;nhóm thẻ mới}}</translation>
 <translation id="2285942871162473373">Không thể nhận dạng vân tay của bạn. Hãy thử lại.</translation>
 <translation id="2287944065963043964">Màn hình đăng nhập</translation>
@@ -2889,6 +2890,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3603622770190368340">Nhận chứng chỉ mạng</translation>
 <translation id="3605780360466892872">Doanh nhân</translation>
 <translation id="3609277884604412258">Tìm kiếm nhanh</translation>
+<translation id="3610241585790874201">Không được phép lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="3610369246614755442">Quạt của đế sạc cần được bảo dưỡng</translation>
 <translation id="361106536627977100">Dữ liệu Flash</translation>
 <translation id="3611655097742243705">Hãy truy cập vào Cửa hàng Play để tìm thêm các ứng dụng khác</translation>
@@ -3112,6 +3114,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3802486193901166966">Tiện ích này không yêu cầu quyền đặc biệt nào cũng như không có thêm quyền truy cập nào vào trang web</translation>
 <translation id="380329542618494757">Tên</translation>
 <translation id="3803345858388753269">Chất lượng video</translation>
+<translation id="3803367742635802571">Các trang web bạn truy cập có thể không còn hoạt động như dự kiến</translation>
 <translation id="380408572480438692">Việc bật tính năng thu thập dữ liệu hoạt động sẽ giúp Google liên tục cải thiện hệ thống. Không dữ liệu nào được gửi cho tới khi bạn gửi báo cáo phản hồi (Alt-Shift-I) và cung cấp dữ liệu hoạt động. Bạn có thể quay lại màn hình này để tắt tính năng thu thập bất kỳ lúc nào.</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (ID tiện ích "<ph name="EXTENSION_ID" />") không được cho phép trên màn hình đăng nhập.</translation>
 <translation id="3807747707162121253">&amp;Huỷ</translation>
@@ -3972,6 +3975,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4595560905247879544">Chỉ người quản lý mới có thể sửa đổi ứng dụng và tiện ích (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Bạn có các chứng chỉ trên tệp có thể nhận dạng các máy chủ này</translation>
 <translation id="4598345735110653698">Quản lý mã xác thực</translation>
+<translation id="4598549027014564149">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web, ngay cả các trang web có liên quan. Hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
 <translation id="4598556348158889687">Quản lý bộ nhớ</translation>
 <translation id="4598776695426288251">Wi-Fi khả dụng qua nhiều thiết bị</translation>
 <translation id="4600071396330666617">Số ý kiến đề xuất</translation>
@@ -4137,6 +4141,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4750185073185658673">Mở điện thoại để xem xét thêm một số quyền khác. Hãy nhớ bật Bluetooth và Wi-Fi trên điện thoại.</translation>
 <translation id="4750394297954878236">Đề xuất</translation>
 <translation id="475088594373173692">Người dùng đầu tiên</translation>
+<translation id="4756302371612574303">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để hoạt động như bạn mong muốn – ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
 <translation id="4756378406049221019">Dừng/Tải lại</translation>
 <translation id="4756388243121344051">&amp;Lịch sử</translation>
 <translation id="4756671452988984333">Chuyển văn bản thành âm thanh</translation>
@@ -4477,6 +4482,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="508059534790499809">Làm mới vé Kerberos</translation>
 <translation id="5081960376148623587">Chọn có tải trước trang hay không</translation>
 <translation id="5084328598860513926">Quy trình cấp phép bị gián đoạn. Vui lòng thử lại hoặc liên hệ với quản trị viên hay chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
+<translation id="5084622689760736648">Các trang web có nhiều khả năng hoạt động như mong đợi</translation>
 <translation id="5085162214018721575">Đang kiểm tra bản cập nhật</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
@@ -4913,7 +4919,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5493792505296048976">màn hình bật</translation>
 <translation id="5494016731375030300">Thẻ đóng gần đây</translation>
 <translation id="5494362494988149300">Mở Khi &amp;Hoàn tất</translation>
-<translation id="5494752089476963479">Chặn quảng cáo trên các trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
 <translation id="5495466433285976480">Quá trình này sẽ xóa tất cả dữ liệu, tệp, người dùng trên máy và các cài đặt khác sau khi bạn khởi động lại vào lần kế tiếp. Tất cả người dùng sẽ cần đăng nhập lại.</translation>
 <translation id="5495597166260341369">Luôn bật màn hình</translation>
 <translation id="5496587651328244253">Tổ chức</translation>
@@ -5818,7 +5823,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6335920438823100346">Để khởi động Linux, <ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và đặt lại thiết bị Chromebook này về trạng thái cài đặt ban đầu.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> đã tắt tùy chọn gỡ lỗi ADB. Thao tác này sẽ đặt lại <ph name="DEVICE_TYPE" /> của bạn sau 24 giờ nữa. Hãy sao lưu mọi tệp bạn muốn giữ lại.</translation>
 <translation id="6338968693068997776">Thêm thiết bị USB</translation>
-<translation id="6338981933082930623">Mọi trang web đều có thể hiển thị quảng cáo bất kỳ cho bạn</translation>
 <translation id="6339668969738228384">Tạo hồ sơ mới cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Giao thức in qua Internet (IPPS)</translation>
 <translation id="6340526405444716530">Cá nhân hóa</translation>
@@ -5883,6 +5887,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6406303162637086258">Mô phỏng khởi động lại trình duyệt</translation>
 <translation id="6406506848690869874">Đồng bộ hóa</translation>
 <translation id="6406708970972405507">Cài đặt - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">Được phép lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="6408118934673775994">Đọc và thay đổi dữ liệu của bạn trên <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> và <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Tệp hình ảnh</translation>
 <translation id="6410328738210026208">Thay đổi kênh và Powerwash</translation>
@@ -6696,6 +6701,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7141105143012495934">Đăng nhập không thành công vì không thể truy xuất chi tiết tài khoản của bạn. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
 <translation id="7141844554192012199">Kiểm tra</translation>
 <translation id="7144878232160441200">Thử lại</translation>
+<translation id="7148426638542880639">Các trang web có thể không hoạt động như mong đợi. Chọn tuỳ chọn này nếu bạn không muốn lưu thông tin về trang web bạn truy cập trên thiết bị của mình.</translation>
 <translation id="7149839598364933473">Chuyển đổi thiết bị này thành thiết bị <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 giờ qua</translation>
 <translation id="7152478047064750137">Tiện ích này không yêu cầu quyền đặc biệt</translation>
@@ -6728,6 +6734,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7186088072322679094">Giữ trong thanh công cụ</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> không thể mở thư mục này vì thư mục này chứa tệp hệ thống</translation>
 <translation id="7187428571767585875">Các mục sổ đăng ký sẽ bị xóa hoặc thay đổi:</translation>
+<translation id="7188508872042490670">Dữ liệu trang web trên thiết bị</translation>
 <translation id="7189234443051076392">Hãy đảm bảo thiết bị của bạn có đủ dung lượng</translation>
 <translation id="7189451821249468368">Bạn không có đủ bản nâng cấp để đăng ký thiết bị này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm. Nếu bạn nhận được thư này do nhầm lẫn, vui lòng liên hệ với nhóm hỗ trợ.</translation>
 <translation id="7189965711416741966">Đã thêm vân tay.</translation>
@@ -6972,7 +6979,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7419565702166471774">Luôn sử dụng kết nối an toàn</translation>
 <translation id="742130257665691897">Đã xóa dấu trang</translation>
 <translation id="7421925624202799674">&amp;Xem Nguồn Trang</translation>
-<translation id="7422192691352527311">Tùy chọn...</translation>
+<translation id="7422192691352527311">Lựa chọn ưu tiên...</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423425410216218516">Chế độ hiển thị này sẽ bật trong <ph name="MINUTES" /> phút</translation>
 <translation id="7423513079490750513">Xóa <ph name="INPUT_METHOD_NAME" /></translation>
@@ -7001,6 +7008,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7444970023873202833">Khám phá thêm về những kỷ niệm của bạn trong Google Photos</translation>
 <translation id="7444983668544353857">Vô hiệu hóa <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Tự động cài đặt ứng dụng</translation>
+<translation id="7448664748118305024">Xoá dữ liệu mà các trang web đã lưu vào thiết bị của bạn khi bạn đóng tất cả cửa sổ</translation>
 <translation id="7449381494541372002">đang khởi động…</translation>
 <translation id="7449752890690775568">Xóa mật khẩu?</translation>
 <translation id="7450761244949417357">Hiện đang mở trong <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -8179,6 +8187,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="851263357009351303">Luôn cho phép <ph name="HOST" /> hiển thị hình ảnh</translation>
 <translation id="8513108775083588393">Tự động xoay</translation>
 <translation id="8514746246728959655">Thử một khóa bảo mật khác</translation>
+<translation id="8514955299594277296">Không cho phép các trang web lưu dữ liệu trên thiết bị của bạn (không khuyến nghị)</translation>
 <translation id="8519895319663397036">Không nhập được mật khẩu. Tệp cần có kích thước dưới 150 KB.</translation>
 <translation id="8523493869875972733">Lưu thay đổi</translation>
 <translation id="8523849605371521713">Được thêm bởi chính sách</translation>
@@ -8623,6 +8632,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8925458182817574960">&amp;Cài đặt</translation>
 <translation id="8926389886865778422">Đừng hỏi lại</translation>
 <translation id="892706138619340876">Đã đặt lại một số cài đặt</translation>
+<translation id="8927438609932588163">Cho phép các trang web lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="8929696694736010839">Chỉ phiên truy cập Ẩn danh hiện tại</translation>
 <translation id="8930351635855238750">Cài đặt cookie mới sẽ có hiệu lực sau khi tải lại trang</translation>
 <translation id="8930622219860340959">Không dây</translation>

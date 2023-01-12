@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">אין עוד לחצנים</translation>
 <translation id="2911433807131383493">‏פתיחת המדריך של ChromeVox</translation>
 <translation id="2912405967290226587">החלקה ימינה עם שלוש אצבעות</translation>
+<translation id="2919107550468490321">התכונה 'הפעלה חכמה של ההקשה ביד אחת' פעילה</translation>
 <translation id="2937799153569150791">אין עוד כותרות מרמה 3</translation>
 <translation id="2942710183375260152">כחול אפור כהה</translation>
 <translation id="2943596527105977722">מטה-זהב כהה</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">הורדת גובה הצליל</translation>
 <translation id="3009352964623081324">‏מקש החיפוש + O, ואז S. אפשר להשתמש במקשי הקיצור האלה לצורך התקנה, ניהול והתאמה אישית של קולות.</translation>
 <translation id="3014130421870723208">‏‎@עריכה 8 נק'‎</translation>
+<translation id="3018210433491759145">‏ChromeVox בטעינה</translation>
 <translation id="3030432017085518523">לחצן בחירה של פריט בתפריט</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{גרש}one{# סימני גרש}two{# סימני גרש}other{# סימני גרש}}</translation>
 <translation id="3040901448410802366">סמן התקדמות</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">סרטון</translation>
 <translation id="3813387282697781382">אלמוג בהיר</translation>
 <translation id="3816633764618089385">המדיה הבאה</translation>
+<translation id="3821689185319271077">אין עוגן למצביע</translation>
 <translation id="3840823741487267909">קיצור</translation>
 <translation id="3841319830220785495">קול טבעי בברירת מחדל</translation>
 <translation id="385383972552776628">פתיחת דף האפשרויות</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">טופס</translation>
 <translation id="4601367666219428522">‏טבלה <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">התעלמות מלחיצת המקש הבאה</translation>
+<translation id="4617384941327705512">התכונה 'הפעלה חכמה של ההקשה ביד אחת' מושבתת</translation>
 <translation id="4623097797855662355">קולופון</translation>
 <translation id="4624970070706497034">‏אין יותר ב-TalkBack אפשרויות להתאמה אישית במכשירי Chromebook. עדיין אפשר להשתמש ב-TalkBack, אבל רק עם מקשי קיצור המוגדרים כברירת מחדל. כדי לראות את מקשי הקיצור הזמינים, מקישים על מקש החיפוש + A ואז על K. אם רוצים להמשיך להשתמש ב-TalkBack, מקישים שוב על הפקודה.</translation>
 <translation id="463135993322337640">‏לחיצה על ChromeVox+o+n תציג את העדכונים</translation>

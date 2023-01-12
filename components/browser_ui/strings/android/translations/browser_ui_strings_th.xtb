@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">ถามก่อนที่จะอนุญาตให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง (แนะนำ)</translation>
 <translation id="2212565012507486665">อนุญาตคุกกี้</translation>
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
+<translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2238944249568001759">การค้นหาที่แนะนําโดยอิงจากแท็บล่าสุด</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2253414712144136228">นำ<ph name="NAME_OF_LIST_ITEM" />ออก</translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">ซิงค์ในแบ็กกราวด์</translation>
 <translation id="3763247130972274048">แตะสองครั้งที่ด้านซ้ายหรือขวาของวิดีโอเพื่อข้ามทีละ 10 วินาที</translation>
 <translation id="3797520601150691162">ไม่ใช้ธีมมืดกับบางเว็บไซต์</translation>
+<translation id="3803367742635802571">เว็บไซต์ที่คุณเข้าชมอาจหยุดทำงานตามการตั้งค่า</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" /> <ph name="TYPE_2" /></translation>
 <translation id="381841723434055211">หมายเลขโทรศัพท์</translation>
 <translation id="3826050100957962900">การลงชื่อเข้าใช้ของบุคคลที่สาม</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงไมโครโฟน ให้เปิดใช้ไมโครโฟนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="4566417217121906555">ปิดเสียงไมโครโฟน</translation>
 <translation id="4570913071927164677">รายละเอียด</translation>
+<translation id="4598549027014564149">ขณะอยู่ในโหมดไม่ระบุตัวตน เว็บไซต์ไม่สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ แม้กระทั่งเว็บไซต์ที่เกี่ยวข้อง ระบบจะไม่ใช้กิจกรรมการท่องเว็บเพื่อวัตถุประสงค์ต่างๆ เช่น การปรับโฆษณาตามโปรไฟล์ของผู้ใช้ ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="4645575059429386691">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
 <translation id="4751476147751820511">เซ็นเซอร์จับความเคลื่อนไหวหรือเซ็นเซอร์แสง</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">กล้องปิดอยู่ในการตั้งค่า Android</translation>
 <translation id="5706552988683188916">การดำเนินการนี้จะลบคุกกี้และข้อมูลเว็บไซต์อื่นๆ ของ <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> หรือแอปที่อยู่ในหน้าจอหลักจัดเก็บไว้</translation>
+<translation id="5723967018671998714">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตนอยู่</translation>
 <translation id="5771720122942595109">บล็อก<ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
 <translation id="5860033963881614850">ปิด</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">บล็อกเว็บไซต์ไม่ให้แสดงป๊อปอัปและการเปลี่ยนเส้นทาง (แนะนำ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
+<translation id="7188508872042490670">ข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="7203150201908454328">ขยาย</translation>
 <translation id="723171743924126238">เลือกภาพ</translation>
 <translation id="7243308994586599757">มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="848952951823693243">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่เสมอ</translation>
 <translation id="8499083585497694743">เปิดเสียงไมโครโฟน</translation>
+<translation id="8514955299594277296">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลลงในอุปกรณ์ (ไม่แนะนำ)</translation>
 <translation id="851751545965956758">บล็อกเว็บไซต์ไม่ให้เชื่อมต่อกับอุปกรณ์</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}}</translation>

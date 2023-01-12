@@ -729,7 +729,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4991110219272367918">Opzione per approvare o meno un sito web chiuso</translation>
 <translation id="499724277181351974">Vai: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Segui questo sito qui</translation>
-<translation id="500351648694011114">Naviga più facilmente</translation>
 <translation id="5004416275253351869">Gestione attività Google</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5011311129201317034">Il sito <ph name="SITE" /> desidera collegarsi</translation>
@@ -882,7 +881,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5864419784173784555">In attesa di un altro download…</translation>
 <translation id="5865733239029070421">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="5869522115854928033">Password salvate</translation>
-<translation id="5869789175361934029">Continua da un altro dispositivo</translation>
 <translation id="5876496397064130037">Attività ripresa</translation>
 <translation id="587735546353481577">Per seguire un sito, aprilo, vai al menu Chrome e tocca Segui.</translation>
 <translation id="5879072387416556377">Ricevi suggerimenti migliori</translation>
@@ -946,6 +944,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6277722725779679269">Impossibile aggiornare Monitora prezzo</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Puoi inviare schede tra dispositivi su cui è stato eseguito l'accesso con lo stesso Account Google</translation>
+<translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6297765934698848803">L'organizzazione che gestisce il tuo dispositivo ha disattivato la fotocamera.</translation>
 <translation id="6301525844455696527">Non dimenticarti il tuo elenco di lettura</translation>
 <translation id="6303969859164067831">Esci e disattiva la sincronizzazione</translation>
@@ -1516,7 +1515,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="96681097142096641">Vuoi visualizzare la pagina semplificata?</translation>
 <translation id="968900484120156207">Le pagine visitate saranno mostrate qui</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>
-<translation id="978443947993957527">Visualizza contenuti personalizzati</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>
 <translation id="987264212798334818">Generali</translation>

@@ -4901,7 +4901,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5493792505296048976">ekran je uključen</translation>
 <translation id="5494016731375030300">Nedavno zatvorene kartice</translation>
 <translation id="5494362494988149300">Otvori kada bude &amp;dovršeno</translation>
-<translation id="5494752089476963479">Blokiraj oglase na sajtovima koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
 <translation id="5495466433285976480">Ovim ćete ukloniti sve lokalne korisnike, datoteke, podatke i druga podešavanja posle sledećeg ponovnog pokretanja. Svi korisnici će morati ponovo da se prijave.</translation>
 <translation id="5495597166260341369">Kada je ekran uključen</translation>
 <translation id="5496587651328244253">Organizovanje</translation>
@@ -5807,7 +5806,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6335920438823100346">Da biste pokrenuli Linux, <ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i resetujete ovaj Chromebook na fabrička podešavanja.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> je onemogućio ADB otklanjanje grešaka. To će resetovati <ph name="DEVICE_TYPE" /> za 24 sata. Napravite rezervne kopije svih fajlova koje želite da zadržite.</translation>
 <translation id="6338968693068997776">Dodajte USB uređaj</translation>
-<translation id="6338981933082930623">Svi sajtovi mogu da prikazuju sve oglase</translation>
 <translation id="6339668969738228384">Otvori novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet protokol za štampanje (IPPS)</translation>
 <translation id="6340526405444716530">Personalizacija</translation>

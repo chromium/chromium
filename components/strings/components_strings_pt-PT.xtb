@@ -162,6 +162,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1337692097987160377">Partilhar este separador</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>
 <translation id="1340482604681802745">Endereço de recolha</translation>
+<translation id="1343356790768851700">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1348198688976932919">O site que pretende visitar contém aplicações perigosas</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
@@ -273,6 +274,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1583429793053364125">Ocorreu um erro ao apresentar esta página Web.</translation>
 <translation id="1586541204584340881">As extensões que instalou.</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589286740290249903"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> os tópicos de anúncios baseiam-se no seu histórico de navegação recente, uma lista dos sites que visitou através do Chrome neste dispositivo.</translation>
 <translation id="1592005682883173041">Acesso aos dados locais</translation>
 <translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Escolher</translation>
@@ -311,6 +313,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1682696192498422849">Margem estreita primeiro</translation>
 <translation id="168693727862418163">Ocorreu um erro na validação desta política em relação ao respetivo esquema e a mesma será ignorada.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave criptográfica fraca.</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> o Chrome apaga automaticamente os tópicos com mais de 4 semanas. Enquanto navega, um tópico pode voltar a ser apresentado na lista. Também pode bloquear tópicos que não quer que o Chrome partilhe com sites e desativar os tópicos de anúncios em qualquer altura nas definições do Chrome.</translation>
 <translation id="1697532407822776718">O processo está concluído!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -340,6 +343,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1736420071277903564">Computador</translation>
 <translation id="1740951997222943430">Introduza um mês de expiração válido</translation>
 <translation id="1741613555002899862">A política tem de ser especificada, bem como uma string válida quando a DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> o Chrome regista tópicos de interesse à medida que navega. As etiquetas de tópicos são predefinidas e incluem, por exemplo, Arte e entretenimento, Compras e Desporto. Posteriormente, um site que visitar pode pedir ao Chrome alguns dos seus tópicos (mas não o seu histórico de navegação) para personalizar os anúncios que vê.</translation>
 <translation id="1745880797583122200">O seu navegador é gerido</translation>
 <translation id="1746113442205726301">Turno Y da imagem</translation>
 <translation id="1746531169546376413">0 graus</translation>
@@ -402,7 +406,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="191374271204266022">Copiar como JSON</translation>
 <translation id="1914326953223720820">Serviço de descompressão de ficheiros</translation>
 <translation id="1916770123977586577">Para aplicar as definições atualizadas a este site, atualize esta página</translation>
-<translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Obter ajuda relativamente a uma mensagem de erro específica</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}other{# sites}}</translation>
@@ -431,6 +434,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> pretende armazenar permanentemente dados de grandes dimensões no seu computador local.</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e mais 1}other{e mais #}}</translation>
+<translation id="2002436619517051938">Pode fazer alterações nas definições do Chrome.</translation>
 <translation id="2003709556000175978">Repor a palavra-passe agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="201174227998721785">Faça a gestão das autorizações e dos dados armazenados em sites nas Definições do Chrome.</translation>
@@ -453,6 +457,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="205212645995975601">Churrascos e grelhados</translation>
 <translation id="2053111141626950936">As páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}=1{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}other{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
+<translation id="2056658168519009885">Os sites podem pedir informações ao Chrome para ajudar a personalizar os anúncios que vê.</translation>
 <translation id="2059202684901022309">22 x 34 pol.</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}other{# sugestões}}</translation>
 <translation id="2066915425250589881">pedir para eliminar</translation>
@@ -672,6 +677,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="262745152991669301">Pode solicitar a ligação a dispositivos USB</translation>
 <translation id="2629325967560697240">Para obter o nível de segurança mais elevado do Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ative a proteção melhorada<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
+<translation id="2639227409413857192">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
 <translation id="2639739919103226564">Estado:</translation>
 <translation id="2643134278432436513">Cuidados capilares</translation>
 <translation id="2647852283046201479">Jogos de estratégia</translation>
@@ -813,6 +819,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3016780570757425217">Conhecer a sua localização</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, prima Tab e, em seguida Enter para remover a sugestão.</translation>
+<translation id="3023165109041533893">Os anúncios sugeridos por sites ajudam a proteger o seu histórico de navegação e identidade, ao mesmo tempo que permitem que os sites lhe mostrem anúncios relevantes. Com base na sua atividade, um site que visitou pode sugerir anúncios relacionados à medida que continua a navegar. Pode ver uma lista destes sites e bloquear os que não quer nas definições.</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
 <translation id="3029752078111257850">Notícias do mundo</translation>
 <translation id="3037177537145227281">Monitorizar o preço</translation>
@@ -824,6 +831,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="306573536155379004">Jogo iniciado.</translation>
 <translation id="3068991664510324412">Videojogos e jogos de computador</translation>
 <translation id="3080254622891793721">Gráfico</translation>
+<translation id="3081538120861307764">Para medir o desempenho de um anúncio, são partilhados tipos de dados limitados entre sites, como a hora do dia em que um anúncio lhe foi mostrado.</translation>
 <translation id="3082007635241601060">Permita que a Google use os seus carrinhos para encontrar descontos personalizados quando estiverem disponíveis</translation>
 <translation id="3086579638707268289">A sua atividade na Web está a ser monitorizada</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
@@ -903,6 +911,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente um novo evento no Calendário Google</translation>
 <translation id="3261488570342242926">Saiba mais sobre cartões virtuais</translation>
 <translation id="3264837738038045344">Botão Gerir definições do Chrome, prima Enter para visitar as definições do Chrome</translation>
+<translation id="3266367459139339908">Estamos a lançar novas formas de limitar o que os sites podem saber sobre si quando mostram anúncios personalizados, por exemplo:</translation>
 <translation id="3266793032086590337">Valor (em conflito)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nenhum site bloqueado, incluindo sites relacionados}=1{1 site bloqueado, incluindo sites relacionados}other{# sites bloqueados, incluindo sites relacionados}}</translation>
 <translation id="3268451620468152448">Separadores abertos</translation>
@@ -925,7 +934,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">A palavra-passe que acabou de usar foi encontrada numa violação de dados. O Gestor de Palavras-passe recomenda que altere esta palavra-passe agora.</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
-<translation id="3308738399950580893">anúncios</translation>
 <translation id="3320021301628644560">Adicionar endereço de faturação</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmesim</translation>
@@ -935,6 +943,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3339440062908617027">Corrida e marcha</translation>
 <translation id="3339446062576134663">Nuvem (Ash)</translation>
 <translation id="3340978935015468852">definições</translation>
+<translation id="3342018947887487892">Posteriormente, um site que visitar pode pedir estas informações, quer sejam os tópicos de anúncios ou os anúncios sugeridos por sites que visitou.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
 <translation id="3345782426586609320">Olhos</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1062,6 +1071,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3634530185120165534">Tabuleiro 5</translation>
 <translation id="3634567936866541746">Acabou de introduzir a sua palavra-passe num site fraudulento. Para proteger as suas contas, o Chrome recomenda verificar as palavras-passe guardadas.</translation>
 <translation id="3642638418806704195">Aplicação:</translation>
+<translation id="3646643500201740985">Medir o desempenho de um anúncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URLs tem de conter entre 1 e 2 URLs.</translation>
 <translation id="3650584904733503804">Validação com êxito</translation>
 <translation id="3653033846669030038">Parques temáticos</translation>
@@ -1079,6 +1089,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3678342917559046352">Extensão inválida: esperava-se que o valor tivesse um dos seguintes formatos: &lt;extension_id&gt; ou &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Abrir a página numa nova janela de navegação anónima (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
+<translation id="3681421644246505351">O Chrome regista tópicos de interesse com base no seu histórico de navegação recente.</translation>
 <translation id="3693327506115126094">Escolha como irá validar a sua identidade</translation>
 <translation id="3701427423622901115">Reposição confirmada.</translation>
 <translation id="3704162925118123524">A rede que está a utilizar pode exigir que visite a respetivapágina de início de sessão.</translation>
@@ -1163,6 +1174,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3911401144270344103">Pode mudar de ideias em qualquer altura nas definições do Chrome</translation>
 <translation id="3921869355029467742">Introduzir o código de segurança</translation>
 <translation id="3927932062596804919">Recusar</translation>
 <translation id="393316646445601645">Internet e telecomunicações</translation>
@@ -1190,6 +1202,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Separar conjuntos</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
+<translation id="399952081411886534">Outras funcionalidades que tornam os anúncios mais privados</translation>
 <translation id="4006465311664329701">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
 <translation id="4009243425692662128">O conteúdo das páginas que imprime é enviado para o Google Cloud ou terceiros para análise. Por exemplo, pode ser analisado quanto a dados confidenciais.</translation>
 <translation id="4010758435855888356">Permitir o acesso ao armazenamento?</translation>
@@ -1207,6 +1220,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4063924980214801036">Usar o desbloqueio do dispositivo para confirmar os cartões mais rapidamente</translation>
 <translation id="4067098466788473230">Subsídios e bolsas para estudantes</translation>
 <translation id="4067947977115446013">Adicionar endereço válido</translation>
+<translation id="4070790659619547722">Com a medição de anúncios, são partilhados tipos de dados limitados entre sites para medir o desempenho dos respetivos anúncios, como a hora do dia em que um anúncio lhe foi mostrado.</translation>
 <translation id="4072193657607981494">A carregar políticas…</translation>
 <translation id="4072486802667267160">Ocorreu um erro ao processar a sua encomenda. Tente novamente.</translation>
 <translation id="4073376909608563327">Não foi possível usar o desbloqueio do dispositivo</translation>
@@ -1314,6 +1328,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o marcador foi removido</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Este cartão foi guardado na sua Conta Google.}other{Estes cartões foram guardados na sua Conta Google.}}</translation>
+<translation id="4287495839370498922">Privacidade de anúncios melhorada no Chrome</translation>
 <translation id="4287885627794386150">Elegível para avaliação, mas não ativa</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investimentos</translation>
@@ -1394,6 +1409,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="449126573531210296">Encriptar palavras-passe sincronizadas com a sua Conta Google</translation>
 <translation id="4492519888999857993">Estas funcionalidades estão desativadas por predefinição. Não estarão disponíveis em versões futuras do Chrome.</translation>
 <translation id="4493480324863638523">URL inválido. Tem de ser um URL com um esquema padrão, por exemplo, http://example.com ou https://example.com.</translation>
+<translation id="4494323206460475851">Pode ver os tópicos dos anúncios nas definições e bloquear os que não quer partilhar com os sites. O Chrome também apaga automaticamente os tópicos de anúncios com mais de 4 semanas.</translation>
 <translation id="4500587658229086076">conteúdo inseguro</translation>
 <translation id="4506176782989081258">Erro de validação: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Contactar o gestor do sistema</translation>
@@ -1464,6 +1480,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4682496302933121474">Traduzir a página?</translation>
 <translation id="468314109939257734">Veja o número do cartão virtual</translation>
+<translation id="4687718960473379118">Anúncios sugeridos pelo site</translation>
 <translation id="4692623383562244444">Motores de pesquisa</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
@@ -1746,6 +1763,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5337569431717511221">Botão Definir o Chrome como o navegador predefinido: prima Enter para definir o Chrome como o navegador predefinido do sistema</translation>
 <translation id="5340250774223869109">A app está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
+<translation id="5344522958567249764">Gerir privacidade de anúncios</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar-lhe dinheiro</translation>
 <translation id="5347645913823149105">Botão Personalizar tipos de letra no Chrome, prima Enter para personalizar os tipos de letra e os respetivos tamanhos no Chrome</translation>
 <translation id="5355557959165512791">Não pode visitar <ph name="SITE" /> neste momento, porque o certificado foi revogado. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
@@ -1844,6 +1862,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5598944008576757369">Escolher método de pagamento</translation>
 <translation id="560412284261940334">Gestão não suportada</translation>
 <translation id="5605670050355397069">Ledger</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> o Chrome apaga automaticamente os sites com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Também pode impedir que um site lhe sugira anúncios e desativar os anúncios sugeridos em qualquer altura nas definições do Chrome.</translation>
 <translation id="5610142619324316209">Verificar a ligação</translation>
 <translation id="5610807607761827392">Pode gerir cartões e endereços nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
@@ -1982,6 +2001,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="598637245381783098">Não é possível abrir a aplicação de pagamento</translation>
 <translation id="5989320800837274978">Não foram especificados servidores proxy fixos nem um URL de script .pac.</translation>
 <translation id="5992691462791905444">Dobra em Z vertical com margem superior</translation>
+<translation id="5992805036496113940">Veja as informações usadas para lhe mostrar anúncios</translation>
 <translation id="5995727681868049093">Faça a gestão das suas informações, privacidade e segurança na Conta Google</translation>
 <translation id="5997247540087773573">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe da Google recomenda que a altere agora e verifique as suas palavras-passe guardadas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
@@ -2018,6 +2038,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6051221802930200923">Não pode visitar <ph name="SITE" /> neste momento, porque o Website utiliza a afixação de certificados. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
 <translation id="6051898664905071243">Número de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053735090575989697">Saiba mais sobre como a Google protege os seus dados na nossa Política de Privacidade.</translation>
 <translation id="6055888660316801977">Página de credenciais de pagamento seguro sem correspondência com as credenciais</translation>
 <translation id="6058977677006700226">Pretende utilizar os seus cartões em todos os seus dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
@@ -2066,6 +2087,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6203231073485539293">Verificar a ligação à Internet</translation>
+<translation id="6205314730813004066">Privacidade de anúncios</translation>
 <translation id="6212314149070368045">Fanfold dos EUA</translation>
 <translation id="6218753634732582820">Remover o endereço do Chromium?</translation>
 <translation id="622039917539443112">Dobra paralela</translation>
@@ -2156,6 +2178,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Alterar palavra-passe Google</translation>
 <translation id="6431119592588449664">O relatório foi carregado</translation>
+<translation id="6432297414176614592">Mais sobre tópicos de anúncios</translation>
 <translation id="6433490469411711332">Editar informações de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> recusou estabelecer ligação.</translation>
 <translation id="6433797564277305076">Confirme os seus cartões mais rapidamente ao usar o desbloqueio do dispositivo a partir de agora</translation>
@@ -2176,6 +2199,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="646793340882508547">Jogos de aventura</translation>
 <translation id="6468485451923838994">Tipos de letra</translation>
 <translation id="647261751007945333">Políticas do dispositivo</translation>
+<translation id="6475672344094591109">Os sites que visitar podem pedir informações ao Chrome para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome protege a sua privacidade ao limitar as informações que os sites podem partilhar entre si.</translation>
 <translation id="6476284679642588870">Gerir métodos de pagamento</translation>
 <translation id="6486200200930923183">Documentários</translation>
 <translation id="6489534406876378309">Começar a carregar falhas</translation>
@@ -2279,6 +2303,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6786145470008421571">Envelope 6 x 9 pol.</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
+<translation id="6787094689637422836">Estamos a lançar novas funcionalidades de privacidade que lhe dão mais opções sobre os anúncios que vê.</translation>
 <translation id="678982761784843853">IDs de conteúdo protegido</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="679355240208270552">Ignorado porque a pesquisa predefinida não está ativada pela política.</translation>
@@ -2578,6 +2603,7 @@ Detalhes adicionais:
 <translation id="7507075214339298899">Envelope n.º 9</translation>
 <translation id="7508255263130623398">O ID do dispositivo da política devolvido está vazio ou não corresponde ao ID do dispositivo atual</translation>
 <translation id="7508870219247277067">Verde abacate</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Como os sites usam estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chrome sobre conteúdo de que gosta. Por exemplo, se visitar um site relacionado com treinos de maratonas, este pode decidir que tem interesse em ténis de corrida. Mais tarde, se visitar um site diferente, esse site pode mostrar-lhe um anúncio de ténis de corrida sugeridos pelo primeiro site.</translation>
 <translation id="7510269639068718544">Gatos</translation>
 <translation id="7511955381719512146">A rede Wi-Fi que está a utilizar pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Não é possível definir esta política como "True" e obrigatória, por isso, foi alterada para recomendada.</translation>
@@ -2706,11 +2732,13 @@ Detalhes adicionais:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Na mesma ordem, com orientação para cima</translation>
 <translation id="7785790577395078482">este tablet</translation>
+<translation id="7790488044432570133">Os sites que visitar podem pedir ao Chrome informações para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome permite que os sites recolham tipos de dados limitados, como a hora do dia em que um anúncio lhe foi mostrado.</translation>
 <translation id="7791011319128895129">Não lançada</translation>
 <translation id="7791196057686275387">Empacotar</translation>
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798389633136518089">Ignorado porque a política não está definida por uma origem na nuvem.</translation>
 <translation id="7800304661137206267">A ligação é encriptada utilizando <ph name="CIPHER" />, com <ph name="MAC" /> para autenticação de mensagens e <ph name="KX" /> como mecanismo de troca de chaves.</translation>
+<translation id="7800977246388195491">O Chrome regista tópicos de interesse com base no seu histórico de navegação recente. Além disso, os sites que visitar podem determinar o que gosta. Posteriormente, os sites podem pedir estas informações para lhe mostrar anúncios personalizados. Pode escolher os tópicos e os sites que são usados para lhe mostrar anúncios.</translation>
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="7802989406998618639">Introduza o código de segurança de <ph name="NUMBER_OF_DIGITS" /> dígitos <ph name="SIDE_OF_CARD" /> para que o banco possa validar a sua identidade</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
@@ -2992,6 +3020,7 @@ Detalhes adicionais:
 <translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URLs bloqueados e outras políticas aplicadas pelo administrador do sistema.</translation>
 <translation id="8539500321752640291">Permitir 2 autorizações?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
+<translation id="8541410041357371550">Este site obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes</translation>
 <translation id="8542014550340843547">Agrafo triplo na parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Pode <ph name="BEGIN_ERROR_LINK" />comunicar um problema de deteção<ph name="END_ERROR_LINK" /> ou, se compreende os riscos para a sua segurança, <ph name="BEGIN_LINK" />aceda a este site não seguro<ph name="END_LINK" />.</translation>
@@ -3011,7 +3040,9 @@ Detalhes adicionais:
 <translation id="8589998999637048520">Qualidade óptima</translation>
 <translation id="8600271352425265729">Apenas desta vez</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> a sua atividade num site que visita através do Chrome neste dispositivo.</translation>
 <translation id="8606726445206553943">Utilizar os seus dispositivos MIDI</translation>
+<translation id="8606988009912891950">Os tópicos de anúncios ajudam os sites a mostrar-lhe anúncios relevantes enquanto protegem o seu histórico de navegação e identidade. O Chrome pode registar tópicos de interesse com base no seu histórico de navegação recente. Posteriormente, um site que visitar pode pedir ao Chrome tópicos relevantes para personalizar os anúncios que vê.</translation>
 <translation id="8617269623452051934">o uso do dispositivo</translation>
 <translation id="861775596732816396">Tamanho 4</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
@@ -3117,6 +3148,7 @@ Detalhes adicionais:
 <translation id="8876033571432926051">Jogos casuais</translation>
 <translation id="8877780815363510165">Pesca</translation>
 <translation id="8884537526797090108">Não é possível gravar conteúdo confidencial</translation>
+<translation id="8890798179125483517">O Chrome apaga automaticamente os tópicos e os sites que sugerem anúncios com mais de 4 semanas. Em alternativa, pode bloquear tópicos e sites específicos de que não gosta.</translation>
 <translation id="8891727572606052622">Modo de proxy inválido.</translation>
 <translation id="8894794286471754040">Margem larga primeiro</translation>
 <translation id="8897428486789851669">Natação</translation>
@@ -3205,6 +3237,7 @@ Detalhes adicionais:
 <translation id="91108059142052966">A política do administrador desativa a partilha de ecrã com <ph name="APPLICATION_TITLE" /> quando existe conteúdo confidencial visível.</translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="9116548361133462832">Mais sobre os anúncios no Chrome</translation>
 <translation id="9117930699067497412">Moderno</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para retomar o percurso e ver atividade relevante no Histórico do Chrome</translation>
 <translation id="9119042192571987207">Carregado</translation>
@@ -3228,6 +3261,8 @@ Detalhes adicionais:
 <translation id="9155211586651734179">Periféricos de áudio ligados</translation>
 <translation id="9157595877708044936">A configurar...</translation>
 <translation id="9164742147345933553">os://flags</translation>
+<translation id="9165305804774426672">Os sites que visitar também podem determinar o que gosta com base na sua atividade no site. Por exemplo, se visitar um site que venda ténis de corrida de longa distância, este pode decidir que tem interesse em correr maratonas.</translation>
+<translation id="9166851138617700776">Mais sobre os anúncios sugeridos pelo site e a medição de anúncios</translation>
 <translation id="9168814207360376865">Permitir que os sites verifiquem se tem métodos de pagamento guardados</translation>
 <translation id="9169664750068251925">Bloquear sempre neste Website</translation>
 <translation id="9169931577761441333">Adicionar <ph name="APP_NAME" /> ao ecrã principal</translation>
@@ -3272,6 +3307,7 @@ Detalhes adicionais:
 <translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}other{# itens}}</translation>
 <translation id="976522784004777030">5 x 8 pol.</translation>
 <translation id="977502174772294970">Casamentos</translation>
+<translation id="979503328401807348">Anúncios mais úteis</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="982885543310356857">Veículos clássicos</translation>
 <translation id="984275831282074731">Métodos de pagamento</translation>

@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">Нижний экран, с помощью которого можно одобрить или заблокировать сайт, закрыт</translation>
 <translation id="499724277181351974">Переход на сайт "<ph name="WEBSITE_TITLE" />" по адресу <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Подписаться на этот сайт</translation>
-<translation id="500351648694011114">Более удобная работа в браузере</translation>
 <translation id="5004416275253351869">Отслеживание действий в Google</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> запрашивает разрешение на подключение</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">Завершение предыдущего скачивания…</translation>
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
-<translation id="5869789175361934029">Продолжайте на этом устройстве</translation>
 <translation id="5876496397064130037">Задача возобновлена</translation>
 <translation id="587735546353481577">Чтобы подписаться на сайт, откройте его, перейдите в меню Google Chrome и нажмите "Подписаться".</translation>
 <translation id="5879072387416556377">Получайте более точные подсказки</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">Не удалось обновить данные для функции отслеживания цен.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6294610283659775533">Вы можете отправлять вкладки на устройства, на которых выполнен вход в тот же аккаунт Google.</translation>
+<translation id="6295158916970320988">Все сайты</translation>
 <translation id="6297765934698848803">Организация, которая управляет вашим устройством, запретила доступ к камере.</translation>
 <translation id="6301525844455696527">Загляните в свой список для чтения</translation>
 <translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">Посмотреть страницу в упрощенном виде?</translation>
 <translation id="968900484120156207">Здесь будут страницы, которые вы посещали.</translation>
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>
-<translation id="978443947993957527">Материалы для вас</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>
 <translation id="987264212798334818">Общие</translation>

@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可する前に確認します（推奨）</translation>
 <translation id="2212565012507486665">Cookie を許可</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> にカメラへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
+<translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
 <translation id="2238944249568001759">最後のタブに基づく検索キーワードの候補</translation>
 <translation id="2241634353105152135">一回限り</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />　を削除</translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
 <translation id="3797520601150691162">ダークモードを特定のサイトに適用しません</translation>
+<translation id="3803367742635802571">アクセスするサイトが想定どおりに機能しなくなる可能性があります</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
 <translation id="381841723434055211">電話番号</translation>
 <translation id="3826050100957962900">サードパーティのログイン</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
+<translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のカスタマイズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">Android の設定でカメラがオフになっています</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> の Cookie などのサイトデータが削除されます</translation>
 <translation id="5719847187258001597"><ph name="ORIGIN" /> またはホーム画面の同アプリにより保存されたすべてのデータおよび Cookie が削除されます。</translation>
+<translation id="5723967018671998714">シークレット モードでサードパーティの Cookie がブロックされています</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5860033963881614850">オフ</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">サイトでのポップアップ表示とリダイレクトをブロックする（推奨）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">更新</translation>
+<translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7203150201908454328">展開表示中</translation>
 <translation id="723171743924126238">画像を選択</translation>
 <translation id="7243308994586599757">画面の下の方にオプションがあります</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="848952951823693243">常にモバイル版サイトを表示する</translation>
 <translation id="8499083585497694743">マイクのミュートを解除</translation>
+<translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>
 <translation id="851751545965956758">サイトからデバイスへの接続をブロックする</translation>
 <translation id="8525306231823319788">全画面表示</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}other{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}}</translation>

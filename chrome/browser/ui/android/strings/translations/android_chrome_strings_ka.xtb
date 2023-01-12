@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">ვებსაიტის დადასტურების ან უარყოფის ვარიანტი დახურულია</translation>
 <translation id="499724277181351974">ნავიგაცია: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">მიადევნეთ თვალი ამ საიტს აქ</translation>
-<translation id="500351648694011114">დაათვალიერეთ ვები უფრო მარტივად</translation>
 <translation id="5004416275253351869">Google აქტივობის მართვის საშუალებები</translation>
 <translation id="5005498671520578047">პაროლის კოპირება</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> დაკავშირებას ითხოვს</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">სხვა ჩამოტვირთვის მოლოდინში…</translation>
 <translation id="5865733239029070421">ავტომატური აგზავნის Google-ში გამოყენების სტატისტიკასა და შეცდომების ანგარიშებს</translation>
 <translation id="5869522115854928033">შენახული პაროლები</translation>
-<translation id="5869789175361934029">სხვა მოწყობილობიდან გაგრძელება</translation>
 <translation id="5876496397064130037">ამოცანა განახლდა</translation>
 <translation id="587735546353481577">საიტისთვის თვალის მისადევნებლად გადადით საიტზე, გახსენით Chrome-ის მენიუ და შეეხეთ „თვალის მიდევნებას“.</translation>
 <translation id="5879072387416556377">მიიღეთ უკეთესი შემოთავაზებები</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">ფასისთვის თვალის მიდევნება ვერ განახლდა</translation>
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6294610283659775533">სურვილისამებრ, შეგიძლიათ გაცვალოთ ჩანართები იმ მოწყობილობებს შორის, რომლებშიც შესული ხართ ერთი და იგივე Google ანგარიშით</translation>
+<translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6297765934698848803">თქვენი მოწყობილობის მმართველმა ორგანიზაციამ გამორთო თქვენი კამერა.</translation>
 <translation id="6301525844455696527">არ დაგავიწყდეთ თქვენი საკითხავი სია</translation>
 <translation id="6303969859164067831">გამოსვლა და სინქრონიზაციის გამორთვა</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">გსურთ, იხილოთ გამარტივებული გვერდი?</translation>
 <translation id="968900484120156207">აქ გამოჩნდება თქვენ მიერ მონახულებული გვერდები</translation>
 <translation id="970715775301869095">დარჩენილია <ph name="MINUTES" /> წთ</translation>
-<translation id="978443947993957527">იხილეთ თქვენთვის განკუთვნილი კონტენტი</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="983192555821071799">ყველა ჩანართის დახურვა</translation>
 <translation id="987264212798334818">ზოგადი</translation>

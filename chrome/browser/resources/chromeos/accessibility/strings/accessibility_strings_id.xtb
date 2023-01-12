@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Tidak ada tombol berikutnya</translation>
 <translation id="2911433807131383493">Membuka tutorial ChromeVox</translation>
 <translation id="2912405967290226587">Geser tiga jari ke kanan</translation>
+<translation id="2919107550468490321">Mode lekat pintar aktif</translation>
 <translation id="2937799153569150791">Tidak ada judul level 3 berikutnya</translation>
 <translation id="2942710183375260152">Dark Slate Blue</translation>
 <translation id="2943596527105977722">Dark Golden Rod</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Menurunkan tinggi nada</translation>
 <translation id="3009352964623081324">Search + O, lalu S. Gunakan untuk menginstal, mengelola, dan menyesuaikan suara.</translation>
 <translation id="3014130421870723208">@ed 8titik</translation>
+<translation id="3018210433491759145">ChromeVox sedang dimuat</translation>
 <translation id="3030432017085518523">Tombol radio item menu</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}other{# apostrof}}</translation>
 <translation id="3040901448410802366">Indikator kemajuan</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Light Coral</translation>
 <translation id="3816633764618089385">Media berikutnya</translation>
+<translation id="3821689185319271077">Tidak ada anchor pointer</translation>
 <translation id="3840823741487267909">Singkatan</translation>
 <translation id="3841319830220785495">Suara alami default</translation>
 <translation id="385383972552776628">Membuka halaman opsi</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulir</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Mengabaikan penekanan tombol berikutnya</translation>
+<translation id="4617384941327705512">Mode lekat pintar nonaktif</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack tidak lagi mendukung penyesuaian di Chromebook. Anda tetap dapat menggunakan TalkBack, tetapi gunakan pintasan keyboard default-nya. Tekan Penelusuran+A, lalu K untuk melihat pintasan yang tersedia. Jika Anda masih ingin menggunakan TalkBack, tekan tombol Command lagi.</translation>
 <translation id="463135993322337640">Tekan ChromeVox o, n untuk melihat apa saja yang baru</translation>

@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Ni naslednjega gumba</translation>
 <translation id="2911433807131383493">Odpiranje vadnice za ChromeVox</translation>
 <translation id="2912405967290226587">S tremi prsti povlecite v desno</translation>
+<translation id="2919107550468490321">Pametni lepljivi način je vklopljen</translation>
 <translation id="2937799153569150791">Ni naslednjega naslova na ravni 3</translation>
 <translation id="2942710183375260152">Temno skrilasto modra</translation>
 <translation id="2943596527105977722">Temno zlatorumena</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Zmanjšanje višine tona</translation>
 <translation id="3009352964623081324">Tipka za iskanje + O, nato S. Uporabite za nameščanje, upravljanje in prilagajanje glasov.</translation>
 <translation id="3014130421870723208">@pu 8pik</translation>
+<translation id="3018210433491759145">ChromeVox se nalaga</translation>
 <translation id="3030432017085518523">Izbirni gumb menijskega elementa</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{opuščaj}one{# opuščaj}two{# opuščaja}few{# opuščaji}other{# opuščajev}}</translation>
 <translation id="3040901448410802366">Kazalnik poteka</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Svetlo koralna</translation>
 <translation id="3816633764618089385">Naslednja predstavnost</translation>
+<translation id="3821689185319271077">Ni sidra za kazalec</translation>
 <translation id="3840823741487267909">Kratica</translation>
 <translation id="3841319830220785495">Privzeti naravni glas</translation>
 <translation id="385383972552776628">Odpiranje strani z možnostmi</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">obrazec</translation>
 <translation id="4601367666219428522">razpr <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Prezrtje naslednjega pritiska tipke</translation>
+<translation id="4617384941327705512">Pametni lepljivi način je izklopljen</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">Funkcija TalkBack prilagajanja po meri za Chromebooke ne zagotavlja več. Še vedno jo lahko uporabljate, vendar uporabljajte privzete bližnjične tipke za TalkBack. Za prikaz razpoložljivih bližnjic pritisnite gumb za iskanje + A, nato K. Če še vedno želite uporabljati TalkBack, znova pritisnite tipke za ukaz.</translation>
 <translation id="463135993322337640">Pritisnite tipki za ChromeVox O in N, če želite izvedeti novosti</translation>

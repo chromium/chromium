@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">ตัวเลือกในการอนุมัติหรือไม่อนุมัติเว็บไซต์ปิดอยู่</translation>
 <translation id="499724277181351974">ไปยัง: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ติดตามเว็บไซต์นี้ได้ที่นี่</translation>
-<translation id="500351648694011114">เรียกดูได้ง่ายขึ้น</translation>
 <translation id="5004416275253351869">ส่วนควบคุมกิจกรรมของ Google</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ต้องการเชื่อมต่อ</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">กำลังรอการดาวน์โหลดรายการอื่น…</translation>
 <translation id="5865733239029070421">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
-<translation id="5869789175361934029">ดำเนินการต่อจากอุปกรณ์อื่น</translation>
 <translation id="5876496397064130037">งานกลับมาทำงานอีกครั้ง</translation>
 <translation id="587735546353481577">หากต้องการติดตามเว็บไซต์ ให้ไปที่เว็บไซต์นั้น เปิดเมนู Chrome แล้วแตะ "ติดตาม"</translation>
 <translation id="5879072387416556377">รับคำแนะนำที่ดีกว่า</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">อัปเดตการติดตามราคาไม่ได้</translation>
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6294610283659775533">คุณสามารถส่งแท็บระหว่างอุปกรณ์ที่ลงชื่อเข้าใช้บัญชี Google เดียวกัน</translation>
+<translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
 <translation id="6297765934698848803">องค์กรที่จัดการอุปกรณ์ของคุณปิดกล้องไว้</translation>
 <translation id="6301525844455696527">อ่านเรื่องรออ่านต่อ</translation>
 <translation id="6303969859164067831">ออกจากระบบและปิดการซิงค์</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">ดูหน้าเว็บในโหมดผู้อ่านไหม</translation>
 <translation id="968900484120156207">หน้าที่คุณเข้าชมจะปรากฏที่นี่</translation>
 <translation id="970715775301869095">เหลือ <ph name="MINUTES" /> นาที</translation>
-<translation id="978443947993957527">ดูเนื้อหาสำหรับคุณ</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="983192555821071799">ปิดแท็บทั้งหมด</translation>
 <translation id="987264212798334818">ทั่วไป</translation>

@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन दिनुअघि मलाई सोधियोस् (सिफारिस गरिएको)</translation>
 <translation id="2212565012507486665">कुकीहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> लाई आफ्नो क्यामेरा प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
+<translation id="2235344399760031203">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइएको छ</translation>
 <translation id="2238944249568001759">तपाईंले पछिल्लो पटक हेर्नुभएको ट्याबका आधारमा सिफारिस गरिएका खोजहरू</translation>
 <translation id="2241634353105152135">एकपटक मात्र</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> हटाउनुहोस्</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Android का सेटिङमा क्यामेरा बन्द गरिएको छ</translation>
 <translation id="5706552988683188916">तपाईंले यसो गर्नुभयो भने <ph name="WEBSITE" /> सम्बन्धी कुकी तथा अन्य साइट डेटा मेटिन्छ</translation>
 <translation id="5719847187258001597">यस कार्यले <ph name="ORIGIN" /> ले वा यसको एपले तपाईंको होम स्क्रिनमा भण्डारण गरेका सबै डेटा र कुकीहरू मेटाउने छ।</translation>
+<translation id="5723967018671998714">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइन्छ</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ब्लक गरिएको छ</translation>
 <translation id="5804241973901381774">अनुमतिहरू</translation>
 <translation id="5860033963881614850">बन्द</translation>

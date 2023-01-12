@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
 <translation id="2212565012507486665">‏אישור קובצי cookie</translation>
 <translation id="2228071138934252756">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המצלמה, צריך להפעיל אותה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2238944249568001759">הצעות לחיפושים על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="2241634353105152135">פעם אחת בלבד</translation>
 <translation id="2253414712144136228">הסרה של <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
 <translation id="3797520601150691162">אין להחיל עיצוב כהה על אתר ספציפי</translation>
+<translation id="3803367742635802571">יכול להיות שאתרים שביקרת בהם יפסיקו לפעול כמו שצריך</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="3826050100957962900">כניסה של צד שלישי</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המיקרופון, צריך להפעיל את המיקרופון גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
 <translation id="4570913071927164677">פרטים</translation>
+<translation id="4598549027014564149">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים, גם לא באתרים קשורים. פעילות הגלישה לא משמשת לפעולות כמו התאמה אישית של מודעות. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">‏המצלמה מושבתת בהגדרות Android</translation>
 <translation id="5706552988683188916">‏הפעולה הזו מוחקת קובצי cookie ונתונים אחרים מאתרים ב-<ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">‏הפעולה הזאת תמחק את כל הנתונים ואת קובצי ה-cookie שנשמרו במסך הבית על ידי האתר <ph name="ORIGIN" /> או האפליקציה שלו.</translation>
+<translation id="5723967018671998714">‏קובצי cookie של צד שלישי חסומים במצב אנונימי</translation>
 <translation id="5771720122942595109">חסומה: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5860033963881614850">כבוי</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">חסימה של חלונות קופצים והפניות אוטומטיות באתרים (מומלץ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">רענון</translation>
+<translation id="7188508872042490670">נתונים מאתרים ששמורים במכשיר</translation>
 <translation id="7203150201908454328">מורחב</translation>
 <translation id="723171743924126238">בחירת תמונות</translation>
 <translation id="7243308994586599757">אפשרויות הזמינות באזור החלק התחתון של המסך</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="848952951823693243">תמיד תוצג בקשה לגרסת האתר לנייד</translation>
 <translation id="8499083585497694743">ביטול של השתקת המיקרופון</translation>
+<translation id="8514955299594277296">אין הרשאה לאתרים לשמור נתונים במכשיר (לא מומלץ)</translation>
 <translation id="851751545965956758">חסימת התחברות של אתרים אל התקנים</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="FPS_MEMBERS_COUNT" />) של <ph name="FPS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}}</translation>

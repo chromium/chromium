@@ -22,6 +22,7 @@
 <translation id="1426410128494586442">បាទ/ចាស</translation>
 <translation id="1446450296470737166">អនុញ្ញាតឲ្យមានការគ្រប់គ្រងពេញលេញលើឧបករណ៍ MIDI</translation>
 <translation id="1448064542941920355">បន្ថយការពង្រីកបង្រួម</translation>
+<translation id="1547123415014299762">ខូគី​ភាគីទីបី​ត្រូវ​បាន​អនុញ្ញាត</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1633720957382884102">គេហទំព័រដែលពាក់ព័ន្ធ</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
@@ -55,6 +56,7 @@
 <translation id="2182457891543959921">សួរ​មុនពេល​អនុញ្ញាតឱ្យ​គេហទំព័របង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញរបស់អ្នក ឬតាមដានទីតាំងកាមេរ៉ា (បានណែនាំ)</translation>
 <translation id="2212565012507486665">អនុញ្ញាត​ខូគី</translation>
 <translation id="2228071138934252756">ដើម្បីអនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ចូលប្រើកាមេរ៉ា​របស់អ្នក អ្នកក៏ត្រូវបើក​កាមេរ៉ា​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ផងដែរ។</translation>
+<translation id="2235344399760031203">បាន​ទប់ស្កាត់ខូគី​ភាគី​ទីបី</translation>
 <translation id="2238944249568001759">ការស្វែងរក​ដែលបានណែនាំ​ផ្អែកលើ​ផ្ទាំង​ចុងក្រោយ​របស់អ្នក</translation>
 <translation id="2241634353105152135">ម្តងប៉ុណ្ណោះ</translation>
 <translation id="2253414712144136228">ដក <ph name="NAME_OF_LIST_ITEM" /> ចេញ</translation>
@@ -135,6 +137,7 @@
 <translation id="3744111561329211289">សមកាលកម្មផ្ទៃខាងក្រោយ</translation>
 <translation id="3763247130972274048">ចុច​ខាងឆ្វេង ឬ​ខាងស្ដាំពីរដង​​លើវីដេអូ ដើម្បី​រំលង 10 វិ</translation>
 <translation id="3797520601150691162">កុំប្រើរចនាប័ទ្មងងឹតសម្រាប់គេហទំព័រជាក់លាក់</translation>
+<translation id="3803367742635802571">គេហទំព័រ​ដែល​អ្នក​ចូលមើល​អាច​ឈប់​ដំណើរការ​​ដូច​អ្វីដែលបាន​រៀបចំ</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />។ <ph name="TYPE_2" />។</translation>
 <translation id="381841723434055211">លេខទូរសព្ទ</translation>
 <translation id="3826050100957962900">ការចូលគណនីភាគីទីបី</translation>
@@ -174,6 +177,7 @@
 <translation id="4534723447064627427">ដើម្បីអនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ចូលប្រើមីក្រូហ្វូន​របស់អ្នក អ្នកក៏ត្រូវបើក​មីក្រូហ្វូន​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ផងដែរ។</translation>
 <translation id="4566417217121906555">បិទ​សំឡេង​មីក្រូហ្វូន</translation>
 <translation id="4570913071927164677">ព័ត៌មាន​លម្អិត</translation>
+<translation id="4598549027014564149">នៅ​ពេលប្រើ​មុខងារ​ឯកជន គេហទំព័រ​មិន​អាច​ប្រើខូគី​របស់​អ្នក ​ដើម្បី​មើលសកម្មភាព​រុករក​តាមអ៊ីនធឺណិត​របស់​អ្នក​នៅលើ​គេហទំព័រ​បាន​ទេ សូម្បី​តែ​គេហទំព័រ​ដែល​ពាក់ព័ន្ធ។ សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត​របស់​អ្នក​មិន​ត្រូ​វបានប្រើប្រាស់​សម្រាប់​អ្វីៗ ដូច​ជាការកំណត់ឱ្យការផ្សាយពាណិជ្ជកម្មមានលក្ខណៈផ្ទាល់ខ្លួនទេ។ មុខងារ​នៅលើ​គេហទំព័រ​មួយចំនួន​អាចនឹងមិនដំណើរការទេ។</translation>
 <translation id="4645575059429386691">គ្រប់គ្រងដោយឪពុកម្តាយរបស់អ្នក</translation>
 <translation id="4670064810192446073">VR</translation>
 <translation id="4751476147751820511">ឧបករណ៍​ចាប់​សញ្ញាពន្លឺ ឬ​ចលនា</translation>
@@ -231,6 +235,7 @@
 <translation id="5690795753582697420">កាមេរ៉ាត្រូវបានបិទនៅក្នុងការកំណត់ Android</translation>
 <translation id="5706552988683188916">សកម្មភាពនេះ​លុប​ខូគី និង​ទិន្នន័យ​គេហទំព័រ​ផ្សេងទៀត​សម្រាប់ <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">សកម្មភាពនេះនឹង​សម្អាត​ទិន្នន័យ និងខូគីទាំងអស់​ដែល <ph name="ORIGIN" /> ឬកម្មវិធីរបស់ខ្លួនបានរក្សាទុក នៅលើ​អេក្រង់ដើម​របស់អ្នក។</translation>
+<translation id="5723967018671998714">បានទប់ស្កាត់ខូគី​ភាគទីបីនៅក្នុងមុខងារឯកជន</translation>
 <translation id="5771720122942595109">បានទប់​ស្កាត់ <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">ការអនុញ្ញាត</translation>
 <translation id="5860033963881614850">បិទ</translation>
@@ -302,6 +307,7 @@
 <translation id="7141896414559753902">ទប់​ស្កាត់​ទំព័រ​មិន​ឱ្យ​បង្ហាញ​ផ្ទាំង​ផុស និង​ការ​បញ្ជូន​បន្ត (បាន​ណែនាំ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
+<translation id="7188508872042490670">ទិន្នន័យគេហទំព័រនៅលើ​ឧបករណ៍</translation>
 <translation id="7203150201908454328">បានពង្រីក</translation>
 <translation id="723171743924126238">ជ្រើសរើសរូបភាព</translation>
 <translation id="7243308994586599757">មានជម្រើសនៅក្បែរផ្នែកខាងក្រោមអេក្រង់</translation>
@@ -346,6 +352,7 @@
 <translation id="8042586301629853791">តម្រៀបតាម៖</translation>
 <translation id="8067883171444229417">ចាក់​វីដេអូ</translation>
 <translation id="8068648041423924542">មិនអាចជ្រើសរើសវិញ្ញាបនបត្រទេ</translation>
+<translation id="8077120325605624147">គ្រប់គេហទំព័រដែល​អ្នក​ចូលមើល អាច​បង្ហាញ​ការ​ផ្សាយពាណិជ្ជកម្ម​ណាក៏បាន​ដល់​អ្នក</translation>
 <translation id="8087000398470557479">មាតិកានេះបានពី <ph name="DOMAIN_NAME" /> ដែលចែកចាយដោយ Google។</translation>
 <translation id="8116925261070264013">បានបិទសំឡេង</translation>
 <translation id="813082847718468539">មើលព័ត៌មានគេហទំព័រ</translation>
@@ -376,12 +383,14 @@
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>
 <translation id="848952951823693243">ស្នើគេហទំព័រសម្រាប់ឧបករណ៍ចល័តជានិច្ច</translation>
 <translation id="8499083585497694743">បើក​សំឡេង​មីក្រូហ្វូន</translation>
+<translation id="8514955299594277296">កុំ​អនុញ្ញាត​ឱ្យ​គេហទំព័រ​រក្សាទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់​អ្នក (មិនណែនាំទេ)</translation>
 <translation id="851751545965956758">ទប់​ស្កាត់​ទំព័រ​មិន​ឱ្យ​ភ្ជាប់​ជាមួយ​ឧបករណ៍</translation>
 <translation id="8525306231823319788">ពេញអេក្រង់</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{បានអនុញ្ញាត​ខូគី​សម្រាប់​គេហទំព័រ <ph name="FPS_OWNER" /> ចំនួន <ph name="FPS_MEMBERS_COUNT" />}other{បានអនុញ្ញាត​ខូគី​សម្រាប់​គេហទំព័រ <ph name="FPS_OWNER" /> ចំនួន <ph name="FPS_MEMBERS_COUNT" />}}</translation>
 <translation id="857943718398505171">បានអនុញ្ញាត (បានណែនាំ)</translation>
 <translation id="8609465669617005112">រំកិលទៅលើ</translation>
 <translation id="8676374126336081632">ជម្រះការបញ្ចូល</translation>
+<translation id="8681886425883659911">ការផ្សាយពាណិជ្ជកម្ម​ត្រូវ​បាន​ទប់ស្កាត់​នៅ​លើ​គេហទំព័រ​ដែល​គេស្គាល់​ថា​ បង្ហាញ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​នាំ​ឱ្យ​យល់ខុស ឬ​រំខាន</translation>
 <translation id="868929229000858085">ស្វែងរក​ទំនាក់ទំនង​របស់អ្នក</translation>
 <translation id="8702612070107455751">រាល់​​ទិន្នន័យគេហទំព័រ​ដែលបានរក្សាទុកលើឧបករណ៍នឹង​ត្រូវបាន​សម្អាត។</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
@@ -394,6 +403,7 @@
 <translation id="8816026460808729765">ទប់ស្កាត់​គេហទំព័រ​មិនឱ្យ​ចូលប្រើ​ឧបករណ៍​ចាប់សញ្ញា</translation>
 <translation id="8823559166155093873">ទប់ស្កាត់ខូគី</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">ពាណិជ្ជកម្មដែលរំខាន</translation>
 <translation id="8903921497873541725">ពង្រីក</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC ត្រូវ​បាន​បិទសម្រាប់​ឧបករណ៍​នេះ។ បើក NFC នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" />។</translation>

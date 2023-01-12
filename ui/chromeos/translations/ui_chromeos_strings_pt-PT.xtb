@@ -219,6 +219,7 @@
 <translation id="2888807692577297075">Nenhum item corresponde a &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informações</translation>
 <translation id="2902734494705624966">EUA alargado</translation>
+<translation id="2904378509913846215">Já existe uma pasta com o nome "<ph name="FILENAME" />". Quer substituí-la pela que está a mover?</translation>
 <translation id="290843123675549676">Marati</translation>
 <translation id="2923240520113693977">Estónio</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -639,6 +640,7 @@
 <translation id="6241349547798190358">Neerlandês (Bélgica)</translation>
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, ligar</translation>
 <translation id="6269630227984243955">Malaio</translation>
+<translation id="6271903698064569429">Não é possível carregar os ficheiros porque "<ph name="SHARED_DRIVE_NAME" />" não tem armazenamento suficiente.</translation>
 <translation id="6287852322318138013">Selecionar uma aplicação para abrir este ficheiro</translation>
 <translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">PUK inválido</translation>

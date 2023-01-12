@@ -729,7 +729,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4991110219272367918">Opción para aprobar o no un sitio web cerrado</translation>
 <translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Sigue este sitio aquí</translation>
-<translation id="500351648694011114">Navega de forma más sencilla</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> desea conectarse</translation>
@@ -882,7 +881,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5864419784173784555">Esperando que finalice otra descarga…</translation>
 <translation id="5865733239029070421">Envía automáticamente informes de fallos y estadísticas de uso a Google</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
-<translation id="5869789175361934029">Continua desde otro dispositivo</translation>
 <translation id="5876496397064130037">Se reanudó la tarea</translation>
 <translation id="587735546353481577">Para seguir un sitio, visítalo, abre el menú de Chrome y presiona Seguir.</translation>
 <translation id="5879072387416556377">Obtén mejores sugerencias</translation>
@@ -946,6 +944,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6277722725779679269">No se pudo actualizar la función Seguir precio</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Puedes enviar pestañas entre dispositivos en los que se haya accedido a la misma Cuenta de Google.</translation>
+<translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6297765934698848803">La organización que administra tu dispositivo desactivó la cámara.</translation>
 <translation id="6301525844455696527">Ponte al día con tus lecturas</translation>
 <translation id="6303969859164067831">Salir y desactivar la sincronización</translation>
@@ -1516,7 +1515,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="96681097142096641">¿Quieres ver una página simplificada?</translation>
 <translation id="968900484120156207">Las páginas que visites aparecerán aquí</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
-<translation id="978443947993957527">Visualiza contenido personalizado</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="987264212798334818">General</translation>

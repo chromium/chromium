@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Keine nächste Schaltfläche</translation>
 <translation id="2911433807131383493">ChromeVox-Anleitung öffnen</translation>
 <translation id="2912405967290226587">Mit drei Fingern nach rechts wischen</translation>
+<translation id="2919107550468490321">Intelligenter fixierter Modus aktiviert</translation>
 <translation id="2937799153569150791">Keine nächste Überschrift der Ebene 3</translation>
 <translation id="2942710183375260152">Dunkles Schieferblau</translation>
 <translation id="2943596527105977722">Dunkle Goldrutenfarbe</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Tonhöhe verringern</translation>
 <translation id="3009352964623081324">Suchtaste + O, anschließend S. Zum Installieren, Verwalten und Personalisieren von Stimmen verwenden.</translation>
 <translation id="3014130421870723208">@bea 8pkt</translation>
+<translation id="3018210433491759145">ChromeVox wird geladen</translation>
 <translation id="3030432017085518523">Optionsfeld für Menüpunkt</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{Apostroph}other{# Apostrophe}}</translation>
 <translation id="3040901448410802366">Fortschrittsanzeige</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Helles Korallenrot</translation>
 <translation id="3816633764618089385">Nächstes Medium</translation>
+<translation id="3821689185319271077">Kein Zeigeranker</translation>
 <translation id="3840823741487267909">Abkürzung</translation>
 <translation id="3841319830220785495">Natürliche Stimme – Standard</translation>
 <translation id="385383972552776628">Seite "Optionen" öffnen</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">Formular</translation>
 <translation id="4601367666219428522">Tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Nächster Tastenanschlag wird ignoriert.</translation>
+<translation id="4617384941327705512">Intelligenter fixierter Modus deaktiviert</translation>
 <translation id="4623097797855662355">Kolophon</translation>
 <translation id="4624970070706497034">TalkBack bietet keine Anpassung mehr für Chromebooks an. Du kannst die Funktion weiterhin nutzen, verwende dazu aber die standardmäßigen TalkBack-Tastenkombinationen. Drücke Suchtaste + A und dann K, um verfügbare Tastenkombinationen aufzurufen. Wenn du TalkBack weiter verwenden möchtest, drücke noch einmal die Befehlstaste.</translation>
 <translation id="463135993322337640">Wenn du mehr über die neuen Funktionen von ChromeVox erfahren möchtest, drücke ChromeVox „O“ und „N“</translation>

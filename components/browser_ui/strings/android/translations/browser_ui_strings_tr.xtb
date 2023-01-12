@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Sitelerin çevremin 3D haritasını oluşturmasına veya kamera konumunu takip etmesine izin vermeden önce sor (önerilir)</translation>
 <translation id="2212565012507486665">Çerezlere izin ver</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> uygulamasının kameranıza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da kamerayı açın.</translation>
+<translation id="2235344399760031203">Üçüncü taraf çerezler engellendi</translation>
 <translation id="2238944249568001759">Son sekmenize göre önerilen aramalar</translation>
 <translation id="2241634353105152135">Sadece bir defa</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> öğesini kaldır</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Kamera, Android ayarlarında kapatıldı</translation>
 <translation id="5706552988683188916">Bu işlem, <ph name="WEBSITE" /> için çerezleri ve diğer site verilerini siler</translation>
 <translation id="5719847187258001597">Bu işlem, Ana ekranınızdaki <ph name="ORIGIN" /> sitesi ve sitenin uygulaması tarafından depolanan tüm verileri ve çerezleri temizleyecek.</translation>
+<translation id="5723967018671998714">Gizli modda üçüncü taraf çerezler engellenir</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> engellendi</translation>
 <translation id="5804241973901381774">İzinler</translation>
 <translation id="5860033963881614850">Kapalı</translation>

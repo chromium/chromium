@@ -3217,6 +3217,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3898233949376129212">Jazyk zariadenia</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> vyžaduje povolenia <ph name="FIRST_PERMISSION" /> a <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Vaše heslo webu <ph name="WEBSITE" /> je uložené v tomto zariadení a vašom účte Google. Ktoré chcete odstrániť?</translation>
+<translation id="3898768766145818464">Prehrať alebo pozastaviť video</translation>
 <translation id="389901847090970821">Výber klávesnice</translation>
 <translation id="3900966090527141178">Exportovanie hesiel</translation>
 <translation id="3902789559055749153">Vyberte, ako chcete vytvoriť prístupový kľúč pre aplikáciu <ph name="APP_NAME" /></translation>
@@ -4904,7 +4905,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5493792505296048976">obrazovka je zapnutá</translation>
 <translation id="5494016731375030300">Nedávno zavreté karty</translation>
 <translation id="5494362494988149300">Po &amp;stiahnutí otvoriť</translation>
-<translation id="5494752089476963479">Blokovať reklamy na weboch, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="5495466433285976480">Týmto sa po nasledujúcom spustení odstránia všetci miestni používatelia, súbory, údaje a ďalšie nastavenia. Všetci používatelia sa budú musieť znova prihlásiť.</translation>
 <translation id="5495597166260341369">Ponechať zapnutú obrazovku</translation>
 <translation id="5496587651328244253">Usporiadať</translation>
@@ -5809,7 +5809,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6335920438823100346">Ak chcete spustiť Linux, <ph name="MANAGER" /> vyžaduje, aby ste zálohovali svoje dáta a obnovili v Chromebooku výrobné nastavenia.</translation>
 <translation id="6336038146639916978">Doména <ph name="MANAGER" /> deaktivovala ladenie ADB. Vaše zariadenie <ph name="DEVICE_TYPE" /> sa o 24 hodín resetuje. Zálohujte všetky súbory, ktoré si chcete ponechať.</translation>
 <translation id="6338968693068997776">Pridajte zariadenie USB</translation>
-<translation id="6338981933082930623">Všetky weby vám môžu zobrazovať akékoľvek reklamy</translation>
 <translation id="6339668969738228384">Vytvoriť nový profil pre používateľa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokol IPP (IPPS)</translation>
 <translation id="6340526405444716530">Prispôsobenie</translation>

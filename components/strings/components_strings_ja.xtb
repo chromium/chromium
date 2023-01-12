@@ -402,7 +402,6 @@
 <translation id="191374271204266022">JSON 形式でコピー</translation>
 <translation id="1914326953223720820">解凍サービス</translation>
 <translation id="1916770123977586577">更新後の設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
-<translation id="1919345977826869612">広告</translation>
 <translation id="1919367280705858090">特定のエラー メッセージに関する情報</translation>
 <translation id="1919526244108283799">400x600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
@@ -801,6 +800,7 @@
 <translation id="2986368408720340940">この受け取り方法はご利用いただけません。別の方法を選択してください。</translation>
 <translation id="2987034854559945715">一致する機能はありません</translation>
 <translation id="2989742184762224133">2 か所のステープル（上）</translation>
+<translation id="2990882401221831923">クレジット カードのリストは閉じています。</translation>
 <translation id="2991174974383378012">ウェブサイトとの共有</translation>
 <translation id="299122504639061328">デフォルトの検索エンジンとサイト内検索を管理します</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> では HSTS が使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
@@ -924,7 +924,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
-<translation id="3308738399950580893">広告</translation>
 <translation id="3320021301628644560">請求先住所を追加</translation>
 <translation id="3324687287337751929">4x6 インチ</translation>
 <translation id="3324983252691184275">クリムゾン</translation>
@@ -1586,6 +1585,7 @@
 <translation id="4976702386844183910">最終アクセス日: <ph name="DATE" /></translation>
 <translation id="498323057460789381">スキーマ検証エラー: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">マイクを使用しますか？</translation>
+<translation id="4988822846878841743">タップ操作で入力するクレジット カードのリストが画面の下半分に表示されています。</translation>
 <translation id="4989163558385430922">すべて表示</translation>
 <translation id="4989542687859782284">利用不可</translation>
 <translation id="4989809363548539747">このプラグインはサポートされていません</translation>
@@ -1934,6 +1934,7 @@
 <translation id="5863847714970149516">表示しようとしているページでは課金される恐れがあります</translation>
 <translation id="5866257070973731571">電話番号の追加</translation>
 <translation id="5866898949289125849">デベロッパー ツール ページを表示しています</translation>
+<translation id="5868548454963263350">タップ操作で入力するクレジット カードのリストが画面全体に表示されています。</translation>
 <translation id="5869405914158311789">このサイトにアクセスできません</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="5873013647450402046">ご利用の銀行またはカード発行会社が本人確認を求めています。</translation>
@@ -2646,6 +2647,7 @@
 <translation id="7653957176542370971">支払いハンドラのシートは閉じています</translation>
 <translation id="7654909834015434372">メモを編集すると、ドキュメントは元の向きに戻ります</translation>
 <translation id="765676359832457558">詳細設定を表示しない...</translation>
+<translation id="7656935528854393684">タップ操作で入力するクレジット カードのリスト。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7659327900411729175">角形 8 号封筒</translation>
 <translation id="7659878911471462949">泣き笑い</translation>

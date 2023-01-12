@@ -292,6 +292,7 @@
 <translation id="2909584066358367921">ليس هناك زر تالٍ.</translation>
 <translation id="2911433807131383493">‏فتح برنامج ChromeVox التعليمي</translation>
 <translation id="2912405967290226587">التمرير السريع بثلاثة أصابع إلى يسار الشاشة</translation>
+<translation id="2919107550468490321">"وضع التثبيت الذكي" مفعَّل</translation>
 <translation id="2937799153569150791">ليس هناك عنوان تالٍ من المستوى الثالث.</translation>
 <translation id="2942710183375260152">أزرق داكن مائل إلى الرمادي</translation>
 <translation id="2943596527105977722">أصفر ذهبي داكن</translation>
@@ -306,6 +307,7 @@
 <translation id="2999559350546931576">خفض درجة الصوت</translation>
 <translation id="3009352964623081324">‏مفتاح البحث + O، ثم S. يُستخدَم لتثبيت الأصوات وإدارتها وتخصيصها.</translation>
 <translation id="3014130421870723208">@ ببرايل 8 نقاط</translation>
+<translation id="3018210433491759145">‏جارٍ تحميل ChromeVox</translation>
 <translation id="3030432017085518523">زر اختيار عنصر القائمة</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{فاصلة عليا واحدة}zero{# apostrophes}two{فاصلتان علويتان (}few{# فواصل علوية}many{# فاصلة علوية}other{# من الفواصل العلوية}}</translation>
 <translation id="3040901448410802366">مؤشر التقدم</translation>
@@ -440,6 +442,7 @@
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3813387282697781382">مرجاني فاتح</translation>
 <translation id="3816633764618089385">الوسائط التالية</translation>
+<translation id="3821689185319271077">ما مِن علامة ارتساء</translation>
 <translation id="3840823741487267909">اختصار</translation>
 <translation id="3841319830220785495">الصوت الطبيعي التلقائي</translation>
 <translation id="385383972552776628">فتح صفحة الخيارات</translation>
@@ -545,6 +548,7 @@
 <translation id="4597532268155981612">نموذج</translation>
 <translation id="4601367666219428522">‏جدول <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">تجاهل الضغط على المفتاح التالي</translation>
+<translation id="4617384941327705512">"وضع التثبيت الذكي" غير مفعَّل</translation>
 <translation id="4623097797855662355">إشارة ناشر</translation>
 <translation id="4624970070706497034">‏لم تعُد ميزة TalkBack توفّر إمكانية التخصيص لأجهزة Chromebook. سيظل بإمكانك استخدام هذه الميزة، إلا أنّه سيكون عليك استخدام اختصارات لوحة المفاتيح التلقائية التي توفّرها TalkBack. اضغط على مفتاح البحث + A ثم K للاطّلاع على الاختصارات المتاحة. لمواصلة استخدام TalkBack، اضغط على الأمر مرة أخرى.</translation>
 <translation id="463135993322337640">‏اضغط على "ChromeVox o، n" للاطلاع على الميزات الجديدة.</translation>

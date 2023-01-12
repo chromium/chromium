@@ -402,7 +402,6 @@
 <translation id="191374271204266022">Copiază ca JSON</translation>
 <translation id="1914326953223720820">Serviciu de dezarhivare</translation>
 <translation id="1916770123977586577">Ca să aplici setările actualizate pentru acest site, reîncarcă pagina</translation>
-<translation id="1919345977826869612">Anunțuri</translation>
 <translation id="1919367280705858090">Obține ajutor în privința unui anumit mesaj de eroare</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Niciunul}=1{1 site}few{# site-uri}other{# de site-uri}}</translation>
@@ -801,6 +800,7 @@
 <translation id="2986368408720340940">Această metodă de preluare nu este disponibilă. Încearcă altă metodă.</translation>
 <translation id="2987034854559945715">Nu există funcții care corespund</translation>
 <translation id="2989742184762224133">Capsare dublă în partea de sus</translation>
+<translation id="2990882401221831923">Lista cardurilor de credit este închisă.</translation>
 <translation id="2991174974383378012">Permiterea accesului pentru site-uri</translation>
 <translation id="299122504639061328">Gestionează opțiunile prestabilite pentru motoarele de căutare și căutarea pe site</translation>
 <translation id="2991571918955627853">Nu poți accesa <ph name="SITE" /> acum, deoarece site-ul folosește HSTS. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
@@ -924,7 +924,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Managerul de parole recomandă să schimbi parola acum.</translation>
 <translation id="3308006649705061278">Unitate organizațională (OU)</translation>
-<translation id="3308738399950580893">Anunțuri</translation>
 <translation id="3320021301628644560">Adaugă o adresă de facturare</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Roșu aprins</translation>
@@ -1586,6 +1585,7 @@
 <translation id="4976702386844183910">Accesat ultima dată pe <ph name="DATE" /></translation>
 <translation id="498323057460789381">Eroare de validare a schemei: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Folosești microfonul?</translation>
+<translation id="4988822846878841743">Lista cardurilor de credit pentru completarea la atingere, deschisă la jumătate din înălțime.</translation>
 <translation id="4989163558385430922">Afișează-le pe toate</translation>
 <translation id="4989542687859782284">Indisponibile</translation>
 <translation id="4989809363548539747">Acest plugin nu este acceptat</translation>
@@ -1934,6 +1934,7 @@
 <translation id="5863847714970149516">Următoarea pagină poate să genereze costuri</translation>
 <translation id="5866257070973731571">Adaugă un număr de telefon</translation>
 <translation id="5866898949289125849">Se afișează o pagină cu instrumente pentru dezvoltatori</translation>
+<translation id="5868548454963263350">Lista cardurilor de credit pentru completarea la atingere, deschisă la înălțimea completă.</translation>
 <translation id="5869405914158311789">Acest site nu poate fi accesat</translation>
 <translation id="5869522115854928033">Parole salvate</translation>
 <translation id="5873013647450402046">Banca dorește să îți confirme identitatea.</translation>
@@ -2646,6 +2647,7 @@ Detalii suplimentare:
 <translation id="7653957176542370971">Foaia handlerului pentru plăți este închisă</translation>
 <translation id="7654909834015434372">Când editezi adnotări, acest document va reveni la orientarea inițială</translation>
 <translation id="765676359832457558">Ascundeți setările avansate...</translation>
+<translation id="7656935528854393684">Lista cardurilor de credit pentru completarea la atingere.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7659327900411729175">Plic Kaku 8</translation>
 <translation id="7659878911471462949">Lacrimi de bucurie</translation>

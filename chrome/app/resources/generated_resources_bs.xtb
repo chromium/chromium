@@ -4918,7 +4918,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5493792505296048976">ekran je uključen</translation>
 <translation id="5494016731375030300">Nedavno zatvorene kartice</translation>
 <translation id="5494362494988149300">Otvori kada bude &amp;gotovo</translation>
-<translation id="5494752089476963479">Blokiraj oglase na web lokacijama koje prikazuju nametljive ili obmanjujuće oglase</translation>
 <translation id="5495466433285976480">Na ovaj način će se ukloniti svi lokalni korisnici, fajlovi, podaci i druge postavke nakon sljedećeg ponovnog pokretanja uređaja. Svi korisnici će se morati ponovo prijaviti.</translation>
 <translation id="5495597166260341369">Ostavi ekran uključenim</translation>
 <translation id="5496587651328244253">Organizacija</translation>
@@ -5823,7 +5822,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6335920438823100346">Da pokrenete Linux, <ph name="MANAGER" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite ovaj Chromebook na fabričke postavke.</translation>
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> je onemogućila otklanjanje grešaka putem ADB-a. Ovim će se <ph name="DEVICE_TYPE" /> vratiti na zadano za 24 sata. Napravite kopiju svih fajlova koje želite sačuvati.</translation>
 <translation id="6338968693068997776">Dodajte USB uređaj</translation>
-<translation id="6338981933082930623">Sve web lokacije vam mogu prikazivati bilo koje oglase</translation>
 <translation id="6339668969738228384">Kreirajte novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetski protokol za štampanje (IPPP)</translation>
 <translation id="6340526405444716530">Personalizacija</translation>

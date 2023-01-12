@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Дараагийн товчлуур алга байна</translation>
 <translation id="2911433807131383493">ChromeVox-ын сургалтын хичээлийг нээх</translation>
 <translation id="2912405967290226587">Гурван хурууг баруун тийш шудрах</translation>
+<translation id="2919107550468490321">Ухаалаг бэхлэгч горим асаалттай байна</translation>
 <translation id="2937799153569150791">Дараагийн 3-р түвшний гарчиг алга байна</translation>
 <translation id="2942710183375260152">Гүн тод хөх</translation>
 <translation id="2943596527105977722">Бараан шаргал</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Түвшинг бууруулах</translation>
 <translation id="3009352964623081324">Search + O, дараа нь S. Дуу хоолойг суулгах, удирдах болон өөрчлөхийн тулд ашиглана уу.</translation>
 <translation id="3014130421870723208">@ed 8цэг</translation>
+<translation id="3018210433491759145">ChromeVox-г ачаалж байна</translation>
 <translation id="3030432017085518523">Цэснээс нэгийг сонгох товч</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{ тодорхойлох тэмдэг}other{# тодорхойлох тэмдэгүүд}}</translation>
 <translation id="3040901448410802366">Явц заагч</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3813387282697781382">Бүдэг ягаан (шүрний өнгө)</translation>
 <translation id="3816633764618089385">Дараагийн медиа</translation>
+<translation id="3821689185319271077">Заагчийн анкер байхгүй</translation>
 <translation id="3840823741487267909">Товчлол</translation>
 <translation id="3841319830220785495">Өгөгдмөл төрөлхийн дуу хоолой</translation>
 <translation id="385383972552776628">Сонголтуудын хуудсыг нээх</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">маягт</translation>
 <translation id="4601367666219428522">хүснэгт <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Дараагийн түлхүүрийг дарахыг орхигдуулж байна</translation>
+<translation id="4617384941327705512">Ухаалаг бэхлэгч горим унтраалттай байна</translation>
 <translation id="4623097797855662355">Колофон</translation>
 <translation id="4624970070706497034">TalkBack нь Chromebooks-д зориулсан тохируулга хийхээ больсон. Та үүнийг ашиглаж болно гэхдээ TalkBack-н өгөгдмөл товчлуурын шууд холбоосыг ашиглана уу. Search+A гэж дарсны дараа K дээр дарж боломжтой товчлолуудыг харна уу. Хэрэв та TalkBack-г ашигламаар байвал тушаалыг дахин дарна уу.</translation>
 <translation id="463135993322337640">Шинээр гарсан зүйлсийг олохын тулд ChromeVox o, n-г дарна уу</translation>

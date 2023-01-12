@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">Կայքի այցելությունը հաստատելու կամ մերժելու ընտրանքը փակված է</translation>
 <translation id="499724277181351974">Անցնել՝ <ph name="WEBSITE_TITLE" />, <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Հետևեք այս կայքին այստեղ</translation>
-<translation id="500351648694011114">Ավելի հարմար դիտարկիչ</translation>
 <translation id="5004416275253351869">Google-ում գործողությունների հետագծում</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">Նախորդ ներբեռնումն ավարտվում է…</translation>
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
-<translation id="5869789175361934029">Շարունակեք այլ սարքից</translation>
 <translation id="5876496397064130037">Առաջադրանքը վերսկսվեց</translation>
 <translation id="587735546353481577">Կայքին հետևելու համար անցեք այդ կայք, բացեք Chrome-ի ընտրացանկն ու հպեք «Հետևել»։</translation>
 <translation id="5879072387416556377">Ստացեք ավելի լավ առաջարկներ</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">Չհաջողվեց թարմացնել գների հետագծումը</translation>
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6294610283659775533">Դուք կարող եք ուղարկել ներդիրները մի սարքից մյուսը, եթե դրանցում մտել եք հաշիվ միևնույն Google հաշվով</translation>
+<translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6297765934698848803">Ձեր սարքը կառավարող կազմակերպությունն անջատել է տեսախցիկը։</translation>
 <translation id="6301525844455696527">Մի՛ մոռացեք ձեր ընթերցանության ցանկի մասին</translation>
 <translation id="6303969859164067831">Դուրս գրվել հաշվից և անջատել համաժամացումը</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">Դիտե՞լ էջը պարզեցված տեսքով։</translation>
 <translation id="968900484120156207">Ձեր այցելած էջերը կցուցադրվեն այստեղ</translation>
 <translation id="970715775301869095">Մնացել է <ph name="MINUTES" /> րոպե</translation>
-<translation id="978443947993957527">Դիտեք բովանդակություն՝ հատուկ ձեզ համար</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="983192555821071799">Փակել բոլոր ներդիրները</translation>
 <translation id="987264212798334818">Ընդհանուր</translation>

@@ -402,7 +402,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="191374271204266022">Copy as JSON</translation>
 <translation id="1914326953223720820">Unzip Service</translation>
 <translation id="1916770123977586577">To apply your updated settings to this site, reload this page</translation>
-<translation id="1919345977826869612">Ads</translation>
 <translation id="1919367280705858090">Get help with a specific error message</translation>
 <translation id="1919526244108283799">400 mm x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 site}other{# sites}}</translation>
@@ -925,7 +924,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3304777285002411338">A2 x 3</translation>
 <translation id="33073482541490531">The password that you just used was found in a data breach. Password Manager recommends changing this password now.</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
-<translation id="3308738399950580893">ads</translation>
 <translation id="3320021301628644560">Add billing address</translation>
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
@@ -1155,6 +1153,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3872834068356954457">Science</translation>
 <translation id="3875783148670536197">Show me how</translation>
 <translation id="3881478300875776315">Show fewer lines</translation>
+<translation id="3883500545751229739">intrusive ads</translation>
 <translation id="3884278016824448484">Conflicting device identifier</translation>
 <translation id="388632593194507180">Monitoring detected</translation>
 <translation id="3886948180919384617">Stacker 3</translation>
@@ -2753,7 +2752,7 @@ Additional details:
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943397946612013052">Blocked download</translation>
 <translation id="7943893128817522649">Can ask to automatically download multiple files</translation>
-<translation id="7946724693008564269">Detected language</translation>
+<translation id="7946724693008564269">Detected Language</translation>
 <translation id="7947285636476623132">Check your expiry year and try again</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to learn about Chrome features</translation>
 <translation id="7950027195171824198">Manage your cookie preferences in Chrome settings</translation>
@@ -3120,6 +3119,7 @@ Additional details:
 <translation id="8891727572606052622">Invalid proxy mode.</translation>
 <translation id="8894794286471754040">Long edge first</translation>
 <translation id="8897428486789851669">Swimming</translation>
+<translation id="8899807382908246773">Intrusive ads</translation>
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="890493561996401738">Remove Suggestion button, press Enter to remove, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8912362522468806198">Google Account</translation>

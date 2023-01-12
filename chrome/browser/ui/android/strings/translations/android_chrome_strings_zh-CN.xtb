@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">选项表单，用于批准/禁止访问某个网站，已关闭</translation>
 <translation id="499724277181351974">前往：<ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">点击此处关注此网站</translation>
-<translation id="500351648694011114">更轻松地浏览</translation>
 <translation id="5004416275253351869">Google 活动控件</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 希望连接到以下所选设备：</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">正在等待完成另一项下载…</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
-<translation id="5869789175361934029">在此设备上继续浏览另一设备上的标签页</translation>
 <translation id="5876496397064130037">任务已恢复</translation>
 <translation id="587735546353481577">若要关注某个网站，请转到该网站，打开 Chrome 菜单，然后点按“关注”。</translation>
 <translation id="5879072387416556377">获得更好的建议</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">无法更新“跟踪价格”设置。</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6294610283659775533">您可在使用同一 Google 帐号登录的不同设备间发送标签页</translation>
+<translation id="6295158916970320988">所有网站</translation>
 <translation id="6297765934698848803">负责管理您设备的组织已关闭您的摄像头。</translation>
 <translation id="6301525844455696527">请尽快补看阅读清单中的内容</translation>
 <translation id="6303969859164067831">退出帐号并关闭同步功能</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">查看简化版网页？</translation>
 <translation id="968900484120156207">您访问的网页会显示在此处</translation>
 <translation id="970715775301869095">还剩 <ph name="MINUTES" /> 分钟</translation>
-<translation id="978443947993957527">查看为您推荐的内容</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>
 <translation id="987264212798334818">常规</translation>

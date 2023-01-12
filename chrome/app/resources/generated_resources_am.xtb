@@ -3221,6 +3221,7 @@
 <translation id="3898233949376129212">የመሣሪያ ቋንቋ</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> የሚከተሉትን ማድረግ ይፈልጋል፦ <ph name="FIRST_PERMISSION" /> እና <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">የእርስዎ የይለፍ ቃል ለ<ph name="WEBSITE" /> በዚህ መሣሪያ ላይ እና ወደ እርስዎ Google መለያ ተቀምጧል። የትኛውን መሰረዝ ይፈልጋሉ?</translation>
+<translation id="3898768766145818464">ቪዲዮን አጫውት ወይም ባለበት አቁም</translation>
 <translation id="389901847090970821">የቁልፍ ሰሌዳን ይምረጡ</translation>
 <translation id="3900966090527141178">የይለፍ ቃላትን ወደ ውጭ ይላኩ</translation>
 <translation id="3902789559055749153">ለ<ph name="APP_NAME" /> አንድ የይለፍ ቁልፍ እንዴት መፍጠር እንደሚፈልጉ ይምረጡ።</translation>
@@ -4903,7 +4904,6 @@
 <translation id="5493792505296048976">ማያ ገጽ አብራ</translation>
 <translation id="5494016731375030300">በቅርቡ የተዘጉ ትሮች</translation>
 <translation id="5494362494988149300">&amp;ሲጠናቀቅ ክፈት</translation>
-<translation id="5494752089476963479">ረባሽ ወይም አሳሳች ማስታወቂያዎችን ከሚያሳዩ ጣቢያዎች የሚመጡ ማስታወቂያዎችን አግድ</translation>
 <translation id="5495466433285976480">ይሄ ዳግም ከአስጀመሩ በኋላ ሁሉንም አካባቢያዊ ተጠቃሚዎችን፣ ፋይሎችን፣ ውሂብ እና ሌሎች ቅንብሮችን ያስወግዳል። ሁሉም ተጠቃሚዎች እንደገና መግባት ይኖርባቸዋል።</translation>
 <translation id="5495597166260341369">ማሳያን እንደበራ አቆይ</translation>
 <translation id="5496587651328244253">አደራጅ</translation>
@@ -5808,7 +5808,6 @@
 <translation id="6335920438823100346">Linuxን ለመጀመር <ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና ይህን Chromebook ወደ የፋብሪካ ቅንብሮቹ እንዲመልሱት ይፈልግብዎታል።</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> የADB ስህተት ማረሚያን አሰናክሏል። ይህ የእርስዎን <ph name="DEVICE_TYPE" /> በ24 ሰዓታት ውስጥ ዳግም ያስጀምረዋል። ለማቆየት የሚፈልጓቸውን ማናቸውም ፋይሎች ምትኬ ያስቀምጡላቸው።</translation>
 <translation id="6338968693068997776">የዩኤስቢ መሣሪያ አክል</translation>
-<translation id="6338981933082930623">ሁሉም ጣቢያዎች ማንኛውንም ማስታወቂያ ለእርስዎ ሊያሳዩዎት ይችላሉ</translation>
 <translation id="6339668969738228384">ለ<ph name="USER_EMAIL_ADDRESS" /> አዲስ መገለጫ ይፈጠሩ</translation>
 <translation id="6340071272923955280">የበይነመረብ ህትመት ፕሮቶኮል (አይፒፒፒኤስ)</translation>
 <translation id="6340526405444716530">ግላዊነት ማላበስ</translation>

@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">वेबसाइट को अनुमति देने या न देने का विकल्प बंद है</translation>
 <translation id="499724277181351974">यहां जाएं: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">इस साइट को यहां फ़ॉलो करें</translation>
-<translation id="500351648694011114">ज़्यादा आसानी से ब्राउज़ करें</translation>
 <translation id="5004416275253351869">Google गतिविधि नियंत्रण</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करना चाहती है</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">दूसरे डाउनलोड का इंतज़ार किया जा रहा है…</translation>
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट अपने आप भेजती है</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
-<translation id="5869789175361934029">किसी अन्य डिवाइस से जारी रखें</translation>
 <translation id="5876496397064130037">टास्क फिर से शुरू किया गया</translation>
 <translation id="587735546353481577">किसी साइट को फ़ॉलो करने के लिए, उस साइट पर जाएं, Chrome मेन्यू को खोलें, और 'फ़ॉलो करें' पर टैप करें.</translation>
 <translation id="5879072387416556377">बेहतर सुझाव पाएं</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">ट्रैक की गई कीमत अपडेट नहीं हो सकी</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6294610283659775533">आप उन डिवाइसों के बीच टैब शेयर कर सकते हैं जिन पर एक ही Google खाते से साइन इन किया हो</translation>
+<translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6297765934698848803">आपके डिवाइस काे प्रबंधित करने वाले संगठन ने आपका कैमरा बंद कर दिया है.</translation>
 <translation id="6301525844455696527">पढ़ने की चीज़ों की सूची में आपके लिए बहुत कुछ नया है</translation>
 <translation id="6303969859164067831">साइन आउट करें और सिंक बंद करें</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">क्या आप सरल बनाए गए पेज को देखना चाहते हैं?</translation>
 <translation id="968900484120156207">विज़िट किए जाने वाले पेज यहां दिखेंगे</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनट शेष</translation>
-<translation id="978443947993957527">अपने काम का कॉन्टेंट पाएं</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
 <translation id="983192555821071799">सभी टैब बंद करें</translation>
 <translation id="987264212798334818">सामान्य</translation>

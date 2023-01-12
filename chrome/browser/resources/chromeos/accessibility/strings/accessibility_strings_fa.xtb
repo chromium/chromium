@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">دکمه بعدی موجود نیست</translation>
 <translation id="2911433807131383493">‏باز کردن برنامه آموزشی ChromeVox</translation>
 <translation id="2912405967290226587">تند کشیدن سه انگشت به چپ</translation>
+<translation id="2919107550468490321">«حالت چسبیده هوشمند» روشن است</translation>
 <translation id="2937799153569150791">عنوان سطح ۳ بعدی وجود ندارد</translation>
 <translation id="2942710183375260152">آبی کربنی تیره</translation>
 <translation id="2943596527105977722">ماشی سیر</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">کاهش گام</translation>
 <translation id="3009352964623081324">‏Search + O، سپس S برای نصب، مدیریت، و سفارشی‌سازی صداها استفاده کنید.</translation>
 <translation id="3014130421870723208">‏‎@ویرایش ۸ نقطه‌ای</translation>
+<translation id="3018210433491759145">‏ChromeVox درحال بار شدن است</translation>
 <translation id="3030432017085518523">دکمه رادیویی مورد منو</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{آپاستروف}one{# آپاستروف}other{# آپاستروف}}</translation>
 <translation id="3040901448410802366">نشانگر پیشرفت</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">فیلم</translation>
 <translation id="3813387282697781382">مرجانی روشن</translation>
 <translation id="3816633764618089385">رسانه بعدی</translation>
+<translation id="3821689185319271077">بدون لنگر اشاره‌گر</translation>
 <translation id="3840823741487267909">کوته‌نوشت</translation>
 <translation id="3841319830220785495">صدای طبیعی پیش‌فرض</translation>
 <translation id="385383972552776628">باز کردن صفحه گزینه‌ها</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">فرم</translation>
 <translation id="4601367666219428522">‏جدول <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">نادیده گرفتن فشار دکمه بعدی</translation>
+<translation id="4617384941327705512">«حالت چسبیده هوشمند» خاموش است</translation>
 <translation id="4623097797855662355">انجامه</translation>
 <translation id="4624970070706497034">‏دیگر نمی‌توان TalkBack را در دستگاه‌های Chromebook سفارشی کرد. همچنان می‌توانید از آن استفاده کنید، اما باید از میان‌برهای صفحه‌کلید پیش‌فرض TalkBack استفاده کنید. برای دیدن میان‌برهای دردسترس، کلیدهای Search+A، و سپس K را فشار دهید. اگر همچنان می‌خواهید از TalkBack استفاده کنید، دوباره این فرمان را فشار دهید.</translation>
 <translation id="463135993322337640">‏برای آشنایی با موارد جدید،‌ به ترتیب کلیدهای ChromeVox،‏ n و o را فشار دهید</translation>

@@ -249,6 +249,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6598877126913850652">Acessar as configurações de notificação do Chromium</translation>
 <translation id="6613594504749178791">As alterações entrarão em vigor na próxima vez que você reiniciar o Chromium.</translation>
 <translation id="665732753414869868">O Chromium precisa da permissão de acesso à câmera para criar um mapa 3D do ambiente</translation>
+<translation id="6663852025006259149">Os sites provavelmente vão funcionar conforme o esperado, mas não se lembrarão dos seus dados depois que você fechar todas as janelas do Chromium</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>
 <translation id="668175097507315160">O ChromiumOS não pôde sincronizar seus dados devido a um erro durante o login.</translation>
 <translation id="6709350901466051922">O Chromium precisa da permissão de acesso ao microfone para este site</translation>
@@ -375,5 +376,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="945990405696787151">Para receber as próximas atualizações do Chromium, você vai precisar do macOS 10.13 ou mais recente. Este computador está usando o OS X 10.11.</translation>
 <translation id="965162752251293939">Quem está usando o Chromium?</translation>
 <translation id="967427899662692980">Use o nível mais alto de segurança do Chromium</translation>
+<translation id="9792300276217204">Sempre limpar os dados do site do seu dispositivo ao fechar o Chromium</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
 </translationbundle>

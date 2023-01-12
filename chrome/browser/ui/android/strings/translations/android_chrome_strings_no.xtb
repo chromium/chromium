@@ -729,7 +729,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4991110219272367918">Valget om å godkjenne eller ikke godkjenne nettstedet er lukket</translation>
 <translation id="499724277181351974">Naviger: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Følg dette nettstedet her</translation>
-<translation id="500351648694011114">Surf enklere</translation>
 <translation id="5004416275253351869">Google Aktivitetslagring</translation>
 <translation id="5005498671520578047">Kopiér passordet</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vil koble til</translation>
@@ -882,7 +881,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5864419784173784555">Venter på en annen nedlasting …</translation>
 <translation id="5865733239029070421">Sender automatisk brukerstatistikk og programstopprapporter til Google</translation>
 <translation id="5869522115854928033">Lagrede passord</translation>
-<translation id="5869789175361934029">Fortsett på en annen enhet</translation>
 <translation id="5876496397064130037">Gjøremålet er gjenopptatt</translation>
 <translation id="587735546353481577">For å følge et nettsted, gå til nettstedet, åpne Chrome-menyen og trykk på Følg.</translation>
 <translation id="5879072387416556377">Få bedre forslag</translation>
@@ -946,6 +944,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6277722725779679269">Kunne ikke oppdatere Spor pris</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Du kan sende faner mellom enheter som er logget på med samme Google-konto</translation>
+<translation id="6295158916970320988">Alle nettsteder</translation>
 <translation id="6297765934698848803">Organisasjonen som administrerer enheten din, har slått av kameraet.</translation>
 <translation id="6301525844455696527">Kom à jour med leselisten din</translation>
 <translation id="6303969859164067831">Logg av og slå av synkronisering</translation>
@@ -1516,7 +1515,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="96681097142096641">Vil du se den forenklede siden?</translation>
 <translation id="968900484120156207">Sider du besøker, vises her</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter igjen</translation>
-<translation id="978443947993957527">Se innhold for deg</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="983192555821071799">Lukk alle faner</translation>
 <translation id="987264212798334818">Generelt</translation>

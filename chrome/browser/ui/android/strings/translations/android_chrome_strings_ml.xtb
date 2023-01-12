@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">അടച്ച വെബ്‌സൈറ്റ് അംഗീകരിക്കാനോ നിരസിക്കാനോ ഉള്ള ഓപ്ഷൻ</translation>
 <translation id="499724277181351974">നാവിഗേറ്റ് ചെയ്യുക: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ഈ സൈറ്റ് ഇവിടെ പിന്തുടരുക</translation>
-<translation id="500351648694011114">കൂടുതൽ എളുപ്പത്തിൽ ബ്രൗസ് ചെയ്യുക</translation>
 <translation id="5004416275253351869">Google പ്രവർത്തന നിയന്ത്രണങ്ങൾ</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> കണക്‌റ്റുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">മറ്റൊരു ഡൗൺലോഡിനായി കാത്തിരിക്കുന്നു…</translation>
 <translation id="5865733239029070421">Google-ലേക്ക് സ്വയമേവ ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോര്‍ട്ടുകളും അയയ്ക്കുന്നു</translation>
 <translation id="5869522115854928033">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
-<translation id="5869789175361934029">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് തുടരുക</translation>
 <translation id="5876496397064130037">ടാസ്‌ക് പുനരാരംഭിച്ചു</translation>
 <translation id="587735546353481577">ഒരു സൈറ്റ് പിന്തുടരാൻ, സൈറ്റിലേക്ക് പോയി Chrome മെനു തുറന്ന് 'പിന്തുടരുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5879072387416556377">മെച്ചപ്പെട്ട നിർദ്ദേശങ്ങൾ നേടുക</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">നിരക്ക് ട്രാക്ക് ചെയ്യൽ അപ്ഡേറ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="6278428485366576908">തീം</translation>
 <translation id="6294610283659775533">ഒരേ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾ തമ്മിൽ നിങ്ങൾക്ക് ടാബുകൾ അയയ്ക്കാനാകും</translation>
+<translation id="6295158916970320988">എല്ലാ സൈറ്റുകളും</translation>
 <translation id="6297765934698848803">നിങ്ങളുടെ ഉപകരണം മാനേജ് ചെയ്യുന്ന ഓർഗനൈസേഷൻ നിങ്ങളുടെ ക്യാമറ ഓഫാക്കി.</translation>
 <translation id="6301525844455696527">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് കാണൂ</translation>
 <translation id="6303969859164067831">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കുക</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">ലളിതമാക്കിയ പേജ് കാണണോ?</translation>
 <translation id="968900484120156207">നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
-<translation id="978443947993957527">നിങ്ങൾക്കുള്ള ഉള്ളടക്കം കാണുക</translation>
 <translation id="981121421437150478">ഓഫ്‌ലൈൻ</translation>
 <translation id="983192555821071799">ടാബെല്ലാം അടയ്‌ക്കൂ</translation>
 <translation id="987264212798334818">പൊതുവായ</translation>

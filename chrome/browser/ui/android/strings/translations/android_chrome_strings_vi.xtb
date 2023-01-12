@@ -729,7 +729,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4991110219272367918">Lựa chọn phê duyệt hoặc không phê duyệt một trang web đã đóng</translation>
 <translation id="499724277181351974">Di chuyển: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Theo dõi trang web này tại đây</translation>
-<translation id="500351648694011114">Duyệt xem dễ dàng hơn</translation>
 <translation id="5004416275253351869">Kiểm soát hoạt động trên Google</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
@@ -882,7 +881,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5864419784173784555">Đang chờ đến lần tải xuống tiếp theo…</translation>
 <translation id="5865733239029070421">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
-<translation id="5869789175361934029">Tiếp tục từ thiết bị khác</translation>
 <translation id="5876496397064130037">Đã tiếp tục việc đang làm dở</translation>
 <translation id="587735546353481577">Để theo dõi một trang web, hãy truy cập vào trang web đó, mở trình đơn Chrome rồi nhấn vào Theo dõi.</translation>
 <translation id="5879072387416556377">Nhận đề xuất tốt hơn</translation>
@@ -946,6 +944,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6277722725779679269">Không thể cập nhật tính năng Theo dõi giá</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6294610283659775533">Bạn có thể gửi thẻ giữa các thiết bị được đăng nhập bằng cùng một Tài khoản Google</translation>
+<translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6297765934698848803">Tổ chức giữ quyền quản lý thiết bị của bạn đã tắt máy ảnh của bạn.</translation>
 <translation id="6301525844455696527">Hãy hoàn thành danh sách đọc của bạn</translation>
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
@@ -1516,7 +1515,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="96681097142096641">Xem trang ở chế độ đơn giản?</translation>
 <translation id="968900484120156207">Các trang mà bạn truy cập sẽ xuất hiện tại đây</translation>
 <translation id="970715775301869095">Còn <ph name="MINUTES" /> phút</translation>
-<translation id="978443947993957527">Xem nội dung dành cho bạn</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="983192555821071799">Đóng tất cả các thẻ</translation>
 <translation id="987264212798334818">Chung</translation>

@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">ఏదైనా వెబ్‌సైట్‌ను ఆమోదించాలా లేదా వద్దా అని నిర్ణయించే ఆప్షన్ మూసివేయబడింది</translation>
 <translation id="499724277181351974">నావిగేట్ చేయండి: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ఈ సైట్‌ను ఇక్కడ ఫాలో అవ్వండి</translation>
-<translation id="500351648694011114">మరింత సులువుగా బ్రౌజ్ చేయండి</translation>
 <translation id="5004416275253351869">Google యాక్టివిటీ కంట్రోల్స్</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">మరొక డౌన్‌లోడ్ కోసం వేచి ఉంది…</translation>
 <translation id="5865733239029070421">వినియోగ గణాంకాలను, క్రాష్ రిపోర్ట్‌లను ఆటోమేటిక్‌గా Googleకు పంపుతుంది</translation>
 <translation id="5869522115854928033">సేవ్  చేసిన పాస్‌వర్డ్‌లు</translation>
-<translation id="5869789175361934029">మరో పరికరం నుండి కొనసాగించండి</translation>
 <translation id="5876496397064130037">టాస్క్ కొనసాగించబడింది</translation>
 <translation id="587735546353481577">సైట్‌ను ఫాలో చేయడానికి, సైట్‌కు వెళ్లి, Chrome మెనూను తెరిచి, 'ఫాలో చేయండి'ని ట్యాప్ చేయండి.</translation>
 <translation id="5879072387416556377">ఉత్తమ సూచనలను పొందండి</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">'ధరను ట్రాక్ చేయడం'ను అప్‌డేట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6294610283659775533">ఒకే Google ఖాతాతో సైన్ ఇన్ చేయబడి ఉన్న పరికరాల మధ్య మీరు ట్యాబ్‌లను పంపవచ్చు</translation>
+<translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
 <translation id="6297765934698848803">మీ పరికరాన్ని మేనేజ్ చేసే సంస్థ మీ కెమెరాను ఆఫ్ చేసింది.</translation>
 <translation id="6301525844455696527">మీ చదవాల్సిన లిస్ట్‌ను మిస్ కాకుండా చూడండి</translation>
 <translation id="6303969859164067831">సైన్ అవుట్ చేసి, సింక్‌ను ఆఫ్ చేయండి</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">సరళంగా తయారయిన పేజీని చూపించాలా?</translation>
 <translation id="968900484120156207">మీరు సందర్శించే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
-<translation id="978443947993957527">మీ కోసం అనుకూలంగా మార్చిన కంటెంట్‌ను చూడండి</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="987264212798334818">సాధారణం</translation>

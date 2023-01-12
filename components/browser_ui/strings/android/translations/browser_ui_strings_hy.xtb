@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Կայքերի համար թույլտվություն խնդրել՝ ստեղծելու շրջակայքի եռաչափ քարտեզն ու հետագծելու ձեր տեսախցիկի դիրքը (խորհուրդ է տրվում)</translation>
 <translation id="2212565012507486665">Թույլատրել քուքիները</translation>
 <translation id="2228071138934252756">Որպեսզի տեսախցիկը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
+<translation id="2235344399760031203">Երրորդ կողմի քուքիներն արգելափակված են</translation>
 <translation id="2238944249568001759">Առաջարկվող որոնման հարցումներ ձեր վերջին ներդիրի հիման վրա</translation>
 <translation id="2241634353105152135">Միայն այս անգամ</translation>
 <translation id="2253414712144136228">Հեռացնել «<ph name="NAME_OF_LIST_ITEM" />» կետը</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Տեսախցիկն անջատված է Android-ի կարգավորումներում</translation>
 <translation id="5706552988683188916">Քուքիները և <ph name="WEBSITE" /> կայքի այլ տվյալները կջնջվեն</translation>
 <translation id="5719847187258001597">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքի և դրա հավելվածի կողմից։</translation>
+<translation id="5723967018671998714">Երրորդ կողմի քուքիներն արգելափակվում են ինկոգնիտո ռեժիմում</translation>
 <translation id="5771720122942595109">Արգելափակված է՝ «<ph name="PERMISSION_1" />»</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
 <translation id="5860033963881614850">Անջատ.</translation>

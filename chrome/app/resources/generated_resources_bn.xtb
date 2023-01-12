@@ -929,6 +929,7 @@
 <translation id="1819721979226826163">অ্যাপ বিজ্ঞপ্তি &gt; Google Play পরিষেবা ট্যাপ করুন।</translation>
 <translation id="1820028137326691631">অ্যাডমিনের দেওয়া পাসওয়ার্ড লিখুন</translation>
 <translation id="1822140782238030981">আপনি কি আগে থেকেই Chrome ব্যবহার করছেন? সাইন-ইন করুন</translation>
+<translation id="1823781806707127806">ম্যানেজ করা প্রোফাইলে আগে থেকে থাকা ব্রাউজ করা ডেটা যোগ করুন</translation>
 <translation id="18245044880483936">ব্যাক-আপ ডেটা, আপনার সন্তানের Drive স্টোরেজ কোটার মধ্যে ধরা হয় না।</translation>
 <translation id="1825565032302550710">পোর্ট অবশ্যই ১০২৪ ও ৬৫৫৩৫-এর মধ্যে থাকতে হবে</translation>
 <translation id="182577151972096764">সম্প্রতি দেখা রেসিপি</translation>
@@ -1090,6 +1091,7 @@
 <translation id="1963976881984600709">স্ট্যান্ডার্ড সুরক্ষা</translation>
 <translation id="1965624977906726414">কোনো বিশেষ অনুমতি নেই৷</translation>
 <translation id="1966649499058910679">প্রতিটি শব্দ যেভাবে উচ্চারণ করা হয় সেইভাবে হাইলাইট করুন</translation>
+<translation id="1967970931040389207">হটস্পট চালু করুন</translation>
 <translation id="1969654639948595766">WebRTC টেক্সট লগ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">আপনি আরও দ্রুত ব্রাউজ করবেন কারণ, আপনার বর্তমান ওয়েবপেজ দেখার উপরে ভিত্তি করে কন্টেন্ট নিজে থেকে লোড হয়</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -1178,6 +1180,7 @@
 <translation id="2048554637254265991">কন্টেনার ম্যানেজার শুরু হওয়ার সময় কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="2048653237708779538">অ্যাকশন উপলভ্য নেই</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
+<translation id="2051555741181591333">অটোমেটিক হটস্পট বন্ধ করুন</translation>
 <translation id="2052572566310583903">আপনার অন্য ডিভাইসে ইনস্টল করা হয়েছে</translation>
 <translation id="2053105195397337973">বিভিন্ন সাইটে বিজ্ঞাপন স্প্যাম এবং জালিয়াতি বন্ধ করার ফিচার চালু করার মাধ্যমে ট্র্যাক করা কমাতে আমরা নতুন উপায় নিয়ে আসছি।</translation>
 <translation id="2053312383184521053">নিষ্ক্রিয় অবস্থার ডেটা</translation>
@@ -1286,6 +1289,7 @@
 <translation id="2137128126782078222"><ph name="WEBSITE" /> থেকে বিজ্ঞপ্তিতে অনুমতি দেবেন না</translation>
 <translation id="2139919072249842737">সেট-আপ করার বোতাম</translation>
 <translation id="2140788884185208305">ব্যাটারির স্বাস্থ্য</translation>
+<translation id="2140902257485550046">এই সাইটে সব এক্সটেনশন ব্লক করতে বেছে নিন</translation>
 <translation id="2142328300403846845">এ হিসেবে লিঙ্ক খুলুন</translation>
 <translation id="2142582065325732898">সাম্প্রতিক Chrome ট্যাব দেখার জন্য, <ph name="LINK1_BEGIN" />Chrome সিঙ্ক<ph name="LINK1_END" /> চালু করুন। <ph name="LINK2_BEGIN" />আরও জানুন<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">ফুল-স্ক্রিনে টুলবার দেখানোর অনুমতি দিন</translation>
@@ -2021,6 +2025,7 @@
 <translation id="2778471504622896352">ChromeOS লঞ্চারে রিমোট অ্যাপ যোগ করুন</translation>
 <translation id="2781120507965857989">এই ডিভাইসে এবং অন্য যেকোনও জায়গায় আপনার বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু পেতে সিঙ্ক চালু করুন। সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">এই সাইটে এক্সটেনশনের অনুমতি দেওয়া আছে</translation>
 <translation id="2782104745158847185">Linux অ্যাপ ইনস্টল করার সময় সমস্যা</translation>
 <translation id="2783298271312924866">ডাউনলোড হয়েছে</translation>
 <translation id="2783321960289401138">শর্টকাট তৈরি করুন...</translation>
@@ -3848,6 +3853,7 @@
 <translation id="449126573531210296">আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা পাসওয়ার্ডগুলি এনক্রিপ্ট করুন</translation>
 <translation id="449232563137139956">ইলাস্ট্রেশনের জন্য সাইট সাধারণত ছবি দেখায়, যেমন অনলাইন স্টোর অথবা খবরের নিবন্ধ সংক্রান্ত ছবি</translation>
 <translation id="4492698018379445570">শপিং কার্টে আপনি কী কী যোগ করেছেন তা দেখুন এবং সব কিছু চেক করা করে নেওয়ার পরেই পেমেন্ট করুন</translation>
+<translation id="4493167769966437077">কখনই অনুবাদের অফার করে না এমন ভাষা থেকে <ph name="LANGUAGE_NAME" /> সরান</translation>
 <translation id="4493468155686877504">সাজেস্ট করা হয়েছে (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180"><ph name="SITE" />-এ এই এক্সটেনশনে অনুমতি দেবেন?</translation>
 <translation id="4495419450179050807">এই পৃষ্ঠাতে দেখাবেন না</translation>
@@ -4422,6 +4428,7 @@
 <translation id="5026874946691314267">এটিকে আবার দেখাবেন না</translation>
 <translation id="5027550639139316293">ইমেল সার্টিফিকেট</translation>
 <translation id="5027562294707732951">এক্সটেনশন যোগ করুন</translation>
+<translation id="5028445315206872221">এই সাইটে এক্সটেনশন ব্লক করা আছে</translation>
 <translation id="5029568752722684782">কপি সাফ করুন</translation>
 <translation id="5029873138381728058">VM চেক করা যায়নি</translation>
 <translation id="503155457707535043">অ্যাপ ডাউনলোড করা হচ্ছে</translation>
@@ -4914,7 +4921,6 @@
 <translation id="5493792505296048976">স্ক্রিন চালু</translation>
 <translation id="5494016731375030300">সম্প্রতি বন্ধ করা ট্যাবগুলি</translation>
 <translation id="5494362494988149300">&amp;সম্পন্ন হলে খুলুন</translation>
-<translation id="5494752089476963479">সাইটে থাকা ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন ব্লক করুন</translation>
 <translation id="5495466433285976480">আপনি যখন পরবর্তীতে রিস্টার্ট করবেন তখন এটি সমস্ত স্থানীয় ব্যবহারকারী, ফাইল, ডেটা, এবং অন্যান্য সেটিংস সরিয়ে ফেলবে৷ সকল ব্যবহারকারীকে আবার সাইন-ইন করতে হবে৷</translation>
 <translation id="5495597166260341369">ডিসপ্লে চালু রাখুন</translation>
 <translation id="5496587651328244253">সংগঠিত করুন</translation>
@@ -4986,6 +4992,7 @@
 <translation id="5554866693883022680">এই লিঙ্ক খুলতে আপনার <ph name="DEVICE_TYPE" />-এ কোনও একটি অ্যাপ বেছে নিন</translation>
 <translation id="5555363196923735206">ক্যামেরা ফ্লিপ করুন</translation>
 <translation id="5555525474779371165">আপনার Safe Browsing সুরক্ষা বেছে নিন</translation>
+<translation id="5555639311269196631">হটস্পট বন্ধ করুন</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5558129378926964177">বড়ো করুন</translation>
 <translation id="55601339223879446">প্রদর্শনের মধ্যে আপনার ডেস্কটপ সীমানার সামঞ্জস্যবিধান করুন</translation>
@@ -5820,7 +5827,6 @@
 <translation id="6335920438823100346">Linux চালু করার আগে, <ph name="MANAGER" /> আপনাকে ডেটা ব্যাকআপ নিতে ও এই Chromebook ফ্যাক্টরি সেটিংসে রিসেট করতে বলছে।</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB ডিবাগিং বন্ধ করে দিয়েছে। এটি করলে ২৪ ঘণ্টায় আপনার <ph name="DEVICE_TYPE" /> রিসেট হয়ে যাবে। কোনও ফাইল রাখতে চাইলে, সেটির ব্যাক-আপ নিন।</translation>
 <translation id="6338968693068997776">ইউএসবি ডিভাইস যোগ করুন</translation>
-<translation id="6338981933082930623">সব সাইটই আপনাকে যেকোনও ধরনের বিজ্ঞাপন দেখাতে পারে</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> এর জন্য একটি নতুন প্রোফাইল তৈরি করুন</translation>
 <translation id="6340071272923955280">ইন্টারনেট প্রিন্ট প্রোটোকল (IPPS)</translation>
 <translation id="6340526405444716530">নিজের পছন্দ অনুযায়ী বেছে নেওয়া</translation>
@@ -6651,6 +6657,7 @@
 <translation id="7088960765736518739">অ্যাক্সেস পাল্টান</translation>
 <translation id="7089253021944603172">আবার ট্যাব অ্যাক্টিভ করে</translation>
 <translation id="7090160970140261931">ওয়েবসাইট ও Android অ্যাপের সাথে ব্যবহার করার জন্য আপনার <ph name="DEVICE_TYPE" />-এ অতিরিক্ত অ্যাকাউন্ট যোগ করতে পারবেন। Android অ্যাপের সাথে কোন অ্যাকাউন্ট ব্যবহার করা হবে তাও নিয়ন্ত্রণ করতে পারবেন।</translation>
+<translation id="7090714929377281710">অটোমেটিক হটস্পট বন্ধ করুন</translation>
 <translation id="7093220653036489319">দ্রুত উত্তর</translation>
 <translation id="7093416310351037609">ডেটার সুরক্ষা ও নিরাপত্তার জন্য আপনার সংস্থার যা প্রয়োজন তা হল, সমস্ত উপযুক্ত ডাউনলোড আপনার সংস্থার <ph name="WEB_DRIVE" /> অ্যাকাউন্টে সেভ করতে হবে।</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" />: নামের্ ডিভাইসসমূহের সাথে ডেটা বিনিময় করুন</translation>
@@ -7274,6 +7281,7 @@
 <translation id="7684718995427157417">আপনার অ্যাপ তৈরি এবং পরীক্ষা করে দেখতে, Android ডিবাগ ব্রিজ টুলটি চালু করুন (ADB)। মনে রাখবেন এই অ্যাকশন Google-এ যাচাই করা হয়নি এমন Android অ্যাপ ইনস্টলের অনুমতি দেয় এবং এটি বন্ধ করতে হলে ডিভাইসটিকে ফ্যাক্টরি রিসেট করতে হয়।</translation>
 <translation id="7685049629764448582">জাভাস্ক্রিপ্ট মেমরি</translation>
 <translation id="7685087414635069102">পিন প্রয়োজন</translation>
+<translation id="7686581688229391955">এই সাইটে এক্সটেনশনের অনুমতি দিতে বেছে নিন</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="7690378713476594306">তালিকা থেকে বেছে নিন</translation>
@@ -8086,6 +8094,7 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কেস)</translation>
 <translation id="8417548266957501132">অভিভাবকের পাসওয়ার্ড</translation>
 <translation id="8418445294933751433">ট্যাব রূপে &amp;দেখান</translation>
+<translation id="8418675848396538775"><ph name="LANGUAGE_NAME" /> যোগ করুন</translation>
 <translation id="8419098111404128271">'<ph name="SEARCH_TEXT" />' এর সার্চ ফলাফল</translation>
 <translation id="8420308167132684745">অভিধানের এন্ট্রিগুলি এডিট করুন</translation>
 <translation id="8421361468937925547">লাইভ ক্যাপশন (শুধু ইংরেজি)</translation>
@@ -8859,6 +8868,7 @@
 <translation id="9121814364785106365">পিন করা ট্যাব হিসেবে খুলুন</translation>
 <translation id="9123287046453017203">আপনার ডিভাইস আপ-টু-ডেট নেই</translation>
 <translation id="9124003689441359348">সংরক্ষিত পাসওয়ার্ডগুলি এখানে দেখা যাবে</translation>
+<translation id="9125910124977405374">অটোমেটিক অনুবাদ হওয়া ভাষা থেকে <ph name="LANGUAGE_NAME" /> সরান</translation>
 <translation id="9126149354162942022">কার্সরের রঙ</translation>
 <translation id="9128317794749765148">সেট-আপ করা যায়নি</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" />-এর সেটিংস পৃষ্ঠা খুলুন</translation>

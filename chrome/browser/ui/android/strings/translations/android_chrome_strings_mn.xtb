@@ -728,7 +728,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4991110219272367918">Вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголтыг хаасан</translation>
 <translation id="499724277181351974">Шилжих: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Энэ сайтыг энд дагана уу</translation>
-<translation id="500351648694011114">Илүү хялбар үзээрэй</translation>
 <translation id="5004416275253351869">Google-н ашиглалт удирдлага</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> холбогдох хүсэлтэй байна</translation>
@@ -881,7 +880,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5864419784173784555">Өөр таталтыг хүлээж байна…</translation>
 <translation id="5865733239029070421">Хэрэглээний статистик мэдээ болон алдааны тайланг Google-д автоматаар илгээдэг</translation>
 <translation id="5869522115854928033">Хадгалагдсан нууц үг</translation>
-<translation id="5869789175361934029">Өөр төхөөрөмжөөс үргэлжлүүлнэ үү</translation>
 <translation id="5876496397064130037">Ажлыг үргэлжлүүлсэн</translation>
 <translation id="587735546353481577">Сайт дагахын тулд тухайн сайт руу очиж, Chrome цэсийг нээн, Дагахыг товшино уу.</translation>
 <translation id="5879072387416556377">Илүү сайн зөвлөмжүүд авах</translation>
@@ -945,6 +943,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6277722725779679269">Үнэ хянахыг шинэчилж чадсангүй</translation>
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6294610283659775533">Та ижил Google Бүртгэлээр нэвтэрсэн төхөөрөмжүүдийн хооронд таб илгээх боломжтой</translation>
+<translation id="6295158916970320988">Бүх сайт</translation>
 <translation id="6297765934698848803">Таны төхөөрөмжийг удирддаг байгууллага таны камерыг унтраасан байна.</translation>
 <translation id="6301525844455696527">Унших жагсаалтаа гүйцээрэй</translation>
 <translation id="6303969859164067831">Гараад синк хийхийг унтраах</translation>
@@ -1515,7 +1514,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="96681097142096641">Хялбарчилсан хуудсыг үзэх үү?</translation>
 <translation id="968900484120156207">Таны зочилдог хуудас энд харагдана</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> минут үлдсэн</translation>
-<translation id="978443947993957527">Танд зориулсан контентыг хараарай</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Бүх табыг хаах</translation>
 <translation id="987264212798334818">Ерөнхий</translation>

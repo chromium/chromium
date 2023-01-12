@@ -4909,7 +4909,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5493792505296048976">skjerm på</translation>
 <translation id="5494016731375030300">Nylig lukkede faner</translation>
 <translation id="5494362494988149300">Åpne når ne&amp;dlastingen er ferdig</translation>
-<translation id="5494752089476963479">Blokkér annonser på nettsteder som ofte viser forstyrrende eller villedende annonser</translation>
 <translation id="5495466433285976480">Dette fjerner alle lokale brukere, filer, data og andre innstillinger etter neste omstart. Alle brukere må logge inn på nytt.</translation>
 <translation id="5495597166260341369">Hold skjermen påslått</translation>
 <translation id="5496587651328244253">Organiser</translation>
@@ -5814,7 +5813,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6335920438823100346">Før du kan starte Linux, krever <ph name="MANAGER" /> at du sikkerhetskopierer dataene dine og tilbakestiller Chromebook til fabrikkstandard.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har slått av ADB-feilsøking. <ph name="DEVICE_TYPE" /> blir tilbakestilt om 24 timer. Sikkerhetskopiér eventuelle filer du vil ta vare på.</translation>
 <translation id="6338968693068997776">Legg til USB-enhet</translation>
-<translation id="6338981933082930623">Alle nettsteder kan vise deg alle slags annonser</translation>
 <translation id="6339668969738228384">Opprett en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Personlig tilpasning</translation>

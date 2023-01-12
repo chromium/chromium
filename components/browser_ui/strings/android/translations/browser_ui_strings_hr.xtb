@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Prikaži upit prije omogućivanja web-lokacijama da izrađuju 3D kartu vašeg okruženja i prate položaj kamere (preporučeno)</translation>
 <translation id="2212565012507486665">Dopusti kolačiće</translation>
 <translation id="2228071138934252756">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj kameri, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Blokirani su kolačići treće strane</translation>
 <translation id="2238944249568001759">Predložena pretraživanja na temelju vaše posljednje kartice</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2253414712144136228">Ukloni <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Kamera se isključuje u Androidovim postavkama</translation>
 <translation id="5706552988683188916">Time se brišu kolačići i ostali podaci web-lokacije <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Izbrisat će se svi podaci i kolačići koje je spremila web-lokacija <ph name="ORIGIN" /> ili njezina aplikacija na vašem početnom zaslonu.</translation>
+<translation id="5723967018671998714">Kolačići trećih strana blokirani su u anonimnom načinu</translation>
 <translation id="5771720122942595109">Blokirano je dopuštenje <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dozvoljeno</translation>
 <translation id="5860033963881614850">Isključeno</translation>

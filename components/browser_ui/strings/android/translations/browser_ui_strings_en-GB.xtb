@@ -22,6 +22,7 @@
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1446450296470737166">Allow full control of MIDI devices</translation>
 <translation id="1448064542941920355">Decrease zoom</translation>
+<translation id="1547123415014299762">Third-party cookies are allowed</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Related sites</translation>
 <translation id="1644574205037202324">History</translation>
@@ -55,6 +56,7 @@
 <translation id="2182457891543959921">Ask before allowing sites to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2238944249568001759">Suggested searches based on your last tab</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remove</translation>
@@ -233,6 +235,7 @@
 <translation id="5690795753582697420">Camera is turned off in Android settings</translation>
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">This will clear all data and cookies stored by <ph name="ORIGIN" /> or by its app on your home screen.</translation>
+<translation id="5723967018671998714">Third-party cookies are blocked in Incognito mode</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -349,6 +352,7 @@
 <translation id="8042586301629853791">Sort by:</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8068648041423924542">Unable to select certificate.</translation>
+<translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>
 <translation id="8087000398470557479">This content is from <ph name="DOMAIN_NAME" />, delivered by Google.</translation>
 <translation id="8116925261070264013">Muted</translation>
 <translation id="813082847718468539">View site information</translation>
@@ -386,6 +390,7 @@
 <translation id="857943718398505171">Allowed (recommended)</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8676374126336081632">Clear input</translation>
+<translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="868929229000858085">Search your contacts</translation>
 <translation id="8702612070107455751">Any offline data will be cleared.</translation>
 <translation id="8712637175834984815">Got it</translation>
@@ -398,6 +403,7 @@
 <translation id="8816026460808729765">Block sites from accessing sensors</translation>
 <translation id="8823559166155093873">Block cookies</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">Intrusive ads</translation>
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>

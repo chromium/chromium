@@ -4230,6 +4230,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılır
       Politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, bu sorguları göndermez.</translation>
 <translation id="5033070732967197381">Sorunlu TLS sertifikalarına sahip sitelerde WebAuthn API isteklerine izin ver.</translation>
 <translation id="5034504101537897433">Cihaz kilitlenme raporu bilgi raporlamasını etkinleştir</translation>
+<translation id="5036013147560568855">Sertifika temel hazırlığı protokolünün sürümü. Varsayılan olarak 1 değerine ayarlanır. 1, "statik" protokoldür. 2, "dinamik" protokoldür.</translation>
 <translation id="5039110755072335605">CORS joker karakter olmayan istek başlıkları desteği</translation>
 <translation id="504116558738617678">Düşük disk alanı uyarılarını, yalnızca cihaz yönetilmiyorsa veya yalnızca 1 kullanıcı varsa göster</translation>
 <translation id="5055474681190962362">Cihazın ayın hangi gününde [1-31] yeniden başlatılması gerektiği (cihazın yerel saat dilimine göre). Yalnızca "sıklık", "AYLIK" olarak ayarlandığında kullanılır. Bu sayı, belirli bir aydaki maksimum gün sayısından fazlaysa ayın son günü seçilir.</translation>

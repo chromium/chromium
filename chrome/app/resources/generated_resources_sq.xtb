@@ -914,6 +914,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1819721979226826163">Trokit te Njoftimet e aplikacioneve &gt; Shërbimet e Google Play.</translation>
 <translation id="1820028137326691631">Fut fjalëkalimin e ofruar nga administratori</translation>
 <translation id="1822140782238030981">Je tashmë një përdorues i Chrome? Identifikohu</translation>
+<translation id="1823781806707127806">Shto të dhënat ekzistuese të shfletimit te profili i menaxhuar</translation>
 <translation id="18245044880483936">Të dhënat e rezervimit nuk do të llogariten në kuotën e hapësirës ruajtëse të "Diskut" të fëmijës tënd.</translation>
 <translation id="1825565032302550710">Porta duhet të jetë mes 1024 dhe 65535</translation>
 <translation id="182577151972096764">recetat e shikuara së fundi</translation>
@@ -1074,6 +1075,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1963976881984600709">Mbrojtja standarde</translation>
 <translation id="1965624977906726414">Nuk ka leje të veçanta.</translation>
 <translation id="1966649499058910679">Thekso secilën fjalë ndërsa thuhet</translation>
+<translation id="1967970931040389207">Aktivizo zonën e qasjes për internet</translation>
 <translation id="1969654639948595766">Evidencat e tekstit WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>
 <translation id="197288927597451399">Mbaje</translation>
@@ -1162,6 +1164,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2048554637254265991">Gabim gjatë nisjes së menaxherit të kontejnerit. Provo përsëri.</translation>
 <translation id="2048653237708779538">Veprimi nuk ofrohet</translation>
 <translation id="2050339315714019657">Portret (vertikal</translation>
+<translation id="2051555741181591333">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="2052572566310583903">Instaluar në pajisje të tjera</translation>
 <translation id="2053105195397337973">Po eksplorojmë mënyra për të kufizuar gjurmimin ndërkohë që bëjmë të mundur që sajtet të ndalojnë reklamat e bezdisshme dhe mashtrimet.</translation>
 <translation id="2053312383184521053">Të dhënat e gjendjes së qetë</translation>
@@ -1270,6 +1273,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2137128126782078222">Mos i lejo njoftimet nga <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Butoni i konfigurimit</translation>
 <translation id="2140788884185208305">Integriteti i baterisë</translation>
+<translation id="2140902257485550046">Zgjidh që të bllokosh të gjitha shtesat në këtë sajt</translation>
 <translation id="2142328300403846845">Hape lidhjen si</translation>
 <translation id="2142582065325732898">Aktivizo <ph name="LINK1_BEGIN" />Sinkronizimin e Chrome<ph name="LINK1_END" /> për të shikuar skedat e fundit të Chrome. <ph name="LINK2_BEGIN" />Mëso më shumë<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Gjithmonë shfaqe "Shiritin e veglave" në ekranin e plotë</translation>
@@ -2002,6 +2006,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2778471504622896352">Shto aplikacione në distancë te nisësi i ChromeOS</translation>
 <translation id="2781120507965857989">Aktivizo sinkronizimin për të marrë faqeshënuesit, fjalëkalimet, historikun etj. në këtë pajisje dhe në çdo vend tjetër ku po sinkronizon. Google mund ta përdorë historikun tënd për të personalizuar "Kërko" dhe shërbime të tjera të Google.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Shtesat nuk lejohen në këtë sajt</translation>
 <translation id="2782104745158847185">Gabim në instalimin e aplikacionit Linux</translation>
 <translation id="2783298271312924866">U shkarkua</translation>
 <translation id="2783321960289401138">Krijo një shkurtore...</translation>
@@ -3205,6 +3210,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3898233949376129212">Gjuha e pajisjes</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> kërkon që: <ph name="FIRST_PERMISSION" /> dhe <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322">Fjalëkalimi yt për <ph name="WEBSITE" /> është ruajtur në këtë pajisje dhe në "Llogarinë tënde të Google". Cilin dëshiron të fshish?</translation>
+<translation id="3898768766145818464">Luaj ose vendose në pauzë videon</translation>
 <translation id="389901847090970821">Zgjidh tastierën</translation>
 <translation id="3900966090527141178">Eksporto fjalëkalimet</translation>
 <translation id="3902789559055749153">Zgjidh se si dëshiron të krijosh një çelës kalimi për <ph name="APP_NAME" /></translation>
@@ -3826,6 +3832,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="449126573531210296">Enkripto fjalëkalimet e sinkronizuara me "Llogarinë tënde të Google"</translation>
 <translation id="449232563137139956">Sajtet shfaqin zakonisht imazhe për të ofruar ilustrime, si p.sh. fotografi për dyqanet në linjë ose artikujt e lajmeve</translation>
 <translation id="4492698018379445570">Gjej atë që ke shtuar në karrocat e blerjeve dhe përfundo blerjen kur të jesh gati</translation>
+<translation id="4493167769966437077">Hiqe gjuhën <ph name="LANGUAGE_NAME" /> nga gjuhët për të cilat nuk ofrohet asnjëherë përkthim</translation>
 <translation id="4493468155686877504">E rekomanduar (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Të lejohet kjo shtesë në <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Mos e shfaq në këtë faqe</translation>
@@ -4396,6 +4403,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5026874946691314267">Mos e trego më këtë</translation>
 <translation id="5027550639139316293">Dërgo certifikatën me mail</translation>
 <translation id="5027562294707732951">Shto një shtesë</translation>
+<translation id="5028445315206872221">Shtesat bllokohen në këtë sajt</translation>
 <translation id="5029568752722684782">Pastro kopjen</translation>
 <translation id="5029873138381728058">Nuk mund të kontrolloheshin VM-të</translation>
 <translation id="503155457707535043">Po shkarkon aplikacionet</translation>
@@ -4887,7 +4895,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5493792505296048976">ekrani aktiv</translation>
 <translation id="5494016731375030300">Skedat e mbyllura së fundmi</translation>
 <translation id="5494362494988149300">Hape kur të &amp;përfundosh</translation>
-<translation id="5494752089476963479">Blloko reklamat në sajtet që shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="5495466433285976480">Kjo do të heqë të gjithë përdoruesit lokalë, skedarët, të dhënat dhe cilësimet e tjera pas rinisjes së radhës. Të gjithë përdoruesit do të duhet të identifikohen sërish.</translation>
 <translation id="5495597166260341369">Mbaje ekranin të ndezur</translation>
 <translation id="5496587651328244253">Organizo</translation>
@@ -4959,6 +4966,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5554866693883022680">Zgjidh një aplikacion në pajisjen tënde <ph name="DEVICE_TYPE" /> për të hapur këtë lidhje</translation>
 <translation id="5555363196923735206">Rrotulloje kamerën</translation>
 <translation id="5555525474779371165">Zgjidh mbrojtjen me "Shfletimin e sigurt"</translation>
+<translation id="5555639311269196631">Çaktivizo zonën e qasjes për internet</translation>
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="5558129378926964177">Afroje&amp;</translation>
 <translation id="55601339223879446">Rregullo kufijtë e desktopit tënd brenda ekranit</translation>
@@ -5791,7 +5799,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6335920438823100346">Për të nisur Linux, <ph name="MANAGER" /> kërkon që të rezervosh të dhënat e tua dhe ta rivendosësh këtë Chromebook te cilësimet e fabrikës.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Kjo do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" /> brenda 24 orësh. Rezervo çdo skedar që dëshiron ta mbash.</translation>
 <translation id="6338968693068997776">Shto një pajisje USB</translation>
-<translation id="6338981933082930623">Të gjitha sajtet mund të të shfaqin çdo reklamë</translation>
 <translation id="6339668969738228384">Krijo një profil të ri për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokolli i printimit në internet (IPPS)</translation>
 <translation id="6340526405444716530">Personalizimi</translation>
@@ -6619,6 +6626,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7088960765736518739">Qasja me çelës</translation>
 <translation id="7089253021944603172">Skeda është përsëri aktive</translation>
 <translation id="7090160970140261931">Mund të shtosh llogari shtesë te <ph name="DEVICE_TYPE" /> për t'i përdorur me sajtet e uebit dhe aplikacionet për Android. Gjithashtu, mund të kontrollosh se cilat llogari përdoren me aplikacionet për Android.</translation>
+<translation id="7090714929377281710">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="7093220653036489319">Përgjigjet e shpejta</translation>
 <translation id="7093416310351037609">Për sigurinë e të dhënave, organizat jote kërkon që të gjitha shkarkimet e përshtatshme të ruhen në llogarinë <ph name="WEB_DRIVE" /> e organizatës sate.</translation>
 <translation id="7093866338626856921">Shkëmbe të dhëna me pajisjet me emrin: <ph name="HOSTNAMES" /></translation>
@@ -7239,6 +7247,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7684718995427157417">Për të krijuar dhe testuar aplikacionet e tua, aktivizo "Urën e korrigjimit të Android" (ADB). Ki parasysh se ky veprim lejon instalimin e aplikacioneve të Android që nuk janë verifikuar nga Google dhe për çaktivizimin kërkohet rivendosja e cilësimeve të fabrikës.</translation>
 <translation id="7685049629764448582">Memoria e JavaScript</translation>
 <translation id="7685087414635069102">Kërkohet kodi PIN</translation>
+<translation id="7686581688229391955">Zgjidh që të lejosh shtesat në këtë sajt</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7690378713476594306">Zgjidh nga lista</translation>
@@ -8050,6 +8059,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (kasa)</translation>
 <translation id="8417548266957501132">Fjalëkalimi i prindit</translation>
 <translation id="8418445294933751433">&amp;Shfaq si skedë</translation>
+<translation id="8418675848396538775">Shto gjuhën <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Rezultatet e kërkimit për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8420308167132684745">Redakto hyrjet e fjalorit</translation>
 <translation id="8421361468937925547">"Titra në çast" (vetëm anglisht)</translation>
@@ -8820,6 +8830,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9121814364785106365">Hap si skedë të gozhduar</translation>
 <translation id="9123287046453017203">Pajisja jote nuk është e përditësuar</translation>
 <translation id="9124003689441359348">Fjalëkalimet e ruajtura do të shfaqen këtu</translation>
+<translation id="9125910124977405374">Hiqe gjuhën <ph name="LANGUAGE_NAME" /> nga gjuhët që përkthehen automatikisht</translation>
 <translation id="9126149354162942022">Ngjyra e kursorit</translation>
 <translation id="9128317794749765148">Konfigurimi nuk mund të përfundonte</translation>
 <translation id="9128335130883257666">Hap faqen e cilësimeve për <ph name="INPUT_METHOD_NAME" /></translation>

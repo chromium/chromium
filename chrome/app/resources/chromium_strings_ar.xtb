@@ -247,6 +247,7 @@
 <translation id="6598877126913850652">‏الانتقال إلى إعدادات الإشعارات في Chromium</translation>
 <translation id="6613594504749178791">‏ستسري التغييرات في المرة التالية التي تعيد فيها تشغيل Chromium.</translation>
 <translation id="665732753414869868">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للمكان حولك.</translation>
+<translation id="6663852025006259149">‏على الأرجح ستعمل المواقع الإلكترونية على النحو المتوقَّع، ولكنها لن تحفظ بياناتك بعد إغلاق جميع نوافذ Chromium.</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>
 <translation id="668175097507315160">‏تعذّر على نظام التشغيل Chromium مزامنة بياناتك بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="6709350901466051922">‏يحتاج Chromium إلى إذن للوصول إلى الميكروفون من أجل هذا الموقع الإلكتروني.</translation>
@@ -377,5 +378,6 @@
 <translation id="945990405696787151">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل macOS 10.13 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل OS X 10.11.</translation>
 <translation id="965162752251293939">‏مَن يستخدم Chromium؟</translation>
 <translation id="967427899662692980">‏الحصول على أعلى مستوى من الأمان في متصفِّح Chromium</translation>
+<translation id="9792300276217204">‏محو بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

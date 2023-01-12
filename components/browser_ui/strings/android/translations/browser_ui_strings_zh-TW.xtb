@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">網站必須先詢問你，才能根據你的周遭環境建立 3D 地圖或追蹤攝影機位置 (建議)</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要允許 <ph name="APP_NAME" /> 存取裝置的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
+<translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">已關閉 Android 設定中的攝影機</translation>
 <translation id="5706552988683188916">如果這麼做，系統將刪除 <ph name="WEBSITE" /> 的 Cookie 及其他網站資料</translation>
 <translation id="5719847187258001597">這會清除 <ph name="ORIGIN" /> 或該網站在主畫面上的應用程式所儲存的所有資料和 Cookie。</translation>
+<translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5860033963881614850">關閉</translation>

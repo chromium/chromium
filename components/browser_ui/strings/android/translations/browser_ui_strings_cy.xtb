@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Gofyn cyn caniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle eich camera (argymhellir)</translation>
 <translation id="2212565012507486665">Caniatáu cwcis</translation>
 <translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
+<translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
 <translation id="2238944249568001759">Chwiliadau a awgrymir yn seiliedig ar eich tab diwethaf</translation>
 <translation id="2241634353105152135">Unwaith yn unig</translation>
 <translation id="2253414712144136228">Tynnu <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -230,6 +231,7 @@
 <translation id="5690795753582697420">Mae'r camera wedi'i ddiffodd yn Gosodiadau Android</translation>
 <translation id="5706552988683188916">Mae hyn yn dileu cwcis a data gwefan eraill ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Bydd hyn yn clirio'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" /> neu gan ei ap ar eich sgrîn Hafan.</translation>
+<translation id="5723967018671998714">Mae cwcis trydydd parti wedi'u rhwystro yn y Modd Anhysbys</translation>
 <translation id="5771720122942595109">Rhwystrwyd <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5860033963881614850">Diffodd</translation>

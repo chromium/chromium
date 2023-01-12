@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Nachfragen, bevor Websites erlaubt wird, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen (empfohlen)</translation>
 <translation id="2212565012507486665">Cookies zulassen</translation>
 <translation id="2228071138934252756">Um <ph name="APP_NAME" /> Zugriff auf deine Kamera zu gewähren, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2238944249568001759">Vorgeschlagene Suchanfragen basierend auf deinem letzten Tab</translation>
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> entfernen</translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3763247130972274048">Tippe links oder rechts im Video doppelt, um 10 s zu überspringen</translation>
 <translation id="3797520601150691162">Dunkles Design auf eine bestimmte Website nicht anwenden</translation>
+<translation id="3803367742635802571">Websites funktionieren dann möglicherweise nicht mehr erwartungsgemäß</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Telefonnummern</translation>
 <translation id="3826050100957962900">Drittanbieter-Anmeldung</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">Um <ph name="APP_NAME" /> Zugriff auf dein Mikrofon zu gewähren, muss die Mikrofonberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="4566417217121906555">Mikrofon stummschalten</translation>
 <translation id="4570913071927164677">Details</translation>
+<translation id="4598549027014564149">Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen. Das gilt auch für zusammenhängende Websites. Deine Browseraktivitäten werden unter anderem auch nicht für personalisierte Werbung verwendet. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">Die Kamera wurde in den Android-Einstellungen deaktiviert</translation>
 <translation id="5706552988683188916">Dadurch werden Cookies und andere Websitedaten für <ph name="WEBSITE" /> gelöscht</translation>
 <translation id="5719847187258001597">Dadurch werden alle von <ph name="ORIGIN" /> oder der zugehörigen App auf dem Startbildschirm gespeicherten Daten und Cookies gelöscht.</translation>
+<translation id="5723967018671998714">Drittanbieter-Cookies sind im Inkognitomodus gesperrt</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockiert</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5860033963881614850">Aus</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
+<translation id="7188508872042490670">Websitedaten auf dem Gerät</translation>
 <translation id="7203150201908454328">Erweitert</translation>
 <translation id="723171743924126238">Bilder auswählen</translation>
 <translation id="7243308994586599757">Optionen unten auf dem Bildschirm verfügbar</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="848952951823693243">Mobile Website immer anfordern</translation>
 <translation id="8499083585497694743">Mikrofon einschalten</translation>
+<translation id="8514955299594277296">Websites nicht erlauben, Daten auf deinem Gerät zu speichern (nicht empfohlen)</translation>
 <translation id="851751545965956758">Verhindern, dass Websites eine Verbindung zu Geräten herstellen</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Website}other{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Websites}}</translation>

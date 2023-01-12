@@ -4198,6 +4198,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, ist die window.we
       Wird die Richtlinie deaktiviert, sendet <ph name="PRODUCT_NAME" /> solche Abfragen nicht mehr.</translation>
 <translation id="5033070732967197381">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="5034504101537897433">Melden von Informationen zu Absturzberichten auf Geräten aktivieren</translation>
+<translation id="5036013147560568855">Version des Zertifikatbereitstellungsprotokolls. Der Standardwert ist 1. 1 entspricht dem statischen Protokoll. 2 entspricht dem dynamischen Protokoll.</translation>
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>

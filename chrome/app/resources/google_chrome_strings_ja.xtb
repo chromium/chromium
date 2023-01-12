@@ -141,6 +141,7 @@
 <translation id="3533694711092285624">保存されているパスワードがありません。パスワードを保存すると Chrome で確認できるようになります。</translation>
 <translation id="3541482654983822893">Chrome でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
 <translation id="3576528680708590453">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに代替ブラウザを開くよう Google Chrome を設定しています。</translation>
+<translation id="3579965087968408543">Chrome を閉じるとき、常にデバイスからサイトデータを削除する</translation>
 <translation id="3582972582564653026">同期してカスタマイズした Chrome をどのデバイスでも使用できます</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{管理者が、アップデートを適用するために Chrome を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
@@ -342,6 +343,7 @@
 <translation id="7917876797003313048">ログインする Google アカウントを管理できます。Google アカウントは、Chrome ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome がパスワードをコピーしようとしています。</translation>
 <translation id="7951272445806340501">アップデートを適用するには ChromeOS Flex を再起動する必要があります。</translation>
+<translation id="7962368738413920945">サイトはおおむね想定どおりに機能しますが、Chrome のウィンドウをすべて閉じるとユーザーに関する情報は失われます</translation>
 <translation id="7962410387636238736">Windows XP と Windows Vista はサポートされなくなったため、このパソコンでは今後 Google Chrome のアップデートは受信されません</translation>
 <translation id="8005666035647241369">このデバイスの Google パスワード マネージャーに移動</translation>
 <translation id="8008534537613507642">Chrome を再インストール</translation>

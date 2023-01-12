@@ -1447,7 +1447,7 @@
 <translation id="2280486287150724112">右邊界</translation>
 <translation id="2281863813036651454">點擊滑鼠左鍵</translation>
 <translation id="2282146716419988068">GPU 處理程序</translation>
-<translation id="228293613124499805">你造訪的大多數網站可能會在裝置上儲存資料 (偏好設定或你與網站分享的資訊)，通常是為了改善使用體驗。建議你將這項設定保持開啟。</translation>
+<translation id="228293613124499805">您瀏覽的大多數網站可能會在裝置上儲存資料，通常是透過儲存您的偏好設定或您與網站分享的資料，從而改善使用體驗。建議您將此設定保持開啟。</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟所有網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="2285942871162473373">無法識別您的指紋。請再試一次。</translation>
 <translation id="2287944065963043964">登入畫面</translation>
@@ -2890,7 +2890,7 @@
 <translation id="3603622770190368340">取得網絡憑證</translation>
 <translation id="3605780360466892872">小員工</translation>
 <translation id="3609277884604412258">快速搜尋</translation>
-<translation id="3610241585790874201">無法將資料儲存到裝置</translation>
+<translation id="3610241585790874201">無法將資料儲存至裝置</translation>
 <translation id="3610369246614755442">插座風扇需要維修</translation>
 <translation id="361106536627977100">Flash 數據</translation>
 <translation id="3611655097742243705">請前往「Play 商店」尋找更多應用程式</translation>
@@ -3114,7 +3114,7 @@
 <translation id="3802486193901166966">這個擴充程式不需要任何特殊權限，亦無需額外的網站存取權</translation>
 <translation id="380329542618494757">名稱</translation>
 <translation id="3803345858388753269">影片品質</translation>
-<translation id="3803367742635802571">你造訪的網站可能無法正常運作</translation>
+<translation id="3803367742635802571">您瀏覽的網站可能無法正常運作</translation>
 <translation id="380408572480438692">啟用效能數據收集功能可協助 Google 持續改善系統。除非您提交意見反映報告 (Alt-Shift-I) 並在其中包含效能數據，否則 Google 不會收到任何相關數據。您可以隨時返回這個螢幕停用收集功能。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (擴充程式 ID：「<ph name="EXTENSION_ID" />」) 無法在登入畫面使用。</translation>
 <translation id="3807747707162121253">取消(&amp;C)</translation>
@@ -3975,7 +3975,7 @@
 <translation id="4595560905247879544">只有管理員 (<ph name="CUSTODIAN_NAME" />) 才能修改應用程式和擴充程式。</translation>
 <translation id="4596295440756783523">您的檔案具備可以識別這些伺服器的憑證</translation>
 <translation id="4598345735110653698">管理密鑰</translation>
-<translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
+<translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="4598556348158889687">管理儲存空間</translation>
 <translation id="4598776695426288251">可透過多部裝置使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建議數量</translation>
@@ -4141,7 +4141,7 @@
 <translation id="4750185073185658673">在手機上查看其他權限。請確保手機的藍牙和 Wi-Fi 已開啟。</translation>
 <translation id="4750394297954878236">建議</translation>
 <translation id="475088594373173692">第一位使用者</translation>
-<translation id="4756302371612574303">你造訪的網站可儲存你在網站上的活動資訊，以便正常運作，例如在網站上保持登入狀態或儲存購物車內的項目。網站通常會暫時在裝置上儲存這項資訊。</translation>
+<translation id="4756302371612574303">您瀏覽的網站可儲存您在網站上的活動資料，以便正常運作，例如在網站上保持登入狀態或儲存購物車內的商品。網站通常會暫時在裝置上儲存這些資料。</translation>
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4756671452988984333">音訊文字</translation>
@@ -4919,7 +4919,6 @@
 <translation id="5493792505296048976">螢幕已開啟</translation>
 <translation id="5494016731375030300">最近關閉的分頁</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
-<translation id="5494752089476963479">在顯示滋擾或誤導廣告的網站上封鎖廣告</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、數據和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持螢幕開啟</translation>
 <translation id="5496587651328244253">管理</translation>
@@ -5822,7 +5821,6 @@
 <translation id="6335920438823100346">「<ph name="MANAGER" />」要求您備份資料並將此 Chromebook 回復原廠設定，才能啟動 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯。這會讓系統在 24 小時後重設您的 <ph name="DEVICE_TYPE" />。請備份您想保留的檔案。</translation>
 <translation id="6338968693068997776">新增 USB 裝置</translation>
-<translation id="6338981933082930623">所有網站都可向您顯示任何廣告</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人檔案</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">個人化</translation>
@@ -6701,7 +6699,7 @@
 <translation id="7141105143012495934">系統無法擷取您帳戶的詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="7141844554192012199">檢查</translation>
 <translation id="7144878232160441200">重試</translation>
-<translation id="7148426638542880639">網站可能無法正常運作。如果你不希望在裝置留下網站造訪資訊，請選擇這個選項。</translation>
+<translation id="7148426638542880639">網站可能無法正常運作。如果您不希望在裝置留下網站瀏覽資訊，請選擇此選項。</translation>
 <translation id="7149839598364933473">在此裝置上安裝 <ph name="DEVICE_OS" />。</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
@@ -6734,7 +6732,7 @@
 <translation id="7186088072322679094">保留在工具列上</translation>
 <translation id="7186303001964993981">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾</translation>
 <translation id="7187428571767585875">系統將移除或變更以下的登錄項目：</translation>
-<translation id="7188508872042490670">網站在裝置端的資料</translation>
+<translation id="7188508872042490670">裝置上的網站資料</translation>
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
 <translation id="7189965711416741966">已加入指紋。</translation>
@@ -7008,7 +7006,7 @@
 <translation id="7444970023873202833">在「Google 相片」中探索更多美好回憶</translation>
 <translation id="7444983668544353857">停用 <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
-<translation id="7448664748118305024">在所有視窗關閉後刪除網站儲存到裝置的資料</translation>
+<translation id="7448664748118305024">在所有視窗關閉後刪除網站儲存至裝置的資料</translation>
 <translation id="7449381494541372002">正在啟動…</translation>
 <translation id="7449752890690775568">要移除密碼嗎？</translation>
 <translation id="7450761244949417357">正在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>

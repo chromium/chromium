@@ -4900,7 +4900,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5493792505296048976">ekran yoniq</translation>
 <translation id="5494016731375030300">Oxirgi yopilgan varaqlar</translation>
 <translation id="5494362494988149300">&amp;Yakunlanishida ochish</translation>
-<translation id="5494752089476963479">Saytlarda chiquvchi yoqimsiz yoki befoyda reklamalar bloklansin</translation>
 <translation id="5495466433285976480">Qayta o‘chirib yoqishdan so‘ng barcha mahalliy hisoblar, fayllar, ma’lumotlar va boshqa sozlamalar o‘chirib yuboriladi. Barcha foydalanuvchilar hisobga qaytadan kirishlari kerak bo‘ladi.</translation>
 <translation id="5495597166260341369">Ekran yoniq qolsin</translation>
 <translation id="5496587651328244253">Boshqarish</translation>
@@ -5805,7 +5804,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6335920438823100346">Linux ishga tushirilishi uchun <ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu Chromebookni zavod sozlamalariga qaytarishni talab qiladi.</translation>
 <translation id="6336038146639916978">ADB tuzatish vositasi <ph name="MANAGER" /> tomonidan faolsizlantirildi. Barcha <ph name="DEVICE_TYPE" /> parametrlari 24 soatdan keyin asl holatiga qaytariladi. Kerakli fayllarni saqlab qolish uchun ularni zaxiralang.</translation>
 <translation id="6338968693068997776">USB qurilma qoʻshish</translation>
-<translation id="6338981933082930623">Barcha saytlar har qanday reklama chiqarishi mumkin</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> hisobi uchun yangi profil yaratilsin.</translation>
 <translation id="6340071272923955280">Internet orqali chop etish protokoli (IPPS)</translation>
 <translation id="6340526405444716530">Personalizatsiya</translation>

@@ -729,7 +729,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="4991110219272367918">Opcija za odobravanje ili neodobravanje web lokacije je zatvorena</translation>
 <translation id="499724277181351974">Navigacija: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Pratite web lokaciju ovdje</translation>
-<translation id="500351648694011114">Jednostavnije pregledajte</translation>
 <translation id="5004416275253351869">Kontrole aktivnosti na Googleu</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> se želi povezati</translation>
@@ -882,7 +881,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5864419784173784555">Čekanje drugog preuzimanja…</translation>
 <translation id="5865733239029070421">Automatski šalje Googleu statistiku korištenja i izvještaje o padovima aplikacije</translation>
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
-<translation id="5869789175361934029">Nastavite s drugog uređaja</translation>
 <translation id="5876496397064130037">Zadatak je nastavljen</translation>
 <translation id="587735546353481577">Da pratite web lokaciju, posjetite web lokaciju, otvorite Chrome meni i dodirnite Prati.</translation>
 <translation id="5879072387416556377">Dobijajte bolje prijedloge</translation>
@@ -946,6 +944,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6277722725779679269">Ažuriranje postavke Prati cijenu nije uspjelo</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Možete slati kartice između uređaja koji su prijavljeni s istim Google računom</translation>
+<translation id="6295158916970320988">Sve web lokacije</translation>
 <translation id="6297765934698848803">Organizacija koja upravlja vašim uređajem je isključila kameru.</translation>
 <translation id="6301525844455696527">Nemojte zaboraviti svoju listu za čitanje</translation>
 <translation id="6303969859164067831">Odjavite se i isključite sinhronizaciju</translation>
@@ -1516,7 +1515,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="96681097142096641">Prikazati pojednostavljenu stranicu?</translation>
 <translation id="968900484120156207">Stranice koje posjetite će se pojaviti ovdje</translation>
 <translation id="970715775301869095">Ostalo je još <ph name="MINUTES" /> min</translation>
-<translation id="978443947993957527">Pogledajte sadržaj prilagođen vama</translation>
 <translation id="981121421437150478">Van mreže</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>
 <translation id="987264212798334818">Opće</translation>

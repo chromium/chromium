@@ -729,7 +729,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4991110219272367918">Valkosti til að samþykkja eða samþykkja ekki vefsvæði lokað</translation>
 <translation id="499724277181351974">Opna: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Fylgja þessu vefsvæði hér</translation>
-<translation id="500351648694011114">Auðveldari vefskoðun</translation>
 <translation id="5004416275253351869">Virknistýringar Google</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vill tengjast</translation>
@@ -882,7 +881,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5864419784173784555">Bíður eftir öðru niðurhali…</translation>
 <translation id="5865733239029070421">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
 <translation id="5869522115854928033">Vistuð aðgangsorð</translation>
-<translation id="5869789175361934029">Halda áfram í öðru tæki</translation>
 <translation id="5876496397064130037">Haldið áfram með verkefni</translation>
 <translation id="587735546353481577">Til að fylgja vefsvæði skaltu opna vefsvæðið, opna Chrome valmyndina og smella á „Fylgja“.</translation>
 <translation id="5879072387416556377">Fáðu betri tillögur</translation>
@@ -946,6 +944,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6277722725779679269">Ekki tókst að uppfæra „Vakta verð“</translation>
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6294610283659775533">Þú getur sent flipa á milli tækja sem eru skráð inn á sama Google reikninginn</translation>
+<translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6297765934698848803">Fyrirtækið sem hefur umsjón með tækinu þínu hefur slökkt á myndavélinni.</translation>
 <translation id="6301525844455696527">Styttu leslistann</translation>
 <translation id="6303969859164067831">Skrá út og slökkva á samstillingu</translation>
@@ -1516,7 +1515,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="96681097142096641">Skoða einfaldaða síðu?</translation>
 <translation id="968900484120156207">Síður sem þú heimsækir birtast hér</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mín. eftir</translation>
-<translation id="978443947993957527">Sjáðu efni fyrir þig</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="983192555821071799">Loka öllum flipum</translation>
 <translation id="987264212798334818">Almennt</translation>

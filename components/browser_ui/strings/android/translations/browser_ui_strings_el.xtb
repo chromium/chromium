@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Να γίνεται ερώτηση προτού επιτραπεί σε ιστοτόπους η δημιουργία τρισδιάστατου χάρτη του περιβάλλοντα χώρου σας και η παρακολούθηση της θέσης της κάμερας (συνιστάται)</translation>
 <translation id="2212565012507486665">Αποδοχή cookie</translation>
 <translation id="2228071138934252756">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην κάμερά σας, ενεργοποιήστε επίσης την κάμερα στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="2238944249568001759">Προτεινόμενες αναζητήσεις βάσει της τελευταίας καρτέλας σας</translation>
 <translation id="2241634353105152135">Μόνο μία φορά</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Κατάργηση</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Η κάμερα απενεργοποιήθηκε στις ρυθμίσεις Android.</translation>
 <translation id="5706552988683188916">Αυτή η ενέργεια διαγράφει τα cookie και άλλα δεδομένα ιστοτόπου για τον ιστότοπο <ph name="WEBSITE" />.</translation>
 <translation id="5719847187258001597">Αυτή η ενέργεια θα διαγράψει όλα τα δεδομένα και τα cookie που έχουν αποθηκευτεί από <ph name="ORIGIN" /> ή από αυτήν την εφαρμογή στην αρχική οθόνη σας.</translation>
+<translation id="5723967018671998714">Τα cookie τρίτου μέρους αποκλείονται στην κατάσταση ανώνυμης περιήγησης.</translation>
 <translation id="5771720122942595109">Η άδεια <ph name="PERMISSION_1" /> αποκλείστηκε.</translation>
 <translation id="5804241973901381774">Άδειες</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>

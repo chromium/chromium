@@ -729,7 +729,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4991110219272367918">Option permettant d'approuver ou non un site Web fermée</translation>
 <translation id="499724277181351974">Accéder à : <ph name="WEBSITE_TITLE" /> – <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Suivre ce site ici</translation>
-<translation id="500351648694011114">Parcourir plus facilement</translation>
 <translation id="5004416275253351869">Commandes Google relatives à l'activité</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> tente de se connecter</translation>
@@ -882,7 +881,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5864419784173784555">En attente d'un autre téléchargement…</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
-<translation id="5869789175361934029">Continuer depuis un autre appareil</translation>
 <translation id="5876496397064130037">Tâche reprise</translation>
 <translation id="587735546353481577">Pour suivre un site, accédez-y, ouvrez le menu Chrome et appuyez sur "Suivre".</translation>
 <translation id="5879072387416556377">Obtenez de meilleures suggestions</translation>
@@ -946,6 +944,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6277722725779679269">Impossible de mettre à jour le suivi du prix</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6294610283659775533">Vous pouvez envoyer des onglets entre appareils connectés au même compte Google</translation>
+<translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6297765934698848803">L'organisation qui gère votre appareil a désactivé la caméra.</translation>
 <translation id="6301525844455696527">Rattrapez votre retard sur votre liste de lecture</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
@@ -1516,7 +1515,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="96681097142096641">Afficher la page simplifiée ?</translation>
 <translation id="968900484120156207">Les pages que vous consultez sont répertoriées ici</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
-<translation id="978443947993957527">Voir des contenus sur mesure</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="987264212798334818">Général</translation>

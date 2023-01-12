@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Spyrja áður en vefsvæðum er leyft að búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar (ráðlagt)</translation>
 <translation id="2212565012507486665">Leyfa fótspor</translation>
 <translation id="2228071138934252756">Til að veita <ph name="APP_NAME" /> aðgang að myndavélinni þarftu einnig að kveikja á henni í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="2238944249568001759">Leitartillögur byggðar á síðasta flipa</translation>
 <translation id="2241634353105152135">Bara einu sinni</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Fjarlægja</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Slökkt er á myndavél í stillingum Android</translation>
 <translation id="5706552988683188916">Þetta eyðir fótsporum og öðrum vefsvæðagögnum fyrir <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Þetta hreinsar öll gögn og fótspor sem <ph name="ORIGIN" /> eða forrit þess geymir á heimaskjánum</translation>
+<translation id="5723967018671998714">Lokað er á fótspor frá þriðja aðila í huliðsstillingu</translation>
 <translation id="5771720122942595109">Lokað er fyrir <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5860033963881614850">Slökkt</translation>

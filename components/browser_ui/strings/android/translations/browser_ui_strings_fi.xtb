@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Kysy, saavatko sivustot luoda 3D-kartan ympäristöstäsi tai seurata kameran asentoa (suositus)</translation>
 <translation id="2212565012507486665">Salli evästeet</translation>
 <translation id="2228071138934252756">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn kameraasi.</translation>
+<translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="2238944249568001759">Viime välilehteen perustuvat hakuehdotukset</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
 <translation id="2253414712144136228">Poista <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Kamera laitettiin pois päältä Androidin asetuksista</translation>
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Tämä tyhjentää kaiken datan ja kaikki evästeet, jotka <ph name="ORIGIN" /> tai sen aloitusnäytölläsi oleva sovellus on tallentanut.</translation>
+<translation id="5723967018671998714">Kolmannen osapuolen evästeet estetään incognito-tilassa</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5860033963881614850">Pois päältä</translation>

@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">Опцијата да се одобри или да не се одобри веб-сајт е затворена</translation>
 <translation id="499724277181351974">Одете на: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Следете го сајтов тука</translation>
-<translation id="500351648694011114">Прелистувајте полесно</translation>
 <translation id="5004416275253351869">Контроли на активноста на Google</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">Се чека друго преземање…</translation>
 <translation id="5865733239029070421">Автоматски испраќа статистика на користењето и извештаи за падовите до Google.</translation>
 <translation id="5869522115854928033">Зачувани лозинки</translation>
-<translation id="5869789175361934029">Продолжете од друг уред</translation>
 <translation id="5876496397064130037">Задачата продолжи</translation>
 <translation id="587735546353481577">За да следите сајт, одете на сајтот, отворете го менито на Chrome и допрете „Следи“.</translation>
 <translation id="5879072387416556377">Добијте подобри предлози</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">Не може да се ажурира „Следете ја цената“</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6294610283659775533">Може да испраќате картички меѓу уредите што се најавени со истата сметка на Google</translation>
+<translation id="6295158916970320988">Сите локации</translation>
 <translation id="6297765934698848803">Организацијата што управува со вашиот уред ви ја исклучила камерата.</translation>
 <translation id="6301525844455696527">Надоместете за пропуштеното од списокот за читање</translation>
 <translation id="6303969859164067831">Одјавете се и исклучете ја синхронизацијата</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">Да се прикаже поедноставена страница?</translation>
 <translation id="968900484120156207">Страниците што ги посетувате се појавуваат тука</translation>
 <translation id="970715775301869095">Останаа <ph name="MINUTES" /> минути</translation>
-<translation id="978443947993957527">Видете содржини за вас</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="983192555821071799">Затвори ги сите картички</translation>
 <translation id="987264212798334818">Општо</translation>

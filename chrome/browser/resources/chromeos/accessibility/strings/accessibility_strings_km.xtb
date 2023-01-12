@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">គ្មានប៊ូតុងបន្ទាប់ទេ</translation>
 <translation id="2911433807131383493">បើកការណែនាំ ChromeVox</translation>
 <translation id="2912405967290226587">អូសម្រាមដៃបីទៅស្ដាំ</translation>
+<translation id="2919107550468490321">មុខងារ​ស្អិតឆ្លាតវៃ​ត្រូវ​បានបើក</translation>
 <translation id="2937799153569150791">គ្មានផ្នែកក្បាលកម្រិតទី 3 បន្ទាប់ទេ</translation>
 <translation id="2942710183375260152">ខៀវចាស់</translation>
 <translation id="2943596527105977722">លឿងទុំចាស់</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">បន្ថយកម្រិតសម្លេង</translation>
 <translation id="3009352964623081324">Search + O បន្ទាប់មក S។ ប្រើដើម្បី​ដំឡើង គ្រប់គ្រង និងប្ដូរសំឡេង​តាមបំណង។</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox កំពុង​ផ្ទុក</translation>
 <translation id="3030432017085518523">ប៊ូតុងវិទ្យុនៃធាតុម៉ឺនុយ</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{សញ្ញាបន្តក់}other{# សញ្ញាបន្តក់}}</translation>
 <translation id="3040901448410802366">សញ្ញា​បង្ហាញពី​ដំណើរការ</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">វីដេអូ</translation>
 <translation id="3813387282697781382">ស៊ីជំពូ</translation>
 <translation id="3816633764618089385">ការកំសាន្តបន្ទាប់</translation>
+<translation id="3821689185319271077">មិនមាន​តម្ពក់​ព្រួញ​ទេ</translation>
 <translation id="3840823741487267909">អក្សរកាត់</translation>
 <translation id="3841319830220785495">សំឡេងធម្មជាតិ​លំនាំដើម</translation>
 <translation id="385383972552776628">បើកទំព័រជម្រើស</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">បែបបទ</translation>
 <translation id="4601367666219428522">តារាង <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">មិនអើពើការចុចប៊ូតុងបន្ទាប់</translation>
+<translation id="4617384941327705512">មុខងារ​ស្អិតឆ្លាតវៃ​ត្រូវ​បានបិទ</translation>
 <translation id="4623097797855662355">ឈ្មោះ​ក្រុមហ៊ុន​បោះពុម្ព​ផ្សាយ</translation>
 <translation id="4624970070706497034">TalkBack លែង​ផ្ដល់​ការប្ដូរតាមបំណង​សម្រាប់ Chromebook ទៀតហើយ។ អ្នកនៅអាច​ប្រើប្រាស់វា ប៉ុន្តែ​ប្រើប្រាស់​ផ្លូវកាត់​ក្ដារចុច​លំនាំដើម TalkBack។ ចុច Search+A រួច K ដើម្បីមើលឃើញ​​ផ្លូវកាត់​ដែល​អាចប្រើបាន។ ប្រសិនបើ​អ្នក​នៅតែ​ចង់​ប្រើប្រាស់ TalkBack សូម​ចុច​ឃ្លាបញ្ជា​ម្ដងទៀត។</translation>
 <translation id="463135993322337640">ចុច ChromeVox o, n ដើម្បីស្វែងយល់ពីអ្វីដែលថ្មី</translation>

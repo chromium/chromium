@@ -402,7 +402,6 @@
 <translation id="191374271204266022">JSON olaraq kopyalayın</translation>
 <translation id="1914326953223720820">Faylların Açılması</translation>
 <translation id="1916770123977586577">Yenilənən ayarları bu sayta tətbiq etmək üçün səhifəni təkrar yükləyin</translation>
-<translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919367280705858090">Spesifik xəta mesajı ilə bağlı yardım əldə edin</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
@@ -801,6 +800,7 @@
 <translation id="2986368408720340940">Bu götürmə üsulu əlçatan deyil. Başqa üsul seçin.</translation>
 <translation id="2987034854559945715">Uyğun funksiya yoxdur</translation>
 <translation id="2989742184762224133">Yuxarıdan qoşa ştapel vurun</translation>
+<translation id="2990882401221831923">Kredit kartlarının siyahısı bağlanıb.</translation>
 <translation id="2991174974383378012">Veb saytlar ilə paylaşılır</translation>
 <translation id="299122504639061328">Defolt axtarış sisteminizi və sayt axtarışınızı idarə edin</translation>
 <translation id="2991571918955627853">Hazırda <ph name="SITE" /> saytına daxil olmaq mümkün deyil, çünki veb səhifə HSTS istifadə edir. Şəbəkə xətaları və hücumları adətən müvəqqəti olur, beləliklə, bu səhifə yəqin ki daha sonra işləyəcək.</translation>
@@ -922,7 +922,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Parol Meneceri bu parolu indi dəyişdirmənizi tövsiyə edir.</translation>
 <translation id="3308006649705061278">Təşkilati Birlik (OU)</translation>
-<translation id="3308738399950580893">reklamlar</translation>
 <translation id="3320021301628644560">Və faktura ünvanı</translation>
 <translation id="3324687287337751929">4 x 6 düym</translation>
 <translation id="3324983252691184275">Tünd-qırmızı</translation>
@@ -1582,6 +1581,7 @@
 <translation id="4976702386844183910">Son ziyarət: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Sxem doğrulama xətası: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofondan istifadə edilsin?</translation>
+<translation id="4988822846878841743">Yarı hündürlükdə açılan toxunduqda doldurulacaq kredit kartlarının siyahısı.</translation>
 <translation id="4989163558385430922">Hamısına baxın</translation>
 <translation id="4989542687859782284">Əlçatmaz</translation>
 <translation id="4989809363548539747">Bu plagin dəstəklənmir</translation>
@@ -1930,6 +1930,7 @@
 <translation id="5863847714970149516">Növbəti səhifədə Sizdən ödəniş tutula bilər</translation>
 <translation id="5866257070973731571">Telefon Nömrəsi Əlavə Edin</translation>
 <translation id="5866898949289125849">Developer alətlər səhifəsinə baxırsınız</translation>
+<translation id="5868548454963263350">Tam hündürlükdə açılan toxunduqda doldurulacaq kredit kartlarının siyahısı.</translation>
 <translation id="5869405914158311789">Bu sayta qoşulmaq olmur</translation>
 <translation id="5869522115854928033">Saxlanılmış parollar</translation>
 <translation id="5873013647450402046">Bankınız bunun siz olduğunuzu təsdiq etmək istəyir.</translation>
@@ -2642,6 +2643,7 @@
 <translation id="7653957176542370971">Ödəniş səhifəsi bağlıdır</translation>
 <translation id="7654909834015434372">Annotasiyaları redaktə etdiyiniz zaman bu sənəd ilkin vəziyyətinə qayıdacaq</translation>
 <translation id="765676359832457558">Qabaqcıl ayarları gizlədin...</translation>
+<translation id="7656935528854393684">Toxunduqda doldurulacaq kredit kartlarının siyahısı.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7659327900411729175">Zərf Kaku 8</translation>
 <translation id="7659878911471462949">Sevinc göz yaşları</translation>

@@ -249,6 +249,7 @@
 <translation id="6598877126913850652">‏מעבר אל הגדרות ההודעות של Chromium</translation>
 <translation id="6613594504749178791">‏השינויים שביצעת ייכנסו לתוקף בפעם הבאה שתפעיל מחדש את Chromium‏.</translation>
 <translation id="665732753414869868">‏נדרשת הרשאת גישה למצלמה ב-Chromium כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
+<translation id="6663852025006259149">‏סביר להניח שאתרים יפעלו כצפוי, אבל ההעדפות שלך באתרים האלו יימחקו לאחר סגירת כל החלונות ב-Chromium</translation>
 <translation id="6676384891291319759">גישה אל האינטרנט</translation>
 <translation id="668175097507315160">‏לא בוצע סנכרון של הנתונים ב-ChromiumOS בגלל שגיאה בתהליך הכניסה.</translation>
 <translation id="6709350901466051922">‏נדרשת הרשאת גישה למיקרופון ב-Chromium עבור האתר הזה</translation>
@@ -379,5 +380,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="945990405696787151">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-macOS מגרסה 10.13 ואילך. במחשב הזה פועלת מערכת ההפעלה ‎OS X 10.11.</translation>
 <translation id="965162752251293939">‏מי משתמש/ת ב-Chromium?</translation>
 <translation id="967427899662692980">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chromium?</translation>
+<translation id="9792300276217204">‏ניקוי נתונים מאתרים מהמכשיר בכל פעם שסוגרים את Chromium</translation>
 <translation id="985602178874221306">‏מחברי Chromium</translation>
 </translationbundle>

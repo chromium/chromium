@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Spør før nettsteder får lage 3D-kart av omgivelsene dine eller spore kameraposisjonen (anbefales)</translation>
 <translation id="2212565012507486665">Tillat informasjonskapsler</translation>
 <translation id="2228071138934252756">For å gi <ph name="APP_NAME" /> tilgang til kameraet må du også slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="2238944249568001759">Foreslåtte søk basert på den siste fanen din</translation>
 <translation id="2241634353105152135">Bare én gang</translation>
 <translation id="2253414712144136228">Fjern <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Kameraet er slått av i Android-innstillingene</translation>
 <translation id="5706552988683188916">Dette medfører sletting av informasjonskapsler og andre nettstedsdata for <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Dette sletter alle data og informasjonskapsler som er lagret av <ph name="ORIGIN" /> eller den tilhørende appen på startskjermen.</translation>
+<translation id="5723967018671998714">Informasjonskapsler fra tredjeparter er blokkert i inkognitomodus</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> er blokkert</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5860033963881614850">Av</translation>

@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Fråga innan webbplatser tillåts att skapa en 3D-karta över dina omgivningar eller registrera kamerans position (rekommenderas)</translation>
 <translation id="2212565012507486665">Tillåt cookies</translation>
 <translation id="2228071138934252756">Om du vill ge <ph name="APP_NAME" /> åtkomst till kameran måste du även aktivera kameran i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Cookies från tredje part har blockerats</translation>
 <translation id="2238944249568001759">Föreslagna sökningar utifrån din senaste flik</translation>
 <translation id="2241634353105152135">Bara en gång</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Ta bort</translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
 <translation id="5706552988683188916">Cookies och annan webbplatsdata för <ph name="WEBSITE" /> raderas</translation>
 <translation id="5719847187258001597">All data och alla cookies som har sparats av <ph name="ORIGIN" /> eller motsvarande app på startskärmen rensas.</translation>
+<translation id="5723967018671998714">Cookies från tredje part blockeras i inkognitoläge</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockeras</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
 <translation id="5860033963881614850">Av</translation>

@@ -413,6 +413,7 @@ No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em in
       No <ph name="PRODUCT_OS_NAME" />, esta política se aplica apenas a usuários afiliados.
 
       Esta política substitui <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.</translation>
+<translation id="1413768951234456918">Limpar histórico de navegação</translation>
 <translation id="1413936351612032792">Enviar informações sobre o uso de apps Linux</translation>
 <translation id="1417888712677507140">Bloquear caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="1418387035898607074">Pular as verificações do "Navegação segura" para arquivos transferidos por download de fontes confiáveis</translation>
@@ -2765,6 +2766,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       Se a política não for definida, nenhuma restrição vai ser aplicada.</translation>
 <translation id="3531084733660068324">Configurações de supervisão da família</translation>
+<translation id="3532827558833318911">Limpar login com senha</translation>
 <translation id="353611922042274900">Sempre mostrar informações do sistema na tela de login</translation>
 <translation id="3536263244905016305">Desativar a otimização de descoberta automática de proxies da Web (WPAD, na sigla em inglês)</translation>
 <translation id="3538869107794555625">Ativar o teclado na tela no modo tablet</translation>
@@ -4425,6 +4427,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       A <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> é uma política relacionada que também pode desativar verificações de interceptação de DNS. Esta política é uma versão mais flexível, que pode controlar barras de informações de redirecionamento à intranet separadamente e ainda pode ser expandida no futuro.
       Se <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> ou esta política solicitarem que as verificações de interceptação sejam desativadas, elas serão desativadas.</translation>
+<translation id="5210133032276211845">Limpar imagens e arquivos armazenados em cache</translation>
 <translation id="5212118847531454979">Permite definir o período, em milissegundos, em que os usuários são notificados de que o <ph name="PRODUCT_NAME" /> ou um dispositivo <ph name="PRODUCT_OS_NAME" /> precisa ser reiniciado para aplicar uma atualização pendente.
 
       Nesse período, o usuário será informado várias vezes sobre a necessidade de atualização. Para dispositivos <ph name="PRODUCT_OS_NAME" />, uma notificação de reinicialização é exibida na bandeja do sistema de acordo com a política <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Para navegadores <ph name="PRODUCT_NAME" />, o menu do app muda para indicar que uma reinicialização é necessária após o decorrer de um terço do período de notificação. Essa notificação muda de cor após dois terços do período de notificação e muda mais uma vez quando todo o período de notificação é concluído. As outras notificações ativadas pela política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> seguem essa mesma programação.
@@ -4783,6 +4786,7 @@ Se a política for desativada ou deixada sem definição, as configurações de 
       Se a lista estiver vazia, não haverá uma fase de testes, e as atualizações serão aplicadas de acordo com outras políticas do dispositivo.
 
       Esta política não se aplica a trocas de canais.</translation>
+<translation id="5517825566262498086">Limpar dados de apps hospedados</translation>
 <translation id="5519331583722582543">Uma sinalização booleana indicando se o teclado na tela pode oferecer entrada por reconhecimento de escrita manual.</translation>
 <translation id="5519619299971727565">Desativar os relatórios de uso de apps Linux</translation>
 <translation id="5521035900165046997">Ativar relatórios de informações de Bluetooth do dispositivo</translation>
@@ -5056,6 +5060,7 @@ Se a política for deixada sem definição, nenhum domínio poderá acessar os U
 
       Esse comportamento não será acionado se o Navegação segura estiver desativado, seja por uma política ou pelo usuário. Para forçar o uso do Navegação segura, use a política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou a <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Configurações de captura de tela</translation>
+<translation id="5835674781974810379">Limpar cookies e outros dados do site</translation>
 <translation id="5836064773277134605">Restringir o intervalo de portas UDP usado pelo host de acesso remoto</translation>
 <translation id="583627479140113555">Ativar a importação de senhas salvas na primeira execução</translation>
 <translation id="5837898601525273156">Se <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> estiver definida, a definição de <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> como "Ativada" manterá a política avançada de gerenciamento de energia para o modo de carregamento da bateria ativada, se ela for compatível com o dispositivo. Esse modo permite que os usuários maximizem a integridade da bateria ao usar um algoritmo de carregamento padrão e outras técnicas fora do horário de trabalho. Durante o horário de trabalho, o sistema usa um carregamento expresso, que permite que a bateria carregue mais rapidamente. Para cada dia, especifique o período em que o sistema será mais utilizado pelo horário de início e a duração.
@@ -5206,6 +5211,7 @@ Se a política for deixada sem definição, nenhum domínio poderá acessar os U
 <translation id="5997543603646547632">Usar relógido de 24 horas por padrão</translation>
 <translation id="5997846976342452720">Especifica se o localizador de plug-ins deve ser desativado (uso suspenso)</translation>
 <translation id="5998198091336830580">Esta política faz parte do seguinte grupo atômico (apenas as políticas da fonte de maior prioridade presentes no grupo são aplicadas):</translation>
+<translation id="6001621991816939414">Limpar histórico de downloads</translation>
 <translation id="600402562436559989">Permitir que as configurações de rede Wi-Fi sejam sincronizadas entre dispositivos <ph name="PRODUCT_OS_NAME" /> e um smartphone Android conectado</translation>
 <translation id="6004575267180297869">
       Especifica se módulos WebAssembly podem ser enviados em origem cruzada a outra janela ou outro worker. O compartilhamento do módulo WebAssembly em origem cruzada será descontinuado como parte dos esforços para descontinuar document.domain, conforme descrito em https://github.com/mikewest/deprecating-document-domain (link em inglês). Esta política permite que o compartilhamento do módulo WebAssembly em origem cruzada seja reativado para oferecer um período de transição maior no processo de descontinuação.
@@ -6836,6 +6842,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7519218194072744342">O URL do gerenciador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir a geração de chaves nesses sites</translation>
 <translation id="7521864460386999758">Impedir que código de terceiros seja injetado no Chrome</translation>
+<translation id="7524983116584990314">Limpar preenchimento automático</translation>
 <translation id="7529144158022474049">Fator de dispersão de atualizações automáticas</translation>
 <translation id="7529332889403151669">Especifica se alertas de tela cheia serão exibidos quando o dispositivo retornar de uma tela desligada ou do modo de Suspensão.
 
@@ -8016,6 +8023,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="8657543427358173663">Permitir a coleta de logs de eventos WebRTC em Serviços do Google</translation>
 <translation id="8659843732895043951">Permitir a área de transferência nesses sites</translation>
 <translation id="8661297125441579970">Bloquear migração de dados e ARC.</translation>
+<translation id="8661538142776716004">Limpar configurações do site</translation>
 <translation id="8661980316738569557">Ativar alto contraste</translation>
 <translation id="8664285601317301180">Esta política controla o valor do <ph name="IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> em trabalhos de impressão.
 
@@ -8266,6 +8274,21 @@ para essa VM. É possível instalar várias VMs de uma configuração no mesmo d
 <translation id="8882307005437314052">Ativar o teclado na tela de login e permitir que o usuário desative o recurso temporariamente</translation>
 <translation id="8883577480680089760">Desativar o serviço <ph name="PRODUCT_NAME" /> V2 e não iniciar o espaço de trabalho remoto após o login</translation>
 <translation id="8887709920496070892">O tempo, em milissegundos, sem entrada do usuário após o qual uma caixa de diálogo de alerta é exibida.</translation>
+<translation id="8887847586787956456">Lista de ações a serem executadas quando o tempo limite da política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido.
+
+      Se a <ph name="IDLE_TIMEOUT_POLICY_NAME" /> não for definida, esta política não terá efeito.
+
+      Quando o tempo limite da <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido, o <ph name="PRODUCT_NAME" /> vai executar as ações configuradas nesta política.
+
+      Se esta política for deixada em branco ou sem definição, a <ph name="IDLE_TIMEOUT_POLICY_NAME" /> não terá efeito.
+
+      As ações disponíveis são:
+
+      <ph name="CLOSE_BROWSERS_ACTION" />: fechar todos os PWAs e janelas do navegador deste perfil.
+
+      <ph name="SHOW_PROFILE_PICKER_ACTION" />: mostrar a janela do seletor de perfil.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: limpar os dados de navegação correspondentes. Consulte a política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> para saber mais detalhes.</translation>
 <translation id="8890438048579188548">Ocultar avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Desativar relatórios de informações do sistema do dispositivo</translation>
 <translation id="8892286064305622118">Espaço livre em disco necessário para o <ph name="PLUGIN_VM_NAME" /></translation>

@@ -729,7 +729,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4991110219272367918">Веб-сайтты мақұлдау не мақұлдамау опциясы бар бет жабық.</translation>
 <translation id="499724277181351974">Өту: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Сайтқа осында жазылу</translation>
-<translation id="500351648694011114">Браузерді пайдалануды оңайлатыңыз</translation>
 <translation id="5004416275253351869">Google-дағы әрекеттерді басқару элементтері</translation>
 <translation id="5005498671520578047">Құпия сөзді көшіру</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты байланыс орнатқысы келеді</translation>
@@ -882,7 +881,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5864419784173784555">Басқа контент жүктеп алынуда...</translation>
 <translation id="5865733239029070421">Қолданыс статистикасын және жаңылыс туралы есептерді Google жүйесіне автоматты түрде жібереді</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
-<translation id="5869789175361934029">Басқа құрылғыдан жалғастыру</translation>
 <translation id="5876496397064130037">Тапсырма қайта жалғасты</translation>
 <translation id="587735546353481577">Сайтқа жазылу үшін оған өтіңіз де, Chrome мәзірін ашып, "Жазылу" түймесін түртіңіз.</translation>
 <translation id="5879072387416556377">Жақсырақ ұсыныстар алыңыз</translation>
@@ -946,6 +944,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6277722725779679269">Бақыланатын баға жаңартылмады.</translation>
 <translation id="6278428485366576908">Тақырып</translation>
 <translation id="6294610283659775533">Бірдей Google аккаунтымен кірген құрылғыларға қойынды жіберуге болады.</translation>
+<translation id="6295158916970320988">Барлық сайттар</translation>
 <translation id="6297765934698848803">Құрылғыңызды басқаратын ұйым камерыңызды өшірді.</translation>
 <translation id="6301525844455696527">Оқылмаған тізімді ашу</translation>
 <translation id="6303969859164067831">Аккаунттан шығу және синхрондау функциясын өшіру</translation>
@@ -1516,7 +1515,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="96681097142096641">Жеңілдетілген бетті көру керек пе?</translation>
 <translation id="968900484120156207">Кірген беттеріңіз осы жерде көрсетіледі.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> мин қалды</translation>
-<translation id="978443947993957527">Сізге арналған контентті көріңіз</translation>
 <translation id="981121421437150478">Желіден тыс</translation>
 <translation id="983192555821071799">Барлық қойындыларды жабу</translation>
 <translation id="987264212798334818">Жалпы</translation>

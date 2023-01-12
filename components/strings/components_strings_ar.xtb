@@ -402,7 +402,6 @@
 <translation id="191374271204266022">‏نسخ بتنسيق JSON</translation>
 <translation id="1914326953223720820">خدمة "فك الضغط"</translation>
 <translation id="1916770123977586577">لتطبيق الإعدادات المُحدَّثة على الموقع الإلكتروني هذا، أعِد تحميل هذه الصفحة</translation>
-<translation id="1919345977826869612">الإعلانات</translation>
 <translation id="1919367280705858090">الحصول على مساعدة بخصوص رسالة خطأ محددة</translation>
 <translation id="1919526244108283799">400 × 600 ملم</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{بدون}=1{موقع واحد}two{ موقعان (#)}few{# مواقع}many{# موقعًا}other{# موقع}}</translation>
@@ -802,6 +801,7 @@
 <translation id="2986368408720340940">طريقة الاستلام هذه غير متاحة. جرِّب طريقة أخرى.</translation>
 <translation id="2987034854559945715">لا تتوفر ميزات متطابقة.</translation>
 <translation id="2989742184762224133">وضع دبوسَين بالأعلى</translation>
+<translation id="2990882401221831923">تم إغلاق قائمة بطاقات الائتمان.</translation>
 <translation id="2991174974383378012">المشاركة مع المواقع الإلكترونية</translation>
 <translation id="299122504639061328">يمكنك إدارة محرك البحث التلقائي وبحث الموقع التلقائي.</translation>
 <translation id="2991571918955627853">‏لا يمكنك زيارة <ph name="SITE" /> في الوقت الحالي لأن الموقع الإلكتروني يستخدم HSTS. أخطاء الشبكة والهجمات عليها عادةً ما تكون مؤقتة، لذا ستعمل هذه الصفحة في وقت لاحق على الأرجح.</translation>
@@ -925,7 +925,6 @@
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات، لذلك ينصح "مدير كلمات المرور" في Google بتغيير كلمة المرور هذه الآن.</translation>
 <translation id="3308006649705061278">‏الوحدة التنظيمية (OU)</translation>
-<translation id="3308738399950580893">الإعلانات</translation>
 <translation id="3320021301628644560">إضافة عنوان إرسال الفواتير</translation>
 <translation id="3324687287337751929">4 × 6 بوصة</translation>
 <translation id="3324983252691184275">قرمزي</translation>
@@ -1589,6 +1588,7 @@
 <translation id="4976702386844183910">تاريخ آخر زيارة للموقع الإلكتروني: <ph name="DATE" /></translation>
 <translation id="498323057460789381">حدث خطأ أثناء التحقّق من صحة المخطط: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">هل تريد استخدام الميكروفون؟</translation>
+<translation id="4988822846878841743">قائمة بطاقات الائتمان المتاحة لملء النموذج تلقائيًا باللمس تم فتحها في نصف الشاشة.</translation>
 <translation id="4989163558385430922">عرض الكل</translation>
 <translation id="4989542687859782284">التجارب غير المتاحة</translation>
 <translation id="4989809363548539747">هذا المكوِّن الإضافي غير مدعوم</translation>
@@ -1937,6 +1937,7 @@
 <translation id="5863847714970149516">قد تحاول الصفحة التالية تحصيل رسوم منك</translation>
 <translation id="5866257070973731571">إضافة رقم الهاتف</translation>
 <translation id="5866898949289125849">أنت تطّلع على صفحة أدوات المطوّرين.</translation>
+<translation id="5868548454963263350">قائمة بطاقات الائتمان المتاحة لملء النموذج تلقائيًا باللمس تم فتحها بطول الشاشة.</translation>
 <translation id="5869405914158311789">لا يمكن الوصول إلى الموقع الإلكتروني هذا</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
 <translation id="5873013647450402046">يجب تأكيد هويتك للمصرف.</translation>
@@ -2649,6 +2650,7 @@
 <translation id="7653957176542370971">جدول بيانات معالج الدفع مغلق</translation>
 <translation id="7654909834015434372">عند تعديل التعليقات التوضيحية، سيعود هذا المستند إلى اتجاه تدويره الأصلي.</translation>
 <translation id="765676359832457558">إخفاء الإعدادات المتقدمة...</translation>
+<translation id="7656935528854393684">قائمة بطاقات الائتمان المتاحة لملء النموذج تلقائيًا باللمس</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7659327900411729175">‏ظرف Kaku 8</translation>
 <translation id="7659878911471462949">دموع الفرح</translation>

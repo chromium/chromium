@@ -251,6 +251,7 @@
 <translation id="6598877126913850652">Chromium の通知設定に移動</translation>
 <translation id="6613594504749178791">変更内容は次に Chromium を再起動したときに有効になります。</translation>
 <translation id="665732753414869868">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
+<translation id="6663852025006259149">サイトはおおむね想定どおりに機能しますが、Chromium のウィンドウをすべて閉じるとユーザーに関する情報は失われます</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
 <translation id="668175097507315160">ログイン時にエラーが発生したため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="6709350901466051922">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
@@ -380,5 +381,6 @@
 <translation id="945990405696787151">今後、Chromium のアップデートを受信するには、macOS 10.13 以降が必要となります。このコンピュータでは OS X 10.11 が実行されています。</translation>
 <translation id="965162752251293939">Chromium はどなたが使用しますか？</translation>
 <translation id="967427899662692980">Chromium の最高のセキュリティ強度で保護</translation>
+<translation id="9792300276217204">Chromium を閉じるとき、常にデバイスからサイトデータを削除する</translation>
 <translation id="985602178874221306">Chromium 開発者</translation>
 </translationbundle>

@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">Старонка, на якой можна ўхваліць вэб-сайт, закрыта</translation>
 <translation id="499724277181351974">Перайсці на сайт <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Падпісацца на сайт можна тут</translation>
-<translation id="500351648694011114">Зручнейшы прагляд старонак</translation>
 <translation id="5004416275253351869">Параметры дзейнасці Google</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">Чаканне іншай спампоўкі…</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
-<translation id="5869789175361934029">Працягніце з іншай прылады</translation>
 <translation id="5876496397064130037">Задача ўзноўлена</translation>
 <translation id="587735546353481577">Каб падпісацца на сайт, перайдзіце на яго, адкрыйце меню Chrome і націсніце "Падпісацца".</translation>
 <translation id="5879072387416556377">Атрымлівайце лепшыя прапановы</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">Абнавіць функцыю "Адсочванне цаны" не ўдалося</translation>
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6294610283659775533">Вы можаце адпраўляць укладкі на свае прылады, на якіх выкананы ўваход у адзін і той жа Уліковы запіс Google</translation>
+<translation id="6295158916970320988">Усе сайты</translation>
 <translation id="6297765934698848803">Арганізацыя, якая кіруе вашай прыладай, выключыла камеру.</translation>
 <translation id="6301525844455696527">Не забудзьце прачытаць</translation>
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">Адкрыць спрошчаны выгляд старонкі?</translation>
 <translation id="968900484120156207">Тут будуць паказвацца наведаныя вамі старонкі</translation>
 <translation id="970715775301869095">Засталося часу: <ph name="MINUTES" /> хв</translation>
-<translation id="978443947993957527">Змесціва для вас</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="983192555821071799">Закрыць усе ўкладкі</translation>
 <translation id="987264212798334818">Агульныя</translation>

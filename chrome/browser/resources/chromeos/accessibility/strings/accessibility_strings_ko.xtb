@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">다음 버튼이 없습니다</translation>
 <translation id="2911433807131383493">ChromeVox 가이드 열기</translation>
 <translation id="2912405967290226587">손가락 세 개를 사용하여 오른쪽으로 스와이프</translation>
+<translation id="2919107550468490321">스마트 고정 모드 사용</translation>
 <translation id="2937799153569150791">다음 수준 3 제목이 없습니다</translation>
 <translation id="2942710183375260152">다크 슬레이트 블루</translation>
 <translation id="2943596527105977722">다크 골든로드</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">음조 낮춤</translation>
 <translation id="3009352964623081324">검색 + O를 누른 후 S. 음성을 설치, 관리, 맞춤설정할 수 있습니다.</translation>
 <translation id="3014130421870723208">@수정 입력란 8점</translation>
+<translation id="3018210433491759145">ChromeVox 로드 중</translation>
 <translation id="3030432017085518523">메뉴 항목 라디오 버튼</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{아포스트로피}other{아포스트로피 #개}}</translation>
 <translation id="3040901448410802366">진행률 표시기</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">동영상</translation>
 <translation id="3813387282697781382">라이트 코럴</translation>
 <translation id="3816633764618089385">다음 미디어</translation>
+<translation id="3821689185319271077">포인터 앵커 없음</translation>
 <translation id="3840823741487267909">약어</translation>
 <translation id="3841319830220785495">기본 자연 음성</translation>
 <translation id="385383972552776628">옵션 페이지 열기</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">양식</translation>
 <translation id="4601367666219428522">표 <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">다음 키 누름 무시</translation>
+<translation id="4617384941327705512">스마트 고정 모드 사용 안함</translation>
 <translation id="4623097797855662355">출판사 이름</translation>
 <translation id="4624970070706497034">Chromebook용 TalkBack 맞춤설정 기능이 더 이상 제공되지 않습니다. 기능은 계속 사용할 수 있지만 TalkBack 기본 키보드 단축키를 사용하셔야 합니다. 검색 키와 A 키를 동시에 누른 후 K 키를 눌러 사용 가능한 단축키를 보세요. TalkBack 기능을 계속 사용하려면 명령 키를 다시 누르시기 바랍니다.</translation>
 <translation id="463135993322337640">ChromeVox o, n을 눌러 새로운 기능을 살펴보세요</translation>

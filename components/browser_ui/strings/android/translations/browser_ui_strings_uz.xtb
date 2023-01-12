@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Saytlar atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatish oldin ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="2212565012507486665">Cookie fayllariga ruxsat berish</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> kameradan foydalanishiga ruxsat berish uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
+<translation id="2235344399760031203">Tashqi cookie fayllar bloklandi</translation>
 <translation id="2238944249568001759">Oxirgi varaq asosida tavsiya etiladigan qidiruvlar</translation>
 <translation id="2241634353105152135">Bir marta</translation>
 <translation id="2253414712144136228">Olib tashlash: <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">Kamera Android sozlamalarida yoqilmagan</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> uchun cookie fayllar va sayt maʼlumotlarini oʻchiradi</translation>
 <translation id="5719847187258001597">Bunda <ph name="ORIGIN" /> saytidan saqlangan barcha maʼlumotlar va cookie fayllar yoki Bosh ekrandagi ilovalar tozalab tashlanadi.</translation>
+<translation id="5723967018671998714">Inkognito rejimida tashqi cookie fayllariga ruxsat berilmaydi</translation>
 <translation id="5771720122942595109">Bloklandi: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
 <translation id="5860033963881614850">O‘chiq</translation>

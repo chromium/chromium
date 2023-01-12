@@ -142,6 +142,7 @@
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="3541482654983822893">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
 <translation id="3576528680708590453">O administrador do seu sistema configurou o Google Chrome para abrir um navegador alternativo ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3579965087968408543">Sempre limpar os dados do site do seu dispositivo ao fechar o Chrome</translation>
 <translation id="3582972582564653026">Sincronize e personalize o Chrome em todos os seus dispositivos</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Seu administrador exige que você reinicie o Chrome para que uma atualização seja feita.}=1{Seu administrador exige que você reinicie o Chrome para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador exige que você reinicie o Chrome para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador exige que você reinicie o Chrome para que uma atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="3622797965165704966">Agora ficou mais fácil usar o Chrome com sua Conta do Google e em computadores compartilhados.</translation>
@@ -343,6 +344,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7917876797003313048">Você pode gerenciar as Contas do Google conectadas. Elas são usadas no navegador Chrome, na Play Store, no Gmail e muito mais. Se quiser adicionar uma conta para outra pessoa, como um membro da família, adicione um novo usuário ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">O Google Chrome está tentando copiar senhas.</translation>
 <translation id="7951272445806340501">É necessário reiniciar o ChromeOS Flex para que a atualização seja aplicada.</translation>
+<translation id="7962368738413920945">Os sites provavelmente vão funcionar conforme o esperado, mas não se lembrarão dos seus dados depois que você fechar todas as janelas do Chrome</translation>
 <translation id="7962410387636238736">Este computador não receberá mais atualizações do Google Chrome porque o Windows XP e o Windows Vista não são mais compatíveis</translation>
 <translation id="8005666035647241369">Para o Gerenciador de senhas do Google deste dispositivo</translation>
 <translation id="8008534537613507642">Reinstalar o Google Chrome</translation>

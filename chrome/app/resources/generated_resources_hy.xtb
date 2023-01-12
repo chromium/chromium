@@ -3214,6 +3214,7 @@
 <translation id="3898233949376129212">Սարքի լեզուն</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> կայքն ուզում է <ph name="FIRST_PERMISSION" /> և <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898743717925399322"><ph name="WEBSITE" /> կայքի ձեր գաղտնաբառը պահված է այս սարքում և ձեր Google հաշվում։ Ո՞րն եք ուզում ջնջել։</translation>
+<translation id="3898768766145818464">Նվագարկել տեսանյութը կամ դադարեցնել նվագարկումը</translation>
 <translation id="389901847090970821">Ընտրեք ստեղնաշարը</translation>
 <translation id="3900966090527141178">Գաղտնաբառերի արտահանում</translation>
 <translation id="3902789559055749153">Ընտրեք, թե ինչպես եք ուզում անցաբառ ստեղծել <ph name="APP_NAME" /> հավելվածի համար</translation>
@@ -4901,7 +4902,6 @@
 <translation id="5493792505296048976">էկրանը միացված է</translation>
 <translation id="5494016731375030300">Վերջերս փակված ներդիրներ</translation>
 <translation id="5494362494988149300">Բացել &amp;ավարտվելուն պես</translation>
-<translation id="5494752089476963479">Արգելափակել գովազդը կայքերում, որոնք հոգնեցնող կամ մոլորեցնող գովազդ են ցուցադրում</translation>
 <translation id="5495466433285976480">Հաջորդ վերագործարկումից հետո այս գործողությունը կջնջի բոլոր տեղային օգտատերերին, ֆայլերը, տվյալները և այլ կարգավորումները: Բոլոր օգտատերերը պետք է նորից մուտք գործեն:</translation>
 <translation id="5495597166260341369">Չանջատել էկրանը</translation>
 <translation id="5496587651328244253">Կազմակերպել</translation>
@@ -5803,7 +5803,6 @@
 <translation id="6335920438823100346">Լինուքսը գործարկելու համար (կանոնի աղբյուրը՝ <ph name="MANAGER" />) անհրաժեշտ է, որ պահուստավորեք ձեր տվյալներն ու վերակայեք այս Chromebook-ի գործարանային կարգավորումները։</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="6338968693068997776">Ավելացրեք USB սարք</translation>
-<translation id="6338981933082930623">Բոլոր կայքերը կարող են գովազդ ցուցադրել</translation>
 <translation id="6339668969738228384">Ստեղծել նոր պրոֆիլ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
 <translation id="6340071272923955280">Ինտերնետի միջոցով տպման հաղորդակարգ (IPPS)</translation>
 <translation id="6340526405444716530">Անհատականացում</translation>

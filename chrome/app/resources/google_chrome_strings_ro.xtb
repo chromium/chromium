@@ -141,6 +141,7 @@
 <translation id="3533694711092285624">Nu există parole salvate. Chrome îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="3541482654983822893">Chrome nu îți poate verifica parolele. Încearcă din nou după 24 de ore.</translation>
 <translation id="3576528680708590453">Administratorul sistemului a configurat Google Chrome astfel încât să deschidă un browser secundar pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3579965087968408543">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chrome</translation>
 <translation id="3582972582564653026">Sincronizează și personalizează Chrome pe toate dispozitivele</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
@@ -342,6 +343,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7917876797003313048">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chrome, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome încearcă să copieze parolele.</translation>
 <translation id="7951272445806340501">Pentru a se aplica actualizarea, sistemul de operare Chrome Flex trebuie să fie repornit.</translation>
+<translation id="7962368738413920945">Probabil că site-urile vor funcționa conform așteptărilor, dar nu te vor reține după ce închizi toate ferestrele Chrome</translation>
 <translation id="7962410387636238736">Acest computer nu va mai primi actualizări pentru Google Chrome, deoarece Windows XP și Windows Vista nu mai sunt acceptate</translation>
 <translation id="8005666035647241369">În Manager de parole Google pe acest dispozitiv</translation>
 <translation id="8008534537613507642">Reinstalați Chrome</translation>

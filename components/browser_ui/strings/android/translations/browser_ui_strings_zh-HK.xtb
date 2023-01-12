@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">在允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置前先詢問您 (建議)</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
+<translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
 <translation id="2241634353105152135">只此一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -135,7 +136,7 @@
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
 <translation id="3797520601150691162">不要為特定網站套用深色主題背景</translation>
-<translation id="3803367742635802571">你造訪的網站可能無法正常運作</translation>
+<translation id="3803367742635802571">您瀏覽的網站可能無法正常運作</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
 <translation id="381841723434055211">電話號碼</translation>
 <translation id="3826050100957962900">第三方登入</translation>
@@ -175,7 +176,7 @@
 <translation id="4534723447064627427">如要讓 <ph name="APP_NAME" /> 存取您的麥克風，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟麥克風。</translation>
 <translation id="4566417217121906555">將麥克風設定為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
-<translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
+<translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
 <translation id="5719847187258001597">此操作會清除主畫面上 <ph name="ORIGIN" /> 或其應用程式儲存的所有資料和 Cookie。</translation>
+<translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -304,7 +306,7 @@
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗和重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>
-<translation id="7188508872042490670">網站在裝置端的資料</translation>
+<translation id="7188508872042490670">裝置上的網站資料</translation>
 <translation id="7203150201908454328">已展開</translation>
 <translation id="723171743924126238">選取圖片</translation>
 <translation id="7243308994586599757">您可在畫面底部附近找到選項</translation>

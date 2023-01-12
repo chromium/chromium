@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Пре него што дозволите сајтовима да праве 3D мапу окружења или прате положај камере приказује се упит (препоручено)</translation>
 <translation id="2212565012507486665">Дозволи колачиће</translation>
 <translation id="2228071138934252756">Да бисте дозволили да <ph name="APP_NAME" /> приступа камери, укључите камеру и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Колачићи треће стране су блокирани</translation>
 <translation id="2238944249568001759">Предложене претраге на основу ваше последње картице</translation>
 <translation id="2241634353105152135">Само једном</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Уклоните</translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Камера је искључена у Android подешавањима</translation>
 <translation id="5706552988683188916">Овим се бришу колачићи и други подаци о сајту за <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Овим бришете све податке и колачиће које чува сајт <ph name="ORIGIN" /> или његова апликација на почетном екрану.</translation>
+<translation id="5723967018671998714">Колачићи треће стране су блокирани у режиму без архивирања</translation>
 <translation id="5771720122942595109">Дозвола <ph name="PERMISSION_1" /> је блокирана</translation>
 <translation id="5804241973901381774">Дозволе</translation>
 <translation id="5860033963881614850">Искључено</translation>

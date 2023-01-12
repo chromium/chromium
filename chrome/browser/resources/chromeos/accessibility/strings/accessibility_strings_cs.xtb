@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">Žádné další tlačítko není</translation>
 <translation id="2911433807131383493">Otevřít výukový program funkce ChromeVox</translation>
 <translation id="2912405967290226587">Přejeďte třemi prsty doprava</translation>
+<translation id="2919107550468490321">Chytrý režim Jedním prstem je zapnutý</translation>
 <translation id="2937799153569150791">Žádný další nadpis 3. úrovně není</translation>
 <translation id="2942710183375260152">Tmavá břidlicová modrá</translation>
 <translation id="2943596527105977722">Tmavě béžová</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">Snížit výšku hlasu</translation>
 <translation id="3009352964623081324">Vyhledávací tlačítko + O, poté S. Slouží k instalaci, správě a přizpůsobení hlasů.</translation>
 <translation id="3014130421870723208">upr @ 8b</translation>
+<translation id="3018210433491759145">ChromeVox se načítá</translation>
 <translation id="3030432017085518523">Položka nabídky – přepínač</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrof}few{# apostrofy}many{# apostrophes}other{# apostrofů}}</translation>
 <translation id="3040901448410802366">Ukazatel průběhu</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Světle korálová</translation>
 <translation id="3816633764618089385">Další mediální objekt</translation>
+<translation id="3821689185319271077">Bez ukotvení ukazatele</translation>
 <translation id="3840823741487267909">Zkratka</translation>
 <translation id="3841319830220785495">Výchozí přirozený hlas</translation>
 <translation id="385383972552776628">Otevřít stránku možností</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">formulář</translation>
 <translation id="4601367666219428522">tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />×<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Další stisknutí klávesy bude ignorováno</translation>
+<translation id="4617384941327705512">Chytrý režim Jedním prstem je vypnutý</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack už nenabízí přizpůsobení pro Chromebooky. Službu lze nadále používat s výchozími klávesovými zkratkami. Dostupné zkratky zobrazíte stisknutím vyhledávacího tlačítka + A a pak K. Pokud chcete TalkBack nadále používat, znovu použijte příkaz.</translation>
 <translation id="463135993322337640">Novinky zobrazíte stisknutím kláves ChromeVox + o + n.</translation>

@@ -729,7 +729,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4991110219272367918">Možnost schválit nebo neschválit web byla zavřena</translation>
 <translation id="499724277181351974">Navigovat: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Zde můžete web sledovat</translation>
-<translation id="500351648694011114">Prohlížejte si internet snadněji</translation>
 <translation id="5004416275253351869">Ovládací prvky aktivity Google</translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
 <translation id="5011311129201317034">Web <ph name="SITE" /> žádá o připojení</translation>
@@ -882,7 +881,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5864419784173784555">Čekání na další stahování…</translation>
 <translation id="5865733239029070421">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
 <translation id="5869522115854928033">Uložená hesla</translation>
-<translation id="5869789175361934029">Pokračujte z jiného zařízení</translation>
 <translation id="5876496397064130037">Úloha byla obnovena</translation>
 <translation id="587735546353481577">Pokud nějaký web chcete sledovat, přejděte na něj, otevřené nabídku Chrome a klepněte na Sledovat.</translation>
 <translation id="5879072387416556377">Získejte lepší návrhy</translation>
@@ -946,6 +944,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6277722725779679269">Sledování ceny se nepodařilo aktualizovat</translation>
 <translation id="6278428485366576908">Motiv</translation>
 <translation id="6294610283659775533">Mezi zařízeními přihlášenými ke stejnému účtu Google lze posílat karty</translation>
+<translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6297765934698848803">Organizace, která spravuje vaše zařízení, kameru vypnula.</translation>
 <translation id="6301525844455696527">Sledujte svůj seznam k přečtení</translation>
 <translation id="6303969859164067831">Odhlásit a vypnout synchronizaci</translation>
@@ -1516,7 +1515,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="96681097142096641">Zobrazit zjednodušenou stránku?</translation>
 <translation id="968900484120156207">Zde se zobrazují navštívené stránky</translation>
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
-<translation id="978443947993957527">Sledujte obsah pro vás</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>
 <translation id="987264212798334818">Všeobecné</translation>

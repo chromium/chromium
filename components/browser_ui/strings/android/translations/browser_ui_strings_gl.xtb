@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Preguntar antes de permitir que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara (recomendado)</translation>
 <translation id="2212565012507486665">Permitir uso de cookies</translation>
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda á cámara, actívaa tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Bloqueáronse as cookies de terceiros</translation>
 <translation id="2238944249568001759">Buscas suxeridas baseadas na última pestana</translation>
 <translation id="2241634353105152135">Só unha vez</translation>
 <translation id="2253414712144136228">Eliminar <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -231,6 +232,7 @@
 <translation id="5690795753582697420">A cámara está desactivada na sección Configuración de Android</translation>
 <translation id="5706552988683188916">Esta acción eliminará as cookies e outros datos dos sitios de <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Ao realizar esta acción, borraranse os datos e as cookies que almacenase <ph name="ORIGIN" /> ou a súa aplicación instalada na pantalla de inicio.</translation>
+<translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> (bloqueado)</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5860033963881614850">Non</translation>

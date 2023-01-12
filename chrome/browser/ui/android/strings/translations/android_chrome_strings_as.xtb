@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">এটা ৱেবছাইট অনুমোদন জনোৱা অথবা নজনোৱাৰ বিকল্প বন্ধ কৰা হৈছে</translation>
 <translation id="499724277181351974">নেভিগে’ট কৰক: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ইয়াত এই ছাইটটো ফ’ল’ কৰক</translation>
-<translation id="500351648694011114">অধিক সহজে ব্ৰাউজ কৰক</translation>
 <translation id="5004416275253351869">Googleৰ কাৰ্যকলাপৰ নিয়ন্ত্ৰণ</translation>
 <translation id="5005498671520578047">পাছৱর্ডটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="5011311129201317034"><ph name="SITE" />এ সংযোগ কৰিব বিচাৰিছে</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">অন্য এটা ডাউনল’ডৰ বাবে অপেক্ষা কৰি থকা হৈছে…</translation>
 <translation id="5865733239029070421">Googleলৈ স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই</translation>
 <translation id="5869522115854928033">ছেভ কৰা পাছৱৰ্ডসমূহ</translation>
-<translation id="5869789175361934029">অন্য ডিভাইচৰ পৰা অব্যাহত ৰাখক</translation>
 <translation id="5876496397064130037">কাৰ্য পুনৰ আৰম্ভ কৰা হৈছে</translation>
 <translation id="587735546353481577">এটা ছাইট ফ’ল’ কৰিবলৈ, ছাইটটোলৈ গৈ Chromeৰ মেনুখন খুলি ফ’ল’ কৰকত টিপক।</translation>
 <translation id="5879072387416556377">উন্নত পৰামৰ্শ পাওক</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">ট্ৰেক কৰা মূল্য আপডে’ট কৰিব পৰা নগ’ল</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6294610283659775533">আপুনি একেটা Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰি থোৱা ডিভাইচসমূহৰ মাজত টেব পঠিয়াব পাৰে</translation>
+<translation id="6295158916970320988">সকলো ছাইট</translation>
 <translation id="6297765934698848803">আপোনাৰ ডিভাইচ পৰিচালনা কৰা প্ৰতিষ্ঠানটোৱে আপোনাৰ কেমেৰাটো বন্ধ কৰিছে।</translation>
 <translation id="6301525844455696527">আপোনাৰ পঢ়াৰ সূচীত চাওক</translation>
 <translation id="6303969859164067831">ছাইন আউট কৰি ছিংক অফ কৰক</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">সৰলীকৃত পৃষ্ঠা চাবনে?</translation>
 <translation id="968900484120156207">আপুনি যিবোৰ ছাইট চায় সেইবোৰ ইয়াত দেখা যায়</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকী আছে</translation>
-<translation id="978443947993957527">আপোনাৰ বাবে থকা সমল চাওক</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="983192555821071799">সকলো টেব বন্ধ কৰক</translation>
 <translation id="987264212798334818">সাধাৰণ</translation>

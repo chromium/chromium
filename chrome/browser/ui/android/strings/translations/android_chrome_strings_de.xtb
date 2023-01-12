@@ -729,7 +729,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="4991110219272367918">Ansicht für die Option, eine Website zu genehmigen oder nicht zu genehmigen (geschlossen)</translation>
 <translation id="499724277181351974">Aufrufen: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dieser Website folgen</translation>
-<translation id="500351648694011114">Einfacher surfen</translation>
 <translation id="5004416275253351869">Google-Aktivitätseinstellungen</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> möchte eine Verbindung herstellen</translation>
@@ -882,7 +881,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5864419784173784555">Warten auf weiteren Download…</translation>
 <translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
-<translation id="5869789175361934029">Tabs von einem anderen Gerät sehen</translation>
 <translation id="5876496397064130037">Aufgabe fortgesetzt</translation>
 <translation id="587735546353481577">Wenn du einer Website folgen möchtest, rufe die Website auf, öffne das Chrome-Menü und tippe auf „Folgen“.</translation>
 <translation id="5879072387416556377">Bessere Vorschläge erhalten</translation>
@@ -946,6 +944,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6277722725779679269">„Preis beobachten“ konnte nicht aktualisiert werden</translation>
 <translation id="6278428485366576908">Design</translation>
 <translation id="6294610283659775533">Du kannst Tabs zwischen Geräten senden, auf denen du mit demselben Google-Konto angemeldet bist.</translation>
+<translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6297765934698848803">Die Organisation, die dein Gerät verwaltet, hat deine Kamera deaktiviert.</translation>
 <translation id="6301525844455696527">Weiterlesen</translation>
 <translation id="6303969859164067831">Abmelden und die Synchronisierung ausschalten</translation>
@@ -1516,7 +1515,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="96681097142096641">Vereinfachte Seite ansehen?</translation>
 <translation id="968900484120156207">Von dir besuchte Seiten werden hier angezeigt</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> Minuten übrig</translation>
-<translation id="978443947993957527">Für dich ausgewählte Inhalte sehen</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="987264212798334818">Allgemein</translation>

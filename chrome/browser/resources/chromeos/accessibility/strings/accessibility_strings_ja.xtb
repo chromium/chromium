@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">次のボタンはありません</translation>
 <translation id="2911433807131383493">ChromeVox チュートリアルを開く</translation>
 <translation id="2912405967290226587">3 本の指で右にスワイプします</translation>
+<translation id="2919107550468490321">スマート キー固定モードはオンです</translation>
 <translation id="2937799153569150791">次のレベル 3 の見出しはありません</translation>
 <translation id="2942710183375260152">ダーク スレートブルー</translation>
 <translation id="2943596527105977722">ダーク ゴールデン ロッド</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">ピッチを下げる</translation>
 <translation id="3009352964623081324">検索+O の後、S キーを押します。音声のインストール、管理、カスタマイズを行います。</translation>
 <translation id="3014130421870723208">@ 8 点入力</translation>
+<translation id="3018210433491759145">ChromeVox を読み込んでいます</translation>
 <translation id="3030432017085518523">メニュー項目のラジオボタン</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{アポストロフィ}other{# 個のアポストロフィ}}</translation>
 <translation id="3040901448410802366">進行状況インジケーター</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">動画</translation>
 <translation id="3813387282697781382">ライトコーラル</translation>
 <translation id="3816633764618089385">次のメディア</translation>
+<translation id="3821689185319271077">ポインタ アンカーがありません</translation>
 <translation id="3840823741487267909">略語</translation>
 <translation id="3841319830220785495">デフォルトの自然な音声</translation>
 <translation id="385383972552776628">オプション ページを開く</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">フォーム</translation>
 <translation id="4601367666219428522">表「<ph name="TABLENAME" />」（<ph name="TABLEROWS" />x<ph name="TABLECOLS" />）</translation>
 <translation id="4615592953348396470">次に押すキーを無視します</translation>
+<translation id="4617384941327705512">スマート キー固定モードはオフです</translation>
 <translation id="4623097797855662355">奥付</translation>
 <translation id="4624970070706497034">Chromebook では TalkBack のカスタマイズがサポートされなくなりました。TalkBack は引き続きご利用いただけますが、デフォルトのキーボード ショートカットをご使用ください。使用できるショートカットは、検索+A キーに続けて K キーを押して確認できます。確認した後に TalkBack に戻るには、もう一度コマンドを押します。</translation>
 <translation id="463135993322337640">ChromeVox+o+n キーを押すと新機能を確認できます</translation>

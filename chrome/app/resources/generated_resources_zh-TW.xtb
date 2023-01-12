@@ -4902,7 +4902,6 @@
 <translation id="5493792505296048976">螢幕已開啟</translation>
 <translation id="5494016731375030300">最近關閉的分頁</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
-<translation id="5494752089476963479">封鎖干擾性或誤導性的網站廣告</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、資料和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持開啟螢幕</translation>
 <translation id="5496587651328244253">整理</translation>
@@ -5804,7 +5803,6 @@
 <translation id="6335920438823100346"><ph name="MANAGER" /> 要求你備份資料，並將這部 Chromebook 恢復原廠設定，才能啟動 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="6338968693068997776">新增 USB 裝置</translation>
-<translation id="6338981933082930623">所有網站都可以向你顯示任何廣告</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人資料</translation>
 <translation id="6340071272923955280">網際網路列印通訊協定 (IPPS)</translation>
 <translation id="6340526405444716530">個人化</translation>

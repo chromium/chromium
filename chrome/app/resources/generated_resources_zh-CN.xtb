@@ -4886,7 +4886,6 @@
 <translation id="5493792505296048976">已开启屏幕</translation>
 <translation id="5494016731375030300">最近关闭的标签页</translation>
 <translation id="5494362494988149300">完成后打开(&amp;D)</translation>
-<translation id="5494752089476963479">禁止会展示侵扰性或误导性广告的网站显示广告</translation>
 <translation id="5495466433285976480">执行此操作后，所有本地用户、文件、数据和其他设置都将遭到删除，下次重启后您将再也看不到这些内容。所有用户均必须重新登录。</translation>
 <translation id="5495597166260341369">不关闭显示屏</translation>
 <translation id="5496587651328244253">整理</translation>
@@ -5788,7 +5787,6 @@
 <translation id="6335920438823100346">根据 <ph name="MANAGER" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
 <translation id="6338968693068997776">添加 USB 设备</translation>
-<translation id="6338981933082930623">所有网站都可以向您显示任何广告</translation>
 <translation id="6339668969738228384">为 <ph name="USER_EMAIL_ADDRESS" /> 创建新的个人资料</translation>
 <translation id="6340071272923955280">互联网打印协议 (IPPS)</translation>
 <translation id="6340526405444716530">个性化</translation>

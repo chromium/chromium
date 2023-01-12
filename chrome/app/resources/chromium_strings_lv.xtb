@@ -251,6 +251,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6598877126913850652">Pāriet uz Chromium paziņojumu iestatījumiem</translation>
 <translation id="6613594504749178791">Izmaiņas stāsies spēkā, kad restartēsiet Chromium.</translation>
 <translation id="665732753414869868">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru, lai varētu izveidot jūsu apkārtnes 3D karti.</translation>
+<translation id="6663852025006259149">Vietnes, visticamāk, darbosies pienācīgi, taču nesaglabās jūsu datus, kad aizvērsiet visus Chromium logus.</translation>
 <translation id="6676384891291319759">Piekļūt internetam</translation>
 <translation id="668175097507315160">Chromium OS nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="6709350901466051922">Pārlūkam Chromium ir nepieciešama atļauja izmantot mikrofonu šajā vietnē.</translation>
@@ -378,5 +379,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="945990405696787151">Lai saņemtu turpmākus Chromium atjauninājumus, ir nepieciešama operētājsistēma macOS 10.13 vai jaunāka versija. Šajā datorā tiek izmantota OS X 10.11 versija.</translation>
 <translation id="965162752251293939">Kas izmanto pārlūku Chromium?</translation>
 <translation id="967427899662692980">Visaugstākais Chromium drošības līmenis</translation>
+<translation id="9792300276217204">Vienmēr notīrīt vietnes datus no ierīces, kad tiek aizvērts pārlūks Chrome</translation>
 <translation id="985602178874221306">Chromium autori</translation>
 </translationbundle>

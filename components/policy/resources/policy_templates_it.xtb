@@ -413,6 +413,7 @@ Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle
       Su <ph name="PRODUCT_OS_NAME" />, questo criterio viene applicato solo agli utenti affiliati.
 
       Questo criterio esegue l'override di <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e delle preferenze dell'utente.</translation>
+<translation id="1413768951234456918">Cancella la cronologia di navigazione</translation>
 <translation id="1413936351612032792">Segnala informazioni sull'utilizzo delle app Linux</translation>
 <translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="1418387035898607074">Salta i controlli di Navigazione sicura per i file scaricati da fonti attendibili</translation>
@@ -2727,6 +2728,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       Se il criterio non viene configurato, non sarà applicata alcuna limitazione.</translation>
 <translation id="3531084733660068324">Impostazioni della supervisione dei genitori</translation>
+<translation id="3532827558833318911">Cancella l'accesso con password</translation>
 <translation id="353611922042274900">Mostra sempre le informazioni di sistema nella schermata di accesso</translation>
 <translation id="3536263244905016305">Disattiva l'ottimizzazione WPAD (Web Proxy Auto-Discovery)</translation>
 <translation id="3538869107794555625">Attiva la tastiera sullo schermo in modalità tablet</translation>
@@ -4194,6 +4196,7 @@ Se questo criterio viene impostato su Disabled o se non viene configurato, l'API
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> smette di inviare queste query.</translation>
 <translation id="5033070732967197381">Consenti le richieste API WebAuthn su siti con certificati TLS inaccessibili.</translation>
 <translation id="5034504101537897433">Attiva i report relativi alle informazioni sul report sugli arresti anomali del dispositivo</translation>
+<translation id="5036013147560568855">Versione del protocollo di provisioning del certificato. Il valore predefinito è 1. 1 significa che il protocollo è "statico". 2 significa che il protocollo è "dinamico".</translation>
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
 <translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
@@ -4346,6 +4349,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> è un criterio correlato che potrebbe anche disattivare i controlli dell'intercettazione DNS; questo criterio è una versione più flessibile che potrebbe controllare separatamente le barre di informazioni di reindirizzamento Intranet e potrebbe essere ampliato in futuro.
       Se <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> o questo criterio richiedono la disattivazione dei controlli dell'intercettazione, i controlli vengono disattivati.</translation>
+<translation id="5210133032276211845">Cancella immagini e file memorizzati nella cache</translation>
 <translation id="5212118847531454979">Consente di stabilire per quanto tempo, in millisecondi, gli utenti riceveranno notifiche relative alla necessità di riavviare <ph name="PRODUCT_NAME" /> o un dispositivo <ph name="PRODUCT_OS_NAME" /> per applicare un aggiornamento in sospeso.
 
       Durante questo periodo di tempo l'utente verrà informato più volte della necessità di un aggiornamento. Per quanto riguarda i dispositivi <ph name="PRODUCT_OS_NAME" />, nella barra delle applicazioni viene mostrata una notifica relativa al riavvio in base al criterio <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Per quanto riguarda i browser <ph name="PRODUCT_NAME" />, il menu delle app cambia per indicare che è necessario il riavvio una volta trascorso un terzo del periodo di notifica. Questa notifica cambia colore una volta trascorsi due terzi del periodo di notifica e lo cambia di nuovo al termine dell'intero periodo di notifica. Le notifiche aggiuntive attivate in base al criterio <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> seguono questa stessa pianificazione.
@@ -4704,6 +4708,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
       Se quest'elenco è vuoto, non verrà eseguita alcuna gestione temporanea e gli aggiornamenti verranno applicati in base agli altri criteri del dispositivo.
 
       Questo criterio non viene applicato agli switch del canale.</translation>
+<translation id="5517825566262498086">Cancella i dati delle app ospitate</translation>
 <translation id="5519331583722582543">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di inserimento tramite riconoscimento della scrittura a mano libera.</translation>
 <translation id="5519619299971727565">Disattiva la generazione di report sull'utilizzo delle app Linux</translation>
 <translation id="5521035900165046997">Attiva i report sulle informazioni Bluetooth del dispositivo</translation>
@@ -4967,6 +4972,7 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
 
       Questo comportamento non viene attivato se Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per l'attivazione forzata di Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Impostazioni Cattura schermo</translation>
+<translation id="5835674781974810379">Cancella cookie e altri dati dei siti</translation>
 <translation id="5836064773277134605">Limita l'intervallo di porte UDP utilizzate dall'host di accesso remoto</translation>
 <translation id="583627479140113555">Abilita l'importazione delle password salvate alla prima esecuzione</translation>
 <translation id="5837898601525273156">Se il criterio <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> viene configurato, l'impostazione di <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> su Attivato consente di mantenere attivo il criterio di gestione della modalità di ricarica avanzata della batteria (se supportato dal dispositivo). Tramite un algoritmo di ricarica standard e altre tecniche al di fuori dell'orario di lavoro, questa modalità consente agli utenti di ottimizzare le condizioni della batteria. Durante l'orario di lavoro, il sistema utilizza una ricarica express, consentendo alla batteria di ricaricarsi più rapidamente. Specifica quando il sistema viene utilizzato con maggiore frequenza ogni giorno e per quanto tempo tramite l'ora di inizio e la durata.
@@ -5117,6 +5123,7 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
 <translation id="5997543603646547632">Utilizza orologio di 24 ore per impostazione predefinita</translation>
 <translation id="5997846976342452720">Specifica se disattivare o meno la ricerca dei plug-in (ritirata)</translation>
 <translation id="5998198091336830580">Questo criterio fa parte del seguente gruppo atomico (vengono applicati soltanto i criteri dell'origine con la priorità massima presenti nel gruppo):</translation>
+<translation id="6001621991816939414">Cancella la cronologia dei download</translation>
 <translation id="600402562436559989">Consenti la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android connesso</translation>
 <translation id="6004575267180297869">
       Consente di specificare se i moduli WebAssembly possono essere inviati a un'altra finestra o un altro worker tra origini. La condivisione di moduli WebAssembly tra origini sarà deprecata nell'ambito del lavoro per ritirare document.domain; visita la pagina https://github.com/mikewest/deprecating-document-domain. Questo criterio consente di riattivare la condivisione di moduli WebAssembly tra origini per offrire un periodo di transizione più lungo durante la procedura di ritiro.
@@ -6735,6 +6742,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7519218194072744342">L'URL del gestore di protocollo.</translation>
 <translation id="7519251620064708155">Consenti la generazione di chiavi su questi siti</translation>
 <translation id="7521864460386999758">Impedisci l'inserimento di codici di terze parti in Chrome</translation>
+<translation id="7524983116584990314">Cancella i suggerimenti di compilazione automatica</translation>
 <translation id="7529144158022474049">Fattore di dispersione aggiornamento automatico</translation>
 <translation id="7529332889403151669">Specifica se mostrare l'avviso di schermo intero quando il dispositivo disattiva la sospensione o lo schermo scuro.
 
@@ -7897,6 +7905,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="8657543427358173663">Consenti la raccolta di log eventi WebRTC dai servizi Google</translation>
 <translation id="8659843732895043951">Consenti gli appunti su questi siti</translation>
 <translation id="8661297125441579970">Non consentire migrazione dei dati e ARC.</translation>
+<translation id="8661538142776716004">Cancella le impostazioni del sito</translation>
 <translation id="8661980316738569557">Attiva alto contrasto</translation>
 <translation id="8664285601317301180">Questo criterio consente di stabilire il valore dell'<ph name="IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> nei processi di stampa.
 
@@ -8144,6 +8153,21 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
 <translation id="8882307005437314052">Attiva la tastiera sullo schermo nella schermata di accesso e consenti all'utente di disattivarla temporaneamente</translation>
 <translation id="8883577480680089760">Disattiva il servizio <ph name="PRODUCT_NAME" /> V2 e non avviare la scrivania remota all'accesso</translation>
 <translation id="8887709920496070892">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene mostrata una finestra di dialogo di avviso.</translation>
+<translation id="8887847586787956456">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Se il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.
+
+      Quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> esegue le azioni configurate in questo criterio.
+
+      Se questo criterio è vuoto o se non viene configurato, il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
+
+      Le azioni supportate sono:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi il criterio <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.</translation>
 <translation id="8890438048579188548">Nascondi avvisi di ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Disattiva i report sulle informazioni di sistema del dispositivo</translation>
 <translation id="8892286064305622118">Spazio libero su disco necessario per <ph name="PLUGIN_VM_NAME" /></translation>

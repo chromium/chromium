@@ -143,6 +143,7 @@
 <translation id="3533694711092285624">Nav saglabātu paroļu. Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="3541482654983822893">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Mēģiniet vēlreiz pēc 24 stundām.</translation>
 <translation id="3576528680708590453">Sistēmas administrators ir konfigurējis pārlūku Google Chrome, lai vietne <ph name="TARGET_URL_HOSTNAME" /> tiktu atvērta papildu pārlūkā.</translation>
+<translation id="3579965087968408543">Vienmēr notīrīt vietnes datus no ierīces, kad tiek aizvērts pārlūks Chrome</translation>
 <translation id="3582972582564653026">Chrome sinhronizēšana un personalizēšana visās jūsu ierīcēs</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome.}=1{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="3622797965165704966">Tagad pārlūkā Chrome ir vieglāk izmantot Google kontu, kā arī ir atvieglota lietošana datoros, ko izmanto vairākas personas.</translation>
@@ -346,6 +347,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7917876797003313048">Varat pārvaldīt Google kontus, kuros esat pierakstījies. Jūsu Google konti tiek izmantoti pārlūkā Chrome, Play veikalā, pakalpojumā Gmail un citur. Ja vēlaties pievienot kontu kādam citam, piemēram, ģimenes loceklim, pievienojiet jaunu personu savai <ph name="DEVICE_TYPE" /> ierīcei. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="7930071585467473040">Google Chrome mēģina nokopēt paroles.</translation>
 <translation id="7951272445806340501">Chrome OS Flex ir jārestartē, lai lietotu atjauninājumu.</translation>
+<translation id="7962368738413920945">Vietnes, visticamāk, darbosies pienācīgi, taču nesaglabās jūsu datus, kad aizvērsiet visus Chrome logus.</translation>
 <translation id="7962410387636238736">Šajā datorā vairs netiks saņemti Google Chrome atjauninājumi, jo operētājsistēmas Windows XP un Windows Vista vairs netiek atbalstītas.</translation>
 <translation id="8005666035647241369">Google paroļu pārvaldniekā šajā ierīcē</translation>
 <translation id="8008534537613507642">Pārinstalēt Chrome</translation>

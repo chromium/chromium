@@ -729,7 +729,6 @@
 <translation id="4991110219272367918">Екран з опцією схвалити або відхилити запит на доступ до веб-сайту закрито</translation>
 <translation id="499724277181351974">Відкрити: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Підпишіться на цей сайт</translation>
-<translation id="500351648694011114">Легше переглядайте контент</translation>
 <translation id="5004416275253351869">Керування активністю в Google</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> хоче підключитися</translation>
@@ -882,7 +881,6 @@
 <translation id="5864419784173784555">Очікується інше завантаження…</translation>
 <translation id="5865733239029070421">Автоматично надсилає статистику використання та звіти про аварійне завершення роботи в Google</translation>
 <translation id="5869522115854928033">Збережені паролі</translation>
-<translation id="5869789175361934029">Продовжити на іншому пристрої</translation>
 <translation id="5876496397064130037">Завдання відновлено</translation>
 <translation id="587735546353481577">Щоб підписатися на сайт, перейдіть на нього, відкрийте меню Chrome і натисніть "Підписатися".</translation>
 <translation id="5879072387416556377">Отримуйте найкращі пропозиції</translation>
@@ -946,6 +944,7 @@
 <translation id="6277722725779679269">Не вдалось оновити відстеження ціни</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6294610283659775533">Ви можете надсилати вкладки між пристроями, на яких увійшли в той самий обліковий запис Google</translation>
+<translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6297765934698848803">Організація, що керує вашим пристроєм, вимкнула камеру.</translation>
 <translation id="6301525844455696527">Не забувайте про свій список читання</translation>
 <translation id="6303969859164067831">Вийти й вимкнути синхронізацію</translation>
@@ -1516,7 +1515,6 @@
 <translation id="96681097142096641">Переглянути спрощену сторінку?</translation>
 <translation id="968900484120156207">Відвідані сторінки з'являються тут</translation>
 <translation id="970715775301869095">Залишилося <ph name="MINUTES" /> хв</translation>
-<translation id="978443947993957527">Контент для вас</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрити всі вкладки</translation>
 <translation id="987264212798334818">Загальне</translation>

@@ -4898,7 +4898,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5493792505296048976">écran activé</translation>
 <translation id="5494016731375030300">Onglets récemment fermés</translation>
 <translation id="5494362494988149300">Ouvrir une fois le téléchargement &amp;terminé</translation>
-<translation id="5494752089476963479">Bloquer les annonces sur les sites qui affichent des annonces intrusives ou trompeuses</translation>
 <translation id="5495466433285976480">Cette option a pour effet de supprimer tous les utilisateurs, les fichiers, les données et les autres paramètres en local au prochain redémarrage. Tous les utilisateurs devront se reconnecter.</translation>
 <translation id="5495597166260341369">Laisser l'écran activé</translation>
 <translation id="5496587651328244253">Organiser</translation>
@@ -5804,7 +5803,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> vous demande de sauvegarder vos données et de rétablir la configuration d'usine de ce Chromebook pour démarrer Linux.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a désactivé le débogage ADB. Votre <ph name="DEVICE_TYPE" /> sera donc réinitialisé dans 24 heures. Sauvegardez les fichiers que vous souhaitez conserver.</translation>
 <translation id="6338968693068997776">Ajouter un appareil USB</translation>
-<translation id="6338981933082930623">Tous les sites peuvent afficher n'importe quelle annonce</translation>
 <translation id="6339668969738228384">Créer un profil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocole d'impression Internet (IPPS)</translation>
 <translation id="6340526405444716530">Personnalisation</translation>

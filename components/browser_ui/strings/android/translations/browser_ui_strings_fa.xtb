@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">قبل از اینکه به سایت‌ها اجازه داده شود نقشه سه‌بعدی از محیط ایجاد کنند یا موقعیت دوربین را ردیابی کنند سؤال شود (توصیه می‌شود)</translation>
 <translation id="2212565012507486665">مجاز کردن کوکی ها</translation>
 <translation id="2228071138934252756">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به دوربین دسترسی پیدا کند، دوربین را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
+<translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
 <translation id="2238944249568001759">جستجوهای پیشنهادی براساس آخرین برگه شما</translation>
 <translation id="2241634353105152135">فقط یک بار</translation>
 <translation id="2253414712144136228">برداشتن <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3763247130972274048">در سمت راست یا چپ ویدیو دو ضربه سریع بزنید تا ۱۰ ثانیه رد شود</translation>
 <translation id="3797520601150691162">زمینه تیره برای سایت خاصی استفاده نشود</translation>
+<translation id="3803367742635802571">ممکن است سایت‌هایی که بازدید می‌کنند دیگر مطابق طراحی عمل نکنند</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">شماره‌های تلفن</translation>
 <translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید به میکروفون دسترسی پیدا کند، میکروفون را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="4566417217121906555">بی‌صدا کردن میکروفون</translation>
 <translation id="4570913071927164677">جزئیات</translation>
+<translation id="4598549027014564149">وقتی در حالت «ناشناس» هستید، سایت‌ها نمی‌توانند از کوکی‌ها برای دیدن فعالیت مرور شما در سایت‌ها (حتی سایت‌های مرتبط) استفاده کنند. فعالیت مرور شما برای چیزهایی مانند آگهی‌های شخصی‌سازی‌شده استفاده نمی‌شود. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکنند.</translation>
 <translation id="4645575059429386691">مدیریت شده توسط والدین شما</translation>
 <translation id="4670064810192446073">واقعیت مجازی</translation>
 <translation id="4751476147751820511">حسگرهای نوری یا حرکتی</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">‏«دوربین» در تنظیمات Android خاموش است</translation>
 <translation id="5706552988683188916">با این کار کوکی‌ها و دیگر داده‌های سایت برای <ph name="WEBSITE" /> حذف می‌شود</translation>
 <translation id="5719847187258001597">با این کار همه داده‌ها و کوکی‌هایی که <ph name="ORIGIN" /> و برنامه آن در صفحه اصلی ذخیره کرده‌اند پاک می‌شود.</translation>
+<translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">مجوزها</translation>
 <translation id="5860033963881614850">خاموش</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">مسدود کردن نمایش پنجره‌های بازشو و هدایت‌ها در سایت‌ها (توصیه می‌شود)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> کیلوبایت</translation>
 <translation id="7180611975245234373">بازآوری</translation>
+<translation id="7188508872042490670">داده‌های درون‌دستگاهی سایت‌ها</translation>
 <translation id="7203150201908454328">باز شده</translation>
 <translation id="723171743924126238">انتخاب تصاویر</translation>
 <translation id="7243308994586599757">گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
 <translation id="848952951823693243">همیشه سایت ویژه تلفن همراه درخواست شود</translation>
 <translation id="8499083585497694743">باصدا کردن میکروفون</translation>
+<translation id="8514955299594277296">سایت‌ها اجازه ندارند در دستگاه داده ذخیره کنند (توصیه نمی‌شود)</translation>
 <translation id="851751545965956758">مسدود کردن سایت‌ها برای اتصال به دستگاه‌ها</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}one{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}other{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}}</translation>

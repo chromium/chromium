@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Spørg, inden websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen (anbefales)</translation>
 <translation id="2212565012507486665">Tillad cookies</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
+<translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238944249568001759">Foreslåede søgninger baseret på din seneste fane</translation>
 <translation id="2241634353105152135">Kun én gang</translation>
 <translation id="2253414712144136228">Fjern <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Kameraet er deaktiveret i Android-indstillingerne</translation>
 <translation id="5706552988683188916">Denne handling sletter cookies og andre websitedata for <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Dette rydder alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startskærm.</translation>
+<translation id="5723967018671998714">Tredjepartscookies er blokeret i inkognitotilstand</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5860033963881614850">Fra</translation>

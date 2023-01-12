@@ -402,7 +402,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="191374271204266022">Kopieer as JSON</translation>
 <translation id="1914326953223720820">Dekompakteer diens</translation>
 <translation id="1916770123977586577">Herlaai hierdie bladsy om jou opgedateerde instellings op hierdie werf toe te pas</translation>
-<translation id="1919345977826869612">Advertensies</translation>
 <translation id="1919367280705858090">Kry hulp met 'n spesifieke foutboodskap</translation>
 <translation id="1919526244108283799">400x600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 werf}other{# werwe}}</translation>
@@ -801,6 +800,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2986368408720340940">Hierdie oplaaimetode is nie beskikbaar nie. Probeer 'n ander metode.</translation>
 <translation id="2987034854559945715">Geen passende kenmerke nie</translation>
 <translation id="2989742184762224133">Dubbelkram bo</translation>
+<translation id="2990882401221831923">Lys kredietkaarte is toegemaak.</translation>
 <translation id="2991174974383378012">Deling met webwerwe</translation>
 <translation id="299122504639061328">Bestuur jou versteksoekenjin en werfsoektog</translation>
 <translation id="2991571918955627853">Jy kan nie <ph name="SITE" /> nou onmiddellik besoek nie omdat die webwerf HSTS gebruik. Netwerkfoute en -aanvalle is gewoonlik tydelik en daarom sal hierdie bladsy waarskynlik later werk.</translation>
@@ -924,7 +924,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy hierdie wagwoord nou verander.</translation>
 <translation id="3308006649705061278">Organisatoriese eenheid (OU)</translation>
-<translation id="3308738399950580893">advertensies</translation>
 <translation id="3320021301628644560">Voeg faktureringadres by</translation>
 <translation id="3324687287337751929">4x6 dm.</translation>
 <translation id="3324983252691184275">Karmosyn</translation>
@@ -1586,6 +1585,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4976702386844183910">Laas besoek op <ph name="DATE" /></translation>
 <translation id="498323057460789381">Skemastawingsfout: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Gebruik mikrofoon?</translation>
+<translation id="4988822846878841743">Lys kredietkaarte wat met aanraking ingevul moet word, is teen halwe hoogte oopgemaak.</translation>
 <translation id="4989163558385430922">Sien alles</translation>
 <translation id="4989542687859782284">Onbeskikbaar</translation>
 <translation id="4989809363548539747">Hierdie inprop word nie gesteun nie</translation>
@@ -1934,6 +1934,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5863847714970149516">Die bladsy wat volg kan dalk geld van jou hef</translation>
 <translation id="5866257070973731571">Voeg foonnommer by</translation>
 <translation id="5866898949289125849">Jy bekyk tans 'n ontwikkelaarnutsgoedbladsy</translation>
+<translation id="5868548454963263350">Lys kredietkaarte wat met aanraking ingevul moet word, is teen volle hoogte oopgemaak.</translation>
 <translation id="5869405914158311789">Hierdie werf kan nie bereik word nie</translation>
 <translation id="5869522115854928033">Gestoorde wagwoorde</translation>
 <translation id="5873013647450402046">Jou bank wil bevestig dis jy.</translation>
@@ -2646,6 +2647,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7653957176542370971">Betalinghanteerdersigblad is toe</translation>
 <translation id="7654909834015434372">Hierdie dokument sal na die oorspronklike rotasie daarvan toe terugkeer wanneer jy aantekeninge redigeer</translation>
 <translation id="765676359832457558">Versteek gevorderde instellings …</translation>
+<translation id="7656935528854393684">Lys kredietkaarte wat met aanraking ingevul moet word.</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7659327900411729175">Koevert Kaku 8</translation>
 <translation id="7659878911471462949">Trane van vreugde</translation>

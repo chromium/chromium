@@ -142,6 +142,7 @@
 <translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="3541482654983822893">Chrome kann deine Passwörter nicht prüfen. Bitte versuche es in 24 Stunden noch einmal.</translation>
 <translation id="3576528680708590453">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="TARGET_URL_HOSTNAME" /> in einem alternativen Browser geöffnet wird.</translation>
+<translation id="3579965087968408543">Beim Schließen von Chrome immer die Websitedaten von deinem Gerät löschen</translation>
 <translation id="3582972582564653026">Chrome auf allen deinen Geräten synchronisieren und personalisieren</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen}=1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3622797965165704966">Du kannst Chrome jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
@@ -343,6 +344,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7917876797003313048">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chrome-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome versucht, Passwörter zu kopieren.</translation>
 <translation id="7951272445806340501">Chrome OS Flex muss neu gestartet werden, um das Update zu übernehmen.</translation>
+<translation id="7962368738413920945">Websites funktionieren wahrscheinlich erwartungsgemäß, sie werden sich aber nach dem Schließen aller Chrome-Fenster nicht mehr an dich erinnern</translation>
 <translation id="7962410387636238736">Dieser Computer erhält keine Google Chrome-Updates mehr, da Windows XP und Windows Vista nicht mehr unterstützt werden</translation>
 <translation id="8005666035647241369">Im Google Passwortmanager auf diesem Gerät</translation>
 <translation id="8008534537613507642">Chrome erneut installieren</translation>

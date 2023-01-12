@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Perguntar antes de permitir que sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera (recomendado)</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que o app <ph name="APP_NAME" /> acesse sua câmera, ative-a também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2238944249568001759">Pesquisas sugeridas com base na sua última guia</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2253414712144136228">Remover <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -135,6 +136,7 @@
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no lado esquerdo ou direito do vídeo para pular 10 s</translation>
 <translation id="3797520601150691162">Não aplicar o tema escuro para um site específico</translation>
+<translation id="3803367742635802571">Os sites que você visita podem parar de funcionar como planejado</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="381841723434055211">Números de telefone</translation>
 <translation id="3826050100957962900">Login de terceiros</translation>
@@ -174,6 +176,7 @@
 <translation id="4534723447064627427">Para permitir que o app <ph name="APP_NAME" /> acesse seu microfone, também é preciso ativá-lo nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
+<translation id="4598549027014564149">Na navegação anônima, os sites não podem usar cookies para conferir sua atividade de navegação, mesmo sites relacionados. Sua atividade de navegação não é usada para ações como a personalização de anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
@@ -231,6 +234,7 @@
 <translation id="5690795753582697420">A câmera está desativada nas configurações do Android</translation>
 <translation id="5706552988683188916">Essa ação vai excluir cookies e outros dados do site <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Essa ação vai apagar todos os dados e cookies armazenados por <ph name="ORIGIN" /> ou pelo app dele na sua tela inicial.</translation>
+<translation id="5723967018671998714">Os cookies de terceiro são bloqueados no modo de navegação anônima</translation>
 <translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -302,6 +306,7 @@
 <translation id="7141896414559753902">Impedir pop-ups e redirecionamento dos sites (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atualizar</translation>
+<translation id="7188508872042490670">Dados do site no dispositivo</translation>
 <translation id="7203150201908454328">Expandido</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>
 <translation id="7243308994586599757">Opções disponíveis perto da parte inferior da tela</translation>
@@ -376,6 +381,7 @@
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="848952951823693243">Sempre ver a versão para dispositivos móveis</translation>
 <translation id="8499083585497694743">Ativar microfone</translation>
+<translation id="8514955299594277296">Não permitir que os sites salvem dados no seu dispositivo (não recomendado)</translation>
 <translation id="851751545965956758">Impedir que sites se conectem a dispositivos</translation>
 <translation id="8525306231823319788">Tela cheia</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}one{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}other{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> sites de <ph name="FPS_OWNER" />}}</translation>

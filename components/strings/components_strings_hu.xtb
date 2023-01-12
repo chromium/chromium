@@ -402,7 +402,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="191374271204266022">Másolás JSON-ként</translation>
 <translation id="1914326953223720820">Kicsomagolási szolgáltatás</translation>
 <translation id="1916770123977586577">A frissített beállításoknak a webhelyen történő alkalmazásához töltse be újra az oldalt</translation>
-<translation id="1919345977826869612">Hirdetések</translation>
 <translation id="1919367280705858090">Segítség kérése adott hibaüzenet esetén</translation>
 <translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nincs}=1{1 webhely}other{# webhely}}</translation>
@@ -801,6 +800,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2986368408720340940">Ez az átvételi mód nem áll rendelkezésre. Próbálkozzon másik móddal.</translation>
 <translation id="2987034854559945715">Nem található ilyen funkció</translation>
 <translation id="2989742184762224133">Két kapocs felül</translation>
+<translation id="2990882401221831923">A bankkártyák listája be van zárva.</translation>
 <translation id="2991174974383378012">Megosztás webhelyekkel</translation>
 <translation id="299122504639061328">Kezelheti az alapértelmezett keresőmotort és a webhelyen való keresést</translation>
 <translation id="2991571918955627853">A(z) <ph name="SITE" /> webhelyet pillanatnyilag nem tudja felkeresni, mert a webhely HSTS-t használ. A hálózati hibák és támadások rendszerint átmenetiek, ezért az említett oldal működése később valószínűleg helyreáll.</translation>
@@ -922,7 +922,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. A Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="3308006649705061278">Szervezeti egység (OU)</translation>
-<translation id="3308738399950580893">hirdetések</translation>
 <translation id="3320021301628644560">Számlázási cím hozzáadása</translation>
 <translation id="3324687287337751929">4 × 6 hüvelyk</translation>
 <translation id="3324983252691184275">Karmazsinvörös</translation>
@@ -1584,6 +1583,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4976702386844183910">Utolsó látogatás: <ph name="DATE" /></translation>
 <translation id="498323057460789381">Sémaérvényesítési hiba: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Engedélyezi a mikrofon használatát?</translation>
+<translation id="4988822846878841743">Az érintéssel kitölthető bankkártyák listája félmagasságban megnyitva.</translation>
 <translation id="4989163558385430922">Összes megtekintése</translation>
 <translation id="4989542687859782284">Nem áll rendelkezésre</translation>
 <translation id="4989809363548539747">Ez a beépülő modul nem támogatott</translation>
@@ -1932,6 +1932,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5863847714970149516">Előfordulhat, hogy a következő oldal megpróbál pénzt felszámolni Önnek</translation>
 <translation id="5866257070973731571">Telefonszám hozzáadása</translation>
 <translation id="5866898949289125849">A fejlesztői eszközök egyik oldalát látja</translation>
+<translation id="5868548454963263350">Az érintéssel kitölthető bankkártyák listája teljes magasságban megnyitva.</translation>
 <translation id="5869405914158311789">A webhely nem érhető el</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
 <translation id="5873013647450402046">Bankja szeretné, ha megerősítené személyazonosságát.</translation>
@@ -2644,6 +2645,7 @@ További részletek:
 <translation id="7653957176542370971">A fizetési információk munkalapja zárva van</translation>
 <translation id="7654909834015434372">A jelölések szerkesztésekor a dokumentum visszaáll az eredeti tájolásba</translation>
 <translation id="765676359832457558">Speciális beállítások elrejtése...</translation>
+<translation id="7656935528854393684">Az érintéssel kitölthető bankkártyák listája.</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7659327900411729175">Kaku 8 boríték</translation>
 <translation id="7659878911471462949">Örömkönnyek</translation>

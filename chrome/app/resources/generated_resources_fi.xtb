@@ -4909,7 +4909,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5493792505296048976">näyttö päällä</translation>
 <translation id="5494016731375030300">Viimeksi suljetut välilehdet</translation>
 <translation id="5494362494988149300">Avaa, kun val&amp;mis</translation>
-<translation id="5494752089476963479">Estä häiritseviä tai harhaanjohtavia mainoksia näyttävien sivustojen mainokset</translation>
 <translation id="5495466433285976480">Tämä poistaa kaikki paikalliset käyttäjät, tiedostot, tiedot ja muut asetukset seuraavan uudelleenkäynnistyksesi jälkeen. Kaikkien käyttäjien on kirjauduttava sisään uudelleen.</translation>
 <translation id="5495597166260341369">Älä sulje näyttöä</translation>
 <translation id="5496587651328244253">Järjestä</translation>
@@ -5814,7 +5813,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6335920438823100346">Linuxin käynnistystä varten <ph name="MANAGER" /> edellyttää datan varmuuskopiointia ja Chromebookin palauttamista tehdasasetuksiin.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> on poistanut ADB-virheenkorjauksen käytöstä. <ph name="DEVICE_TYPE" /> nollataan 24 tunnin kuluttua. Varmuuskopioi kaikki tiedostot, jotka haluat säilyttää.</translation>
 <translation id="6338968693068997776">USB-laitteen lisääminen</translation>
-<translation id="6338981933082930623">Kaikki sivustot saavat näyttää sinulle kaikenlaisia mainoksia</translation>
 <translation id="6339668969738228384">Luo uusi profiili käyttäjälle <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet-tulostusprotokolla (IPPS)</translation>
 <translation id="6340526405444716530">Personointi</translation>

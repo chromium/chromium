@@ -55,6 +55,7 @@
 <translation id="2182457891543959921">Pýtať sa, či chcete povoliť webu vytvárať priestorovú mapu okolia alebo sledovať pozíciu kamery (odporúčané)</translation>
 <translation id="2212565012507486665">Povoliť súbory cookie</translation>
 <translation id="2228071138934252756">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať váš fotoaparát, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
+<translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
 <translation id="2238944249568001759">Navrhované vyhľadávania na základe vašej poslednej karty</translation>
 <translation id="2241634353105152135">Iba raz</translation>
 <translation id="2253414712144136228">Odobrať osobu alebo odstrániť položku <ph name="NAME_OF_LIST_ITEM" /></translation>
@@ -233,6 +234,7 @@
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastaveniach Androidu</translation>
 <translation id="5706552988683188916">Týmto odstránite súbory cookie a ďalšie dáta webu <ph name="WEBSITE" /></translation>
 <translation id="5719847187258001597">Týmto vymažete všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" /> alebo jeho aplikáciou na ploche.</translation>
+<translation id="5723967018671998714">Súbory cookie tretích strán sú v anonymnom režime blokované</translation>
 <translation id="5771720122942595109">Blokované: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5860033963881614850">Vypnuté</translation>

@@ -729,7 +729,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="4991110219272367918">Iespēja apstiprināt vai neapstiprināt piekļuvi vietnei, kas ir aizvērta</translation>
 <translation id="499724277181351974">Doties uz vietni <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Šeit varat sekot šai vietnei</translation>
-<translation id="500351648694011114">Pārlūkojiet tīmekli ērtāk</translation>
 <translation id="5004416275253351869">Google aktivitātes vadīklas</translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vēlas izveidot savienojumu</translation>
@@ -882,7 +881,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5864419784173784555">Tiek gaidīta cita lejupielāde…</translation>
 <translation id="5865733239029070421">Automātiski sūtīt lietojuma statistiku un avāriju pārskatus Google serveriem</translation>
 <translation id="5869522115854928033">Saglabātās paroles</translation>
-<translation id="5869789175361934029">Turpiniet citā ierīcē</translation>
 <translation id="5876496397064130037">Uzdevums ir atsākts</translation>
 <translation id="587735546353481577">Lai sekotu kādai vietnei, atveriet attiecīgo vietni, atveriet Chrome izvēlni un pieskarieties vienumam Sekot.</translation>
 <translation id="5879072387416556377">Iegūstiet labākus ieteikumus</translation>
@@ -946,6 +944,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6277722725779679269">Nevarēja atjaunināt cenas izsekošanu.</translation>
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6294610283659775533">Varat pārsūtīt cilnes starp ierīcēm, kurās esat pierakstījies vienā un tajā pašā Google kontā.</translation>
+<translation id="6295158916970320988">Visas vietnes</translation>
 <translation id="6297765934698848803">Organizācija, kas pārvalda jūsu ierīci, ir izslēgusi kameru.</translation>
 <translation id="6301525844455696527">Neaizmirstiet ielūkoties savā lasīšanas sarakstā</translation>
 <translation id="6303969859164067831">Izrakstīties un izslēgt sinhronizēšanu</translation>
@@ -1516,7 +1515,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="96681097142096641">Vai skatīt vienkāršotu lapu</translation>
 <translation id="968900484120156207">Šeit tiek rādītas jūsu apmeklētās lapas</translation>
 <translation id="970715775301869095">Atlikušas <ph name="MINUTES" /> min</translation>
-<translation id="978443947993957527">Skatiet jums ieteikto saturu</translation>
 <translation id="981121421437150478">Bezsaistē</translation>
 <translation id="983192555821071799">Aizvērt visas cilnes</translation>
 <translation id="987264212798334818">Vispārīgi</translation>

@@ -729,7 +729,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4991110219272367918">Kapatılan bir web sitesini onaylama veya onaylamama seçeneği</translation>
 <translation id="499724277181351974">Şu sayfaya git: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Siteyi buradan takip edin</translation>
-<translation id="500351648694011114">Daha kolay göz atın</translation>
 <translation id="5004416275253351869">Google etkinlik kontrolleri</translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> bağlanmak istiyor</translation>
@@ -882,7 +881,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5864419784173784555">Başka bir indirme işlemi bekleniyor…</translation>
 <translation id="5865733239029070421">Kullanım istatistiklerini ve kilitlenme raporlarını Google'a otomatik olarak gönderir</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
-<translation id="5869789175361934029">Başka bir cihazdan devam edin</translation>
 <translation id="5876496397064130037">Görev devam ettirildi</translation>
 <translation id="587735546353481577">Bir siteyi takip etmek için siteye gidin, Chrome menüsünü açıp Takip et'e dokunun.</translation>
 <translation id="5879072387416556377">Daha iyi öneriler alın</translation>
@@ -946,6 +944,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6277722725779679269">Fiyat takibi özelliği güncellenemedi</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6294610283659775533">Aynı Google Hesabında oturum açmış olan cihazlar arasında sekmeleri gönderebilirsiniz</translation>
+<translation id="6295158916970320988">Tüm siteler</translation>
 <translation id="6297765934698848803">Cihazınızı yöneten kuruluş, kameranızı kapattı.</translation>
 <translation id="6301525844455696527">Okuma listenizde geride kalmayın</translation>
 <translation id="6303969859164067831">Oturumu ve senkronizasyonu kapat</translation>
@@ -1516,7 +1515,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="96681097142096641">Basitleştirilmiş sayfa görüntülensin mi?</translation>
 <translation id="968900484120156207">Ziyaret ettiğiniz sayfalar burada görünür</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> dk. kaldı</translation>
-<translation id="978443947993957527">Size özel içerikleri görün</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="983192555821071799">Tüm sekmeleri kapat</translation>
 <translation id="987264212798334818">Genel</translation>

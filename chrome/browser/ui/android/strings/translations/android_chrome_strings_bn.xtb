@@ -731,7 +731,6 @@
 <translation id="4991110219272367918">ওয়েবসাইট বন্ধ করা হবে কিনা তা অনুমোদন করা বা না করার বিকল্প</translation>
 <translation id="499724277181351974">নেভিগেট করুন: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">এই সাইট এখানে ফলো করুন</translation>
-<translation id="500351648694011114">আরও সহজে ব্রাউজ করুন</translation>
 <translation id="5004416275253351869">Google অ্যাক্টিভিটির নিয়ন্ত্রণ</translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
@@ -884,7 +883,6 @@
 <translation id="5864419784173784555">অন্য ডাউনলোডের জন্য অপেক্ষা করা হচ্ছে…</translation>
 <translation id="5865733239029070421">ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট নিজে থেকেই Google-কে পাঠায়</translation>
 <translation id="5869522115854928033">সংরক্ষিত পাসওয়ার্ড</translation>
-<translation id="5869789175361934029">অন্য ডিভাইস থেকে চালিয়ে যান</translation>
 <translation id="5876496397064130037">টাস্ক আবার চালু করা হয়েছে</translation>
 <translation id="587735546353481577">কোনও সাইট ফলো করতে, সাইটে যান, 'Chrome' মেনু খুলুন এবং 'ফলো করুন' বিকল্পে ট্যাপ করুন।</translation>
 <translation id="5879072387416556377">আরও ভাল সাজেশন পান</translation>
@@ -948,6 +946,7 @@
 <translation id="6277722725779679269">দাম ট্র্যাক করার ফিচার আপডেট করা যায়নি</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6294610283659775533">আপনি একই Google অ্যাকাউন্টের মাধ্যমে সাইন-ইন করা ডিভাইসের মধ্যে ট্যাব পাঠাতে পারেন</translation>
+<translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6297765934698848803">যে সংস্থাটি আপনার ডিভাইস ম্যানেজ করে সেটি আপনার ক্যামেরা বন্ধ করে দিয়েছে।</translation>
 <translation id="6301525844455696527">আপনি যা পড়তে চান সেগুলি দেখুন</translation>
 <translation id="6303969859164067831">সাইন-আউট করুন এবং সিঙ্ক করা বন্ধ করুন</translation>
@@ -1518,7 +1517,6 @@
 <translation id="96681097142096641">'রিডার' মোডে পৃষ্ঠাটি দেখতে চান?</translation>
 <translation id="968900484120156207">আপনি যে পৃষ্ঠাগুলিতে যান সেগুলি এখানে দেখানো হয়</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকি আছে</translation>
-<translation id="978443947993957527">আপনার জন্য কন্টেন্ট দেখুন</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="983192555821071799">সমস্ত ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="987264212798334818">সাধারণ</translation>

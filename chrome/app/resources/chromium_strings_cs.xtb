@@ -253,6 +253,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6598877126913850652">Přejít na nastavení oznámení prohlížeče Chromium</translation>
 <translation id="6613594504749178791">Změny se projeví po příštím restartu prohlížeče Chromium.</translation>
 <translation id="665732753414869868">K vytvoření 3D mapy vašeho okolí potřebuje Chromium přístup k fotoaparátu</translation>
+<translation id="6663852025006259149">Weby budou pravděpodobně fungovat podle očekávání, ale po zavření všech oken prohlížeče Chromium si vás nebudou pamatovat</translation>
 <translation id="6676384891291319759">Přístup k internetu</translation>
 <translation id="668175097507315160">ChromiumOS vaše data nemohl synchronizovat, protože při přihlašování došlo k chybě.</translation>
 <translation id="6709350901466051922">Chromium pro tento web potřebuje přístup k mikrofonu</translation>
@@ -383,5 +384,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="945990405696787151">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 10.13 nebo novější. Tento počítač používá systém OS X 10.11.</translation>
 <translation id="965162752251293939">Kdo Chromium používá?</translation>
 <translation id="967427899662692980">Aktivujte si v prohlížeči Chromium maximální zabezpečení</translation>
+<translation id="9792300276217204">Při zavření prohlížeče Chromium vždy vymazat ze zařízení data webů</translation>
 <translation id="985602178874221306">Autoři prohlížeče Chromium</translation>
 </translationbundle>

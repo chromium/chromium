@@ -4913,7 +4913,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5493792505296048976">skärm på</translation>
 <translation id="5494016731375030300">Nyligen stängda flikar</translation>
 <translation id="5494362494988149300">Öppna när nedladdning är &amp;klar</translation>
-<translation id="5494752089476963479">Blockera annonser på webbplatser där påträngande eller vilseledande annonser visas</translation>
 <translation id="5495466433285976480">Om du gör detta tas alla lokala användare, filer, data och andra inställningar bort efter nästa omstart. Alla användare måste logga in igen.</translation>
 <translation id="5495597166260341369">Låt skärmen vara på</translation>
 <translation id="5496587651328244253">Ordna</translation>
@@ -5818,7 +5817,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> kräver att du säkerhetskopierar din data och återställer Chromebook-enheten till standardinställningarna innan du startar Linux.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har inaktiverat felsökning med ADB. Detta återställer din <ph name="DEVICE_TYPE" /> inom 24 timmar. Säkerhetskopiera alla filer du vill spara.</translation>
 <translation id="6338968693068997776">Lägg till USB-enhet</translation>
-<translation id="6338981933082930623">Alla webbplatser får visa vilka annonser som helst för dig</translation>
 <translation id="6339668969738228384">Skapa en ny profil för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokoll för internetutskrift (IPPS)</translation>
 <translation id="6340526405444716530">Anpassning</translation>

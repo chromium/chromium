@@ -1428,6 +1428,7 @@
 <translation id="2280486287150724112">右余白</translation>
 <translation id="2281863813036651454">左マウスクリック</translation>
 <translation id="2282146716419988068">GPU プロセス</translation>
+<translation id="228293613124499805">アクセスするサイトの多くは、ユーザーのデバイスにデータを保存します。多くの場合、エクスペリエンスの向上を目的として、設定やサイトと共有した情報が保存されます。この設定はオンにしておくことをおすすめします。</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{すべてを新しいタブグループで開く(&amp;N)}=1{新しいタブグループで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいタブグループで開く(&amp;N)}}</translation>
 <translation id="2285942871162473373">指紋を認識できませんでした。もう一度お試しください。</translation>
 <translation id="2287944065963043964">ログイン画面</translation>
@@ -2867,6 +2868,7 @@
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>
 <translation id="3605780360466892872">ボタンダウン</translation>
 <translation id="3609277884604412258">すばやく検索</translation>
+<translation id="3610241585790874201">デバイスへのデータの保存を許可しない</translation>
 <translation id="3610369246614755442">ドックのファンに問題があります</translation>
 <translation id="361106536627977100">Flash データ</translation>
 <translation id="3611655097742243705">Play ストアでアプリを探しましょう</translation>
@@ -3090,6 +3092,7 @@
 <translation id="3802486193901166966">この拡張機能では、特別な権限は必要なく、追加のサイトアクセスは行われません</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803345858388753269">画質</translation>
+<translation id="3803367742635802571">アクセスするサイトが想定どおりに機能しなくなる可能性があります</translation>
 <translation id="380408572480438692">パフォーマンス データの収集を有効にすると、Google によるシステムの改善に役立てることができます。フィードバック レポートを作成（Alt-Shift-I）してパフォーマンス データを追加するまでは、データは送信されません。いつでもこの画面に戻って、データの収集を無効にできます。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" />（拡張機能 ID「<ph name="EXTENSION_ID" />」）はログイン画面ではインストールできません。</translation>
 <translation id="3807747707162121253">キャンセル(&amp;C)</translation>
@@ -3948,6 +3951,7 @@
 <translation id="4595560905247879544">アプリと拡張機能は管理者（<ph name="CUSTODIAN_NAME" />）だけが変更できます。</translation>
 <translation id="4596295440756783523">これらのサーバーを識別する証明書がファイルに格納されています</translation>
 <translation id="4598345735110653698">パスキーを管理</translation>
+<translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のカスタマイズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="4598556348158889687">ストレージ管理</translation>
 <translation id="4598776695426288251">複数のデバイスから Wi-Fi に接続できます</translation>
 <translation id="4600071396330666617">サジェストの候補数</translation>
@@ -4113,6 +4117,7 @@
 <translation id="4750185073185658673">スマートフォンでアクセス許可の設定を見直し、スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
 <translation id="4750394297954878236">候補</translation>
 <translation id="475088594373173692">最初のユーザー</translation>
+<translation id="4756302371612574303">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
 <translation id="4756388243121344051">履歴(&amp;H)</translation>
 <translation id="4756671452988984333">音声のテキスト変換</translation>
@@ -4453,6 +4458,7 @@
 <translation id="508059534790499809">Kerberos チケットの更新</translation>
 <translation id="5081960376148623587">ページをプリロードするかどうかを選択する</translation>
 <translation id="5084328598860513926">プロビジョニング フローが中断されました。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
+<translation id="5084622689760736648">サイトが想定どおりに機能する可能性が高くなります</translation>
 <translation id="5085162214018721575">アップデートを確認しています</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">メモが 1,000 文字を超えています</translation>
@@ -4887,7 +4893,6 @@
 <translation id="5493792505296048976">画面オン</translation>
 <translation id="5494016731375030300">最近閉じたタブ</translation>
 <translation id="5494362494988149300">ダウンロードしたら開く(&amp;D)</translation>
-<translation id="5494752089476963479">煩わしい広告や誤解を招く広告が表示されるサイトで広告をブロックする</translation>
 <translation id="5495466433285976480">すべてのローカル ユーザー、ファイル、データ、およびその他の設定が次回の再起動後に削除されます。すべてのユーザーは、もう一度ログインする必要があります。</translation>
 <translation id="5495597166260341369">画面をオンのままにする</translation>
 <translation id="5496587651328244253">管理</translation>
@@ -5792,7 +5797,6 @@
 <translation id="6335920438823100346">Linux を起動するため、<ph name="MANAGER" /> がデータをバックアップし、この Chromebook を初期状態にリセットするよう求めています。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
 <translation id="6338968693068997776">USB デバイスの追加</translation>
-<translation id="6338981933082930623">すべてのサイトであらゆる広告を表示できるようにする</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成します</translation>
 <translation id="6340071272923955280">インターネット印刷プロトコル（IPPS）</translation>
 <translation id="6340526405444716530">カスタマイズ</translation>
@@ -5857,6 +5861,7 @@
 <translation id="6406303162637086258">ブラウザ再起動のシミュレート</translation>
 <translation id="6406506848690869874">同期</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407398811519202484">デバイスへのデータの保存を許可する</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="6410328738210026208">チャンネルを変更して Powerwash</translation>
@@ -6668,6 +6673,7 @@
 <translation id="7141105143012495934">アカウントの詳細を取得できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="7141844554192012199">チェックアップ</translation>
 <translation id="7144878232160441200">再読み込み</translation>
+<translation id="7148426638542880639">サイトが想定どおりに機能しない可能性があります。アクセスしたサイトに関する情報をデバイスに残したくない場合は、このオプションを選択します。</translation>
 <translation id="7149839598364933473">このデバイスを <ph name="DEVICE_OS" /> デバイスに変換します。</translation>
 <translation id="7149893636342594995">過去 24 時間</translation>
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
@@ -6700,6 +6706,7 @@
 <translation id="7186088072322679094">ツールバーに残す</translation>
 <translation id="7186303001964993981">システム ファイルが含まれているため、<ph name="ORIGIN" /> はこのフォルダを開くことができません</translation>
 <translation id="7187428571767585875">削除または変更されるレジストリ項目:</translation>
+<translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7189234443051076392">デバイスに十分な空き容量があることを確認してください</translation>
 <translation id="7189451821249468368">このデバイスの登録に必要なアップグレード ライセンスを持っていません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
 <translation id="7189965711416741966">指紋の登録が完了しました。</translation>
@@ -6972,6 +6979,7 @@
 <translation id="7444970023873202833">Google フォトで思い出の写真に簡単アクセス</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> を無効にする</translation>
 <translation id="7448430327655618736">アプリの自動インストール</translation>
+<translation id="7448664748118305024">すべてのウィンドウを閉じると、サイトによりデバイスに保存されたデータが削除されます。</translation>
 <translation id="7449381494541372002">起動しています...</translation>
 <translation id="7449752890690775568">パスワードを削除しますか？</translation>
 <translation id="7450761244949417357">まもなく <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
@@ -8149,6 +8157,7 @@
 <translation id="851263357009351303"><ph name="HOST" /> の画像を常に表示する</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="8514746246728959655">別のセキュリティ キーを試す</translation>
+<translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>
 <translation id="8519895319663397036">パスワードをインポートできません。ファイルサイズを 150 KB より小さくしてください。</translation>
 <translation id="8523493869875972733">変更を保持</translation>
 <translation id="8523849605371521713">ポリシーにより追加</translation>
@@ -8593,6 +8602,7 @@
 <translation id="8925458182817574960">設定(&amp;S)</translation>
 <translation id="8926389886865778422">再表示させない</translation>
 <translation id="892706138619340876">一部の設定がリセットされました</translation>
+<translation id="8927438609932588163">サイトによるデバイスへのデータの保存を許可する</translation>
 <translation id="8929696694736010839">現在のシークレット モード セッションのみ</translation>
 <translation id="8930351635855238750">新しい Cookie 設定はページの再読み込み後に有効になります</translation>
 <translation id="8930622219860340959">ワイヤレス</translation>

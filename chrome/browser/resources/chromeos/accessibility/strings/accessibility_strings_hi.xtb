@@ -291,6 +291,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2909584066358367921">आगे कोई बटन नहीं है</translation>
 <translation id="2911433807131383493">ChromeVox निर्देश खोलें</translation>
 <translation id="2912405967290226587">तीन उंगलियों से दाईं ओर स्वाइप करें</translation>
+<translation id="2919107550468490321">स्मार्ट स्टिकी मोड चालू है</translation>
 <translation id="2937799153569150791">आगे कोई लेवल 3 शीर्षक नहीं है</translation>
 <translation id="2942710183375260152">गहरा स्लेटी नीला</translation>
 <translation id="2943596527105977722">गोल्डन रॉड जैसा गहरा रंग</translation>
@@ -305,6 +306,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2999559350546931576">पिच घटाएं</translation>
 <translation id="3009352964623081324">Search + O, फिर S. इस शॉर्टकट का इस्तेमाल इंस्टॉल करने, प्रबंधित करने, और आवाज़ को अपनी पसंद के मुताबिक बनाने के लिए करें.</translation>
 <translation id="3014130421870723208">@ed 8dot</translation>
+<translation id="3018210433491759145">ChromeVox लोड हो रहा है</translation>
 <translation id="3030432017085518523">मेन्यू आइटम रेडियो बटन</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{संबंध कारक चिह्न}one{# संबंध कारक चिह्न}other{# संबंध कारक चिह्न}}</translation>
 <translation id="3040901448410802366">प्रगति संकेतक</translation>
@@ -439,6 +441,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3813387282697781382">हल्के मूंगे जैसा रंग</translation>
 <translation id="3816633764618089385">अगला मीडिया</translation>
+<translation id="3821689185319271077">कोई पॉइंटर ऐंकर मौजूद नहीं है</translation>
 <translation id="3840823741487267909">छोटा रूप</translation>
 <translation id="3841319830220785495">डिफ़ॉल्ट के तौर पर सेट की गई अच्छी क्वालिटी वाली आवाज़</translation>
 <translation id="385383972552776628">विकल्प पेज खोलें</translation>
@@ -544,6 +547,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4597532268155981612">फ़ॉर्म</translation>
 <translation id="4601367666219428522">ता <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">ध्यान न देते हुए अगला बटन दबाएं</translation>
+<translation id="4617384941327705512">स्मार्ट स्टिकी मोड बंद है</translation>
 <translation id="4623097797855662355">कॉलफ़न</translation>
 <translation id="4624970070706497034">अब Chromebook पर TalkBack की सुविधा को पसंद के मुताबिक सेट नहीं किया जा सकेगा. आपके पास अब भी इसे इस्तेमाल करने का विकल्प है. इसके लिए TalkBack के डिफ़ॉल्ट कीबोर्ड शॉर्टकट का इस्तेमाल करें. उपलब्ध शॉर्टकट देखने के लिए, Search+A और फिर K बटन दबाएं. अगर आपको अब भी TalkBack का इस्तेमाल करना है, तो दोबारा कमांड बटन दबाएं.</translation>
 <translation id="463135993322337640">नया क्या है, यह जानने के लिए ChromeVox o, n दबाएं</translation>

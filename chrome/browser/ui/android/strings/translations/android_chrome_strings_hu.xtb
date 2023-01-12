@@ -729,7 +729,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="4991110219272367918">Lehetőség a webhely jóváhagyására vagy elutasítására bezárva</translation>
 <translation id="499724277181351974">A következő felkeresése: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Itt követheti ezt a webhelyet</translation>
-<translation id="500351648694011114">Böngészés még egyszerűbben</translation>
 <translation id="5004416275253351869">Google Tevékenységvezérlők</translation>
 <translation id="5005498671520578047">Jelszó másolása</translation>
 <translation id="5011311129201317034">A(z) <ph name="SITE" /> csatlakozni szeretne</translation>
@@ -882,7 +881,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5864419784173784555">Várakozás a másik letöltésre…</translation>
 <translation id="5865733239029070421">Automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google-nak</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
-<translation id="5869789175361934029">Folytatás másik eszközről</translation>
 <translation id="5876496397064130037">Feladat folytatva</translation>
 <translation id="587735546353481577">Webhely követéséhez lépjen a kívánt webhelyhez, nyissa meg a Chrome menüjét, majd koppintson a Követés pontra.</translation>
 <translation id="5879072387416556377">Relevánsabb javaslatokat kaphat</translation>
@@ -946,6 +944,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6277722725779679269">Nem sikerült frissíteni a nyomon követett árat.</translation>
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6294610283659775533">Átküldheti a lapokat ugyanazzal a Google-fiókkal bejelentkezett eszközei között</translation>
+<translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6297765934698848803">Az eszközét kezelő szervezet kikapcsolta a kamerát.</translation>
 <translation id="6301525844455696527">Ne feledkezzen meg az olvasási listájáról</translation>
 <translation id="6303969859164067831">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
@@ -1516,7 +1515,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="96681097142096641">Megtekinti az egyszerűsített oldalt?</translation>
 <translation id="968900484120156207">Itt jelennek meg a felkeresett oldalak</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> perc van hátra</translation>
-<translation id="978443947993957527">Önhöz tartozó tartalmak megtekintése</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Az összes lap bezárása</translation>
 <translation id="987264212798334818">Általános</translation>

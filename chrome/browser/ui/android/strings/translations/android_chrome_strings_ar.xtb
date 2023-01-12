@@ -730,7 +730,6 @@
 <translation id="4991110219272367918">تم إغلاق نافذة خيار الموافقة أو عدم الموافقة على زيارة موقع إلكتروني.</translation>
 <translation id="499724277181351974">الانتقال إلى <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">متابعة هذا الموقع الإلكتروني هنا</translation>
-<translation id="500351648694011114">التصفُّح بسهولة أكبر</translation>
 <translation id="5004416275253351869">‏عناصر التحكم بالنشاط على Google</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5011311129201317034">يريد <ph name="SITE" /> الاتصال</translation>
@@ -883,7 +882,6 @@
 <translation id="5864419784173784555">في انتظار تنزيل آخر…</translation>
 <translation id="5865733239029070421">‏يُرسِل إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا.</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
-<translation id="5869789175361934029">متابعة من جهاز آخر</translation>
 <translation id="5876496397064130037">تم استئناف المهمة</translation>
 <translation id="587735546353481577">‏لمتابعة موقع إلكتروني، انتقِل إلى الموقع الإلكتروني وافتح قائمة Chrome وانقر على "متابعة".</translation>
 <translation id="5879072387416556377">الحصول على اقتراحات أفضل</translation>
@@ -947,6 +945,7 @@
 <translation id="6277722725779679269">تعذّر تحديث ميزة تتبُّع السعر</translation>
 <translation id="6278428485366576908">مظهر</translation>
 <translation id="6294610283659775533">‏يمكنك إرسال علامات التبويب من وإلى الأجهزة التي تم من خلالها تسجيل الدخول إلى حساب Google نفسه.</translation>
+<translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6297765934698848803">إن المؤسسة التي تدير الجهاز أوقفت الكاميرا.</translation>
 <translation id="6301525844455696527">متابعة قراءة ما فاتك في قائمة القراءة</translation>
 <translation id="6303969859164067831">تسجيل الخروج وإيقاف المزامنة</translation>
@@ -1517,7 +1516,6 @@
 <translation id="96681097142096641">هل تريد عرض صفحة مبسّطة؟</translation>
 <translation id="968900484120156207">يتم عرض الصفحات التي تزورها هنا.</translation>
 <translation id="970715775301869095">عدد الدقائق المتبقية: <ph name="MINUTES" /></translation>
-<translation id="978443947993957527">الاطّلاع على محتوى مخصّص لك</translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="983192555821071799">إغلاق جميع علامات التبويب</translation>
 <translation id="987264212798334818">عام</translation>

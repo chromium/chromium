@@ -729,7 +729,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4991110219272367918">Valik suletud veebisaidi heakskiitmiseks või mitteheakskiitmiseks</translation>
 <translation id="499724277181351974">Navigeerige: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Jälgige seda saiti siin</translation>
-<translation id="500351648694011114">Sirvige hõlpsamini</translation>
 <translation id="5004416275253351869">Google'i kontotegevuste haldus</translation>
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> soovib ühenduse luua</translation>
@@ -882,7 +881,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5864419784173784555">Teise allalaadimise ootamine …</translation>
 <translation id="5865733239029070421">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid</translation>
 <translation id="5869522115854928033">Salvestatud paroolid</translation>
-<translation id="5869789175361934029">Jätkake sealt, kus muus seadmes pooleli jäite</translation>
 <translation id="5876496397064130037">Ülesannet jätkati</translation>
 <translation id="587735546353481577">Saidi jälgimiseks minge saidile, avage Chrome'i menüü ja puudutage nuppu Jälgi.</translation>
 <translation id="5879072387416556377">Hankige paremaid soovitusi</translation>
@@ -946,6 +944,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6277722725779679269">Funktsiooni Hindade jälgimine ei õnnestunud värskendada</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6294610283659775533">Saate vahelehti saata seadmete vahel, mis on sisse logitud sama Google'i kontoga</translation>
+<translation id="6295158916970320988">Kõik saidid</translation>
 <translation id="6297765934698848803">Teie seadet haldav organisatsioon on kaamera välja lülitanud.</translation>
 <translation id="6301525844455696527">Võtke oma lugemisloend käsile</translation>
 <translation id="6303969859164067831">Logi välja ja lülita sünkroonimine välja</translation>
@@ -1516,7 +1515,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="96681097142096641">Kas kuvada lihtsustatud leht?</translation>
 <translation id="968900484120156207">Teie külastatud lehed kuvatakse siin</translation>
 <translation id="970715775301869095">Jäänud on <ph name="MINUTES" /> minutit</translation>
-<translation id="978443947993957527">Vaadake teile mõeldud sisu</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="983192555821071799">Sule kõik vahelehed</translation>
 <translation id="987264212798334818">Üldine</translation>

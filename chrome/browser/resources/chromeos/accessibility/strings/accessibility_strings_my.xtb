@@ -291,6 +291,7 @@
 <translation id="2909584066358367921">နောက်ထပ် ခလုတ် မရှိပါ</translation>
 <translation id="2911433807131383493">ChromeVox သင်တန်း ဖွင့်ရန်</translation>
 <translation id="2912405967290226587">ညာဘက်သို့ လက်သုံးချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
+<translation id="2919107550468490321">စမတ် ကပ်ခွာစနစ် ဖွင့်ထားသည်</translation>
 <translation id="2937799153569150791">နောက်ထပ် အဆင့် ၃ ခေါင်စီး မရှိပါ</translation>
 <translation id="2942710183375260152">မီးခိုးပြာရင့်</translation>
 <translation id="2943596527105977722">ရွှေချောင်းအရင့်</translation>
@@ -305,6 +306,7 @@
 <translation id="2999559350546931576">ပတ်ချ်အသံ လျော့မည်</translation>
 <translation id="3009352964623081324">Search + O၊ ၎င်းနောက် S။ စကားသံများကို ထည့်သွင်းရန်၊ စီမံရန်နှင့် စိတ်ကြိုက်ပြုလုပ်ရန် အသုံးပြုနိုင်သည်။</translation>
 <translation id="3014130421870723208">@အစက် ၈ စက်စနစ်ကို တည်းဖြတ်ရန်</translation>
+<translation id="3018210433491759145">ChromeVox ဖွင့်နေသည်</translation>
 <translation id="3030432017085518523">မီနူး အရာ ရေဒီယို ခလုတ်</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{အပေါ်စတော်ပီ}other{# အပေါ်စတော်ပီ}}</translation>
 <translation id="3040901448410802366">တိုးတက်မှု အညွှန်း</translation>
@@ -439,6 +441,7 @@
 <translation id="3810838688059735925">ဗီဒီယို</translation>
 <translation id="3813387282697781382">သန္တာ အနု</translation>
 <translation id="3816633764618089385">နောက် မီဒီယာ</translation>
+<translation id="3821689185319271077">ကျောက်ဆူးညွှန်မြား မရှိပါ</translation>
 <translation id="3840823741487267909">အတိုကောက်</translation>
 <translation id="3841319830220785495">မူလပင်ကိုအသံ</translation>
 <translation id="385383972552776628">ရွေးချယ်မှု စာမျက်နှာ ကို ဖွင့်မည်</translation>
@@ -544,6 +547,7 @@
 <translation id="4597532268155981612">ပုံစံ</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">နောက် ကီး နှိပ်ကို လျစ်လျူရှုရန်</translation>
+<translation id="4617384941327705512">စမတ် ကပ်ခွာစနစ် ပိတ်ထားသည်</translation>
 <translation id="4623097797855662355">အမှတ်တံဆိပ်</translation>
 <translation id="4624970070706497034">Chromebook များအတွက် စိတ်ကြိုက်လုပ်ခြင်းကို Talkback က နောက်ထပ်မပေးတော့ပါ။ ၎င်းကို သုံးနိုင်သေးသော်လည်း Talkback မူရင်းလက်ကွက်ဖြတ်လမ်းများကို သုံးပါ။ Search+A ထို့နောက် K ကိုနှိပ်ပြီး သုံးနိုင်သည့်ဖြတ်လမ်းလင့်ခ်များကို ကြည့်ပါ။ သင် Talkback ကို ဆက်သုံးလိုပါက command ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="463135993322337640">အသစ်များကို သိရှိနိုင်ရန် ChromeVox o၊ n ကို နှိပ်ပါ</translation>
