@@ -21,11 +21,35 @@
 
 namespace blink {
 
-// A class representing the key that Storage APIs use to key their storage on.
+// A class used by Storage APIs as a key for storage. An entity with a given
+// storage key may not access data keyed with any other storage key.
 //
-// StorageKey contains an origin, a top-level site, and an optional nonce. Using
-// the nonce is still unsupported since serialization and deserialization don't
-// take it into account. For more details on the overall design, see
+// When third party storage partitioning is disabled, a StorageKey is equivalent
+// to an origin, which is how storage has historically been partitioned.
+//
+// When third party storage partitioning is enabled, a storage key additionally
+// contains a top-level site and an ancestor chain bit (see below). This
+// achieves partitioning of an origin by the top-level site that it is embedded
+// in. For example, https://chat.example.net embedded in
+// https://social-example.org is a distinct key from https://chat.example.net
+// embedded in https://news-example.org.
+//
+// A key is a third-party key if its origin is not in its top-level site (or if
+// its ancestor chain bit is `kCrossSite`; see below); otherwise it is a
+// first-party key.
+//
+// A corner-case is a first-party origin embedded in a third-party origin, such
+// as https://a.com embedded in https://b.com in https://a.com. The inner
+// `a.com` frame can be controlled by `b.com`, and is thus considered
+// third-party. The ancestor chain bit tracks this status.
+//
+// Storage keys can also optionally have a nonce. Keys with different nonces are
+// considered distinct, and distinct from a key with no nonce. This is used to
+// implement iframe credentialless and other forms of storage partitioning.
+// Keys with a nonce disregard the top level site and ancestor chain bit. For
+// consistency we set them to the origin's site and `kSameSite` respectively.
+//
+// For more details on the overall design, see
 // https://docs.google.com/document/d/1xd6MXcUhfnZqIe5dt2CTyCn6gEZ7nOezAEWS0W9hwbQ/edit.
 class BLINK_COMMON_EXPORT StorageKey {
  public:
@@ -126,7 +150,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // `IsThirdPartyContext` returns true if the StorageKey is for a context that
   // is "third-party", i.e. the StorageKey's top-level site and origin have
-  // different schemes and/or domains.
+  // different schemes and/or domains, or an intervening frame in the frame
+  // tree is third-party.
   //
   // `IsThirdPartyContext` returns true if the StorageKey was created with a
   // nonce or has an AncestorChainBit value of kCrossSite.
