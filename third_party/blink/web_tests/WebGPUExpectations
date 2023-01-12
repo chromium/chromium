@@ -15,8 +15,9 @@ crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_compl
 crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Skip ]
 crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_copy.https.html [ Skip ]
 crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_draw.https.html [ Skip ]
-crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Skip ]
-crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Skip ]
+# Conflicts with 1405639
+#crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Skip ]
+#crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Skip ]
 
 # STORAGE_BINDING is only support on WIN.
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
@@ -27,3 +28,14 @@ crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_com
 # SharedImageBackingFactoryIOSurface takes rgba8unorm as bgra8unorm.
 # https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image_backing_factory_iosurface.mm;l=217?q=SharedImageBackingFactoryIOSurface::CreateSharedImage&ss=chromium%2Fchromium%2Fsrc
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html [ Skip ]
+
+# image-rendering CSS property doesn't work properly
+crbug.com/1405548 wpt_internal/webgpu/web_platform/reftests/canvas_image_rendering.https.html [ Failure ]
+
+# Transparent WebGPU canvas with background color renders incorrectly
+crbug.com/1405639 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied_copy.https.html [ Failure ]
+crbug.com/1405639 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied_draw.https.html [ Failure ]
+crbug.com/1405639 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba16float_premultiplied_copy.https.html [ Failure ]
+crbug.com/1405639 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba16float_premultiplied_draw.https.html [ Failure ]
+crbug.com/1405639 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Failure ]
+crbug.com/1405639 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Failure ]

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html class="reftest-wait">
   <base href="/gen/third_party/webgpu-cts/src/webgpu/web_platform/reftests/" />
   <title>WebGPU canvas_composite_alpha_rgba16float_opaque</title>
@@ -10,11 +11,11 @@
   <link rel="match" href="./ref/canvas_composite_alpha_opaque-ref.html" />
   <style>
     body { background-color: #F0E68C; }
+    #c-canvas { background-color: #8CF0E6; }
   </style>
-  <canvas id="cvs" width="20" height="20" style="width: 20px; height: 20px;"></canvas>
-  <script src="/common/reftest-wait.js"></script>
+  <canvas id="c-body" width="20" height="20" style="width: 20px; height: 20px;"></canvas>
+  <canvas id="c-canvas" width="20" height="20" style="width: 20px; height: 20px;"></canvas>
   <script type="module">
-    cvs.style.imageRendering = 'pixelated';
     import { run } from './canvas_composite_alpha.html.js';
     run('rgba16float', 'opaque', 'draw');
   </script>
