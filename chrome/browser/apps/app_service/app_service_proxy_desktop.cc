@@ -7,7 +7,6 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 
@@ -24,11 +23,6 @@ void AppServiceProxy::Initialize() {
   }
 
   AppServiceProxyBase::Initialize();
-
-  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
-      !app_service_.is_connected()) {
-    return;
-  }
 
   publisher_host_ = std::make_unique<PublisherHost>(this);
 }

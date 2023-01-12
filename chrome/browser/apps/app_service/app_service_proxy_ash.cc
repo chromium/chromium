@@ -35,7 +35,6 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/grit/components_resources.h"
-#include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/features.h"
@@ -129,11 +128,6 @@ void AppServiceProxyAsh::Initialize() {
       profile_->GetPath(), &app_registry_cache_);
 
   AppServiceProxyBase::Initialize();
-
-  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
-      !app_service_.is_connected()) {
-    return;
-  }
 
   AppRegistryCache::Observer::Observe(&AppRegistryCache());
 
