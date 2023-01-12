@@ -10267,6 +10267,8 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/invalidations/fake_sync_instance_id.h",
     "../browser/sync/test/integration/invalidations/fake_sync_instance_id_driver.cc",
     "../browser/sync/test/integration/invalidations/fake_sync_instance_id_driver.h",
+    "../browser/sync/test/integration/invalidations/invalidations_status_checker.cc",
+    "../browser/sync/test/integration/invalidations/invalidations_status_checker.h",
     "../browser/sync/test/integration/multi_client_status_change_checker.cc",
     "../browser/sync/test/integration/multi_client_status_change_checker.h",
     "../browser/sync/test/integration/offer_helper.cc",

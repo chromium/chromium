@@ -163,7 +163,10 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
   SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(
         {syncer::kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
-         syncer::kUseSyncInvalidations},
+         // Enable both features to make it sure that old invalidations are
+         // completely disabled.
+         syncer::kUseSyncInvalidations,
+         syncer::kUseSyncInvalidationsForWalletAndOffer},
         {});
   }
 
@@ -600,6 +603,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitInvalidationsStatus(/*expected_status=*/true));
 
   bool has_local_changes = false;
   base::RunLoop run_loop;

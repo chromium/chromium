@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/quiesce_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
@@ -420,6 +421,10 @@ bool SyncServiceImplHarness::AwaitSyncTransportActive() {
   }
 
   return true;
+}
+
+bool SyncServiceImplHarness::AwaitInvalidationsStatus(bool expected_status) {
+  return InvalidationsStatusChecker(service(), expected_status).Wait();
 }
 
 bool SyncServiceImplHarness::EnableSyncForType(

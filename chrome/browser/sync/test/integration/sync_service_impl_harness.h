@@ -146,6 +146,9 @@ class SyncServiceImplHarness {
   // successful.
   bool AwaitSyncTransportActive();
 
+  // Blocks the caller until invalidations are enabled or disabled.
+  bool AwaitInvalidationsStatus(bool expected_status);
+
   // Returns the SyncServiceImpl member of the sync client.
   syncer::SyncServiceImpl* service() { return service_; }
   const syncer::SyncServiceImpl* service() const { return service_; }
