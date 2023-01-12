@@ -527,7 +527,7 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
 }
 
 TEST_F(ChromePasswordManagerClientTest,
-       SavingAndFillingDisabledConditionsInOffTheRecord) {
+       SavingAndFillingDisabledConditionsInGuestAndIncognitoProfiles) {
   MockPasswordManagerSettingsService* settings_service =
       static_cast<MockPasswordManagerSettingsService*>(
           PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
@@ -547,15 +547,14 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
   EXPECT_TRUE(client->IsFillingFallbackEnabled(kUrlOn));
 
-  // In guest mode saving is disabled, filling is enabled but there is in fact
-  // nothing to fill, manual filling is disabled.
+  // In guest mode saving, filling and manual filling are disabled.
   profile()->SetGuestSession(true);
   profile()
       ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
       ->AsTestingProfile()
       ->SetGuestSession(true);
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
-  EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
+  EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
 }
 
