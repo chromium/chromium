@@ -85,6 +85,29 @@ void SodaInstallerImpl::InstallLanguage(const std::string& language,
   }
 }
 
+void SodaInstallerImpl::UninstallLanguage(const std::string& language,
+                                          PrefService* global_prefs) {
+  speech::LanguageCode language_code = speech::GetLanguageCode(language);
+  if (language_code != speech::LanguageCode::kNone) {
+    // Remove the language from the preference tracking installed language packs
+    // and unregister the corresponding component from the component updater
+    // service to remove the files and prevent future updates.
+    SodaInstaller::UnregisterLanguage(language, global_prefs);
+    const std::string crx_id = component_updater::
+        SodaLanguagePackComponentInstallerPolicy::GetExtensionId(language_code);
+    auto* component_updater_service = g_browser_process->component_updater();
+    if (component_updater_service) {
+      component_updater_service->UnregisterComponent(crx_id);
+    }
+
+    std::set<speech::LanguageCode>::iterator it =
+        installed_languages_.find(language_code);
+    if (it != installed_languages_.end()) {
+      installed_languages_.erase(it);
+    }
+  }
+}
+
 std::vector<std::string> SodaInstallerImpl::GetAvailableLanguages() const {
   // TODO(crbug.com/1161569): SODA is only available for English right now.
   // Update this to check available languages.

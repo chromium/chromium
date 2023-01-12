@@ -17,6 +17,7 @@
 
 namespace {
 const speech::LanguageCode kEnglishLocale = speech::LanguageCode::kEnUs;
+const speech::LanguageCode kJapaneseLocale = speech::LanguageCode::kJaJp;
 const base::TimeDelta kSodaUninstallTime = base::Days(30);
 
 constexpr char kSodaEnglishLanguageInstallationResult[] =
@@ -36,7 +37,7 @@ class MockSodaInstallerImpl : public SodaInstallerImpl {
 
   void InstallLanguage(const std::string& language,
                        PrefService* global_prefs) override {
-    OnSodaLanguagePackInstalled(kEnglishLocale);
+    OnSodaLanguagePackInstalled(speech::GetLanguageCode(language));
   }
 };
 
@@ -59,16 +60,27 @@ class SodaInstallerImplTest : public testing::Test {
 
   SodaInstallerImpl* GetInstance() { return soda_installer_impl_.get(); }
 
-  bool IsSodaInstalled() {
-    return soda_installer_impl_->IsSodaInstalled(kEnglishLocale);
+  bool IsSodaInstalled(
+      speech::LanguageCode language_code = speech::LanguageCode::kEnUs) {
+    return soda_installer_impl_->IsSodaInstalled(language_code);
   }
 
-  bool IsEnglishLanguagePackInstalled() {
-    return soda_installer_impl_->IsLanguageInstalled(kEnglishLocale);
+  bool IsLanguagePackInstalled(speech::LanguageCode language_code) {
+    return soda_installer_impl_->IsLanguageInstalled(language_code);
   }
 
-  bool IsSodaDownloading() {
-    return soda_installer_impl_->IsSodaDownloading(kEnglishLocale);
+  bool IsSodaDownloading(
+      speech::LanguageCode language_code = speech::LanguageCode::kEnUs) {
+    return soda_installer_impl_->IsSodaDownloading(language_code);
+  }
+
+  void InstallLanguage(const std::string& language) {
+    return soda_installer_impl_->InstallLanguage(language, pref_service_.get());
+  }
+
+  void UninstallLanguage(const std::string& language) {
+    return soda_installer_impl_->UninstallLanguage(language,
+                                                   pref_service_.get());
   }
 
   void Init() {
@@ -123,10 +135,27 @@ TEST_F(SodaInstallerImplTest, IsDownloading) {
   ASSERT_FALSE(IsSodaDownloading());
 }
 
-TEST_F(SodaInstallerImplTest, IsEnglishLanguagePackInstalled) {
-  ASSERT_FALSE(IsEnglishLanguagePackInstalled());
+TEST_F(SodaInstallerImplTest, IsLanguagePackInstalled) {
+  ASSERT_FALSE(IsLanguagePackInstalled(kEnglishLocale));
   Init();
-  ASSERT_TRUE(IsEnglishLanguagePackInstalled());
+  ASSERT_TRUE(IsLanguagePackInstalled(kEnglishLocale));
+  ASSERT_FALSE(IsLanguagePackInstalled(kJapaneseLocale));
+}
+
+TEST_F(SodaInstallerImplTest, UninstallLanguagePacks) {
+  ASSERT_FALSE(IsLanguagePackInstalled(kEnglishLocale));
+  ASSERT_FALSE(IsLanguagePackInstalled(kJapaneseLocale));
+  Init();
+  ASSERT_TRUE(IsLanguagePackInstalled(kEnglishLocale));
+  ASSERT_FALSE(IsLanguagePackInstalled(kJapaneseLocale));
+
+  InstallLanguage(speech::GetLanguageName(kJapaneseLocale));
+  ASSERT_TRUE(IsLanguagePackInstalled(kEnglishLocale));
+  ASSERT_TRUE(IsLanguagePackInstalled(kJapaneseLocale));
+
+  UninstallLanguage(speech::GetLanguageName(kEnglishLocale));
+  ASSERT_FALSE(IsLanguagePackInstalled(kEnglishLocale));
+  ASSERT_TRUE(IsLanguagePackInstalled(kJapaneseLocale));
 }
 
 TEST_F(SodaInstallerImplTest, UninstallSodaAfterThirtyDays) {

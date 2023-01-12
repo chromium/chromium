@@ -260,6 +260,15 @@ void SodaInstaller::RegisterLanguage(const std::string& language,
   }
 }
 
+void SodaInstaller::UnregisterLanguage(const std::string& language,
+                                       PrefService* global_prefs) {
+  ScopedListPrefUpdate update(global_prefs,
+                              prefs::kSodaRegisteredLanguagePacks);
+  if (base::Contains(*update, base::Value(language))) {
+    update->EraseValue(base::Value(language));
+  }
+}
+
 void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
   ScopedListPrefUpdate update(global_prefs,
                               prefs::kSodaRegisteredLanguagePacks);

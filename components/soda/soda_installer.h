@@ -92,6 +92,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   virtual void InstallLanguage(const std::string& language,
                                PrefService* global_prefs) = 0;
 
+  // Uninstalls the language pack given a localized language code in BCP-47
+  // (e.g. "en-US");
+  virtual void UninstallLanguage(const std::string& language,
+                                 PrefService* global_prefs) = 0;
+
   // Gets all installed and installable language codes supported by SODA
   // (in BCP-47 format).
   virtual std::vector<std::string> GetAvailableLanguages() const = 0;
@@ -167,6 +172,9 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // Unregisters all language packs by clearing the preference tracking the
   // installed SODA language packs.
   void UnregisterLanguages(PrefService* global_prefs);
+
+  void UnregisterLanguage(const std::string& language,
+                          PrefService* global_prefs);
 
   // Returns whether or not the language pack for a given language is
   // installed. The language should be localized in BCP-47, e.g. "en-US".
