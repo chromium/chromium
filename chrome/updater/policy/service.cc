@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -133,15 +134,25 @@ void PolicyService::FetchPoliciesDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
-  // TODO(crbug/1259428): The managers may need to be reinitialized even when
-  // dm_policy_manager is not provided, the next CL will address this.
-  if (dm_policy_manager) {
-    policy_managers_ = SortManagers(CreatePolicyManagerVector(
-        external_constants_, is_system_install_scenario,
-        std::move(dm_policy_manager)));
-  }
-
-  std::move(callback).Run(result);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](scoped_refptr<ExternalConstants> external_constants,
+             bool is_system_install_scenario,
+             scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
+            return CreatePolicyManagerVector(external_constants,
+                                             is_system_install_scenario,
+                                             std::move(dm_policy_manager));
+          },
+          external_constants_, is_system_install_scenario, dm_policy_manager),
+      base::BindOnce(
+          [](scoped_refptr<PolicyService> self,
+             base::OnceCallback<void(int)> callback, int result,
+             PolicyService::PolicyManagerVector managers) {
+            self->policy_managers_ = SortManagers(std::move(managers));
+            std::move(callback).Run(result);
+          },
+          base::WrapRefCounted(this), std::move(callback), result));
 }
 
 std::string PolicyService::source() const {
