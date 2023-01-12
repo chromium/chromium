@@ -487,6 +487,7 @@ suite('NewTabPageAppTest', () => {
       ['cr-most-visited', NtpElement.MOST_VISITED],
       ['ntp-middle-slot-promo', NtpElement.MIDDLE_SLOT_PROMO],
       ['ntp-modules', NtpElement.MODULE],
+      ['#customizeButton', NtpElement.CUSTOMIZE_BUTTON],
     ] as Array<[string, NtpElement]>)
         .forEach(([selector, element]) => {
           test(`clicking '${selector}' records click`, () => {
@@ -507,7 +508,10 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertEquals(2, metrics.count('NewTabPage.Click'));
-      assertEquals(2, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE));
+      assertEquals(
+          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
+      assertEquals(
+          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_DIALOG));
     });
 
     test('clicking OGB records click', () => {

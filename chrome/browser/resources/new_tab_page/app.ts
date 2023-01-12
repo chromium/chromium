@@ -57,7 +57,9 @@ export enum NtpElement {
   MOST_VISITED = 5,
   MIDDLE_SLOT_PROMO = 6,
   MODULE = 7,
-  CUSTOMIZE = 8,
+  CUSTOMIZE = 8,  // Obsolete
+  CUSTOMIZE_BUTTON = 9,
+  CUSTOMIZE_DIALOG = 10,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
@@ -769,8 +771,10 @@ export class AppElement extends PolymerElement {
           recordClick(NtpElement.MODULE);
           return;
         case $$(this, '#customizeButton'):
+          recordClick(NtpElement.CUSTOMIZE_BUTTON);
+          return;
         case $$(this, 'ntp-customize-dialog'):
-          recordClick(NtpElement.CUSTOMIZE);
+          recordClick(NtpElement.CUSTOMIZE_DIALOG);
           return;
       }
     }

@@ -73280,7 +73280,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Most Visited Tiles"/>
   <int value="6" label="Middle Slot Promo"/>
   <int value="7" label="Module"/>
-  <int value="8" label="Customize Dialog / Button"/>
+  <int value="8" label="Obsolete: Customize Dialog / Button"/>
+  <int value="9" label="Customize Chrome Button"/>
+  <int value="10" label="Customize Chrome Dialog"/>
 </enum>
 
 <enum name="NtpFollowAction">
