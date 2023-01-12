@@ -817,4 +817,102 @@ TEST_F(RestoreDataTest, UpdateAppIdToLacros) {
               restore_data().app_id_to_launch_list().end());
   EXPECT_EQ(1u, restore_data().app_id_to_launch_list().size());
 }
+
+TEST_F(RestoreDataTest, CompareAppRestoreData) {
+  std::unique_ptr<AppLaunchInfo> app_launch_info_1 =
+      std::make_unique<AppLaunchInfo>(
+          kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
+          std::vector<base::FilePath>{base::FilePath(kFilePath1),
+                                      base::FilePath(kFilePath2)},
+          MakeIntent(kIntentActionSend, kMimeType, kShareText1));
+
+  app_launch_info_1->app_type_browser = kAppTypeBrower2;
+  app_launch_info_1->tab_group_infos.emplace();
+  app_launch_info_1->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
+  PopulateTestTabgroups(app_launch_info_1->tab_group_infos.value());
+
+  // Same as app_launch_info_1.
+  std::unique_ptr<AppLaunchInfo> app_launch_info_2 =
+      std::make_unique<AppLaunchInfo>(
+          kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
+          std::vector<base::FilePath>{base::FilePath(kFilePath1),
+                                      base::FilePath(kFilePath2)},
+          MakeIntent(kIntentActionSend, kMimeType, kShareText1));
+
+  app_launch_info_2->app_type_browser = kAppTypeBrower2;
+  app_launch_info_2->tab_group_infos.emplace();
+  app_launch_info_2->first_non_pinned_tab_index = kFirstNonPinnedTabIndex;
+  PopulateTestTabgroups(app_launch_info_2->tab_group_infos.value());
+
+  std::unique_ptr<AppLaunchInfo> app_launch_info_3 =
+      std::make_unique<AppLaunchInfo>(
+          kAppId1, kWindowId2, apps::LaunchContainer::kLaunchContainerTab,
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
+          std::vector<base::FilePath>{base::FilePath(kFilePath2)},
+          MakeIntent(kIntentActionView, kMimeType, kShareText2));
+
+  std::unique_ptr<AppRestoreData> app_restore_data_1 =
+      std::make_unique<AppRestoreData>(std::move(app_launch_info_1));
+
+  std::unique_ptr<AppRestoreData> app_restore_data_2 =
+      std::make_unique<AppRestoreData>(std::move(app_launch_info_2));
+
+  std::unique_ptr<AppRestoreData> app_restore_data_3 =
+      std::make_unique<AppRestoreData>(std::move(app_launch_info_3));
+
+  EXPECT_TRUE(*app_restore_data_1 == *app_restore_data_2);
+  EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_3);
+
+  // Modify tab groups of app_restore_data_2.
+  app_restore_data_2->tab_group_infos->push_back(
+      MakeTestTabGroup(kTestTabGroupTitleThree, kTestTabGroupColorThree));
+  EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_2);
+}
+
+TEST_F(RestoreDataTest, CompareAppRestoreDataIntent) {
+  // Intent is nullptr.
+  std::unique_ptr<AppLaunchInfo> app_launch_info_1 =
+      std::make_unique<AppLaunchInfo>(
+          kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
+          std::vector<base::FilePath>{base::FilePath(kFilePath1),
+                                      base::FilePath(kFilePath2)},
+          nullptr);
+
+  // Same as app_launch_info_1.
+  std::unique_ptr<AppLaunchInfo> app_launch_info_2 =
+      std::make_unique<AppLaunchInfo>(
+          kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
+          std::vector<base::FilePath>{base::FilePath(kFilePath1),
+                                      base::FilePath(kFilePath2)},
+          nullptr);
+
+  std::unique_ptr<AppRestoreData> app_restore_data_1 =
+      std::make_unique<AppRestoreData>(std::move(app_launch_info_1));
+
+  std::unique_ptr<AppRestoreData> app_restore_data_2 =
+      std::make_unique<AppRestoreData>(std::move(app_launch_info_2));
+
+  // Intent both nullptr.
+  EXPECT_TRUE(*app_restore_data_1 == *app_restore_data_2);
+
+  // Add intent to app_restore_data_1.
+  app_restore_data_1->intent =
+      MakeIntent(kIntentActionView, kMimeType, kShareText1);
+  EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_2);
+
+  // Add intent to app_restore_data_2, different from app_restore_data_1.
+  app_restore_data_2->intent =
+      MakeIntent(kIntentActionView, kMimeType, kShareText2);
+  EXPECT_TRUE(*app_restore_data_1 != *app_restore_data_2);
+
+  // Modify app_restore_data_2 to the same as app_restore_data_1.
+  app_restore_data_2->intent =
+      MakeIntent(kIntentActionView, kMimeType, kShareText1);
+  EXPECT_TRUE(*app_restore_data_1 == *app_restore_data_2);
+}
+
 }  // namespace app_restore

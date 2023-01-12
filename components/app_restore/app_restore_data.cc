@@ -623,13 +623,23 @@ apps::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
 }
 
 bool AppRestoreData::operator==(const AppRestoreData& other) const {
+  if (!intent && other.intent) {
+    return false;
+  }
+  if (intent && !other.intent) {
+    return false;
+  }
+  if (intent && other.intent && *intent != *other.intent) {
+    return false;
+  }
+
   return event_flag == other.event_flag && container == other.container &&
          disposition == other.disposition &&
          override_url == other.override_url && display_id == other.display_id &&
          handler_id == other.handler_id && urls == other.urls &&
          active_tab_index == other.active_tab_index &&
          first_non_pinned_tab_index == other.first_non_pinned_tab_index &&
-         intent == other.intent && file_paths == other.file_paths &&
+         file_paths == other.file_paths &&
          app_type_browser == other.app_type_browser &&
          app_name == other.app_name && title == other.title &&
          activation_index == other.activation_index &&
