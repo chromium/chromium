@@ -480,6 +480,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.dragDelegate = self;
   collectionView.dropDelegate = self;
   collectionView.dragInteractionEnabled = YES;
+  collectionView.showsHorizontalScrollIndicator = NO;
 
   self.view = collectionView;
 
