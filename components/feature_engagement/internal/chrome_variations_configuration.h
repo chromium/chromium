@@ -46,9 +46,11 @@ class ChromeVariationsConfiguration : public Configuration {
 
  private:
   void ParseFeatureConfig(const base::Feature* feature,
-                          const FeatureVector& all_features);
+                          const FeatureVector& all_features,
+                          const GroupVector& all_groups);
   void ParseGroupConfig(const base::Feature* group,
-                        const FeatureVector& all_features);
+                        const FeatureVector& all_features,
+                        const GroupVector& all_groups);
 
   // Checks whether |feature| should use a client side config and fills in
   // |params| the parameters for later parsing if necessary.

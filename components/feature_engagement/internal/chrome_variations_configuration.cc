@@ -46,6 +46,7 @@ const char kBlockingKey[] = "blocking";
 const char kBlockedByKey[] = "blocked_by";
 const char kAvailabilityKey[] = "availability";
 const char kTrackingOnlyKey[] = "tracking_only";
+const char kGroupsKey[] = "groups";
 const char kIgnoredKeyPrefix[] = "x_";
 
 const char kSnoozeParams[] = "snooze_params";
@@ -214,6 +215,16 @@ bool IsKnownFeature(const base::StringPiece& feature_name,
   for (const auto* feature : features) {
     if (feature->name == feature_name)
       return true;
+  }
+  return false;
+}
+
+bool IsKnownGroup(const base::StringPiece& group_name,
+                  const GroupVector& groups) {
+  for (const auto* group : groups) {
+    if (group->name == group_name) {
+      return true;
+    }
   }
   return false;
 }
@@ -414,6 +425,46 @@ bool ParseTrackingOnly(const base::StringPiece& definition,
   return base::EqualsCaseInsensitiveASCII(trimmed_def, kTrackingOnlyFalse);
 }
 
+bool ParseGroups(const base::StringPiece& definition,
+                 std::vector<std::string>* groups,
+                 const base::Feature* this_feature,
+                 const GroupVector& all_groups) {
+  base::StringPiece trimmed_def =
+      base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
+
+  if (trimmed_def.length() == 0) {
+    return false;
+  }
+
+  auto parsed_group_names = base::SplitStringPiece(
+      trimmed_def, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parsed_group_names.empty()) {
+    return false;
+  }
+
+  for (const auto& group_name : parsed_group_names) {
+    if (group_name.length() == 0) {
+      DVLOG(1) << "Empty group name when parsing groups "
+               << "for feature " << this_feature->name;
+      continue;
+    }
+    if (!IsKnownGroup(group_name, all_groups)) {
+      DVLOG(1) << "Unknown group name found when parsing groups "
+               << "for feature " << this_feature->name << ": " << group_name;
+      stats::RecordConfigParsingEvent(
+          stats::ConfigParsingEvent::FAILURE_GROUPS_UNKNOWN_GROUP);
+      continue;
+    }
+    groups->emplace_back(std::string(group_name));
+  }
+
+  if (groups->empty()) {
+    return false;
+  }
+
+  return true;
+}
+
 // Holds all the possible fields that can be parsed. The parsing code will fill
 // the provided items with parsed data. If any field is null, then it won't be
 // parsed.
@@ -429,6 +480,7 @@ struct ConfigParseOutput {
   bool* tracking_only = nullptr;
   Comparator* availability = nullptr;
   SnoozeParams* snooze_params = nullptr;
+  std::vector<std::string>* groups = nullptr;
 
   explicit ConfigParseOutput(uint32_t& parse_errors)
       : parse_errors(parse_errors) {}
@@ -436,6 +488,7 @@ struct ConfigParseOutput {
 
 void ParseConfigFields(const base::Feature* feature,
                        const FeatureVector& all_features,
+                       const GroupVector& all_groups,
                        std::map<std::string, std::string> params,
                        ConfigParseOutput& output) {
   for (const auto& it : params) {
@@ -531,6 +584,18 @@ void ParseConfigFields(const base::Feature* feature,
         continue;
       }
       *output.snooze_params = parsed_snooze_params;
+    } else if (key == kGroupsKey && output.groups) {
+      if (!base::FeatureList::IsEnabled(kIPHGroups)) {
+        continue;
+      }
+      std::vector<std::string> groups;
+      if (!ParseGroups(param_value, &groups, feature, all_groups)) {
+        stats::RecordConfigParsingEvent(
+            stats::ConfigParsingEvent::FAILURE_GROUPS_PARSE);
+        ++output.parse_errors;
+        continue;
+      }
+      *output.groups = groups;
     } else if (base::StartsWith(key, kEventConfigKeyPrefix,
                                 base::CompareCase::INSENSITIVE_ASCII) &&
                output.event_configs) {
@@ -577,15 +642,14 @@ ChromeVariationsConfiguration::~ChromeVariationsConfiguration() = default;
 void ChromeVariationsConfiguration::ParseConfigs(const FeatureVector& features,
                                                  const GroupVector& groups) {
   for (auto* feature : features) {
-    ParseFeatureConfig(feature, features);
+    ParseFeatureConfig(feature, features, groups);
   }
-
   if (!base::FeatureList::IsEnabled(kIPHGroups)) {
     return;
   }
 
   for (auto* group : groups) {
-    ParseGroupConfig(group, features);
+    ParseGroupConfig(group, features, groups);
   }
 }
 
@@ -642,7 +706,8 @@ void ChromeVariationsConfiguration::TryAddingClientSideConfig(
 
 void ChromeVariationsConfiguration::ParseFeatureConfig(
     const base::Feature* feature,
-    const FeatureVector& all_features) {
+    const FeatureVector& all_features,
+    const GroupVector& all_groups) {
   DCHECK(feature);
   DCHECK(configs_.find(feature->name) == configs_.end());
 
@@ -669,8 +734,9 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
   output.tracking_only = &config.tracking_only;
   output.availability = &config.availability;
   output.snooze_params = &config.snooze_params;
+  output.groups = &config.groups;
 
-  ParseConfigFields(feature, all_features, params, output);
+  ParseConfigFields(feature, all_features, all_groups, params, output);
 
   // The |used| and |trigger| members are required, so should not be the
   // default values.
@@ -707,7 +773,8 @@ bool ChromeVariationsConfiguration::MaybeAddClientSideFeatureConfig(
 
 void ChromeVariationsConfiguration::ParseGroupConfig(
     const base::Feature* group,
-    const FeatureVector& all_features) {
+    const FeatureVector& all_features,
+    const GroupVector& all_groups) {
   DCHECK(group);
   DCHECK(group_configs_.find(group->name) == group_configs_.end());
 
@@ -729,7 +796,7 @@ void ChromeVariationsConfiguration::ParseGroupConfig(
   output.trigger = &config.trigger;
   output.event_configs = &config.event_configs;
 
-  ParseConfigFields(group, all_features, params, output);
+  ParseConfigFields(group, all_features, all_groups, params, output);
 
   // The |trigger| member is required, so should not be the
   // default value.

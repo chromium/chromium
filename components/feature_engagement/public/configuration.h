@@ -207,6 +207,9 @@ struct FeatureConfig {
 
   // Snoozing parameter to decide if in-product help should be shown.
   SnoozeParams snooze_params;
+
+  // Groups this feature is part of.
+  std::vector<std::string> groups;
 };
 
 bool operator==(const FeatureConfig& lhs, const FeatureConfig& rhs);
