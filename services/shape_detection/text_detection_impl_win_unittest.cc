@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/windows_version.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/shape_detection/public/mojom/textdetection.mojom.h"
 #include "services/shape_detection/text_detection_impl.h"
@@ -55,10 +54,6 @@ class TextDetectionImplWinTest : public testing::Test {
 };
 
 TEST_F(TextDetectionImplWinTest, ScanOnce) {
-  // OCR not supported before Windows 10
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
-
   mojo::Remote<mojom::TextDetection> text_service;
   TextDetectionImpl::Create(text_service.BindNewPipeAndPassReceiver());
 

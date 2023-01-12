@@ -28,16 +28,11 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
       []() { return gl::QueryD3D11DeviceObjectFromANGLE(); });
 }
 
-bool ShouldUseD3D11VideoDecoder(
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
-  return !gpu_workarounds.disable_d3d11_video_decoder;
-}
-
 }  // namespace
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     VideoDecoderTraits& traits) {
-  if (!ShouldUseD3D11VideoDecoder(*traits.gpu_workarounds)) {
+  if (traits.gpu_workarounds->disable_d3d11_video_decoder) {
     if (traits.gpu_workarounds->disable_dxva_video_decoder)
       return nullptr;
     return VdaVideoDecoder::Create(
@@ -76,7 +71,7 @@ GetPlatformSupportedVideoDecoderConfigs(
   SupportedVideoDecoderConfigs supported_configs;
   if (gpu_preferences.disable_accelerated_video_decode)
     return supported_configs;
-  if (ShouldUseD3D11VideoDecoder(gpu_workarounds)) {
+  if (!gpu_workarounds.disable_d3d11_video_decoder) {
     supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
         gpu_preferences, gpu_workarounds, GetD3D11DeviceCallback());
   } else if (!gpu_workarounds.disable_dxva_video_decoder) {
@@ -98,8 +93,8 @@ VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-  return ShouldUseD3D11VideoDecoder(gpu_workarounds) ? VideoDecoderType::kD3D11
-                                                     : VideoDecoderType::kVda;
+  return gpu_workarounds.disable_d3d11_video_decoder ? VideoDecoderType::kVda
+                                                     : VideoDecoderType::kD3D11;
 }
 
 // There is no CdmFactory on windows, so just stub it out.

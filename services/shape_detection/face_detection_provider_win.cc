@@ -12,7 +12,6 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
-#include "base/win/windows_version.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -50,11 +49,6 @@ BitmapPixelFormat GetPreferredPixelFormat(IFaceDetectorStatics* factory) {
 void FaceDetectionProviderWin::CreateFaceDetection(
     mojo::PendingReceiver<shape_detection::mojom::FaceDetection> receiver,
     shape_detection::mojom::FaceDetectorOptionsPtr options) {
-  // FaceDetector class is only available in Win 10 onwards (v10.0.10240.0).
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    DVLOG(1) << "FaceDetector not supported before Windows 10";
-    return;
-  }
   // Loads functions dynamically at runtime to prevent library dependencies.
   if (!(base::win::ResolveCoreWinRTDelayload() &&
         ScopedHString::ResolveCoreWinRTStringDelayload())) {

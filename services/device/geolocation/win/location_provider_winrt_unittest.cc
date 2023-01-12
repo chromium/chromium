@@ -4,10 +4,12 @@
 
 #include "services/device/geolocation/win/location_provider_winrt.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_winrt_initializer.h"
-#include "base/win/windows_version.h"
 #include "services/device/geolocation/win/fake_geocoordinate_winrt.h"
 #include "services/device/geolocation/win/fake_geolocator_winrt.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -21,7 +23,7 @@ using ABI::Windows::Devices::Geolocation::PositionStatus;
 
 class MockLocationObserver {
  public:
-  MockLocationObserver(base::OnceClosure update_called)
+  explicit MockLocationObserver(base::OnceClosure update_called)
       : update_called_(std::move(update_called)) {}
   ~MockLocationObserver() = default;
 
@@ -90,9 +92,6 @@ class LocationProviderWinrtTest : public testing::Test {
                                       base::Unretained(observer_.get()))) {}
 
   void SetUp() override {
-    if (base::win::GetVersion() < base::win::Version::WIN8)
-      GTEST_SKIP();
-
     winrt_initializer_.emplace();
     ASSERT_TRUE(winrt_initializer_->Succeeded());
   }

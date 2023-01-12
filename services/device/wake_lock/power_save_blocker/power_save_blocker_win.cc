@@ -19,11 +19,6 @@ namespace {
 
 HANDLE CreatePowerRequest(POWER_REQUEST_TYPE type,
                           const std::string& description) {
-  if (type == PowerRequestExecutionRequired &&
-      base::win::GetVersion() == base::win::Version::WIN7) {
-    return INVALID_HANDLE_VALUE;
-  }
-
   std::wstring wide_description = base::ASCIIToWide(description);
   REASON_CONTEXT context = {0};
   context.Version = POWER_REQUEST_CONTEXT_VERSION;
@@ -47,11 +42,6 @@ void DeletePowerRequest(POWER_REQUEST_TYPE type, HANDLE handle) {
   base::win::ScopedHandle request_handle(handle);
   if (!request_handle.IsValid())
     return;
-
-  if (type == PowerRequestExecutionRequired &&
-      base::win::GetVersion() == base::win::Version::WIN7) {
-    return;
-  }
 
   BOOL success = ::PowerClearRequest(request_handle.Get(), type);
   DCHECK(success);
@@ -119,9 +109,6 @@ POWER_REQUEST_TYPE PowerSaveBlocker::Delegate::RequestType() {
   if (type_ == mojom::WakeLockType::kPreventDisplaySleep ||
       type_ == mojom::WakeLockType::kPreventDisplaySleepAllowDimming)
     return PowerRequestDisplayRequired;
-
-  if (base::win::GetVersion() == base::win::Version::WIN7)
-    return PowerRequestSystemRequired;
 
   return PowerRequestExecutionRequired;
 }
