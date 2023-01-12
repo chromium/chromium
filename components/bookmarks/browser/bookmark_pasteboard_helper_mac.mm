@@ -164,6 +164,8 @@ bool ReadStandardBookmarks(NSPasteboard* pb,
   return true;
 }
 
+// Transforms a list of bookmark nodes into an `NSArray` of `NSDictionaries`
+// encoding them.
 NSArray* GetNSArrayForBookmarkList(
     const std::vector<BookmarkNodeData::Element>& elements) {
   NSMutableArray* array = [NSMutableArray array];
@@ -219,6 +221,20 @@ void CollectUrlsAndTitlesOfBookmarks(
 NSArray<NSPasteboardItem*>* PasteboardItemsFromBookmarks(
     const std::vector<BookmarkNodeData::Element>& elements,
     const base::FilePath& profile_path) {
+  // Bookmarks are encoded into pasteboard items in two ways:
+  //
+  // 1. As a flat array of pasteboard items, one for each of the bookmarks. This
+  //    loses the hierarchical information, but this makes the bookmark drags
+  //    interoperable with other applications on the system.
+  // 2. As a plist and path containing full information about everything.
+  //
+  // The OS pasteboard provides support for multiple items, so the array of
+  // items created as part of step 1 is set to be the items on the pasteboard.
+  // Blobs of data that are only useful to Chromium are added to the first item
+  // to go along for the ride.
+
+  // 1. The flat array of URLs for interoperability.
+
   NSMutableArray* url_titles = [NSMutableArray array];
   NSMutableArray* urls = [NSMutableArray array];
   CollectUrlsAndTitlesOfBookmarks(elements, url_titles, urls);
@@ -226,13 +242,21 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromBookmarks(
   NSArray<NSPasteboardItem*>* items =
       ui::ClipboardUtil::PasteboardItemsFromUrls(urls, url_titles);
 
-  if (items.count) {
-    [items[0] setPropertyList:GetNSArrayForBookmarkList(elements)
-                      forType:kUTTypeChromiumBookmarkDictionaryList];
+  // 2. The plist and path for Chromium use.
 
-    [items[0] setString:base::SysUTF8ToNSString(profile_path.value())
-                forType:kUTTypeChromiumProfilePath];
+  if (!items.count) {
+    // There were no bookmark URLs encoded, therefore the elements being encoded
+    // consist of bookmark folders. The data for those folders will be contained
+    // in the Chromium-specific data, so make a single pasteboard item to hold
+    // it.
+    items = @[ [[[NSPasteboardItem alloc] init] autorelease] ];
   }
+
+  [items.firstObject setPropertyList:GetNSArrayForBookmarkList(elements)
+                             forType:kUTTypeChromiumBookmarkDictionaryList];
+
+  [items.firstObject setString:base::SysUTF8ToNSString(profile_path.value())
+                       forType:kUTTypeChromiumProfilePath];
 
   return items;
 }
@@ -260,6 +284,12 @@ bool ReadBookmarksFromPasteboard(
   elements->clear();
   NSString* profile = [pb stringForType:kUTTypeChromiumProfilePath];
   *profile_path = base::FilePath(base::SysNSStringToUTF8(profile));
+
+  // Corresponding to the two types of data written above in
+  // `PasteboardItemsFromBookmarks()`, first attempt to read the Chromium-only
+  // data that has more fidelity, and then fall back to reading standard URL
+  // types.
+
   return ReadChromiumBookmarks(pb, elements) ||
          ReadStandardBookmarks(pb, elements);
 }
