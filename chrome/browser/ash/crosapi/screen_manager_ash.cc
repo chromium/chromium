@@ -16,12 +16,12 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/video_capture_device_ash.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/video_capture/ash/video_capture_device_ash.h"
 #include "ui/aura/window_observer.h"
 #include "ui/snapshot/snapshot.h"
 

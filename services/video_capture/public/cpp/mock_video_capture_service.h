@@ -28,8 +28,8 @@ class MockVideoCaptureService
       mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
           accelerator_factory) override;
 
-  void ConnectToDeviceFactory(
-      mojo::PendingReceiver<video_capture::mojom::DeviceFactory> receiver)
+  void BindVideoCaptureDeviceFactory(
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver)
       override;
 
   MOCK_METHOD1(
@@ -37,9 +37,9 @@ class MockVideoCaptureService
       void(mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
                accelerator_factory));
 
-  MOCK_METHOD1(DoConnectToDeviceFactory,
-               void(mojo::PendingReceiver<video_capture::mojom::DeviceFactory>
-                        receiver));
+  MOCK_METHOD1(DoBindVideoCaptureDeviceFactory,
+               void(mojo::PendingReceiver<
+                    crosapi::mojom::VideoCaptureDeviceFactory> receiver));
 
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge>) override {}

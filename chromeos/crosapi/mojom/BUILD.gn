@@ -96,7 +96,6 @@ mojom("mojom") {
     "tts.mojom",
     "ui_constants.mojom",
     "url_handler.mojom",
-    "video_capture.mojom",
     "video_conference.mojom",
     "virtual_keyboard.mojom",
     "volume_manager.mojom",
@@ -111,6 +110,7 @@ mojom("mojom") {
   cpp_only = true
 
   public_deps = [
+    ":video_capture",
     "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors/mojom",
     "//chromeos/services/machine_learning/public/mojom",
@@ -118,8 +118,6 @@ mojom("mojom") {
     "//components/digital_goods/mojom:mojom",
     "//components/metrics/structured/mojom",
     "//components/tab_groups/public/mojom:mojo_bindings",
-    "//media/capture/mojom:image_capture",
-    "//media/capture/mojom:video_capture_types",
     "//media/mojo/mojom:speech_recognition",
     "//mojo/public/mojom/base",
     "//printing/backend/mojom",
@@ -302,6 +300,20 @@ mojom("mojom") {
         "//ui/base:ui_data_pack",
       ]
     },
+  ]
+}
+
+# This needs a separate target, because this is also used
+# by the Video Capture Service in Ash and blink bindings
+# are needed.
+mojom("video_capture") {
+  sources = [ "video_capture.mojom" ]
+  public_deps = [
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:video_capture_types",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
   ]
 }
 

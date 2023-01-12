@@ -91,7 +91,6 @@
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
-#include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
 #include "chrome/browser/ash/crosapi/volume_manager_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
@@ -136,8 +135,11 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
+#include "content/public/browser/video_capture_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/video_capture/ash/video_capture_device_factory_ash.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 #include "content/public/browser/stable_video_decoder_factory.h"
@@ -261,8 +263,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
       tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
-      video_capture_device_factory_ash_(
-          std::make_unique<VideoCaptureDeviceFactoryAsh>()),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
       virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
@@ -816,7 +816,8 @@ void CrosapiAsh::BindUrlHandler(
 
 void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
-  video_capture_device_factory_ash_->BindReceiver(std::move(receiver));
+  content::GetVideoCaptureService().BindVideoCaptureDeviceFactory(
+      std::move(receiver));
 }
 
 void CrosapiAsh::BindVideoConferenceManager(

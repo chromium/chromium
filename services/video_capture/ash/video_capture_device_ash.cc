@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/video_capture_device_ash.h"
+#include "services/video_capture/ash/video_capture_device_ash.h"
 
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ash/crosapi/video_frame_handler_ash.h"
 #include "media/capture/mojom/image_capture.mojom.h"
+#include "services/video_capture/ash/video_frame_handler_ash.h"
 
 namespace crosapi {
 

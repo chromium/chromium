@@ -25,9 +25,9 @@ void MockVideoCaptureService::InjectGpuDependencies(
   DoInjectGpuDependencies(std::move(accelerator_factory));
 }
 
-void MockVideoCaptureService::ConnectToDeviceFactory(
-    mojo::PendingReceiver<video_capture::mojom::DeviceFactory> receiver) {
-  DoConnectToDeviceFactory(std::move(receiver));
+void MockVideoCaptureService::BindVideoCaptureDeviceFactory(
+    mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver) {
+  DoBindVideoCaptureDeviceFactory(std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

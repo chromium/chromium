@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/video_frame_handler_ash.h"
+#include "services/video_capture/ash/video_frame_handler_ash.h"
 
 #include <memory>
 #include <string>
@@ -62,8 +62,9 @@ crosapi::mojom::ReadyFrameInBufferPtr ToCrosapiBuffer(
     }
     crosapi_buffer_info->rotation = crosapi_rotation;
   }
-  if (buffer_info->metadata.reference_time.has_value())
+  if (buffer_info->metadata.reference_time.has_value()) {
     crosapi_buffer_info->reference_time = *buffer_info->metadata.reference_time;
+  }
 
   crosapi_buffer->frame_info = std::move(crosapi_buffer_info);
   return crosapi_buffer;

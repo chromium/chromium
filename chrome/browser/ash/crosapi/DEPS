@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "crosapi_ash\.cc": [
+    "+services/video_capture/ash",
+  ],
   "crosapi_ash\.h": [
     "+media/gpu/buildflags.h",
   ],
@@ -15,6 +18,9 @@ specific_include_rules = {
   "remoting_ash\.cc": [
     # For remote support functionality.
     "+remoting/host/chromeos",
+  ],
+  "screen_manager_ash\.cc": [
+    "+services/video_capture/ash",
   ],
   "select_file_ash\.cc": [
     # For Chrome OS-specific file manager parameters.

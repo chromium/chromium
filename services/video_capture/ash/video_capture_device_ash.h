@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSAPI_VIDEO_CAPTURE_DEVICE_ASH_H_
-#define CHROME_BROWSER_ASH_CROSAPI_VIDEO_CAPTURE_DEVICE_ASH_H_
+#ifndef SERVICES_VIDEO_CAPTURE_ASH_VIDEO_CAPTURE_DEVICE_ASH_H_
+#define SERVICES_VIDEO_CAPTURE_ASH_VIDEO_CAPTURE_DEVICE_ASH_H_
 
 #include "base/functional/callback_forward.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
@@ -57,4 +57,4 @@ class VideoCaptureDeviceAsh : public crosapi::mojom::VideoCaptureDevice {
 
 }  // namespace crosapi
 
-#endif  // CHROME_BROWSER_ASH_CROSAPI_VIDEO_CAPTURE_DEVICE_ASH_H_
+#endif  // SERVICES_VIDEO_CAPTURE_ASH_VIDEO_CAPTURE_DEVICE_ASH_H_

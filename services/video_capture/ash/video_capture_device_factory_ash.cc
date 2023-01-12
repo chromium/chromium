@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
+#include "services/video_capture/ash/video_capture_device_factory_ash.h"
 
 #include <memory>
 #include <string>
@@ -10,23 +10,16 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/crosapi/video_capture_device_ash.h"
-#include "content/public/browser/video_capture_service.h"
-#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "services/video_capture/ash/video_capture_device_ash.h"
+#include "services/video_capture/device_factory.h"
 
 namespace crosapi {
 
-VideoCaptureDeviceFactoryAsh::VideoCaptureDeviceFactoryAsh() {
-  content::GetVideoCaptureService().ConnectToDeviceFactory(
-      device_factory_.BindNewPipeAndPassReceiver());
-}
+VideoCaptureDeviceFactoryAsh::VideoCaptureDeviceFactoryAsh(
+    raw_ptr<video_capture::DeviceFactory> device_factory)
+    : device_factory_(device_factory) {}
 
 VideoCaptureDeviceFactoryAsh::~VideoCaptureDeviceFactoryAsh() = default;
-
-void VideoCaptureDeviceFactoryAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
 
 void VideoCaptureDeviceFactoryAsh::GetDeviceInfos(
     GetDeviceInfosCallback callback) {

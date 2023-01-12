@@ -111,7 +111,6 @@ class WallpaperAsh;
 class WebAppServiceAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
-class VideoCaptureDeviceFactoryAsh;
 class VirtualKeyboardAsh;
 class VolumeManagerAsh;
 class VpnExtensionObserverAsh;
@@ -570,8 +569,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<TtsAsh> tts_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
-  std::unique_ptr<VideoCaptureDeviceFactoryAsh>
-      video_capture_device_factory_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;

@@ -13,6 +13,8 @@ import "services/video_capture/public/mojom/video_source_provider.mojom";
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
 import "media/capture/video/chromeos/mojom/camera_app.mojom";
+[EnableIf=is_chromeos_ash]
+import "chromeos/crosapi/mojom/video_capture.mojom";
 
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
@@ -52,9 +54,11 @@ interface VideoCaptureService  {
   ConnectToCameraAppDeviceBridge(
       pending_receiver<cros.mojom.CameraAppDeviceBridge> receiver);
 
-  // Legacy API. Supports one client per device.
+  // Interface to expose the internal DeviceFactory to be passed from ash
+  // to lacros.
   [EnableIf=is_chromeos_ash]
-  ConnectToDeviceFactory(pending_receiver<DeviceFactory> receiver);
+  BindVideoCaptureDeviceFactory(
+      pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
 
   // Current API. Supports multiple clients per source.
   ConnectToVideoSourceProvider(pending_receiver<VideoSourceProvider> receiver);

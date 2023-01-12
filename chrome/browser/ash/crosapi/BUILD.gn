@@ -218,12 +218,6 @@ source_set("crosapi") {
     "translate_proxy_config_to_crosapi.cc",
     "url_handler_ash.cc",
     "url_handler_ash.h",
-    "video_capture_device_ash.cc",
-    "video_capture_device_ash.h",
-    "video_capture_device_factory_ash.cc",
-    "video_capture_device_factory_ash.h",
-    "video_frame_handler_ash.cc",
-    "video_frame_handler_ash.h",
     "virtual_keyboard_ash.cc",
     "virtual_keyboard_ash.h",
     "volume_manager_ash.cc",
@@ -342,8 +336,6 @@ source_set("crosapi") {
     "//remoting/host/chromeos:remoting_service",
     "//services/data_decoder/public/cpp:cpp",
     "//services/device/wake_lock/power_save_blocker",
-    "//services/video_capture/public/cpp:cpp",
-    "//services/video_capture/public/mojom",
     "//ui/base",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
@@ -366,6 +358,7 @@ source_set("crosapi") {
     ":browser_util",
     "//media/gpu:buildflags",
     "//printing",
+    "//services/video_capture:video_capture_ash",
   ]
 }
 

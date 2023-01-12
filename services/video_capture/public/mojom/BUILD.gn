@@ -31,6 +31,7 @@ mojom("mojom") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/crosapi/mojom:video_capture",
       "//components/chromeos_camera/common",
       "//media/capture/video/chromeos/mojom:cros_camera",
     ]
