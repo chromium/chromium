@@ -95,11 +95,6 @@ class METRICS_EXPORT UkmRecorder {
       base::PassKey<web_app::DesktopWebAppUkmRecorder>,
       const GURL& start_url);
 
-  // Gets new SourceId for a website Url. This method should only be called by
-  // WebsiteMetrics.
-  static SourceId GetSourceIdForWebsiteUrl(base::PassKey<apps::WebsiteMetrics>,
-                                           const GURL& website_url);
-
   // Gets new source Id for PAYMENT_APP_ID type and updates the source url to
   // the scope of the app. This method should only be called by
   // PaymentAppProviderUtil class when the payment app window is opened.
@@ -123,7 +118,7 @@ class METRICS_EXPORT UkmRecorder {
   // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only
   // used for recording ChromeOS website stats.
   static SourceId GetSourceIdForChromeOSWebsiteURL(
-      base::PassKey<DIPSNavigationHandle>,
+      base::PassKey<apps::WebsiteMetrics>,
       const GURL& chromeos_website_url);
 
   // Add an entry to the UkmEntry list.

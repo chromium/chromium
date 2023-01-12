@@ -5327,6 +5327,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="UrlContent" enum="URLContent">
+    <obsolete>
+      Deprecated as of 01/2023.
+    </obsolete>
     <summary>
       The url content, e.g. full url, scope.
     </summary>

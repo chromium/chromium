@@ -87,7 +87,6 @@ namespace apps {
 
 constexpr char kWebsiteUsageTime[] = "app_platform_metrics.website_usage_time";
 constexpr char kRunningTimeKey[] = "time";
-constexpr char kUrlContentKey[] = "url_content";
 constexpr char kPromotableKey[] = "promotable";
 
 WebsiteMetrics::ActiveTabWebContentsObserver::ActiveTabWebContentsObserver(
@@ -139,18 +138,12 @@ WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
     return;
   }
 
-  auto url_content_value = data_dict->FindInt(kUrlContentKey);
-  if (!url_content_value.has_value()) {
-    return;
-  }
-
   auto promotable_value = data_dict->FindBool(kPromotableKey);
   if (!promotable_value.has_value()) {
     return;
   }
 
   running_time_in_two_hours = running_time_value.value();
-  url_content = static_cast<UrlContent>(url_content_value.value());
   promotable = promotable_value.value();
 }
 
@@ -158,7 +151,6 @@ base::Value WebsiteMetrics::UrlInfo::ConvertToValue() const {
   base::Value usage_time_dict(base::Value::Type::DICTIONARY);
   usage_time_dict.SetPath(kRunningTimeKey,
                           base::TimeDeltaToValue(running_time_in_two_hours));
-  usage_time_dict.SetIntKey(kUrlContentKey, static_cast<int>(url_content));
   usage_time_dict.SetBoolKey(kPromotableKey, promotable);
   return usage_time_dict;
 }
@@ -442,9 +434,9 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   bool is_activated = wm::IsActiveWindow(window) &&
                       it != window_to_web_contents_.end() &&
                       it->second == web_contents;
-  AddUrlInfo(web_contents->GetVisibleURL(), base::TimeTicks::Now(),
-             UrlContent::kFullUrl, is_activated,
-             /*promotable=*/false);
+  AddUrlInfo(web_contents->GetVisibleURL(),
+             web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+             base::TimeTicks::Now(), is_activated, /*promotable=*/false);
 }
 
 void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
@@ -465,64 +457,31 @@ void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
 
   // In some test cases, AppBannerManager might be null.
   if (!app_banner_manager ||
-      blink::IsEmptyManifest(app_banner_manager->manifest())) {
+      blink::IsEmptyManifest(app_banner_manager->manifest()) ||
+      app_banner_manager->manifest().scope.is_empty()) {
     return;
   }
 
-  auto* window =
-      GetWindowWithBrowser(chrome::FindBrowserWithWebContents(web_contents));
-  if (!window) {
-    return;
-  }
-
-  DCHECK(!app_banner_manager->manifest().scope.is_empty());
-  auto window_it = window_to_web_contents_.find(window);
-  bool is_activated = wm::IsActiveWindow(window) &&
-                      window_it != window_to_web_contents_.end() &&
-                      window_it->second == web_contents;
-  UpdateUrlInfo(it->second, app_banner_manager->manifest().scope,
-                UrlContent::kScope, is_activated,
-                /*promotable=*/true);
-  it->second = app_banner_manager->manifest().scope;
+  UpdateUrlInfo(it->second, /*promotable=*/true);
 }
 
 void WebsiteMetrics::AddUrlInfo(const GURL& url,
+                                ukm::SourceId source_id,
                                 const base::TimeTicks& start_time,
-                                UrlContent url_content,
                                 bool is_activated,
                                 bool promotable) {
   auto& url_info = url_infos_[url];
+  url_info.source_id = source_id;
   url_info.start_time = start_time;
-  url_info.url_content = url_content;
   url_info.is_activated = is_activated;
   url_info.promotable = promotable;
 }
 
-void WebsiteMetrics::UpdateUrlInfo(const GURL& old_url,
-                                   const GURL& new_url,
-                                   UrlContent url_content,
-                                   bool is_activated,
-                                   bool promotable) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  base::TimeDelta running_time_in_five_minutes;
-  base::TimeDelta running_time_in_two_hours;
-
-  auto it = url_infos_.find(old_url);
+void WebsiteMetrics::UpdateUrlInfo(const GURL& url, bool promotable) {
+  auto it = url_infos_.find(url);
   if (it != url_infos_.end()) {
-    running_time_in_five_minutes = it->second.running_time_in_five_minutes;
-    running_time_in_two_hours = it->second.running_time_in_two_hours;
-    start_time = it->second.start_time;
-    url_infos_.erase(old_url);
+    it->second.promotable = promotable;
   }
-
-  if (new_url.is_empty() || !new_url.SchemeIsHTTPOrHTTPS()) {
-    return;
-  }
-
-  AddUrlInfo(new_url, start_time, url_content, is_activated, promotable);
-  url_infos_[new_url].running_time_in_five_minutes =
-      running_time_in_five_minutes;
-  url_infos_[new_url].running_time_in_two_hours = running_time_in_two_hours;
 }
 
 void WebsiteMetrics::SetWindowActivated(aura::Window* window) {
@@ -603,8 +562,9 @@ void WebsiteMetrics::SaveUsageTime() {
 void WebsiteMetrics::RecordUsageTime() {
   for (auto& it : url_infos_) {
     if (!it.second.running_time_in_two_hours.is_zero()) {
-      EmitUkm(it.first, it.second.running_time_in_two_hours.InMilliseconds(),
-              it.second.url_content, it.second.promotable,
+      EmitUkm(it.second.source_id,
+              it.second.running_time_in_two_hours.InMilliseconds(),
+              it.second.promotable,
               /*is_from_last_login=*/false);
       it.second.running_time_in_two_hours = base::TimeDelta();
     }
@@ -629,39 +589,36 @@ void WebsiteMetrics::RecordUsageTimeFromPref() {
     }
     auto url_info = std::make_unique<UrlInfo>(url_info_value);
     if (!url_info->running_time_in_two_hours.is_zero()) {
-      EmitUkm(url, url_info->running_time_in_two_hours.InMilliseconds(),
-              url_info->url_content, url_info->promotable,
+      // For the URL records dump from the user pref, since the web_contents
+      // doesn't exist due to logout/login, we can't call GetPageUkmSourceId to
+      // get the source id with the web_contents. So call
+      // GetSourceIdForChromeOSWebsiteURL to generate the UKM source id to log
+      // saved URLs from the last login session.
+      auto source_id = ukm::UkmRecorder::GetSourceIdForChromeOSWebsiteURL(
+          base::PassKey<WebsiteMetrics>(), url);
+      EmitUkm(source_id, url_info->running_time_in_two_hours.InMilliseconds(),
+              url_info->promotable,
               /*is_from_last_login=*/true);
     }
   }
 }
 
-void WebsiteMetrics::EmitUkm(const GURL& url,
+void WebsiteMetrics::EmitUkm(ukm::SourceId source_id,
                              int64_t usage_time,
-                             UrlContent url_content,
                              bool promotable,
                              bool is_from_last_login) {
-  auto source_id = ukm::UkmRecorder::GetSourceIdForWebsiteUrl(
-      base::PassKey<WebsiteMetrics>(), url);
-  if (url.is_empty() || !url.SchemeIsHTTPOrHTTPS() ||
-      ukm::SourceIdObj::FromInt64(source_id).GetType() !=
-          ukm::SourceIdType::DESKTOP_WEB_APP_ID) {
-    LOG(ERROR) << "WebsiteMetrics::EmitUkm url is " << url.spec()
-               << ", source id type is "
-               << (int)ukm::SourceIdObj::FromInt64(source_id).GetType();
+  if (source_id == ukm::kInvalidSourceId) {
+    DVLOG(1) << "WebsiteMetrics::EmitUkm source id is invalid.";
     base::debug::DumpWithoutCrashing();
     return;
   }
 
-  if (source_id != ukm::kInvalidSourceId) {
-    ukm::builders::ChromeOS_WebsiteUsageTime builder(source_id);
-    builder.SetDuration(usage_time)
-        .SetUrlContent(static_cast<int>(url_content))
-        .SetIsFromLastLogin(is_from_last_login)
-        .SetPromotable(promotable)
-        .SetUserDeviceMatrix(user_type_by_device_type_)
-        .Record(ukm::UkmRecorder::Get());
-  }
+  ukm::builders::ChromeOS_WebsiteUsageTime builder(source_id);
+  builder.SetDuration(usage_time)
+      .SetIsFromLastLogin(is_from_last_login)
+      .SetPromotable(promotable)
+      .SetUserDeviceMatrix(user_type_by_device_type_)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace apps

@@ -22,6 +22,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -35,17 +36,6 @@ namespace apps {
 
 class WebsiteMetricsBrowserTest;
 class TestWebsiteMetrics;
-
-// This is used for logging, so do not remove or reorder existing entries.
-enum class UrlContent {
-  kUnknown = 0,
-  kFullUrl = 1,
-  kScope = 2,
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kScope,
-};
 
 extern const char kWebsiteUsageTime[];
 extern const char kRunningTimeKey[];
@@ -134,6 +124,7 @@ class WebsiteMetrics : public BrowserListObserver,
   struct UrlInfo {
     UrlInfo() = default;
     explicit UrlInfo(const base::Value& value);
+    ukm::SourceId source_id = ukm::kInvalidSourceId;
     base::TimeTicks start_time;
     // Running time in the past 5 minutes without noise.
     base::TimeDelta running_time_in_five_minutes;
@@ -141,7 +132,6 @@ class WebsiteMetrics : public BrowserListObserver,
     // time1 * noise1 + time2 * noise2 + time3 * noise3....
     base::TimeDelta running_time_in_two_hours;
 
-    UrlContent url_content = UrlContent::kUnknown;
     bool is_activated = false;
     bool promotable = false;
 
@@ -184,18 +174,14 @@ class WebsiteMetrics : public BrowserListObserver,
 
   // Adds the url info to `url_infos_`.
   void AddUrlInfo(const GURL& url,
+                  ukm::SourceId source_id,
                   const base::TimeTicks& start_time,
-                  UrlContent url_content,
                   bool is_activated,
                   bool promotable);
 
-  // Modifies `old_url` to `new_url` in `url_infos_`, when the website manifest
-  // is updated.
-  void UpdateUrlInfo(const GURL& old_url,
-                     const GURL& new_url,
-                     UrlContent url_content,
-                     bool is_activated,
-                     bool promotable);
+  // Modifies `url_infos_` to set whether the website can be promoted to PWA,
+  // when the website manifest is updated.
+  void UpdateUrlInfo(const GURL& old_url, bool promotable);
 
   void SetWindowActivated(aura::Window* window);
 
@@ -216,9 +202,8 @@ class WebsiteMetrics : public BrowserListObserver,
   // after the user logs in.
   void RecordUsageTimeFromPref();
 
-  void EmitUkm(const GURL& url,
+  void EmitUkm(ukm::SourceId source_id,
                int64_t usage_time,
-               UrlContent url_content,
                bool promotable,
                bool is_from_last_login);
 
