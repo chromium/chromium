@@ -205,6 +205,7 @@
         "payload": {
           "attribution_destination": "https://destination1.test",
           "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643325573",
           "source_event_id": "111",
           "source_type": "navigation",
           "trigger_data": "1"
@@ -216,6 +217,7 @@
         "payload": {
           "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643411977",
           "source_event_id": "333",
           "source_type": "navigation",
           "trigger_data": "3"
@@ -227,6 +229,7 @@
         "payload": {
           "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643411979",
           "source_event_id": "444",
           "source_type": "navigation",
           "trigger_data": "4"
@@ -238,6 +241,7 @@
         "payload": {
           "attribution_destination": "https://destination3.test",
           "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643498373",
           "source_event_id": "555",
           "source_type": "navigation",
           "trigger_data": "5"

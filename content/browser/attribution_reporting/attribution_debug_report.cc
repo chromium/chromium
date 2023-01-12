@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -282,9 +283,14 @@ base::Value::Dict GetReportDataBody(
   return data_body;
 }
 
+// `original_report_time` must be non-null when `data_type`'s body will contain
+// a `scheduled_report_time` field, which is only true for certain event-level
+// failures that use the entire body of the report that would have been stored
+// if attribution had succeeded.
 base::Value::Dict GetReportDataBody(DebugDataType data_type,
                                     const AttributionTrigger& trigger,
-                                    const CreateReportResult& result) {
+                                    const CreateReportResult& result,
+                                    base::Time* original_report_time) {
   base::Value::Dict data_body;
   data_body.Set(kAttributionDestination,
                 net::SchemefulSite(trigger.destination_origin()).Serialize());
@@ -329,6 +335,9 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventLowPriority:
     case DebugDataType::kTriggerEventExcessiveReports:
       DCHECK(result.dropped_event_level_report());
+      DCHECK(original_report_time);
+      *original_report_time =
+          result.dropped_event_level_report()->OriginalReportTime();
       return result.dropped_event_level_report()->ReportBody();
     case DebugDataType::kSourceDestinationLimit:
     case DebugDataType::kSourceNoised:
@@ -369,7 +378,8 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   report_body.Append(
       GetReportData(*data_type, GetReportDataBody(*data_type, source, result)));
   return AttributionDebugReport(std::move(report_body),
-                                source.common_info().reporting_origin());
+                                source.common_info().reporting_origin(),
+                                /*original_report_time=*/base::Time());
 }
 
 // static
@@ -383,13 +393,15 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   }
 
   base::Value::List report_body;
+  base::Time original_report_time;
 
   absl::optional<DebugDataType> event_level_data_type =
       GetReportDataType(result.event_level_status(), is_debug_cookie_set);
   if (event_level_data_type) {
-    report_body.Append(GetReportData(
-        *event_level_data_type,
-        GetReportDataBody(*event_level_data_type, trigger, result)));
+    report_body.Append(
+        GetReportData(*event_level_data_type,
+                      GetReportDataBody(*event_level_data_type, trigger, result,
+                                        &original_report_time)));
   }
 
   if (absl::optional<DebugDataType> aggregatable_data_type =
@@ -398,22 +410,25 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
       aggregatable_data_type != event_level_data_type) {
     report_body.Append(GetReportData(
         *aggregatable_data_type,
-        GetReportDataBody(*aggregatable_data_type, trigger, result)));
+        GetReportDataBody(*aggregatable_data_type, trigger, result,
+                          /*original_report_time=*/nullptr)));
   }
 
   if (report_body.empty()) {
     return absl::nullopt;
   }
 
-  return AttributionDebugReport(std::move(report_body),
-                                trigger.reporting_origin());
+  return AttributionDebugReport(
+      std::move(report_body), trigger.reporting_origin(), original_report_time);
 }
 
 AttributionDebugReport::AttributionDebugReport(
     base::Value::List report_body,
-    attribution_reporting::SuitableOrigin reporting_origin)
+    attribution_reporting::SuitableOrigin reporting_origin,
+    base::Time original_report_time)
     : report_body_(std::move(report_body)),
-      reporting_origin_(std::move(reporting_origin)) {
+      reporting_origin_(std::move(reporting_origin)),
+      original_report_time_(original_report_time) {
   DCHECK(!report_body_.empty());
 }
 

@@ -171,6 +171,7 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643411973",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "1"
@@ -182,6 +183,7 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643411973",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "5"
@@ -193,6 +195,7 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643411973",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "6"

@@ -35,6 +35,10 @@ attribution_reporting_promise_test(async t => {
   assert_equals(typeof report.report_id, 'string');
   assert_regexp_match(report.report_id, uuidPattern);
 
+  assert_own_property(report, 'scheduled_report_time');
+  assert_equals(typeof report.scheduled_report_time, 'string');
+  assert_regexp_match(report.scheduled_report_time, /^[0-9]+$/);
+
   assert_not_own_property(report, 'source_debug_key');
   assert_not_own_property(report, 'trigger_debug_key');
 

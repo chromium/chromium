@@ -48,6 +48,7 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0000025,
+          "scheduled_report_time": "1645831173",
           "source_event_id": "123",
           "source_type": "event",
           "trigger_data": "1"

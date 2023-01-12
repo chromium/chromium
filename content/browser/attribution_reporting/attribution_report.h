@@ -168,6 +168,8 @@ class CONTENT_EXPORT AttributionReport {
 
   void SetExternalReportIdForTesting(base::GUID external_report_id);
 
+  base::Time OriginalReportTime() const;
+
  private:
   // The attribution info.
   AttributionInfo attribution_info_;

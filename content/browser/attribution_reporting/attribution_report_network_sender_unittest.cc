@@ -158,6 +158,7 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("scheduled_report_time":"3600",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5"})"},
@@ -165,18 +166,21 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("scheduled_report_time":"3600",)"
        R"("source_event_id":"100",)"
        R"("source_type":"event",)"
        R"("trigger_data":"5"})"},
   };
 
   for (const auto& test_case : kTestCases) {
-    auto impression = SourceBuilder(base::Time())
+    auto impression = SourceBuilder(base::Time::UnixEpoch())
                           .SetSourceEventId(100)
                           .SetSourceType(test_case.source_type)
                           .BuildStored();
     AttributionReport report =
-        ReportBuilder(AttributionInfoBuilder(impression).Build())
+        ReportBuilder(AttributionInfoBuilder(impression)
+                          .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                          .Build())
             .SetTriggerData(5)
             .SetRandomizedTriggerRate(0.2)
             .Build();
@@ -208,6 +212,7 @@ TEST_F(AttributionReportNetworkSenderTest,
           R"({"attribution_destination":["https://b.test","https://d.test"],)"
           R"("randomized_trigger_rate":0.0,)"
           R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+          R"("scheduled_report_time":"3600",)"
           R"("source_event_id":"123",)"
           R"("source_type":"navigation",)"
           R"("trigger_data":"0"})",
@@ -220,17 +225,20 @@ TEST_F(AttributionReportNetworkSenderTest,
           R"({"attribution_destination":"https://d.test",)"
           R"("randomized_trigger_rate":0.0,)"
           R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+          R"("scheduled_report_time":"3600",)"
           R"("source_event_id":"123",)"
           R"("source_type":"navigation",)"
           R"("trigger_data":"0"})",
       }};
 
   for (const auto& test_case : kTestCases) {
-    auto source = SourceBuilder(base::Time())
+    auto source = SourceBuilder(base::Time::UnixEpoch())
                       .SetDestinationOrigins(test_case.destination_origins)
                       .BuildStored();
     AttributionReport report =
-        ReportBuilder(AttributionInfoBuilder(std::move(source)).Build())
+        ReportBuilder(AttributionInfoBuilder(std::move(source))
+                          .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                          .Build())
             .Build();
     network_sender_->SendReport(report, /*is_debug_report=*/false,
                                 base::DoNothing());
@@ -253,13 +261,18 @@ TEST_F(AttributionReportNetworkSenderTest,
       R"({"attribution_destination":"https://conversion.test",)"
       R"("randomized_trigger_rate":0.2,)"
       R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("scheduled_report_time":"3600",)"
       R"("source_event_id":"100",)"
       R"("source_type":"navigation",)"
       R"("trigger_data":"5"})";
 
-  auto source = SourceBuilder().SetSourceEventId(100).BuildStored();
+  auto source = SourceBuilder(base::Time::UnixEpoch())
+                    .SetSourceEventId(100)
+                    .BuildStored();
   const AttributionReport report =
-      ReportBuilder(AttributionInfoBuilder(source).Build())
+      ReportBuilder(AttributionInfoBuilder(source)
+                        .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
+                        .Build())
           .SetTriggerData(5)
           .SetRandomizedTriggerRate(0.2)
           .Build();
@@ -295,6 +308,7 @@ TEST_F(AttributionReportNetworkSenderTest,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("scheduled_report_time":"3600",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5"})"},
@@ -302,6 +316,7 @@ TEST_F(AttributionReportNetworkSenderTest,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("scheduled_report_time":"3600",)"
        R"("source_debug_key":"7",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
@@ -310,6 +325,7 @@ TEST_F(AttributionReportNetworkSenderTest,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("scheduled_report_time":"3600",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5",)"
@@ -318,6 +334,7 @@ TEST_F(AttributionReportNetworkSenderTest,
        R"({"attribution_destination":"https://conversion.test",)"
        R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+       R"("scheduled_report_time":"3600",)"
        R"("source_debug_key":"7",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
@@ -326,12 +343,13 @@ TEST_F(AttributionReportNetworkSenderTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    auto impression = SourceBuilder(base::Time())
+    auto impression = SourceBuilder(base::Time::UnixEpoch())
                           .SetSourceEventId(100)
                           .SetDebugKey(test_case.source_debug_key)
                           .BuildStored();
     AttributionReport report =
         ReportBuilder(AttributionInfoBuilder(impression)
+                          .SetTime(base::Time::UnixEpoch() + base::Seconds(1))
                           .SetDebugKey(test_case.trigger_debug_key)
                           .Build())
             .SetTriggerData(5)

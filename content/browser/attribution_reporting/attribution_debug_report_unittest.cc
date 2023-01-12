@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -25,9 +26,11 @@ using ::attribution_reporting::SuitableOrigin;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
-AttributionReport DefaultEventLevelReport() {
+AttributionReport DefaultEventLevelReport(
+    base::Time source_time = base::Time::Now()) {
   return ReportBuilder(
-             AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
+             AttributionInfoBuilder(SourceBuilder(source_time).BuildStored())
+                 .Build())
       .Build();
 }
 
@@ -466,14 +469,17 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
       {EventLevelResult::kPriorityTooLow,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
-       /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/DefaultEventLevelReport(),
+       /*source=*/SourceBuilder(base::Time::UnixEpoch()).BuildStored(),
+       CreateReportResult::Limits(),
+       /*dropped_event_level_report=*/
+       DefaultEventLevelReport(base::Time::UnixEpoch()),
        /*trigger_debug_key=*/absl::nullopt,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
            "randomized_trigger_rate": 0.0,
            "report_id": "21abd97f-73e8-4b88-9389-a9fee6abda5e",
+           "scheduled_report_time": "3600",
            "source_event_id": "123",
            "source_type": "navigation",
            "trigger_data": "0"
@@ -549,14 +555,17 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
       {EventLevelResult::kExcessiveReports,
        /*replaced_event_level_report=*/absl::nullopt,
        /*new_event_level_report=*/absl::nullopt,
-       /*source=*/SourceBuilder().BuildStored(), CreateReportResult::Limits(),
-       /*dropped_event_level_report=*/DefaultEventLevelReport(),
+       /*source=*/SourceBuilder(base::Time::UnixEpoch()).BuildStored(),
+       CreateReportResult::Limits(),
+       /*dropped_event_level_report=*/
+       DefaultEventLevelReport(base::Time::UnixEpoch()),
        /*trigger_debug_key=*/absl::nullopt,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
            "randomized_trigger_rate": 0.0,
            "report_id": "21abd97f-73e8-4b88-9389-a9fee6abda5e",
+           "scheduled_report_time": "3600",
            "source_event_id": "123",
            "source_type": "navigation",
            "trigger_data": "0"

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DEBUG_REPORT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DEBUG_REPORT_H_
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -45,13 +46,23 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   GURL ReportURL() const;
 
+  // TODO(apaseltiner): This is a workaround to allow the simulator to adjust
+  // times while accounting for sub-second precision. Investigate removing it.
+  base::Time GetOriginalReportTimeForTesting() const {
+    return original_report_time_;
+  }
+
  private:
-  AttributionDebugReport(
-      base::Value::List report_body,
-      attribution_reporting::SuitableOrigin reporting_origin);
+  AttributionDebugReport(base::Value::List report_body,
+                         attribution_reporting::SuitableOrigin reporting_origin,
+                         base::Time original_report_time);
 
   base::Value::List report_body_;
   attribution_reporting::SuitableOrigin reporting_origin_;
+
+  // Only set for report bodies that would include an event-level
+  // scheduled_report_time field.
+  base::Time original_report_time_;
 };
 
 }  // namespace content

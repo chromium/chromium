@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -178,6 +179,11 @@ base::Value::Dict AttributionReport::ReportBody() const {
               dict.Set("trigger_debug_key", base::NumberToString(*debug_key));
             }
 
+            dict.Set("scheduled_report_time",
+                     base::NumberToString(
+                         (OriginalReportTime() - base::Time::UnixEpoch())
+                             .InSeconds()));
+
             return dict;
           },
 
@@ -224,6 +230,20 @@ void AttributionReport::SetExternalReportIdForTesting(
     base::GUID external_report_id) {
   DCHECK(external_report_id.is_valid());
   external_report_id_ = std::move(external_report_id);
+}
+
+base::Time AttributionReport::OriginalReportTime() const {
+  return absl::visit(base::Overloaded{
+                         [this](const EventLevelData&) {
+                           return ComputeReportTime(
+                               this->attribution_info_.source.common_info(),
+                               this->attribution_info_.time);
+                         },
+                         [](const AggregatableAttributionData& data) {
+                           return data.initial_report_time;
+                         },
+                     },
+                     data_);
 }
 
 // static
