@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 {
   include: [
-    "syslog/client.shard.cml",
-    "vulkan/client.shard.cml",
-
     // CML shards intended for tests are used here because this component is
     // launched as a test. While it doesn't fit the typical use-case for a test
     // component, it's a useful way to be able to launch the component from a
@@ -13,6 +10,7 @@
     // to function correctly.
     "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
+    "syslog/client.shard.cml",
   ],
   program: {
     binary: "web_engine_shell_exec",
@@ -25,8 +23,14 @@
         "fuchsia.sys.Environment",
         "fuchsia.sys.Launcher",
         "fuchsia.sys.Loader",
-        "fuchsia.web.ContextProvider",
       ],
+    },
+
+    // Used conditionally based on the absence of `--use-web-instance` on the
+    // command line at runtime.
+    {
+      protocol: "fuchsia.web.ContextProvider",
+      availability: "optional",
     },
     {
       storage: "data",
@@ -40,7 +44,6 @@
     // Uses below this line are for web_instance.cmx
     {
       protocol: [
-        "fuchsia.accessibility.semantics.SemanticsManager",
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
         "fuchsia.fonts.Provider",
@@ -50,7 +53,6 @@
         "fuchsia.kernel.VmexResource",
         "fuchsia.media.Audio",
         "fuchsia.media.AudioDeviceEnumerator",
-        "fuchsia.media.drm.Widevine",
         "fuchsia.media.ProfileProvider",
         "fuchsia.media.SessionAudioConsumerFactory",
         "fuchsia.mediacodec.CodecFactory",
@@ -59,12 +61,32 @@
         "fuchsia.net.name.Lookup",
         "fuchsia.posix.socket.Provider",
         "fuchsia.process.Launcher",
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.ui.input3.Keyboard",
+      ],
+    },
+
+    // Used conditionally based on the value of `enable_widevine` at build time.
+    // TODO(crbug.com/1379411): Use a shard to conditionally use based on
+    // build-time config.
+    {
+      protocol: "fuchsia.media.drm.Widevine",
+      availability: "optional",
+    },
+
+    // Used conditionally based on the absence of `--headless` on the command
+    // line at runtime.
+    {
+      protocol: [
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.tracing.provider.Registry",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
-        "fuchsia.ui.input3.Keyboard",
         "fuchsia.ui.policy.Presenter",
         "fuchsia.ui.scenic.Scenic",
+        "fuchsia.vulkan.loader.Loader",
       ],
+      availability: "optional",
     },
     {
       protocol: "fuchsia.tracing.perfetto.ProducerConnector",
