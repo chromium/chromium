@@ -798,41 +798,36 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
     // to the cardholder name, and the label is added as the suffix.
     EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
               u"Virtual card");
-    EXPECT_EQ(
-        virtual_card_name_field_suggestion.minor_text.value,
-        base::StrCat({u"Elvis Presley ",
-                      internal::GetObfuscatedStringForCardDigits(u"1111", 2)}));
-
-    // There should be only 1 line of label: obfuscated last 4 digits.
-    ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
+    EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value,
+              u"Elvis Presley");
   } else {
     // On other platforms, the cardholder name is shown on the first line.
     EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
               u"Elvis Presley");
     EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value, u"");
-
-    // There should be 2 lines of labels:
-    // 1. Card name + obfuscated last 4 digits for the dropdowns, only
-    // obfuscated last 4 digits for iOS.
-    // 2. Virtual card label.
-    ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
   }
 
 #if BUILDFLAG(IS_IOS)
-  // For IOS, the label is "....1111".
+  // There should be 2 lines of labels:
+  // 1. Obfuscated last 4 digits "....1111".
+  // 2. Virtual card label.
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
   ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
   if (keyboard_accessory_enabled()) {
-    // For the keyboard accessory, the label is "..1111". This label is added as
-    // a suffix to the cardholder name.
+    // There should be only 1 line of label: obfuscated last 4 digits "..1111".
+    ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
     ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
     EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
               internal::GetObfuscatedStringForCardDigits(u"1111", 2));
   } else {
-    // For Desktop/Android dropdown, the label is "CardName  ....1111". Card
-    // name and last four are shown separately.
+    // There should be 2 lines of labels:
+    // 1. Card name + obfuscated last 4 digits "CardName  ....1111". Card name
+    // and last four are populated separately.
+    // 2. Virtual card label.
+    ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
     ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 2U);
     EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value, u"Visa");
     EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][1].value,
@@ -871,13 +866,12 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
 #else
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, the "Virtual card" label is added as a prefix
-    // to the card number. The obfuscated last four digits are shown as suffix.
+    // to the card number. The obfuscated last four digits are shown in a
+    // separate view.
     EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
-              u"Virtual card");
-    EXPECT_EQ(
-        virtual_card_number_field_suggestion.minor_text.value,
-        base::StrCat({u"Visa  ",
-                      internal::GetObfuscatedStringForCardDigits(u"1111", 2)}));
+              u"Virtual card  Visa");
+    EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
+              internal::GetObfuscatedStringForCardDigits(u"1111", 2));
   } else {
     // Card name and the obfuscated last four digits are shown separately.
     EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
@@ -887,13 +881,8 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
 #endif
 
   if (keyboard_accessory_enabled()) {
-    // For the keyboard accessory, the label is the expiration date formatted as
-    // mm/yy.
-    ASSERT_EQ(virtual_card_number_field_suggestion.labels.size(), 1U);
-    ASSERT_EQ(virtual_card_number_field_suggestion.labels[0].size(), 1U);
-    EXPECT_EQ(virtual_card_number_field_suggestion.labels[0][0].value,
-              base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
-                            base::UTF8ToUTF16(test::NextYear().substr(2))}));
+    // For the keyboard accessory, there is no label.
+    ASSERT_TRUE(virtual_card_number_field_suggestion.labels.empty());
   } else {
     // For Desktop/Android dropdown, and on iOS, "Virtual card" is the label.
     ASSERT_EQ(virtual_card_number_field_suggestion.labels.size(), 1U);
@@ -965,21 +954,12 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
                                          u"1111", 4)}));
   EXPECT_EQ(real_card_number_field_suggestion.minor_text.value, u"");
 #else
-  // For the keyboard accessory, the card name and the last 4 digits appear in
-  // the same view.
-  if (keyboard_accessory_enabled()) {
-    EXPECT_EQ(
-        real_card_number_field_suggestion.main_text.value,
-        base::StrCat({u"Visa  ",
-                      internal::GetObfuscatedStringForCardDigits(u"1111", 2)}));
-    EXPECT_EQ(real_card_number_field_suggestion.minor_text.value, u"");
-  } else {
-    // For Desktop/Android dropdown, split the first line and populate card
-    // name, last 4 digits separately.
-    EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
-    EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
-              internal::GetObfuscatedStringForCardDigits(u"1111", 4));
-  }
+  // For Desktop/Android, split the first line and populate the card name and
+  // the last 4 digits separately.
+  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
+            internal::GetObfuscatedStringForCardDigits(
+                u"1111", keyboard_accessory_enabled() ? 2 : 4));
 #endif
 
   // The label is the expiration date formatted as mm/yy.

@@ -82,14 +82,6 @@ int GetObfuscationLength() {
 bool ShouldSplitCardNameAndLastFourDigits() {
 #if BUILDFLAG(IS_IOS)
   return false;
-#elif BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableVirtualCardMetadata) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableCardProductName) &&
-         // TODO(crbug.com/1313616): Remove keyboard accessory check and merge
-         // Android with Desktop after the logic for truncation is implemented.
-         !base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory);
 #else
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableVirtualCardMetadata) &&
@@ -598,8 +590,6 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
   // On Android devices, the label is formatted as
   // "Product Description/Nickname/Network  ••••1234" when the keyboard
   // accessory experiment is disabled and as "••1234" when it's enabled.
-  // TODO(crbug.com/1313616): Remove keyboard accessory check after the logic
-  // for truncation is implemented.
   if (base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
     return {
         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
@@ -668,19 +658,44 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     suggestion.minor_text.value = suggestion.main_text.value;
     suggestion.main_text.value = VIRTUAL_CARD_LABEL;
   } else if (IsKeyboardAccessoryEnabled()) {
-    suggestion.minor_text.value = suggestion.main_text.value;
-    suggestion.main_text.value = VIRTUAL_CARD_LABEL;
-
-    // For the card number field, the original label if any is removed. For
-    // other fields, it is retained and is appended to the `minor_text`.
-    if (type.GetStorableType() != CREDIT_CARD_NUMBER &&
-        suggestion.labels.size() > 0) {
-      // Verify that there is a single line of label, and it contains a single
-      // item.
-      DCHECK_EQ(suggestion.labels.size(), 1U);
-      DCHECK_EQ(suggestion.labels[0].size(), 1U);
-      suggestion.minor_text.value = base::StrCat(
-          {suggestion.minor_text.value, u" ", suggestion.labels[0][0].value});
+    // The keyboard accessory chips can only accommodate 2 strings which are
+    // displayed on a single row. The minor_text and the labels are
+    // concatenated, so we have: String 1 = main_text, String 2 = minor_text +
+    // labels.
+    // For the card number field, suggestion = virtual card label + card name +
+    // last 4 digits.
+    if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
+      if (ShouldSplitCardNameAndLastFourDigits()) {
+        // Before: main_text = card name, minor_text = last 4 digits, labels =
+        // expiration date.
+        // We add the virtual card label as a prefix to the main_text.
+        // After: main_text = virtual card label + card name, minor_text = last
+        // 4 digits, labels = expiration date.
+        suggestion.main_text.value = base::StrCat(
+            {VIRTUAL_CARD_LABEL, u"  ", suggestion.main_text.value});
+      } else {
+        // Before: main_text = card name + last 4 digits, minor_text = null,
+        // labels = expiration date.
+        // The main_text is assigned to the minor_text, and the virtual card
+        // label is shown as the main_text.
+        // After: main_text = virtual card label, minor_text = card name + last
+        // 4 digits, minor_text = null, labels = expiration date.
+        suggestion.minor_text.value = suggestion.main_text.value;
+        suggestion.main_text.value = VIRTUAL_CARD_LABEL;
+      }
+      // The expiration date is not shown, so it is removed.
+      suggestion.labels = {};
+    } else {
+      // For the cardholder name field, suggestion = virtual card label +
+      // cardholder name + last 4 digits.
+      // Before: main_text = cardholder name, minor_text = null, labels = last 4
+      // digits.
+      // The main_text is assigned to the minor_text, and the virtual card label
+      // is shown as the main_text.
+      // After: main_text = virtual card label, minor_text = cardholder name,
+      // labels = last 4 digits.
+      suggestion.minor_text.value = suggestion.main_text.value;
+      suggestion.main_text.value = VIRTUAL_CARD_LABEL;
     }
     // Desktop/Android dropdown.
   } else {

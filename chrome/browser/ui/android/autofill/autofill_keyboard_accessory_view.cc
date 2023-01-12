@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 
@@ -79,24 +80,29 @@ void AutofillKeyboardAccessoryView::Show() {
           GetIconResourceID(suggestion.icon));
     }
 
-    std::u16string value;
-    std::u16string label;
-    if (controller_->GetSuggestionMinorTextAt(i).empty()) {
-      value = controller_->GetSuggestionMainTextAt(i);
-      std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
-          controller_->GetSuggestionLabelsAt(i);
-      if (!suggestion_labels.empty()) {
-        DCHECK_EQ(suggestion_labels[0].size(), 1U);
-        label = std::move(suggestion_labels[0][0].value);
+    std::u16string label = controller_->GetSuggestionMainTextAt(i);
+    std::u16string sublabel = controller_->GetSuggestionMinorTextAt(i);
+    if (std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
+            controller_->GetSuggestionLabelsAt(i);
+        !suggestion_labels.empty()) {
+      // Verify that there is a single line of label, and it contains a single
+      // item.
+      DCHECK_EQ(suggestion_labels.size(), 1U);
+      DCHECK_EQ(suggestion_labels[0].size(), 1U);
+
+      // Since the keyboard accessory chips support showing only 2 strings, the
+      // minor_text and the suggestion_labels are concatenated.
+      if (sublabel.empty()) {
+        sublabel = std::move(suggestion_labels[0][0].value);
+      } else {
+        sublabel = base::StrCat(
+            {sublabel, u"  ", std::move(suggestion_labels[0][0].value)});
       }
-    } else {
-      value = controller_->GetSuggestionMainTextAt(i);
-      label = controller_->GetSuggestionMinorTextAt(i);
     }
 
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
-        env, data_array, position++, ConvertUTF16ToJavaString(env, value),
-        ConvertUTF16ToJavaString(env, label), android_icon_id,
+        env, data_array, position++, ConvertUTF16ToJavaString(env, label),
+        ConvertUTF16ToJavaString(env, sublabel), android_icon_id,
         suggestion.frontend_id,
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
         ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
