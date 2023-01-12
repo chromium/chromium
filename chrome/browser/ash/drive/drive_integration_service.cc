@@ -45,6 +45,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -1497,9 +1498,9 @@ void DriveIntegrationService::GetSyncingPaths(
   }
 }
 
-drivefs::SyncStatusAndProgress DriveIntegrationService::GetSyncStatusForPath(
+drivefs::SyncState DriveIntegrationService::GetSyncStateForPath(
     const base::FilePath& drive_path) {
-  return GetDriveFsHost()->GetSyncStatusForPath(drive_path);
+  return GetDriveFsHost()->GetSyncStateForPath(drive_path);
 }
 
 void DriveIntegrationService::PollHostedFilePinStates() {

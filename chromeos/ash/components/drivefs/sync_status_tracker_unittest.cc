@@ -4,198 +4,249 @@
 
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 
+#include <cstdint>
+#include <memory>
+
+#include "base/files/file_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace drivefs {
 namespace {
 
-MATCHER_P(MatchesStatusAndProgress, value, "") {
-  *result_listener << "where the progress difference is "
-                   << std::abs(arg.progress - value.progress);
-  return arg.status == value.status &&
-         std::abs(arg.progress - value.progress) < 1e-4;
+const base::FilePath   //
+    root("/"),         //
+    a("/a"),           //
+    b("/b"),           //
+    ab("/a/b"),        //
+    ad("/a/d"),        //
+    abc("/a/b/c"),     //
+    abcd("/a/b/c/d"),  //
+    abce("/a/b/c/e"),  //
+    abcf("/a/b/c/f"),  //
+    abd("/a/b/d"),     //
+    abe("/a/b/e"),     //
+    af("/a/f"),        //
+    afg("/a/f/g");     //
+
+inline SyncState NotFound(const base::FilePath path = base::FilePath()) {
+  return {SyncStatus::kNotFound, 0, path};
+}
+inline SyncState Moved(const base::FilePath path = base::FilePath()) {
+  return {SyncStatus::kMoved, 0, path};
+}
+inline SyncState Completed(const base::FilePath path = base::FilePath()) {
+  return {SyncStatus::kCompleted, 1, path};
+}
+inline SyncState Queued(const base::FilePath path = base::FilePath()) {
+  return {SyncStatus::kQueued, 0, path};
+}
+inline SyncState InProgress(const base::FilePath path = base::FilePath(),
+                            const float progress = 0) {
+  return {SyncStatus::kInProgress, progress, path};
+}
+inline SyncState Error(const base::FilePath path = base::FilePath(),
+                       const float progress = 0) {
+  return {SyncStatus::kError, progress, path};
 }
 
 class SyncStatusTrackerTest : public testing::Test {
  public:
   SyncStatusTrackerTest() = default;
-
   SyncStatusTrackerTest(const SyncStatusTrackerTest&) = delete;
   SyncStatusTrackerTest& operator=(const SyncStatusTrackerTest&) = delete;
 
-  SyncStatus GetSyncStatus(SyncStatusTracker& tracker,
-                           const std::string& path) {
-    return tracker.GetSyncStatusForPath(base::FilePath(path)).status;
-  }
-
-  SyncStatusAndProgress GetSyncStatusAndProgress(SyncStatusTracker& tracker,
-                                                 const std::string& path) {
-    return tracker.GetSyncStatusForPath(base::FilePath(path));
-  }
-
-  void AddSyncStatus(SyncStatusTracker& tracker,
-                     const int64_t id,
-                     const std::string& path,
-                     SyncStatus status) {
-    return tracker.AddSyncStatusForPath(id, base::FilePath(path), status, 0);
-  }
-
-  void AddSyncStatusAndProgress(SyncStatusTracker& tracker,
-                                const int64_t id,
-                                const std::string& path,
-                                SyncStatus status,
-                                float progress) {
-    return tracker.AddSyncStatusForPath(id, base::FilePath(path), status,
-                                        progress);
-  }
+  SyncStatusTracker t;
 };
 
-TEST_F(SyncStatusTrackerTest, PathReturnsValueForLeafAndAncestors) {
-  SyncStatusTracker tracker;
-
-  AddSyncStatus(tracker, 0, "/a/b/c", SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c"), SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b"), SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a"), SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/"), SyncStatus::kInProgress);
+TEST_F(SyncStatusTrackerTest, StatePropagatesToAncestors) {
+  t.SetInProgress(0, abc, 0, 0);
+  ASSERT_EQ(t.GetSyncState(abc), InProgress(abc));
+  ASSERT_EQ(t.GetSyncState(ab), InProgress(ab));
+  ASSERT_EQ(t.GetSyncState(a), InProgress(a));
+  ASSERT_EQ(t.GetSyncState(root), InProgress(root));
 }
 
 TEST_F(SyncStatusTrackerTest, ErrorTakesPrecedenceInAncestors) {
-  SyncStatusTracker tracker;
-
-  AddSyncStatus(tracker, 0, "/a/b/c", SyncStatus::kInProgress);
-  AddSyncStatus(tracker, 1, "/a/b/d", SyncStatus::kError);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c"), SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b"), SyncStatus::kError);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a"), SyncStatus::kError);
-  EXPECT_EQ(GetSyncStatus(tracker, "/"), SyncStatus::kError);
+  t.SetInProgress(0, abc, 0, 0);
+  t.SetError(1, abd);
+  ASSERT_EQ(t.GetSyncState(abc), InProgress(abc));
+  ASSERT_EQ(t.GetSyncState(ab), Error(ab));
+  ASSERT_EQ(t.GetSyncState(a), Error(a));
+  ASSERT_EQ(t.GetSyncState(root), Error(root));
 }
 
 TEST_F(SyncStatusTrackerTest, PathsNotInTrackerReturnNotFound) {
-  SyncStatusTracker tracker;
-
-  AddSyncStatus(tracker, 0, "/a/b/c", SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c"), SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/d"), SyncStatus::kNotFound);
+  t.SetInProgress(0, abc, 0, 0);
+  ASSERT_EQ(t.GetSyncState(abc), InProgress(abc));
+  ASSERT_EQ(t.GetSyncState(abd), NotFound(abd));
 }
 
 TEST_F(SyncStatusTrackerTest, RemovingAPathRemovesSingleUseAncestors) {
-  SyncStatusTracker tracker;
+  t.SetInProgress(0, abcf, 10, 100);
+  t.SetInProgress(1, abd, 10, 100);
+  t.SetInProgress(2, abe, 10, 100);
 
-  AddSyncStatus(tracker, 0, "/a/b/c/f", SyncStatus::kInProgress);
-  AddSyncStatus(tracker, 1, "/a/b/d", SyncStatus::kInProgress);
-  AddSyncStatus(tracker, 2, "/a/b/e", SyncStatus::kInProgress);
+  t.SetCompleted(0, base::FilePath(abcf));
 
-  tracker.RemovePath(0, base::FilePath("/a/b/c/f"));
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/f"), SyncStatus::kNotFound);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c"), SyncStatus::kNotFound);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b"), SyncStatus::kInProgress);
+  ASSERT_EQ(t.GetSyncState(ab), InProgress(ab, 120. / 300.));
+  ASSERT_EQ(t.GetSyncState(abc), Completed(abc));
+  ASSERT_EQ(t.GetSyncState(abcf), Completed(abcf));
+
+  t.GetChangesAndClean();
+
+  ASSERT_EQ(t.GetSyncState(abcf), NotFound(abcf));
+  ASSERT_EQ(t.GetSyncState(abc), NotFound(abc));
 }
 
-TEST_F(SyncStatusTrackerTest, OnlyLeafPathsCanBeRemoved) {
-  SyncStatusTracker tracker;
+TEST_F(SyncStatusTrackerTest, FoldersCantBeMarkedCompleted) {
+  t.SetInProgress(0, abcd, 0, 0);
 
-  AddSyncStatus(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress);
+  t.SetCompleted(1, base::FilePath(abc));
+  t.SetCompleted(2, base::FilePath(ab));
+  t.SetCompleted(3, base::FilePath(a));
 
-  tracker.RemovePath(1, base::FilePath("/a/b/c"));
-  tracker.RemovePath(2, base::FilePath("/a/b"));
-  tracker.RemovePath(3, base::FilePath("/a"));
-
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/d"), SyncStatus::kInProgress);
+  ASSERT_EQ(t.GetSyncState(abcd), InProgress(abcd));
 }
 
 TEST_F(SyncStatusTrackerTest, Utf8PathsAreSupported) {
-  SyncStatusTracker tracker;
-
-  AddSyncStatus(tracker, 0, "/a/b/日本", SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/日本"), SyncStatus::kInProgress);
+  const base::FilePath utf8_path("/a/b/日本");
+  t.SetInProgress(0, utf8_path, 0, 0);
+  ASSERT_EQ(t.GetSyncState(utf8_path), InProgress(utf8_path));
 }
 
 TEST_F(SyncStatusTrackerTest, DeletingNonexistingPathIsNoOp) {
-  SyncStatusTracker tracker;
+  t.SetInProgress(0, abcd, 0, 0);
 
-  AddSyncStatus(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress);
+  t.SetCompleted(1, base::FilePath("/a/b/c/d/e"));
+  t.GetFileCount();
 
-  tracker.RemovePath(1, base::FilePath("/a/b/c/d/e"));
-
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/d"), SyncStatus::kInProgress);
+  ASSERT_EQ(t.GetSyncState(abcd), InProgress(abcd));
 }
 
 TEST_F(SyncStatusTrackerTest, AddingExistingPathReplacesStatus) {
-  SyncStatusTracker tracker;
+  t.SetInProgress(0, abcd, 0, 0);
+  t.SetError(1, abcd);
 
-  AddSyncStatus(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress);
-  AddSyncStatus(tracker, 1, "/a/b/c/d", SyncStatus::kError);
-
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/d"), SyncStatus::kError);
+  ASSERT_EQ(t.GetSyncState(abcd), Error(abcd));
 }
 
 TEST_F(SyncStatusTrackerTest, MalformedPathsAreSupported) {
-  SyncStatusTracker tracker;
+  base::FilePath malformed_path("////");
+  t.SetInProgress(0, malformed_path, 0, 0);
 
-  AddSyncStatus(tracker, 0, "////", SyncStatus::kInProgress);
-
-  EXPECT_EQ(GetSyncStatus(tracker, "////"), SyncStatus::kInProgress);
+  ASSERT_EQ(t.GetSyncState(malformed_path), InProgress(malformed_path));
 }
 
 TEST_F(SyncStatusTrackerTest, RelativePathsAreNotSupported) {
-  SyncStatusTracker tracker;
+  base::FilePath relative_path1("./..");
+  base::FilePath relative_path2("../");
 
-  AddSyncStatus(tracker, 0, "./..", SyncStatus::kInProgress);
-  AddSyncStatus(tracker, 1, "../", SyncStatus::kInProgress);
+  t.SetInProgress(0, relative_path1, 0, 0);
+  t.SetInProgress(1, relative_path2, 0, 0);
 
-  EXPECT_EQ(GetSyncStatus(tracker, "./.."), SyncStatus::kNotFound);
-  EXPECT_EQ(GetSyncStatus(tracker, "../"), SyncStatus::kNotFound);
+  ASSERT_EQ(t.GetSyncState(relative_path1), NotFound(relative_path1));
+  ASSERT_EQ(t.GetSyncState(relative_path2), NotFound(relative_path2));
 }
 
-TEST_F(SyncStatusTrackerTest, MovingFileRemovesOldPath) {
-  SyncStatusTracker tracker;
-
-  AddSyncStatusAndProgress(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress,
-                           0.1);
-  AddSyncStatusAndProgress(tracker, 1, "/a/b/c/e", SyncStatus::kQueued, 0);
+TEST_F(SyncStatusTrackerTest, MovingFileDoesNotImmediatelyRemoveOldPath) {
+  t.SetInProgress(0, abcd, 10, 100);
+  t.SetQueued(1, abce, 0);
   // Rename /a/b/c/d to /a/b/c/f.
-  AddSyncStatusAndProgress(tracker, 0, "/a/b/c/f", SyncStatus::kInProgress,
-                           0.5);
+  t.SetInProgress(0, abcf, 50, 100);
 
-  // Old path is removed.
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/d"),
-              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/e"),
-              MatchesStatusAndProgress(SyncStatusAndProgress::kQueued));
+  // Old path is moved.
+  ASSERT_EQ(t.GetSyncState(abcd), Moved(abcd));
+  ASSERT_EQ(t.GetSyncState(abce), Queued(abce));
   // New path is tracked.
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/f"),
-              MatchesStatusAndProgress(
-                  SyncStatusAndProgress{SyncStatus::kInProgress, 0.5}));
+  ASSERT_EQ(t.GetSyncState(abcf), InProgress(abcf, 0.5));
 
-  EXPECT_EQ(tracker.LeafCount(), 2u);
+  ASSERT_EQ(t.GetFileCount(), 2u);
 }
 
-TEST_F(SyncStatusTrackerTest, MovingFileRemovesOldPathAndParents) {
-  SyncStatusTracker tracker;
-
-  AddSyncStatusAndProgress(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress,
-                           0.1);
+TEST_F(SyncStatusTrackerTest,
+       MovingFileDoesNotImmediatelyRemoveOldPathAndParents) {
+  t.SetInProgress(0, abcd, 10, 100);
   // Rename /a/b/c/d to /a/d.
-  AddSyncStatusAndProgress(tracker, 0, "/a/d", SyncStatus::kInProgress, 0.2);
+  t.SetInProgress(0, ad, 20, 100);
 
-  // Old path is removed along with any childless parents.
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/d"),
-              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c"),
-              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b"),
-              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
+  // Old path is marked as "moved" along with any childless parents.
+  ASSERT_EQ(t.GetSyncState(abcd), Moved(abcd));
+  ASSERT_EQ(t.GetSyncState(abc), Moved(abc));
+  ASSERT_EQ(t.GetSyncState(ab), Moved(ab));
   // New path is tracked.
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/d"),
-              MatchesStatusAndProgress(
-                  SyncStatusAndProgress{SyncStatus::kInProgress, 0.2}));
-  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a"),
-              MatchesStatusAndProgress(
-                  SyncStatusAndProgress{SyncStatus::kInProgress, -1}));
+  ASSERT_EQ(t.GetSyncState(ad), InProgress(ad, 0.2));
+  ASSERT_EQ(t.GetSyncState(a), InProgress(a, 0.2));
 
-  EXPECT_EQ(tracker.LeafCount(), 1u);
+  ASSERT_EQ(t.GetFileCount(), 1u);
+}
+
+TEST_F(SyncStatusTrackerTest, FolderAggregateProgress) {
+  t.SetInProgress(0, abcd, 10, 100);
+  t.SetInProgress(1, abce, 20, 100);
+  t.SetInProgress(2, ad, 20, 100);
+
+  ASSERT_EQ(t.GetSyncState(abc), InProgress(abc, 30. / 200.));
+  ASSERT_EQ(t.GetSyncState(ab), InProgress(ab, 30. / 200.));
+  ASSERT_EQ(t.GetSyncState(a), InProgress(a, 50. / 300.));
+
+  t.SetInProgress(0, abcd, 50, 100);
+  t.SetInProgress(2, ad, 10, 200);
+
+  ASSERT_EQ(t.GetSyncState(ab), InProgress(ab, 70. / 200.));
+  ASSERT_EQ(t.GetSyncState(a), InProgress(a, 80. / 400.));
+
+  t.SetError(0, abcd);
+
+  ASSERT_EQ(t.GetSyncState(ab), Error(ab, 20. / 200.));
+  ASSERT_EQ(t.GetSyncState(a), Error(a, 30. / 400.));
+}
+
+TEST_F(SyncStatusTrackerTest, OnlyDirtyNodesAreReturned) {
+  t.SetInProgress(0, abcd, 10, 100);
+  t.SetInProgress(1, abce, 20, 100);
+  t.SetInProgress(2, ad, 20, 100);
+
+  ASSERT_THAT(t.GetChangesAndClean(),
+              testing::UnorderedElementsAre(InProgress(root, 50. / 300.),  //
+                                            InProgress(a, 50. / 300.),     //
+                                            InProgress(ab, 30. / 200.),    //
+                                            InProgress(abc, 30. / 200.),   //
+                                            InProgress(abcd, 10. / 100.),  //
+                                            InProgress(abce, 20. / 100.),  //
+                                            InProgress(ad, 20. / 100.)));  //
+
+  t.SetError(0, abcd);
+  t.SetQueued(3, afg, 100);
+
+  ASSERT_THAT(t.GetChangesAndClean(),
+              testing::UnorderedElementsAre(Error(root, 40. / 400.),  //
+                                            Error(a, 40. / 400.),     //
+                                            Error(ab, 20. / 200.),    //
+                                            Error(abc, 20. / 200.),   //
+                                            Error(abcd, 0. / 100.),   //
+                                            Queued(af),               //
+                                            Queued(afg)));            //
+
+  t.SetCompleted(1, abce);
+
+  ASSERT_THAT(t.GetChangesAndClean(),
+              testing::UnorderedElementsAre(Error(root, 120. / 400.),  //
+                                            Error(a, 120. / 400.),     //
+                                            Error(ab, 100. / 200.),    //
+                                            Error(abc, 100. / 200.),   //
+                                            Completed(abce)));         //
+
+  // Move /a/b/c/d to /b.
+  t.SetInProgress(0, b, 20, 100);
+
+  ASSERT_THAT(t.GetChangesAndClean(),
+              testing::UnorderedElementsAre(InProgress(root, 140. / 400.),  //
+                                            InProgress(a, 120. / 300.),     //
+                                            Completed(ab),                  //
+                                            Completed(abc),                 //
+                                            Moved(abcd),                    //
+                                            InProgress(b, 20. / 100.)));    //
 }
 
 }  // namespace

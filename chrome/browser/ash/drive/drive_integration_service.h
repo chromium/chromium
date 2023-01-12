@@ -270,8 +270,7 @@ class DriveIntegrationService : public KeyedService,
   void GetSyncingPaths(
       drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
 
-  drivefs::SyncStatusAndProgress GetSyncStatusForPath(
-      const base::FilePath& drive_path);
+  drivefs::SyncState GetSyncStateForPath(const base::FilePath& drive_path);
 
   // Tells DriveFS to update its cached pin states of hosted files (once).
   void PollHostedFilePinStates();

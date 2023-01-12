@@ -105,8 +105,8 @@ class DriveFsHost::MountState : public DriveFsSession,
     return search_->PerformSearch(std::move(query), std::move(callback));
   }
 
-  SyncStatusAndProgress GetSyncStatusForPath(const base::FilePath& drive_path) {
-    return sync_status_tracker_->GetSyncStatusForPath(drive_path);
+  SyncState GetSyncStateForPath(const base::FilePath& drive_path) {
+    return sync_status_tracker_->GetSyncState(drive_path);
   }
 
  private:
@@ -134,31 +134,23 @@ class DriveFsHost::MountState : public DriveFsSession,
         }
         switch (event->state) {
           case mojom::ItemEvent::State::kQueued:
-            sync_status_tracker_->AddSyncStatusForPath(event->stable_id, path,
-                                                       SyncStatus::kQueued, 0);
+            sync_status_tracker_->SetQueued(event->stable_id, std::move(path),
+                                            event->bytes_to_transfer);
             break;
-          case mojom::ItemEvent::State::kInProgress: {
-            float transferred = event->bytes_transferred;
-            float total = event->bytes_to_transfer;
-            float progress = -1;
-            if (total > 0 && transferred <= total) {
-              progress = transferred / total;
-            } else {
-              has_invalid_progress = true;
-            }
-            sync_status_tracker_->AddSyncStatusForPath(
-                event->stable_id, path, SyncStatus::kInProgress, progress);
+          case mojom::ItemEvent::State::kInProgress:
+            sync_status_tracker_->SetInProgress(
+                event->stable_id, std::move(path), event->bytes_transferred,
+                event->bytes_to_transfer);
             break;
-          }
           case mojom::ItemEvent::State::kFailed:
             // This state only comes through for failed downloads of pinned
             // files. Other transfer failures are reported through the OnError()
             // event.
-            sync_status_tracker_->AddSyncStatusForPath(event->stable_id, path,
-                                                       SyncStatus::kError, -1);
+            sync_status_tracker_->SetError(event->stable_id, std::move(path));
             break;
           case mojom::ItemEvent::State::kCompleted:
-            sync_status_tracker_->RemovePath(event->stable_id, path);
+            sync_status_tracker_->SetCompleted(event->stable_id,
+                                               std::move(path));
             break;
           default:
             break;
@@ -201,8 +193,7 @@ class DriveFsHost::MountState : public DriveFsSession,
     if (error->stable_id > 0) {
       if (base::FilePath("/").AppendRelativePath(base::FilePath(error->path),
                                                  &path)) {
-        sync_status_tracker_->AddSyncStatusForPath(error->stable_id, path,
-                                                   SyncStatus::kError, -1);
+        sync_status_tracker_->SetError(error->stable_id, std::move(path));
       } else {
         LOG(ERROR) << "Failed to make path relative to drive root";
       }
@@ -396,12 +387,11 @@ mojom::DriveFs* DriveFsHost::GetDriveFsInterface() const {
   return mount_state_->drivefs_interface();
 }
 
-SyncStatusAndProgress DriveFsHost::GetSyncStatusForPath(
-    const base::FilePath& drive_path) const {
+SyncState DriveFsHost::GetSyncStateForPath(const base::FilePath& path) const {
   if (!mount_state_) {
-    return SyncStatusAndProgress::kNotFound;
+    return SyncState::CreateNotFound(path);
   }
-  return mount_state_->GetSyncStatusForPath(drive_path);
+  return mount_state_->GetSyncStateForPath(path);
 }
 
 mojom::QueryParameters::QuerySource DriveFsHost::PerformSearch(
