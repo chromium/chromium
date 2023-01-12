@@ -96,6 +96,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.Apn.CustomApns.{CustomApnState}.Count"
+    units="count" expires_after="2023-10-18">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the number of {CustomApnState} APNs saved for a cellular network
+    every time a cellular network successfully connects.
+  </summary>
+  <token key="CustomApnState">
+    <variant name="Disabled"/>
+    <variant name="Enabled"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.Apn.DisableCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2023-10-18">
   <owner>gordonseto@google.com</owner>

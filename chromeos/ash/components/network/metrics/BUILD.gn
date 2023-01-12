@@ -13,10 +13,12 @@ source_set("metrics") {
 
   configs += [ "//chromeos/ash/components/network:network_config" ]
   deps = [
+    "//ash/constants:constants",
     "//base",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/services/network_config/public/mojom",
     "//components/device_event_log",
+    "//components/onc",
   ]
   sources = [
     "cellular_network_metrics_logger.cc",
@@ -40,12 +42,14 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//ash/constants",
+    "//ash/constants:constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
+    "//components/onc",
     "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gtest",
