@@ -2113,8 +2113,14 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_1},
       {"adMeasurementPageEnabledBullet2",
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_2},
+      {"adMeasurementPageEnabledBullet3",
+       IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_3},
       {"adMeasurementPageConsiderBullet1",
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_1},
+      {"adMeasurementPageConsiderBullet2",
+       IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2},
+      {"adMeasurementPageConsiderBullet3",
+       IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_3},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

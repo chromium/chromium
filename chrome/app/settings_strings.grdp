@@ -1980,8 +1980,17 @@
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_2" translateable="false" desc="Second bullet point underneath the 'When on' section in the Ad Measurement preferences page.">
     Nunc metus est, faucibus sit amet lacus sit amet, aliquet rutrum libero. Maecenas vel euismod ante.
   </message>
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_3" translateable="false" desc="Third bullet point underneath the 'When on' section in the Ad Measurement preferences page.">
+    Nunc metus est, faucibus sit amet lacus sit amet, aliquet rutrum libero.
+  </message>
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_1" translateable="false" desc="First bullet point underneath the 'Things to consider' section in the Ad Measurement preferences page.">
     Mauris mattis urna elit. Phasellus quis erat sapien. Praesent finibus pellentesque iaculis. Mauris hendrerit metus at enim rhoncus bibendum.
+  </message>
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2" translateable="false" desc="Second bullet point underneath the 'Things to consider' section in the Ad Measurement preferences page.">
+    Phasellus quis erat sapien. Praesent finibus pellentesque iaculis.
+  </message>
+  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_3" translateable="false" desc="Third bullet point underneath the 'Things to consider' section in the Ad Measurement preferences page.">
+    Mauris mattis urna elit. Phasellus quis erat sapien. Praesent finibus pellentesque iaculis. Mauris hendrerit metus at enim rhoncus bibendum. Maecenas vel euismod ante.
   </message>
 
   <!-- Privacy Guide -->

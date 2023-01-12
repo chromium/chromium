@@ -10,7 +10,6 @@
   }
 
   .description-item {
-    align-items: center;
     column-gap: 16px;
     display: flex;
     padding: 16px 0;
@@ -40,19 +39,23 @@
     <div class="description-header">
       $i18n{adMeasurementPageEnabledHeading}
     </div>
-    <div role="list">
-      <div class="description-item">
-        <iron-icon icon="settings20:spam" aria-hidden="true"></iron-icon>
-        <div class="secondary">
-          $i18n{adMeasurementPageEnabledBullet1}
-        </div>
+    <div class="description-item">
+      <iron-icon icon="settings20:bar-chart" aria-hidden="true"></iron-icon>
+      <div class="secondary">
+        $i18n{adMeasurementPageEnabledBullet1}
       </div>
-      <div class="description-item">
-        <iron-icon icon="settings20:performance-max" aria-hidden="true">
-        </iron-icon>
-        <div class="secondary">
-          $i18n{adMeasurementPageEnabledBullet2}
-        </div>
+    </div>
+    <div class="description-item">
+      <iron-icon icon="settings20:auto-delete" aria-hidden="true"></iron-icon>
+      <div class="secondary">
+        $i18n{adMeasurementPageEnabledBullet2}
+      </div>
+    </div>
+    <div class="description-item">
+      <iron-icon icon="settings20:background-replace" aria-hidden="true">
+      </iron-icon>
+      <div class="secondary">
+        $i18n{adMeasurementPageEnabledBullet3}
       </div>
     </div>
   </div>
@@ -60,12 +63,22 @@
     <div class="description-header">
       $i18n{adMeasurementPageConsiderHeading}
     </div>
-    <div role="list">
-      <div class="description-item">
-        <iron-icon icon="settings:permissions" aria-hidden="true"></iron-icon>
-        <div class="secondary">
-          $i18n{adMeasurementPageConsiderBullet1}
-        </div>
+    <div class="description-item">
+      <iron-icon icon="settings20:delete" aria-hidden="true"></iron-icon>
+      <div class="secondary">
+        $i18n{adMeasurementPageConsiderBullet1}
+      </div>
+    </div>
+    <div class="description-item">
+      <iron-icon icon="settings20:filter-list" aria-hidden="true"></iron-icon>
+      <div class="secondary">
+        $i18n{adMeasurementPageConsiderBullet2}
+      </div>
+    </div>
+    <div class="description-item">
+      <iron-icon icon="settings:devices" aria-hidden="true"></iron-icon>
+      <div class="secondary">
+        $i18n{adMeasurementPageConsiderBullet3}
       </div>
     </div>
   </div>
