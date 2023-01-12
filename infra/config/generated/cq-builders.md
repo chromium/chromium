@@ -349,17 +349,6 @@ builder.
   Location filters:
   * [`//build/.*check_gn_headers.*`](https://cs.chromium.org/search?q=+file:build/.*check_gn_headers.*)
 
-* [linux_layout_tests_layout_ng_disabled](https://ci.chromium.org/p/chromium/builders/try/linux_layout_tests_layout_ng_disabled) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_layout_tests_layout_ng_disabled""))
-
-  Location filters:
-  * [`//third_party/blink/renderer/core/editing/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/editing/)
-  * [`//third_party/blink/renderer/core/layout/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/layout/)
-  * [`//third_party/blink/renderer/core/paint/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/paint/)
-  * [`//third_party/blink/renderer/core/svg/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/svg/)
-  * [`//third_party/blink/renderer/platform/fonts/shaping/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/fonts/shaping/)
-  * [`//third_party/blink/renderer/platform/graphics/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/graphics/)
-  * [`//third_party/blink/web_tests/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/)
-
 * [linux_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/linux_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_optional_gpu_tests_rel""))
 
   Location filters:

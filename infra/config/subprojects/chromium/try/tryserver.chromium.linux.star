@@ -640,17 +640,6 @@ try_.builder(
         ),
     ),
     main_list_view = "try",
-    tryjob = try_.job(
-        location_filters = [
-            "third_party/blink/renderer/core/editing/.+",
-            "third_party/blink/renderer/core/layout/.+",
-            "third_party/blink/renderer/core/paint/.+",
-            "third_party/blink/renderer/core/svg/.+",
-            "third_party/blink/renderer/platform/fonts/shaping/.+",
-            "third_party/blink/renderer/platform/graphics/.+",
-            "third_party/blink/web_tests/.+",
-        ],
-    ),
 )
 
 try_.builder(
