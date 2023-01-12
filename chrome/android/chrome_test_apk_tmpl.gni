@@ -10,7 +10,7 @@ chrome_public_shared_deps = [
   "//chrome/android:chrome_public_apk_resources",
   "//chrome/android:chrome_public_base_module_java",
   "//chrome/android:chrome_public_non_pak_assets",
-  "//chrome/android:chrome_public_v8_assets",
+  "//gin:v8_snapshot_assets",
   "//third_party/icu:icu_assets",
 ]
 

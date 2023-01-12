@@ -161,7 +161,7 @@ template("trichrome_library_apk_tmpl") {
 
     if (_include_primary_support) {
       deps += [
-        "//chrome/android:chrome_public_v8_assets",
+        "//gin:v8_snapshot_assets",
         "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
       ]
       loadable_modules = [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
@@ -171,7 +171,7 @@ template("trichrome_library_apk_tmpl") {
           "//third_party/crashpad/crashpad/handler:" +
           "crashpad_handler_trampoline($android_secondary_abi_toolchain)"
       deps += [
-        "//android_webview:v8_snapshot_secondary_abi_assets",
+        "//gin:v8_snapshot_secondary_abi_assets",
         _trampoline,
       ]
       _secondary_out_dir = get_label_info(_trampoline, "root_out_dir")

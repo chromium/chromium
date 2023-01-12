@@ -22,7 +22,6 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/repack.gni")
 import("//tools/resources/generate_resource_allowlist.gni")
-import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 
 if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
@@ -964,57 +963,27 @@ android_assets("pak_file_assets") {
   disable_compression = true
 }
 
+java_group("webview_primary_abi_assets") {
+  deps = [ "//gin:v8_snapshot_assets" ]
+}
+
+java_group("monochrome_webview_primary_abi_assets") {
+  deps = [
+    "//gin:v8_snapshot_assets",
+    "//third_party/icu:icu_assets",
+  ]
+}
+
 if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-  android_assets("v8_snapshot_secondary_abi_assets") {
-    assert(android_64bit_target_cpu,
-           "32-bit targets shouldn't have secondary abi")
-    arch_suffix = "32"
-    renaming_sources = []
-    renaming_destinations = []
-    if (use_v8_context_snapshot) {
-      renaming_sources += [ "$root_out_dir/v8_context_snapshot_32.bin" ]
-      renaming_destinations += [ "v8_context_snapshot_$arch_suffix.bin" ]
-    } else {
-      _secondary_abi_out_dir =
-          get_label_info("//v8($android_secondary_abi_toolchain)",
-                         "root_out_dir")
-      renaming_sources = [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
-      renaming_destinations = [ "snapshot_blob_$arch_suffix.bin" ]
-    }
-    disable_compression = true
+  java_group("webview_secondary_abi_assets") {
+    deps = [ "//gin:v8_snapshot_secondary_abi_assets" ]
+  }
+
+  java_group("monochrome_webview_secondary_abi_assets") {
     deps = [
-      "//tools/v8_context_snapshot($android_secondary_abi_toolchain)",
-      "//v8($android_secondary_abi_toolchain)",
+      "//gin:v8_snapshot_secondary_abi_assets",
+      "//third_party/icu:icu_assets",
     ]
-  }
-}
-
-android_assets("webview_primary_abi_assets") {
-  deps = []
-  if (use_v8_context_snapshot) {
-    deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
-  }
-}
-
-android_assets("monochrome_webview_primary_abi_assets") {
-  deps = [ "//third_party/icu:icu_assets" ]
-  if (use_v8_context_snapshot) {
-    deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
-  }
-}
-
-if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-  android_assets("webview_secondary_abi_assets") {
-    deps = [ ":v8_snapshot_secondary_abi_assets" ]
-  }
-
-  android_assets("monochrome_webview_secondary_abi_assets") {
-    deps = [ "//third_party/icu:icu_assets" ]
-    deps += [ ":v8_snapshot_secondary_abi_assets" ]
   }
 }
 

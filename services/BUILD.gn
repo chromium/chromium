@@ -4,7 +4,6 @@
 
 import("//build/config/ui.gni")
 import("//testing/test.gni")
-import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 # One Big Target for services to register their unit test sources. This exists
 # to avoid having to maintain a separate test binary for every service.
@@ -75,14 +74,10 @@ test("services_unittests") {
 
       # Some tests make network requests.
       "//net/android:net_java",
-    ]
 
-    # Some tests need to initialize V8.
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
+      # Some tests need to initialize V8.
+      "//gin:v8_snapshot_assets",
+    ]
   }
 
   if (!is_android && !is_ios) {

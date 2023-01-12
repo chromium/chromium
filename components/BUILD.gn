@@ -23,7 +23,6 @@ import("//tools/grit/repack.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//build/config/compiler/compiler.gni")
-  import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 }
 
 if (is_ios) {
@@ -519,17 +518,13 @@ test("components_unittests") {
       "//components/webapps/browser/android:unit_tests",
       "//content/public/android:content_java",
       "//content/public/browser",
+      "//gin:v8_snapshot_assets",
       "//net",
       "//services/data_decoder/public/cpp/android:safe_json_java",
       "//ui/android:ui_java",
       "//ui/base",
       "//ui/gfx",
     ]
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
 
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank/build/bot/filters:components_unittests_filters" ]
@@ -742,13 +737,9 @@ if (is_android) {
     deps = [
       ":components_tests_pak",
       "//content/shell:pak",
+      "//gin:v8_snapshot_assets",
       "//third_party/icu:icu_assets",
     ]
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
   }
 
   android_library("components_browsertests_java") {
@@ -1038,12 +1029,10 @@ if (!is_ios) {
     ]
 
     if (is_android) {
-      deps += [ "//ui/android:ui_java" ]
-      if (use_v8_context_snapshot) {
-        deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-      } else {
-        deps += [ "//v8:v8_external_startup_data_assets" ]
-      }
+      deps += [
+        "//gin:v8_snapshot_assets",
+        "//ui/android:ui_java",
+      ]
     }
 
     if (!is_android) {

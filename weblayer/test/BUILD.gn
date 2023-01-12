@@ -6,7 +6,6 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 
 if (is_android) {
@@ -69,15 +68,12 @@ if (is_android) {
     ]
   }
 
-  android_assets("weblayer_test_assets") {
+  java_group("weblayer_test_assets") {
     testonly = true
-    disable_compression = true
-    deps = [ "//third_party/icu:icu_assets" ]
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
+    deps = [
+      "//gin:v8_snapshot_assets",
+      "//third_party/icu:icu_assets",
+    ]
   }
 
   java_cpp_enum("generated_enums") {

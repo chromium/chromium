@@ -168,8 +168,8 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
     if (!_is_monochrome && !_is_trichrome) {
       deps += [
-        "//chrome/android:chrome_public_v8_assets",
         "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
+        "//gin:v8_snapshot_assets",
         "//third_party/icu:icu_assets",
       ]
       if (!defined(loadable_modules)) {

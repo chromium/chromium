@@ -679,8 +679,8 @@ if (is_android) {
     deps = [
       ":cast_shell_apk_locale_assets",
       ":cast_shell_pak",
+      "//gin:v8_snapshot_assets",
       "//third_party/icu:icu_assets",
-      "//v8:v8_external_startup_data_assets",
     ]
     disable_compression = true
   }

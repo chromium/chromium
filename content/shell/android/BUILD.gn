@@ -5,7 +5,6 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//third_party/icu/config.gni")
-import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 content_shell_manifest =
     "$target_gen_dir/content_shell_manifest/AndroidManifest.xml"
@@ -174,13 +173,9 @@ android_assets("content_shell_assets") {
   disable_compression = true
   deps = [
     "//content/shell:pak",
+    "//gin:v8_snapshot_assets",
     "//third_party/icu:icu_assets",
   ]
-  if (use_v8_context_snapshot) {
-    deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
-  }
 }
 
 template("content_shell_apk_tmpl") {

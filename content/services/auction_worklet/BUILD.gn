@@ -167,9 +167,5 @@ source_set("tests") {
     deps += [ "//gin" ]
   }
 
-  if (is_android) {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
-  }
-
   configs += [ "//v8:external_startup_data" ]
 }

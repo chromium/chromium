@@ -8,7 +8,6 @@ import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//testing/test.gni")
-import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 # Mark all targets as test only.
 testonly = true
@@ -162,6 +161,7 @@ android_resources("webview_instrumentation_apk_resources") {
 android_assets("webview_instrumentation_apk_assets") {
   deps = [
     "//android_webview:pak_file_assets",
+    "//gin:v8_snapshot_assets",
     "//third_party/icu:icu_assets",
   ]
 
@@ -184,12 +184,6 @@ android_assets("webview_instrumentation_apk_assets") {
     "shell/assets/visual_state_waits_for_js_detached_test.html",
     "shell/assets/visual_state_waits_for_js_test.html",
   ]
-
-  if (use_v8_context_snapshot) {
-    deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
-  }
 }
 
 generate_jni("draw_fn_impl_jni_headers") {
@@ -597,6 +591,7 @@ test("android_webview_unittests") {
     "//components/viz/service:service",
     "//content:content",
     "//content/test:test_support",
+    "//gin:v8_snapshot_assets",
     "//mojo/core/embedder",
     "//net:net",
     "//net:test_support",
@@ -649,12 +644,6 @@ test("android_webview_unittests") {
     "../nonembedded/component_updater/aw_component_updater_configurator_unittest.cc",
     "../nonembedded/component_updater/installer_policies/aw_package_names_allowlist_component_installer_policy_unittest.cc",
   ]
-
-  if (use_v8_context_snapshot) {
-    deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  } else {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
-  }
 }
 
 android_assets("android_webview_unittests_assets") {

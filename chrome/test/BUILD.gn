@@ -60,7 +60,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
-  import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 }
 
 # This target exists to reference other test executables to bring these files
@@ -1111,14 +1110,9 @@ if (is_android) {
     # These are assets rules so we can just depend on them.
     deps += [
       "//chrome/android:chrome_apk_pak_assets",
+      "//gin:v8_snapshot_assets",
       "//third_party/icu:icu_assets",
     ]
-
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
   }
 
   android_library("android_browsertests_java") {
@@ -6629,14 +6623,10 @@ test("unit_tests") {
       "//components/webapk:proto",
       "//components/webapps/browser",
       "//content/public/android:content_java",
+      "//gin:v8_snapshot_assets",
       "//ui/android",
       "//ui/events/devices:test_support",
     ]
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
     if (dfmify_dev_ui) {
       sources += [
         "//chrome/browser/dev_ui/android/dev_ui_loader_throttle_unittest.cc",

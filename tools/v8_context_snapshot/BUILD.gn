@@ -36,32 +36,11 @@ buildflag_header("buildflags") {
 }
 
 if (use_v8_context_snapshot) {
-  if (is_android && enable_java_templates) {
-    android_assets("v8_context_snapshot_assets") {
-      deps = [ ":v8_context_snapshot" ]
-      default_toolchain_root_out_dir =
-          get_label_info(":v8_context_snapshot_generator($default_toolchain)",
-                         "root_out_dir")
-      snapshot_file =
-          "$default_toolchain_root_out_dir/$v8_context_snapshot_filename"
-      renaming_sources = [ snapshot_file ]
-      renaming_destinations = [ "$v8_context_snapshot_filename" ]
-      disable_compression = true
-    }
-  }
-
   if (v8_snapshot_toolchain == current_toolchain) {
     action("generate_v8_context_snapshot") {
       script = "//build/gn_run_binary.py"
 
-      # When cross compiling this target runs in a toolchain other than the
-      # default_toolchain. Code depending on this expect the snapshot to be
-      # generated in root_out_dir for the default toolchain.
-      default_toolchain_root_out_dir =
-          get_label_info(":v8_context_snapshot_generator($default_toolchain)",
-                         "root_out_dir")
-      output_file =
-          "$default_toolchain_root_out_dir/$v8_context_snapshot_filename"
+      output_file = "$root_build_dir/$v8_context_snapshot_filename"
       output_path = rebase_path(output_file, root_build_dir)
 
       args = [

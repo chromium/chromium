@@ -36,7 +36,6 @@ import("//testing/test.gni")
 import("//third_party/icu/config.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/resources/generate_resource_allowlist.gni")
-import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 import("channel.gni")
 import("java_sources.gni")
@@ -2110,14 +2109,6 @@ if (current_toolchain == default_toolchain) {
     deps = [
       "//chrome/android/webapk/libs/runtime_library:runtime_library_assets",
     ]
-  }
-
-  java_group("chrome_public_v8_assets") {
-    if (use_v8_context_snapshot) {
-      deps = [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps = [ "//v8:v8_external_startup_data_assets" ]
-    }
   }
 
   jinja_template_resources("chrome_public_apk_template_resources") {
