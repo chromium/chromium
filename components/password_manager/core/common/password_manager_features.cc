@@ -106,6 +106,12 @@ BASE_FEATURE(kIOSPasswordUISplit,
 BASE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport,
              "IOSPasswordManagerCrossOriginIframeSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables displaying and managing compromised, weak and reused credentials in
+// the Password Manager.
+BASE_FEATURE(kIOSPasswordCheckup,
+             "IOSPasswordCheckup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 // Enables (un)muting compromised passwords from bulk leak check in settings.

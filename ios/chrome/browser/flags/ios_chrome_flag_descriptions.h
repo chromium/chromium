@@ -383,6 +383,11 @@ extern const char kIOSForceTranslateEnabledDescription[];
 extern const char kIOSNewPostRestoreExperienceName[];
 extern const char kIOSNewPostRestoreExperienceDescription[];
 
+// Title and description for the flag to enabled displaying and managing
+// compromised, weak and reused credentials in the Password Manager.
+extern const char kIOSPasswordCheckupName[];
+extern const char kIOSPasswordCheckupDescription[];
+
 // Title and description for the flag to split password settings and password
 // management into two separate UIs.
 extern const char kIOSPasswordUISplitName[];

@@ -1254,7 +1254,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"intents-on-email", flag_descriptions::kEmailName,
      flag_descriptions::kEmailDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableEmails)},
-
+    {"ios-password-checkup", flag_descriptions::kIOSPasswordCheckupName,
+     flag_descriptions::kIOSPasswordCheckupDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordCheckup)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

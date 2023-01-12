@@ -432,6 +432,11 @@ const char kIOSNewPostRestoreExperienceDescription[] =
     "When enabled, a prompt will be presented after a device restore to "
     "allow the user to sign in again.";
 
+const char kIOSPasswordCheckupName[] = "Password Checkup";
+const char kIOSPasswordCheckupDescription[] =
+    "Enables displaying and managing compromised, weak and reused credentials "
+    "in the Password Manager.";
+
 const char kIOSPasswordUISplitName[] = "Password Manager UI Split";
 const char kIOSPasswordUISplitDescription[] =
     "Splits Password Settings and "
