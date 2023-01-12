@@ -7,7 +7,7 @@ desc: |-
 
         If this policy is not set, no action will be ran.
 
-        The minimum threshold is 5 minutes.
+        The minimum threshold is 1 minute.
 
         "User input" is defined by Operating System APIs, and includes things like moving the mouse or typing on the keyboard.
 example_value: 30
@@ -20,7 +20,7 @@ owners:
 - nicolaso@chromium.org
 - cbe-magic@google.com
 schema:
-  minimum: 5
+  minimum: 1
   type: integer
 tags: []
 type: int
