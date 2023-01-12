@@ -7,7 +7,6 @@
 #import <WebKit/WebKit.h>
 
 #import "base/functional/bind.h"
-#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
@@ -18,9 +17,10 @@
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_matchers.h"
 #import "ios/web/public/test/element_selector.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/web_state/web_state_impl.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,70 +37,6 @@ constexpr base::TimeDelta kContextMenuLongPressDuration = base::Seconds(1);
 // TODO(crbug.com/670910): Reduce duration if the time required for verification
 // is reduced on devices.
 constexpr base::TimeDelta kWaitForVerificationTimeout = base::Seconds(8);
-
-// Generic verification injector. Injects one-time mousedown verification into
-// `web_state` that will set the boolean pointed to by `verified` to true when
-// `web_state`'s webview registers the mousedown event.
-base::CallbackListSubscription AddVerifierToElementWithPrefix(
-    web::WebState* web_state,
-    ElementSelector* selector,
-    const std::string& prefix,
-    bool* verified) {
-  const char kCallbackCommand[] = "verified";
-  const std::string kCallbackInvocation = prefix + '.' + kCallbackCommand;
-
-  const char kAddInteractionVerifierScriptTemplate[] =
-      "(function() {"
-      // First template param: element.
-      "  var element = %1$s;"
-      "  if (!element)"
-      "    return 'Element not found';"
-      "  var invokeType = typeof __gCrWeb.message;"
-      "  if (invokeType != 'object')"
-      "    return 'Host invocation not installed (' + invokeType + ')';"
-      "  var options = {'capture' : true, 'once' : true, 'passive' : true};"
-      "  element.addEventListener('mousedown', function(event) {"
-      "      __gCrWeb.message.invokeOnHost("
-      // Second template param: callback command.
-      "          {'command' : '%2$s' });"
-      "  }, options);"
-      "  return true;"
-      "})();";
-
-  std::string selector_script =
-      base::SysNSStringToUTF8(selector.selectorScript);
-  const std::string kAddVerifierScript =
-      base::StringPrintf(kAddInteractionVerifierScriptTemplate,
-                         selector_script.c_str(), kCallbackInvocation.c_str());
-
-  bool success = base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^{
-        std::unique_ptr<base::Value> value =
-            web::test::ExecuteJavaScript(web_state, kAddVerifierScript);
-        if (value) {
-          if (value->is_string()) {
-            DLOG(ERROR) << "Verifier injection failed: " << value->GetString()
-                        << ", retrying.";
-          } else if (value->is_bool()) {
-            return true;
-          }
-        }
-        return false;
-      });
-
-  if (!success)
-    return {};
-
-  // The callback doesn't care about any of the parameters, just whether it is
-  // called or not.
-  auto callback = base::BindRepeating(
-      ^(const base::Value& /* json */, const GURL& /* origin_url */,
-        bool /* user_is_interacting */, web::WebFrame* /* sender_frame */) {
-        *verified = true;
-      });
-
-  return web_state->AddScriptCommandCallback(callback, prefix);
-}
 
 // Returns a no element found error.
 id<GREYAction> WebViewElementNotFound(ElementSelector* selector) {
@@ -156,37 +92,53 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
   NSString* action_name =
       [NSString stringWithFormat:@"Verified action (%@) on webview element %@.",
                                  action.name, selector.selectorDescription];
-  const std::string prefix =
-      base::StringPrintf("__web_test_%p_interaction", &selector);
 
   GREYPerformBlock verified_tap = ^BOOL(id element, __strong NSError** error) {
-    // A pointer to `verified` is passed into AddVerifierToElementWithPrefix()
-    // so the verifier can update its value, but `verified` also needs to be
-    // marked as __block so that waitUntilCondition(), below, can access it by
-    // reference.
-    __block bool verified = false;
+    NSString* verifier_script = [NSString
+        stringWithFormat:
+            @"return await new Promise((resolve) => {"
+             "  var element = %@;"
+             "  if (!element) {"
+             "    resolve('No element');"
+             "  }"
+             "  const timeoutId = setTimeout(() => {"
+             "    resolve(false);"
+             // JS timeout slightly shorter than `kWaitForVerificationTimeout`
+             "   }, 7900);"
+             "  var options = { 'capture': true, 'once': true, 'passive': true "
+             "};"
+             "  element.addEventListener('mousedown', function(event) {"
+             "    clearTimeout(timeoutId);"
+             "    resolve(true);"
+             "  }, options);"
+             "});",
+            selector.selectorScript];
 
-    __block base::CallbackListSubscription subscription;
+    __block bool async_call_complete = false;
+    __block bool verified = false;
     // GREYPerformBlock executes on background thread by default in EG2.
     // Dispatch any call involving UI API to UI thread as they can't be executed
     // on background thread. See go/eg2-migration#greyactions-threading-behavior
     grey_dispatch_sync_on_main_thread(^{
-      // Inject the verifier.
-      subscription =
-          AddVerifierToElementWithPrefix(state, selector, prefix, &verified);
-    });
+      WKWebView* web_view =
+          [web::test::GetWebController(state) ensureWebViewCreated];
 
-    if (!subscription) {
-      NSString* description = [NSString
-          stringWithFormat:@"It wasn't possible to add the verification "
-                           @"javascript for element %@",
-                           selector.selectorDescription];
-      NSDictionary* user_info = @{NSLocalizedDescriptionKey : description};
-      *error = [NSError errorWithDomain:kGREYInteractionErrorDomain
-                                   code:kGREYInteractionActionFailedErrorCode
-                               userInfo:user_info];
-      return NO;
-    }
+      [web_view
+          callAsyncJavaScript:verifier_script
+                    arguments:nil
+                      inFrame:nil
+               inContentWorld:[WKContentWorld pageWorld]
+            completionHandler:^(id result, NSError* async_error) {
+              if (!async_error) {
+                if ([result isKindOfClass:[NSString class]]) {
+                  DLOG(ERROR) << base::SysNSStringToUTF8(result);
+                } else if ([result isKindOfClass:[NSNumber class]]) {
+                  verified = [result boolValue];
+                }
+              }
+              async_call_complete = true;
+            }];
+    });
 
     // Run the action and wait for the UI to settle.
     NSError* actionError = nil;
@@ -202,17 +154,16 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
     [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
 
     // Wait for the verified to trigger and set `verified`.
-    NSString* verification_timeout_message =
-        [NSString stringWithFormat:@"The action (%@) on element %@ wasn't "
-                                   @"verified before timing out.",
-                                   action.name, selector.selectorDescription];
     bool success = base::test::ios::WaitUntilConditionOrTimeout(
         kWaitForVerificationTimeout, ^{
-          return verified;
+          return async_call_complete;
         });
 
     if (!success || !verified) {
-      DLOG(WARNING) << base::SysNSStringToUTF8(verification_timeout_message);
+      DLOG(WARNING) << base::SysNSStringToUTF8([NSString
+          stringWithFormat:@"The action (%@) on element %@ wasn't "
+                           @"verified before timing out.",
+                           action.name, selector.selectorDescription]);
       return NO;
     }
 
