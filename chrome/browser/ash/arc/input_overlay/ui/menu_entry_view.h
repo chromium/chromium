@@ -41,6 +41,12 @@ class MenuEntryView : public views::ImageButton {
   void OnDragUpdate(const ui::LocatedEvent& event);
   void OnDragEnd();
 
+  // TODO(b/260937747) For Alpha version, this view is not movable. Cancel
+  // located event and reset event target when the located event doesn't
+  // released on top of this view. This can be removed when removing the AlphaV2
+  // flag.
+  void MayCancelLocatedEvent(const ui::LocatedEvent& event);
+
   OnPositionChangedCallback on_position_changed_callback_;
 
   // LocatedEvent's position when drag starts.

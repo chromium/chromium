@@ -38,6 +38,7 @@ bool MenuEntryView::OnMouseDragged(const ui::MouseEvent& event) {
 void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
   if (!allow_reposition_ || !is_dragging_) {
     views::Button::OnMouseReleased(event);
+    MayCancelLocatedEvent(event);
   } else {
     OnDragEnd();
     RecordInputOverlayMenuEntryReposition(RepositionType::kMouseDragRepostion);
@@ -45,8 +46,12 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
-  if (!allow_reposition_)
-    return views::Button::OnGestureEvent(event);
+  if (!allow_reposition_) {
+    views::Button::OnGestureEvent(event);
+    MayCancelLocatedEvent(*event);
+    return;
+  }
+
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       OnDragStart(*event);
@@ -117,6 +122,14 @@ void MenuEntryView::OnDragEnd() {
                                     origin() != start_drag_view_pos_
                                         ? absl::make_optional(origin())
                                         : absl::nullopt);
+}
+
+void MenuEntryView::MayCancelLocatedEvent(const ui::LocatedEvent& event) {
+  if ((event.IsMouseEvent() && !HitTestPoint(event.location())) ||
+      (event.IsGestureEvent() && event.type() == ui::ET_GESTURE_TAP_CANCEL)) {
+    on_position_changed_callback_.Run(/*leave_focus=*/true,
+                                      /*location=*/absl::nullopt);
+  }
 }
 
 }  // namespace arc::input_overlay
