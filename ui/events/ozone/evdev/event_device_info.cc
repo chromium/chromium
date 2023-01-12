@@ -240,6 +240,8 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
     {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
+    {0x1532, 0x009a},  // Razer Pro Click Mini (Dongle)
+    {0x1532, 0x009b},  // Razer Pro Click Mini (Bluetooth)
     {0x17ef, 0x60be},  // Lenovo Legion M200 RGB Gaming Mouse
     {0x17ef, 0x60e4},  // Lenovo Legion M300 RGB Gaming Mouse
     {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
