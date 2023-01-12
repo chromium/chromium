@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp"
-    android:background="@drawable/touch_to_fill_credit_card_background"
+    android:background="@drawable/touch_to_fill_credential_background_modern_rounded_all"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="16dp">
