@@ -11,10 +11,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/app_list/search/files/local_file_suggestion_provider.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -122,7 +122,7 @@ TEST_F(ZeroStateFileProviderTest, FilterScreenshots) {
   WriteFile(DownloadsPath("Screenshot123.png"));
 
   auto* keyed_service =
-      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
+      ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
   keyed_service->local_file_suggestion_provider_for_test()->OnFilesOpened(
       {OpenEvent(Path("ScreenshotNonDownload.png")),
        OpenEvent(DownloadsPath("ScreenshotNonPng.jpg")),

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/item_suggest_cache.h"
+#include "chrome/browser/ash/file_suggest/item_suggest_cache.h"
 
 #include <algorithm>
 #include <string>
@@ -36,7 +36,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-namespace app_list {
+namespace ash {
 namespace {
 
 // Maximum accepted size of an ItemSuggest response. 1MB.
@@ -105,21 +105,25 @@ void LogLatency(base::TimeDelta latency) {
 
 const base::Value::List* GetList(const base::Value* value,
                                  const std::string& key) {
-  if (!value->is_dict())
+  if (!value->is_dict()) {
     return nullptr;
+  }
   const base::Value* field = value->FindListKey(key);
-  if (!field)
+  if (!field) {
     return nullptr;
+  }
   return &field->GetList();
 }
 
 absl::optional<std::string> GetString(const base::Value* value,
                                       const std::string& key) {
-  if (!value->is_dict())
+  if (!value->is_dict()) {
     return absl::nullopt;
+  }
   const std::string* field = value->GetDict().FindString(key);
-  if (!field)
+  if (!field) {
     return absl::nullopt;
+  }
   return *field;
 }
 
@@ -134,8 +138,9 @@ absl::optional<ItemSuggestCache::Result> ConvertResult(
   const auto& prediction_reason = GetString(value, "predictionReason");
 
   // Allow |prediction_reason| to be nullopt.
-  if (!item_id || !display_text)
+  if (!item_id || !display_text) {
     return absl::nullopt;
+  }
 
   return ItemSuggestCache::Result(item_id.value(), display_text.value(),
                                   prediction_reason);
@@ -144,8 +149,9 @@ absl::optional<ItemSuggestCache::Result> ConvertResult(
 absl::optional<ItemSuggestCache::Results> ConvertResults(
     const base::Value* value) {
   const auto& suggestion_id = GetString(value, "suggestionSessionId");
-  if (!suggestion_id)
+  if (!suggestion_id) {
     return absl::nullopt;
+  }
 
   ItemSuggestCache::Results results(suggestion_id.value());
 
@@ -160,8 +166,9 @@ absl::optional<ItemSuggestCache::Results> ConvertResults(
     // If any result fails conversion, fail completely and return absl::nullopt,
     // rather than just skipping this result. This makes clear the distinction
     // between a response format issue and the response containing no results.
-    if (!result)
+    if (!result) {
       return absl::nullopt;
+    }
     results.results.push_back(std::move(result.value()));
   }
 
@@ -260,8 +267,9 @@ void ItemSuggestCache::MaybeUpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_start_time_ = base::TimeTicks::Now();
 
-  if (base::Time::Now() - GetLastRequestTime(profile_) < GetDelay())
+  if (base::Time::Now() - GetLastRequestTime(profile_) < GetDelay()) {
     return;
+  }
 
   // Make no requests and exit in these cases:
   // - Item suggest has been disabled via experiment.
@@ -432,4 +440,4 @@ absl::optional<ItemSuggestCache::Results> ItemSuggestCache::ConvertJsonForTest(
   return ConvertResults(value);
 }
 
-}  // namespace app_list
+}  // namespace ash

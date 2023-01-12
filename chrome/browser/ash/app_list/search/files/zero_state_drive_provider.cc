@@ -12,11 +12,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -25,7 +25,7 @@
 namespace app_list {
 namespace {
 
-using SuggestResults = std::vector<FileSuggestData>;
+using SuggestResults = std::vector<ash::FileSuggestData>;
 
 // How long to wait before making the first request for results from the
 // ItemSuggestCache.
@@ -47,7 +47,8 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
       drive_service_(drive_service),
       session_manager_(session_manager),
       file_suggest_service_(
-          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)),
+          ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+              profile)),
       construction_time_(base::Time::Now()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(profile_);
@@ -128,7 +129,7 @@ void ZeroStateDriveProvider::StartZeroState() {
   suggestion_query_weak_factory_.InvalidateWeakPtrs();
 
   file_suggest_service_->GetSuggestFileData(
-      FileSuggestionType::kDriveFile,
+      ash::FileSuggestionType::kDriveFile,
       base::BindOnce(&ZeroStateDriveProvider::OnSuggestFileDataFetched,
                      suggestion_query_weak_factory_.GetWeakPtr()));
 }
@@ -192,9 +193,11 @@ void ZeroStateDriveProvider::MaybeUpdateCache() {
   }
 }
 
-void ZeroStateDriveProvider::OnFileSuggestionUpdated(FileSuggestionType type) {
-  if (type == FileSuggestionType::kDriveFile)
+void ZeroStateDriveProvider::OnFileSuggestionUpdated(
+    ash::FileSuggestionType type) {
+  if (type == ash::FileSuggestionType::kDriveFile) {
     StartZeroState();
+  }
 }
 
 }  // namespace app_list

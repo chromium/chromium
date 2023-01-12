@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_FILE_SUGGESTION_PROVIDER_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_FILE_SUGGESTION_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_DRIVE_FILE_SUGGESTION_PROVIDER_H_
+#define CHROME_BROWSER_ASH_FILE_SUGGEST_DRIVE_FILE_SUGGESTION_PROVIDER_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggestion_provider.h"
-#include "chrome/browser/ash/app_list/search/files/item_suggest_cache.h"
+#include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
+#include "chrome/browser/ash/file_suggest/item_suggest_cache.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 
 namespace drive {
 class DriveIntegrationService;
 }  // namespace drive
 
-namespace app_list {
+namespace ash {
 enum class DriveSuggestValidationStatus;
 class FileSuggestKeyedService;
 
@@ -92,6 +92,6 @@ class DriveFileSuggestionProvider : public FileSuggestionProvider {
   base::WeakPtrFactory<DriveFileSuggestionProvider> weak_factory_{this};
 };
 
-}  // namespace app_list
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_FILE_SUGGESTION_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SUGGEST_DRIVE_FILE_SUGGESTION_PROVIDER_H_

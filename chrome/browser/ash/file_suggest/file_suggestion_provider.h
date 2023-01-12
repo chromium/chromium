@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGESTION_PROVIDER_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGESTION_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGESTION_PROVIDER_H_
+#define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGESTION_PROVIDER_H_
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 
-namespace app_list {
+namespace ash {
 
 // The base class of file suggestion providers (such as drive file suggestion
 // provider). A subclass should ensure that `NotifySuggestionUpdate()` is
@@ -37,6 +37,6 @@ class FileSuggestionProvider {
   base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback_;
 };
 
-}  // namespace app_list
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGESTION_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGESTION_PROVIDER_H_

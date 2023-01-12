@@ -7,11 +7,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_test_util.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
-#include "chrome/browser/ash/app_list/search/files/mock_file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/mock_file_suggest_keyed_service_observer.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
+#include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service_observer.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,7 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list::test {
+namespace ash::test {
 // TODO(https://crbug.com/1370774): move `ScopedTestMountPoint` out of holding
 // space to remove the dependency on holding space code.
 using ash::holding_space::ScopedTestMountPoint;
@@ -258,4 +258,4 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveMixedFileSuggestions) {
   EXPECT_TRUE(GetSuggestionsForType(FileSuggestionType::kLocalFile)->empty());
 }
 
-}  // namespace app_list::test
+}  // namespace ash::test

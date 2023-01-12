@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_TEST_UTIL_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_TEST_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_TEST_UTIL_H_
+#define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_TEST_UTIL_H_
 
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ash/app_list/search/files/mock_file_suggest_keyed_service_observer.h"
+#include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace app_list {
+namespace ash {
 
 /*
 The suggest item metadata. It matches the json response used by
@@ -42,11 +42,11 @@ std::string CreateItemSuggestUpdateJsonString(
 // Waits until `mock` is notified of the file suggestion update.
 void WaitForFileSuggestionUpdate(
     const testing::NiceMock<MockFileSuggestKeyedServiceObserver>& mock,
-    app_list::FileSuggestionType expected_type);
+    ash::FileSuggestionType expected_type);
 
 // Waits until `service` is ready.
-void WaitUntilFileSuggestServiceReady(FileSuggestKeyedService* service);
+void WaitUntilFileSuggestServiceReady(ash::FileSuggestKeyedService* service);
 
-}  // namespace app_list
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_TEST_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_TEST_UTIL_H_

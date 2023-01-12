@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/file_suggest_test_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
 
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 
-namespace app_list {
+namespace ash {
 
 std::string CreateItemSuggestUpdateJsonString(
     const std::vector<SuggestItemMetadata>& item_data_array,
@@ -35,12 +35,13 @@ std::string CreateItemSuggestUpdateJsonString(
 
 void WaitForFileSuggestionUpdate(
     const testing::NiceMock<MockFileSuggestKeyedServiceObserver>& mock,
-    app_list::FileSuggestionType expected_type) {
+    ash::FileSuggestionType expected_type) {
   base::RunLoop run_loop;
   EXPECT_CALL(mock, OnFileSuggestionUpdated)
-      .WillRepeatedly([&](app_list::FileSuggestionType type) {
-        if (type == expected_type)
+      .WillRepeatedly([&](ash::FileSuggestionType type) {
+        if (type == expected_type) {
           run_loop.Quit();
+        }
       });
   run_loop.Run();
 }
@@ -48,18 +49,19 @@ void WaitForFileSuggestionUpdate(
 void WaitUntilFileSuggestServiceReady(FileSuggestKeyedService* service) {
   if (!service->IsReadyForTest()) {
     testing::NiceMock<MockFileSuggestKeyedServiceObserver> mock;
-    base::ScopedObservation<app_list::FileSuggestKeyedService,
-                            app_list::FileSuggestKeyedService::Observer>
+    base::ScopedObservation<ash::FileSuggestKeyedService,
+                            ash::FileSuggestKeyedService::Observer>
         service_observer{&mock};
     service_observer.Observe(service);
     // Not sure which suggestion type is ready first. Therefore, wait for both.
     WaitForFileSuggestionUpdate(mock, FileSuggestionType::kDriveFile);
-    if (service->IsReadyForTest())
+    if (service->IsReadyForTest()) {
       return;
+    }
 
     WaitForFileSuggestionUpdate(mock, FileSuggestionType::kLocalFile);
     EXPECT_TRUE(service->IsReadyForTest());
   }
 }
 
-}  // namespace app_list
+}  // namespace ash

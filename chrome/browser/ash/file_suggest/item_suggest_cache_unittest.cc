@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/item_suggest_cache.h"
+#include "chrome/browser/ash/file_suggest/item_suggest_cache.h"
 
 #include <vector>
 
@@ -61,7 +61,7 @@ constexpr char kResponseSizeHistogramName[] =
     "Apps.AppList.ItemSuggestCache.ResponseSize";
 }  // namespace
 
-namespace app_list::test {
+namespace ash::test {
 using base::test::ScopedFeatureList;
 
 class ItemSuggestCacheTest : public testing::Test {
@@ -506,4 +506,4 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSmallTimeBetweenUpdates) {
                {{"item id 1", "display text 1", absl::nullopt}});
 }
 
-}  // namespace app_list::test
+}  // namespace ash::test

@@ -35,12 +35,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_locale.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/app_list/search/files/local_file_suggestion_provider.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -3010,7 +3010,7 @@ class HoldingSpaceSuggestionUiBrowserTest : public HoldingSpaceUiBrowserTest {
       open_events.push_back(std::move(e));
     }
 
-    app_list::FileSuggestKeyedServiceFactory::GetInstance()
+    FileSuggestKeyedServiceFactory::GetInstance()
         ->GetService(GetProfile())
         ->local_file_suggestion_provider_for_test()
         ->OnFilesOpened(open_events);

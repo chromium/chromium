@@ -13,8 +13,11 @@
 
 class Profile;
 
-namespace app_list {
+namespace ash {
 class FileSuggestKeyedService;
+}  // namespace ash
+
+namespace app_list {
 
 // A ranker which removes results which have previously been marked for removal
 // from the launcher search results list.
@@ -38,7 +41,7 @@ class RemovedResultsRanker : public Ranker {
  private:
   friend class RemovedResultsRankerTest;
 
-  FileSuggestKeyedService* GetFileSuggestKeyedService();
+  ash::FileSuggestKeyedService* GetFileSuggestKeyedService();
 
   // Whether the ranker has finished reading from disk.
   bool initialized() const { return proto_->initialized(); }

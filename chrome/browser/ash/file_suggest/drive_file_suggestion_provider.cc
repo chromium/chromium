@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/drive_file_suggestion_provider.h"
+#include "chrome/browser/ash/file_suggest/drive_file_suggestion_provider.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
@@ -12,14 +12,14 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace app_list {
+namespace ash {
 namespace {
 
 // The minimum number of results required to keep using the short delay. This
@@ -110,8 +110,9 @@ void DriveFileSuggestionProvider::GetSuggestFileData(
 
   // Return early if there is an active validation. `callback` will run when
   // validation completes.
-  if (has_active_validation)
+  if (has_active_validation) {
     return;
+  }
 
   // If there is not any available drive service, return early.
   if (!drive_service_ || !drive_service_->IsMounted()) {
@@ -132,8 +133,10 @@ void DriveFileSuggestionProvider::GetSuggestFileData(
       results_before_validation->results.empty()) {
     // An empty but non-null value indicates that the cache was updated
     // successfully, and no results were returned.
-    if (results_before_validation && results_before_validation->results.empty())
+    if (results_before_validation &&
+        results_before_validation->results.empty()) {
       SetUseLongDelayInDriveSuggestQuery(profile_, true);
+    }
 
     EndDriveFilePathValidation(DriveSuggestValidationStatus::kNoResults,
                                /*suggest_results=*/absl::nullopt);
@@ -141,8 +144,9 @@ void DriveFileSuggestionProvider::GetSuggestFileData(
   }
 
   std::vector<std::string> item_ids;
-  for (const auto& result : results_before_validation->results)
+  for (const auto& result : results_before_validation->results) {
     item_ids.push_back(result.id);
+  }
 
   // Validate the drive cache results whenever drive file suggest data is
   // fetched to guarantee the file path validity.
@@ -204,13 +208,15 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
     const auto& path_or_error = paths->at(index);
 
     // Fail to validate the file path at `index`, so skip this loop iteration.
-    if (!path_or_error->is_path())
+    if (!path_or_error->is_path()) {
       continue;
+    }
 
     absl::optional<std::u16string> reason;
-    if (raw_suggest_results[index].prediction_reason)
+    if (raw_suggest_results[index].prediction_reason) {
       reason = base::UTF8ToUTF16(
           raw_suggest_results[index].prediction_reason.value());
+    }
     suggest_results.emplace_back(
         FileSuggestionType::kDriveFile,
         ReparentToDriveMount(path_or_error->get_path(), drive_service_), reason,
@@ -233,4 +239,4 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
                      DriveSuggestValidationStatus::kOk));
 }
 
-}  // namespace app_list
+}  // namespace ash

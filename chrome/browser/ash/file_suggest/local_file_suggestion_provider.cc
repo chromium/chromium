@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/local_file_suggestion_provider.h"
+#include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
 
 #include <vector>
 
@@ -12,15 +12,15 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggestion_provider.h"
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
 #include "chrome/browser/ash/app_list/search/util/mrfu_cache.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace app_list {
+namespace ash {
 
 namespace {
 constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
@@ -90,18 +90,20 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
   if (notifier) {
     file_tasks_observer_.Observe(notifier);
 
-    MrfuCache::Params params;
+    app_list::MrfuCache::Params params;
     // 5 consecutive clicks to get a new file to a score of 0.8, and 10 clicks
     // on other files to reduce its score by half.
     params.half_life = 10.0f;
     params.boost_factor = 5.0f;
-    MrfuCache::Proto proto(
-        RankerStateDirectory(profile).AppendASCII("zero_state_local_files.pb"),
+    app_list::MrfuCache::Proto proto(
+        app_list::RankerStateDirectory(profile).AppendASCII(
+            "zero_state_local_files.pb"),
         kSaveDelay);
     proto.RegisterOnRead(
         base::BindOnce(&LocalFileSuggestionProvider::OnProtoInitialized,
                        base::Unretained(this)));
-    files_ranker_ = std::make_unique<MrfuCache>(std::move(proto), params);
+    files_ranker_ =
+        std::make_unique<app_list::MrfuCache>(std::move(proto), params);
   }
 }
 
@@ -150,8 +152,9 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
 
 void LocalFileSuggestionProvider::OnFilesOpened(
     const std::vector<FileOpenEvent>& file_opens) {
-  if (!files_ranker_)
+  if (!files_ranker_) {
     return;
+  }
 
   const auto& profile_path = profile_->GetPath();
   for (const auto& file_open : file_opens) {
@@ -165,8 +168,9 @@ void LocalFileSuggestionProvider::OnFilesOpened(
     // 2. The open relates to a Drive file, which is handled by another
     // provider. Filter this out by checking if the file resides in the user's
     // cryptohome.
-    if (!profile_path.AppendRelativePath(file_open.path, nullptr))
+    if (!profile_path.AppendRelativePath(file_open.path, nullptr)) {
       continue;
+    }
 
     files_ranker_->Use(file_open.path.value());
   }
@@ -185,7 +189,8 @@ bool LocalFileSuggestionProvider::HasPendingLocalSuggestionFetchForTest()
   return !on_validation_complete_callback_list_.empty();
 }
 
-void LocalFileSuggestionProvider::OnProtoInitialized(ReadStatus status) {
+void LocalFileSuggestionProvider::OnProtoInitialized(
+    app_list::ReadStatus status) {
   NotifySuggestionUpdate(FileSuggestionType::kLocalFile);
 }
 
@@ -193,15 +198,16 @@ void LocalFileSuggestionProvider::OnValidationComplete(
     std::pair<std::vector<LocalFileData>, std::vector<base::FilePath>>
         results) {
   // Delete invalid results from the ranker.
-  for (const base::FilePath& path : results.second)
+  for (const base::FilePath& path : results.second) {
     files_ranker_->Delete(path.value());
+  }
 
   std::vector<FileSuggestData> final_results;
   for (auto& result : results.first) {
     final_results.emplace_back(
         FileSuggestionType::kLocalFile, result.path,
-        GetJustificationString(result.info.last_accessed,
-                               result.info.last_modified),
+        app_list::GetJustificationString(result.info.last_accessed,
+                                         result.info.last_modified),
         result.score);
   }
 
@@ -215,4 +221,4 @@ void LocalFileSuggestionProvider::OnValidationComplete(
   DCHECK(on_validation_complete_callback_list_.empty());
 }
 
-}  // namespace app_list
+}  // namespace ash

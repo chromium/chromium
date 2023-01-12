@@ -10,11 +10,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,7 +33,7 @@ using ::testing::DoubleNear;
 
 constexpr double kEpsilon = 0.000001;
 
-class TestFileSuggestKeyedService : public FileSuggestKeyedService {
+class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
  public:
   explicit TestFileSuggestKeyedService(Profile* profile,
                                        const base::FilePath& proto_path)
@@ -51,8 +51,8 @@ class TestFileSuggestKeyedService : public FileSuggestKeyedService {
     update_count_++;
   }
 
-  void GetSuggestFileData(app_list::FileSuggestionType type,
-                          GetSuggestFileDataCallback callback) override {
+  void GetSuggestFileData(ash::FileSuggestionType type,
+                          ash::GetSuggestFileDataCallback callback) override {
     if (!IsProtoInitialized()) {
       std::move(callback).Run(/*suggestions=*/absl::nullopt);
       return;
@@ -67,9 +67,8 @@ class TestFileSuggestKeyedService : public FileSuggestKeyedService {
   }
 
   void SetSuggestionsForType(
-      app_list::FileSuggestionType type,
-      const absl::optional<std::vector<app_list::FileSuggestData>>&
-          suggestions) {
+      ash::FileSuggestionType type,
+      const absl::optional<std::vector<ash::FileSuggestData>>& suggestions) {
     type_suggestion_mappings_[type] = suggestions;
     OnSuggestionProviderUpdated(type);
   }
@@ -77,18 +76,19 @@ class TestFileSuggestKeyedService : public FileSuggestKeyedService {
   int update_count_ = 0;
 
  private:
-  void RunGetSuggestFileDataCallback(app_list::FileSuggestionType type,
-                                     GetSuggestFileDataCallback callback) {
-    absl::optional<std::vector<FileSuggestData>> suggestions;
+  void RunGetSuggestFileDataCallback(ash::FileSuggestionType type,
+                                     ash::GetSuggestFileDataCallback callback) {
+    absl::optional<std::vector<ash::FileSuggestData>> suggestions;
     auto iter = type_suggestion_mappings_.find(type);
-    if (iter != type_suggestion_mappings_.end())
+    if (iter != type_suggestion_mappings_.end()) {
       suggestions = iter->second;
+    }
     FilterRemovedSuggestions(std::move(callback), suggestions);
   }
 
   // Caches file suggestions.
-  std::map<app_list::FileSuggestionType,
-           absl::optional<std::vector<app_list::FileSuggestData>>>
+  std::map<ash::FileSuggestionType,
+           absl::optional<std::vector<ash::FileSuggestData>>>
       type_suggestion_mappings_;
 
   base::WeakPtrFactory<TestFileSuggestKeyedService> weak_factory_{this};
@@ -112,11 +112,12 @@ class ZeroStateDriveProviderTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     profile_ = testing_profile_manager_->CreateTestingProfile(
         "primary_profile@test",
-        {{FileSuggestKeyedServiceFactory::GetInstance(),
+        {{ash::FileSuggestKeyedServiceFactory::GetInstance(),
           base::BindRepeating(&BuildTestFileSuggestKeyedService,
                               temp_dir_.GetPath())}});
     file_suggest_service_ = static_cast<TestFileSuggestKeyedService*>(
-        FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
+        ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+            profile_));
     session_manager_ = std::make_unique<session_manager::SessionManager>();
 
     auto provider = std::make_unique<ZeroStateDriveProvider>(
@@ -244,11 +245,11 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
   // Creates files and suggests these files through the file suggest keyed
   // service. Returns paths to these files.
   size_t suggestion_size = 3;
-  std::vector<app_list::FileSuggestData> suggestions;
+  std::vector<ash::FileSuggestData> suggestions;
   for (size_t i = 0; i < suggestion_size; ++i) {
     base::FilePath suggested_file_path =
         drive_fs_mount_point_.get()->CreateArbitraryFile();
-    suggestions.emplace_back(FileSuggestionType::kDriveFile,
+    suggestions.emplace_back(ash::FileSuggestionType::kDriveFile,
                              suggested_file_path,
                              /*new_prediction_reason=*/absl::nullopt,
                              /*new_score=*/absl::nullopt);
@@ -256,8 +257,8 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
 
   // Only test this logic if the `file_suggest_service_` is ready for test.
   if (file_suggest_service_->IsReadyForTest()) {
-    file_suggest_service_->SetSuggestionsForType(FileSuggestionType::kDriveFile,
-                                                 suggestions);
+    file_suggest_service_->SetSuggestionsForType(
+        ash::FileSuggestionType::kDriveFile, suggestions);
     Wait();
 
     EXPECT_EQ(search_controller_.last_results().size(), suggestion_size);

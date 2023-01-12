@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chrome/browser/ash/app_list/search/files/drive_file_suggestion_provider.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
-#include "chrome/browser/ash/app_list/search/files/local_file_suggestion_provider.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_suggest/drive_file_suggestion_provider.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
+#include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
 #include "storage/browser/file_system/file_system_context.h"
 
-namespace app_list {
+namespace ash {
 
 namespace {
 using SuggestResults = std::vector<FileSuggestData>;
@@ -19,7 +19,7 @@ using SuggestResults = std::vector<FileSuggestData>;
 
 FileSuggestKeyedService::FileSuggestKeyedService(
     Profile* profile,
-    PersistentProto<RemovedResultsProto> proto)
+    app_list::PersistentProto<app_list::RemovedResultsProto> proto)
     : profile_(profile), proto_(std::move(proto)) {
   DCHECK(profile_);
 
@@ -44,7 +44,7 @@ FileSuggestKeyedService::FileSuggestKeyedService(
 FileSuggestKeyedService::~FileSuggestKeyedService() = default;
 
 void FileSuggestKeyedService::MaybeUpdateItemSuggestCache(
-    base::PassKey<ZeroStateDriveProvider>) {
+    base::PassKey<app_list::ZeroStateDriveProvider>) {
   drive_file_suggestion_provider_->MaybeUpdateItemSuggestCache(
       base::PassKey<FileSuggestKeyedService>());
 }
@@ -75,8 +75,9 @@ void FileSuggestKeyedService::GetSuggestFileData(
 
 void FileSuggestKeyedService::RemoveSuggestionsAndNotify(
     const std::vector<base::FilePath>& absolute_file_paths) {
-  if (!IsProtoInitialized())
+  if (!IsProtoInitialized()) {
     return;
+  }
 
   std::vector<std::pair<FileSuggestionType, std::string>> type_id_pairs;
   for (const auto& file_path : absolute_file_paths) {
@@ -104,9 +105,10 @@ void FileSuggestKeyedService::RemoveSuggestionsAndNotify(
 }
 
 void FileSuggestKeyedService::RemoveSuggestionBySearchResultAndNotify(
-    const ash::SearchResultMetadata& search_result) {
-  if (!IsProtoInitialized())
+    const SearchResultMetadata& search_result) {
+  if (!IsProtoInitialized()) {
     return;
+  }
 
   // `search_result` should refer to a suggested file.
   DCHECK(search_result.result_type ==
@@ -122,8 +124,9 @@ void FileSuggestKeyedService::RemoveSuggestionBySearchResultAndNotify(
         search_result.id}});
 }
 
-PersistentProto<RemovedResultsProto>* FileSuggestKeyedService::GetProto(
-    base::PassKey<RemovedResultsRanker>) {
+app_list::PersistentProto<app_list::RemovedResultsProto>*
+FileSuggestKeyedService::GetProto(
+    base::PassKey<app_list::RemovedResultsRanker>) {
   return &proto_;
 }
 
@@ -145,8 +148,9 @@ bool FileSuggestKeyedService::HasPendingSuggestionFetchForTest() const {
 void FileSuggestKeyedService::OnSuggestionProviderUpdated(
     FileSuggestionType type) {
   if (IsProtoInitialized()) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnFileSuggestionUpdated(type);
+    }
   }
 }
 
@@ -182,11 +186,12 @@ bool FileSuggestKeyedService::IsProtoInitialized() const {
 }
 
 void FileSuggestKeyedService::OnRemovedSuggestionProtoReady(
-    ReadStatus read_status) {
+    app_list::ReadStatus read_status) {
   OnSuggestionProviderUpdated(FileSuggestionType::kDriveFile);
 
-  if (local_file_suggestion_provider_->IsInitialized())
+  if (local_file_suggestion_provider_->IsInitialized()) {
     OnSuggestionProviderUpdated(FileSuggestionType::kLocalFile);
+  }
 }
 
 void FileSuggestKeyedService::RemoveSuggestionsByTypeIdPairs(
@@ -206,14 +211,16 @@ void FileSuggestKeyedService::RemoveSuggestionsByTypeIdPairs(
         proto_->mutable_removed_ids()->insert({id, false}).second;
 
     // Skip the suggestion whose id is already in `proto_`.
-    if (success)
+    if (success) {
       types_to_update.insert(type);
+    }
   }
 
   proto_.StartWrite();
 
-  for (const auto& type : types_to_update)
+  for (const auto& type : types_to_update) {
     OnSuggestionProviderUpdated(type);
+  }
 }
 
-}  // namespace app_list
+}  // namespace ash

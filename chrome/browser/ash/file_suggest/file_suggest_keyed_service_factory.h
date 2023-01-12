@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-namespace app_list {
+namespace ash {
 class FileSuggestKeyedService;
 
 class FileSuggestKeyedServiceFactory
@@ -36,6 +36,6 @@ class FileSuggestKeyedServiceFactory
       content::BrowserContext* context) const override;
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_UTIL_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_UTIL_H_
+#define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_UTIL_H_
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace app_list {
+namespace ash {
 
 struct FileSuggestData;
 using GetSuggestFileDataCallback = base::OnceCallback<void(
@@ -68,6 +68,6 @@ struct FileSuggestData {
 std::string CalculateSuggestionId(FileSuggestionType type,
                                   const base::FilePath& file_path);
 
-}  // namespace app_list
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_UTIL_H_

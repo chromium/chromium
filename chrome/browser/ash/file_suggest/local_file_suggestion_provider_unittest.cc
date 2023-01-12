@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/local_file_suggestion_provider.h"
+#include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list::test {
+namespace ash::test {
 namespace {
 
 using file_manager::file_tasks::FileTasksObserver;
@@ -58,8 +58,9 @@ class LocalFileSuggestionProviderTest : public testing::Test {
   void Wait() { task_environment_.RunUntilIdle(); }
 
   void WaitForProviderToBeInitialized() {
-    while (!provider_->IsInitialized())
+    while (!provider_->IsInitialized()) {
       Wait();
+    }
   }
 
   void UpdateResults() {
@@ -235,4 +236,4 @@ TEST_F(LocalFileSuggestionProviderTrashTest,
                                    FilePathMatcher(TrashPath("trashed_file"))));
 }
 
-}  // namespace app_list::test
+}  // namespace ash::test

@@ -22,10 +22,10 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -57,7 +57,8 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
     : profile_(profile),
       thumbnail_loader_(profile),
       file_suggest_service_(
-          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)),
+          ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+              profile)),
       downloads_path_(
           file_manager::util::GetDownloadsFolderForProfile(profile)) {
   DCHECK(profile_);
@@ -80,7 +81,7 @@ void ZeroStateFileProvider::StartZeroState() {
   }
 
   file_suggest_service_->GetSuggestFileData(
-      FileSuggestionType::kLocalFile,
+      ash::FileSuggestionType::kLocalFile,
       base::BindOnce(&ZeroStateFileProvider::OnSuggestFileDataFetched,
                      weak_factory_.GetWeakPtr()));
 }
@@ -91,13 +92,13 @@ void ZeroStateFileProvider::StopZeroState() {
 }
 
 void ZeroStateFileProvider::OnSuggestFileDataFetched(
-    const absl::optional<std::vector<FileSuggestData>>& suggest_results) {
+    const absl::optional<std::vector<ash::FileSuggestData>>& suggest_results) {
   if (suggest_results)
     SetSearchResults(*suggest_results);
 }
 
 void ZeroStateFileProvider::SetSearchResults(
-    const std::vector<FileSuggestData>& results) {
+    const std::vector<ash::FileSuggestData>& results) {
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (size_t i = 0; i < std::min(results.size(), kMaxLocalFiles); ++i) {
@@ -135,9 +136,11 @@ void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
   }
 }
 
-void ZeroStateFileProvider::OnFileSuggestionUpdated(FileSuggestionType type) {
-  if (type == FileSuggestionType::kLocalFile)
+void ZeroStateFileProvider::OnFileSuggestionUpdated(
+    ash::FileSuggestionType type) {
+  if (type == ash::FileSuggestionType::kLocalFile) {
     StartZeroState();
+  }
 }
 
 }  // namespace app_list

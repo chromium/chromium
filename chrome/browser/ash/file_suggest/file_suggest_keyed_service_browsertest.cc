@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
-#include "chrome/browser/ash/app_list/search/files/drive_file_suggestion_provider.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_test_util.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
+#include "chrome/browser/ash/file_suggest/drive_file_suggestion_provider.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
 
-namespace app_list::test {
+namespace ash::test {
 namespace {
 
 class MockObserver : public FileSuggestKeyedService::Observer {
@@ -75,8 +75,8 @@ class FileSuggestKeyedServiceBrowserTest
 IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
                        QueryWithEmptySuggestCache) {
   base::HistogramTester tester;
-  app_list::FileSuggestKeyedService* service =
-      app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+  FileSuggestKeyedService* service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           browser()->profile());
   service->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
@@ -111,9 +111,8 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
   // A file id that does not exist in the drive file system.
   const std::string non_existed_id("non_existed");
 
-  app_list::FileSuggestKeyedService* service =
-      app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
-          profile);
+  FileSuggestKeyedService* service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile);
   base::HistogramTester tester;
 
   // Verify in the scenario that all suggested file paths are invalid.
@@ -192,4 +191,4 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
   }
 }
 
-}  // namespace app_list::test
+}  // namespace ash::test

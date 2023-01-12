@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_H_
+#define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_H_
 
 #include <utility>
 #include <vector>
@@ -12,23 +12,23 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
-namespace ash {
-struct SearchResultMetadata;
-}  // namespace ash
-
 namespace app_list {
-class DriveFileSuggestionProvider;
-class LocalFileSuggestionProvider;
 class RemovedResultsRanker;
 class ZeroStateDriveProvider;
+}  // namespace app_list
+
+namespace ash {
+class DriveFileSuggestionProvider;
+class LocalFileSuggestionProvider;
+struct SearchResultMetadata;
 
 // The keyed service that queries for the file suggestions (for both the drive
 // files and local files) and exposes those data to consumers such as app list.
@@ -42,8 +42,9 @@ class FileSuggestKeyedService : public KeyedService {
     virtual void OnFileSuggestionUpdated(FileSuggestionType type) {}
   };
 
-  FileSuggestKeyedService(Profile* profile,
-                          PersistentProto<RemovedResultsProto> proto);
+  FileSuggestKeyedService(
+      Profile* profile,
+      app_list::PersistentProto<app_list::RemovedResultsProto> proto);
   FileSuggestKeyedService(const FileSuggestKeyedService&) = delete;
   FileSuggestKeyedService& operator=(const FileSuggestKeyedService&) = delete;
   ~FileSuggestKeyedService() override;
@@ -56,7 +57,7 @@ class FileSuggestKeyedService : public KeyedService {
   // confusing. The service should update the data cache by its own without
   // depending on the app list code.
   virtual void MaybeUpdateItemSuggestCache(
-      base::PassKey<ZeroStateDriveProvider>);
+      base::PassKey<app_list::ZeroStateDriveProvider>);
 
   // Queries for the suggested files of the specified type and returns the
   // suggested file data, including file paths and suggestion reasons, through
@@ -75,15 +76,15 @@ class FileSuggestKeyedService : public KeyedService {
   // Similar to `RemoveSuggestionsAndNotify()` but with the difference that
   // the suggestion is specified by a search result. Overridden for tests.
   virtual void RemoveSuggestionBySearchResultAndNotify(
-      const ash::SearchResultMetadata& search_result);
+      const SearchResultMetadata& search_result);
 
   // Used to expose `proto_` to app list so that the app list can query/remove
   // non-file result ids from `proto_`.
   // TODO(https://crbug.com/1368833): remove this function when the removed file
   // results are managed by this service's own proto without reusing the app
   // list's.
-  PersistentProto<RemovedResultsProto>* GetProto(
-      base::PassKey<RemovedResultsRanker>);
+  app_list::PersistentProto<app_list::RemovedResultsProto>* GetProto(
+      base::PassKey<app_list::RemovedResultsRanker>);
 
   // Adds/Removes an observer.
   void AddObserver(Observer* observer);
@@ -118,7 +119,7 @@ class FileSuggestKeyedService : public KeyedService {
 
  private:
   // Called when `proto_` is ready to read.
-  void OnRemovedSuggestionProtoReady(ReadStatus read_status);
+  void OnRemovedSuggestionProtoReady(app_list::ReadStatus read_status);
 
   // Removes the suggestions specified by type-id pairs.
   void RemoveSuggestionsByTypeIdPairs(
@@ -139,11 +140,11 @@ class FileSuggestKeyedService : public KeyedService {
   // non-file ids.
   // TODO(https://crbug.com/1368833): `proto_` should only contain file ids
   // after this issue gets fixed.
-  PersistentProto<RemovedResultsProto> proto_;
+  app_list::PersistentProto<app_list::RemovedResultsProto> proto_;
 
   base::WeakPtrFactory<FileSuggestKeyedService> weak_factory_{this};
 };
 
-}  // namespace app_list
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_H_

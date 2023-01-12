@@ -10,14 +10,14 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -26,16 +26,19 @@
 
 class Profile;
 
-namespace app_list {
+namespace ash {
 struct FileSuggestData;
 enum class FileSuggestionType;
+}  // namespace ash
+
+namespace app_list {
 class SearchController;
 
 class ZeroStateDriveProvider : public SearchProvider,
                                public drive::DriveIntegrationServiceObserver,
                                public session_manager::SessionManagerObserver,
                                public chromeos::PowerManagerClient::Observer,
-                               public FileSuggestKeyedService::Observer {
+                               public ash::FileSuggestKeyedService::Observer {
  public:
   ZeroStateDriveProvider(Profile* profile,
                          SearchController* search_controller,
@@ -64,10 +67,11 @@ class ZeroStateDriveProvider : public SearchProvider,
  private:
   // Called when file suggestion data are fetched from the service.
   void OnSuggestFileDataFetched(
-      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
+      const absl::optional<std::vector<ash::FileSuggestData>>& suggest_results);
 
   // Builds the search results from file suggestions then publishes the results.
-  void SetSearchResults(const std::vector<FileSuggestData>& suggest_results);
+  void SetSearchResults(
+      const std::vector<ash::FileSuggestData>& suggest_results);
 
   std::unique_ptr<FileResult> MakeListResult(
       const std::string& result_id,
@@ -83,13 +87,13 @@ class ZeroStateDriveProvider : public SearchProvider,
   void MaybeUpdateCache();
 
   // FileSuggestKeyedService::Observer:
-  void OnFileSuggestionUpdated(FileSuggestionType type) override;
+  void OnFileSuggestionUpdated(ash::FileSuggestionType type) override;
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
   session_manager::SessionManager* const session_manager_;
 
-  const base::raw_ptr<FileSuggestKeyedService> file_suggest_service_;
+  const base::raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
 
   const base::Time construction_time_;
   base::TimeTicks query_start_time_;
@@ -106,8 +110,8 @@ class ZeroStateDriveProvider : public SearchProvider,
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_observation_{this};
-  base::ScopedObservation<FileSuggestKeyedService,
-                          FileSuggestKeyedService::Observer>
+  base::ScopedObservation<ash::FileSuggestKeyedService,
+                          ash::FileSuggestKeyedService::Observer>
       file_suggest_service_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);

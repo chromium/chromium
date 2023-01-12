@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_ITEM_SUGGEST_CACHE_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_ITEM_SUGGEST_CACHE_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_ITEM_SUGGEST_CACHE_H_
+#define CHROME_BROWSER_ASH_FILE_SUGGEST_ITEM_SUGGEST_CACHE_H_
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
@@ -24,7 +24,7 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-namespace app_list {
+namespace ash {
 
 // Whether or not to override configuration of the cache with an experiment.
 BASE_DECLARE_FEATURE(kLauncherItemSuggest);
@@ -178,6 +178,6 @@ class ItemSuggestCache {
   base::WeakPtrFactory<ItemSuggestCache> weak_factory_{this};
 };
 
-}  // namespace app_list
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_ITEM_SUGGEST_CACHE_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SUGGEST_ITEM_SUGGEST_CACHE_H_

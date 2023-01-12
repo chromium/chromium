@@ -15,12 +15,12 @@
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -279,8 +279,9 @@ void HoldingSpaceClientImpl::PinFiles(
     file_system_urls.push_back(file_system_url);
   }
 
-  if (!file_system_urls.empty())
+  if (!file_system_urls.empty()) {
     GetHoldingSpaceKeyedService(profile_)->AddPinnedFiles(file_system_urls);
+  }
 }
 
 void HoldingSpaceClientImpl::PinItems(
@@ -290,23 +291,26 @@ void HoldingSpaceClientImpl::PinItems(
   // NOTE: In-progress holding space items are neither pin- nor unpin-able.
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
-    if (!item->progress().IsComplete())
+    if (!item->progress().IsComplete()) {
       continue;
+    }
     const GURL& crack_url = item->file_system_url();
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)
             ->CrackURLInFirstPartyContext(crack_url);
-    if (!service->ContainsPinnedFile(file_system_url))
+    if (!service->ContainsPinnedFile(file_system_url)) {
       file_system_urls.push_back(file_system_url);
+    }
   }
 
-  if (!file_system_urls.empty())
+  if (!file_system_urls.empty()) {
     service->AddPinnedFiles(file_system_urls);
+  }
 }
 
 void HoldingSpaceClientImpl::RemoveFileSuggestions(
     const std::vector<base::FilePath>& absolute_file_paths) {
-  app_list::FileSuggestKeyedServiceFactory::GetInstance()
+  FileSuggestKeyedServiceFactory::GetInstance()
       ->GetService(profile_)
       ->RemoveSuggestionsAndNotify(absolute_file_paths);
 }
@@ -339,18 +343,21 @@ void HoldingSpaceClientImpl::UnpinItems(
   // NOTE: In-progress holding space items are neither pin- nor unpin-able.
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const HoldingSpaceItem* item : items) {
-    if (!item->progress().IsComplete())
+    if (!item->progress().IsComplete()) {
       continue;
+    }
     const GURL& crack_url = item->file_system_url();
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)
             ->CrackURLInFirstPartyContext(crack_url);
-    if (service->ContainsPinnedFile(file_system_url))
+    if (service->ContainsPinnedFile(file_system_url)) {
       file_system_urls.push_back(file_system_url);
+    }
   }
 
-  if (!file_system_urls.empty())
+  if (!file_system_urls.empty()) {
     service->RemovePinnedFiles(file_system_urls);
+  }
 }
 
 }  // namespace ash

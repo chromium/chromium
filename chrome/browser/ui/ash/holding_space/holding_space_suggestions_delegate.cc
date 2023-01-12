@@ -6,19 +6,19 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 
 namespace ash {
 namespace {
 
 // Returns the holding space item type that matches a given suggestion type.
 HoldingSpaceItem::Type GetItemTypeFromSuggestionType(
-    app_list::FileSuggestionType suggestion_type) {
+    FileSuggestionType suggestion_type) {
   switch (suggestion_type) {
-    case app_list::FileSuggestionType::kDriveFile:
+    case FileSuggestionType::kDriveFile:
       return HoldingSpaceItem::Type::kDriveSuggestion;
-    case app_list::FileSuggestionType::kLocalFile:
+    case FileSuggestionType::kLocalFile:
       return HoldingSpaceItem::Type::kLocalSuggestion;
   }
 }
@@ -46,7 +46,7 @@ HoldingSpaceSuggestionsDelegate::HoldingSpaceSuggestionsDelegate(
     HoldingSpaceKeyedService* service,
     HoldingSpaceModel* model)
     : HoldingSpaceKeyedServiceDelegate(service, model) {
-  DCHECK(ash::features::IsHoldingSpaceSuggestionsEnabled());
+  DCHECK(features::IsHoldingSpaceSuggestionsEnabled());
 }
 
 HoldingSpaceSuggestionsDelegate::~HoldingSpaceSuggestionsDelegate() = default;
@@ -96,20 +96,19 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
   }
 
   file_suggest_service_observation_.Observe(
-      app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
-          profile()));
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile()));
 
-  MaybeFetchSuggestions(app_list::FileSuggestionType::kDriveFile);
-  MaybeFetchSuggestions(app_list::FileSuggestionType::kLocalFile);
+  MaybeFetchSuggestions(FileSuggestionType::kDriveFile);
+  MaybeFetchSuggestions(FileSuggestionType::kLocalFile);
 }
 
 void HoldingSpaceSuggestionsDelegate::OnFileSuggestionUpdated(
-    app_list::FileSuggestionType type) {
+    FileSuggestionType type) {
   MaybeFetchSuggestions(type);
 }
 
 void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
-    app_list::FileSuggestionType type) {
+    FileSuggestionType type) {
   // A data query on `type` has been sent so it is unnecessary to send a request
   // again. Return early.
   if (base::Contains(pending_fetches_, type))
@@ -118,7 +117,7 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
   // Mark that the query for suggestions of `type` has been sent.
   pending_fetches_.insert(type);
 
-  app_list::FileSuggestKeyedServiceFactory::GetInstance()
+  FileSuggestKeyedServiceFactory::GetInstance()
       ->GetService(profile())
       ->GetSuggestFileData(
           type,
@@ -138,8 +137,8 @@ void HoldingSpaceSuggestionsDelegate::MaybeScheduleUpdateSuggestionsInModel() {
 }
 
 void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
-    app_list::FileSuggestionType type,
-    const absl::optional<std::vector<app_list::FileSuggestData>>& suggestions) {
+    FileSuggestionType type,
+    const absl::optional<std::vector<FileSuggestData>>& suggestions) {
   // Mark that the suggestions of `type` have been fetched.
   size_t deleted_size = pending_fetches_.erase(type);
   DCHECK_EQ(1u, deleted_size);
@@ -151,7 +150,7 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
   std::vector<base::FilePath> updated_suggestions(suggestions->size());
   std::transform(suggestions->cbegin(), suggestions->cend(),
                  updated_suggestions.begin(),
-                 [](const app_list::FileSuggestData& raw_suggestion_data) {
+                 [](const FileSuggestData& raw_suggestion_data) {
                    return raw_suggestion_data.file_path;
                  });
   suggestions_by_type_[GetItemTypeFromSuggestionType(type)] =

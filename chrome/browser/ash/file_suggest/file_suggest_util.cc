@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 
-namespace app_list {
+namespace ash {
 namespace {
 
 // The prefix of a drive file suggestion id.
@@ -53,4 +53,4 @@ std::string CalculateSuggestionId(FileSuggestionType type,
   return GetPrefixFromSuggestionType(type) + file_path.value();
 }
 
-}  // namespace app_list
+}  // namespace ash

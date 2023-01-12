@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/files/file_suggestion_provider.h"
+#include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
 
-namespace app_list {
+namespace ash {
 
 FileSuggestionProvider::FileSuggestionProvider(
     base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback)
@@ -16,4 +16,4 @@ void FileSuggestionProvider::NotifySuggestionUpdate(FileSuggestionType type) {
   notify_update_callback_.Run(type);
 }
 
-}  // namespace app_list
+}  // namespace ash

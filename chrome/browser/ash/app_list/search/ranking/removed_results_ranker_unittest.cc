@@ -6,14 +6,11 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_test_util.h"
-#include "chrome/browser/ash/app_list/search/files/mock_file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
-#include "chrome/browser/ash/app_list/search/types.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
+#include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,10 +48,10 @@ class RemovedResultsRankerTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     profile_ = testing_profile_manager_->CreateTestingProfile(
         "primary_profile@test",
-        {{FileSuggestKeyedServiceFactory::GetInstance(),
-          base::BindRepeating(
-              &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
-              temp_dir_.GetPath().Append("proto"))}});
+        {{ash::FileSuggestKeyedServiceFactory::GetInstance(),
+          base::BindRepeating(&ash::MockFileSuggestKeyedService::
+                                  BuildMockFileSuggestKeyedService,
+                              temp_dir_.GetPath().Append("proto"))}});
     ranker_ = std::make_unique<RemovedResultsRanker>(profile_);
   }
 
@@ -64,7 +61,8 @@ class RemovedResultsRankerTest : public testing::Test {
   // all removed results.
   void InitFileService() {
     WaitUntilFileSuggestServiceReady(
-        FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
+        ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+            profile_));
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -156,9 +154,10 @@ TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
       ash::AppListSearchResultType::kZeroStateDrive,
       ash::SearchResultDisplayType::kList, /*relevance=*/0.5f,
       /*query=*/std::u16string(), FileResult::Type::kFile, profile_);
-  MockFileSuggestKeyedService* mock_service =
-      static_cast<MockFileSuggestKeyedService*>(
-          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
+  ash::MockFileSuggestKeyedService* mock_service =
+      static_cast<ash::MockFileSuggestKeyedService*>(
+          ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+              profile_));
   auto drive_file_metadata = drive_file_result.CloneMetadata();
   EXPECT_CALL(*mock_service, RemoveSuggestionBySearchResultAndNotify)
       .WillOnce([&](const ash::SearchResultMetadata& search_result) {

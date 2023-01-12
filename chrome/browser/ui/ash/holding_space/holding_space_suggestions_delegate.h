@@ -9,8 +9,8 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 
 namespace ash {
@@ -21,7 +21,7 @@ namespace ash {
 // delegate refreshes the file suggestion items in the holding space model.
 class HoldingSpaceSuggestionsDelegate
     : public HoldingSpaceKeyedServiceDelegate,
-      public app_list::FileSuggestKeyedService::Observer {
+      public FileSuggestKeyedService::Observer {
  public:
   HoldingSpaceSuggestionsDelegate(HoldingSpaceKeyedService* service,
                                   HoldingSpaceModel* model);
@@ -40,21 +40,20 @@ class HoldingSpaceSuggestionsDelegate
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
   void OnPersistenceRestored() override;
 
-  // app_list::FileSuggestKeyedService::Observer:
-  void OnFileSuggestionUpdated(app_list::FileSuggestionType type) override;
+  // FileSuggestKeyedService::Observer:
+  void OnFileSuggestionUpdated(FileSuggestionType type) override;
 
   // Fetches file suggestions of the specified `type` from the service. Returns
   // early if the fetch on the suggestions of `type` is already pending.
-  void MaybeFetchSuggestions(app_list::FileSuggestionType type);
+  void MaybeFetchSuggestions(FileSuggestionType type);
 
   // Maybe schedules a task to update suggestions in the holding space model.
   void MaybeScheduleUpdateSuggestionsInModel();
 
   // Called when fetching file suggestions finishes.
   void OnSuggestionsFetched(
-      app_list::FileSuggestionType type,
-      const absl::optional<std::vector<app_list::FileSuggestData>>&
-          suggestions);
+      FileSuggestionType type,
+      const absl::optional<std::vector<FileSuggestData>>& suggestions);
 
   // Updates suggestions in the holding space model. The method ensures that:
   // 1. Drive file suggestions (if any) are always in front of local file
@@ -63,12 +62,12 @@ class HoldingSpaceSuggestionsDelegate
   // ones) follow the relevance order.
   void UpdateSuggestionsInModel();
 
-  base::ScopedObservation<app_list::FileSuggestKeyedService,
-                          app_list::FileSuggestKeyedService::Observer>
+  base::ScopedObservation<FileSuggestKeyedService,
+                          FileSuggestKeyedService::Observer>
       file_suggest_service_observation_{this};
 
   // Records the suggestion types on which data fetches are pending.
-  std::set<app_list::FileSuggestionType> pending_fetches_;
+  std::set<FileSuggestionType> pending_fetches_;
 
   // Caches the suggested files in the holding space model. In each key-value
   // pair: the key is a holding space suggestion item type; the value is an
