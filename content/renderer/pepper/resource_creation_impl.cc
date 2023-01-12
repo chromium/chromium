@@ -4,8 +4,12 @@
 
 #include "content/renderer/pepper/resource_creation_impl.h"
 
+#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "content/common/content_switches_internal.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/renderer/pepper/ppb_audio_impl.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
@@ -30,6 +34,25 @@ using ppapi::PPB_InputEvent_Shared;
 using ppapi::StringVar;
 
 namespace content {
+
+namespace {
+
+// Returns whether the PPB_VideoDecoder(Dev) API is enabled. The API is enabled
+// iff either:
+// (a) the relevant base::Feature is set, or
+// (b) the relevant "force-enable" switch is passed on the command line (this
+// overrides the value of the base::Feature).
+bool IsVideoDecoderDevAPIEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceEnablePepperVideoDecoderDevAPI)) {
+    return true;
+  }
+
+  return base::FeatureList::IsEnabled(
+      features::kSupportPepperVideoDecoderDevAPI);
+}
+
+}  // namespace
 
 ResourceCreationImpl::ResourceCreationImpl(PepperPluginInstanceImpl* instance) {
 }
@@ -289,7 +312,11 @@ PP_Resource ResourceCreationImpl::CreateVideoDecoderDev(
     PP_Instance instance,
     PP_Resource graphics3d_id,
     PP_VideoDecoder_Profile profile) {
-  return PPB_VideoDecoder_Impl::Create(instance, graphics3d_id, profile);
+  if (IsVideoDecoderDevAPIEnabled()) {
+    return PPB_VideoDecoder_Impl::Create(instance, graphics3d_id, profile);
+  }
+
+  return 0;
 }
 
 PP_Resource ResourceCreationImpl::CreateVideoEncoder(PP_Instance instance) {

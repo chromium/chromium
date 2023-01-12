@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "flag_descriptions.h"
 #include "pdf/buildflags.h"
 
 // Keep in identical order as the header file, see the comment at the top
@@ -203,6 +204,12 @@ extern const char kPPAPISharedImagesSwapChainName[] =
     "Use SharedImages for PPAPI swapchain";
 extern const char kPPAPISharedImagesSwapChainDescription[] =
     "Switches legacy swap chain code to SharedImages";
+
+extern const char kSupportPepperVideoDecoderDevAPIName[] =
+    "Controls whether the Pepper PPB_VideoDecoder(Dev) API is supported";
+extern const char kSupportPepperVideoDecoderDevAPIDescription[] =
+    "When disabled, Chrome will return 0 if asked to create the "
+    "PPB_VideoDecoder(Dev) API by in-process callers";
 
 const char kPrivacyIndicatorsName[] = "Enable Privacy Indicators";
 const char kPrivacyIndicatorsDescription[] =

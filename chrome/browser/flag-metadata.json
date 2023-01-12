@@ -6465,6 +6465,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "support-pepper-video-decoder-dev-api",
+    "owners": [ "blundell" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "support-tool",
     "owners": [ "//chrome/browser/support_tool/OWNERS" ],
     "expiry_milestone": 120

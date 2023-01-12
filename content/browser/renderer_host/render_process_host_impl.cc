@@ -3381,6 +3381,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kFileUrlPathAlias,
     switches::kForceDeviceScaleFactor,
     switches::kForceDisplayColorProfile,
+    switches::kForceEnablePepperVideoDecoderDevAPI,
     switches::kForceGpuMemAvailableMb,
     switches::kForceHighContrast,
     switches::kForceRasterColorProfile,

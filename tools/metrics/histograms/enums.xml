@@ -59068,6 +59068,7 @@ from previous Chrome versions.
   <int value="-1083736482" label="OmniboxCompactSuggestions:enabled"/>
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>
   <int value="-1083146397" label="AutofillTypeSpecificPopupWidth:enabled"/>
+  <int value="-1083092248" label="kSupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="-1082302549" label="scan-cards-in-web-payments"/>
   <int value="-1082053427"
       label="OmniboxUIExperimentElideToRegistrableDomain:disabled"/>
@@ -61726,6 +61727,7 @@ from previous Chrome versions.
       label="UsernameFirstFlowFallbackCrowdsourcing:enabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
   <int value="462453078" label="cast-streaming-force-enable-hardware-h264"/>
+  <int value="462624070" label="kSupportPepperVideoDecoderDevAPI:enabled"/>
   <int value="463582989" label="CompositorThreadedScrollbarScrolling:disabled"/>
   <int value="464226051" label="CrOSComponent:enabled"/>
   <int value="464773709" label="OmniboxExperimentalSuggestScoring:enabled"/>

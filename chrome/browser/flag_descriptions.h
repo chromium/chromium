@@ -147,6 +147,9 @@ extern const char kPasswordViewPageInSettingsDescription[];
 extern const char kPPAPISharedImagesSwapChainName[];
 extern const char kPPAPISharedImagesSwapChainDescription[];
 
+extern const char kSupportPepperVideoDecoderDevAPIName[];
+extern const char kSupportPepperVideoDecoderDevAPIDescription[];
+
 extern const char kPrivacyIndicatorsName[];
 extern const char kPrivacyIndicatorsDescription[];
 

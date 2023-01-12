@@ -9277,6 +9277,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPPAPISharedImagesSwapChain)},
 #endif
 
+#if BUILDFLAG(ENABLE_NACL)
+    {"support-pepper-video-decoder-dev-api",
+     flag_descriptions::kSupportPepperVideoDecoderDevAPIName,
+     flag_descriptions::kSupportPepperVideoDecoderDevAPIDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSupportPepperVideoDecoderDevAPI)},
+#endif
+
 #if BUILDFLAG(IS_WIN)
     {"cloud-ap-auth", flag_descriptions::kCloudApAuthName,
      flag_descriptions::kCloudApAuthDescription, kOsWin,
