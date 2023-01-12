@@ -20,6 +20,8 @@ static_library("renderer") {
 
   if (is_android) {
     sources += [
+      "android_key_system_info.cc",
+      "android_key_system_info.h",
       "android_key_systems.cc",
       "android_key_systems.h",
     ]
