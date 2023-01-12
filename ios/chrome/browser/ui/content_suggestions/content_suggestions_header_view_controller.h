@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 
@@ -27,7 +27,7 @@
 // the interactions between the header and the collection, and the rest of the
 // application.
 @interface ContentSuggestionsHeaderViewController
-    : UIViewController <NTPHomeConsumer,
+    : UIViewController <ContentSuggestionsHeaderConsumer,
                         LogoAnimationControllerOwnerOwner,
                         UserAccountImageUpdateDelegate>
 

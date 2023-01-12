@@ -25,15 +25,16 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -147,8 +148,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     self.webState->AddObserver(_webStateObserver.get());
   }
 
-  [self.consumer setLogoVendor:self.logoVendor];
-  [self.consumer setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
+  [self.contentSuggestionsHeaderConsumer setLogoVendor:self.logoVendor];
+  [self.contentSuggestionsHeaderConsumer
+      setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
 
   self.templateURLService->Load();
   [self searchEngineChanged];
@@ -176,7 +178,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     return;
   }
 
-  CGFloat scrollPosition = [self.NTPViewController scrollPosition];
+  CGFloat scrollPosition = [self.consumer scrollPosition];
 
   if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
     // Return to Recent tab tile is only shown one time, so subtract it's
@@ -184,13 +186,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     CGFloat tileSectionHeight =
         ReturnToRecentTabHeight() +
         content_suggestions::kReturnToRecentTabSectionBottomMargin;
-    if (scrollPosition >
-        tileSectionHeight + [self.NTPViewController pinnedOffsetY]) {
+    if (scrollPosition > tileSectionHeight + [self.consumer pinnedOffsetY]) {
       scrollPosition -= tileSectionHeight;
     }
   }
 
-  scrollPosition -= self.NTPViewController.collectionShiftingOffset;
+  scrollPosition -= self.consumer.collectionShiftingOffset;
 
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
 
@@ -258,8 +259,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  DCHECK(self.consumer);
-  [self.consumer locationBarResignsFirstResponder];
+  DCHECK(self.contentSuggestionsHeaderConsumer);
+  [self.consumer omniboxDidResignFirstResponder];
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
@@ -284,7 +285,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                    self.templateURLService->search_terms_data()) ==
                SEARCH_ENGINE_GOOGLE;
   }
-  [self.consumer setLogoIsShowing:showLogo];
+  [self.contentSuggestionsHeaderConsumer setLogoIsShowing:showLogo];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -321,12 +322,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     offsetFromSavedState = -CGFLOAT_MAX;
   }
 
-  CGFloat minimumOffset = -[self.NTPViewController heightAboveFeed];
+  CGFloat minimumOffset = -[self.consumer heightAboveFeed];
   if (offsetFromSavedState > minimumOffset) {
-    [self.NTPViewController setSavedContentOffset:offsetFromSavedState];
+    [self.consumer setSavedContentOffset:offsetFromSavedState];
   } else {
     // Remove this if NTPs are ever scoped back to the WebState.
-    [self.NTPViewController setContentOffsetToTop];
+    [self.consumer setContentOffsetToTop];
     // Refresh NTP content if there is is no saved scrolled state or when a new
     // NTP is opened. Since the same NTP is being shared across tabs, this
     // ensures that new content is being fetched.

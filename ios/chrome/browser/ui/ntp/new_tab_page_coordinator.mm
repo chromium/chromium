@@ -388,7 +388,7 @@
 }
 
 - (void)locationBarDidResignFirstResponder {
-  [self.headerController locationBarResignsFirstResponder];
+  [self.NTPViewController omniboxDidResignFirstResponder];
 }
 
 - (void)constrainDiscoverHeaderMenuButtonNamedGuide {
@@ -646,9 +646,9 @@
   DCHECK(self.ntpMediator);
   DCHECK(self.contentSuggestionsCoordinator.contentSuggestionsMediator);
   self.ntpMediator.browser = self.browser;
-  self.ntpMediator.NTPViewController = self.NTPViewController;
   self.ntpMediator.feedControlDelegate = self;
-  self.ntpMediator.consumer = self.headerController;
+  self.ntpMediator.contentSuggestionsHeaderConsumer = self.headerController;
+  self.ntpMediator.consumer = self.NTPViewController;
   self.ntpMediator.suggestionsMediator =
       self.contentSuggestionsCoordinator.contentSuggestionsMediator;
   [self.ntpMediator setUp];

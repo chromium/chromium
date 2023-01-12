@@ -164,6 +164,7 @@ source_set("ntp_internal") {
     "feed_menu_commands.h",
     "feed_wrapper_view_controller.h",
     "feed_wrapper_view_controller.mm",
+    "new_tab_page_consumer.h",
     "new_tab_page_mediator.h",
     "new_tab_page_mediator.mm",
     "new_tab_page_view_controller.h",

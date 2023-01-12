@@ -642,7 +642,7 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
   [self.commandHandler updateForHeaderSizeChange];
 }
 
-#pragma mark - NTPHomeConsumer
+#pragma mark - ContentSuggestionsHeaderConsumer
 
 - (void)setLogoIsShowing:(BOOL)logoIsShowing {
   _logoIsShowing = logoIsShowing;
@@ -661,10 +661,6 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
   self.omniboxFocused = YES;
 
   [self.delegate focusFakebox];
-}
-
-- (void)locationBarResignsFirstResponder {
-  [self.delegate omniboxDidResignFirstResponder];
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {

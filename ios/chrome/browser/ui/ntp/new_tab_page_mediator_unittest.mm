@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
@@ -86,8 +86,10 @@ class NewTabPageMediatorTest : public PlatformTest {
            accountManagerService:accountManagerService
                       logoVendor:logo_vendor_
         identityDiscImageUpdater:imageUpdater_];
-    consumer_ = OCMProtocolMock(@protocol(NTPHomeConsumer));
-    mediator_.consumer = consumer_;
+    contentSuggestionsHeaderConsumer_ =
+        OCMProtocolMock(@protocol(ContentSuggestionsHeaderConsumer));
+    mediator_.contentSuggestionsHeaderConsumer =
+        contentSuggestionsHeaderConsumer_;
     histogram_tester_.reset(new base::HistogramTester());
   }
 
@@ -100,7 +102,7 @@ class NewTabPageMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
-  id consumer_;
+  id contentSuggestionsHeaderConsumer_;
   id imageUpdater_;
   id logo_vendor_;
   NewTabPageMediator* mediator_;
@@ -114,12 +116,12 @@ class NewTabPageMediatorTest : public PlatformTest {
 // Tests that the consumer has the right value set up.
 TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
   // Setup.
-  OCMExpect([consumer_ setLogoVendor:logo_vendor_]);
-  OCMExpect([consumer_ setLogoIsShowing:YES]);
+  OCMExpect([contentSuggestionsHeaderConsumer_ setLogoVendor:logo_vendor_]);
+  OCMExpect([contentSuggestionsHeaderConsumer_ setLogoIsShowing:YES]);
 
   // Action.
   [mediator_ setUp];
 
   // Tests.
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(contentSuggestionsHeaderConsumer_);
 }

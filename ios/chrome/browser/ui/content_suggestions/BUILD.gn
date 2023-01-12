@@ -163,6 +163,7 @@ source_set("content_suggestions_ui") {
     "content_suggestions_commands.h",
     "content_suggestions_consumer.h",
     "content_suggestions_header_commands.h",
+    "content_suggestions_header_consumer.h",
     "content_suggestions_header_view.h",
     "content_suggestions_header_view.mm",
     "content_suggestions_header_view_controller.h",
@@ -171,7 +172,6 @@ source_set("content_suggestions_ui") {
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
     "content_suggestions_view_controller_audience.h",
-    "ntp_home_consumer.h",
     "user_account_image_update_delegate.h",
   ]
   deps = [

@@ -436,34 +436,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
   [scrollView setContentOffset:scrollView.contentOffset animated:NO];
 }
 
-- (void)setSavedContentOffset:(CGFloat)offset {
-  self.initialOffsetFromSavedState = YES;
-  [self setContentOffset:offset];
-}
-
-- (void)setContentOffsetToTop {
-  // There are many instances during NTP startup where the NTP layout is reset
-  // (e.g. calling -updateNTPLayout), which involves resetting the scroll
-  // offset. Some come from mutliple layout calls from the BVC, some come from
-  // an ambifuous source (likely the Feed). Particularly, the mediator's
-  // -setContentOffsetForWebState: call happens late in the cycle, which can
-  // clash with an already focused omnibox state. That call to reset the content
-  // offset to the top is important since the MVTiles and Google doodle are aync
-  // fetched/displayed, thus needed a reset. However, in the instance where the
-  // omnibox is focused, it is more important to keep that focused state and not
-  // show a "double" omibox state.
-  // TODO(crbug.com/1371261): Replace the -setContentOffsetForWebState: call
-  // with calls directly from all async updates to the NTP.
-  if (self.headerController.omniboxFocused) {
-    return;
-  }
-  [self setContentOffset:-[self heightAboveFeed]];
-  [self setInitialFakeOmniboxConstraints];
-  if ([self.ntpContentDelegate isContentHeaderSticky]) {
-    [self setInitialFeedHeaderConstraints];
-  }
-}
-
 - (BOOL)isNTPScrolledToTop {
   return [self scrollPosition] <= -[self heightAboveFeed];
 }
@@ -486,14 +458,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
   }
 }
 
-- (CGFloat)heightAboveFeed {
-  CGFloat heightAboveFeed = self.view.safeAreaInsets.top;
-  for (UIViewController* viewController in self.viewControllersAboveFeed) {
-    heightAboveFeed += viewController.view.frame.size.height;
-  }
-  return heightAboveFeed;
-}
-
 - (void)resetViewHierarchy {
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.contentSuggestionsViewController];
@@ -502,10 +466,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
     [self removeFromViewHierarchy:viewController];
   }
   [self.viewControllersAboveFeed removeAllObjects];
-}
-
-- (CGFloat)scrollPosition {
-  return self.collectionView.contentOffset.y;
 }
 
 - (void)setContentOffsetToTopOfFeed:(CGFloat)contentOffset {
@@ -548,6 +508,61 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
   [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
 }
 
+#pragma mark - NewTabPageConsumer
+
+- (void)setSavedContentOffset:(CGFloat)offset {
+  self.initialOffsetFromSavedState = YES;
+  [self setContentOffset:offset];
+}
+
+- (void)setContentOffsetToTop {
+  // There are many instances during NTP startup where the NTP layout is reset
+  // (e.g. calling -updateNTPLayout), which involves resetting the scroll
+  // offset. Some come from mutliple layout calls from the BVC, some come from
+  // an ambifuous source (likely the Feed). Particularly, the mediator's
+  // -setContentOffsetForWebState: call happens late in the cycle, which can
+  // clash with an already focused omnibox state. That call to reset the content
+  // offset to the top is important since the MVTiles and Google doodle are aync
+  // fetched/displayed, thus needed a reset. However, in the instance where the
+  // omnibox is focused, it is more important to keep that focused state and not
+  // show a "double" omibox state.
+  // TODO(crbug.com/1371261): Replace the -setContentOffsetForWebState: call
+  // with calls directly from all async updates to the NTP.
+  if (self.headerController.omniboxFocused) {
+    return;
+  }
+  [self setContentOffset:-[self heightAboveFeed]];
+  [self setInitialFakeOmniboxConstraints];
+  if ([self.ntpContentDelegate isContentHeaderSticky]) {
+    [self setInitialFeedHeaderConstraints];
+  }
+}
+
+- (CGFloat)heightAboveFeed {
+  CGFloat heightAboveFeed = self.view.safeAreaInsets.top;
+  for (UIViewController* viewController in self.viewControllersAboveFeed) {
+    heightAboveFeed += viewController.view.frame.size.height;
+  }
+  return heightAboveFeed;
+}
+
+- (CGFloat)scrollPosition {
+  return self.collectionView.contentOffset.y;
+}
+
+- (CGFloat)pinnedOffsetY {
+  return [self.headerController pinnedOffsetY] - self.additionalOffset;
+}
+
+- (void)omniboxDidResignFirstResponder {
+  if (![self.headerController isShowing] && !self.scrolledToMinimumHeight) {
+    return;
+  }
+
+  self.headerController.omniboxFocused = NO;
+  [self shiftTilesDownForOmniboxDefocus];
+}
+
 #pragma mark - ContentSuggestionsHeaderViewControllerDelegate
 
 - (void)focusFakebox {
@@ -561,15 +576,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
   } else {
     [self shiftTilesUpToFocusOmnibox];
   }
-}
-
-- (void)omniboxDidResignFirstResponder {
-  if (![self.headerController isShowing] && !self.scrolledToMinimumHeight) {
-    return;
-  }
-
-  self.headerController.omniboxFocused = NO;
-  [self shiftTilesDownForOmniboxDefocus];
 }
 
 - (void)shiftTilesDownForOmniboxDefocus {
@@ -1276,10 +1282,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
   CGPoint adjustedOffset = self.collectionView.contentOffset;
   adjustedOffset.y += self.additionalOffset;
   return adjustedOffset;
-}
-
-- (CGFloat)pinnedOffsetY {
-  return [self.headerController pinnedOffsetY] - self.additionalOffset;
 }
 
 #pragma mark - Helpers
