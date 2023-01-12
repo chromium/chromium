@@ -220,8 +220,9 @@ class NotificationListViewTest : public AshTestBase,
   void AnimateToEnd() { message_list_view()->animation_->End(); }
 
   void AnimateUntilIdle() {
-    while (message_list_view()->animation_->is_animating())
+    while (message_list_view()->animation_->is_animating()) {
       message_list_view()->animation_->End();
+    }
   }
 
   bool IsAnimating() { return message_list_view()->animation_->is_animating(); }
@@ -244,7 +245,7 @@ class NotificationListViewTest : public AshTestBase,
   std::unique_ptr<TestNotificationListView> notification_list_view_;
 };
 
-// Tests with NotificationsRefresh enabled and disabled.
+// Tests with QsRevamp enabled and disabled.
 class ParameterizedNotificationListViewTest
     : public NotificationListViewTest,
       public testing::WithParamInterface<bool> {
@@ -261,28 +262,16 @@ class ParameterizedNotificationListViewTest
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    if (IsNotificationsRefreshEnabled()) {
+    if (IsQsRevampEnabled()) {
       scoped_feature_list_->InitWithFeatures(
-          /*enabled_features=*/{features::kNotificationsRefresh,
-                                chromeos::features::kDarkLightMode},
+          /*enabled_features=*/{features::kQsRevamp, features::kQsRevampWip},
           /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_->InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kNotificationsRefresh,
-                                 chromeos::features::kDarkLightMode});
     }
 
     NotificationListViewTest::SetUp();
   }
 
-  int GetMessageCenterNotificationCornerRadius() {
-    return IsNotificationsRefreshEnabled()
-               ? kMessageCenterNotificationInnerCornerRadius
-               : 0;
-  }
-
-  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
+  bool IsQsRevampEnabled() const { return GetParam(); }
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -290,7 +279,7 @@ class ParameterizedNotificationListViewTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ParameterizedNotificationListViewTest,
-                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+                         testing::Bool() /* IsQsRevampEnabled() */);
 
 TEST_P(ParameterizedNotificationListViewTest, Open) {
   auto id0 = AddNotification();
@@ -300,50 +289,31 @@ TEST_P(ParameterizedNotificationListViewTest, Open) {
 
   EXPECT_EQ(3u, message_list_view()->children().size());
 
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
-    EXPECT_EQ(id1, GetMessageViewAt(1)->notification_id());
-    EXPECT_EQ(id2, GetMessageViewAt(2)->notification_id());
+  EXPECT_EQ(id0, GetMessageViewAt(2)->notification_id());
+  EXPECT_EQ(id1, GetMessageViewAt(1)->notification_id());
+  EXPECT_EQ(id2, GetMessageViewAt(0)->notification_id());
 
-    EXPECT_FALSE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(2)->IsExpanded());
-  } else {
-    EXPECT_EQ(id0, GetMessageViewAt(2)->notification_id());
-    EXPECT_EQ(id1, GetMessageViewAt(1)->notification_id());
-    EXPECT_EQ(id2, GetMessageViewAt(0)->notification_id());
+  EXPECT_FALSE(GetMessageViewAt(2)->IsExpanded());
+  EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
 
-    EXPECT_FALSE(GetMessageViewAt(2)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
-  }
-  // Check the position of notifications within the list. When the new feature
-  // is enabled, we have extra spacing between notifications.
-  if (IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(
-        GetMessageViewBounds(0).bottom() + kMessageListNotificationSpacing,
-        GetMessageViewBounds(1).y());
-    EXPECT_EQ(
-        GetMessageViewBounds(1).bottom() + kMessageListNotificationSpacing,
-        GetMessageViewBounds(2).y());
-  } else {
-    EXPECT_EQ(GetMessageViewBounds(0).bottom(), GetMessageViewBounds(1).y());
-    EXPECT_EQ(GetMessageViewBounds(1).bottom(), GetMessageViewBounds(2).y());
-  }
+  // Check the position of notifications for the required extra spacing between
+  // notifications.
+  EXPECT_EQ(GetMessageViewBounds(0).bottom() + kMessageListNotificationSpacing,
+            GetMessageViewBounds(1).y());
+  EXPECT_EQ(GetMessageViewBounds(1).bottom() + kMessageListNotificationSpacing,
+            GetMessageViewBounds(2).y());
 
-  int top_most_corner_radius =
-      IsNotificationsRefreshEnabled()
-          ? kMessageCenterNotificationTopBottomCornerRadius
-          : GetMessageCenterNotificationCornerRadius();
+  int top_most_corner_radius = kMessageCenterNotificationTopBottomCornerRadius;
   EXPECT_EQ(top_most_corner_radius, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
             GetMessageViewAt(1)->top_radius());
-  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
             GetMessageViewAt(2)->top_radius());
 
-  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
             GetMessageViewAt(0)->bottom_radius());
-  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
             GetMessageViewAt(1)->bottom_radius());
 
   EXPECT_EQ(kMessageCenterNotificationTopBottomCornerRadius,
@@ -374,35 +344,19 @@ TEST_P(ParameterizedNotificationListViewTest, AddNotifications) {
   auto id1 = AddNotification();
   EXPECT_EQ(2, size_changed_count());
   EXPECT_EQ(2u, message_list_view()->children().size());
-  EXPECT_EQ(id1,
-            GetMessageViewAt(features::IsNotificationsRefreshEnabled() ? 0 : 1)
-                ->notification_id());
+  EXPECT_EQ(id1, GetMessageViewAt(0)->notification_id());
 
   EXPECT_LT(previous_notification_list_view_height,
             message_list_view()->GetPreferredSize().height());
 
-  if (!IsNotificationsRefreshEnabled()) {
-    // 1dip larger because now it has separator border.
-    previous_bounds.Inset(gfx::Insets::TLBR(0, 0, -1, 0));
-  }
   EXPECT_EQ(previous_bounds, GetMessageViewBounds(0));
 
-  // When the new feature is enabled, we have extra spacing between
-  // notifications.
-  if (IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(
-        GetMessageViewBounds(0).bottom() + kMessageListNotificationSpacing,
-        GetMessageViewBounds(1).y());
-  } else {
-    EXPECT_EQ(GetMessageViewBounds(0).bottom(), GetMessageViewBounds(1).y());
-  }
+  EXPECT_EQ(GetMessageViewBounds(0).bottom() + kMessageListNotificationSpacing,
+            GetMessageViewBounds(1).y());
 
-  int top_most_corner_radius =
-      IsNotificationsRefreshEnabled()
-          ? kMessageCenterNotificationTopBottomCornerRadius
-          : GetMessageCenterNotificationCornerRadius();
+  int top_most_corner_radius = kMessageCenterNotificationTopBottomCornerRadius;
   EXPECT_EQ(top_most_corner_radius, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
             GetMessageViewAt(1)->top_radius());
 
   EXPECT_EQ(kMessageCenterNotificationTopBottomCornerRadius,
@@ -418,12 +372,9 @@ TEST_P(ParameterizedNotificationListViewTest, RemoveNotification) {
 
   EXPECT_EQ(2u, message_list_view()->children().size());
 
-  int top_most_corner_radius =
-      IsNotificationsRefreshEnabled()
-          ? kMessageCenterNotificationTopBottomCornerRadius
-          : GetMessageCenterNotificationCornerRadius();
+  int top_most_corner_radius = kMessageCenterNotificationTopBottomCornerRadius;
   EXPECT_EQ(top_most_corner_radius, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+  EXPECT_EQ(kMessageCenterNotificationInnerCornerRadius,
             GetMessageViewAt(0)->bottom_radius());
 
   gfx::Rect previous_bounds = GetMessageViewBounds(0);
@@ -454,42 +405,24 @@ TEST_P(ParameterizedNotificationListViewTest, CollapseOlderNotifications) {
 
   AddNotification();
 
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_FALSE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(1)->IsExpanded());
-  } else {
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
-  }
+  EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
 
   AddNotification();
 
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_FALSE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(2)->IsExpanded());
-  } else {
-    EXPECT_FALSE(GetMessageViewAt(2)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
-  }
+  EXPECT_FALSE(GetMessageViewAt(2)->IsExpanded());
+  EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
 
   GetMessageViewAt(1)->SetExpanded(true);
   GetMessageViewAt(1)->SetManuallyExpandedOrCollapsed(true);
 
   AddNotification();
 
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_FALSE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(2)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(3)->IsExpanded());
-  } else {
-    EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(2)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(3)->IsExpanded());
-  }
+  EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
+  EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(2)->IsExpanded());
+  EXPECT_FALSE(GetMessageViewAt(3)->IsExpanded());
 }
 
 TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
@@ -506,10 +439,7 @@ TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  if (!IsNotificationsRefreshEnabled()) {
-    // Now it lost separator border.
-    bounds1.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
-  }
+
   EXPECT_EQ(bounds0, GetMessageViewBounds(0));
   EXPECT_EQ(bounds1, GetMessageViewBounds(1));
 
@@ -518,10 +448,6 @@ TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  if (!IsNotificationsRefreshEnabled()) {
-    // Now it lost separator border.
-    bounds0.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
-  }
   EXPECT_EQ(bounds0, GetMessageViewBounds(0));
 
   MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
@@ -554,17 +480,19 @@ TEST_P(ParameterizedNotificationListViewTest, DISABLED_ResetAnimation) {
 }
 
 TEST_P(ParameterizedNotificationListViewTest, KeepManuallyExpanded) {
+  // TODO(b/252876795): Enable this test for the QsRevamp feature after expand
+  // statefulness is implemented.
+  if (IsQsRevampEnabled()) {
+    return;
+  }
+
   AddNotification();
   AddNotification();
   CreateMessageListView();
 
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_FALSE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(1)->IsExpanded());
-  } else {
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
-  }
+  EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
+
   EXPECT_FALSE(GetMessageViewAt(0)->IsManuallyExpandedOrCollapsed());
   EXPECT_FALSE(GetMessageViewAt(1)->IsManuallyExpandedOrCollapsed());
 
@@ -590,21 +518,12 @@ TEST_P(ParameterizedNotificationListViewTest, KeepManuallyExpanded) {
   CreateMessageListView();
 
   // Confirm the new notification isn't affected & others are still kept.
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_FALSE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(2)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(0)->IsManuallyExpandedOrCollapsed());
-    EXPECT_TRUE(GetMessageViewAt(1)->IsManuallyExpandedOrCollapsed());
-    EXPECT_FALSE(GetMessageViewAt(2)->IsManuallyExpandedOrCollapsed());
-  } else {
-    EXPECT_FALSE(GetMessageViewAt(2)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(1)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
-    EXPECT_TRUE(GetMessageViewAt(2)->IsManuallyExpandedOrCollapsed());
-    EXPECT_TRUE(GetMessageViewAt(1)->IsManuallyExpandedOrCollapsed());
-    EXPECT_FALSE(GetMessageViewAt(0)->IsManuallyExpandedOrCollapsed());
-  }
+  EXPECT_FALSE(GetMessageViewAt(2)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(1)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(0)->IsExpanded());
+  EXPECT_TRUE(GetMessageViewAt(2)->IsManuallyExpandedOrCollapsed());
+  EXPECT_TRUE(GetMessageViewAt(1)->IsManuallyExpandedOrCollapsed());
+  EXPECT_FALSE(GetMessageViewAt(0)->IsManuallyExpandedOrCollapsed());
 }
 
 TEST_P(ParameterizedNotificationListViewTest,
@@ -615,7 +534,7 @@ TEST_P(ParameterizedNotificationListViewTest,
 
   EXPECT_EQ(2u, message_list_view()->children().size());
   int previous_height = message_list_view()->GetPreferredSize().height();
-  int removed_view_index = features::IsNotificationsRefreshEnabled() ? 1 : 0;
+  int removed_view_index = 1;
   gfx::Rect previous_bounds = GetMessageViewBounds(removed_view_index);
 
   message_list_view()->ClearAllWithAnimation();
@@ -774,16 +693,9 @@ TEST_P(ParameterizedNotificationListViewTest, InitInSortedOrder) {
   CreateMessageListView();
 
   EXPECT_EQ(3u, message_list_view()->children().size());
-
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(id1, GetMessageViewAt(0)->notification_id());
-    EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
-    EXPECT_EQ(id0, GetMessageViewAt(2)->notification_id());
-  } else {
-    EXPECT_EQ(id1, GetMessageViewAt(2)->notification_id());
-    EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
-    EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
-  }
+  EXPECT_EQ(id1, GetMessageViewAt(2)->notification_id());
+  EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
+  EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
 }
 
 TEST_P(ParameterizedNotificationListViewTest, NotificationAddedInSortedOrder) {
@@ -797,31 +709,19 @@ TEST_P(ParameterizedNotificationListViewTest, NotificationAddedInSortedOrder) {
 
   auto id3 = AddNotification(/*pinned=*/true);
   EXPECT_EQ(4u, message_list_view()->children().size());
-  if (!features::IsNotificationsRefreshEnabled()) {
-    // New pinned notification should be added to the end.
-    EXPECT_EQ(id3, GetMessageViewAt(3)->notification_id());
-  } else {
-    // New pinned notification should be added to the start.
-    EXPECT_EQ(id3, GetMessageViewAt(0)->notification_id());
-  }
+
+  // New pinned notification should be added to the start.
+  EXPECT_EQ(id3, GetMessageViewAt(0)->notification_id());
 
   // New non-pinned notification should be added before pinned notifications.
   auto id4 = AddNotification();
   EXPECT_EQ(5u, message_list_view()->children().size());
 
-  if (!features::IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(id1, GetMessageViewAt(0)->notification_id());
-    EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
-    EXPECT_EQ(id4, GetMessageViewAt(2)->notification_id());
-    EXPECT_EQ(id0, GetMessageViewAt(3)->notification_id());
-    EXPECT_EQ(id3, GetMessageViewAt(4)->notification_id());
-  } else {
-    EXPECT_EQ(id1, GetMessageViewAt(4)->notification_id());
-    EXPECT_EQ(id2, GetMessageViewAt(3)->notification_id());
-    EXPECT_EQ(id4, GetMessageViewAt(2)->notification_id());
-    EXPECT_EQ(id0, GetMessageViewAt(1)->notification_id());
-    EXPECT_EQ(id3, GetMessageViewAt(0)->notification_id());
-  }
+  EXPECT_EQ(id1, GetMessageViewAt(4)->notification_id());
+  EXPECT_EQ(id2, GetMessageViewAt(3)->notification_id());
+  EXPECT_EQ(id4, GetMessageViewAt(2)->notification_id());
+  EXPECT_EQ(id0, GetMessageViewAt(1)->notification_id());
+  EXPECT_EQ(id3, GetMessageViewAt(0)->notification_id());
 }
 
 // Tests only with NotificationsRefresh enabled.
