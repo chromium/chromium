@@ -3,6 +3,9 @@
     --ntp-realbox-border-radius: calc(0.5 * var(--ntp-realbox-height));
     --ntp-realbox-height: 44px;
     --ntp-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
+    --ntp-realbox-icon-width: 26px;
+    --ntp-realbox-inner-icon-margin: 8px;
+    --ntp-realbox-voice-icon-offset: 16px;
     border-radius: var(--ntp-realbox-border-radius);
     box-shadow: var(--ntp-realbox-shadow);
     font-size: 16px;
@@ -11,6 +14,10 @@
 
   :host([is-dark]) {
     --ntp-realbox-shadow: 0 2px 6px 0 var(--color-realbox-shadow);
+  }
+
+  :host([realbox-lens-search-enabled_]) {
+    --ntp-realbox-voice-icon-offset: 53px;
   }
 
   @media (forced-colors: active) {
@@ -50,7 +57,7 @@
     font-size: inherit;
     height: 100%;
     outline: none;
-    padding-inline-end:  44px;
+    padding-inline-end: calc(var(--ntp-realbox-voice-icon-offset) + var(--ntp-realbox-icon-width) + var(--ntp-realbox-inner-icon-margin));
     padding-inline-start: 52px;
     position: relative;
     width: 100%;
@@ -118,7 +125,7 @@
     pointer-events: auto;
     position: absolute;
     right: 16px;
-    width: 26px;
+    width: var(--ntp-realbox-icon-width);
   }
 
   :host([single-colored-icons]) #voiceSearchButton,
@@ -146,12 +153,12 @@
   }
 
   :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
-    left: 53px;
+    left: var(--ntp-realbox-voice-icon-offset);
     right: unset;
   }
 
   :host([realbox-lens-search-enabled_]) #voiceSearchButton {
-    right: 53px;
+    right: var(--ntp-realbox-voice-icon-offset);
   }
 
   :host-context([dir='rtl']) .realbox-icon-button {
@@ -164,7 +171,7 @@
   }
 
   :-webkit-any(input, ntp-realbox-icon, .realbox-icon-button) {
-   z-index: 100;
+    z-index: 100;
   }
 
   ntp-realbox-dropdown {
@@ -188,20 +195,16 @@
   <ntp-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </ntp-realbox-icon>
-  <button id="voiceSearchButton"
-    class="realbox-icon-button"
-    on-click="onVoiceSearchClick_"
-    title="$i18n{voiceSearchButtonLabel}">
+  <button id="voiceSearchButton" class="realbox-icon-button"
+      on-click="onVoiceSearchClick_" title="$i18n{voiceSearchButtonLabel}">
   </button>
   <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-    <button id="lensSearchButton"
-        class="realbox-icon-button"
-        on-click="onLensSearchClick_"
-        title="$i18n{lensSearchButtonLabel}">
+    <button id="lensSearchButton" class="realbox-icon-button"
+        on-click="onLensSearchClick_" title="$i18n{lensSearchButtonLabel}">
     </button>
   </template>
-  <ntp-realbox-dropdown id="matches" role="listbox"
-      result="[[result_]]" selected-match-index="{{selectedMatchIndex_}}"
+  <ntp-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
+      selected-match-index="{{selectedMatchIndex_}}"
       on-result-repaint="onResultRepaint_" on-match-focusin="onMatchFocusin_"
       on-match-click="onMatchClick_" on-match-remove="onMatchRemove_"
       on-header-focusin="onHeaderFocusin_" hidden$="[[!matchesAreVisible]]">
