@@ -51,7 +51,9 @@
 
 <div id="key" class="key-container">
   <template is="dom-if" if="[[getIconIdForKey(key)]]">
-    <iron-icon icon="[[getIconIdForKey(key)]]" id="key-icon"></iron-icon>
+    <div aria-label$="[[getAriaLabelForIcon(key)]]" role="img">
+      <iron-icon icon="[[getIconIdForKey(key)]]" id="key-icon"></iron-icon>
+    </div>
   </template>
   <template is="dom-if" if="[[!getIconIdForKey(key)]]">
     <span id="key-text">[[key]]</span>
