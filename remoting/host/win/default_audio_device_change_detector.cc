@@ -80,8 +80,12 @@ HRESULT DefaultAudioDeviceChangeDetector::OnPropertyValueChanged(
   return S_OK;
 }
 
-ULONG DefaultAudioDeviceChangeDetector::AddRef() { return 1; }
+ULONG DefaultAudioDeviceChangeDetector::AddRef() {
+  return 1;
+}
 
-ULONG DefaultAudioDeviceChangeDetector::Release() { return 1; }
+ULONG DefaultAudioDeviceChangeDetector::Release() {
+  return 1;
+}
 
 }  // namespace remoting

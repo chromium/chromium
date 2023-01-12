@@ -99,13 +99,15 @@ void LocalPointerInputMonitorChromeos::Core::Start() {
   // TODO(erg): Need to handle the mus case where PlatformEventSource is null
   // because we are in mus. This class looks like it can be rewritten with mus
   // EventMatchers. (And if that doesn't work, maybe a PointerObserver.)
-  if (ui::PlatformEventSource::GetInstance())
+  if (ui::PlatformEventSource::GetInstance()) {
     ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
+  }
 }
 
 LocalPointerInputMonitorChromeos::Core::~Core() {
-  if (ui::PlatformEventSource::GetInstance())
+  if (ui::PlatformEventSource::GetInstance()) {
     ui::PlatformEventSource::GetInstance()->RemovePlatformEventObserver(this);
+  }
 }
 
 void LocalPointerInputMonitorChromeos::Core::WillProcessEvent(
@@ -117,8 +119,9 @@ void LocalPointerInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
   // Do not pass on events remotely injected by CRD, as we're supposed to
   // monitor for local input only.
-  if (IsInjectedByCrd(event))
+  if (IsInjectedByCrd(event)) {
     return;
+  }
 
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::ET_MOUSE_MOVED || type == ui::ET_TOUCH_MOVED) {

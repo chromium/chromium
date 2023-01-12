@@ -111,8 +111,9 @@ void LocalKeyboardInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
   // Do not pass on events remotely injected by CRD, as we're supposed to
   // monitor for local input only.
-  if (IsInjectedByCrd(event))
+  if (IsInjectedByCrd(event)) {
     return;
+  }
 
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::ET_KEY_PRESSED) {

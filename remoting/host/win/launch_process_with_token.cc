@@ -21,20 +21,15 @@ namespace {
 // The returned handle will have |desired_access| rights.
 bool CopyProcessToken(DWORD desired_access, ScopedHandle* token_out) {
   HANDLE temp_handle;
-  if (!OpenProcessToken(GetCurrentProcess(),
-                        TOKEN_DUPLICATE | desired_access,
+  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_DUPLICATE | desired_access,
                         &temp_handle)) {
     PLOG(ERROR) << "Failed to open process token";
     return false;
   }
   ScopedHandle process_token(temp_handle);
 
-  if (!DuplicateTokenEx(process_token.Get(),
-                        desired_access,
-                        nullptr,
-                        SecurityImpersonation,
-                        TokenPrimary,
-                        &temp_handle)) {
+  if (!DuplicateTokenEx(process_token.Get(), desired_access, nullptr,
+                        SecurityImpersonation, TokenPrimary, &temp_handle)) {
     PLOG(ERROR) << "Failed to duplicate the process token";
     return false;
   }
@@ -99,9 +94,7 @@ bool CreateSessionToken(uint32_t session_id, ScopedHandle* token_out) {
 
   // Change the session ID of the token.
   DWORD new_session_id = session_id;
-  if (!SetTokenInformation(session_token.Get(),
-                           TokenSessionId,
-                           &new_session_id,
+  if (!SetTokenInformation(session_token.Get(), TokenSessionId, &new_session_id,
                            sizeof(new_session_id))) {
     PLOG(ERROR) << "Failed to change session ID of a token";
 
@@ -132,8 +125,9 @@ bool LaunchProcessWithToken(
 
   base::win::StartupInformation startup_info_wrapper;
   STARTUPINFO* startup_info = startup_info_wrapper.startup_info();
-  if (desktop_name)
+  if (desktop_name) {
     startup_info->lpDesktop = const_cast<wchar_t*>(desktop_name);
+  }
 
   bool inherit_handles = false;
   if (!handles_to_inherit.empty()) {

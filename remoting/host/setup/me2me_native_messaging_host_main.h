@@ -12,6 +12,6 @@ namespace remoting {
 // The me2me native messaging host entry point exported from remoting_core.dll.
 HOST_EXPORT int Me2MeNativeMessagingHostMain(int argc, char** argv);
 
-} // namespace remoting
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_SETUP_ME2ME_NATIVE_MESSAGING_HOST_MAIN_H_

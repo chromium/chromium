@@ -163,8 +163,9 @@ void WaylandManager::SetKeyboardLayoutCallback(
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   keyboard_layout_callback_ = std::move(callback);
-  if (keymap_)
+  if (keymap_) {
     keyboard_layout_callback_.Run(std::move(keymap_));
+  }
 }
 
 void WaylandManager::OnKeyboardLayout(XkbKeyMapUniquePtr keymap) {
@@ -175,10 +176,11 @@ void WaylandManager::OnKeyboardLayout(XkbKeyMapUniquePtr keymap) {
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (keyboard_layout_callback_)
+  if (keyboard_layout_callback_) {
     keyboard_layout_callback_.Run(std::move(keymap));
-  else
+  } else {
     keymap_ = std::move(keymap);
+  }
 }
 
 void WaylandManager::AddKeyboardModifiersCallback(

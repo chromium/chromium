@@ -9,7 +9,6 @@
 
 #include <vector>
 
-
 namespace remoting {
 
 std::vector<uint32_t> GetKeySymsForUnicode(uint32_t code_point);

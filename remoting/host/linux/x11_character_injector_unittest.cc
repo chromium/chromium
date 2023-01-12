@@ -137,7 +137,7 @@ void FakeX11Keyboard::Sync() {}
 void FakeX11Keyboard::ExpectEnterCodePoints(
     const std::vector<uint32_t>& sequence) {
   expected_code_point_sequence_.insert(expected_code_point_sequence_.end(),
-              sequence.begin(), sequence.end());
+                                       sequence.begin(), sequence.end());
 }
 
 class X11CharacterInjectorTest : public testing::Test {
@@ -170,14 +170,14 @@ void X11CharacterInjectorTest::InjectAndRun(
     const std::vector<uint32_t>& code_points) {
   base::RunLoop run_loop;
   keyboard_->SetKeyPressFinishedCallback(run_loop.QuitClosure());
-  for (uint32_t code_point : code_points)
+  for (uint32_t code_point : code_points) {
     injector_->Inject(code_point);
+  }
   keyboard_->ExpectEnterCodePoints(code_points);
   run_loop.Run();
 }
 
-TEST_F(X11CharacterInjectorTest, TestNoMappingNoExpectation) {
-}
+TEST_F(X11CharacterInjectorTest, TestNoMappingNoExpectation) {}
 
 TEST_F(X11CharacterInjectorTest, TestTypeOneCharacter) {
   InjectAndRun({123});

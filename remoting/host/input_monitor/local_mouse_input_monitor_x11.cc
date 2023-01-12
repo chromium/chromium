@@ -102,18 +102,21 @@ void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   auto* raw = event.As<x11::Input::RawDeviceEvent>();
   // The X server may send unsolicited MappingNotify events without having
   // selected them.
-  if (!raw)
+  if (!raw) {
     return;
-  if (raw->opcode != x11::Input::RawDeviceEvent::RawMotion)
+  }
+  if (raw->opcode != x11::Input::RawDeviceEvent::RawMotion) {
     return;
+  }
 
   connection_->QueryPointer({connection_->default_root()})
       .OnResponse(base::BindOnce(
           [](scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
              LocalInputMonitor::PointerMoveCallback on_mouse_move,
              x11::QueryPointerResponse response) {
-            if (!response)
+            if (!response) {
               return;
+            }
             webrtc::DesktopVector position(response->root_x, response->root_y);
             caller_task_runner->PostTask(
                 FROM_HERE,

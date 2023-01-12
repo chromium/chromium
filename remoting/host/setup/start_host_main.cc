@@ -81,8 +81,9 @@ void SetEcho(bool echo) {
 
 // Reads a newline-terminated string from stdin.
 std::string ReadString(bool no_echo) {
-  if (no_echo)
+  if (no_echo) {
     SetEcho(false);
+  }
   const int kMaxLen = 1024;
   std::string str(kMaxLen, 0);
   char* result = fgets(&str[0], kMaxLen, stdin);
@@ -90,11 +91,13 @@ std::string ReadString(bool no_echo) {
     printf("\n");
     SetEcho(true);
   }
-  if (!result)
+  if (!result) {
     return std::string();
+  }
   size_t newline_index = str.find('\n');
-  if (newline_index != std::string::npos)
+  if (newline_index != std::string::npos) {
     str[newline_index] = '\0';
+  }
   str.resize(strlen(&str[0]));
   return str;
 }
@@ -256,8 +259,8 @@ int StartHostMain(int argc, char** argv) {
       url_request_context_getter);
 
   // Start the host.
-  std::unique_ptr<HostStarter> host_starter(HostStarter::Create(
-      url_loader_factory_owner.GetURLLoaderFactory()));
+  std::unique_ptr<HostStarter> host_starter(
+      HostStarter::Create(url_loader_factory_owner.GetURLLoaderFactory()));
   host_starter->StartHost(host_id, host_name, host_pin, host_owner,
                           /*consent_to_data_collection=*/true, auth_code,
                           redirect_url, base::BindOnce(&OnDone));

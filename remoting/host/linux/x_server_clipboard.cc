@@ -55,8 +55,9 @@ void XServerClipboard::Init(x11::Connection* connection,
   static const int kNumAtomNames = std::size(kAtomNames);
 
   x11::Future<x11::InternAtomReply> futures[kNumAtomNames];
-  for (size_t i = 0; i < kNumAtomNames; i++)
+  for (size_t i = 0; i < kNumAtomNames; i++) {
     futures[i] = connection_->InternAtom({false, kAtomNames[i]});
+  }
   connection_->Flush();
   x11::Atom atoms[kNumAtomNames];
   memset(atoms, 0, sizeof(atoms));
@@ -87,12 +88,14 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
                                     const std::string& data) {
   DCHECK(connection_->Ready());
 
-  if (clipboard_window_ == x11::Window::None)
+  if (clipboard_window_ == x11::Window::None) {
     return;
+  }
 
   // Currently only UTF-8 is supported.
-  if (mime_type != kMimeTypeTextUtf8)
+  if (mime_type != kMimeTypeTextUtf8) {
     return;
+  }
   if (!base::IsStringUTF8AllowingNoncharacters(data)) {
     LOG(ERROR) << "ClipboardEvent: data is not UTF-8 encoded.";
     return;
@@ -110,14 +113,15 @@ void XServerClipboard::ProcessXEvent(const x11::Event& event) {
     return;
   }
 
-  if (auto* property_notify = event.As<x11::PropertyNotifyEvent>())
+  if (auto* property_notify = event.As<x11::PropertyNotifyEvent>()) {
     OnPropertyNotify(*property_notify);
-  else if (auto* selection_notify = event.As<x11::SelectionNotifyEvent>())
+  } else if (auto* selection_notify = event.As<x11::SelectionNotifyEvent>()) {
     OnSelectionNotify(*selection_notify);
-  else if (auto* selection_request = event.As<x11::SelectionRequestEvent>())
+  } else if (auto* selection_request = event.As<x11::SelectionRequestEvent>()) {
     OnSelectionRequest(*selection_request);
-  else if (auto* selection_clear = event.As<x11::SelectionClearEvent>())
+  } else if (auto* selection_clear = event.As<x11::SelectionClearEvent>()) {
     OnSelectionClear(*selection_clear);
+  }
 
   if (auto* xfixes_selection_notify =
           event.As<x11::XFixes::SelectionNotifyEvent>()) {
@@ -141,12 +145,14 @@ void XServerClipboard::OnSetSelectionOwnerNotify(x11::Atom selection,
   }
 
   // Only process CLIPBOARD selections.
-  if (selection != clipboard_atom_)
+  if (selection != clipboard_atom_) {
     return;
+  }
 
   // If we own the selection, don't request details for it.
-  if (IsSelectionOwner(selection))
+  if (IsSelectionOwner(selection)) {
     return;
+  }
 
   get_selections_time_ = base::TimeTicks::Now();
 
@@ -172,8 +178,9 @@ void XServerClipboard::OnPropertyNotify(const x11::PropertyNotifyEvent& event) {
         // http://crbug.com/151447.
 
         // If the property is zero-length then the large transfer is complete.
-        if (reply->value_len == 0)
+        if (reply->value_len == 0) {
           large_selection_property_ = x11::Atom::None;
+        }
       }
     }
   }
@@ -315,13 +322,15 @@ void XServerClipboard::HandleSelectionNotify(
   bool finished = false;
 
   auto target = event.target;
-  if (target == targets_atom_)
+  if (target == targets_atom_) {
     finished = HandleSelectionTargetsEvent(event, format, item_count, data);
-  else if (target == utf8_string_atom_ || target == x11::Atom::STRING)
+  } else if (target == utf8_string_atom_ || target == x11::Atom::STRING) {
     finished = HandleSelectionStringEvent(event, format, item_count, data);
+  }
 
-  if (finished)
+  if (finished) {
     get_selections_time_ = base::TimeTicks();
+  }
 }
 
 bool XServerClipboard::HandleSelectionTargetsEvent(
@@ -353,13 +362,15 @@ bool XServerClipboard::HandleSelectionStringEvent(
   auto property = event.property;
   auto target = event.target;
 
-  if (property != selection_string_atom_ || !data || format != 8)
+  if (property != selection_string_atom_ || !data || format != 8) {
     return true;
+  }
 
   std::string text(static_cast<const char*>(data), item_count);
 
-  if (target == x11::Atom::STRING || target == utf8_string_atom_)
+  if (target == x11::Atom::STRING || target == utf8_string_atom_) {
     NotifyClipboardText(text);
+  }
 
   return true;
 }

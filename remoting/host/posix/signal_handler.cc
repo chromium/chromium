@@ -57,8 +57,7 @@ void SignalListener::OnFileCanReadWithoutBlocking() {
   int result = HANDLE_EINTR(read(g_read_fd, &buffer, sizeof(buffer)));
   if (result > 0) {
     for (SignalHandlers::const_iterator i = signal_handlers_.begin();
-         i != signal_handlers_.end();
-         ++i) {
+         i != signal_handlers_.end(); ++i) {
       if (i->first == buffer) {
         i->second.Run(i->first);
       }

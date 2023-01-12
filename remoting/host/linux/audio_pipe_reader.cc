@@ -53,8 +53,7 @@ AudioPipeReader::AudioPipeReader(
     const base::FilePath& pipe_path)
     : task_runner_(task_runner),
       pipe_path_(pipe_path),
-      observers_(new base::ObserverListThreadSafe<StreamObserver>()) {
-}
+      observers_(new base::ObserverListThreadSafe<StreamObserver>()) {}
 
 AudioPipeReader::~AudioPipeReader() = default;
 
@@ -162,8 +161,9 @@ void AudioPipeReader::DoCapture() {
     if (read_result > 0) {
       pos += read_result;
     } else {
-      if (read_result < 0 && errno != EWOULDBLOCK && errno != EAGAIN)
+      if (read_result < 0 && errno != EWOULDBLOCK && errno != EAGAIN) {
         PLOG(ERROR) << "read";
+      }
       break;
     }
   }
@@ -186,8 +186,9 @@ void AudioPipeReader::DoCapture() {
   // to read |bytes_to_read| bytes, but in case it's misbehaving we need to make
   // sure that |stream_position_bytes| doesn't go out of sync with the current
   // stream position.
-  if (stream_position_bytes - last_capture_position_ > pipe_buffer_size_)
+  if (stream_position_bytes - last_capture_position_ > pipe_buffer_size_) {
     last_capture_position_ = stream_position_bytes - pipe_buffer_size_;
+  }
   DCHECK_LE(last_capture_position_, stream_position_bytes);
 
   // Dispatch asynchronous notification to the stream observers.

@@ -14,11 +14,9 @@
 
 namespace remoting {
 
-RdpDesktopSession::RdpDesktopSession() {
-}
+RdpDesktopSession::RdpDesktopSession() {}
 
-RdpDesktopSession::~RdpDesktopSession() {
-}
+RdpDesktopSession::~RdpDesktopSession() {}
 
 STDMETHODIMP RdpDesktopSession::Connect(
     long width,
@@ -53,9 +51,9 @@ STDMETHODIMP RdpDesktopSession::ChangeResolution(long width,
                                                  long dpi_x,
                                                  long dpi_y) {
   if (client_) {
-    client_->ChangeResolution(ScreenResolution(
-        webrtc::DesktopSize(width, height),
-        webrtc::DesktopVector(dpi_x, dpi_y)));
+    client_->ChangeResolution(
+        ScreenResolution(webrtc::DesktopSize(width, height),
+                         webrtc::DesktopVector(dpi_x, dpi_y)));
   }
   return S_OK;
 }
@@ -69,8 +67,8 @@ STDMETHODIMP RdpDesktopSession::InjectSas() {
 
 void RdpDesktopSession::OnRdpConnected() {
   HRESULT result = event_handler_->OnRdpConnected();
-  CHECK(SUCCEEDED(result)) << "OnRdpConnected() failed: 0x"
-                           << std::hex << result << std::dec << ".";
+  CHECK(SUCCEEDED(result)) << "OnRdpConnected() failed: 0x" << std::hex
+                           << result << std::dec << ".";
 }
 
 void RdpDesktopSession::OnRdpClosed() {
@@ -79,4 +77,4 @@ void RdpDesktopSession::OnRdpClosed() {
                            << std::dec << ".";
 }
 
-} // namespace remoting
+}  // namespace remoting

@@ -9,12 +9,13 @@
 namespace remoting {
 
 bool IsPinValid(const std::string& pin) {
-  if (pin.length() < 6)
+  if (pin.length() < 6) {
     return false;
-  for (size_t i = 0; i < pin.length(); i++) {
-    char c = pin[i];
-    if (c < '0'  || c > '9')
+  }
+  for (char c : pin) {
+    if (c < '0' || c > '9') {
       return false;
+    }
   }
   return true;
 }

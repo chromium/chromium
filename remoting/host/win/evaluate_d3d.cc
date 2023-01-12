@@ -103,8 +103,9 @@ bool GetD3DCapabilities(std::vector<std::string>* result) {
 }
 
 bool IsD3DAvailable() {
-  if (BlockD3DCheck())
+  if (BlockD3DCheck()) {
     return false;
+  }
 
   std::string unused;
   return (EvaluateCapability(kEvaluateD3D, &unused) == kSuccessExitCode);

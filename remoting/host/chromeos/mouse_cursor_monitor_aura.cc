@@ -37,9 +37,7 @@ webrtc::MouseCursor* CreateEmptyMouseCursor() {
 namespace remoting {
 
 MouseCursorMonitorAura::MouseCursorMonitorAura()
-    : callback_(nullptr),
-      mode_(SHAPE_AND_POSITION) {
-}
+    : callback_(nullptr), mode_(SHAPE_AND_POSITION) {}
 
 void MouseCursorMonitorAura::Init(Callback* callback, Mode mode) {
   DCHECK(!callback_);

@@ -30,7 +30,7 @@ bool CheckCtrlAndAltArePressed(const std::set<ui::DomCode>& pressed_keys) {
   size_t alt_keys = pressed_keys.count(ui::DomCode::ALT_LEFT) +
                     pressed_keys.count(ui::DomCode::ALT_RIGHT);
   return ctrl_keys != 0 && alt_keys != 0 &&
-    (ctrl_keys + alt_keys == pressed_keys.size());
+         (ctrl_keys + alt_keys == pressed_keys.size());
 }
 
 bool IsWinKeyPressed(const std::set<ui::DomCode>& pressed_keys) {
@@ -39,7 +39,7 @@ bool IsWinKeyPressed(const std::set<ui::DomCode>& pressed_keys) {
   return win_keys != 0 && win_keys == pressed_keys.size();
 }
 
-} // namespace
+}  // namespace
 
 namespace remoting {
 
@@ -202,8 +202,7 @@ void SessionInputInjectorWin::Core::InjectTouchEvent(const TouchEvent& event) {
   nested_executor_->InjectTouchEvent(event);
 }
 
-SessionInputInjectorWin::Core::~Core() {
-}
+SessionInputInjectorWin::Core::~Core() {}
 
 void SessionInputInjectorWin::Core::SwitchToInputDesktop() {
   // Switch to the desktop receiving user input if different from the current
@@ -227,8 +226,7 @@ SessionInputInjectorWin::SessionInputInjectorWin(
                    inject_sas_task_runner, inject_sas, lock_workstation);
 }
 
-SessionInputInjectorWin::~SessionInputInjectorWin() {
-}
+SessionInputInjectorWin::~SessionInputInjectorWin() {}
 
 void SessionInputInjectorWin::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {

@@ -20,8 +20,9 @@ namespace remoting {
 std::string GetUsername() {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   long buf_size = sysconf(_SC_GETPW_R_SIZE_MAX);
-  if (buf_size <= 0)
+  if (buf_size <= 0) {
     return std::string();
+  }
 
   std::vector<char> buf(buf_size);
   struct passwd passwd;

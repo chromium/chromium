@@ -117,8 +117,9 @@ TEST_F(ClipboardAuraTest, MonitorClipboardChanges) {
   }
 
   EXPECT_CALL(*client_clipboard_,
-              InjectClipboardEvent(Property(&protocol::ClipboardEvent::data,
-                                            Eq("Test data.")))).Times(1);
+              InjectClipboardEvent(
+                  Property(&protocol::ClipboardEvent::data, Eq("Test data."))))
+      .Times(1);
 
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(

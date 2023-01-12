@@ -107,14 +107,16 @@ bool HostService::AddWtsTerminalObserver(const std::string& terminal_id,
     }
 
     // Check that |observer| hasn't been registered already.
-    if (i->observer == observer)
+    if (i->observer == observer) {
       return false;
+    }
   }
 
   // If |terminal_id| is new, enumerate all sessions to see if there is one
   // attached to |terminal_id|.
-  if (!session_id_found)
+  if (!session_id_found) {
     registered_observer.session_id = LookupSessionId(terminal_id);
+  }
 
   observers_.push_back(registered_observer);
 
@@ -143,8 +145,7 @@ HostService::HostService()
       stopped_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                      base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
-HostService::~HostService() {
-}
+HostService::~HostService() {}
 
 void HostService::OnSessionChange(uint32_t event, uint32_t session_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -219,9 +220,8 @@ void HostService::CreateLauncher(
 
 int HostService::RunAsService() {
   SERVICE_TABLE_ENTRYW dispatch_table[] = {
-    { const_cast<LPWSTR>(kWindowsServiceName), &HostService::ServiceMain },
-    { nullptr, nullptr }
-  };
+      {const_cast<LPWSTR>(kWindowsServiceName), &HostService::ServiceMain},
+      {nullptr, nullptr}};
 
   if (!StartServiceCtrlDispatcherW(dispatch_table)) {
     PLOG(ERROR) << "Failed to connect to the service control manager";
@@ -265,10 +265,10 @@ void HostService::RunAsServiceImpl() {
     return;
   }
 
-  // Query for supported hardware as soon as the Windows service is started. This greatly reduces
-  // the risk of hitting a crash due to an unsupported CPU instruction since very little
-  // specialized code has been executed at this point (e.g. connecting to the network, capturing
-  // video, etc.).
+  // Query for supported hardware as soon as the Windows service is started.
+  // This greatly reduces the risk of hitting a crash due to an unsupported CPU
+  // instruction since very little specialized code has been executed at this
+  // point (e.g. connecting to the network, capturing video, etc.).
   if (!IsCpuSupported()) {
     LOG(ERROR) << "CPU not supported, shutting down to prevent random crashes";
     service_status.dwCurrentState = SERVICE_STOPPED;
@@ -284,8 +284,9 @@ void HostService::RunAsServiceImpl() {
 
   // Initialize COM.
   base::win::ScopedCOMInitializer com_initializer;
-  if (!com_initializer.Succeeded())
+  if (!com_initializer.Succeeded()) {
     return;
+  }
 
   if (!InitializeComSecurity(base::WideToUTF8(kComProcessSd),
                              base::WideToUTF8(kComProcessMandatoryLabel),
@@ -294,8 +295,7 @@ void HostService::RunAsServiceImpl() {
   }
 
   CreateLauncher(scoped_refptr<AutoThreadTaskRunner>(
-      new AutoThreadTaskRunner(main_task_runner_,
-                               run_loop.QuitClosure())));
+      new AutoThreadTaskRunner(main_task_runner_, run_loop.QuitClosure())));
 
   // Run the service.
   run_loop.Run();
@@ -321,8 +321,9 @@ int HostService::RunInConsole() {
 
   // Initialize COM.
   base::win::ScopedCOMInitializer com_initializer;
-  if (!com_initializer.Succeeded())
+  if (!com_initializer.Succeeded()) {
     return result;
+  }
 
   if (!InitializeComSecurity(base::WideToUTF8(kComProcessSd),
                              base::WideToUTF8(kComProcessMandatoryLabel),
@@ -345,11 +346,10 @@ int HostService::RunInConsole() {
   }
 
   // Subscribe to session change notifications.
-  if (WTSRegisterSessionNotification(window.hwnd(),
-                                     NOTIFY_FOR_ALL_SESSIONS) != FALSE) {
+  if (WTSRegisterSessionNotification(window.hwnd(), NOTIFY_FOR_ALL_SESSIONS) !=
+      FALSE) {
     CreateLauncher(scoped_refptr<AutoThreadTaskRunner>(
-        new AutoThreadTaskRunner(main_task_runner_,
-                                 run_loop.QuitClosure())));
+        new AutoThreadTaskRunner(main_task_runner_, run_loop.QuitClosure())));
 
     // Run the service.
     run_loop.Run();
@@ -378,8 +378,10 @@ void HostService::StopDaemonProcess() {
   daemon_process_.reset();
 }
 
-bool HostService::HandleMessage(
-    UINT message, WPARAM wparam, LPARAM lparam, LRESULT* result) {
+bool HostService::HandleMessage(UINT message,
+                                WPARAM wparam,
+                                LPARAM lparam,
+                                LRESULT* result) {
   if (message == WM_WTSSESSION_CHANGE) {
     OnSessionChange(wparam, lparam);
     *result = 0;

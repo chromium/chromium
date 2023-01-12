@@ -19,8 +19,9 @@ WaylandConnection::WaylandConnection(std::string wl_socket)
 }
 
 WaylandConnection::~WaylandConnection() {
-  if (display_)
+  if (display_) {
     wl_display_disconnect(display_.get());
+  }
 }
 
 // static
@@ -81,8 +82,9 @@ void WaylandConnection::DispatchWaylandEvents() {
                << errno;
     success = false;
   }
-  if (!success)
+  if (!success) {
     timer_.Stop();
+  }
 }
 
 DesktopDisplayInfo WaylandConnection::GetCurrentDisplayInfo() const {

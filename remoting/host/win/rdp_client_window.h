@@ -32,9 +32,12 @@ namespace remoting {
 // a UI thread.
 class RdpClientWindow
     : public CWindowImpl<RdpClientWindow, CWindow, CFrameWinTraits>,
-      public IDispEventImpl<1, RdpClientWindow,
+      public IDispEventImpl<1,
+                            RdpClientWindow,
                             &__uuidof(mstsc::IMsTscAxEvents),
-                            &__uuidof(mstsc::__MSTSCLib), 1, 0> {
+                            &__uuidof(mstsc::__MSTSCLib),
+                            1,
+                            0> {
  public:
   // Receives connect/disconnect notifications. The notifications can be
   // delivered after RdpClientWindow::Connect() returned success.
@@ -89,9 +92,13 @@ class RdpClientWindow
   void ChangeResolution(const ScreenResolution& resolution);
 
  private:
-  typedef IDispEventImpl<1, RdpClientWindow,
+  typedef IDispEventImpl<1,
+                         RdpClientWindow,
                          &__uuidof(mstsc::IMsTscAxEvents),
-                         &__uuidof(mstsc::__MSTSCLib), 1, 0> RdpEventsSink;
+                         &__uuidof(mstsc::__MSTSCLib),
+                         1,
+                         0>
+      RdpEventsSink;
 
   // Handled window messages.
   BEGIN_MSG_MAP_EX(RdpClientWindow)
@@ -111,20 +118,34 @@ class RdpClientWindow
   void OnDestroy();
 
   BEGIN_SINK_MAP(RdpClientWindow)
-    SINK_ENTRY_EX(1, __uuidof(mstsc::IMsTscAxEvents), 2,
-                  &RdpClientWindow::OnConnected)
-    SINK_ENTRY_EX(1, __uuidof(mstsc::IMsTscAxEvents), 3,
-                  &RdpClientWindow::OnLoginComplete)
-    SINK_ENTRY_EX(1, __uuidof(mstsc::IMsTscAxEvents), 4,
-                  &RdpClientWindow::OnDisconnected)
-    SINK_ENTRY_EX(1, __uuidof(mstsc::IMsTscAxEvents), 10,
-                  &RdpClientWindow::OnFatalError)
-    SINK_ENTRY_EX(1, __uuidof(mstsc::IMsTscAxEvents), 15,
-                  &RdpClientWindow::OnConfirmClose)
-    SINK_ENTRY_EX(1, __uuidof(mstsc::IMsTscAxEvents), 18,
-                  &RdpClientWindow::OnAuthenticationWarningDisplayed)
-    SINK_ENTRY_EX(1, __uuidof(mstsc::IMsTscAxEvents), 19,
-                  &RdpClientWindow::OnAuthenticationWarningDismissed)
+  SINK_ENTRY_EX(1,
+                __uuidof(mstsc::IMsTscAxEvents),
+                2,
+                &RdpClientWindow::OnConnected)
+  SINK_ENTRY_EX(1,
+                __uuidof(mstsc::IMsTscAxEvents),
+                3,
+                &RdpClientWindow::OnLoginComplete)
+  SINK_ENTRY_EX(1,
+                __uuidof(mstsc::IMsTscAxEvents),
+                4,
+                &RdpClientWindow::OnDisconnected)
+  SINK_ENTRY_EX(1,
+                __uuidof(mstsc::IMsTscAxEvents),
+                10,
+                &RdpClientWindow::OnFatalError)
+  SINK_ENTRY_EX(1,
+                __uuidof(mstsc::IMsTscAxEvents),
+                15,
+                &RdpClientWindow::OnConfirmClose)
+  SINK_ENTRY_EX(1,
+                __uuidof(mstsc::IMsTscAxEvents),
+                18,
+                &RdpClientWindow::OnAuthenticationWarningDisplayed)
+  SINK_ENTRY_EX(1,
+                __uuidof(mstsc::IMsTscAxEvents),
+                19,
+                &RdpClientWindow::OnAuthenticationWarningDismissed)
   END_SINK_MAP()
 
   // mstsc::IMsTscAxEvents notifications.

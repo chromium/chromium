@@ -93,14 +93,16 @@ void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
 
   // Ignore input if we've already initiated a disconnect.
-  if (!disconnect_callback_)
+  if (!disconnect_callback_) {
     return;
+  }
 
   const auto* raw = event.As<x11::Input::RawDeviceEvent>();
   // The X server may send unsolicited MappingNotify events without having
   // selected them.
-  if (!raw)
+  if (!raw) {
     return;
+  }
   if (raw->opcode != x11::Input::RawDeviceEvent::RawKeyPress &&
       raw->opcode != x11::Input::RawDeviceEvent::RawKeyRelease) {
     return;
@@ -110,12 +112,13 @@ void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   const auto key_sym =
       connection_->KeycodeToKeysym(static_cast<x11::KeyCode>(raw->detail), 0);
 
-  if (key_sym == XK_Control_L || key_sym == XK_Control_R)
+  if (key_sym == XK_Control_L || key_sym == XK_Control_R) {
     ctrl_pressed_ = down;
-  else if (key_sym == XK_Alt_L || key_sym == XK_Alt_R)
+  } else if (key_sym == XK_Alt_L || key_sym == XK_Alt_R) {
     alt_pressed_ = down;
-  else if (key_sym == XK_Escape && down && alt_pressed_ && ctrl_pressed_)
+  } else if (key_sym == XK_Escape && down && alt_pressed_ && ctrl_pressed_) {
     caller_task_runner_->PostTask(FROM_HERE, std::move(disconnect_callback_));
+  }
 }
 
 std::unique_ptr<LocalHotkeyInputMonitor> LocalHotkeyInputMonitor::Create(

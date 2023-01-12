@@ -59,8 +59,9 @@ class It2MeConfirmationDialogChromeOSTest
   const message_center::Notification* GetFirstNotification() {
     const message_center::NotificationList::Notifications& notifications =
         message_center().GetVisibleNotifications();
-    if (notifications.size() == 0)
+    if (notifications.size() == 0) {
       return nullptr;
+    }
 
     return *notifications.cbegin();
   }
@@ -69,8 +70,9 @@ class It2MeConfirmationDialogChromeOSTest
                 const std::u16string& button_title) {
     auto button_iter = base::ranges::find(array, button_title,
                                           &message_center::ButtonInfo::title);
-    if (button_iter == array.cend())
+    if (button_iter == array.cend()) {
       return -1;
+    }
 
     return std::distance(array.cbegin(), button_iter);
   }

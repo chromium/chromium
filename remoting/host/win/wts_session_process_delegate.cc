@@ -205,13 +205,11 @@ bool WtsSessionProcessDelegate::Core::Initialize(uint32_t session_id) {
     // that all processes will be killed once the job object is destroyed.
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION info;
     memset(&info, 0, sizeof(info));
-    info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_ACTIVE_PROCESS |
-        JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+    info.BasicLimitInformation.LimitFlags =
+        JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
     info.BasicLimitInformation.ActiveProcessLimit = 2;
-    if (!SetInformationJobObject(job.Get(),
-                                 JobObjectExtendedLimitInformation,
-                                 &info,
-                                 sizeof(info))) {
+    if (!SetInformationJobObject(job.Get(), JobObjectExtendedLimitInformation,
+                                 &info, sizeof(info))) {
       PLOG(ERROR) << "Failed to set limits on the job object";
       return false;
     }
@@ -370,8 +368,9 @@ void WtsSessionProcessDelegate::Core::OnChannelConnected(int32_t peer_pid) {
 
   channel_->GetRemoteAssociatedInterface(&worker_process_control_);
 
-  if (event_handler_)
+  if (event_handler_) {
     event_handler_->OnChannelConnected(peer_pid);
+  }
 }
 
 void WtsSessionProcessDelegate::Core::OnChannelError() {

@@ -48,12 +48,14 @@ void HostStopper::OnStopped(DaemonController::AsyncResult) {
   for (auto i = 0; !stopped && i < 10; i++) {
     stopped =
         (daemon_controller_->GetState() == DaemonController::STATE_STOPPED);
-    if (!stopped)
+    if (!stopped) {
       base::PlatformThread::Sleep(base::Seconds(1));
+    }
   }
-  if (!stopped)
+  if (!stopped) {
     LOG(WARNING) << "Unable to stop existing host process. Setup will "
                  << "continue, but you may need to reboot to complete it.";
+  }
   std::move(on_done_).Run();
 }
 

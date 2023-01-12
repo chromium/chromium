@@ -27,8 +27,9 @@ namespace {
 
 absl::optional<SkBitmap> ToSkBitmap(
     std::unique_ptr<viz::CopyOutputResult> result) {
-  if (result->IsEmpty())
+  if (result->IsEmpty()) {
     return absl::nullopt;
+  }
 
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
   return scoped_bitmap.GetOutScopedBitmap();
@@ -43,8 +44,9 @@ class DefaultAshProxy : public AshProxy {
 
   // AshProxy implementation:
   DisplayId GetPrimaryDisplayId() const override {
-    if (!screen())
+    if (!screen()) {
       return display::kDefaultDisplayId;
+    }
 
     return screen()->GetPrimaryDisplay().id();
   }
@@ -54,8 +56,9 @@ class DefaultAshProxy : public AshProxy {
   }
 
   const display::Display* GetDisplayForId(DisplayId display_id) const override {
-    if (!display_manager().IsActiveDisplayId(display_id))
+    if (!display_manager().IsActiveDisplayId(display_id)) {
       return nullptr;
+    }
 
     return &display_manager().GetDisplayForId(display_id);
   }
@@ -157,16 +160,18 @@ AshProxy* g_instance_for_testing_ = nullptr;
 AshProxy& AshProxy::Get() {
   static base::NoDestructor<DefaultAshProxy> instance_;
 
-  if (g_instance_for_testing_)
+  if (g_instance_for_testing_) {
     return *g_instance_for_testing_;
+  }
 
   return *instance_;
 }
 
 // static
 void AshProxy::SetInstanceForTesting(AshProxy* instance) {
-  if (instance)
+  if (instance) {
     DCHECK(!g_instance_for_testing_);
+  }
   g_instance_for_testing_ = instance;
 }
 

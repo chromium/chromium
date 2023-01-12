@@ -51,14 +51,16 @@ std::unique_ptr<remoting::CompoundBuffer> DataToBuffer(
 // base::queue doesn't provide operator==.
 template <typename T>
 bool QueuesEqual(const base::queue<T>& a, const base::queue<T>& b) {
-  if (a.size() != b.size())
+  if (a.size() != b.size()) {
     return false;
+  }
 
   auto a_copy = a;
   auto b_copy = b;
   while (!a_copy.empty()) {
-    if (a_copy.front() != b_copy.front())
+    if (a_copy.front() != b_copy.front()) {
       return false;
+    }
     a_copy.pop();
     b_copy.pop();
   }

@@ -139,8 +139,7 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
     return DaemonController::STATE_NOT_IMPLEMENTED;
   } else {
     LOG(ERROR) << "Unknown status string returned from  \""
-               << command_line.GetCommandLineString()
-               << "\": " << status;
+               << command_line.GetCommandLineString() << "\": " << status;
     return DaemonController::STATE_UNKNOWN;
   }
 }
@@ -148,8 +147,9 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
 absl::optional<base::Value::Dict> DaemonControllerDelegateLinux::GetConfig() {
   absl::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(GetConfigPath()));
-  if (!host_config.has_value())
+  if (!host_config.has_value()) {
     return absl::nullopt;
+  }
 
   base::Value::Dict result;
   std::string* value = host_config->FindString(kHostIdConfigPath);
@@ -235,8 +235,9 @@ void DaemonControllerDelegateLinux::UpdateConfig(
   std::vector<std::string> args = {"--reload",
                                    "--config=" + GetConfigPath().value()};
   DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
-  if (RunHostScript(args))
+  if (RunHostScript(args)) {
     result = DaemonController::RESULT_OK;
+  }
 
   std::move(done).Run(result);
 }
@@ -246,8 +247,9 @@ void DaemonControllerDelegateLinux::Stop(
   std::vector<std::string> args = {"--stop",
                                    "--config=" + GetConfigPath().value()};
   DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
-  if (RunHostScript(args))
+  if (RunHostScript(args)) {
     result = DaemonController::RESULT_OK;
+  }
 
   std::move(done).Run(result);
 }

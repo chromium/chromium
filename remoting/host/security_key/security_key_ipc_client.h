@@ -21,7 +21,7 @@
 namespace IPC {
 class Channel;
 class Message;
-}  // IPC
+}  // namespace IPC
 
 namespace remoting {
 

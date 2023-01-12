@@ -27,8 +27,9 @@ KeyboardLayoutMonitorWayland::KeyboardLayoutMonitorWayland(
     : layout_changed_callback_(std::move(callback)) {}
 
 KeyboardLayoutMonitorWayland::~KeyboardLayoutMonitorWayland() {
-  if (xkb_state_)
+  if (xkb_state_) {
     xkb_state_unref(xkb_state_.get());
+  }
 }
 
 void KeyboardLayoutMonitorWayland::Start() {
@@ -41,8 +42,9 @@ void KeyboardLayoutMonitorWayland::Start() {
 }
 
 void KeyboardLayoutMonitorWayland::UpdateState() {
-  if (xkb_state_)
+  if (xkb_state_) {
     xkb_state_unref(xkb_state_.get());
+  }
   xkb_state_ = xkb_state_new(keymap_.get());
 }
 
@@ -88,8 +90,9 @@ KeyboardLayoutMonitorWayland::GenerateProtocolLayoutMessage() {
       constexpr uint32_t ALTGR_MODIFIER = 128;
       uint32_t mods_locked = NUMLOCK_MODIFIER;
       uint32_t mods_latched = 0;
-      if (shift_level & 1)
+      if (shift_level & 1) {
         mods_locked |= SHIFT_MODIFIER;
+      }
       if (shift_level & 2) {
         mods_locked &= ~CAPSLOCK_MODIFIER;
         mods_latched |= ALTGR_MODIFIER;
@@ -165,8 +168,9 @@ KeyboardLayoutMonitorWayland::GenerateProtocolLayoutMessage() {
 void KeyboardLayoutMonitorWayland::ProcessModifiersAndNotifyCallbacks(
     uint32_t group) {
   if (current_group_ != XKB_LAYOUT_INVALID &&
-      group == static_cast<uint32_t>(current_group_))
+      group == static_cast<uint32_t>(current_group_)) {
     return;
+  }
 
   if (!xkb_state_) {
     LOG(WARNING) << "Received modifier without keymap?";

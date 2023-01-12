@@ -83,8 +83,7 @@ NativeMessagingReader::Core::Core(
     : read_stream_(std::move(file)),
       reader_(reader),
       caller_task_runner_(caller_task_runner),
-      read_task_runner_(read_task_runner) {
-}
+      read_task_runner_(read_task_runner) {}
 
 NativeMessagingReader::Core::~Core() = default;
 

@@ -75,8 +75,9 @@ HWND FindWindowRecursively(HWND parent, const std::wstring& class_name) {
       // See if the window class name matches |class_name|.
       WCHAR name[kMaxWindowClassLength];
       int length = GetClassName(child, name, std::size(name));
-      if (std::wstring(name, length) == class_name)
+      if (std::wstring(name, length) == class_name) {
         return child;
+      }
 
       // Remember the window to look through its children.
       windows.push_back(child);
@@ -97,8 +98,7 @@ HWND FindWindowRecursively(HWND parent, const std::wstring& class_name) {
 // a WH_CBT window hook to track window activations and close all activated
 // windows. There should be only one instance of |WindowHook| per thread
 // at any given moment.
-class RdpClientWindow::WindowHook
-    : public base::RefCounted<WindowHook> {
+class RdpClientWindow::WindowHook : public base::RefCounted<WindowHook> {
  public:
   static scoped_refptr<WindowHook> Create();
 
@@ -111,8 +111,9 @@ class RdpClientWindow::WindowHook
   WindowHook();
   virtual ~WindowHook();
 
-  static LRESULT CALLBACK CloseWindowOnActivation(
-      int code, WPARAM wparam, LPARAM lparam);
+  static LRESULT CALLBACK CloseWindowOnActivation(int code,
+                                                  WPARAM wparam,
+                                                  LPARAM lparam);
 
   HHOOK hook_;
 };
@@ -122,8 +123,7 @@ RdpClientWindow::RdpClientWindow(const net::IPEndPoint& server_endpoint,
                                  EventHandler* event_handler)
     : event_handler_(event_handler),
       server_endpoint_(server_endpoint),
-      terminal_id_(terminal_id) {
-}
+      terminal_id_(terminal_id) {}
 
 RdpClientWindow::~RdpClientWindow() {
   if (m_hWnd) {
@@ -272,33 +272,39 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
                screen_resolution_.dimensions().height()};
   activex_window.Create(m_hWnd, rect, nullptr,
                         WS_CHILD | WS_VISIBLE | WS_BORDER);
-  if (activex_window.m_hWnd == nullptr)
+  if (activex_window.m_hWnd == nullptr) {
     return LogOnCreateError(HRESULT_FROM_WIN32(GetLastError()));
+  }
 
   // Instantiate the RDP ActiveX control.
   result = activex_window.CreateControlEx(
       OLESTR("MsTscAx.MsTscAx"), nullptr, nullptr, &control,
       __uuidof(mstsc::IMsTscAxEvents),
       reinterpret_cast<IUnknown*>(static_cast<RdpEventsSink*>(this)));
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   result = control.As(&client_);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Use 32-bit color.
   result = client_->put_ColorDepth(32);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Set dimensions of the remote desktop.
   result = client_->put_DesktopWidth(screen_resolution_.dimensions().width());
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
   result = client_->put_DesktopHeight(screen_resolution_.dimensions().height());
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Check to see if the platform exposes the interface used for resizing.
   result = client_.As(&client_9_);
@@ -308,75 +314,88 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
 
   // Set the server name to connect to.
   result = client_->put_Server(server_name.Get());
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Fetch IMsRdpClientAdvancedSettings interface for the client.
   result = client_->get_AdvancedSettings2(&client_settings_);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Disable background input mode.
   result = client_settings_->put_allowBackgroundInput(0);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Do not use bitmap cache.
   result = client_settings_->put_BitmapPersistence(0);
-  if (SUCCEEDED(result))
+  if (SUCCEEDED(result)) {
     result = client_settings_->put_CachePersistenceActive(0);
-  if (FAILED(result))
+  }
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Do not use compression.
   result = client_settings_->put_Compress(0);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Enable the Ctrl+Alt+Del screen.
   result = client_settings_->put_DisableCtrlAltDel(0);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Disable printer and clipboard redirection.
   result = client_settings_->put_DisableRdpdr(FALSE);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Do not display the connection bar.
   result = client_settings_->put_DisplayConnectionBar(VARIANT_FALSE);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Do not grab focus on connect.
   result = client_settings_->put_GrabFocusOnConnect(VARIANT_FALSE);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Enable enhanced graphics, font smoothing and desktop composition.
   const LONG kDesiredFlags = WTS_PERF_ENABLE_ENHANCED_GRAPHICS |
                              WTS_PERF_ENABLE_FONT_SMOOTHING |
                              WTS_PERF_ENABLE_DESKTOP_COMPOSITION;
   result = client_settings_->put_PerformanceFlags(kDesiredFlags);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Set the port to connect to.
   result = client_settings_->put_RDPPort(server_endpoint_.port());
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   result = client_->get_SecuredSettings2(&secured_settings2);
   if (SUCCEEDED(result)) {
-    result =
-        secured_settings2->put_AudioRedirectionMode(kRdpAudioModeRedirect);
-    if (FAILED(result))
+    result = secured_settings2->put_AudioRedirectionMode(kRdpAudioModeRedirect);
+    if (FAILED(result)) {
       return LogOnCreateError(result);
+    }
   }
 
   result = client_->get_SecuredSettings(&secured_settings);
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   // Set the terminal ID as the working directory for the initial program. It is
   // observed that |WorkDir| is used only if an initial program is also
@@ -386,12 +405,14 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
   //
   // This code should be in sync with WtsTerminalMonitor::LookupTerminalId().
   result = secured_settings->put_WorkDir(terminal_id.Get());
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   result = client_->Connect();
-  if (FAILED(result))
+  if (FAILED(result)) {
     return LogOnCreateError(result);
+  }
 
   return 0;
 }
@@ -462,8 +483,9 @@ STDMETHODIMP RdpClientWindow::OnDisconnected(long reason) {
   // Get the extended disconnect reason code.
   mstsc::ExtendedDisconnectReasonCode extended_code;
   HRESULT result = client_->get_ExtendedDisconnectReason(&extended_code);
-  if (FAILED(result))
+  if (FAILED(result)) {
     extended_code = mstsc::exDiscReasonNoInfo;
+  }
 
   // Get the error message as well.
   base::win::ScopedBstr error_message;
@@ -472,8 +494,9 @@ STDMETHODIMP RdpClientWindow::OnDisconnected(long reason) {
   if (SUCCEEDED(result)) {
     result = client5->GetErrorDescription(reason, extended_code,
                                           error_message.Receive());
-    if (FAILED(result))
+    if (FAILED(result)) {
       error_message.Reset();
+    }
   }
 
   LOG(ERROR) << "RDP: disconnected from " << server_endpoint_.ToString() << ": "
@@ -485,8 +508,7 @@ STDMETHODIMP RdpClientWindow::OnDisconnected(long reason) {
 }
 
 STDMETHODIMP RdpClientWindow::OnFatalError(long error_code) {
-  LOG(ERROR) << "RDP: an error occured: error_code="
-             << error_code;
+  LOG(ERROR) << "RDP: an error occured: error_code=" << error_code;
 
   NotifyDisconnected();
   return S_OK;
@@ -537,8 +559,7 @@ HRESULT RdpClientWindow::UpdateDesktopResolution() {
       screen_resolution_.dimensions().height(),
       screen_resolution_.dimensions().width(),
       screen_resolution_.dimensions().height(),
-      /*ulOrientation=*/0,
-      screen_resolution_.dpi().x(),
+      /*ulOrientation=*/0, screen_resolution_.dpi().x(),
       screen_resolution_.dpi().y());
 }
 
@@ -575,10 +596,8 @@ RdpClientWindow::WindowHook::WindowHook() : hook_(nullptr) {
   DCHECK(!g_window_hook.Pointer()->Get());
 
   // Install a window hook to be called on window activation.
-  hook_ = SetWindowsHookEx(WH_CBT,
-                           &WindowHook::CloseWindowOnActivation,
-                           nullptr,
-                           GetCurrentThreadId());
+  hook_ = SetWindowsHookEx(WH_CBT, &WindowHook::CloseWindowOnActivation,
+                           nullptr, GetCurrentThreadId());
   // Without the hook installed, RdpClientWindow will not be able to cancel
   // modal UI windows. This will block the UI message loop so it is better to
   // terminate the process now.
@@ -598,8 +617,10 @@ RdpClientWindow::WindowHook::~WindowHook() {
 }
 
 // static
-LRESULT CALLBACK RdpClientWindow::WindowHook::CloseWindowOnActivation(
-    int code, WPARAM wparam, LPARAM lparam) {
+LRESULT CALLBACK
+RdpClientWindow::WindowHook::CloseWindowOnActivation(int code,
+                                                     WPARAM wparam,
+                                                     LPARAM lparam) {
   // Get the hook handle.
   HHOOK hook = g_window_hook.Pointer()->Get()->hook_;
 

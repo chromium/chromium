@@ -9,9 +9,7 @@
 namespace remoting {
 
 WindowStationAndDesktop::WindowStationAndDesktop()
-    : desktop_(nullptr),
-      window_station_(nullptr) {
-}
+    : desktop_(nullptr), window_station_(nullptr) {}
 
 WindowStationAndDesktop::~WindowStationAndDesktop() {
   SetDesktop(nullptr);
@@ -20,14 +18,16 @@ WindowStationAndDesktop::~WindowStationAndDesktop() {
 
 void WindowStationAndDesktop::SetDesktop(HDESK desktop) {
   std::swap(desktop_, desktop);
-  if (desktop)
+  if (desktop) {
     CloseDesktop(desktop);
+  }
 }
 
 void WindowStationAndDesktop::SetWindowStation(HWINSTA window_station) {
   std::swap(window_station_, window_station);
-  if (window_station)
+  if (window_station) {
     CloseWindowStation(window_station);
+  }
 }
 
 void WindowStationAndDesktop::Swap(WindowStationAndDesktop& other) {

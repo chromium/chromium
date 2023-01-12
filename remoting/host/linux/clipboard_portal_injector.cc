@@ -40,8 +40,9 @@ void UnsubscribeSignalHandler(GDBusConnection* connection, guint& signal_id) {
 // portal expects 'text/plain;charset=utf-8' while we use 'text/plain;
 // charset=UTF-8'
 static std::string TranslateMimeTypeForPortal(std::string mime_type) {
-  if (mime_type == kMimeTypeTextUtf8)
+  if (mime_type == kMimeTypeTextUtf8) {
     return kPortalMimeTypeTextUtf8;
+  }
 
   return mime_type;
 }
@@ -108,8 +109,9 @@ void ClipboardPortalInjector::SetSelection(std::string mime_type,
   mime_type = TranslateMimeTypeForPortal(mime_type);
   write_data_ = data;
 
-  if (!writable_mime_type_set_.contains(mime_type))
+  if (!writable_mime_type_set_.contains(mime_type)) {
     writable_mime_type_set_.insert(mime_type);
+  }
 
   GVariantBuilder options_builder;
   GVariantBuilder mime_types_string_builder;
@@ -118,8 +120,9 @@ void ClipboardPortalInjector::SetSelection(std::string mime_type,
   g_variant_builder_init(&mime_types_string_builder,
                          G_VARIANT_TYPE_STRING_ARRAY);
 
-  for (auto it : writable_mime_type_set_)
+  for (auto it : writable_mime_type_set_) {
     g_variant_builder_add(&mime_types_string_builder, "s", it.c_str());
+  }
 
   g_variant_builder_add(&options_builder, "{sv}", "mime_types",
                         g_variant_builder_end(&mime_types_string_builder));
@@ -277,11 +280,13 @@ void ClipboardPortalInjector::OnSelectionReadCallback(GDBusProxy* proxy,
 
   std::string read_data;
   base::ScopedFILE stream(fdopen(fd.release(), "rb"));
-  if (!stream.get())
+  if (!stream.get()) {
     return;
+  }
 
-  if (base::ReadStreamToString(stream.get(), &read_data))
+  if (base::ReadStreamToString(stream.get(), &read_data)) {
     that->clipboard_changed_callback_.Run(kMimeTypeTextUtf8, read_data);
+  }
 }
 
 void ClipboardPortalInjector::SubscribeClipboardSignals() {
@@ -355,13 +360,15 @@ void ClipboardPortalInjector::OnSelectionOwnerChangedSignal(
 
   Scoped<GVariant> session_is_owner(g_variant_lookup_value(
       options.get(), "session_is_owner", G_VARIANT_TYPE_BOOLEAN));
-  if (session_is_owner && g_variant_get_boolean(session_is_owner.get()))
+  if (session_is_owner && g_variant_get_boolean(session_is_owner.get())) {
     return;
+  }
 
   Scoped<GVariant> mime_types(g_variant_lookup_value(
       options.get(), "mime_types", G_VARIANT_TYPE("(as)")));
-  if (!mime_types)
+  if (!mime_types) {
     return;
+  }
 
   GVariantIter iterator;
   gchar* mime_type;

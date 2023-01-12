@@ -18,7 +18,7 @@ bool AudioVolumeFilterWin::ActivateBy(IMMDevice* mm_device) {
   audio_volume_.Reset();
   // TODO(zijiehe): Do we need to control the volume per process?
   HRESULT hr = mm_device->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_ALL,
-      nullptr, &audio_volume_);
+                                   nullptr, &audio_volume_);
   if (FAILED(hr)) {
     LOG(WARNING) << "Failed to get an IAudioEndpointVolume. Error " << hr;
     return false;

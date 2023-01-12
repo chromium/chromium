@@ -231,8 +231,9 @@ void InputInjectorWayland::Core::InjectKeyEvent(const KeyEvent& event) {
     return;
   }
   // HostEventDispatcher should filter events missing the pressed field.
-  if (!event.has_pressed() || !event.has_usb_keycode())
+  if (!event.has_pressed() || !event.has_usb_keycode()) {
     return;
+  }
 
   int keycode =
       ui::KeycodeConverter::UsbKeycodeToNativeKeycode(event.usb_keycode()) -
@@ -319,8 +320,9 @@ void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
 #endif
     if (event.has_button() && event.has_button_down() && !event.button_down()) {
       if (latest_mouse_position_ &&
-          new_mouse_position.equals(*latest_mouse_position_))
+          new_mouse_position.equals(*latest_mouse_position_)) {
         inject_motion = false;
+      }
     }
 
     if (inject_motion) {

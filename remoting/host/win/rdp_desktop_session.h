@@ -32,7 +32,7 @@ class __declspec(uuid(RDP_DESKTOP_SESSION_CLSID)) RdpDesktopSession
   // ATL::CComObjectCached) for classes hosted in a DLL. This class is compiled
   // into a DLL but it is registered as an out-of-process class, so its class
   // factory should not use locking.
-  typedef ATL::CComCreator<ATL::CComObjectNoLock<ATL::CComClassFactory> >
+  typedef ATL::CComCreator<ATL::CComObjectNoLock<ATL::CComClassFactory>>
       _ClassFactoryCreatorClass;
 
   RdpDesktopSession();
@@ -40,16 +40,16 @@ class __declspec(uuid(RDP_DESKTOP_SESSION_CLSID)) RdpDesktopSession
 
   // IRdpDesktopSession implementation.
   STDMETHOD(Connect)
-      (long width,
-       long height,
-       long dpi_x,
-       long dpi_y,
-       BSTR terminal_id,
-       DWORD port_number,
-       IRdpDesktopSessionEventHandler* event_handler) override;
+  (long width,
+   long height,
+   long dpi_x,
+   long dpi_y,
+   BSTR terminal_id,
+   DWORD port_number,
+   IRdpDesktopSessionEventHandler* event_handler) override;
   STDMETHOD(Disconnect)() override;
-  STDMETHOD(ChangeResolution)(long width, long height,
-                              long dpi_x, long dpi_y) override;
+  STDMETHOD(ChangeResolution)
+  (long width, long height, long dpi_x, long dpi_y) override;
   STDMETHOD(InjectSas)() override;
 
   DECLARE_NO_REGISTRY()
@@ -60,8 +60,8 @@ class __declspec(uuid(RDP_DESKTOP_SESSION_CLSID)) RdpDesktopSession
   void OnRdpClosed() override;
 
   BEGIN_COM_MAP(RdpDesktopSession)
-    COM_INTERFACE_ENTRY(IRdpDesktopSession)
-    COM_INTERFACE_ENTRY(IUnknown)
+  COM_INTERFACE_ENTRY(IRdpDesktopSession)
+  COM_INTERFACE_ENTRY(IUnknown)
   END_COM_MAP()
 
   // Implements loading and instantiation of the RDP ActiveX client.
@@ -74,6 +74,6 @@ class __declspec(uuid(RDP_DESKTOP_SESSION_CLSID)) RdpDesktopSession
   DECLARE_PROTECT_FINAL_CONSTRUCT()
 };
 
-} // namespace remoting
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_WIN_RDP_DESKTOP_SESSION_H_

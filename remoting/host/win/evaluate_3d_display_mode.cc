@@ -57,16 +57,18 @@ int Evaluate3dDisplayMode() {
     return kInitializationFailed;
   }
 
-  if (factory->IsWindowedStereoEnabled())
+  if (factory->IsWindowedStereoEnabled()) {
     std::cout << k3dDisplayModeEnabled << std::endl;
+  }
 
   return kSuccessExitCode;
 }
 
 bool Get3dDisplayModeEnabled() {
   std::string output;
-  if (EvaluateCapability(kEvaluate3dDisplayMode, &output) != kSuccessExitCode)
+  if (EvaluateCapability(kEvaluate3dDisplayMode, &output) != kSuccessExitCode) {
     return false;
+  }
 
   base::TrimString(output, base::kWhitespaceASCII, &output);
 

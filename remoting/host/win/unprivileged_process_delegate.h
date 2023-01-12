@@ -24,12 +24,12 @@
 namespace base {
 class CommandLine;
 class SingleThreadTaskRunner;
-} // namespace base
+}  // namespace base
 
 namespace IPC {
 class ChannelProxy;
 class Message;
-} // namespace IPC
+}  // namespace IPC
 
 namespace remoting {
 

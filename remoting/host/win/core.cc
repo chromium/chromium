@@ -10,8 +10,9 @@ extern "C" BOOL WINAPI PsDllMain(HINSTANCE instance,
                                  void* reserved);
 
 BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, void* reserved) {
-  if (reason == DLL_PROCESS_ATTACH)
+  if (reason == DLL_PROCESS_ATTACH) {
     DisableThreadLibraryCalls(instance);
+  }
 
   // Initialize the proxy/stub code as well.
   return PsDllMain(instance, reason, reserved);

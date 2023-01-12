@@ -50,7 +50,10 @@ class It2MeConfirmationDialogLinux : public It2MeConfirmationDialog {
   void Hide();
 
   // Handles user input from the dialog.
-  CHROMEG_CALLBACK_1(It2MeConfirmationDialogLinux, void, OnResponse, GtkDialog*,
+  CHROMEG_CALLBACK_1(It2MeConfirmationDialogLinux,
+                     void,
+                     OnResponse,
+                     GtkDialog*,
                      int);
 
   GtkWidget* confirmation_window_ = nullptr;
@@ -97,8 +100,7 @@ void It2MeConfirmationDialogLinux::CreateWindow(
 
   confirmation_window_ = gtk_dialog_new_with_buttons(
       l10n_util::GetStringUTF8(IDS_PRODUCT_NAME).c_str(),
-      /*parent=*/nullptr,
-      static_cast<GtkDialogFlags>(GTK_DIALOG_MODAL),
+      /*parent=*/nullptr, static_cast<GtkDialogFlags>(GTK_DIALOG_MODAL),
       l10n_util::GetStringUTF8(IDS_SHARE_CONFIRM_DIALOG_DECLINE).c_str(),
       GTK_RESPONSE_CANCEL,
       l10n_util::GetStringUTF8(IDS_SHARE_CONFIRM_DIALOG_CONFIRM).c_str(),

@@ -20,10 +20,10 @@ void HostEntryPoint() {
 // Executables instrumented with ASAN need CRT functions. We do not use
 // the /ENTRY switch for ASAN instrumented executable and a "main" function
 // is required.
-int WINAPI wWinMain (HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPWSTR lpCmdLine,
-                     int nCmdShow) {
+int WINAPI wWinMain(HINSTANCE hInstance,
+                    HINSTANCE hPrevInstance,
+                    LPWSTR lpCmdLine,
+                    int nCmdShow) {
   HostEntryPoint();
   return 0;
 }

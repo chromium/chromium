@@ -202,8 +202,9 @@ void HostStarter::StartHostProcess() {
 }
 
 void HostStarter::OnLocalHostStopped() {
-  if (host_id_.empty())
+  if (host_id_.empty()) {
     host_id_ = base::GenerateGUID();
+  }
   key_pair_ = RsaKeyPair::Generate();
 
   std::string host_client_id;

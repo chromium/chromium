@@ -24,9 +24,7 @@ namespace remoting {
 class AudioPipeReaderTest : public testing::Test,
                             public AudioPipeReader::StreamObserver {
  public:
-  AudioPipeReaderTest()
-    : stop_at_position_(-1) {
-  }
+  AudioPipeReaderTest() : stop_at_position_(-1) {}
 
   AudioPipeReaderTest(const AudioPipeReaderTest&) = delete;
   AudioPipeReaderTest& operator=(const AudioPipeReaderTest&) = delete;
@@ -37,8 +35,7 @@ class AudioPipeReaderTest : public testing::Test,
     audio_thread_.reset(new base::Thread("TestAudioThread"));
     audio_thread_->StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
-    reader_ = AudioPipeReader::Create(audio_thread_->task_runner(),
-                                      pipe_path_);
+    reader_ = AudioPipeReader::Create(audio_thread_->task_runner(), pipe_path_);
     reader_->AddObserver(this);
   }
 

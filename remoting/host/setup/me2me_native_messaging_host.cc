@@ -102,8 +102,9 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
 
   // If the client supplies an ID, it will expect it in the response. This
   // might be a string or a number, so cope with both.
-  if (const base::Value* id = message_dict.Find("id"))
+  if (const base::Value* id = message_dict.Find("id")) {
     response.Set("id", id->Clone());
+  }
 
   const std::string* type = message_dict.FindString("type");
   if (!type) {
@@ -142,11 +143,11 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
   } else if (*type == "getHostClientId") {
     ProcessGetHostClientId(std::move(message_dict), std::move(response));
   } else if (*type == "getCredentialsFromAuthCode") {
-    ProcessGetCredentialsFromAuthCode(
-        std::move(message_dict), std::move(response), true);
+    ProcessGetCredentialsFromAuthCode(std::move(message_dict),
+                                      std::move(response), true);
   } else if (*type == "getRefreshTokenFromAuthCode") {
-    ProcessGetCredentialsFromAuthCode(
-        std::move(message_dict), std::move(response), false);
+    ProcessGetCredentialsFromAuthCode(std::move(message_dict),
+                                      std::move(response), false);
   } else if (*type == "it2mePermissionCheck") {
     ProcessIt2mePermissionCheck(std::move(message_dict), std::move(response));
   } else {

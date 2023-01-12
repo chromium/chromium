@@ -77,8 +77,9 @@ void ClipboardPortal::OnClipboardPortalProxyRequested(GObject* /* object */,
   Scoped<GError> error;
   GDBusProxy* proxy = g_dbus_proxy_new_finish(result, error.receive());
   if (!proxy) {
-    if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED))
+    if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
       return;
+    }
     LOG(ERROR) << "Failed to create a proxy for the clipboard portal: "
                << error->message;
     that->OnPortalDone(RequestResponse::kError);

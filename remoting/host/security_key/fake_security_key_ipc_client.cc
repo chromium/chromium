@@ -66,8 +66,9 @@ bool FakeSecurityKeyIpcClient::ConnectViaIpc(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
   mojo::PlatformChannelEndpoint endpoint =
       mojo::NamedPlatformChannel::ConnectToServer(server_name);
-  if (!endpoint.is_valid())
+  if (!endpoint.is_valid()) {
     return false;
+  }
 
   mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
   client_channel_ = IPC::Channel::CreateClient(

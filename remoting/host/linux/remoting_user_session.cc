@@ -158,14 +158,16 @@ extern "C" int Converse(int num_messages,
     }
   }
 
-  if (failed)
+  if (failed) {
     return PAM_CONV_ERR;
+  }
 
   pam_response* response_list = static_cast<pam_response*>(
       std::calloc(num_messages, sizeof(*response_list)));
 
-  if (response_list == nullptr)
+  if (response_list == nullptr) {
     return PAM_BUF_ERR;
+  }
 
   *responses = response_list;
   return PAM_SUCCESS;
@@ -232,8 +234,9 @@ class PamHandle {
     const char* user;
     last_return_code_ = pam_get_item(pam_handle_, PAM_USER,
                                      reinterpret_cast<const void**>(&user));
-    if (last_return_code_ != PAM_SUCCESS || user == nullptr)
+    if (last_return_code_ != PAM_SUCCESS || user == nullptr) {
       return absl::nullopt;
+    }
     return std::string(user);
   }
 
@@ -247,8 +250,9 @@ class PamHandle {
   absl::optional<base::EnvironmentMap> GetEnvironment() {
     char** environment = pam_getenvlist(pam_handle_);
 
-    if (environment == nullptr)
+    if (environment == nullptr) {
       return absl::nullopt;
+    }
 
     base::EnvironmentMap environment_map;
 
@@ -456,12 +460,12 @@ bool ExecuteSession(std::string user,
   // as done here, but it may be worth noting that `login` calls open_session
   // first.
   pam_handle.CheckReturnCode(pam_handle.SetCredentials(PAM_ESTABLISH_CRED),
-                              "Set credentials");
+                             "Set credentials");
 
   pam_handle.CheckReturnCode(pam_handle.OpenSession(0), "Open session");
 
   // The above may have remapped the user.
-  user =  pam_handle.GetUser().value_or(std::move(user));
+  user = pam_handle.GetUser().value_or(std::move(user));
 
   // Fetch pwinfo again, as it may have been invalidated or the user name might
   // have been remapped.

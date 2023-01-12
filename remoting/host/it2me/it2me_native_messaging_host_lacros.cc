@@ -463,8 +463,7 @@ void It2MeNativeMessagingHostLacros::SendErrorAndExit(
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForLacros(
     scoped_refptr<base::SingleThreadTaskRunner> ui_runner) {
-  return std::make_unique<It2MeNativeMessagingHostLacros>(
-      std::move(ui_runner));
+  return std::make_unique<It2MeNativeMessagingHostLacros>(std::move(ui_runner));
 }
 
 }  // namespace remoting

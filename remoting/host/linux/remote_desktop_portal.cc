@@ -60,10 +60,12 @@ void RemoteDesktopPortal::Stop() {
     g_main_context_pop_thread_default(context_);
     g_main_context_unref(context_);
   }
-  if (screencast_portal_)
+  if (screencast_portal_) {
     screencast_portal_.reset();
-  if (clipboard_portal_)
+  }
+  if (clipboard_portal_) {
     clipboard_portal_.reset();
+  }
   UnsubscribeSignalHandlers();
   webrtc::xdg_portal::TearDownSession(std::move(session_handle_), proxy_,
                                       cancellable_, connection_);
@@ -135,8 +137,9 @@ void RemoteDesktopPortal::OnProxyRequested(GObject* gobject,
   // posted task on the task runner can start/finish).
   GDBusProxy* proxy = g_dbus_proxy_new_finish(result, error.receive());
   if (!proxy) {
-    if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED))
+    if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
       return;
+    }
     LOG(ERROR) << "Failed to get a proxy for the portal: " << error->message;
     that->OnPortalDone(RequestResponse::kError);
     return;
@@ -155,8 +158,9 @@ void RemoteDesktopPortal::OnScreenCastPortalProxyRequested(GObject* /*object*/,
   Scoped<GError> error;
   GDBusProxy* proxy = g_dbus_proxy_new_finish(result, error.receive());
   if (!proxy) {
-    if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED))
+    if (g_error_matches(error.get(), G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
       return;
+    }
     LOG(ERROR) << "Failed to create a proxy for the screen cast portal: "
                << error->message;
     that->OnPortalDone(RequestResponse::kError);

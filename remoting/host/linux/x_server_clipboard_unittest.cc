@@ -92,8 +92,9 @@ class XServerClipboardTest : public testing::Test {
 
   void PumpXEvents() {
     while (true) {
-      if (!client1_.PumpXEvents() && !client2_.PumpXEvents())
+      if (!client1_.PumpXEvents() && !client2_.PumpXEvents()) {
         break;
+      }
     }
   }
 

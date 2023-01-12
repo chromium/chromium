@@ -20,29 +20,29 @@
 using base::win::ScopedHandle;
 
 const net::BackoffEntry::Policy kDefaultBackoffPolicy = {
-  // Number of initial errors (in sequence) to ignore before applying
-  // exponential back-off rules.
-  0,
+    // Number of initial errors (in sequence) to ignore before applying
+    // exponential back-off rules.
+    0,
 
-  // Initial delay for exponential back-off in ms.
-  100,
+    // Initial delay for exponential back-off in ms.
+    100,
 
-  // Factor by which the waiting time will be multiplied.
-  2,
+    // Factor by which the waiting time will be multiplied.
+    2,
 
-  // Fuzzing percentage. ex: 10% will spread requests randomly
-  // between 90%-100% of the calculated time.
-  0,
+    // Fuzzing percentage. ex: 10% will spread requests randomly
+    // between 90%-100% of the calculated time.
+    0,
 
-  // Maximum amount of time we are willing to delay our request in ms.
-  60000,
+    // Maximum amount of time we are willing to delay our request in ms.
+    60000,
 
-  // Time to keep an entry from being discarded even when it
-  // has no significant state, -1 to never discard.
-  -1,
+    // Time to keep an entry from being discarded even when it
+    // has no significant state, -1 to never discard.
+    -1,
 
-  // Don't use initial delay unless the last request was an error.
-  false,
+    // Don't use initial delay unless the last request was an error.
+    false,
 };
 
 const int kKillProcessTimeoutSeconds = 5;
@@ -226,8 +226,9 @@ void WorkerProcessLauncher::StopWorker() {
   launcher_delegate_->KillProcess();
 
   // Do not relaunch the worker process if the caller has asked us to stop.
-  if (stopping())
+  if (stopping()) {
     return;
+  }
 
   ipc_handler_->OnWorkerProcessStopped();
 
@@ -244,4 +245,4 @@ void WorkerProcessLauncher::StopWorker() {
                       &WorkerProcessLauncher::LaunchWorker);
 }
 
-} // namespace remoting
+}  // namespace remoting

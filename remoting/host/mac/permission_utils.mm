@@ -57,8 +57,9 @@ void ShowAccessibilityPermissionDialog() {
   // want to shrink the dialog if it is already larger than our min value.
   NSWindow* alert_window = [alert window];
   NSRect frame = [alert_window frame];
-  if (frame.size.width < kMinDialogWidthPx)
+  if (frame.size.width < kMinDialogWidthPx) {
     frame.size.width = kMinDialogWidthPx;
+  }
   [alert_window setFrame:frame display:YES];
 
   [alert setAlertStyle:NSAlertStyleWarning];
@@ -93,8 +94,9 @@ void ShowScreenRecordingPermissionDialog() {
   // want to shrink the dialog if it is already larger than our min value.
   NSWindow* alert_window = [alert window];
   NSRect frame = [alert_window frame];
-  if (frame.size.width < kMinDialogWidthPx)
+  if (frame.size.width < kMinDialogWidthPx) {
     frame.size.width = kMinDialogWidthPx;
+  }
   [alert_window setFrame:frame display:YES];
 
   [alert setAlertStyle:NSAlertStyleWarning];
@@ -111,8 +113,9 @@ namespace remoting {
 namespace mac {
 
 bool CanInjectInput() {
-  if (!base::mac::IsAtLeastOS10_14())
+  if (!base::mac::IsAtLeastOS10_14()) {
     return true;
+  }
   return AXIsProcessTrusted();
 }
 
@@ -126,8 +129,9 @@ bool CanRecordScreen() {
 // affected version and the permission has not already been approved.
 void PromptUserForAccessibilityPermissionIfNeeded(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  if (CanInjectInput())
+  if (CanInjectInput()) {
     return;
+  }
 
   LOG(WARNING) << "AXIsProcessTrusted returned false, requesting "
                << "permission from user to allow input injection.";
@@ -142,8 +146,9 @@ void PromptUserForAccessibilityPermissionIfNeeded(
 // been approved.
 void PromptUserForScreenRecordingPermissionIfNeeded(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  if (CanRecordScreen())
+  if (CanRecordScreen()) {
     return;
+  }
 
   LOG(WARNING) << "CanRecordScreen returned false, requesting permission "
                << "from user to allow screen recording.";

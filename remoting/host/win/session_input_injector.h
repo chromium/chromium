@@ -13,7 +13,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-} // namespace base
+}  // namespace base
 
 namespace remoting {
 
@@ -40,8 +40,7 @@ class SessionInputInjectorWin : public InputInjector {
       std::unique_ptr<protocol::ClipboardStub> client_clipboard) override;
 
   // protocol::ClipboardStub implementation.
-  void InjectClipboardEvent(
-      const protocol::ClipboardEvent& event) override;
+  void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
 
   // protocol::InputStub implementation.
   void InjectKeyEvent(const protocol::KeyEvent& event) override;

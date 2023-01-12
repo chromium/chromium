@@ -10,7 +10,7 @@
 // Concatenates ACE type, permissions and sid given as SDDL strings into an ACE
 // definition in SDDL form.
 #define SDDL_ACE(type, permissions, sid) \
-    L"(" type L";;" permissions L";;;" sid L")"
+  L"(" type L";;" permissions L";;;" sid L")"
 
 // Text representation of COM_RIGHTS_EXECUTE and COM_RIGHTS_EXECUTE_LOCAL
 // permission bits that is used in the SDDL definition below.
@@ -30,6 +30,6 @@ bool InitializeComSecurity(const std::string& security_descriptor,
                            const std::string& mandatory_label,
                            bool activate_as_activator);
 
-} // namespace remoting
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_WIN_COM_SECURITY_H_

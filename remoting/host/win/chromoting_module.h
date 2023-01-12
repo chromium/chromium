@@ -65,6 +65,6 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   raw_ptr<ATL::_ATL_OBJMAP_ENTRY> classes_end_;
 };
 
-} // namespace remoting
+}  // namespace remoting
 
 #endif  // REMOTING_HOST_WIN_CHROMOTING_MODULE_H_

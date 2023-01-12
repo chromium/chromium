@@ -35,28 +35,29 @@ bool InitializeComSecurity(const std::string& security_descriptor,
   }
 
   DWORD capabilities = EOAC_DYNAMIC_CLOAKING;
-  if (!activate_as_activator)
+  if (!activate_as_activator) {
     capabilities |= EOAC_DISABLE_AAA;
+  }
 
   // Apply the security descriptor and default security settings. See
   // InitializeComSecurity's declaration for details.
   HRESULT result = CoInitializeSecurity(
       absolute_sd.get(),
       -1,       // Let COM choose which authentication services to register.
-      nullptr,     // See above.
-      nullptr,     // Reserved, must be nullptr.
+      nullptr,  // See above.
+      nullptr,  // Reserved, must be nullptr.
       RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
       RPC_C_IMP_LEVEL_IDENTIFY,
-      nullptr,     // Default authentication information is not provided.
+      nullptr,  // Default authentication information is not provided.
       capabilities,
-      nullptr);    /// Reserved, must be nullptr
+      nullptr);  // Reserved, must be nullptr
   if (FAILED(result)) {
-    LOG(ERROR) << "CoInitializeSecurity() failed, result=0x"
-               << std::hex << result << std::dec << ".";
+    LOG(ERROR) << "CoInitializeSecurity() failed, result=0x" << std::hex
+               << result << std::dec << ".";
     return false;
   }
 
   return true;
 }
 
-} // namespace remoting
+}  // namespace remoting

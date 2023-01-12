@@ -134,8 +134,9 @@ void PermissionWizard::Impl::CheckScreenRecordingPermission(
 }
 
 void PermissionWizard::Impl::NotifyCompletion(bool result) {
-  if (completion_callback_)
+  if (completion_callback_) {
     std::move(completion_callback_).Run(result);
+  }
 }
 
 void PermissionWizard::Impl::CheckAccessibilityPermissionNow() {
@@ -506,8 +507,9 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
 }
 
 - (void)onPermissionCheckResult:(bool)result {
-  if (_cancelled)
+  if (_cancelled) {
     return;
+  }
 
   _hasPermission = result;
 

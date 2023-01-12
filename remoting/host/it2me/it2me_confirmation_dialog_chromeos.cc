@@ -137,8 +137,9 @@ void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
 
 void It2MeConfirmationDialogChromeOS::OnConfirmationNotificationResult(
     absl::optional<int> button_index) {
-  if (!button_index.has_value())
+  if (!button_index.has_value()) {
     return;  // This happens when the user clicks the notification itself.
+  }
 
   // Note: |by_user| must be false, otherwise the notification will not actually
   // be removed but instead it will be moved into the message center bubble

@@ -28,21 +28,19 @@ namespace {
 
 // 127.0.0.1 is explicitly blocked by the RDP ActiveX control, so we use
 // 127.0.0.2 instead.
-const unsigned char kRdpLoopbackAddress[] = { 127, 0, 0, 2 };
+const unsigned char kRdpLoopbackAddress[] = {127, 0, 0, 2};
 
 }  // namespace
 
 // The core of RdpClient is ref-counted since it services calls and notifies
 // events on the caller task runner, but runs the ActiveX control on the UI
 // task runner.
-class RdpClient::Core
-    : public base::RefCountedThreadSafe<Core>,
-      public RdpClientWindow::EventHandler {
+class RdpClient::Core : public base::RefCountedThreadSafe<Core>,
+                        public RdpClientWindow::EventHandler {
  public:
-  Core(
-      scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      RdpClient::EventHandler* event_handler);
+  Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+       RdpClient::EventHandler* event_handler);
 
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
@@ -128,8 +126,7 @@ RdpClient::Core::Core(
     RdpClient::EventHandler* event_handler)
     : caller_task_runner_(caller_task_runner),
       ui_task_runner_(ui_task_runner),
-      event_handler_(event_handler) {
-}
+      event_handler_(event_handler) {}
 
 void RdpClient::Core::Connect(const ScreenResolution& resolution,
                               const std::string& terminal_id,
@@ -231,8 +228,9 @@ void RdpClient::Core::NotifyConnected() {
     return;
   }
 
-  if (event_handler_)
+  if (event_handler_) {
     event_handler_->OnRdpConnected();
+  }
 }
 
 void RdpClient::Core::NotifyClosed() {

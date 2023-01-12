@@ -196,8 +196,9 @@ void DaemonController::OnServicingDone() {
 
 void DaemonController::ServiceOrQueueRequest(base::OnceClosure request) {
   pending_requests_.push(std::move(request));
-  if (!servicing_request_)
+  if (!servicing_request_) {
     ServiceNextRequest();
+  }
 }
 
 void DaemonController::ServiceNextRequest() {

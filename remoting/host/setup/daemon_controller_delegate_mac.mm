@@ -238,8 +238,9 @@ absl::optional<base::Value::Dict> DaemonControllerDelegateMac::GetConfig() {
   base::FilePath config_path(kHostConfigFilePath);
   absl::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(config_path));
-  if (!host_config.has_value())
+  if (!host_config.has_value()) {
     return absl::nullopt;
+  }
 
   base::Value::Dict config;
   std::string* value = host_config->FindString(kHostIdConfigPath);
@@ -286,8 +287,7 @@ void DaemonControllerDelegateMac::UpdateConfig(
   }
 
   host_config->Merge(std::move(config));
-  ElevateAndSetConfig(std::move(host_config.value()),
-                      std::move(done));
+  ElevateAndSetConfig(std::move(host_config.value()), std::move(done));
 }
 
 void DaemonControllerDelegateMac::Stop(

@@ -36,8 +36,9 @@ void ClipboardWayland::SetSessionDetails(
 
 void ClipboardWayland::OnClipboardChanged(const std::string& mime_type,
                                           const std::string& data) {
-  if (!client_clipboard_)
+  if (!client_clipboard_) {
     return;
+  }
 
   protocol::ClipboardEvent event;
   event.set_mime_type(mime_type);

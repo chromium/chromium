@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "remoting/host/setup/test_util.h"
+
+#include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -13,13 +14,13 @@
 
 namespace remoting {
 
-bool MakePipe(base::File* read_file,
-              base::File* write_file) {
+bool MakePipe(base::File* read_file, base::File* write_file) {
 #if BUILDFLAG(IS_WIN)
   base::PlatformFile read_handle;
   base::PlatformFile write_handle;
-  if (!CreatePipe(&read_handle, &write_handle, nullptr, 0))
+  if (!CreatePipe(&read_handle, &write_handle, nullptr, 0)) {
     return false;
+  }
   *read_file = base::File(read_handle);
   *write_file = base::File(write_handle);
   return true;

@@ -22,7 +22,7 @@
 namespace base {
 class Location;
 class TimeDelta;
-} // namespace base
+}  // namespace base
 
 namespace mojo {
 class ScopedInterfaceEndpointHandle;

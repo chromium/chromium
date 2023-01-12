@@ -11,8 +11,7 @@ namespace remoting {
 
 // Creates an anonymous, unidirectional pipe, returning true if successful. On
 // success, the receives ownership of both files.
-bool MakePipe(base::File* read_file,
-              base::File* write_file);
+bool MakePipe(base::File* read_file, base::File* write_file);
 
 }  // namespace remoting
 

@@ -103,8 +103,9 @@ const std::vector<display::Display>& ScopedFakeAshProxy::GetActiveDisplays()
 const display::Display* ScopedFakeAshProxy::GetDisplayForId(
     DisplayId display_id) const {
   for (const auto& display : displays_) {
-    if (display_id == display.id())
+    if (display_id == display.id()) {
       return &display;
+    }
   }
   return nullptr;
 }

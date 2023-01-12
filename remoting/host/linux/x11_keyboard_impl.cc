@@ -44,10 +44,12 @@ bool FindKeycodeForKeySym(x11::Connection* connection,
 // This is ported from XStringToKeysym
 // https://gitlab.freedesktop.org/xorg/lib/libx11/-/blob/2b7598221d87049d03e9a95fcb541c37c8728184/src/StrKeysym.c#L147-154
 uint32_t UnicodeToKeysym(uint32_t u) {
-  if (u > 0x10ffff || u < 0x20 || (u > 0x7e && u < 0xa0))
+  if (u > 0x10ffff || u < 0x20 || (u > 0x7e && u < 0xa0)) {
     return 0;
-  if (u < 0x100)
+  }
+  if (u < 0x100) {
     return u;
+  }
   return u | 0x01000000;
 }
 
@@ -78,8 +80,9 @@ std::vector<uint32_t> X11KeyboardImpl::GetUnusedKeycodes() {
           break;
         }
       }
-      if (!used)
+      if (!used) {
         unused_keycodes_.push_back(keycode);
+      }
     }
   }
   return unused_keycodes_;
@@ -105,18 +108,21 @@ bool X11KeyboardImpl::FindKeycode(uint32_t code_point,
                                   uint32_t* keycode,
                                   uint32_t* modifiers) {
   for (uint32_t keysym : GetKeySymsForUnicode(code_point)) {
-    if (FindKeycodeForKeySym(connection_, keysym, keycode, modifiers))
+    if (FindKeycodeForKeySym(connection_, keysym, keycode, modifiers)) {
       return true;
+    }
   }
   return false;
 }
 
 bool X11KeyboardImpl::ChangeKeyMapping(uint32_t keycode, uint32_t code_point) {
-  if (!code_point)
+  if (!code_point) {
     return false;
+  }
   auto keysym = UnicodeToKeysym(code_point);
-  if (!keysym)
+  if (!keysym) {
     return false;
+  }
   connection_->ChangeKeyboardMapping({
       .keycode_count = 1,
       .first_keycode = static_cast<x11::KeyCode>(keycode),

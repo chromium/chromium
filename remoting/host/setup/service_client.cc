@@ -60,13 +60,12 @@ class ServiceClient::Core
   DirectoryServiceClient directory_service_client_;
 };
 
-void ServiceClient::Core::RegisterHost(
-    const std::string& host_id,
-    const std::string& host_name,
-    const std::string& public_key,
-    const std::string& host_client_id,
-    const std::string& oauth_access_token,
-    Delegate* delegate) {
+void ServiceClient::Core::RegisterHost(const std::string& host_id,
+                                       const std::string& host_name,
+                                       const std::string& public_key,
+                                       const std::string& host_client_id,
+                                       const std::string& oauth_access_token,
+                                       Delegate* delegate) {
   DCHECK(pending_request_type_ == PENDING_REQUEST_NONE);
   pending_request_type_ = PENDING_REQUEST_REGISTER_HOST;
 
@@ -151,21 +150,19 @@ ServiceClient::ServiceClient(
 
 ServiceClient::~ServiceClient() = default;
 
-void ServiceClient::RegisterHost(
-    const std::string& host_id,
-    const std::string& host_name,
-    const std::string& public_key,
-    const std::string& host_client_id,
-    const std::string& oauth_access_token,
-    Delegate* delegate) {
+void ServiceClient::RegisterHost(const std::string& host_id,
+                                 const std::string& host_name,
+                                 const std::string& public_key,
+                                 const std::string& host_client_id,
+                                 const std::string& oauth_access_token,
+                                 Delegate* delegate) {
   return core_->RegisterHost(host_id, host_name, public_key, host_client_id,
                              oauth_access_token, delegate);
 }
 
-void ServiceClient::UnregisterHost(
-    const std::string& host_id,
-    const std::string& oauth_access_token,
-    Delegate* delegate) {
+void ServiceClient::UnregisterHost(const std::string& host_id,
+                                   const std::string& oauth_access_token,
+                                   Delegate* delegate) {
   return core_->DeleteHost(host_id, oauth_access_token, delegate);
 }
 

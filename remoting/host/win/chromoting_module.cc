@@ -58,8 +58,8 @@ bool LowerProcessIntegrityLevel(DWORD max_level) {
   // Read the current integrity level.
   DWORD sub_authority_count =
       *GetSidSubAuthorityCount(mandatory_label->Label.Sid);
-  DWORD* current_level = GetSidSubAuthority(mandatory_label->Label.Sid,
-                                            sub_authority_count - 1);
+  DWORD* current_level =
+      GetSidSubAuthority(mandatory_label->Label.Sid, sub_authority_count - 1);
 
   // Set the integrity level to |max_level| if needed.
   if (*current_level > max_level) {
@@ -76,22 +76,22 @@ bool LowerProcessIntegrityLevel(DWORD max_level) {
 
 }  // namespace
 
-ChromotingModule::ChromotingModule(
-    ATL::_ATL_OBJMAP_ENTRY* classes,
-    ATL::_ATL_OBJMAP_ENTRY* classes_end)
-    : classes_(classes),
-      classes_end_(classes_end) {
+ChromotingModule::ChromotingModule(ATL::_ATL_OBJMAP_ENTRY* classes,
+                                   ATL::_ATL_OBJMAP_ENTRY* classes_end)
+    : classes_(classes), classes_end_(classes_end) {
   // Don't do anything if COM initialization failed.
-  if (!com_initializer_.Succeeded())
+  if (!com_initializer_.Succeeded()) {
     return;
+  }
 
   ATL::_AtlComModule.ExecuteObjectMain(true);
 }
 
 ChromotingModule::~ChromotingModule() {
   // Don't do anything if COM initialization failed.
-  if (!com_initializer_.Succeeded())
+  if (!com_initializer_.Succeeded()) {
     return;
+  }
 
   Term();
   ATL::_AtlComModule.ExecuteObjectMain(false);
@@ -104,15 +104,16 @@ scoped_refptr<AutoThreadTaskRunner> ChromotingModule::task_runner() {
 
 bool ChromotingModule::Run() {
   // Don't do anything if COM initialization failed.
-  if (!com_initializer_.Succeeded())
+  if (!com_initializer_.Succeeded()) {
     return false;
+  }
 
   // Register class objects.
   HRESULT result = RegisterClassObjects(CLSCTX_LOCAL_SERVER,
                                         REGCLS_MULTIPLEUSE | REGCLS_SUSPENDED);
   if (FAILED(result)) {
-    LOG(ERROR) << "Failed to register class objects, result=0x"
-               << std::hex << result << std::dec << ".";
+    LOG(ERROR) << "Failed to register class objects, result=0x" << std::hex
+               << result << std::dec << ".";
     return false;
   }
 
@@ -125,8 +126,8 @@ bool ChromotingModule::Run() {
   // Start accepting activations.
   result = CoResumeClassObjects();
   if (FAILED(result)) {
-    LOG(ERROR) << "CoResumeClassObjects() failed, result=0x"
-               << std::hex << result << std::dec << ".";
+    LOG(ERROR) << "CoResumeClassObjects() failed, result=0x" << std::hex
+               << result << std::dec << ".";
     return false;
   }
 
@@ -136,8 +137,8 @@ bool ChromotingModule::Run() {
   // Unregister class objects.
   result = RevokeClassObjects();
   if (FAILED(result)) {
-    LOG(ERROR) << "Failed to unregister class objects, result=0x"
-               << std::hex << result << std::dec << ".";
+    LOG(ERROR) << "Failed to unregister class objects, result=0x" << std::hex
+               << result << std::dec << ".";
     return false;
   }
 
@@ -163,8 +164,9 @@ HRESULT ChromotingModule::RegisterClassObjects(DWORD class_context,
                                                DWORD flags) {
   for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_; ++i) {
     HRESULT result = i->RegisterClassObject(class_context, flags);
-    if (FAILED(result))
+    if (FAILED(result)) {
       return result;
+    }
   }
 
   return S_OK;
@@ -173,8 +175,9 @@ HRESULT ChromotingModule::RegisterClassObjects(DWORD class_context,
 HRESULT ChromotingModule::RevokeClassObjects() {
   for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_; ++i) {
     HRESULT result = i->RevokeClassObject();
-    if (FAILED(result))
+    if (FAILED(result)) {
       return result;
+    }
   }
 
   return S_OK;
@@ -189,11 +192,10 @@ int RdpDesktopSessionMain() {
   }
 
   ATL::_ATL_OBJMAP_ENTRY rdp_client_entry[] = {
-    OBJECT_ENTRY(__uuidof(RdpDesktopSession), RdpDesktopSession)
-  };
+      OBJECT_ENTRY(__uuidof(RdpDesktopSession), RdpDesktopSession)};
 
   ChromotingModule module(rdp_client_entry, rdp_client_entry + 1);
   return module.Run() ? kSuccessExitCode : kInitializationFailed;
 }
 
-} // namespace remoting
+}  // namespace remoting
