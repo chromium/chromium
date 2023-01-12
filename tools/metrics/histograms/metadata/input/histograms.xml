@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Type}.{Language}"
+    name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Language}.{Type}"
     enum="IMEAutocorrectPrefStateTransition" expires_after="2023-06-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -436,6 +436,28 @@ chromium-metrics-reviews@google.com.
     This histogram is recorded whenever the user changes their preference for
     the autocorrect level enabled. Metrics are split between VK and PK, and
     English versus non English languages.
+  </summary>
+  <token key="Type">
+    <variant name="PK" summary="Physical Keyboard"/>
+    <variant name="VK" summary="Virtual Keyboard"/>
+  </token>
+  <token key="Language">
+    <variant name="All" summary="All languages"/>
+    <variant name="English" summary="English language only"/>
+  </token>
+</histogram>
+
+<histogram
+    name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Type}.{Language}"
+    enum="IMEAutocorrectPrefStateTransition" expires_after="2023-06-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    DEPRECATED: This metric name is incorrect and deviates from the string used
+    when recorded in code. To save the data emitted from clients we add a new
+    metric below with the correct string. This histogram is recorded whenever
+    the user changes their preference for the autocorrect level enabled. Metrics
+    are split between VK and PK, and English versus non English languages.
   </summary>
   <token key="Type">
     <variant name="PK" summary="Physical Keyboard"/>
