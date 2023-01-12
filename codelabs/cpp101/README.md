@@ -241,7 +241,7 @@ Include `testonly=true` flag in the BUILD.gn file, along with
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/at_exit.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/command_line.h"
 ```

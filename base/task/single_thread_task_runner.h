@@ -107,10 +107,6 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,
                              NestedRunLoop);
 
-    // This is in order for ThreadTaskRunnerHandleOverride to call this private
-    // constructor during migration.
-    friend class ThreadTaskRunnerHandleOverride;
-
     // We expect SingleThreadTaskRunner::CurrentHandleOverride to be only needed
     // under special circumstances. Require them to be enumerated as friends to
     // require //base/OWNERS review. Use

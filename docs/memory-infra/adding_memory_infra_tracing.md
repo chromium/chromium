@@ -95,7 +95,7 @@ complex and may be a number of things:
  * If your component already uses a custom `base::SingleThreadTaskRunner` for
    executing tasks on a specific thread, you should likely use this runner.
 
-[task-runner-handle]: https://chromium.googlesource.com/chromium/src/+/main/base/thread_task_runner_handle.h
+[task-runner-current-default-handle]: https://chromium.googlesource.com/chromium/src/+/main/base/task/single_thread_task_runner.h
 
 ## Unregistration
 

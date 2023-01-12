@@ -1179,9 +1179,10 @@ void TraceEventDataSource::ReturnTraceWriter(
 
   // Return the TraceWriter on the sequence that the PerfettoProducers run on.
   // Needed as the TrackEventThreadLocalEventSink gets deleted on thread
-  // shutdown and we can't safely call TaskRunnerHandle::Get() at that point
-  // (which can happen as the TraceWriter destructor might issue a Mojo call
-  // synchronously, which can trigger a call to TaskRunnerHandle::Get()).
+  // shutdown and we can't safely call task runner GetCurrentDefault() at that
+  // point (which can happen as the TraceWriter destructor might issue a Mojo
+  // call synchronously, which can trigger a call to
+  // task runner GetCurrentDefault()).
   auto* trace_writer_raw = trace_writer.release();
   ANNOTATE_LEAKING_OBJECT_PTR(trace_writer_raw);
   // Use PostTask() on PerfettoTaskRunner to ensure we comply with

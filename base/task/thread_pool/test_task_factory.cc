@@ -59,7 +59,8 @@ void TestTaskFactory::RunTaskCallback(size_t task_index,
                     ->RunsTasksInCurrentSequence());
   }
 
-  // Verify TaskRunnerHandles are set as expected in the task's scope.
+  // Verify task runner CurrentDefaultHandles are set as expected in the task's
+  // scope.
   switch (execution_mode_) {
     case TaskSourceExecutionMode::kJob:
     case TaskSourceExecutionMode::kParallel:

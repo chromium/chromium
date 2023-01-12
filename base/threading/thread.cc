@@ -376,7 +376,7 @@ void Thread::ThreadMain() {
 
   // Lazily initialize the |message_loop| so that it can run on this thread.
   DCHECK(delegate_);
-  // This binds CurrentThread and ThreadTaskRunnerHandle.
+  // This binds CurrentThread and SingleThreadTaskRunner::CurrentDefaultHandle.
   delegate_->BindToCurrentThread(timer_slack_);
   DCHECK(CurrentThread::Get());
   DCHECK(SingleThreadTaskRunner::HasCurrentDefault());

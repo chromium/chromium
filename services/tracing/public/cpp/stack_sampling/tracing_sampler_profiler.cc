@@ -432,8 +432,8 @@ TracingSamplerProfiler::TracingProfileBuilder::TracingProfileBuilder(
 TracingSamplerProfiler::TracingProfileBuilder::~TracingProfileBuilder() {
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // Deleting a TraceWriter can end up triggering a Mojo call which calls
-  // TaskRunnerHandle::Get() and isn't safe on thread shutdown, which is when
-  // TracingProfileBuilder gets destructed, so we make sure this happens on
+  // task runner GetCurrentDefault() and isn't safe on thread shutdown, which is
+  // when TracingProfileBuilder gets destructed, so we make sure this happens on
   // a different sequence.
   if (base::ThreadPoolInstance::Get()) {
     PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->DeleteSoon(

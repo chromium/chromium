@@ -11,7 +11,8 @@
 
 namespace cast_api_bindings {
 
-// MessagePortCore serving users of base::SequenedTaskRunnerHandle
+// MessagePortCore serving users of
+// base::SequencedTaskRunner::CurrentDefaultHandle
 class MessagePortCoreWithTaskRunner : public MessagePortCore {
  public:
   explicit MessagePortCoreWithTaskRunner(uint32_t channel_id);

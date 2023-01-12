@@ -64,9 +64,9 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
 
     virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
 
-    // Binds a RunLoop::Delegate and TaskRunnerHandle to the thread. The
-    // underlying MessagePump will have its |timer_slack| set to the specified
-    // amount.
+    // Binds a RunLoop::Delegate and task runner CurrentDefaultHandle to the
+    // thread. The underlying MessagePump will have its |timer_slack| set to the
+    // specified amount.
     virtual void BindToCurrentThread(TimerSlack timer_slack) = 0;
   };
 

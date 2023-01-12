@@ -52,9 +52,9 @@ namespace base {
 //     }
 //   };
 //
-//   // SequenceBound itself is owned on `SequencedTaskRunnerHandle::Get()`.
-//   // The managed Database instance managed by it is constructed and owned on
-//   // `GetDBTaskRunner()`.
+//   // SequenceBound itself is owned on
+//   // `SequencedTaskRunner::GetCurrentDefault()`. The managed Database
+//   // instance managed by it is constructed and owned on `GetDBTaskRunner()`.
 //   base::SequenceBound<Database> db(GetDBTaskRunner());
 //
 //   // `Database::Query()` runs on `GetDBTaskRunner()`, but

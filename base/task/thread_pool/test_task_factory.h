@@ -27,8 +27,8 @@ namespace test {
 // - The RunsTasksInCurrentSequence() method of the SequencedTaskRunner
 //   (kSequenced or kSingleThread modes) returns false on a thread on which a
 //   Task is run.
-// - The TaskRunnerHandles set in the context of the task don't match what's
-//   expected for the tested TaskSourceExecutionMode.
+// - The task runner CurrentDefaultHandles set in the context of the task don't
+//   match what's expected for the tested TaskSourceExecutionMode.
 // - The TaskSourceExecutionMode of the TaskRunner is kSequenced or
 //   kSingleThread and Tasks don't run in posting order.
 // - The TaskSourceExecutionMode of the TaskRunner is kSingleThread and Tasks

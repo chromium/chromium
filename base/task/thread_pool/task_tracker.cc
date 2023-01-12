@@ -469,21 +469,21 @@ void TaskTracker::RunTask(Task task,
     // Set up TaskRunner CurrentDefaultHandle as expected for the scope of the
     // task.
     absl::optional<SequencedTaskRunner::CurrentDefaultHandle>
-        sequenced_task_runner_handle;
+        sequenced_task_runner_current_default_handle;
     absl::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
-        single_thread_task_runner_handle;
+        single_thread_task_runner_current_default_handle;
     switch (task_source->execution_mode()) {
       case TaskSourceExecutionMode::kJob:
       case TaskSourceExecutionMode::kParallel:
         break;
       case TaskSourceExecutionMode::kSequenced:
         DCHECK(task_source->task_runner());
-        sequenced_task_runner_handle.emplace(
+        sequenced_task_runner_current_default_handle.emplace(
             static_cast<SequencedTaskRunner*>(task_source->task_runner()));
         break;
       case TaskSourceExecutionMode::kSingleThread:
         DCHECK(task_source->task_runner());
-        single_thread_task_runner_handle.emplace(
+        single_thread_task_runner_current_default_handle.emplace(
             static_cast<SingleThreadTaskRunner*>(task_source->task_runner()));
         break;
     }

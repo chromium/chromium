@@ -86,8 +86,9 @@ bool ThreadCheckerImpl::CalledOnValidThread(
 
     // If this ThreadCheckerImpl is bound to a valid SequenceToken, it must be
     // equal to the current SequenceToken and there must be a registered
-    // ThreadTaskRunnerHandle. Otherwise, the fact that the current task runs on
-    // the thread to which this ThreadCheckerImpl is bound is fortuitous.
+    // SingleThreadTaskRunner::CurrentDefaultHandle. Otherwise, the fact that
+    // the current task runs on the thread to which this ThreadCheckerImpl is
+    // bound is fortuitous.
     if (sequence_token_.IsValid() &&
         (sequence_token_ != SequenceToken::GetForCurrentThread() ||
          !SingleThreadTaskRunner::HasCurrentDefault())) {

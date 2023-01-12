@@ -545,8 +545,8 @@ static void RunTaskRunnerCurrentDefaultHandleVerificationTask(
   // Pretend |verify_task| is posted to respect TaskTracker's contract.
   EXPECT_TRUE(tracker->WillPostTask(&verify_task, traits.shutdown_behavior()));
 
-  // Confirm that the test conditions are right (no TaskRunnerHandles set
-  // already).
+  // Confirm that the test conditions are right (no
+  // task runner CurrentDefaultHandles set already).
   EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
   EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
 
@@ -555,12 +555,12 @@ static void RunTaskRunnerCurrentDefaultHandleVerificationTask(
       test::CreateSequenceWithTask(std::move(verify_task), traits,
                                    std::move(task_runner), execution_mode));
 
-  // TaskRunnerHandle state is reset outside of task's scope.
+  // task runner CurrentDefaultHandle state is reset outside of task's scope.
   EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
   EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
 }
 
-static void VerifyNoTaskRunnerHandle() {
+static void VerifyNoTaskRunnerCurrentDefaultHandle() {
   EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
   EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
 }
@@ -568,7 +568,7 @@ static void VerifyNoTaskRunnerHandle() {
 TEST_P(ThreadPoolTaskTrackerTest, TaskRunnerHandleIsNotSetOnParallel) {
   // Create a task that will verify that TaskRunnerHandles are not set in its
   // scope per no TaskRunner ref being set to it.
-  Task verify_task(FROM_HERE, BindOnce(&VerifyNoTaskRunnerHandle),
+  Task verify_task(FROM_HERE, BindOnce(&VerifyNoTaskRunnerCurrentDefaultHandle),
                    TimeTicks::Now(), TimeDelta());
 
   RunTaskRunnerCurrentDefaultHandleVerificationTask(
