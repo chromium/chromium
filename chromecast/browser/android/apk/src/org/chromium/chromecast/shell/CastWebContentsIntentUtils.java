@@ -96,8 +96,8 @@ public class CastWebContentsIntentUtils {
     /** Key of extra value of the intent to start a web content, value is true is if cast app is
      *  a remote control app.
      */
-    static final String INTENT_EXTRA_REMOTE_CONTROL_MODE =
-            "com.google.android.apps.castshell.intent.extra.REMOTE_CONTROL_MODE";
+    static final String INTENT_EXTRA_SHOULD_REQUEST_AUDIO_FOCUS =
+            "com.google.android.apps.castshell.intent.extra.SHOULD_REQUEST_AUDIO_FOCUS";
 
     /** Key for extra value for intent to start web contents. true if the app should turn on the
      * display. */
@@ -187,7 +187,7 @@ public class CastWebContentsIntentUtils {
 
     // CastWebContentsComponent.Receiver -> CastWebContentsActivity
     public static Intent requestStartCastActivity(Context context, WebContents webContents,
-            boolean enableTouch, boolean isRemoteControlMode, boolean turnOnScreen,
+            boolean enableTouch, boolean shouldRequestAudioFocus, boolean turnOnScreen,
             boolean keepScreenOn, String instanceId) {
         WebContentsRegistry.addWebContents(instanceId, webContents);
         Intent intent =
@@ -197,7 +197,7 @@ public class CastWebContentsIntentUtils {
         intent.putExtra(INTENT_EXTRA_TOUCH_INPUT_ENABLED, enableTouch);
         intent.putExtra(INTENT_EXTRA_TURN_ON_SCREEN, turnOnScreen);
         intent.putExtra(INTENT_EXTRA_KEEP_SCREEN_ON, keepScreenOn);
-        intent.putExtra(INTENT_EXTRA_REMOTE_CONTROL_MODE, isRemoteControlMode);
+        intent.putExtra(INTENT_EXTRA_SHOULD_REQUEST_AUDIO_FOCUS, shouldRequestAudioFocus);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP
                 | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
         return intent;
@@ -273,13 +273,13 @@ public class CastWebContentsIntentUtils {
     }
 
     // Used by ACTION_VIEW
-    public static boolean isRemoteControlMode(Bundle bundle) {
-        return bundle.getBoolean(INTENT_EXTRA_REMOTE_CONTROL_MODE);
+    public static boolean shouldRequestAudioFocus(Bundle bundle) {
+        return bundle.getBoolean(INTENT_EXTRA_SHOULD_REQUEST_AUDIO_FOCUS);
     }
 
     // Used by ACTION_VIEW
-    public static boolean isRemoteControlMode(Intent in) {
-        return isRemoteControlMode(in.getExtras());
+    public static boolean shouldRequestAudioFocus(Intent in) {
+        return shouldRequestAudioFocus(in.getExtras());
     }
 
     // Used by ACTION_VIEW

@@ -133,7 +133,7 @@ struct CastWebViewParams {
   bool enable_touch_input = false;
 
   // Enable if this CastContentWindow is for running a remote control app.
-  bool is_remote_control_mode = false;
+  bool should_request_audio_focus = true;
 
   // Turns on the device screen when the window is made visible.
   bool turn_on_screen = true;

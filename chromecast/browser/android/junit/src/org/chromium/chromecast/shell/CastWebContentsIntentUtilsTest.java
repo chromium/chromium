@@ -66,8 +66,8 @@ public class CastWebContentsIntentUtilsTest {
     @Test
     public void testRequestStartCastActivity() {
         Intent in = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, true, false, SESSION_ID);
-        Assert.assertFalse(CastWebContentsIntentUtils.isRemoteControlMode(in));
+                mActivity, mWebContents, true, true, true, false, SESSION_ID);
+        Assert.assertTrue(CastWebContentsIntentUtils.shouldRequestAudioFocus(in));
         Assert.assertNull(in.getData());
         String uri = CastWebContentsIntentUtils.getUriString(in);
         Assert.assertNotNull(uri);

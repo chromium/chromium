@@ -21,14 +21,14 @@ namespace {
 base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
     jlong native_window,
     bool enable_touch_input,
-    bool is_remote_control_mode,
+    bool should_request_audio_focus,
     bool turn_on_screen,
     bool keep_screen_on,
     const std::string& session_id,
     const std::string& display_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_CastContentWindowAndroid_create(
-      env, native_window, enable_touch_input, is_remote_control_mode,
+      env, native_window, enable_touch_input, should_request_audio_focus,
       turn_on_screen, keep_screen_on, ConvertUTF8ToJavaString(env, session_id),
       ConvertUTF8ToJavaString(env, display_id));
 }
@@ -41,7 +41,7 @@ CastContentWindowAndroid::CastContentWindowAndroid(
       web_contents_attached_(false),
       java_window_(CreateJavaWindow(reinterpret_cast<jlong>(this),
                                     params_->enable_touch_input,
-                                    params_->is_remote_control_mode,
+                                    params_->should_request_audio_focus,
                                     params_->turn_on_screen,
                                     params_->keep_screen_on,
                                     params_->session_id,

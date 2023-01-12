@@ -88,7 +88,7 @@ public class CastWebContentsComponent {
             if (mStarted) return; // No-op if already started.
             if (DEBUG) Log.d(TAG, "start: SHOW_WEB_CONTENT in activity");
             startCastActivity(params.context, params.webContents, mEnableTouchInput,
-                    mIsRemoteControlMode, mTurnOnScreen);
+                    mShouldRequestAudioFocus, mTurnOnScreen);
             mStarted = true;
         }
 
@@ -100,9 +100,9 @@ public class CastWebContentsComponent {
     }
 
     private void startCastActivity(Context context, WebContents webContents, boolean enableTouch,
-            boolean isRemoteControlMode, boolean turnOnScreen) {
+            boolean shouldRequestAudioFocus, boolean turnOnScreen) {
         Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(context, webContents,
-                enableTouch, isRemoteControlMode, turnOnScreen, mKeepScreenOn, mSessionId);
+                enableTouch, shouldRequestAudioFocus, turnOnScreen, mKeepScreenOn, mSessionId);
         int displayId = DisplayAndroidManager.getDefaultDisplayForContext(context).getDisplayId();
         if (DEBUG) Log.d(TAG, "start activity by intent: " + intent + " on display: " + displayId);
         sResumeIntent.set(intent);
@@ -160,26 +160,26 @@ public class CastWebContentsComponent {
     private boolean mStarted;
     private boolean mEnableTouchInput;
     private boolean mMediaPlaying;
-    private final boolean mIsRemoteControlMode;
+    private final boolean mShouldRequestAudioFocus;
     private final boolean mTurnOnScreen;
     private final boolean mKeepScreenOn;
 
     public CastWebContentsComponent(String sessionId,
             OnComponentClosedHandler onComponentClosedHandler,
             SurfaceEventHandler surfaceEventHandler, boolean enableTouchInput,
-            boolean isRemoteControlMode, boolean turnOnScreen, boolean keepScreenOn) {
+            boolean shouldRequestAudioFocus, boolean turnOnScreen, boolean keepScreenOn) {
         if (DEBUG) {
             Log.d(TAG,
                     "New CastWebContentsComponent. Instance ID: " + sessionId
                             + "; enableTouchInput:" + enableTouchInput
-                            + "; isRemoteControlMode:" + isRemoteControlMode);
+                            + "; shouldRequestAudioFocus:" + shouldRequestAudioFocus);
         }
 
         mComponentClosedHandler = onComponentClosedHandler;
         mEnableTouchInput = enableTouchInput;
         mSessionId = sessionId;
         mSurfaceEventHandler = surfaceEventHandler;
-        mIsRemoteControlMode = isRemoteControlMode;
+        mShouldRequestAudioFocus = shouldRequestAudioFocus;
         mTurnOnScreen = turnOnScreen;
         mKeepScreenOn = keepScreenOn;
 

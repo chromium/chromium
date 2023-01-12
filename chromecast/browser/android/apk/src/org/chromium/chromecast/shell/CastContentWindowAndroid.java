@@ -41,10 +41,10 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     @SuppressWarnings("unused")
     @CalledByNative
     private static CastContentWindowAndroid create(long nativeCastContentWindowAndroid,
-            boolean enableTouchInput, boolean isRemoteControlMode, boolean turnOnScreen,
+            boolean enableTouchInput, boolean shouldRequestAudioFocus, boolean turnOnScreen,
             boolean keepScreenOn, String sessionId, String displayId) {
         return new CastContentWindowAndroid(nativeCastContentWindowAndroid,
-                getContextWithDisplay(displayId), enableTouchInput, isRemoteControlMode,
+                getContextWithDisplay(displayId), enableTouchInput, shouldRequestAudioFocus,
                 turnOnScreen, keepScreenOn, sessionId);
     }
 
@@ -66,7 +66,7 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     }
 
     private CastContentWindowAndroid(long nativeCastContentWindowAndroid, final Context context,
-            boolean enableTouchInput, boolean isRemoteControlMode, boolean turnOnScreen,
+            boolean enableTouchInput, boolean shouldRequestAudioFocus, boolean turnOnScreen,
             boolean keepScreenOn, String sessionId) {
         mNativeCastContentWindowAndroid = nativeCastContentWindowAndroid;
         mContext = context;
@@ -74,7 +74,7 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
                 "Creating new CastContentWindowAndroid(No. " + sInstanceId++
                         + ") Seesion ID: " + sessionId);
         mComponent = new CastWebContentsComponent(sessionId, this, this, enableTouchInput,
-                isRemoteControlMode, turnOnScreen, keepScreenOn);
+                shouldRequestAudioFocus, turnOnScreen, keepScreenOn);
     }
 
     @SuppressWarnings("unused")

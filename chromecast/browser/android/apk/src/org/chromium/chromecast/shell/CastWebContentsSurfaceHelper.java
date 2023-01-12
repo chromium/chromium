@@ -52,14 +52,14 @@ class CastWebContentsSurfaceHelper {
     public static class StartParams {
         public final Uri uri;
         public final WebContents webContents;
-        public final boolean isRemoteControlMode;
+        public final boolean shouldRequestAudioFocus;
         public final boolean touchInputEnabled;
 
-        public StartParams(Uri uri, WebContents webContents, boolean isRemoteControlMode,
+        public StartParams(Uri uri, WebContents webContents, boolean shouldRequestAudioFocus,
                 boolean touchInputEnabled) {
             this.uri = uri;
             this.webContents = webContents;
-            this.isRemoteControlMode = isRemoteControlMode;
+            this.shouldRequestAudioFocus = shouldRequestAudioFocus;
             this.touchInputEnabled = touchInputEnabled;
         }
 
@@ -68,7 +68,7 @@ class CastWebContentsSurfaceHelper {
             if (other instanceof StartParams) {
                 StartParams that = (StartParams) other;
                 return this.uri.equals(that.uri) && this.webContents.equals(that.webContents)
-                        && this.isRemoteControlMode == that.isRemoteControlMode
+                        && this.shouldRequestAudioFocus == that.shouldRequestAudioFocus
                         && this.touchInputEnabled == that.touchInputEnabled;
             }
             return false;
@@ -92,10 +92,10 @@ class CastWebContentsSurfaceHelper {
                 return null;
             }
 
-            final boolean isRemoteControlMode =
-                    CastWebContentsIntentUtils.isRemoteControlMode(bundle);
+            final boolean shouldRequestAudioFocus =
+                    CastWebContentsIntentUtils.shouldRequestAudioFocus(bundle);
             final boolean touchInputEnabled = CastWebContentsIntentUtils.isTouchable(bundle);
-            return new StartParams(uri, webContents, isRemoteControlMode, touchInputEnabled);
+            return new StartParams(uri, webContents, shouldRequestAudioFocus, touchInputEnabled);
         }
     }
 
@@ -166,8 +166,11 @@ class CastWebContentsSurfaceHelper {
                 .map(Both::getFirst)
                 .subscribe(Observers.onExit(WebContents::tearDownDialogOverlays));
 
-        // Take audio focus when receiving new WebContents if not the remote control app.
-        mStartParamsState.filter(params -> !params.isRemoteControlMode)
+        // Take audio focus when receiving new WebContents if requested. In most cases, we do want
+        // to take audio focus when starting the Cast UI, but there are some exceptions, such as
+        // when launching a remote control app or when starting an app by voice request, when the
+        // TTS may still be retaining audio focus.
+        mStartParamsState.filter(params -> params.shouldRequestAudioFocus)
                 .map(params -> mMediaSessionGetter.get(params.webContents))
                 .subscribe(Observers.onEnter(MediaSessionImpl::requestSystemAudioFocus));
 
