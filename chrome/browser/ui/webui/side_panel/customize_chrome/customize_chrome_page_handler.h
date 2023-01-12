@@ -70,6 +70,7 @@ class CustomizeChromePageHandler
                           const GURL& image_url,
                           const GURL& thumbnail_url) override;
   void OpenChromeWebStore() override;
+  void OpenThirdPartyThemePage(const std::string& theme_id) override;
   void SetModulesVisible(bool visible) override;
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
 

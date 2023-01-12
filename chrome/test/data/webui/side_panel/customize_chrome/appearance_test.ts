@@ -12,7 +12,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, createThirdPartyThemeInfo, installMock} from './test_support.js';
 
 suite('AppearanceTest', () => {
   let appearanceElement: AppearanceElement;
@@ -72,5 +72,45 @@ suite('AppearanceTest', () => {
 
     appearanceElement.$.setClassicChromeButton.click();
     assertEquals(1, handler.getCallCount('setClassicChromeDefaultTheme'));
+  });
+
+  test('1P view shows when 3P theme info not set', async () => {
+    const theme = createTheme();
+
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+    assertNotStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
+    assertNotStyle(appearanceElement.$.chromeColors, 'display', 'none');
+    assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+  });
+
+  suite('third party theme', () => {
+    test('3P view shows when 3P theme info is set', async () => {
+      const theme = createTheme();
+      theme.thirdPartyThemeInfo = createThirdPartyThemeInfo('foo', 'bar');
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      assertNotStyle(
+          appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+      assertNotStyle(
+          appearanceElement.$.setClassicChromeButton, 'display', 'none');
+      assertStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
+      assertStyle(appearanceElement.$.chromeColors, 'display', 'none');
+    });
+
+    test('clicking 3P theme link opens theme page', async () => {
+      // Arrange.
+      const theme = createTheme();
+      theme.thirdPartyThemeInfo = createThirdPartyThemeInfo('foo', 'Foo Name');
+
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Assert.
+      appearanceElement.$.thirdPartyLinkButton.click();
+      assertEquals(1, handler.getCallCount('openThirdPartyThemePage'));
+    });
   });
 });

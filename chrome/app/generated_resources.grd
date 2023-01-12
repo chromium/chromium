@@ -6757,6 +6757,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_UPLOAD_FROM_DEVICE_LABEL" desc="The label for the 'Upload from device' tile in the customization menu on the New Tab Page">
         Upload from device
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL" desc="The second line of the label for the button that opens a link to a third party theme.">
+        Current theme you have installed.
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_HIDE_SHORTCUTS_LABEL" desc="The label for the option to hide shortcuts in the customization menu on the New Tab Page">
         Hide shortcuts
       </message>

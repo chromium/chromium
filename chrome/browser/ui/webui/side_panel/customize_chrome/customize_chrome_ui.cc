@@ -47,6 +47,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"classicChrome", IDS_NTP_CUSTOMIZE_NO_BACKGROUND_LABEL},
       {"colorsContainerLabel", IDS_NTP_THEMES_CONTAINER_LABEL},
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
+      {"currentTheme", IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL},
       {"defaultColorName", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
       {"mainColorName", IDS_NTP_CUSTOMIZE_MAIN_COLOR_LABEL},
       {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},

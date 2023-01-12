@@ -18,8 +18,11 @@ import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface AppearanceElement {
   $: {
+    chromeColors: HTMLElement,
     editThemeButton: HTMLButtonElement,
-    setClassicChromeButton: HTMLElement,
+    themeSnapshot: HTMLElement,
+    setClassicChromeButton: HTMLButtonElement,
+    thirdPartyLinkButton: HTMLButtonElement,
   };
 }
 
@@ -36,6 +39,26 @@ export class AppearanceElement extends PolymerElement {
     return {
       theme_: Object,
 
+      thirdPartyThemeId_: {
+        type: String,
+        computed: 'computeThirdPartyThemeId_(theme_)',
+        reflectToAttribute: true,
+      },
+
+      thirdPartyThemeName_: {
+        type: String,
+        computed: 'computeThirdPartyThemeName_(theme_)',
+        reflectToAttribute: true,
+      },
+
+      // Prevents side panel from showing theme snapshot and colors before
+      // thirdPartyThemeName_ is determined if third party theme is installed.
+      showFirstPartyThemeView_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowFirstPartyThemeView_(theme_)',
+      },
+
       showClassicChromeButton_: {
         type: Boolean,
         value: false,
@@ -45,8 +68,12 @@ export class AppearanceElement extends PolymerElement {
   }
 
   private theme_: Theme|undefined = undefined;
-  private setThemeListenerId_: number|null = null;
+  private thirdPartyThemeId_: string|null = null;
+  private thirdPartyThemeName_: string|null = null;
   private showClassicChromeButton_: boolean;
+  private showFirstPartyThemeView_: boolean;
+
+  private setThemeListenerId_: number|null = null;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
@@ -73,12 +100,40 @@ export class AppearanceElement extends PolymerElement {
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
   }
 
+  private computeThirdPartyThemeId_(): string|null {
+    if (this.theme_ && this.theme_.thirdPartyThemeInfo) {
+      return this.theme_.thirdPartyThemeInfo.id;
+    } else {
+      return null;
+    }
+  }
+
+  private computeThirdPartyThemeName_(): string|null {
+    if (this.theme_ && this.theme_.thirdPartyThemeInfo) {
+      return this.theme_.thirdPartyThemeInfo.name;
+    } else {
+      return null;
+    }
+  }
+
+  private computeShowFirstPartyThemeView_(): boolean {
+    return !!this.theme_ && !this.theme_.thirdPartyThemeInfo;
+  }
+
   private computeShowClassicChromeButton_(): boolean {
-    return !!(this.theme_ && this.theme_.backgroundImage);
+    return !!(
+        this.theme_ &&
+        (this.theme_.backgroundImage || this.theme_.thirdPartyThemeInfo));
   }
 
   private onEditThemeClicked_() {
     this.dispatchEvent(new Event('edit-theme-click'));
+  }
+
+  private onThirdPartyLinkButtonClick_() {
+    if (this.thirdPartyThemeId_) {
+      this.pageHandler_.openThirdPartyThemePage(this.thirdPartyThemeId_);
+    }
   }
 
   private onSetClassicChromeClicked_() {
