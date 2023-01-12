@@ -81,9 +81,9 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
         .ExtractBool();
   }
 
-  content::EvalJsResult NavigateAndCallMakeCredential() {
+  content::EvalJsResult NavigateAndCallMakeCredential(Browser* browser) {
     if (!ui_test_utils::NavigateToURL(
-            browser(), https_test_server_.GetURL(test_domain_, "/page.html"))) {
+            browser, https_test_server_.GetURL(test_domain_, "/page.html"))) {
       ADD_FAILURE() << "Failed to navigate to test URL";
     }
     constexpr char kMakeCredentialJs[] =
@@ -96,8 +96,12 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
               }});
               return credential.id;
             })();)";
-    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+    return content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                            kMakeCredentialJs);
+  }
+
+  content::EvalJsResult NavigateAndCallMakeCredential() {
+    return NavigateAndCallMakeCredential(browser());
   }
 
   bool NavigateAndCallMakeCredentialThenCancel() {
@@ -169,14 +173,13 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
 
   bool ProxyIsActiveForContext(content::BrowserContext* context) {
     WebAuthenticationProxyService* proxy =
-        WebAuthenticationProxyServiceFactory::GetForBrowserContext(context);
-    DCHECK(proxy);
-    return proxy->IsActive(
-        url::Origin::CreateFromNormalizedTuple("https", test_domain_, 443));
+        WebAuthenticationProxyService::GetIfProxyAttached(context);
+    return proxy && proxy->IsActive(url::Origin::CreateFromNormalizedTuple(
+                        "https", test_domain_, 443));
   }
 
   const Extension* ProxyForContext(content::BrowserContext* context) {
-    return WebAuthenticationProxyServiceFactory::GetForBrowserContext(context)
+    return WebAuthenticationProxyService::GetIfProxyAttached(context)
         ->GetActiveRequestProxy();
   }
 
@@ -506,12 +509,16 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IncognitoSpanning) {
   // The proxy should be active in the test browser profile.
   EXPECT_TRUE(ProxyIsActiveForContext(profile()));
   EXPECT_EQ(ProxyForContext(profile()), extension);
+  EXPECT_EQ(NavigateAndCallMakeCredential(browser()).ExtractString(),
+            kTestCredentialId);
 
   // And it should also be active in an incognito profile created from the main
   // profile.
   Browser* incognito_browser = CreateIncognitoBrowser();
   EXPECT_TRUE(ProxyIsActiveForContext(incognito_browser->profile()));
   EXPECT_EQ(ProxyForContext(incognito_browser->profile()), extension);
+  EXPECT_EQ(NavigateAndCallMakeCredential(incognito_browser).ExtractString(),
+            kTestCredentialId);
 
   // After the extension is unloaded, it should be detached from the regular and
   // incognito profiles.
@@ -542,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IncognitoNotAllowed) {
   // because the extension isn't allowed to run in incognito, it doesn't get to
   // proxy requests.
   Browser* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_FALSE(ProxyIsActiveForContext(incognito_browser->profile()));
+  EXPECT_FALSE(ProxyIsActiveForContext(incognito_browser->profile()));
 }
 
 // A split mode extension can be active in regular and incognito profiles.
@@ -563,11 +570,20 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
   // The proxy should be active in the "regular" profile.
   EXPECT_TRUE(ProxyIsActiveForContext(profile()));
   EXPECT_EQ(ProxyForContext(profile()), extension);
+  EXPECT_EQ(NavigateAndCallMakeCredential(browser()).ExtractString(),
+            kTestCredentialId);
 
   // The incognito split also called attach and should therefore be active.
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(ProxyIsActiveForContext(incognito_browser->profile()));
   EXPECT_EQ(ProxyForContext(incognito_browser->profile()), extension);
+  EXPECT_EQ(NavigateAndCallMakeCredential(incognito_browser).ExtractString(),
+            kTestCredentialId);
+
+  UnloadExtension(extension->id());
+  EXPECT_FALSE(ProxyIsActiveForContext(profile()));
+  EXPECT_FALSE(ProxyIsActiveForContext(incognito_browser->profile()));
 }
 
 // A split mode extension that is active in a regular profile is not necessarily
@@ -584,11 +600,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitRegularOnly) {
       {.allow_in_incognito = true, .wait_for_registration_stored = true});
   ASSERT_TRUE(extension) << message_;
   ASSERT_TRUE(regular_ready_listener.WaitUntilSatisfied());
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
 
   // The proxy should be active in the "regular" profile, but not incognito.
   EXPECT_TRUE(ProxyIsActiveForContext(profile()));
+  EXPECT_EQ(ProxyForContext(profile()), extension);
+  EXPECT_EQ(NavigateAndCallMakeCredential(browser()).ExtractString(),
+            kTestCredentialId);
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
   EXPECT_FALSE(ProxyIsActiveForContext(incognito_browser->profile()));
 
   UnloadExtension(extension->id());
@@ -619,6 +639,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitIncognitoOnly) {
   ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
   EXPECT_TRUE(ProxyIsActiveForContext(incognito_browser->profile()));
   EXPECT_EQ(ProxyForContext(incognito_browser->profile()), extension);
+  EXPECT_EQ(NavigateAndCallMakeCredential(incognito_browser).ExtractString(),
+            kTestCredentialId);
 
   UnloadExtension(extension->id());
   EXPECT_FALSE(ProxyIsActiveForContext(profile()));
@@ -644,6 +666,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitModeDestruction) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
   EXPECT_TRUE(ProxyIsActiveForContext(incognito_browser->profile()));
+  EXPECT_EQ(ProxyForContext(incognito_browser->profile()), extension);
 
   // Close the browser, then recreate it. The extension should re-attach
   // automatically.
@@ -653,6 +676,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitModeDestruction) {
   incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_ready_listener.WaitUntilSatisfied());
   EXPECT_TRUE(ProxyIsActiveForContext(incognito_browser->profile()));
+  EXPECT_EQ(ProxyForContext(incognito_browser->profile()), extension);
 }
 
 // The webAuthenticationproxy API does not consider user host permissions.
@@ -671,13 +695,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, UserHostPermissions) {
 
   // The proxy should function normally on a user blocked host.
   SetTestDomainToNavigate("blocked.b.test");
-  const bool proxy_active =
-      WebAuthenticationProxyServiceFactory::GetForBrowserContext(profile())
-          ->IsActive(user_blocked_host);
-  EXPECT_TRUE(proxy_active);
-
-  bool is_uvpaa = NavigateAndCallIsUVPAA();
-  EXPECT_TRUE(is_uvpaa);
+  WebAuthenticationProxyService* proxy =
+      WebAuthenticationProxyService::GetIfProxyAttached(profile());
+  ASSERT_TRUE(proxy);
+  EXPECT_TRUE(proxy->IsActive(user_blocked_host));
+  EXPECT_TRUE(NavigateAndCallIsUVPAA());
 }
 
 class WebAuthenticationProxyApiTestWithPolicyOverride
@@ -729,14 +751,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTestWithPolicyOverride,
     auto origin =
         url::Origin::Create(GURL((base::StrCat({"https://", test.domain}))));
     SCOPED_TRACE(testing::Message() << "origin=" << origin);
-    const bool proxy_active =
-        WebAuthenticationProxyServiceFactory::GetForBrowserContext(profile())
-            ->IsActive(origin);
-    EXPECT_EQ(proxy_active, test.expect_proxy_active);
+    WebAuthenticationProxyService* proxy =
+        WebAuthenticationProxyService::GetIfProxyAttached(profile());
+    ASSERT_TRUE(proxy);
+    EXPECT_EQ(proxy->IsActive(origin), test.expect_proxy_active);
 
     // If the proxy is active, the SW JS stubs IsUVPAA to return true.
-    bool is_uvpaa = NavigateAndCallIsUVPAA();
-    EXPECT_EQ(is_uvpaa, test.expect_proxy_active);
+    EXPECT_EQ(NavigateAndCallIsUVPAA(), test.expect_proxy_active);
   }
 }
 

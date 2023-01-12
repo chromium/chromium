@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as util from '/_test_resources/api_test/web_authentication_proxy/util.js';
+
 let availableTests = [
   async function incognitoAndRegular() {
+    chrome.webAuthenticationProxy.onCreateRequest.addListener(
+        async (request) => {
+          await util.completeCreateRequest(request.requestId);
+        });
     await chrome.webAuthenticationProxy.attach();
     if (chrome.extension.inIncognitoContext) {
       chrome.test.sendMessage('incognito ready');
@@ -15,12 +21,20 @@ let availableTests = [
     if (chrome.extension.inIncognitoContext) {
       chrome.test.sendMessage('incognito ready');
     } else {
+      chrome.webAuthenticationProxy.onCreateRequest.addListener(
+          async (request) => {
+            await util.completeCreateRequest(request.requestId);
+          });
       await chrome.webAuthenticationProxy.attach();
       chrome.test.sendMessage('regular ready');
     }
   },
   async function incognitoOnly() {
     if (chrome.extension.inIncognitoContext) {
+      chrome.webAuthenticationProxy.onCreateRequest.addListener(
+          async (request) => {
+            await util.completeCreateRequest(request.requestId);
+          });
       await chrome.webAuthenticationProxy.attach();
       chrome.test.sendMessage('incognito ready');
     } else {

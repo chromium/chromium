@@ -88,9 +88,8 @@ ExtensionFunction::ResponseAction WebAuthenticationProxyDetachFunction::Run() {
   DCHECK(extension());
 
   WebAuthenticationProxyService* proxy_service =
-      WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-          browser_context());
-  if (proxy_service->GetActiveRequestProxy() != extension()) {
+      WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
+  if (!proxy_service || proxy_service->GetActiveRequestProxy() != extension()) {
     return RespondNow(NoArguments());
   }
 
@@ -120,9 +119,8 @@ WebAuthenticationProxyCompleteCreateRequestFunction::Run() {
           args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
   WebAuthenticationProxyService* proxy_service =
-      WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-          browser_context());
-  if (proxy_service->GetActiveRequestProxy() != extension()) {
+      WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
+  if (!proxy_service || proxy_service->GetActiveRequestProxy() != extension()) {
     return RespondNow(Error("Invalid sender"));
   }
   proxy_service->CompleteCreateRequest(
@@ -150,9 +148,8 @@ WebAuthenticationProxyCompleteGetRequestFunction::Run() {
       api::web_authentication_proxy::CompleteGetRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
   WebAuthenticationProxyService* proxy_service =
-      WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-          browser_context());
-  if (proxy_service->GetActiveRequestProxy() != extension()) {
+      WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
+  if (!proxy_service || proxy_service->GetActiveRequestProxy() != extension()) {
     return RespondNow(Error("Invalid sender"));
   }
   proxy_service->CompleteGetRequest(
@@ -175,9 +172,8 @@ WebAuthenticationProxyCompleteIsUvpaaRequestFunction::Run() {
           args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
   WebAuthenticationProxyService* proxy_service =
-      WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-          browser_context());
-  if (proxy_service->GetActiveRequestProxy() != extension()) {
+      WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
+  if (!proxy_service || proxy_service->GetActiveRequestProxy() != extension()) {
     return RespondNow(Error("Invalid sender"));
   }
   if (!proxy_service->CompleteIsUvpaaRequest(params->details)) {

@@ -135,6 +135,20 @@ void WebAuthenticationProxyRegistrar::ClearRequestProxy(Profile* profile) {
   attach_regular_proxy_to_both_contexts_ = false;
 }
 
+WebAuthenticationProxyRegistrar::ProxyStatus
+WebAuthenticationProxyRegistrar::ProxyActiveForProfile(Profile* profile) {
+  DCHECK(profile->IsSameOrParent(profile_));
+  if (profile->IsOffTheRecord()) {
+    if (active_otr_split_proxy_) {
+      return ProxyStatus::kActive;
+    }
+    return active_regular_proxy_ && attach_regular_proxy_to_both_contexts_
+               ? ProxyStatus::kActiveUseOriginalProfile
+               : ProxyStatus::kInactive;
+  }
+  return active_regular_proxy_ ? ProxyStatus::kActive : ProxyStatus::kInactive;
+}
+
 void WebAuthenticationProxyRegistrar::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -231,6 +245,24 @@ KeyedService* WebAuthenticationProxyRegistrarFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new WebAuthenticationProxyRegistrar(
       Profile::FromBrowserContext(context));
+}
+
+WebAuthenticationProxyService*
+WebAuthenticationProxyService::GetIfProxyAttached(
+    content::BrowserContext* browser_context) {
+  auto* profile = Profile::FromBrowserContext(browser_context);
+  switch (WebAuthenticationProxyRegistrarFactory::GetForBrowserContext(profile)
+              ->ProxyActiveForProfile(profile)) {
+    case WebAuthenticationProxyRegistrar::ProxyStatus::kActive:
+      return WebAuthenticationProxyServiceFactory::GetForBrowserContext(
+          profile);
+    case WebAuthenticationProxyRegistrar::ProxyStatus::
+        kActiveUseOriginalProfile:
+      return WebAuthenticationProxyServiceFactory::GetForBrowserContext(
+          profile->GetOriginalProfile());
+    case WebAuthenticationProxyRegistrar::ProxyStatus::kInactive:
+      return nullptr;
+  }
 }
 
 WebAuthenticationProxyService::WebAuthenticationProxyService(
@@ -569,7 +601,7 @@ WebAuthenticationProxyServiceFactory::GetInstance() {
 
 WebAuthenticationProxyServiceFactory::WebAuthenticationProxyServiceFactory()
     : ProfileKeyedServiceFactory(
-          "WebAuthentcationProxyService",
+          "WebAuthenticationProxyService",
           ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(EventRouterFactory::GetInstance());
   DependsOn(ExtensionRegistryFactory::GetInstance());

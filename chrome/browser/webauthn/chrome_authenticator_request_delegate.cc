@@ -449,10 +449,9 @@ content::WebAuthenticationRequestProxy*
 ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
     content::BrowserContext* browser_context,
     const url::Origin& caller_origin) {
-  extensions::WebAuthenticationProxyService* proxy =
-      extensions::WebAuthenticationProxyServiceFactory::GetForBrowserContext(
-          browser_context);
-  return proxy->IsActive(caller_origin) ? proxy : nullptr;
+  auto* service = extensions::WebAuthenticationProxyService::GetIfProxyAttached(
+      Profile::FromBrowserContext(browser_context));
+  return service && service->IsActive(caller_origin) ? service : nullptr;
 }
 
 #endif  // !IS_ANDROID
@@ -556,8 +555,9 @@ void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
 
 bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
     InterestingFailureReason reason) {
-  if (!IsWebAuthnUIEnabled())
+  if (!IsWebAuthnUIEnabled()) {
     return false;
+  }
 
   switch (reason) {
     case InterestingFailureReason::kTimeout:
@@ -939,16 +939,18 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorAdded(
     const device::FidoAuthenticator& authenticator) {
-  if (!IsWebAuthnUIEnabled())
+  if (!IsWebAuthnUIEnabled()) {
     return;
+  }
 
   dialog_model_->AddAuthenticator(authenticator);
 }
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
     base::StringPiece authenticator_id) {
-  if (!IsWebAuthnUIEnabled())
+  if (!IsWebAuthnUIEnabled()) {
     return;
+  }
 
   dialog_model_->RemoveAuthenticator(authenticator_id);
 }

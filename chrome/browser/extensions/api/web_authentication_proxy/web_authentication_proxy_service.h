@@ -63,6 +63,19 @@ class WebAuthenticationProxyRegistrar : public KeyedService,
   // must be cleared separately.
   void ClearRequestProxy(Profile* profile);
 
+  // Indicates whether a proxy is active for a given profile.
+  enum class ProxyStatus {
+    // The proxy service is active for this profile.
+    kActive,
+    // The proxy service for the original profile to this incognito profile is
+    // active and handles both contexts.
+    kActiveUseOriginalProfile,
+    // No active proxy for this profile.
+    kInactive,
+  };
+
+  ProxyStatus ProxyActiveForProfile(Profile* profile);
+
  private:
   using PassKey = base::PassKey<WebAuthenticationProxyRegistrar>;
   friend class WebAuthenticationProxyRegistrarFactory;
@@ -126,14 +139,22 @@ class WebAuthenticationProxyRegistrarFactory
 // content::WebAuthenticationRequestProxy interface that integrates Chrome's Web
 // Authentication API with the webAuthenticationProxy extension API.
 //
-// You can obtain the instance for a given BrowserContext from
-// WebAuthenticationProxyServiceFactory. Unlike WebAuthenticationProxyRegistrar,
-// this class does not redirect instances for off-the-record profiles.
+// Use GetIfProxyAttached() to obtain an instance of this class.
 class WebAuthenticationProxyService
     : public content::WebAuthenticationRequestProxy,
       public KeyedService {
  public:
   using RespondCallback = base::OnceCallback<void(absl::optional<std::string>)>;
+
+  // Returns the service instance for the given BrowserContext, if a proxy is
+  // currently attached, and nulltpr otherwise. References to this class should
+  // not be stored because they become invalid whenever the proxy detaches.
+  //
+  // Service instances are shared between incognito and regular contexts if the
+  // attached proxy is incognito-enabled in spanning mode. Otherwise, regular
+  // and incognito contexts use separate instances.
+  static WebAuthenticationProxyService* GetIfProxyAttached(
+      content::BrowserContext* browser_context);
 
   // Returns the extension registered as the request proxy or `nullptr` if none
   // is active.
