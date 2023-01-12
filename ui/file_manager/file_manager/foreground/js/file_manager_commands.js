@@ -1163,11 +1163,18 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     const noEntries = entries.length === 0;
     event.command.setHidden(noEntries);
 
-    // Hide 'move-to-trash' if trash will not be used. E.g. drive or removable.
-    if (event.command.id === 'move-to-trash' &&
-        (!shouldMoveToTrash(entries, fileManager.volumeManager) ||
-         !fileManager.trashEnabled)) {
+    const isTrashDisabled =
+        !shouldMoveToTrash(entries, fileManager.volumeManager) ||
+        !fileManager.trashEnabled;
+
+    if (event.command.id === 'move-to-trash' && isTrashDisabled) {
       event.canExecute = false;
+      event.command.setHidden(true);
+    }
+
+    // If the "move-to-trash" command is enabled, don't show the Delete command
+    // but still leave it executable.
+    if (event.command.id === 'delete' && !isTrashDisabled) {
       event.command.setHidden(true);
     }
   }
