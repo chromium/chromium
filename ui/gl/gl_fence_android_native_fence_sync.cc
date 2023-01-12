@@ -129,8 +129,12 @@ std::unique_ptr<gfx::GpuFence> GLFenceAndroidNativeFenceSync::GetGpuFence() {
   DCHECK(GLSurfaceEGL::GetGLDisplayEGL()->IsAndroidNativeFenceSyncSupported());
 
   const EGLint sync_fd = eglDupNativeFenceFDANDROID(display_, sync_);
-  if (sync_fd < 0)
+  if (sync_fd < 0) {
+#if BUILDFLAG(IS_CHROMEOS)
+    SetFDCrashKeys();
+#endif
     return nullptr;
+  }
 
   gfx::GpuFenceHandle handle;
   handle.owned_fd = base::ScopedFD(sync_fd);
