@@ -284,7 +284,7 @@ UChar32 StringView::CodepointAt(unsigned i) const {
 }
 
 unsigned StringView::NextCodePointOffset(unsigned i) const {
-  SECURITY_DCHECK(i < length());
+  DCHECK_LT(i, length());
   if (Is8Bit())
     return i + 1;
   const UChar* str = Characters16() + i;
