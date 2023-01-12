@@ -53,6 +53,15 @@ class ErrorType(Enum):
   ADD_GROUPING_XML = auto()
   # Annotations should be removed from grouping.xml.
   REMOVE_GROUPING_XML = auto()
+  # Annotation is missing internal email, user_data
+  # or last_reviewed fields
+  MISSING_NEW_FIELDS = auto()
+  # Annotation should be removed from safe_list.txt
+  REMOVE_FROM_SAFE_LIST = auto()
+  # User data type should not be unspecified
+  INVALID_USER_DATA_TYPE = auto()
+  # Date format should be YYYY-mm-dd
+  INVALID_DATE_FORMAT = auto()
 
 
 class AuditorError:
@@ -71,7 +80,8 @@ class AuditorError:
     assert message or result_type in [
         ErrorType.MISSING_TAG_USED, ErrorType.TEST_ANNOTATION,
         ErrorType.NO_ANNOTATION, ErrorType.MISSING_SECOND_ID,
-        ErrorType.MUTABLE_TAG, ErrorType.INVALID_OS, ErrorType.INVALID_ADDED_IN
+        ErrorType.MUTABLE_TAG, ErrorType.INVALID_OS, ErrorType.INVALID_ADDED_IN,
+        ErrorType.INVALID_DATE_FORMAT
     ]
 
     if message:
@@ -195,6 +205,26 @@ class AuditorError:
           "traffic_annotation/scripts/auditor/README.md), but you can also "
           "apply the following edit(s) to do it manually:\n{}".format(
               self._details[0]))
+
+    if self.type == ErrorType.MISSING_NEW_FIELDS:
+      assert self._details
+      return ("MISSING_NEW_FIELDS: Annotation at '{}:{}' {}".format(
+          self.file_path, self.line, self._details[0]))
+    if self.type == ErrorType.REMOVE_FROM_SAFE_LIST:
+      assert self._details
+      return ("REMOVE_FROM_SAFE_LIST: {}. Remove {} from safe_list.txt".format(
+          self._details[0], self.file_path))
+
+    if self.type == ErrorType.INVALID_USER_DATA_TYPE:
+      assert self._details
+      return (
+          "Invalid value of user_data::type: {} in annotation at {}:{}".format(
+              self._details[0], self.file_path, self.line))
+
+    if self.type == ErrorType.INVALID_DATE_FORMAT:
+      assert self._details
+      return ("Date format should be {} in annotation at {}:{}".format(
+          self._details[0], self.file_path, self.line))
 
     raise NotImplementedError("Unimplemented ErrorType: {}".format(
         self.type.name))

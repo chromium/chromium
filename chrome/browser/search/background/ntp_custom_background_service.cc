@@ -255,6 +255,10 @@ void NtpCustomBackgroundService::FetchCustomBackgroundAndExtractBackgroundColor(
                 email: "chrome-desktop-ntp@google.com"
               }
             }
+            user_data {
+              type: NONE
+            }
+            last_reviewed: "2023-01-09"
           }
           policy {
             cookies_allowed: NO

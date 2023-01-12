@@ -21,9 +21,7 @@ supervised_user_refresh_token_fetcher
               "identify the refresh token in account management."
             destination: GOOGLE_OWNED_SERVICE
             internal {
-              contacts {
-                email: "chromium-dev@google.com"
-              }
+              contacts
             }
             user_data {
               type: NONE

@@ -1,10 +1,13 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// An OK annotation
+// File should not be added in safe list.
+
+// Incomplete annotation
 net::NetworkTrafficAnnotationTag traffic_annotation =
-  net::DefineNetworkTrafficAnnotation("ok_annotation", R"(
+    net::DefineNetworkTrafficAnnotation("missing_new_fields_not_safe_listed",
+                                        R"(
   semantics {
     sender: "Cloud Policy"
     description:
@@ -27,11 +30,10 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
     "the policy fetcher itself."
   })");
 
-
-// An annotation with a syntax error: semantics is missing '{'.
+// Missing email annotation
 net::NetworkTrafficAnnotationTag traffic_annotation =
-  net::DefineNetworkTrafficAnnotation("syntax_error_annotation", R"(
-  semantics
+    net::DefineNetworkTrafficAnnotation("missing_email_not_safe_listed", R"(
+  semantics {
     sender: "Cloud Policy"
     description:
     "Used to fetch policy for extensions, policy-controlled wallpaper, "
@@ -42,6 +44,15 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
     "This request does not send any data. It loads external resources "
     "by a unique URL provided by the admin."
     destination: GOOGLE_OWNED_SERVICE
+    internal {
+      contacts {
+        email: ""
+      }
+    }
+    user_data {
+      type: NONE
+    }
+    last_reviewed: "2022-12-23"
   }
   policy {
     cookies_allowed: NO
@@ -53,32 +64,9 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
     "the policy fetcher itself."
   })");
 
-// An annotation with a completeness error: missing sender and
-// policy_exception_justification, chrome_policy field.
+// Invalid user data type annotation
 net::NetworkTrafficAnnotationTag traffic_annotation =
-  net::DefineNetworkTrafficAnnotation("incomplete_error_annotation", R"(
-  semantics {
-    description:
-    "Used to fetch policy for extensions, policy-controlled wallpaper, "
-    "and custom terms of service."
-    trigger:
-    "Periodically loaded when a managed user is signed in to Chrome."
-    data:
-    "This request does not send any data. It loads external resources "
-    "by a unique URL provided by the admin."
-    destination: GOOGLE_OWNED_SERVICE
-  }
-  policy {
-    cookies_allowed: YES
-    setting:
-    "This feature cannot be controlled by Chrome settings, but users "
-    "can sign out of Chrome to disable it."
-  })");
-
-// An annotation with a incomplete email address, unspecified user_data
-// invalid date format.
-net::NetworkTrafficAnnotationTag traffic_annotation =
-    net::DefineNetworkTrafficAnnotation("invalid_assignment_annotation", R"(
+    net::DefineNetworkTrafficAnnotation("invalid_userdata_not_safe_listed", R"(
   semantics {
     sender: "Cloud Policy"
     description:
@@ -96,9 +84,9 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
       }
     }
     user_data {
-      type: NONE
+      type: UNSPECIFIED
     }
-    last_reviewed: "23-12-2022"
+    last_reviewed: "2022-12-23"
   }
   policy {
     cookies_allowed: NO

@@ -134,6 +134,10 @@ void IsolatedWebAppPolicyManager::DownloadUpdateManifest() {
           email: "peletskyi@google.com"
         }
       }
+      user_data {
+        type: NONE
+      }
+      last_reviewed: "2023-01-09"
     }
     policy {
       cookies_allowed: NO
@@ -286,6 +290,10 @@ void IsolatedWebAppPolicyManager::DownloadWebBundle() {
         email: "peletskyi@google.com"
       }
     }
+    user_data {
+      type: NONE
+    }
+    last_reviewed: "2023-01-09"
   }
   policy {
     cookies_allowed: NO

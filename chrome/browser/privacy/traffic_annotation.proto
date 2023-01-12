@@ -134,7 +134,6 @@ message NetworkTrafficAnnotation {
           string email = 1;
         }
       }
-      // TODO(b/254273300): add contacts tag in auditor.py
       repeated Contact contacts = 1;
     }
 
@@ -198,15 +197,15 @@ message NetworkTrafficAnnotation {
         // If none of the below apply, use this and provide
         // more info in the data field.
         OTHER = 999;
+        NONE = 1000;
       }
-      UserDataType type = 1;
+      repeated UserDataType type = 1;
     }
-    // TODO(b/254273300): add user_data tag in auditor.py
-    repeated UserData user_data = 8;
+
+    UserData user_data = 8;
 
     // Date when this annotation was last reviewed
     // in YYYY-MM-DD format.
-    // TODO(b/254273300): add last_reviewed tag in auditor.py
     string last_reviewed = 9;
   }
 

@@ -40,12 +40,18 @@ const net::NetworkTrafficAnnotationTag kBruschettaTrafficAnnotation =
         description: "Request sent to download firmware and VM image for "
           "a Bruschetta VM, which allows the user to run the VM."
         trigger: "User installing a Bruschetta VM"
+        internal {
+          contacts {
+            email: "clumptini+oncall@google.com"
+          }
+        }
         user_data: {
           type: ACCESS_TOKEN
         }
         data: "Request to download Bruschetta firmware and VM image. "
           "Sends cookies associated with the source to authenticate the user."
         destination: WEBSITE
+        last_reviewed: "2023-01-09"
       }
       policy {
         cookies_allowed: YES
