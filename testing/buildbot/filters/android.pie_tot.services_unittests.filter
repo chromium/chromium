@@ -1,4 +1,0 @@
-# crbug.com/1384180
--TracingSampleProfilerTest.JoinRunningTracing
--TracingSampleProfilerTest.OnSampleCompleted
--TracingSampleProfilerTest.SamplingChildThread

@@ -6954,8 +6954,7 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.services_unittests.filter"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
