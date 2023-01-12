@@ -18,17 +18,17 @@ class ExecutionContext;
 
 struct KeyframeOffset {
   explicit KeyframeOffset(
-      Timing::TimelineNamedPhase phase = Timing::TimelineNamedPhase::kNone,
+      Timing::TimelineNamedRange name = Timing::TimelineNamedRange::kNone,
       double percent = 0)
-      : phase(phase), percent(percent) {}
+      : name(name), percent(percent) {}
 
   bool operator==(const KeyframeOffset& b) const {
-    return percent == b.percent && phase == b.phase;
+    return percent == b.percent && name == b.name;
   }
 
   bool operator!=(const KeyframeOffset& b) const { return !(*this == b); }
 
-  Timing::TimelineNamedPhase phase;
+  Timing::TimelineNamedRange name;
   double percent;
 };
 

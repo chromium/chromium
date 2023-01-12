@@ -269,11 +269,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
     // Currently, compositor animation tests are using document timelines
     // exclusively. In order to support scroll timelines, the algorithm would
-    // need to correct for the intrinsic iteration duration of the timeline as
-    // well as delays that are expressed as timeline offsets.
+    // need to correct for the intrinsic iteration duration of the timeline.
     EXPECT_TRUE(timeline_->IsDocumentTimeline());
-    EXPECT_FALSE(timing.start_delay.IsTimelineOffset());
-    EXPECT_FALSE(timing.end_delay.IsTimelineOffset());
 
     normalized_timing.start_delay = timing.start_delay.AsTimeValue();
     normalized_timing.end_delay = timing.end_delay.AsTimeValue();

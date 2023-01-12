@@ -341,17 +341,7 @@ const CSSValue* AlternativeAnimationDelay::CSSValueFromComputedStyleInternal(
   auto* outer_list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < delay_start_list.size(); ++i) {
-    const Timing::Delay& start = delay_start_list[i];
     const Timing::Delay& end = delay_end_list[i];
-
-    // E.g. "enter 0% enter 100%" must be shortened to just "enter".
-    if (start.IsTimelineOffset() && end.IsTimelineOffset() &&
-        start.phase == end.phase && start.relative_offset == 0.0 &&
-        end.relative_offset == 1.0) {
-      outer_list->Append(
-          *MakeGarbageCollected<CSSIdentifierValue>(start.phase));
-      continue;
-    }
 
     auto* inner_list = CSSValueList::CreateSpaceSeparated();
     inner_list->Append(

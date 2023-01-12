@@ -1803,22 +1803,22 @@ inline TimelineScroller CSSIdentifierValue::ConvertTo() const {
 
 template <>
 inline CSSIdentifierValue::CSSIdentifierValue(
-    Timing::TimelineNamedPhase named_phase)
+    Timing::TimelineNamedRange named_range)
     : CSSValue(kIdentifierClass) {
-  switch (named_phase) {
-    case Timing::TimelineNamedPhase::kCover:
+  switch (named_range) {
+    case Timing::TimelineNamedRange::kCover:
       value_id_ = CSSValueID::kCover;
       break;
-    case Timing::TimelineNamedPhase::kContain:
+    case Timing::TimelineNamedRange::kContain:
       value_id_ = CSSValueID::kContain;
       break;
-    case Timing::TimelineNamedPhase::kEnter:
+    case Timing::TimelineNamedRange::kEnter:
       value_id_ = CSSValueID::kEnter;
       break;
-    case Timing::TimelineNamedPhase::kExit:
+    case Timing::TimelineNamedRange::kExit:
       value_id_ = CSSValueID::kExit;
       break;
-    case Timing::TimelineNamedPhase::kNone:
+    default:
       NOTREACHED();
       value_id_ = CSSValueID::kCover;
       break;
@@ -1826,21 +1826,21 @@ inline CSSIdentifierValue::CSSIdentifierValue(
 }
 
 template <>
-inline Timing::TimelineNamedPhase CSSIdentifierValue::ConvertTo() const {
+inline Timing::TimelineNamedRange CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kCover:
-      return Timing::TimelineNamedPhase::kCover;
+      return Timing::TimelineNamedRange::kCover;
     case CSSValueID::kContain:
-      return Timing::TimelineNamedPhase::kContain;
+      return Timing::TimelineNamedRange::kContain;
     case CSSValueID::kEnter:
-      return Timing::TimelineNamedPhase::kEnter;
+      return Timing::TimelineNamedRange::kEnter;
     case CSSValueID::kExit:
-      return Timing::TimelineNamedPhase::kExit;
+      return Timing::TimelineNamedRange::kExit;
     default:
       break;
   }
   NOTREACHED();
-  return Timing::TimelineNamedPhase::kCover;
+  return Timing::TimelineNamedRange::kCover;
 }
 
 }  // namespace blink
