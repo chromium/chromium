@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/webui/ukm_internals_ui.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/ref_counted_memory.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/ukm/debug/ukm_debug_data_extractor.h"

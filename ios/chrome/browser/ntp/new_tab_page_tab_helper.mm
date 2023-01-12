@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"

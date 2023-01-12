@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_push_notification_client.h"
 
 #import "base/base64.h"
-#import "base/callback_helpers.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"

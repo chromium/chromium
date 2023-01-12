@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"

@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_CWV_LOOKALIKE_URL_HANDLER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_CWV_LOOKALIKE_URL_HANDLER_INTERNAL_H_
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/public/cwv_lookalike_url_handler.h"

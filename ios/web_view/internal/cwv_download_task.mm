@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/cwv_download_task_internal.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

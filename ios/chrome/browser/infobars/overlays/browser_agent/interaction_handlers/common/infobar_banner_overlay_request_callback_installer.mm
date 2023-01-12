@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_overlay_request_callback_installer.h"
 
-#import "base/bind.h"
-#import "base/callback.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "ios/chrome/browser/infobars/infobar_controller_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"

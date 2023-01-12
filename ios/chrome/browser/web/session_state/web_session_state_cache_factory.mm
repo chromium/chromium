@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/memory/ptr_util.h"
 #import "base/no_destructor.h"

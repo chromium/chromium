@@ -4,8 +4,8 @@
 
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 
-#import "base/bind.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "build/branding_buildflags.h"
 #import "components/prefs/pref_change_registrar.h"

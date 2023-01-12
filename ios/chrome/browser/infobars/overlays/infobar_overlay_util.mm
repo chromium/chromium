@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 
-#import "base/bind.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"

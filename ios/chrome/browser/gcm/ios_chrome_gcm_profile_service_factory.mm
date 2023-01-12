@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/ref_counted.h"
 #import "base/no_destructor.h"

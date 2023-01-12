@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/hash/md5.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"

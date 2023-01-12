@@ -5,8 +5,8 @@
 #ifndef IOS_WEB_DOWNLOAD_DOWNLOAD_SESSION_TASK_IMPL_H_
 #define IOS_WEB_DOWNLOAD_DOWNLOAD_SESSION_TASK_IMPL_H_
 
-#include "base/callback.h"
 #include "base/files/file.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ios/web/download/download_task_impl.h"
 

@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"

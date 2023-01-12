@@ -6,8 +6,8 @@
 
 #import <memory>
 
-#import "base/bind.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "base/task/single_thread_task_runner.h"
 #import "components/favicon/core/favicon_service.h"

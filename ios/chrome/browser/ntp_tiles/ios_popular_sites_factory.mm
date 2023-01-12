@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ntp_tiles/ios_popular_sites_factory.h"
 
-#import "base/bind.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "components/ntp_tiles/popular_sites_impl.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"

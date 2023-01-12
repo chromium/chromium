@@ -4,7 +4,7 @@
 
 #import "ios/web/js_messaging/scoped_wk_script_message_handler.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/web_state_test_util.h"

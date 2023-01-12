@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"

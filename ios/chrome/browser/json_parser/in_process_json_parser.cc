@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/json_parser/in_process_json_parser.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"

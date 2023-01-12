@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/overlays/public/overlay_dispatch_callback.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #include "testing/platform_test.h"

@@ -6,7 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/web/common/uikit_ui_util.h"

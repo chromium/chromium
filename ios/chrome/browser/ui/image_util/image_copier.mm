@@ -6,7 +6,7 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"

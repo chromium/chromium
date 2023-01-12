@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "ios/chrome/browser/dom_distiller/distiller_viewer.h"
 #include "ios/chrome/browser/reading_list/reading_list_distiller_page.h"

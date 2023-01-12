@@ -5,8 +5,8 @@
 #ifndef IOS_WEB_WEB_STATE_POLICY_DECISION_STATE_TRACKER_H_
 #define IOS_WEB_WEB_STATE_POLICY_DECISION_STATE_TRACKER_H_
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 

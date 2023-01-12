@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_FIND_IN_PAGE_FIND_IN_PAGE_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"

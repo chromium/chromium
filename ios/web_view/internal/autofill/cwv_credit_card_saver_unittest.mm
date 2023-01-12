@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"

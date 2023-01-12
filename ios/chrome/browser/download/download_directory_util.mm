@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/download/download_directory_util.h"
 
-#import "base/bind.h"
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/mac/foundation_util.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"

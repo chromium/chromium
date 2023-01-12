@@ -6,8 +6,8 @@
 
 #import <memory>
 
-#import "base/bind.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "services/network/public/cpp/resource_request.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

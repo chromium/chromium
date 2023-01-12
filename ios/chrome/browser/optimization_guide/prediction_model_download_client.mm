@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/optimization_guide/prediction_model_download_client.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros_local.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/download/public/background_service/download_metadata.h"

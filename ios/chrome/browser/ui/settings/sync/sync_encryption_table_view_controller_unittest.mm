@@ -6,8 +6,8 @@
 
 #import <memory>
 
-#import "base/bind.h"
 #import "base/compiler_specific.h"
+#import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"

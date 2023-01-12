@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/favicon/core/large_icon_service_impl.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"

@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/bind.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"

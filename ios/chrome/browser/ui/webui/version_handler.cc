@@ -4,8 +4,8 @@
 
 #include "ios/chrome/browser/ui/webui/version_handler.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/version_ui/version_handler_helper.h"
 #include "components/version_ui/version_ui_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"

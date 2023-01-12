@@ -9,9 +9,9 @@
 #import <stdint.h>
 #import <sys/sysctl.h>
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ref_counted.h"
 #import "base/task/thread_pool.h"
 #import "ios/net/cookies/cookie_store_ios.h"

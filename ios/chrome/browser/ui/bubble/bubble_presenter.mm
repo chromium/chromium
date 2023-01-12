@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"

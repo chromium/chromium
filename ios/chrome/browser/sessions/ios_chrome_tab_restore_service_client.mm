@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_client.h"
 
-#import "base/bind.h"
-#import "base/callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "components/sessions/ios/ios_live_tab.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/application_context/application_context.h"

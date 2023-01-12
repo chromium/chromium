@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/sync/glue/sync_start_util.h"
 
-#import "base/bind.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/location.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"

@@ -6,8 +6,8 @@
 
 #import <list>
 
-#import "base/callback.h"
 #import "base/check.h"
+#import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

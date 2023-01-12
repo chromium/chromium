@@ -6,7 +6,7 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"

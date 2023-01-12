@@ -4,7 +4,7 @@
 
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"

@@ -6,7 +6,7 @@
 
 #import <utility>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/singleton.h"
 #import "base/time/default_clock.h"
 #import "components/keyed_service/core/service_access_type.h"

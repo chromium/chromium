@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

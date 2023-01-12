@@ -4,8 +4,8 @@
 
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 
-#import "base/bind.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"

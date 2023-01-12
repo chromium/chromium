@@ -4,8 +4,8 @@
 
 #import <memory>
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"

@@ -6,8 +6,8 @@
 
 #import <WebKit/WebKit.h>
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"

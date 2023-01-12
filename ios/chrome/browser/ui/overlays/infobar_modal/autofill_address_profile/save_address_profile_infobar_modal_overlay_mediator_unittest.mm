@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator.h"
 
-#import "base/bind.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_client.h"

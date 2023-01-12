@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"

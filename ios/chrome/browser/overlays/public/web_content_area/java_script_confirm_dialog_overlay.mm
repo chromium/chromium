@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_confirm_dialog_overlay.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"

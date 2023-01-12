@@ -6,9 +6,9 @@
 
 #import <vector>
 
-#import "base/bind.h"
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/task/sequenced_task_runner.h"

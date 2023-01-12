@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
 
-#import "base/bind.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "components/autofill/core/browser/autofill_address_policy_handler.h"
 #import "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"

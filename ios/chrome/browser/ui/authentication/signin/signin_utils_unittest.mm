@@ -8,7 +8,7 @@
 
 #import <memory>
 
-#import "base/callback_helpers.h"
+#import "base/functional/callback_helpers.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"

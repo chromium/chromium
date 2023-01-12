@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/callback.h"
 #import "base/check.h"
+#import "base/functional/callback.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

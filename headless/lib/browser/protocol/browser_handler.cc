@@ -4,7 +4,7 @@
 
 #include "headless/lib/browser/protocol/browser_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

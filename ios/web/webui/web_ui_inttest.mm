@@ -5,7 +5,7 @@
 #import <memory>
 #import <string>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/grit/ios_web_resources.h"

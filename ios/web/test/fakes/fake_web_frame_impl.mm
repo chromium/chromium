@@ -11,8 +11,8 @@
 #import <string>
 #import <utility>
 
-#import "base/bind.h"
-#import "base/callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/json/json_writer.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"

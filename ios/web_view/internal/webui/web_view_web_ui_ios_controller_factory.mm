@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "ios/components/webui/web_ui_url_constants.h"

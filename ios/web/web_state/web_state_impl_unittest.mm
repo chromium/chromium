@@ -11,7 +11,7 @@
 #import <OCMock/OCMock.h>
 
 #import "base/base64.h"
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"

@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_JS_FEATURES_WINDOW_ERROR_WINDOW_ERROR_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_JS_FEATURES_WINDOW_ERROR_WINDOW_ERROR_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 #include "url/gurl.h"
 

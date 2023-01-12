@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_IMAGE_FETCH_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_IMAGE_FETCH_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 

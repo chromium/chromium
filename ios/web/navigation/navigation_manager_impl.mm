@@ -9,8 +9,8 @@
 #import <memory>
 #import <utility>
 
-#import "base/bind.h"
-#import "base/callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
 #import "base/mac/bundle_locations.h"

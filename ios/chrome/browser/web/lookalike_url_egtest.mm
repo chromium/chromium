@@ -4,7 +4,7 @@
 
 #import <string>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/web/lookalike_url_app_interface.h"

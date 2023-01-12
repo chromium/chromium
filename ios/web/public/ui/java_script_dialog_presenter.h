@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_UI_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 #define IOS_WEB_PUBLIC_UI_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_forward.h"
 #import "url/gurl.h"
 

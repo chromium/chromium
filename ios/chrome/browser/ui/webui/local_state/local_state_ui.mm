@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/values.h"
 #import "components/grit/dev_ui_components_resources.h"
 #import "components/local_state/local_state_utils.h"

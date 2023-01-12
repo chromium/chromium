@@ -4,7 +4,7 @@
 
 #include "headless/lib/browser/protocol/page_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)

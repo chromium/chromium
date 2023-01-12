@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/download/confirm_download_closing_overlay.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response_util.h"
 #import "ios/chrome/grit/ios_strings.h"

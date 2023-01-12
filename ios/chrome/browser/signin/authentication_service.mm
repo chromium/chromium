@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 
 #import "base/auto_reset.h"
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/metrics/histogram_functions.h"

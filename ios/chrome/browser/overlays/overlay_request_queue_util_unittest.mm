@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

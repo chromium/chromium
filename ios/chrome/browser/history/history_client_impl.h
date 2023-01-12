@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/history/core/browser/history_client.h"
 #include "components/history/core/browser/history_service.h"

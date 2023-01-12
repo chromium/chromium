@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/signin/system_identity_manager.h"
 
-#import "base/bind.h"
-#import "base/callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

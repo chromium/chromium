@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 
-#import "base/bind.h"
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"

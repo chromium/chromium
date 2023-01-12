@@ -4,8 +4,8 @@
 
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 

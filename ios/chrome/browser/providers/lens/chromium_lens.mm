@@ -5,7 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <ostream>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"

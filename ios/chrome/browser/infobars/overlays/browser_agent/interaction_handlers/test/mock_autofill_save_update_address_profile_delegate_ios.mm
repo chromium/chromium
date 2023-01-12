@@ -8,7 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/guid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 

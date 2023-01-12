@@ -4,7 +4,7 @@
 
 #import "ios/web/web_view/wk_web_view_util.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"

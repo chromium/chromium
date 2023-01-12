@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/singleton.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"

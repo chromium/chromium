@@ -4,7 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/signin/trusted_vault_api.h"
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

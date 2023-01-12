@@ -8,8 +8,8 @@
 #include <map>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #import "ios/web_view/public/cwv_identity.h"

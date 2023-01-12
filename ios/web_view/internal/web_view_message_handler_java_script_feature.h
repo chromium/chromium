@@ -8,7 +8,7 @@
 #import <map>
 #import <string>
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/no_destructor.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"

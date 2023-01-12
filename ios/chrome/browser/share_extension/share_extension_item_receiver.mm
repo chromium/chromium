@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"

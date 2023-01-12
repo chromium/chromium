@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 
-#import "base/bind.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 
 namespace web {
 class WebState;

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"

@@ -6,9 +6,9 @@
 
 #import <utility>
 
-#import "base/bind.h"
-#import "base/callback.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_util.h"

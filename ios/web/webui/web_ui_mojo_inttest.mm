@@ -5,7 +5,7 @@
 #import <memory>
 #import <string>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"

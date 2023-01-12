@@ -4,7 +4,7 @@
 
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 
-#import "base/callback_helpers.h"
+#import "base/functional/callback_helpers.h"
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"

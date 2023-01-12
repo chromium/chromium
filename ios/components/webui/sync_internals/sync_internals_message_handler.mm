@@ -7,8 +7,8 @@
 #import <utility>
 #import <vector>
 
-#import "base/bind.h"
 #import "base/command_line.h"
+#import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/values.h"
 #import "components/sync/base/command_line_switches.h"

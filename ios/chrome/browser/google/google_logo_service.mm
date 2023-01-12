@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

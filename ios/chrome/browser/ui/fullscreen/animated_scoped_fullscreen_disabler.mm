@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 
-#import "base/callback.h"
 #import "base/check.h"
+#import "base/functional/callback.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/common/material_timing.h"
 

@@ -9,9 +9,9 @@
 #import <utility>
 
 #import "base/barrier_closure.h"
-#import "base/bind.h"
-#import "base/callback.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/cookie_config/cookie_store_util.h"

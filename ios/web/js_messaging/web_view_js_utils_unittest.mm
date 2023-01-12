@@ -6,8 +6,8 @@
 
 #import <WebKit/WebKit.h>
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"

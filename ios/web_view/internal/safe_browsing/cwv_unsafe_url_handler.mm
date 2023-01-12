@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
 #import "base/notreached.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"

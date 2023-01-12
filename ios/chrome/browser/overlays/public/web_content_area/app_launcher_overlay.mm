@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/grit/ios_strings.h"

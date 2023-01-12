@@ -12,10 +12,10 @@
 #import <stdint.h>
 
 #import "base/base_switches.h"
-#import "base/bind.h"
-#import "base/callback_helpers.h"
 #import "base/check_op.h"
 #import "base/debug/debugging_buildflags.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/mac/foundation_util.h"
 #import "base/no_destructor.h"
 #import "base/strings/stringprintf.h"

@@ -5,7 +5,7 @@
 #ifndef IOS_NET_HTTP_CACHE_HELPER_H_
 #define IOS_NET_HTTP_CACHE_HELPER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 

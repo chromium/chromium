@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"

@@ -4,7 +4,7 @@
 
 #include "headless/lib/browser/headless_permission_manager.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"

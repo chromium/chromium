@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_WEB_THREAD_IMPL_H_
 #define IOS_WEB_WEB_THREAD_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"

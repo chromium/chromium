@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/app_launcher/app_launcher_browser_agent.h"
 
-#import "base/bind.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_util.h"

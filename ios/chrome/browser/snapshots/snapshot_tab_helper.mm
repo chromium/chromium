@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/task/sequenced_task_runner.h"

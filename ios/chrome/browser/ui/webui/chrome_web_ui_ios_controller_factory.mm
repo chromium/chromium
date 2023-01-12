@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/no_destructor.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"

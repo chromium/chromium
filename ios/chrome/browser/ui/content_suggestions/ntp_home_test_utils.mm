@@ -6,7 +6,7 @@
 
 #import <string>
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"

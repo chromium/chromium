@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_mediator.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"

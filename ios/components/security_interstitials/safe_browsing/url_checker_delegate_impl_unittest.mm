@@ -4,8 +4,8 @@
 
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 
-#import "base/bind.h"
-#import "base/callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/memory/ref_counted.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"

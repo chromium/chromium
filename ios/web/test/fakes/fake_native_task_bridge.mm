@@ -4,7 +4,7 @@
 
 #import "ios/web/test/fakes/fake_native_task_bridge.h"
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "net/base/net_errors.h"
 

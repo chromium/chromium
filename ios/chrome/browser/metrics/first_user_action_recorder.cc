@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"

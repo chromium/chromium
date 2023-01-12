@@ -6,7 +6,7 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"

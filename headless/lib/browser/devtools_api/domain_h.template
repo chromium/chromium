@@ -7,7 +7,7 @@
 #ifndef HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 #define HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 {% for domain_name in domain.dependencies %}

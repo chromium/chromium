@@ -6,8 +6,8 @@
 
 #import <QuickLook/QuickLook.h>
 
-#import "base/bind.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/logging.h"
 #import "base/mac/scoped_cftyperef.h"

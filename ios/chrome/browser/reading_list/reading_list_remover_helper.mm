@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/reading_list/reading_list_remover_helper.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service.h"

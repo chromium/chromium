@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <memory>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"

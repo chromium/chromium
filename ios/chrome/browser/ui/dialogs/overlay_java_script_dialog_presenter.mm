@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"

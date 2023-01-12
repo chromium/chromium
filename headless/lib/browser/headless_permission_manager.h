@@ -5,7 +5,7 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_PERMISSION_MANAGER_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_PERMISSION_MANAGER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller_delegate.h"
 

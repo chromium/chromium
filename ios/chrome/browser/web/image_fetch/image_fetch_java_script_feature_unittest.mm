@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/base64.h"
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"

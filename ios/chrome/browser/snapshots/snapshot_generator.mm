@@ -11,8 +11,8 @@
 // is no longer needed.
 #import <WebKit/WebKit.h>
 
-#import "base/bind.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"

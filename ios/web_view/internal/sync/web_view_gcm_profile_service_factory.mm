@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"

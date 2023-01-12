@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web/certificate_policy_app_agent.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"

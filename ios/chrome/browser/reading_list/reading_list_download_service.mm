@@ -7,10 +7,10 @@
 #import <memory>
 #import <utility>
 
-#import "base/bind.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_util.h"
 #import "base/task/sequenced_task_runner.h"

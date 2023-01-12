@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"

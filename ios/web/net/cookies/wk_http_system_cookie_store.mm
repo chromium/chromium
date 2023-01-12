@@ -4,7 +4,7 @@
 
 #import "ios/web/net/cookies/wk_http_system_cookie_store.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/ios/block_types.h"
 #import "ios/net/cookies/cookie_creation_time_manager.h"
 #import "ios/net/cookies/system_cookie_util.h"

@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/https_upgrades/https_upgrade_test_helper.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/escape.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"

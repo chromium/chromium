@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"

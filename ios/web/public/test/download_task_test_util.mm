@@ -4,10 +4,10 @@
 
 #import "ios/web/public/test/download_task_test_util.h"
 
-#import "base/bind.h"
-#import "base/callback.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/notreached.h"
 #import "base/run_loop.h"
 #import "ios/web/public/download/download_task.h"

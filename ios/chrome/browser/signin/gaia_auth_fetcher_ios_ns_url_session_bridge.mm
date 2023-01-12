@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/chrome_connected_header_helper.h"

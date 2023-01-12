@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
 
 namespace web {

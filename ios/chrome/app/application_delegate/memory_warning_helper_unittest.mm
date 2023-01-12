@@ -4,7 +4,7 @@
 
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/memory_pressure_listener.h"
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"

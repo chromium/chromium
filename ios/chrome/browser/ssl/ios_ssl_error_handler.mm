@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
 
-#import "base/bind.h"
-#import "base/callback.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"

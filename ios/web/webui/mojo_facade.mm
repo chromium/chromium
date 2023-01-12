@@ -13,7 +13,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/base64.h"
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/ios/block_types.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"

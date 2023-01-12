@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/bind.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/test_simple_task_runner.h"
 #import "components/metrics/metrics_pref_names.h"

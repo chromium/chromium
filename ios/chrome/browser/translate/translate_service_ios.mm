@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/translate/translate_service_ios.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "components/language/core/browser/language_model.h"
 #import "components/prefs/pref_service.h"

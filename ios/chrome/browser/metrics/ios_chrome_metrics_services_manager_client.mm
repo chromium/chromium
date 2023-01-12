@@ -6,10 +6,10 @@
 
 #import <string>
 
-#import "base/bind.h"
 #import "base/check.h"
 #import "base/command_line.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/path_service.h"
 #import "components/metrics/enabled_state_provider.h"
 #import "components/metrics/metrics_state_manager.h"

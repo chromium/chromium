@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 

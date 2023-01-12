@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"

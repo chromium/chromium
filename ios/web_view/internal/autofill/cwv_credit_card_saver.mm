@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "ios/web/public/thread/web_task_traits.h"

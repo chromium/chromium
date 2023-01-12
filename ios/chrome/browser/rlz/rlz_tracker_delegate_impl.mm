@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/rlz/rlz_tracker_delegate_impl.h"
 
-#import "base/bind.h"
 #import "base/check.h"
 #import "base/command_line.h"
+#import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
 #import "components/omnibox/browser/omnibox_log.h"

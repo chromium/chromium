@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_request_ui_state.h"
 
-#import "base/bind.h"
-#import "base/callback.h"
-#import "base/callback_helpers.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
 #import "ios/chrome/browser/ui/overlays/test/fake_overlay_request_coordinator.h"

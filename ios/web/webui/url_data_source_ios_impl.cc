@@ -4,7 +4,7 @@
 
 #include "ios/web/webui/url_data_source_ios_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"

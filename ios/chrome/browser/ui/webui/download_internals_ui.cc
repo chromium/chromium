@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/background_download_service.h"

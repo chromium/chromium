@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_DISMISSAL_CALLBACK_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_DISMISSAL_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 // Enum type categorizing the different reasons overlay UI may be dismissed.
 // Used in OverlayDismissalCallbacks to notify the OverlayPresenter why the

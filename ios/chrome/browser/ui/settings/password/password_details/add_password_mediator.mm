@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"

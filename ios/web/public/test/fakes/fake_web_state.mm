@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 #import <stdint.h>
 
-#import "base/bind.h"
-#import "base/callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"

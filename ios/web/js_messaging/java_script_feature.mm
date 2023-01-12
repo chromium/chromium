@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/web/js_messaging/java_script_content_world.h"

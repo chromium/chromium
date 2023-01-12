@@ -7,7 +7,7 @@
 #include <array>
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"

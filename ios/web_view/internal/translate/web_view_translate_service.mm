@@ -4,7 +4,7 @@
 
 #import "ios/web_view/internal/translate/web_view_translate_service.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/no_destructor.h"
 #import "components/translate/core/browser/translate_download_manager.h"

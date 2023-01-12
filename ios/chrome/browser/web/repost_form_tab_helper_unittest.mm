@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"

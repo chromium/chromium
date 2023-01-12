@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/webui/user_actions_handler.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
 #import "base/values.h"

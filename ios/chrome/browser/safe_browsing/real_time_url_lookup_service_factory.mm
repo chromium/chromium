@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"

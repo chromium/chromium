@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 
-#import "base/bind.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"

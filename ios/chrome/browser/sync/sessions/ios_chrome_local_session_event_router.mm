@@ -6,8 +6,8 @@
 
 #import <stddef.h>
 
-#import "base/bind.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/sync_sessions/sync_sessions_client.h"

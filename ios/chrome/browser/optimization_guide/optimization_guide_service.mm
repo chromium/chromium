@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
-#import "base/callback.h"
 #import "base/files/file_util.h"
+#import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/task/thread_pool.h"

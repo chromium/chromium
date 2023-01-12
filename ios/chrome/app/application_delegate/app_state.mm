@@ -6,9 +6,9 @@
 
 #import <utility>
 
-#import "base/bind.h"
-#import "base/callback.h"
 #import "base/critical_closure.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"

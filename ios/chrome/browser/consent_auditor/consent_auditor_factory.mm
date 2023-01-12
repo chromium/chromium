@@ -7,9 +7,9 @@
 #import <memory>
 #import <utility>
 
-#import "base/bind.h"
-#import "base/callback_helpers.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"

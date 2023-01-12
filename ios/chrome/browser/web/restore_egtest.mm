@@ -4,7 +4,7 @@
 
 #import <objc/runtime.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"

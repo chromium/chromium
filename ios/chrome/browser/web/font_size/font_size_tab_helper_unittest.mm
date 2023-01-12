@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"

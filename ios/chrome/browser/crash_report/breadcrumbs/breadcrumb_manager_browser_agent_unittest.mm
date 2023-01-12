@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
 
-#import "base/bind.h"
 #import "base/containers/circular_deque.h"
+#import "base/functional/bind.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"

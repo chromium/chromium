@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/follow/followed_web_site.h"
 #include "ios/chrome/browser/follow/web_page_urls.h"

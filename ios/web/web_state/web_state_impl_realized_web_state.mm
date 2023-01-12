@@ -8,9 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
-#import "base/bind.h"
 #import "base/check.h"
 #import "base/compiler_specific.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"

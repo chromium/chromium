@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class AppLauncherTabHelper;
 class GURL;

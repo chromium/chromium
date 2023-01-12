@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/json_parser/in_process_json_parser.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"

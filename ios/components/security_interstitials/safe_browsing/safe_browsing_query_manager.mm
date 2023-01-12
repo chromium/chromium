@@ -4,8 +4,8 @@
 
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 
-#import "base/callback_helpers.h"
 #import "base/check_op.h"
+#import "base/functional/callback_helpers.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/web/public/thread/web_task_traits.h"

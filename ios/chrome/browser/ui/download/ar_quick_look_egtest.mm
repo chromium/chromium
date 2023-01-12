@@ -4,7 +4,7 @@
 
 #import <memory>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/download/download_test_util.h"
 #import "ios/chrome/browser/download/mime_type_util.h"

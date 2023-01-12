@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_fetcher.h"

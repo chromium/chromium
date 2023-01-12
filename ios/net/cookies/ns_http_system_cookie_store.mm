@@ -4,7 +4,7 @@
 
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #import "ios/net/cookies/cookie_creation_time_manager.h"
 #import "ios/net/cookies/cookie_store_ios_client.h"

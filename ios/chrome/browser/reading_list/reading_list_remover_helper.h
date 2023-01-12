@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_READING_LIST_REMOVER_HELPER_H_
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_REMOVER_HELPER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model.h"

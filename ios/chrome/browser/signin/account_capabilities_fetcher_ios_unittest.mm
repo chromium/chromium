@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/signin/account_capabilities_fetcher_ios.h"
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"

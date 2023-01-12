@@ -10,8 +10,8 @@
 #import <memory>
 #import <unordered_map>
 
-#import "base/callback.h"
 #import "base/check_op.h"
+#import "base/functional/callback.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/session_features.h"

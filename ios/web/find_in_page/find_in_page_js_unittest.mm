@@ -5,8 +5,8 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-#import "base/bind.h"
-#import "base/callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"

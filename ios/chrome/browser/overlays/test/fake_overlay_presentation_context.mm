@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 
-#import "base/bind.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 

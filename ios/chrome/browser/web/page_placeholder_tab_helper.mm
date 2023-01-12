@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 
-#import "base/bind.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"

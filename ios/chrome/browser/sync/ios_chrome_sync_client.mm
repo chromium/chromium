@@ -6,8 +6,8 @@
 
 #import <utility>
 
-#import "base/bind.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/logging.h"
 #import "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #import "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"

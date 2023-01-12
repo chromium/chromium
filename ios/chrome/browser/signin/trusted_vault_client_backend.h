@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/ios/block_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/driver/trusted_vault_client.h"

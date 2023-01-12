@@ -6,7 +6,7 @@
 
 #import <utility>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/personal_data_manager.h"

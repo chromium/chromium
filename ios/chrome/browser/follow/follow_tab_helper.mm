@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 
-#import "base/callback.h"
+#import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"

@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/shell/shell_web_main_parts.h"

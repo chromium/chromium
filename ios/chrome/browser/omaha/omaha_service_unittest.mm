@@ -7,8 +7,8 @@
 #import <regex.h>
 #import <sys/types.h>
 
-#import "base/bind.h"
 #import "base/check_op.h"
+#import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"

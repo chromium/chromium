@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"

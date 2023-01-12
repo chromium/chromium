@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
 
-#import "base/callback_helpers.h"
+#import "base/functional/callback_helpers.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"

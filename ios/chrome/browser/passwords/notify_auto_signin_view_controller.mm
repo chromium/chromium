@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_fetcher_impl.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"

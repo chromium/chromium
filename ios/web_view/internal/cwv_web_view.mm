@@ -10,7 +10,7 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"

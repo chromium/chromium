@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 
 // Clears the application snapshots taken by iOS and invoke `callback` when
 // the deletion has completed (asynchronously).

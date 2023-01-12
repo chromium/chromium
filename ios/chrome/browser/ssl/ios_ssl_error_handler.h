@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SSL_IOS_SSL_ERROR_HANDLER_H_
 #define IOS_CHROME_BROWSER_SSL_IOS_SSL_ERROR_HANDLER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

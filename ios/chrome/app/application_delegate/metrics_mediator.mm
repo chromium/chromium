@@ -7,7 +7,7 @@
 #import <mach/mach.h>
 #import <sys/sysctl.h>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"

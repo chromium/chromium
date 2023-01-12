@@ -4,7 +4,7 @@
 
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/json/string_escape.h"
 #import "base/logging.h"
 #import "base/strings/stringprintf.h"

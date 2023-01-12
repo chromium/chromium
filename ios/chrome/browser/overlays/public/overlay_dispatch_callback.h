@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_DISPATCH_CALLBACK_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_DISPATCH_CALLBACK_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 
 class OverlayResponseSupport;
 class OverlayResponse;

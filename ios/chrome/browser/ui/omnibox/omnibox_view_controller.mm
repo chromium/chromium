@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_view_controller.h"
 
-#import "base/bind.h"
 #import "base/containers/contains.h"
+#import "base/functional/bind.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"

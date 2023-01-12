@@ -7,7 +7,7 @@
 #import <memory>
 #import <vector>
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"

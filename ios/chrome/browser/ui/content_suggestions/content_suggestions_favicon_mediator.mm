@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 
-#import "base/bind.h"
+#import "base/functional/bind.h"
 #import "components/favicon/core/large_icon_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
