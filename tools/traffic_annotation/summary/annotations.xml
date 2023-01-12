@@ -20,9 +20,9 @@ Refer to README.md for content description and update process.
  <item id="autofill_image_fetcher_card_art_image" added_in_milestone="93" content_hash_code="0177b54c" os_list="linux,windows,chromeos,android" file_path="chrome/browser/autofill/autofill_image_fetcher_impl.cc" />
  <item id="autofill_query" added_in_milestone="62" content_hash_code="00ed7a4b" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/autofill_download_manager.cc" />
  <item id="autofill_upload" added_in_milestone="62" content_hash_code="0698270b" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/autofill_download_manager.cc" />
- <item id="backdrop_collection_images_download" added_in_milestone="68" content_hash_code="03c0de0e" os_list="linux,windows" file_path="chrome/browser/search/background/ntp_background_service.cc" />
- <item id="backdrop_collection_names_download" added_in_milestone="68" content_hash_code="0592b787" os_list="linux,windows" file_path="chrome/browser/search/background/ntp_background_service.cc" />
- <item id="backdrop_next_image_download" added_in_milestone="77" content_hash_code="05df91f2" os_list="linux,windows" file_path="chrome/browser/search/background/ntp_background_service.cc" />
+ <item id="backdrop_collection_images_download" added_in_milestone="68" content_hash_code="03c0de0e" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
+ <item id="backdrop_collection_names_download" added_in_milestone="68" content_hash_code="0592b787" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
+ <item id="backdrop_next_image_download" added_in_milestone="77" content_hash_code="05df91f2" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
  <item id="background_fetch_context" added_in_milestone="62" content_hash_code="031d0caa" os_list="linux,windows,chromeos,android" file_path="content/browser/background_fetch/background_fetch_delegate_proxy.cc" />
  <item id="bidirectional_stream" added_in_milestone="67" content_hash_code="07c03a44" os_list="linux,windows,chromeos,android" file_path="net/http/bidirectional_stream.cc" />
  <item id="blink_extension_resource_loader" added_in_milestone="63" content_hash_code="03c97c39" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc" />
