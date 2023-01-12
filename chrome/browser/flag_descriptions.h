@@ -2697,6 +2697,9 @@ extern const char kArcRtVcpuQuadCoreDesc[];
 extern const char kArcUpdateO4CListViaA2C2Name[];
 extern const char kArcUpdateO4CListViaA2C2Desc[];
 
+extern const char kArcEnableAAudioMMAPName[];
+extern const char kArcEnableAAudioMMAPDescription[];
+
 extern const char kArcEnableUsapName[];
 extern const char kArcEnableUsapDesc[];
 

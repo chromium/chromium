@@ -4693,6 +4693,11 @@ const char kArcUpdateO4CListViaA2C2Name[] = "Update the O4C list via A2C2";
 const char kArcUpdateO4CListViaA2C2Desc[] =
     "When enabled, the O4C list is allowed to be updated via A2C2.";
 
+const char kArcEnableAAudioMMAPName[] = "Enable ARCVM AAudio MMAP";
+const char kArcEnableAAudioMMAPDescription[] =
+    "Enable AAudio MMAP support for ARCVM which provides low latency audio "
+    "for supported apps.";
+
 const char kArcEnableUsapName[] =
     "Enable ARC Unspecialized Application Processes";
 const char kArcEnableUsapDesc[] =

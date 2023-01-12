@@ -59119,6 +59119,7 @@ from previous Chrome versions.
   <int value="-1053198238" label="kScrollableTabStripWithDragging:enabled"/>
   <int value="-1052831253" label="ChromeKioskEnableLacros:enabled"/>
   <int value="-1052782474" label="enable-cloud-devices"/>
+  <int value="-1052592553" label="CrOSLateBootArcVmAAudioMMAP:enabled"/>
   <int value="-1052415111" label="malware-interstitial-v2"/>
   <int value="-1052219252" label="disable-captive-portal-bypass-proxy"/>
   <int value="-1052115254" label="TextfieldFocusOnTapUp:disabled"/>
@@ -60493,6 +60494,7 @@ from previous Chrome versions.
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
   <int value="-257600773" label="MessagesPreinstall:disabled"/>
   <int value="-257478609" label="TextfieldFocusOnTapUp:enabled"/>
+  <int value="-257251583" label="CrOSLateBootArcVmAAudioMMAP:disabled"/>
   <int value="-256940675" label="HelpAppSearchServiceIntegration:disabled"/>
   <int value="-256923848" label="ProfilesUIRevamp:disabled"/>
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>

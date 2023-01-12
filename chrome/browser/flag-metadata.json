@@ -202,6 +202,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "arc-enable-aaudio-mmap",
+    "owners": [ "pteerapong", "chromeos-audio@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "arc-enable-usap",
     "owners": [ "camurcu" ],
     "expiry_milestone": 92
