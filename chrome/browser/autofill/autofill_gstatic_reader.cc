@@ -146,11 +146,12 @@ std::vector<std::string> AutofillGstaticReader::ParseListJSON(
   absl::optional<base::Value> data = base::JSONReader::Read(*response_body);
   if (data == absl::nullopt || !data->is_dict())
     return {};
-  base::Value* raw_result = data->FindKey(key);
-  if (!raw_result || !raw_result->is_list())
+  base::Value::List* raw_result = data->GetDict().FindList(key);
+  if (!raw_result) {
     return {};
+  }
   std::vector<std::string> result;
-  for (const base::Value& value : raw_result->GetList()) {
+  for (const base::Value& value : *raw_result) {
     if (value.is_string())
       result.push_back(value.GetString());
   }
