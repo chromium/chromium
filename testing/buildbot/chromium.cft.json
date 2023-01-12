@@ -244,7 +244,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter;../../testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -809,6 +809,9 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -2533,7 +2536,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter;../../testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3110,6 +3113,9 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -4445,7 +4451,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter;../../testing/buildbot/filters/win.win-rel-cft.interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -5206,6 +5212,9 @@
         "test_id_prefix": "ninja://chrome/installer/util:installer_util_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.interactive_ui_tests.filter"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
