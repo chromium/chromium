@@ -535,7 +535,7 @@ void WebURLLoader::LoadSynchronously(
     absl::optional<WebURLError>& error,
     WebData& data,
     int64_t& encoded_data_length,
-    int64_t& encoded_body_length,
+    uint64_t& encoded_body_length,
     WebBlobInfo& downloaded_blob,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
@@ -585,7 +585,10 @@ void WebURLLoader::LoadSynchronously(
       WebURLResponse::Create(final_url, *sync_load_response.head,
                              has_devtools_request_id, context_->request_id());
   encoded_data_length = sync_load_response.head->encoded_data_length;
-  encoded_body_length = sync_load_response.head->encoded_body_length;
+  encoded_body_length =
+      sync_load_response.head->encoded_body_length
+          ? sync_load_response.head->encoded_body_length->value
+          : 0;
   if (sync_load_response.downloaded_blob) {
     downloaded_blob = WebBlobInfo(
         WebString::FromLatin1(sync_load_response.downloaded_blob->uuid),

@@ -117,7 +117,7 @@ class FakeWebURLLoader : public blink::WebURLLoader {
       absl::optional<blink::WebURLError>&,
       blink::WebData&,
       int64_t&,
-      int64_t&,
+      uint64_t&,
       blink::WebBlobInfo&,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>) override {
     client->DidFail(blink::WebURLError(kFailureReason, request->url),

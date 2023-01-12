@@ -247,7 +247,7 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
 
   // Original size of the response body before decompression.
   int64_t EncodedBodyLength() const;
-  void SetEncodedBodyLength(int64_t);
+  void SetEncodedBodyLength(uint64_t);
 
   void SetIsSignedExchangeInnerResponse(bool);
   void SetWasInPrefetchCache(bool);

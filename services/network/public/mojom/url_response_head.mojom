@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/alternate_protocol_usage.mojom";
+import "services/network/public/mojom/encoded_body_length.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -55,9 +56,9 @@ struct URLResponseHead {
   // no data, contains -1.
   int64 encoded_data_length = -1;
 
-  // Length of the response body data before decompression. -1 unless the body
-  // has been read to the end.
-  int64 encoded_body_length = -1;
+  // Length of the response body data before decompression. It is null unless
+  // the body has been read to the end.
+  network.mojom.EncodedBodyLength? encoded_body_length;
 
   // True if the request accessed the network in the process of retrieving data.
   bool network_accessed = false;

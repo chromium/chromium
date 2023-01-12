@@ -342,6 +342,7 @@ mojom("url_loader_base") {
     "data_pipe_getter.mojom",
     "devtools_observer.mojom",
     "early_hints.mojom",
+    "encoded_body_length.mojom",
     "fetch_api.mojom",
     "http_raw_headers.mojom",
     "http_request_headers.mojom",

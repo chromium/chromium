@@ -350,7 +350,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   void SetEncodedDataLength(int64_t value);
 
   int64_t EncodedBodyLength() const { return encoded_body_length_; }
-  void SetEncodedBodyLength(int64_t value);
+  void SetEncodedBodyLength(uint64_t value);
 
   int64_t DecodedBodyLength() const { return decoded_body_length_; }
   void SetDecodedBodyLength(int64_t value);
@@ -612,7 +612,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   int64_t encoded_data_length_ = 0;
 
   // Size of the response body in bytes prior to decompression.
-  int64_t encoded_body_length_ = 0;
+  uint64_t encoded_body_length_ = 0;
 
   // Sizes of the response body in bytes after any content-encoding is
   // removed.

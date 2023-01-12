@@ -41,6 +41,8 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/encoded_body_length.mojom-forward.h"
+#include "services/network/public/mojom/encoded_body_length.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
@@ -1220,7 +1222,7 @@ Response InterceptionJob::ProcessResponseOverride(
   size_t headers_size = head->headers->raw_headers().size();
   head->content_length = body_size;
   head->encoded_data_length = headers_size;
-  head->encoded_body_length = 0;
+  head->encoded_body_length = network::mojom::EncodedBodyLength::New(0u);
   head->request_start = start_ticks_;
   head->response_start = now_ticks;
 

@@ -30,6 +30,8 @@
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/encoded_body_length.mojom-forward.h"
+#include "services/network/public/mojom/encoded_body_length.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -104,8 +106,9 @@ class MockResourceRequestSender : public WebResourceRequestSender {
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     EXPECT_FALSE(peer_);
-    if (sync_load_response_.head->encoded_body_length != -1)
+    if (sync_load_response_.head->encoded_body_length) {
       EXPECT_TRUE(loader_options & network::mojom::kURLLoadOptionSynchronous);
+    }
     peer_ = std::move(peer);
     return 1;
   }
@@ -247,7 +250,7 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
   void DidFinishLoading(
       base::TimeTicks finishTime,
       int64_t totalEncodedDataLength,
-      int64_t totalEncodedBodyLength,
+      uint64_t totalEncodedBodyLength,
       int64_t totalDecodedBodyLength,
       bool should_report_corb_blocking,
       absl::optional<bool> pervasive_payload_requested) override {
@@ -263,7 +266,7 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
   void DidFail(const WebURLError& error,
                base::TimeTicks finishTime,
                int64_t totalEncodedDataLength,
-               int64_t totalEncodedBodyLength,
+               uint64_t totalEncodedBodyLength,
                int64_t totalDecodedBodyLength) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_finish_);
@@ -564,7 +567,7 @@ TEST_F(WebURLLoaderTest, SSLInfo) {
 // correctly assigned for sync XHR.
 TEST_F(WebURLLoaderTest, SyncLengths) {
   static const char kBodyData[] = "Today is Thursday";
-  const int kEncodedBodyLength = 30;
+  const uint64_t kEncodedBodyLength = 30;
   const int kEncodedDataLength = 130;
   const KURL url(kTestURL);
 
@@ -579,7 +582,8 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
   sync_load_response.url = GURL(url);
   sync_load_response.data.Assign(WebData(kBodyData));
   ASSERT_EQ(17u, sync_load_response.data.size());
-  sync_load_response.head->encoded_body_length = kEncodedBodyLength;
+  sync_load_response.head->encoded_body_length =
+      network::mojom::EncodedBodyLength::New(kEncodedBodyLength);
   sync_load_response.head->encoded_data_length = kEncodedDataLength;
   sender()->set_sync_load_response(std::move(sync_load_response));
 
@@ -587,7 +591,7 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
   absl::optional<WebURLError> error;
   WebData data;
   int64_t encoded_data_length = 0;
-  int64_t encoded_body_length = 0;
+  uint64_t encoded_body_length = 0;
   WebBlobInfo downloaded_blob;
 
   client()->loader()->LoadSynchronously(

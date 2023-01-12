@@ -113,7 +113,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
   virtual void DidFinishLoading(
       base::TimeTicks finish_time,
       int64_t total_encoded_data_length,
-      int64_t total_encoded_body_length,
+      uint64_t total_encoded_body_length,
       int64_t total_decoded_body_length,
       bool should_report_corb_blocking,
       absl::optional<bool> pervasive_payload_requested = absl::nullopt) {}
@@ -124,7 +124,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
   virtual void DidFail(const WebURLError&,
                        base::TimeTicks finish_time,
                        int64_t total_encoded_data_length,
-                       int64_t total_encoded_body_length,
+                       uint64_t total_encoded_body_length,
                        int64_t total_decoded_body_length) {}
 
   // Value passed to DidFinishLoading when total encoded data length isn't

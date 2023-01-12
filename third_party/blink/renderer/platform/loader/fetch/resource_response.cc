@@ -473,7 +473,7 @@ void ResourceResponse::SetEncodedDataLength(int64_t value) {
   encoded_data_length_ = value;
 }
 
-void ResourceResponse::SetEncodedBodyLength(int64_t value) {
+void ResourceResponse::SetEncodedBodyLength(uint64_t value) {
   encoded_body_length_ = value;
 }
 
