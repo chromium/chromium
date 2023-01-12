@@ -1320,6 +1320,18 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
   return nullptr;
 }
 
+bool DoesDefaultApnExist(const base::Value::List& apns) {
+  for (const base::Value& apn : apns) {
+    mojom::ApnPropertiesPtr apn_ptr = GetApnProperties(apn.GetDict());
+    for (const mojom::ApnType& type : apn_ptr->apn_types) {
+      if (type == mojom::ApnType::kDefault) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 std::vector<mojom::FoundNetworkPropertiesPtr> GetFoundNetworksList(
     const base::Value* dict,
     const char* key) {
@@ -3548,6 +3560,12 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
 
   NET_LOG(USER) << "CreateCustomApn: Setting user APNs for: " << network_guid
                 << ": " << new_apns.size();
+  if (!DoesDefaultApnExist(new_apns)) {
+    NET_LOG(ERROR)
+        << "CreateCustomApn: Cannot create new custom APN without a "
+        << "default type if no custom APN with a default type exist yet.";
+    return;
+  }
 
   network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
 
