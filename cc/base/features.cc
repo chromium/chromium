@@ -104,4 +104,8 @@ BASE_FEATURE(kUIEnableSharedImageCacheForGpu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kReclaimResourcesFlushInBackground,
+             "ReclaimResourceFlushInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

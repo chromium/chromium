@@ -2175,8 +2175,12 @@ void LayerTreeHostImpl::ReclaimResources(
   // aggressively flush here to make sure those DeleteTextures make it to the
   // GPU process to free up the memory.
   if (!visible_ && layer_tree_frame_sink_->context_provider()) {
-    auto* gl = layer_tree_frame_sink_->context_provider()->ContextGL();
-    gl->ShallowFlushCHROMIUM();
+    auto* compositor_context = layer_tree_frame_sink_->context_provider();
+    compositor_context->ContextGL()->ShallowFlushCHROMIUM();
+    if (base::FeatureList::IsEnabled(
+            features::kReclaimResourcesFlushInBackground)) {
+      compositor_context->ContextSupport()->FlushPendingWork();
+    }
   }
 }
 
