@@ -218,6 +218,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     kWaitForTasksFinished = 2,
   };
   void FlushGpuTasks(SyncMode sync_mode);
+  // When flushing the final task to destroy |impl_on_gpu_| we need to pass in a
+  // copy of that pointer for any tasks that were already enqueued and will run
+  // before the destructor.
+  void FlushGpuTasksWithImpl(SyncMode sync_mode,
+                             SkiaOutputSurfaceImplOnGpu* impl_on_gpu);
   GrBackendFormat GetGrBackendFormatForTexture(
       SharedImageFormat si_format,
       int plane_index,
