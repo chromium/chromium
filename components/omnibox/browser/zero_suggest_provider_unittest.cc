@@ -52,13 +52,10 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient()
       : template_url_service_(new TemplateURLService(nullptr, 0)),
-        pref_service_(new TestingPrefServiceSimple()),
-        zero_suggest_cache_service_(
-            std::make_unique<ZeroSuggestCacheService>(kCacheSize)) {
-    pref_service_->registry()->RegisterStringPref(
-        omnibox::kZeroSuggestCachedResults, std::string());
-    pref_service_->registry()->RegisterDictionaryPref(
-        omnibox::kZeroSuggestCachedResultsWithURL, base::Value::Dict());
+        pref_service_(new TestingPrefServiceSimple()) {
+    ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
+    zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
+        pref_service_.get(), kCacheSize);
   }
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;

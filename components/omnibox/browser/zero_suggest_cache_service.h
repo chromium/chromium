@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ZERO_SUGGEST_CACHE_SERVICE_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ZERO_SUGGEST_CACHE_SERVICE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/containers/lru_cache.h"
@@ -15,6 +16,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/prefs/pref_service.h"
 
 class ZeroSuggestCacheService : public KeyedService {
  public:
@@ -50,7 +52,7 @@ class ZeroSuggestCacheService : public KeyedService {
                                               const CacheEntry& response) {}
   };
 
-  explicit ZeroSuggestCacheService(size_t cache_size);
+  ZeroSuggestCacheService(PrefService* prefs, size_t cache_size);
 
   ZeroSuggestCacheService(const ZeroSuggestCacheService&) = delete;
   ZeroSuggestCacheService& operator=(const ZeroSuggestCacheService&) = delete;
@@ -73,11 +75,16 @@ class ZeroSuggestCacheService : public KeyedService {
   void RemoveObserver(Observer* observer);
 
  private:
+  // Pref service used for in-memory cache data persistence. Not owned.
+  const raw_ptr<PrefService> prefs_;
   // Cache mapping each page URL to the corresponding zero suggest response
   // (serialized JSON). |mutable| is used here because reading from the cache,
   // while logically const, will actually modify the internal recency list of
   // the HashingLRUCache object.
   mutable base::HashingLRUCache<std::string, CacheEntry> cache_;
+  // Dedicated cache entry for "ZPS on NTP" data in order to minimize any
+  // negative impact due to cache eviction policy.
+  CacheEntry ntp_entry_;
   base::ObserverList<Observer> observers_;
 };
 

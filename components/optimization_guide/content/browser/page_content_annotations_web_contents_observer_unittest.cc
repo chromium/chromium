@@ -10,11 +10,18 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/test/test_history_database.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/zero_suggest_cache_service.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
@@ -194,6 +201,10 @@ class PageContentAnnotationsWebContentsObserverTest
     optimization_guide_model_provider_ =
         std::make_unique<TestOptimizationGuideModelProvider>();
     history_service_ = std::make_unique<history::HistoryService>();
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
+    zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
+        pref_service_.get(), /*cache_size=*/1);
     page_content_annotations_service_ =
         std::make_unique<FakePageContentAnnotationsService>(
             optimization_guide_model_provider_.get(), history_service_.get());
@@ -249,6 +260,9 @@ class PageContentAnnotationsWebContentsObserverTest
   std::unique_ptr<TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
   std::unique_ptr<history::HistoryService> history_service_;
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;

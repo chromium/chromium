@@ -35,7 +35,10 @@ ZeroSuggestCacheServiceFactory::~ZeroSuggestCacheServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<ZeroSuggestCacheService>(
+      browser_state->GetPrefs(),
       OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
 }
 

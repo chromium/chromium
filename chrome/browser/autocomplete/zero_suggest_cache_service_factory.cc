@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 
 // static
@@ -20,8 +21,9 @@ ZeroSuggestCacheServiceFactory* ZeroSuggestCacheServiceFactory::GetInstance() {
 
 KeyedService* ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
   return new ZeroSuggestCacheService(
-      OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
+      profile->GetPrefs(), OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
 }
 
 ZeroSuggestCacheServiceFactory::ZeroSuggestCacheServiceFactory()
