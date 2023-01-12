@@ -32,6 +32,9 @@ class SignedWebBundleSignatureStack {
 
   ~SignedWebBundleSignatureStack();
 
+  bool operator==(const SignedWebBundleSignatureStack& other) const;
+  bool operator!=(const SignedWebBundleSignatureStack& other) const;
+
   // Returns the signature stack entries. There is guaranteed to be at least one
   // entry. The first entry corresponds to the entry at the bottom of the stack.
   const std::vector<SignedWebBundleSignatureStackEntry>& entries() const {

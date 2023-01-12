@@ -11,6 +11,7 @@
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_package {
@@ -58,7 +59,7 @@ TEST(SignedWebBundleSignatureStack,
 TEST(SignedWebBundleSignatureStack,
      CreateFromVectorOfSignedWebBundleSignatureStackEntry) {
   SignedWebBundleSignatureStackEntry entry(
-      {1, 2, 3}, {4, 5},
+      /*complete_entry_cbor=*/{1, 2, 3}, /*attributes_cbor=*/{4, 5},
       Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
       Ed25519Signature::Create(base::make_span(kTestSignature1)));
 
@@ -75,11 +76,11 @@ TEST(SignedWebBundleSignatureStack,
 TEST(SignedWebBundleSignatureStack,
      CreateFromVectorOfMultipleSignedWebBundleSignatureStackEntry) {
   SignedWebBundleSignatureStackEntry entry1(
-      {1, 2, 3}, {4, 5},
+      /*complete_entry_cbor=*/{1, 2, 3}, /*attributes_cbor=*/{4, 5},
       Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
       Ed25519Signature::Create(base::make_span(kTestSignature1)));
   SignedWebBundleSignatureStackEntry entry2(
-      {6, 7}, {8, 9, 0},
+      /*complete_entry_cbor=*/{6, 7}, /*attributes_cbor=*/{8, 9, 0},
       Ed25519PublicKey::Create(base::make_span(kTestPublicKey2)),
       Ed25519Signature::Create(base::make_span(kTestSignature2)));
 
@@ -112,6 +113,34 @@ TEST(SignedWebBundleSignatureStack,
   EXPECT_EQ(result->entries()[0].attributes_cbor(), entry->attributes_cbor);
   EXPECT_EQ(result->entries()[0].public_key(), entry->public_key);
   EXPECT_EQ(result->entries()[0].signature(), entry->signature);
+}
+
+TEST(SignedWebBundleSignatureStack, Comparators) {
+  const SignedWebBundleSignatureStackEntry entry1(
+      /*complete_entry_cbor=*/{1}, /*attributes_cbor=*/{},
+      Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
+      Ed25519Signature::Create(base::make_span(kTestSignature1)));
+
+  const SignedWebBundleSignatureStackEntry entry2(
+      /*complete_entry_cbor=*/{2}, /*attributes_cbor=*/{},
+      Ed25519PublicKey::Create(base::make_span(kTestPublicKey1)),
+      Ed25519Signature::Create(base::make_span(kTestSignature1)));
+
+  SignedWebBundleSignatureStack stack1a =
+      *SignedWebBundleSignatureStack::Create(std::array{entry1});
+  SignedWebBundleSignatureStack stack1b =
+      *SignedWebBundleSignatureStack::Create(std::array{entry1});
+
+  SignedWebBundleSignatureStack stack2 =
+      *SignedWebBundleSignatureStack::Create(std::array{entry2});
+
+  EXPECT_TRUE(stack1a == stack1a);
+  EXPECT_TRUE(stack1a == stack1b);
+  EXPECT_FALSE(stack1a == stack2);
+
+  EXPECT_FALSE(stack1a != stack1a);
+  EXPECT_FALSE(stack1a != stack1b);
+  EXPECT_TRUE(stack1a != stack2);
 }
 
 }  // namespace

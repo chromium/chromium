@@ -35,18 +35,18 @@ class SignedWebBundleIntegrityBlock {
   static base::expected<SignedWebBundleIntegrityBlock, std::string> Create(
       mojom::BundleIntegrityBlockPtr integrity_block);
 
-  SignedWebBundleIntegrityBlock(const SignedWebBundleIntegrityBlock&) = delete;
+  SignedWebBundleIntegrityBlock(const SignedWebBundleIntegrityBlock&);
   SignedWebBundleIntegrityBlock& operator=(
-      const SignedWebBundleIntegrityBlock&) = delete;
-
-  SignedWebBundleIntegrityBlock(SignedWebBundleIntegrityBlock&&);
-  SignedWebBundleIntegrityBlock& operator=(SignedWebBundleIntegrityBlock&&);
+      const SignedWebBundleIntegrityBlock&);
 
   ~SignedWebBundleIntegrityBlock();
 
+  bool operator==(const SignedWebBundleIntegrityBlock& other) const;
+  bool operator!=(const SignedWebBundleIntegrityBlock& other) const;
+
   // Returns the size of this integrity block in bytes. This is useful for
   // finding out where the actual Web Bundle starts.
-  uint64_t size_in_bytes() const { return size_; }
+  uint64_t size_in_bytes() const { return size_in_bytes_; }
 
   // Returns the the public keys contained in the signature stack in order.
   // The first public key in the vector is the first key that signed the Web
@@ -63,10 +63,10 @@ class SignedWebBundleIntegrityBlock {
 
  private:
   explicit SignedWebBundleIntegrityBlock(
-      uint64_t size,
+      uint64_t size_in_bytes,
       SignedWebBundleSignatureStack&& signature_stack);
 
-  uint64_t size_;
+  uint64_t size_in_bytes_;
   SignedWebBundleSignatureStack signature_stack_;
 };
 

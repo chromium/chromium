@@ -56,4 +56,14 @@ SignedWebBundleSignatureStack& SignedWebBundleSignatureStack::operator=(
 
 SignedWebBundleSignatureStack::~SignedWebBundleSignatureStack() = default;
 
+bool SignedWebBundleSignatureStack::operator==(
+    const SignedWebBundleSignatureStack& other) const {
+  return entries() == other.entries();
+}
+
+bool SignedWebBundleSignatureStack::operator!=(
+    const SignedWebBundleSignatureStack& other) const {
+  return !operator==(other);
+}
+
 }  // namespace web_package
