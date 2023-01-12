@@ -4176,6 +4176,38 @@ TEST_F(AXPlatformNodeWinTest, IsUIAControlForTextNodes) {
   EXPECT_UIA_BOOL_EQ(text_7_provider, UIA_IsControlElementPropertyId, false);
 }
 
+TEST_F(AXPlatformNodeWinTest, IsUIAControlForNonFocusableNodesInViews) {
+  // ++1 kUnknown
+  // ++++2 kButton
+
+  AXNodeData root_1;
+  AXNodeData button_2;
+
+  root_1.id = 1;
+  button_2.id = 2;
+
+  root_1.role = ax::mojom::Role::kUnknown;
+  root_1.child_ids = {button_2.id};
+
+  button_2.role = ax::mojom::Role::kButton;
+
+  Init(root_1, button_2);
+
+  // Set web content mode to false for the AXTree since we're testing for Views.
+  TestAXNodeWrapper::SetGlobalIsWebContent(false);
+
+  AXNode* root_1_node = GetRoot();
+  AXNode* button_2_node = root_1_node->children()[0];
+
+  ComPtr<IRawElementProviderSimple> root_1_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(root_1_node);
+  EXPECT_UIA_BOOL_EQ(root_1_provider, UIA_IsControlElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> button_2_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(button_2_node);
+  EXPECT_UIA_BOOL_EQ(button_2_provider, UIA_IsControlElementPropertyId, true);
+}
+
 TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueClickablePoint) {
   AXNodeData root;
   root.id = 1;
