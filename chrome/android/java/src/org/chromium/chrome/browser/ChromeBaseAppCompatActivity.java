@@ -10,8 +10,6 @@ import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -257,11 +255,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Sets the default task description that will appear in the recents UI.
      */
     protected void setDefaultTaskDescription() {
-        final Resources res = getResources();
         final TaskDescription taskDescription =
-                new TaskDescription(res.getString(R.string.app_name),
-                        BitmapFactory.decodeResource(res, R.mipmap.app_icon),
-                        res.getColor(R.color.default_task_description_color));
+                new TaskDescription(null, null, getColor(R.color.default_task_description_color));
         setTaskDescription(taskDescription);
     }
 
