@@ -293,9 +293,6 @@ struct InsecureDownloadData {
         download_source == DownloadSource::INTERNAL_API ||
         download_source == DownloadSource::EXTENSION_API ||
         download_source == DownloadSource::EXTENSION_INSTALLER) {
-      base::UmaHistogramEnumeration(
-          kInsecureDownloadHistogramName,
-          InsecureDownloadSecurityStatus::kDownloadIgnored);
       is_insecure_download_ = false;
     } else {  // Not ignorable download.
       // TODO(crbug.com/1352598): Add blocking metrics.
