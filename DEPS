@@ -3841,12 +3841,6 @@ include_rules = [
   '+third_party/icu/source/i18n/unicode',
   '+url',
 
-  # PSM libraries usages must be allowlisted explicitly for now. That
-  # is because it does not support component build.
-  # TODO(crbug.com/1241832): Support component build for PSM libraries.
-  '-third_party/shell-encryption',
-  '-third_party/private_membership',
-
   # Abseil features are allowlisted explicitly. See
   # //styleguide/c++/c++-features.md.
   '-absl',
