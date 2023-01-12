@@ -77,6 +77,8 @@ public class PartialCustomTabHeightStrategyTest {
     private static final int FIND_TOOLBAR_COLOR = 3755;
     private static final int PCCT_TOOLBAR_COLOR = 12111;
 
+    private boolean mFullscreen;
+
     private PartialCustomTabHeightStrategy createPcctBackgroundDisabled() {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
                 mPCCTTestRule.mActivity, 500, false, mPCCTTestRule.mOnResizedCallback,
@@ -803,18 +805,65 @@ public class PartialCustomTabHeightStrategyTest {
     @Test
     public void enterAndExitHtmlFullscreen() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-        assertFalse(isFullscreen());
+        assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
 
+        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
+
+        mFullscreen = true;
         strategy.onEnterFullscreen(null, null);
-        assertTrue(isFullscreen());
+        assertTrue(getWindowAttributes().isFullscreen());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
 
+        mFullscreen = false;
         strategy.onExitFullscreen(null);
-        assertFalse(isFullscreen());
+        waitForAnimationToFinish();
+        assertFalse(getWindowAttributes().isFullscreen());
         assertEquals(height, getWindowAttributes().height);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), anyInt());
+    }
+
+    @Test
+    public void fullscreenInLandscapeMode() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        int height = getWindowAttributes().height;
+
+        mPCCTTestRule.mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        strategy.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+
+        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
+
+        mFullscreen = true;
+        strategy.onEnterFullscreen(null, null);
+        mFullscreen = false;
+        strategy.onExitFullscreen(null);
+        waitForAnimationToFinish();
+
+        assertEquals(0, getWindowAttributes().y);
+    }
+
+    @Test
+    public void rotateAcrossFullscreenMode() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        int height = getWindowAttributes().height;
+
+        mPCCTTestRule.mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        strategy.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+
+        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
+
+        mFullscreen = true;
+        strategy.onEnterFullscreen(null, null);
+
+        mPCCTTestRule.mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        strategy.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+
+        mFullscreen = false;
+        strategy.onExitFullscreen(null);
+        waitForAnimationToFinish();
+
+        assertTabIsAtInitialPos(getWindowAttributes());
     }
 
     @Test
@@ -890,12 +939,6 @@ public class PartialCustomTabHeightStrategyTest {
         assertEquals("ResizeType.AUTO_MINIMIZATION should be recorded once.", 1,
                 histogramMinimization.getDelta());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(INITIAL_HEIGHT), anyInt());
-    }
-
-    private boolean isFullscreen() {
-        WindowManager.LayoutParams attrs =
-                mPCCTTestRule.mAttributeResults.get(mPCCTTestRule.mAttributeResults.size() - 1);
-        return attrs.isFullscreen();
     }
 
     private static void waitForAnimationToFinish() {
