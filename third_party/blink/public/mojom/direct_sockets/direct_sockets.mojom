@@ -8,6 +8,7 @@ module blink.mojom;
 // https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "services/network/public/mojom/restricted_udp_socket.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
@@ -72,23 +73,9 @@ interface DirectSocketsService {
   // Caller can supply a |listener| to listen for incoming datagrams.
   OpenUdpSocket(
       DirectSocketOptions options,
-      pending_receiver<DirectUDPSocket> receiver,
+      pending_receiver<network.mojom.RestrictedUDPSocket> receiver,
       pending_remote<network.mojom.UDPSocketListener>? listener)
       => (int32 result,
           network.mojom.IPEndPoint? local_addr,
           network.mojom.IPEndPoint? peer_addr);
-};
-
-// This wraps network.mojom.UDPSocket, exposing only the functionality needed
-// after connection has occurred.
-interface DirectUDPSocket {
-  // Notifies that the listener is ready to accept datagrams. OnReceived() of
-  // the UDPSocketListener interface will be called |num_additional_datagrams|
-  // times (errors also count), unless the connection is closed before that.
-  ReceiveMore(uint32 num_additional_datagrams);
-
-  // Sends a UDP datagram. Upon successfully handing the data to the OS,
-  // |result| is net::OK. On failure, |result| is a network error code.
-  Send(mojo_base.mojom.ReadOnlyBuffer data)
-      => (int32 result);
 };

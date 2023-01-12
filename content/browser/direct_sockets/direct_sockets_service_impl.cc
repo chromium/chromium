@@ -166,7 +166,7 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
 
 void DirectSocketsServiceImpl::OpenUdpSocket(
     blink::mojom::DirectSocketOptionsPtr options,
-    mojo::PendingReceiver<blink::mojom::DirectUDPSocket> receiver,
+    mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenUdpSocketCallback callback) {
   const std::string remote_host = options->remote_hostname;
@@ -239,7 +239,7 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTcpSocket(
 
 void DirectSocketsServiceImpl::OnResolveCompleteForUdpSocket(
     blink::mojom::DirectSocketOptionsPtr options,
-    mojo::PendingReceiver<blink::mojom::DirectUDPSocket>
+    mojo::PendingReceiver<network::mojom::RestrictedUDPSocket>
         direct_udp_socket_receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenUdpSocketCallback callback,

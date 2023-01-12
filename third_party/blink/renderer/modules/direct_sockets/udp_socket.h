@@ -9,9 +9,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/udp_socket.mojom-blink.h"
+#include "services/network/public/mojom/restricted_udp_socket.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_service_mojo_remote.h"
@@ -75,7 +74,7 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
   bool HasPendingActivity() const override;
 
  private:
-  mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
+  mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
   GetUDPSocketReceiver();
 
   void OnServiceConnectionError() override;

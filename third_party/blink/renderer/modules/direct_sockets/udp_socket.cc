@@ -159,7 +159,7 @@ void UDPSocket::Init(
   opened_resolver_ = nullptr;
 }
 
-mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
+mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
 UDPSocket::GetUDPSocketReceiver() {
   auto pending_receiver = udp_socket_->get().BindNewPipeAndPassReceiver(
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));

@@ -38,7 +38,7 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
   ScriptPromise Write(ScriptValue chunk, ExceptionState&) override;
 
  private:
-  // Callback for DirectUDPSocket::Send().
+  // Callback for RestrictedUDPSocket::Send().
   void OnSend(int32_t result);
 
   CloseOnceCallback on_close_;

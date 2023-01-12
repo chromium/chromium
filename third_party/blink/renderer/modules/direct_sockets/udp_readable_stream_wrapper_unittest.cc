@@ -9,7 +9,8 @@
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
-#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
+#include "services/network/public/mojom/restricted_udp_socket.mojom-blink.h"
+#include "services/network/public/mojom/udp_socket.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -33,7 +34,8 @@
 namespace blink {
 namespace {
 
-class FakeDirectUDPSocket : public blink::mojom::blink::DirectUDPSocket {
+class FakeRestrictedUDPSocket
+    : public network::mojom::blink::RestrictedUDPSocket {
  public:
   void Send(base::span<const uint8_t> data, SendCallback callback) override {
     NOTIMPLEMENTED();
@@ -91,13 +93,13 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
   void Trace(Visitor* visitor) const { visitor->Trace(stream_wrapper_); }
 
-  FakeDirectUDPSocket& fake_udp_socket() { return fake_udp_socket_; }
+  FakeRestrictedUDPSocket& fake_udp_socket() { return fake_udp_socket_; }
 
  private:
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Receiver<blink::mojom::blink::DirectUDPSocket> receiver_;
+  mojo::Receiver<network::mojom::blink::RestrictedUDPSocket> receiver_;
 
-  FakeDirectUDPSocket fake_udp_socket_;
+  FakeRestrictedUDPSocket fake_udp_socket_;
   Member<UDPReadableStreamWrapper> stream_wrapper_;
 };
 

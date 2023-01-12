@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_UDP_SOCKET_MOJO_REMOTE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_UDP_SOCKET_MOJO_REMOTE_H_
 
-#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
+#include "services/network/public/mojom/restricted_udp_socket.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -13,22 +13,24 @@
 
 namespace blink {
 
-// A wrapper class of HeapMojoRemote<DirectUDPSocket> so that multiple owners
-// share the same HeapmojoRemote.
+// A wrapper class of HeapMojoRemote<RestrictedUDPSocket> so that multiple
+// owners share the same HeapMojoRemote.
 class MODULES_EXPORT UDPSocketMojoRemote
     : public GarbageCollected<UDPSocketMojoRemote> {
  public:
   explicit UDPSocketMojoRemote(ExecutionContext* execution_context);
   ~UDPSocketMojoRemote();
 
-  HeapMojoRemote<mojom::blink::DirectUDPSocket>& get() { return udp_socket_; }
+  HeapMojoRemote<network::mojom::blink::RestrictedUDPSocket>& get() {
+    return udp_socket_;
+  }
 
   void Close();
 
   void Trace(Visitor* visitor) const;
 
  private:
-  HeapMojoRemote<mojom::blink::DirectUDPSocket> udp_socket_;
+  HeapMojoRemote<network::mojom::blink::RestrictedUDPSocket> udp_socket_;
 };
 
 }  // namespace blink

@@ -10,8 +10,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/restricted_udp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
-#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
 namespace content {
 
@@ -19,9 +19,9 @@ namespace content {
 // We do not expose the UDPSocket directly to the Renderer, as that
 // would allow a compromised Renderer to contact other end points.
 class CONTENT_EXPORT DirectUDPSocketImpl
-    : public blink::mojom::DirectUDPSocket {
+    : public network::mojom::RestrictedUDPSocket {
  public:
-  typedef network::mojom::UDPSocket::ConnectCallback ConnectCallback;
+  using ConnectCallback = network::mojom::UDPSocket::ConnectCallback;
 
   DirectUDPSocketImpl(
       network::mojom::NetworkContext* network_context,
@@ -33,7 +33,7 @@ class CONTENT_EXPORT DirectUDPSocketImpl
                network::mojom::UDPSocketOptionsPtr options,
                ConnectCallback callback);
 
-  // blink::mojom::DirectUDPSocket:
+  // blink::mojom::RestrictedUDPSocket:
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
 

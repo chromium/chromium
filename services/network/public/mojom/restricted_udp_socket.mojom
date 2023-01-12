@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/read_only_buffer.mojom";
+
+// This wraps network.mojom.UDPSocket, exposing only the functionality needed
+// for the Direct Sockets API.
+//
+// The original network.mojom.UDPSocket allows the caller to perform a second
+// round of Bind() or Connect() calls after Close() which is highly undesirable
+// in an untrusted process like the renderer. This restricted version implements
+// a different model where the socket is bound or connected right upon creation
+// and can't change its state afterwards.
+//
+// Caller can close the socket by destroying the interface pointer.
+interface RestrictedUDPSocket {
+  // Notifies that the listener is ready to accept datagrams. OnReceived() of
+  // the UDPSocketListener interface will be called |num_additional_datagrams|
+  // times (errors also count), unless the connection is closed before that.
+  ReceiveMore(uint32 num_additional_datagrams);
+
+  // Sends a UDP datagram. Upon successfully handing the data to the OS,
+  // |result| is net::OK. On failure, |result| is a network error code.
+  Send(mojo_base.mojom.ReadOnlyBuffer data)
+      => (int32 result);
+};
