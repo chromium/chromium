@@ -648,6 +648,9 @@ bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
 }
 
 // Omnibox UI simplification - Uniform Suggestion Row Heights
+bool OmniboxFieldTrial::IsSquareSuggestIconEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kSquareSuggestIcons);
+}
 
 bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);

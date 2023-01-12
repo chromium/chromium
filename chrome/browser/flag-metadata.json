@@ -5275,6 +5275,13 @@
     "expiry_milestone": 92
   },
   {
+    "name": "omnibox-square-suggest-icons",
+    "owners": [
+      "yohanes@google.com", "manukh", "chrome-omnibox-team@google.com"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
     "owners": [ "ender", "stkhapugin", "mahmadi", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
@@ -5292,7 +5299,7 @@
   {
     "name": "omnibox-uniform-suggestion-height",
     "owners": [ "yohanes@google.com", "manukh", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-updated-connection-security-indicators",

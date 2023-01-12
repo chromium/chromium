@@ -59844,6 +59844,7 @@ from previous Chrome versions.
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
   <int value="-653505852" label="WebViewEmptyComponentLoaderPolicy:disabled"/>
+  <int value="-652635658" label="OmniboxSquareIcons:enabled"/>
   <int value="-652144124" label="BorealisBigGl:enabled"/>
   <int value="-650731862" label="ExperimentalRgbKeyboardPatterns:enabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
@@ -62485,6 +62486,7 @@ from previous Chrome versions.
       label="ThreadedScrollPreventRenderingStarvation:enabled"/>
   <int value="896506516"
       label="enable-canvas-context-lost-in-background (obsolete)"/>
+  <int value="897179602" label="OmniboxSquareIcons:disabled"/>
   <int value="897457037" label="AutocorrectByDefault:enabled"/>
   <int value="897695337" label="TabStripRedesign:enabled"/>
   <int value="898311758" label="ReaderMode:disabled"/>

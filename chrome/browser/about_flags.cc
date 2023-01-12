@@ -5419,6 +5419,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxShortBookmarkSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kShortBookmarkSuggestions)},
 
+    {"omnibox-square-suggest-icons",
+     flag_descriptions::kOmniboxSimplifiedUiSquareSuggestIconName,
+     flag_descriptions::kOmniboxSimplifiedUiSquareSuggestIconDescription,
+     kOsAll, FEATURE_VALUE_TYPE(omnibox::kSquareSuggestIcons)},
+
     {"omnibox-uniform-suggestion-height",
      flag_descriptions::kOmniboxSimplifiedUiUniformRowHeightName,
      flag_descriptions::kOmniboxSimplifiedUiUniformRowHeightDescription, kOsAll,

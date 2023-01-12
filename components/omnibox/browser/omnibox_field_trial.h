@@ -369,6 +369,9 @@ bool ShouldDisableCGIParamMatching();
 // scopes for Site Search.
 bool IsSiteSearchStarterPackEnabled();
 
+// Omnibox UI Simplification - Square icon backgrounds.
+bool IsSquareSuggestIconEnabled();
+
 // Omnibox UI simplification - uniform row heights.
 // Returns true if the feature to enable uniform row height is enabled.
 bool IsUniformRowHeightEnabled();

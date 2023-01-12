@@ -411,6 +411,12 @@ BASE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool,
              "OmniboxMostVisitedTilesAddRecycledViewPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, adds a grey square background to search icons, and makes answer
+// icon square instead of round.
+BASE_FEATURE(kSquareSuggestIcons,
+             "OmniboxSquareIcons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, forces omnibox suggestion rows to be uniformly sized.
 BASE_FEATURE(kUniformRowHeight,
              "OmniboxUniformRowHeight",
@@ -451,6 +457,7 @@ BASE_FEATURE(kUpdatedConnectionSecurityIndicators,
 BASE_FEATURE(kDefaultTypedNavigationsToHttps,
              "OmniboxDefaultTypedNavigationsToHttps",
              enabled_by_default_desktop_android);
+
 // Parameter name used to look up the delay before falling back to the HTTP URL
 // while trying an HTTPS URL. The parameter is treated as a TimeDelta, so the
 // unit must be included in the value as well (e.g. 3s for 3 seconds).
