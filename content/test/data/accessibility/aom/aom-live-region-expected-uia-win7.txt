@@ -1,5 +1,0 @@
-Document LocalizedControlType='document' AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false'
-++Text LocalizedControlType='marquee' IsControlElement=false AriaProperties='atomic=false;readonly=true;expanded=false;live=off;multiline=false;multiselectable=false;relevant=additions text;required=false'
-++Text LocalizedControlType='marquee' IsControlElement=false AriaProperties='atomic=false;readonly=true;expanded=false;live=polite;multiline=false;multiselectable=false;relevant=additions text;required=false'
-++StatusBar LocalizedControlType='status bar' IsControlElement=false AriaProperties='atomic=true;readonly=true;expanded=false;live=assertive;multiline=false;multiselectable=false;relevant=additions text;required=false'
-++Text LocalizedControlType='alert' IsControlElement=false AriaProperties='atomic=true;readonly=true;expanded=false;live=assertive;multiline=false;multiselectable=false;relevant=additions text;required=false'

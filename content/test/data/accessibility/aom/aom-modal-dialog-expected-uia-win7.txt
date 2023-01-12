@@ -1,7 +1,0 @@
-#<skip -- crbug.com/1289698>
-Document LocalizedControlType='document'
-++Group LocalizedControlType='group' IsControlElement=false
-++++Text LocalizedControlType='text' Name='Content outside modal dialog. '
-++++Button LocalizedControlType='button' Name='Button outside modal dialog.'
-++Window LocalizedControlType='pane' Name='Modal dialog.' Window.IsModal=true
-++++Button LocalizedControlType='button' Name='Button inside modal dialog.'

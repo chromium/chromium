@@ -1,7 +1,0 @@
-Document
-++Tree Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
-++++TreeItem Name='card content' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
-++++++Text Name='card content' IsControlElement=false
-++++Group
-++++TreeItem Name='card content' ExpandCollapse.ExpandCollapseState='LeafNode' SelectionItem.IsSelected=false
-++++++Text Name='card content' IsControlElement=false

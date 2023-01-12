@@ -1,3 +1,0 @@
-AriaProperties changed on role=option, name=Li1
-AriaProperties changed on role=option, name=Li2
-AriaProperties changed on role=option, name=Li3

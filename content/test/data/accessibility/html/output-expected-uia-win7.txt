@@ -1,7 +1,0 @@
-Document LocalizedControlType='document'
-++Group LocalizedControlType='group'
-++++Spinner LocalizedControlType='spinner' RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
-++++Text LocalizedControlType='text' Name=' + '
-++++Spinner LocalizedControlType='spinner' RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
-++++Text LocalizedControlType='text' Name=' ='
-++++StatusBar LocalizedControlType='status bar' IsControlElement=false
