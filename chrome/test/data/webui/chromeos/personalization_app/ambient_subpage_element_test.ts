@@ -34,7 +34,7 @@ suite('AmbientSubpageTest', function() {
   setup(() => {
     loadTimeData.overrideValues({
       isAmbientModeAllowed: true,
-      isAmbientSubpageUIChangeEnabled: true,
+      isAmbientSubpageUiChangeEnabled: true,
     });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
@@ -702,9 +702,9 @@ suite('AmbientSubpageTest', function() {
   test(
       'displays 4 image collage when there are enough photos in Google photos album',
       async () => {
-        // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
+        // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
         loadTimeData.overrideValues(
-            {['isAmbientSubpageUIChangeEnabled']: false});
+            {['isAmbientSubpageUiChangeEnabled']: false});
 
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
@@ -728,9 +728,9 @@ suite('AmbientSubpageTest', function() {
   test(
       'displays 1 image collage when there are not enough photos in Google photos album',
       async () => {
-        // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
+        // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
         loadTimeData.overrideValues(
-            {['isAmbientSubpageUIChangeEnabled']: false});
+            {['isAmbientSubpageUiChangeEnabled']: false});
 
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
@@ -756,9 +756,9 @@ suite('AmbientSubpageTest', function() {
   test(
       'displays preview urls from selected albums when there are zero preview photos in Google photos album',
       async () => {
-        // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
+        // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
         loadTimeData.overrideValues(
-            {['isAmbientSubpageUIChangeEnabled']: false});
+            {['isAmbientSubpageUiChangeEnabled']: false});
 
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kGooglePhotos, TemperatureUnit.kFahrenheit,
@@ -780,8 +780,8 @@ suite('AmbientSubpageTest', function() {
       });
 
   test('displays zero state when ambient mode is disabled', async () => {
-    // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
-    loadTimeData.overrideValues({['isAmbientSubpageUIChangeEnabled']: false});
+    // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
+    loadTimeData.overrideValues({['isAmbientSubpageUiChangeEnabled']: false});
 
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,

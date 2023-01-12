@@ -377,7 +377,7 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isScreenSaverPreviewEnabled",
                      features::IsScreenSaverPreviewEnabled());
 
-  source->AddBoolean("isAmbientSubpageUIChangeEnabled",
+  source->AddBoolean("isAmbientSubpageUiChangeEnabled",
                      features::IsAmbientSubpageUIChangeEnabled());
 
   // TODO(b/258838122): update when the screen saver policy code is ready.

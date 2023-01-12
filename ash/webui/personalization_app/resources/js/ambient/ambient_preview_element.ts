@@ -94,6 +94,18 @@ export class AmbientPreview extends WithPersonalizationStore {
         type: Boolean,
         computed: 'computeScreenSaverPreviewActive_(ambientUiVisibility_)',
       },
+      isAmbientSubpageUiChangeEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAmbientSubpageUiChangeEnabled');
+        },
+      },
+      isAmbientModeManaged_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAmbientModeManaged');
+        },
+      },
     };
   }
 
@@ -109,6 +121,8 @@ export class AmbientPreview extends WithPersonalizationStore {
   private collageImages_: Url[];
   private ambientUiVisibility_: AmbientUiVisibility|null;
   private screenSaverPreviewActive_: boolean;
+  private isAmbientSubpageUiChangeEnabled_: boolean;
+  private isAmbientModeManaged_: boolean;
 
   private loadingTimeoutId_: number|null = null;
 
@@ -207,12 +221,12 @@ export class AmbientPreview extends WithPersonalizationStore {
    *        - if |previewAlbums_| contains fewer than 4 albums, return one of
    *        their previews; otherwise return the first 4.
    *
-   * If isAmbientSubpageUIChangeEnabled flag is on, max number of collage image
+   * If isAmbientSubpageUiChangeEnabled flag is on, max number of collage image
    * will be 3 instead of 4.
    */
   private computeCollageImages_(): Url[] {
     const maxLength =
-        loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled') ? 3 : 4;
+        loadTimeData.getBoolean('isAmbientSubpageUiChangeEnabled') ? 3 : 4;
     switch (this.topicSource_) {
       case TopicSource.kArtGallery:
         return (this.previewAlbums_ || [])
@@ -259,7 +273,7 @@ export class AmbientPreview extends WithPersonalizationStore {
 
     /* TODO(b/253470553): Remove this condition after Ambient subpage UI change
      * is released. */
-    if (!loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled')) {
+    if (!loadTimeData.getBoolean('isAmbientSubpageUiChangeEnabled')) {
       classes.push('pre-ui-change');
     }
     return classes.join(' ');
@@ -330,18 +344,6 @@ export class AmbientPreview extends WithPersonalizationStore {
             'ambientModeMultipleAlbumsDesc', this.previewAlbums_[1].title,
             this.previewAlbums_.length - 2);
     }
-  }
-
-  /**
-   * Determines whether ambient subpage UI restructure is enabled. Value can be
-   * mocked in tests.
-   */
-  private isAmbientSubpageUiChangeEnabled_(): boolean {
-    return loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled');
-  }
-
-  private isAmbientModeManaged_(): boolean {
-    return loadTimeData.getBoolean('isAmbientModeManaged');
   }
 }
 

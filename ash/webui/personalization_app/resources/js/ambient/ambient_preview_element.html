@@ -337,7 +337,7 @@
   <slot></slot>
   <template is="dom-if" if="[[loading_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
-    <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_()]]">
+    <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
       <div id="thumbnailPlaceholder" class="placeholder"></div>
     </template>
     <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
@@ -349,7 +349,7 @@
   </template>
   <template is="dom-if" if="[[!loading_]]">
     <template is="dom-if" if="[[!ambientModeEnabled_]]">
-      <div id="imageContainer" class="preview-image-container" ambient-mode-managed$="[[isAmbientModeManaged_()]]" aria-hidden="true">
+      <div id="imageContainer" class="preview-image-container" ambient-mode-managed$="[[isAmbientModeManaged_]]" aria-hidden="true">
         <div class="preview-image-border"></div>
         <img class="preview-image disabled" src="//personalization/images/slideshow.png">
       </div>
@@ -360,7 +360,7 @@
           $i18n{ambientModeMainPageZeroStateMessage}
         </span>
       </h3>
-      <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_()]]">
+      <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
         <div id="messageContainer" class="pre-ui-change">
           <span class="text" id="turnOnDescription">
             $i18n{ambientModeMainPageZeroStateMessage}
@@ -371,10 +371,10 @@
           </cr-button>
         </div>
       </template>
-      <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_()]]">
+      <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
         <div id="messageContainer">
           <ambient-zero-state-svg></ambient-zero-state-svg>
-          <template is="dom-if" if="[[!isAmbientModeManaged_()]]">
+          <template is="dom-if" if="[[!isAmbientModeManaged_]]">
             <span class="text" id="turnOnDescription">
               $i18n{ambientModeMainPageZeroStateMessageV2}
             </span>
@@ -383,7 +383,7 @@
               <div>$i18n{ambientModeTurnOnLabel}</div>
             </cr-button>
           </template>
-          <template is="dom-if" if="[[isAmbientModeManaged_()]]">
+          <template is="dom-if" if="[[isAmbientModeManaged_]]">
             <span class="text" id="turnOnDescription">
               $i18n{ambientModeMainPageEnterpriseUserMessage}
             </span>
@@ -416,7 +416,7 @@
                 is-google-photos>
           </template>
         </div>
-        <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_()]]">
+        <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
           <div id="thumbnailContainer" aria-hidden="true"
               class$="[[getThumbnailContainerClass_(collageImages_)]]"
               on-click="onClickPhotoCollage_"
@@ -455,7 +455,7 @@
             </span>
           </h3>
         </template>
-        <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_()]]">
+        <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
           <h3 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage pre-ui-change"
               aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">
             <span id="currentlySet" class="currently-set-text" aria-hidden="true">

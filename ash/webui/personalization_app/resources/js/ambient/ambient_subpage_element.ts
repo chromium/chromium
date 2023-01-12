@@ -51,24 +51,40 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Object,
         value: null,
       },
-      ambientModeEnabled_: Boolean,
-      temperatureUnit_: Number,
-      topicSource_: Number,
+      ambientModeEnabled_: {
+        type: Boolean,
+        value: null,
+      },
+      temperatureUnit_: {
+        type: Number,
+        value: null,
+      },
+      topicSource_: {
+        type: Number,
+        value: null,
+      },
       loadingSettings_: {
         type: Boolean,
         computed:
             'computeLoadingSettings_(albums_, temperatureUnit_, topicSource_)',
+      },
+      isAmbientSubpageUiChangeEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAmbientSubpageUiChangeEnabled');
+        },
       },
     };
   }
 
   path: Paths;
   queryParams: Record<string, string>;
-  private albums_: AmbientModeAlbum[]|null = null;
-  private ambientModeEnabled_: boolean|null = null;
-  private animationTheme_: AnimationTheme|null = null;
-  private temperatureUnit_: TemperatureUnit|null = null;
-  private topicSource_: TopicSource|null = null;
+  private albums_: AmbientModeAlbum[]|null;
+  private ambientModeEnabled_: boolean|null;
+  private animationTheme_: AnimationTheme|null;
+  private temperatureUnit_: TemperatureUnit|null;
+  private topicSource_: TopicSource|null;
+  private isAmbientSubpageUiChangeEnabled_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
   // another window, and then re-focuses personalization app.
@@ -190,14 +206,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   private getClassContainer_(x: number): string {
     return `ambient-text-placeholder-${x}`;
-  }
-
-  /**
-   * Determines whether ambient subpage UI restructure is enabled. Value can be
-   * mocked in tests.
-   */
-  private isAmbientSubpageUiChangeEnabled_(): boolean {
-    return loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled');
   }
 }
 

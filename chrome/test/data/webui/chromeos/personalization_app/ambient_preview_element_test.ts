@@ -134,8 +134,8 @@ suite('AmbientPreviewTest', function() {
   });
 
   test('click ambient collage goes to ambient albums subpage', async () => {
-    // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
-    loadTimeData.overrideValues({['isAmbientSubpageUIChangeEnabled']: false});
+    // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
+    loadTimeData.overrideValues({isAmbientSubpageUiChangeEnabled: false});
 
     personalizationStore.data.ambient = {
       ...personalizationStore.data.ambient,
@@ -188,7 +188,7 @@ suite('AmbientPreviewTest', function() {
   });
 
   test('click ambient thumbnail goes to ambient albums subpage', async () => {
-    loadTimeData.overrideValues({['isAmbientSubpageUIChangeEnabled']: true});
+    loadTimeData.overrideValues({isAmbientSubpageUiChangeEnabled: true});
 
     personalizationStore.data.ambient = {
       ...personalizationStore.data.ambient,
@@ -241,8 +241,8 @@ suite('AmbientPreviewTest', function() {
   });
 
   test('displays zero state message before UI change', async () => {
-    // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
-    loadTimeData.overrideValues({['isAmbientSubpageUIChangeEnabled']: false});
+    // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
+    loadTimeData.overrideValues({isAmbientSubpageUiChangeEnabled: false});
 
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
@@ -267,10 +267,11 @@ suite('AmbientPreviewTest', function() {
   test(
       'displays not available message for enterprise controlled user',
       async () => {
-        loadTimeData.overrideValues(
-            {['isAmbientSubpageUIChangeEnabled']: true});
         // Enable `isAmbientModeManaged` to mock an enterprise controlled user.
-        loadTimeData.overrideValues({['isAmbientModeManaged']: true});
+        loadTimeData.overrideValues({
+          isAmbientSubpageUiChangeEnabled: true,
+          isAmbientModeManaged: true,
+        });
 
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
