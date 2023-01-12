@@ -4081,7 +4081,7 @@
     },
 
     'lacros_skylab': {
-      'lacros_tast_tests': {
+      'lacros_all_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
         'timeout_sec': 10800,
       },
