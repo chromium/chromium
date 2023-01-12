@@ -12,10 +12,10 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.ui.resources.Resource;
@@ -58,8 +58,7 @@ public class ViewResourceAdapter
     private final CaptureMechanism mCaptureMechanism;
     private float mScale = 1;
 
-    @Nullable
-    private Callback<Resource> mOnResourceReady;
+    private final ObserverList<Callback<Resource>> mOnResourceReadyObservers = new ObserverList<>();
 
     /**
      * Builds a {@link ViewResourceAdapter} instance around {@code view}.
@@ -97,8 +96,8 @@ public class ViewResourceAdapter
     }
 
     /**
-     * Triggers a bitmap capture. Depending on this mechanism, it may do some or all of the work,
-     * and may be sync or async.
+     * Triggers a bitmap capture ignoring whether the view is dirty. Depending on this mechanism,
+     * it may do some or all of the work, and may be sync or async.
      */
     @SuppressWarnings("NewApi")
     public void triggerBitmapCapture() {
@@ -116,7 +115,7 @@ public class ViewResourceAdapter
         Resource resource = new DynamicResourceSnapshot(bitmap,
                 mCaptureMechanism.shouldRemoveResourceOnNullBitmap(), mViewSize,
                 createNativeResource());
-        mOnResourceReady.onResult(resource);
+        for (Callback<Resource> observer : mOnResourceReadyObservers) observer.onResult(resource);
     }
 
     /**
@@ -137,8 +136,13 @@ public class ViewResourceAdapter
     }
 
     @Override
-    public void setOnResourceReadyCallback(Callback<Resource> onResourceReady) {
-        mOnResourceReady = onResourceReady;
+    public void addOnResourceReadyCallback(Callback<Resource> onResourceReady) {
+        mOnResourceReadyObservers.addObserver(onResourceReady);
+    }
+
+    @Override
+    public void removeOnResourceReadyCallback(Callback<Resource> onResourceReady) {
+        mOnResourceReadyObservers.removeObserver(onResourceReady);
     }
 
     /**
@@ -154,7 +158,7 @@ public class ViewResourceAdapter
 
     @Override
     public void onResourceRequested() {
-        if (mOnResourceReady != null && isDirty()) {
+        if (!mOnResourceReadyObservers.isEmpty() && isDirty()) {
             triggerBitmapCapture();
         }
     }

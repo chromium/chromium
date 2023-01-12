@@ -7,9 +7,8 @@ package org.chromium.ui.resources.dynamics;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 
@@ -21,8 +20,7 @@ public class BitmapDynamicResource implements DynamicResource {
     private Bitmap mBitmap;
     private final Rect mSize = new Rect();
 
-    @Nullable
-    private Callback<Resource> mOnResourceReady;
+    private final ObserverList<Callback<Resource>> mOnResourceReadyObservers = new ObserverList<>();
 
     public BitmapDynamicResource(int resourceId) {
         mResId = resourceId;
@@ -48,16 +46,23 @@ public class BitmapDynamicResource implements DynamicResource {
 
     @Override
     public void onResourceRequested() {
-        if (mOnResourceReady != null && mBitmap != null) {
+        if (!mOnResourceReadyObservers.isEmpty() && mBitmap != null) {
             Resource resource = new DynamicResourceSnapshot(
                     mBitmap, false, mSize, ResourceFactory.createBitmapResource(null));
-            mOnResourceReady.onResult(resource);
+            for (Callback<Resource> observer : mOnResourceReadyObservers) {
+                observer.onResult(resource);
+            }
             mBitmap = null;
         }
     }
 
     @Override
-    public void setOnResourceReadyCallback(Callback<Resource> onResourceReady) {
-        mOnResourceReady = onResourceReady;
+    public void addOnResourceReadyCallback(Callback<Resource> onResourceReady) {
+        mOnResourceReadyObservers.addObserver(onResourceReady);
+    }
+
+    @Override
+    public void removeOnResourceReadyCallback(Callback<Resource> onResourceReady) {
+        mOnResourceReadyObservers.removeObserver(onResourceReady);
     }
 }

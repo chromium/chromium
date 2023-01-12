@@ -28,8 +28,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.ResourceFactoryJni;
 
@@ -303,5 +306,32 @@ public class ViewResourceAdapterTest {
         rect = mAdapter.getDirtyRect();
         assertEquals(mViewWidth, rect.width());
         assertEquals(mViewHeight, rect.height());
+    }
+
+    @Test
+    public void testManuallyTriggerCapture() throws Exception {
+        Bitmap bitmap = getBitmap();
+
+        Bitmap[] bitmapHolder = new Bitmap[1];
+        Callback<Resource> callback = (resource) -> {
+            bitmapHolder[0] = resource.getBitmap();
+        };
+        mAdapter.addOnResourceReadyCallback(callback);
+
+        CallbackHelper helper = new CallbackHelper();
+        DynamicResourceReadyOnceCallback.onNext(mAdapter, (r) -> helper.notifyCalled());
+
+        mAdapter.triggerBitmapCapture();
+
+        helper.waitForFirst("Capture never completed.");
+        // Bitmap is re-used.
+        assertEquals(bitmap, bitmapHolder[0]);
+
+        mAdapter.triggerBitmapCapture();
+        // Assert that no further captures occur.
+        assertEquals(1, helper.getCallCount());
+
+        // Clear this out in case another case depends on it being unset.
+        mAdapter.removeOnResourceReadyCallback(callback);
     }
 }

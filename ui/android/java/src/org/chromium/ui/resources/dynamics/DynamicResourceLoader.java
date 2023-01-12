@@ -6,6 +6,8 @@ package org.chromium.ui.resources.dynamics;
 
 import android.util.SparseArray;
 
+import org.chromium.base.Callback;
+import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceLoader;
 
 /**
@@ -15,8 +17,30 @@ import org.chromium.ui.resources.ResourceLoader;
  * back in our {@link ResourceLoaderCallback}.
  */
 public class DynamicResourceLoader extends ResourceLoader {
-    private final SparseArray<DynamicResource> mDynamicResources =
-            new SparseArray<DynamicResource>();
+    /**
+     * Adapter for holding a callback and {@link DynamicResource}. The callback must be held so
+     * it can be unregistered when the {@link DynamicResource} is no longer in use.
+     */
+    private static class DynamicResourceHolder {
+        private final DynamicResource mDynamicResource;
+        private final Callback<Resource> mCallback;
+
+        public DynamicResourceHolder(DynamicResource dynamicResource, Callback<Resource> callback) {
+            mDynamicResource = dynamicResource;
+            mCallback = callback;
+            mDynamicResource.addOnResourceReadyCallback(mCallback);
+        }
+
+        DynamicResource getDynamicResource() {
+            return mDynamicResource;
+        }
+
+        void destroy() {
+            mDynamicResource.removeOnResourceReadyCallback(mCallback);
+        }
+    }
+
+    private final SparseArray<DynamicResourceHolder> mDynamicResourceHolders = new SparseArray<>();
 
     /**
      * Builds a {@link DynamicResourceLoader} instance.
@@ -35,10 +59,10 @@ public class DynamicResourceLoader extends ResourceLoader {
      * @param asyncDynamicResource The {@link DynamicResource} to track and expose.
      */
     public void registerResource(int resId, DynamicResource asyncDynamicResource) {
-        assert mDynamicResources.get(resId) == null;
-        mDynamicResources.put(resId, asyncDynamicResource);
-        asyncDynamicResource.setOnResourceReadyCallback(
-                (resource) -> notifyLoadFinished(resId, resource));
+        assert mDynamicResourceHolders.get(resId) == null;
+        DynamicResourceHolder dynamicResourceHolder = new DynamicResourceHolder(
+                asyncDynamicResource, (resource) -> notifyLoadFinished(resId, resource));
+        mDynamicResourceHolders.put(resId, dynamicResourceHolder);
     }
 
     /**
@@ -46,10 +70,10 @@ public class DynamicResourceLoader extends ResourceLoader {
      * @param resId The Android id representing the {@link DynamicResource}.
      */
     public void unregisterResource(int resId) {
-        DynamicResource dynamicResource = mDynamicResources.get(resId);
-        if (dynamicResource == null) return;
-        mDynamicResources.remove(resId);
-        dynamicResource.setOnResourceReadyCallback(null);
+        DynamicResourceHolder dynamicResourceHolder = mDynamicResourceHolders.get(resId);
+        if (dynamicResourceHolder == null) return;
+        mDynamicResourceHolders.remove(resId);
+        dynamicResourceHolder.destroy();
         notifyResourceUnregistered(resId);
     }
 
@@ -60,9 +84,9 @@ public class DynamicResourceLoader extends ResourceLoader {
      */
     @Override
     public void loadResource(int resId) {
-        DynamicResource dynamicResource = mDynamicResources.get(resId);
-        if (dynamicResource == null) return;
-        dynamicResource.onResourceRequested();
+        DynamicResourceHolder dynamicResourceHolder = mDynamicResourceHolders.get(resId);
+        if (dynamicResourceHolder == null) return;
+        dynamicResourceHolder.getDynamicResource().onResourceRequested();
     }
 
     /**

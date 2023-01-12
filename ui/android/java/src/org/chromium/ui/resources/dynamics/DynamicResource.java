@@ -23,8 +23,13 @@ public interface DynamicResource {
     void onResourceRequested();
 
     /**
-     * Sets the way this dynamic resource will use to return the resource that is ready to be used
-     * and drawn.
+     * Adds an callback that will be invoked when the resource is ready to be used and drawn or is
+     * updated.
      */
-    void setOnResourceReadyCallback(Callback<Resource> onResourceReady);
+    void addOnResourceReadyCallback(Callback<Resource> onResourceReady);
+
+    /**
+     * Removes a resource ready callback to stop listening for updates to the resource.
+     */
+    void removeOnResourceReadyCallback(Callback<Resource> onResourceReady);
 }

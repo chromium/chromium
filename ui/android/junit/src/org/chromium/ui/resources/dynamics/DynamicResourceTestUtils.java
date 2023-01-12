@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.resources.Resource;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,14 +32,15 @@ public final class DynamicResourceTestUtils {
     /** Only works on {@link DynamicResource} that synchronously invoke their callback. */
     public static Resource getResourceSync(DynamicResource dynamicResource) {
         AtomicReference<Resource> resourcePointer = new AtomicReference<>();
-        dynamicResource.setOnResourceReadyCallback((resource) -> resourcePointer.set(resource));
+        Callback<Resource> callback = (resource) -> resourcePointer.set(resource);
+        dynamicResource.addOnResourceReadyCallback(callback);
         dynamicResource.onResourceRequested();
         Resource temp = resourcePointer.get();
         assertNotNull(temp);
 
         // Clear out the callback which is owning the AtomicReference, which in turn keeps alive the
         // Resource and/or Bitmap. Some tests will verify GC is able to reclaim these.
-        dynamicResource.setOnResourceReadyCallback(null);
+        dynamicResource.removeOnResourceReadyCallback(callback);
 
         return temp;
     }

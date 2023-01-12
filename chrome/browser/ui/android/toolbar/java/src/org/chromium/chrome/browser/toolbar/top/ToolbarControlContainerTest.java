@@ -149,7 +149,7 @@ public class ToolbarControlContainerTest {
     @Test
     public void testIsDirty() {
         ToolbarViewResourceAdapter adapter = makeAdapter();
-        adapter.setOnResourceReadyCallback((resource) -> {});
+        adapter.addOnResourceReadyCallback((resource) -> {});
 
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
