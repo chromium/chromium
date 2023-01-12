@@ -96,6 +96,7 @@ class CORE_EXPORT SVGLengthContext {
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:
+  float ViewportDimension(SVGLengthMode) const;
   float ValueForLength(const Length&, float zoom, SVGLengthMode) const;
   static float ValueForLength(const Length&, float zoom, float dimension);
 
