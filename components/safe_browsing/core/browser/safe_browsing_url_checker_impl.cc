@@ -257,11 +257,11 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(
                         /*rt_lookup_response=*/nullptr,
                         /*timed_out=*/true);
   } else {
-    OnUrlResultInternal(result.value()->url, result.value()->threat_type,
-                        result.value()->metadata,
-                        result.value()->is_from_real_time_check,
-                        std::move(result.value()->real_time_lookup_response),
-                        /*timed_out=*/false);
+    OnUrlResultInternal(
+        result.value()->url, result.value()->threat_type,
+        result.value()->metadata, result.value()->is_from_url_real_time_check,
+        std::move(result.value()->url_real_time_lookup_response),
+        /*timed_out=*/false);
   }
 }
 
@@ -451,7 +451,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     SafeBrowsingLookupMechanism::StartCheckResult start_check_result =
         lookup_mechanism_runner_->Run();
     urls_[next_index_].did_check_allowlist =
-        start_check_result.did_check_allowlist;
+        start_check_result.did_check_url_real_time_allowlist;
 
     if (start_check_result.is_safe_synchronously) {
       lookup_mechanism_runner_.reset();

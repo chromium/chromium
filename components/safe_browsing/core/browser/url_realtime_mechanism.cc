@@ -89,7 +89,7 @@ UrlRealTimeMechanism::StartCheckInternal() {
 
   return StartCheckResult(
       /*is_safe_synchronously=*/false,
-      /*did_check_allowlist=*/check_allowlist);
+      /*did_check_url_real_time_allowlist=*/check_allowlist);
 }
 
 void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
@@ -223,7 +223,7 @@ void UrlRealTimeMechanism::OnRTLookupResponse(
   } else {
     CompleteCheck(std::make_unique<CompleteCheckResult>(
         url_, sb_threat_type, ThreatMetadata(),
-        /*is_from_real_time_check=*/true, std::move(response)));
+        /*is_from_url_real_time_check=*/true, std::move(response)));
   }
 }
 
@@ -297,8 +297,8 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
   }
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url_, threat_type, metadata,
-      /*is_from_real_time_check=*/false,
-      /*real_time_lookup_response=*/nullptr));
+      /*is_from_url_real_time_check=*/false,
+      /*url_real_time_lookup_response=*/nullptr));
 }
 
 }  // namespace safe_browsing

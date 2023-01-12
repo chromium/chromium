@@ -20,21 +20,21 @@ SafeBrowsingLookupMechanism::~SafeBrowsingLookupMechanism() = default;
 
 SafeBrowsingLookupMechanism::StartCheckResult::StartCheckResult(
     bool is_safe_synchronously,
-    bool did_check_allowlist)
+    bool did_check_url_real_time_allowlist)
     : is_safe_synchronously(is_safe_synchronously),
-      did_check_allowlist(did_check_allowlist) {}
+      did_check_url_real_time_allowlist(did_check_url_real_time_allowlist) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    bool is_from_real_time_check,
-    std::unique_ptr<RTLookupResponse> real_time_lookup_response)
+    bool is_from_url_real_time_check,
+    std::unique_ptr<RTLookupResponse> url_real_time_lookup_response)
     : url(url),
       threat_type(threat_type),
       metadata(metadata),
-      is_from_real_time_check(is_from_real_time_check),
-      real_time_lookup_response(std::move(real_time_lookup_response)) {}
+      is_from_url_real_time_check(is_from_url_real_time_check),
+      url_real_time_lookup_response(std::move(url_real_time_lookup_response)) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::~CompleteCheckResult() =
     default;

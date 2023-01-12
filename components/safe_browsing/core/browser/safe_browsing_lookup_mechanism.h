@@ -21,9 +21,10 @@ namespace safe_browsing {
 class SafeBrowsingLookupMechanism {
  public:
   struct StartCheckResult {
-    StartCheckResult(bool is_safe_synchronously, bool did_check_allowlist);
+    StartCheckResult(bool is_safe_synchronously,
+                     bool did_check_url_real_time_allowlist);
     bool is_safe_synchronously;
-    bool did_check_allowlist;
+    bool did_check_url_real_time_allowlist;
   };
 
   // This is used by individual lookup mechanisms as the input for the
@@ -34,14 +35,14 @@ class SafeBrowsingLookupMechanism {
         const GURL& url,
         SBThreatType threat_type,
         const ThreatMetadata& metadata,
-        bool is_from_real_time_check,
-        std::unique_ptr<RTLookupResponse> real_time_lookup_response);
+        bool is_from_url_real_time_check,
+        std::unique_ptr<RTLookupResponse> url_real_time_lookup_response);
     ~CompleteCheckResult();
     GURL url;
     SBThreatType threat_type;
     ThreatMetadata metadata;
-    bool is_from_real_time_check;
-    std::unique_ptr<RTLookupResponse> real_time_lookup_response;
+    bool is_from_url_real_time_check;
+    std::unique_ptr<RTLookupResponse> url_real_time_lookup_response;
   };
   using CompleteCheckResultCallback =
       base::OnceCallback<void(std::unique_ptr<CompleteCheckResult> result)>;
