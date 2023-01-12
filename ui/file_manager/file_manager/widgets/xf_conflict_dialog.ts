@@ -76,15 +76,24 @@ export class XfConflictDialog extends HTMLElement {
 
   /**
    * Open the modal dialog to ask the user to resolve a conflict for the given
-   * |filename|. Set |checkbox| true to display the 'Apply to all' checkbox.
+   * |filename|. The default parameters after |filename| are as follows:
+   *
+   * Set |checkbox| true to display the 'Apply to all' checkbox in the dialog,
+   *   and should be set true if there are potentially, multiple file names in
+   *   a copy or move operation that conflict. The default is false.
+   *
+   * Set |directory| true if the |filename| is a directory (aka a folder). The
+   *   default is false.
    */
-  async show(filename: string, checkbox?: boolean): Promise<ConflictResult> {
+  async show(
+      filename: string, checkbox: boolean = false,
+      directory: boolean = false): Promise<ConflictResult> {
     const unlock = await this.mutex_.lock();
     try {
       return await new Promise<ConflictResult>((resolve, reject) => {
         this.resolve_ = resolve;
         this.reject_ = reject;
-        this.showModal_(filename, !!checkbox);
+        this.showModal_(filename, checkbox, directory);
       });
     } finally {
       unlock();
@@ -92,12 +101,13 @@ export class XfConflictDialog extends HTMLElement {
   }
 
   /**
-   * Resets the dialog message content for the given |filename| and |checkbox|
-   * display state, and then shows the modal dialog.
+   * Resets the dialog message content for the given |filename| |checkbox| and
+   * |folder| display state, and then shows the modal dialog.
    */
-  private showModal_(filename: string, checkbox: boolean) {
-    const message = strf('CONFLICT_DIALOG_MESSAGE', filename);
-    this.getMessageElement().innerText = message;
+  private showModal_(filename: string, checkbox: boolean, folder: boolean) {
+    const message =  // 'A folder named ...' or 'A file named ...'
+        folder ? 'CONFLICT_DIALOG_FOLDER_MESSAGE' : 'CONFLICT_DIALOG_MESSAGE';
+    this.getMessageElement().innerText = strf(message, filename);
 
     const applyToAll = this.getCheckboxElement();
     applyToAll.hidden = !checkbox;

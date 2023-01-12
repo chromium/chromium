@@ -42,6 +42,7 @@ export async function testDialogShow(done: () => void) {
   // Check: the dialog message should contain 'file.txt'.
   const message = element.getMessageElement();
   assertNotEquals('none', window.getComputedStyle(message).display);
+  assertTrue(message.innerText.includes('A file named'));
   assertTrue(message.innerText.includes('file.txt'));
   assertFalse(message.hidden);
 
@@ -51,7 +52,7 @@ export async function testDialogShow(done: () => void) {
   assertFalse(checkbox.checked);
   assertTrue(checkbox.hidden);
 
-  // Check: the dialog should have the focus.
+  // Check: dialog must have the focus, never its child DOM elements.
   assertNotEquals('none', window.getComputedStyle(dialog).display);
   await waitUntil(() => element.shadowRoot!.activeElement === dialog);
 
@@ -76,6 +77,7 @@ export async function testDialogShowCheckbox(done: () => void) {
   // Check: the dialog message should contain 'image.jpg'.
   const message = element.getMessageElement();
   assertNotEquals('none', window.getComputedStyle(message).display);
+  assertTrue(message.innerText.includes('A file named'));
   assertTrue(message.innerText.includes('image.jpg'));
   assertFalse(message.hidden);
 
@@ -86,7 +88,45 @@ export async function testDialogShowCheckbox(done: () => void) {
   assertFalse(checkbox.checked);
   assertFalse(checkbox.hidden);
 
-  // Check: the dialog should have the focus.
+  // Check: dialog must have the focus, never its child DOM elements.
+  assertNotEquals('none', window.getComputedStyle(dialog).display);
+  await waitUntil(() => element.shadowRoot!.activeElement === dialog);
+
+  done();
+}
+
+/*
+ * Tests that the dialog can open with the directory (aka a folder) message
+ * text shown.
+ */
+export async function testDialogShowDirectoryMessageText(done: () => void) {
+  const element = getConflictDialogElement();
+
+  // Check: the dialog should not be open.
+  const dialog = element.getDialogElement();
+  assertFalse(dialog.open);
+
+  // Open the conflict dialog for a given file name, with no checkbox, and
+  // (test-case) message text indicating that the file type is a folder.
+  const isDirectory = true;
+  const withCheckbox = false;
+  element.show('Downloads', withCheckbox, isDirectory);
+  await waitUntil(() => dialog.open);
+
+  // Check: the dialog message should contain 'Downloads'.
+  const message = element.getMessageElement();
+  assertNotEquals('none', window.getComputedStyle(message).display);
+  assertTrue(message.innerText.includes('A folder named'));
+  assertTrue(message.innerText.includes('Downloads'));
+  assertFalse(message.hidden);
+
+  // Check: the 'Apply to all' checkbox should not be shown.
+  const checkbox = element.getCheckboxElement();
+  assertEquals('none', window.getComputedStyle(checkbox).display);
+  assertFalse(checkbox.checked);
+  assertTrue(checkbox.hidden);
+
+  // Check: dialog must have the focus, never its child DOM elements.
   assertNotEquals('none', window.getComputedStyle(dialog).display);
   await waitUntil(() => element.shadowRoot!.activeElement === dialog);
 
