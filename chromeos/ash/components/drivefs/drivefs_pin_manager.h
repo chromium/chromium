@@ -154,6 +154,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // Stop the syncing setup.
   void Stop();
 
+  // Gets the current progress status.
+  SetupProgress GetProgress() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return progress_;
+  }
+
   void AddObserver(DriveFsBulkPinObserver* observer);
   void RemoveObserver(DriveFsBulkPinObserver* observer);
 
