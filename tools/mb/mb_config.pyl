@@ -166,6 +166,7 @@
       'lacros-amd64-generic-rel-skylab': 'chromeos_amd64-generic_lacros_rel_skylab_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
+      'lacros-arm64-generic-rel-skylab': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
@@ -419,7 +420,7 @@
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_skylab_reclient',
-      'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi_reclient',
+      'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta_reclient',
@@ -2142,12 +2143,12 @@
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'release','is_skylab',
     ],
 
-    'chromeos_arm64-generic_lacros_rel_fyi_reclient': [
-      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release','is_skylab',
-    ],
-
     'chromeos_arm64-generic_lacros_rel_reclient': [
       'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release',
+    ],
+
+    'chromeos_arm64-generic_lacros_rel_skylab_reclient': [
+      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release','is_skylab',
     ],
 
     'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient': [

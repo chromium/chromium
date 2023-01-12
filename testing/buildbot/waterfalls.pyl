@@ -1470,6 +1470,15 @@
         ],
         'os_type': 'chromeos'
       },
+      'lacros-arm64-generic-rel-skylab': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_arm64_generic_rel_skylab',
+        },
+        'os_type': 'chromeos',
+      },
       'linux-ash-chromium-generator-rel': {
         'additional_compile_targets': [
           'chromiumos_preflight',
