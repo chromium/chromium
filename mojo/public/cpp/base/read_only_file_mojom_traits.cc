@@ -79,7 +79,7 @@ bool IsPhysicalFile(base::File& file) {
 
 mojo::PlatformHandle StructTraits<mojo_base::mojom::ReadOnlyFileDataView,
                                   base::File>::fd(base::File& file) {
-  DCHECK(file.IsValid());
+  CHECK(file.IsValid());
   // For now we require real files as on some platforms it is too difficult to
   // be sure that more general handles cannot be written or made writable. This
   // could be relaxed if an interface needs readonly pipes. This check may block
