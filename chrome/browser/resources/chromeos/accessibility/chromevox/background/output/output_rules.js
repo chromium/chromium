@@ -85,10 +85,6 @@ export class OutputRule {
     this.role_ = role;
   }
 
-  /** @param {string|undefined} navigation */
-  set navigation(navigation) {
-    this.navigation_ = navigation;
-  }
   /** @param {string|undefined} output */
   set output(output) {
     this.output_ = output;
@@ -109,6 +105,15 @@ export class OutputRule {
   /** @return {string|undefined} */
   get output() {
     return this.output_;
+  }
+}
+
+export class AncestryOutputRule extends OutputRule {
+  /** @param {string|undefined} formatName */
+  populateNavigation(formatName) {
+    if (formatName && OutputRule.RULES[this.event_][this.role_][formatName]) {
+      this.navigation_ = formatName;
+    }
   }
 }
 

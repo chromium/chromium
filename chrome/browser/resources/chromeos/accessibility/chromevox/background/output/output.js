@@ -32,7 +32,7 @@ import {OutputFormatter} from './output_formatter.js';
 import {OutputInterface} from './output_interface.js';
 import {OutputFormatLogger} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
-import {OutputRule, OutputRuleSpecifier} from './output_rules.js';
+import {AncestryOutputRule, OutputRule, OutputRuleSpecifier} from './output_rules.js';
 import * as outputTypes from './output_types.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
@@ -857,7 +857,7 @@ export class Output {
   ancestryHelper_(args) {
     let {node, prevNode, buff, formatLog, type, ancestors, formatName} = args;
 
-    const rule = new OutputRule(type);
+    const rule = new AncestryOutputRule(type);
     // First, look up the event type's format block.
     const eventBlock = OutputRule.RULES[rule.event];
 
@@ -880,9 +880,9 @@ export class Output {
       // the last iteration.
       rule.role = CustomRole.DEFAULT;
       rule.populateRole(formatNode.role, roleInfo.inherits, formatName);
+      rule.populateNavigation(formatName);
 
       if (eventBlock[rule.role][formatName]) {
-        rule.navigation = formatName;
         rule.output = eventBlock[rule.role][formatName].speak ?
             outputTypes.OutputFormatType.SPEAK :
             undefined;
