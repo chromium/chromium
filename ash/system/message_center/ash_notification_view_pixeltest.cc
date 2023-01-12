@@ -88,6 +88,9 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   ASSERT_TRUE(notification_view);
   EXPECT_TRUE(notification_view->GetVisible());
 
+  // Waits for the message popup animation to complete.
+  base::RunLoop().RunUntilIdle();
+
   // Compare pixels.
   const std::string screenshot = GetParam().second;
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
