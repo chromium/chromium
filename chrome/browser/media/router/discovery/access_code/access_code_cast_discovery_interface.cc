@@ -129,18 +129,18 @@ void AccessCodeCastDiscoveryInterface::ReportErrorViaCallback(
 
 AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
     const base::Value& response) {
-  const base::Value* error = response.FindKey(kJsonError);
+  const base::Value::Dict* error = response.GetDict().FindDict(kJsonError);
   if (!error) {
     return AddSinkResultCode::OK;
   }
 
   // Get the HTTP code
-  absl::optional<int> http_code = error->FindIntKey(kJsonErrorCode);
+  absl::optional<int> http_code = error->FindInt(kJsonErrorCode);
   if (!http_code) {
     return AddSinkResultCode::RESPONSE_MALFORMED;
   }
 
-  const std::string* error_message = error->FindStringKey(kJsonErrorMessage);
+  const std::string* error_message = error->FindString(kJsonErrorMessage);
 
   logger_->LogError(
       mojom::LogCategory::kDiscovery, kLoggerComponent,
@@ -363,23 +363,24 @@ AccessCodeCastDiscoveryInterface::ConstructDiscoveryDeviceFromJson(
     base::Value json_response) {
   DiscoveryDevice discovery_device;
 
-  base::Value* device = json_response.FindKey(kJsonDevice);
+  base::Value::Dict* device = json_response.GetDict().FindDict(kJsonDevice);
   if (!device) {
     return std::make_pair(absl::nullopt, AddSinkResultCode::RESPONSE_MALFORMED);
   }
 
-  std::string* display_name = device->FindStringKey(kJsonDisplayName);
+  std::string* display_name = device->FindString(kJsonDisplayName);
   if (!display_name) {
     return std::make_pair(absl::nullopt, AddSinkResultCode::RESPONSE_MALFORMED);
   }
 
-  std::string* sink_id = device->FindStringKey(kJsonId);
+  std::string* sink_id = device->FindString(kJsonId);
   if (!sink_id) {
     return std::make_pair(absl::nullopt, AddSinkResultCode::RESPONSE_MALFORMED);
   }
 
   chrome_browser_media::proto::DeviceCapabilities device_capabilities_proto;
-  base::Value* device_capabilities = device->FindKey(kJsonDeviceCapabilities);
+  base::Value::Dict* device_capabilities =
+      device->FindDict(kJsonDeviceCapabilities);
   if (!device_capabilities) {
     return std::make_pair(absl::nullopt, AddSinkResultCode::RESPONSE_MALFORMED);
   }
@@ -388,11 +389,11 @@ AccessCodeCastDiscoveryInterface::ConstructDiscoveryDeviceFromJson(
 
   for (auto* const capability_key : capability_keys) {
     absl::optional<bool> capability =
-        device_capabilities->FindBoolKey(capability_key);
+        device_capabilities->FindBool(capability_key);
     if (capability.has_value()) {
       SetDeviceCapabilitiesField(&device_capabilities_proto, capability.value(),
                                  capability_key);
-    } else if (device_capabilities->FindKey(capability_key)) {
+    } else if (device_capabilities->contains(capability_key)) {
       // It's ok if the capability isn't present, but if it is, it must be a
       // bool
       return std::make_pair(absl::nullopt,
@@ -401,14 +402,14 @@ AccessCodeCastDiscoveryInterface::ConstructDiscoveryDeviceFromJson(
   }
 
   chrome_browser_media::proto::NetworkInfo network_info_proto;
-  base::Value* network_info = device->FindKey(kJsonNetworkInfo);
+  base::Value::Dict* network_info = device->FindDict(kJsonNetworkInfo);
   if (!network_info) {
     return std::make_pair(absl::nullopt, AddSinkResultCode::RESPONSE_MALFORMED);
   }
   const auto network_keys = {kJsonHostName, kJsonPort, kJsonIpV4Address,
                              kJsonIpV6Address};
   for (auto* const network_key : network_keys) {
-    std::string* network_value = network_info->FindStringKey(network_key);
+    std::string* network_value = network_info->FindString(network_key);
     if (network_value) {
       SetNetworkInfoField(&network_info_proto, *network_value, network_key);
     }
