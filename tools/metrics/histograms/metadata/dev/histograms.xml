@@ -334,6 +334,27 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools panel was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.RecordingCodeToggled"
+    enum="DevToolsRecordingCodeToggled" expires_after="2024-01-10">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Recorded when the code view for a recording was toggled in Recorder panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.RecordingCopiedToClipboard"
+    enum="DevToolsRecordingCopiedToClipboard" expires_after="2024-01-10">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Recorded when user copies a recording or step to clipboard in Recorder
+    panel.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.RecordingEdited" enum="DevToolsRecordingEdited"
     expires_after="2023-06-25">
   <owner>alexrudenko@chromium.org</owner>

@@ -26533,6 +26533,22 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="63" label="Performance Insights"/>
 </enum>
 
+<enum name="DevToolsRecordingCodeToggled">
+  <int value="1" label="Recording showing code view"/>
+  <int value="2" label="Recording hiding code view"/>
+</enum>
+
+<enum name="DevToolsRecordingCopiedToClipboard">
+  <int value="1" label="Recording copied with Puppeteer"/>
+  <int value="2" label="Recording copied with JSON"/>
+  <int value="3" label="Recording copied with @puppeteer/replay"/>
+  <int value="4" label="Recording copied with extension"/>
+  <int value="5" label="Step copied with Puppeteer"/>
+  <int value="6" label="Step copied with JSON"/>
+  <int value="7" label="Step copied with @puppeteer/replay"/>
+  <int value="8" label="Step copied with extension"/>
+</enum>
+
 <enum name="DevToolsRecordingEdited">
   <int value="1" label="Selector picker used"/>
   <int value="2" label="Step added"/>
