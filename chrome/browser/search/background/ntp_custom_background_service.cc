@@ -192,6 +192,12 @@ void NtpCustomBackgroundService::OnNextCollectionImageAvailable() {
   std::string resume_token = background_service_->next_image_resume_token();
   int64_t timestamp = (clock_->Now() + base::Days(1)).ToTimeT();
 
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeColorExtraction)) {
+    FetchCustomBackgroundAndExtractBackgroundColor(image.image_url,
+                                                   image.thumbnail_image_url);
+  }
+
   base::Value::Dict background_info = GetBackgroundInfoAsDict(
       image.image_url, attribution1, attribution2, image.attribution_action_url,
       image.collection_id, resume_token, timestamp);
