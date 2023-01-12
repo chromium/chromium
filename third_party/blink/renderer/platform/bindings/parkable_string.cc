@@ -161,7 +161,7 @@ struct BackgroundTaskParams final {
       size_t size,
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
       : callback_task_runner(callback_task_runner),
-        string(string),
+        string(std::move(string)),
         data(data),
         size(size) {}
 
@@ -223,7 +223,6 @@ ParkableStringImpl::ParkableMetadata::ParkableMetadata(
     : lock_(),
       lock_depth_(0),
       state_(State::kUnparked),
-      background_task_in_progress_(false),
       compressed_(nullptr),
       digest_(*digest),
       age_(Age::kYoung),
@@ -281,21 +280,20 @@ ParkableStringImpl::ParkableStringImpl(scoped_refptr<StringImpl>&& impl,
 }
 
 ParkableStringImpl::~ParkableStringImpl() {
-  AssertOnValidThread();
   if (!may_be_parked())
     return;
-
+  // There is nothing thread-hostile in this method, but the current design
+  // should only reach this path through the main thread.
+  AssertOnValidThread();
   DCHECK_EQ(0, lock_depth_for_testing());
   AsanUnpoisonString(string_);
   // Cannot destroy while parking is in progress, as the object is kept alive by
   // the background task.
   DCHECK(!metadata_->background_task_in_progress_);
-
-  auto& manager = ParkableStringManager::Instance();
-  manager.Remove(this);
-
-  if (has_on_disk_data())
-    manager.data_allocator().Discard(std::move(metadata_->on_disk_metadata_));
+  DCHECK(!has_on_disk_data());
+#if DCHECK_IS_ON()
+  ParkableStringManager::Instance().AssertRemoved(this);
+#endif
 }
 
 void ParkableStringImpl::Lock() {
@@ -337,7 +335,6 @@ void ParkableStringImpl::Unlock() {
 }
 
 const String& ParkableStringImpl::ToString() {
-  AssertOnValidThread();
   if (!may_be_parked())
     return string_;
 
@@ -349,7 +346,6 @@ const String& ParkableStringImpl::ToString() {
 }
 
 size_t ParkableStringImpl::CharactersSizeInBytes() const {
-  AssertOnValidThread();
   if (!may_be_parked())
     return string_.CharactersSizeInBytes();
 
@@ -365,8 +361,10 @@ size_t ParkableStringImpl::MemoryFootprintForDump() const {
 
   size += sizeof(ParkableMetadata);
 
-  if (!is_parked())
+  base::AutoLock locker(metadata_->lock_);
+  if (!is_parked_no_lock()) {
     size += string_.CharactersSizeInBytes();
+  }
 
   if (metadata_->compressed_)
     size += metadata_->compressed_->size();
@@ -378,14 +376,14 @@ ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
   base::AutoLock locker(metadata_->lock_);
   AssertOnValidThread();
   DCHECK(may_be_parked());
-  DCHECK(!is_on_disk());
+  DCHECK(!is_on_disk_no_lock());
 
   // No concurrent background tasks.
   if (metadata_->background_task_in_progress_)
     return AgeOrParkResult::kSuccessOrTransientFailure;
 
   // TODO(lizeb): Simplify logic below.
-  if (is_parked()) {
+  if (is_parked_no_lock()) {
     if (metadata_->age_ == Age::kVeryOld) {
       bool ok = ParkInternal(ParkingMode::kToDisk);
       if (!ok)
@@ -489,12 +487,22 @@ void ParkableStringImpl::DiscardCompressedData() {
   ParkableStringManager::Instance().OnWrittenToDisk(this);
 }
 
-bool ParkableStringImpl::is_parked() const {
+bool ParkableStringImpl::is_parked_no_lock() const {
   return metadata_->state_ == State::kParked;
 }
 
-bool ParkableStringImpl::is_on_disk() const {
+bool ParkableStringImpl::is_on_disk_no_lock() const {
   return metadata_->state_ == State::kOnDisk;
+}
+
+bool ParkableStringImpl::is_parked() const {
+  base::AutoLock locker(metadata_->lock_);
+  return is_parked_no_lock();
+}
+
+bool ParkableStringImpl::is_on_disk() const {
+  base::AutoLock locker(metadata_->lock_);
+  return is_on_disk_no_lock();
 }
 
 ParkableStringImpl::Status ParkableStringImpl::CurrentStatus() const {
@@ -522,7 +530,6 @@ bool ParkableStringImpl::CanParkNow() const {
 }
 
 void ParkableStringImpl::Unpark() {
-  AssertOnValidThread();
   DCHECK(may_be_parked());
 
   if (metadata_->state_ == State::kUnparked)
@@ -544,7 +551,6 @@ void ParkableStringImpl::Unpark() {
 
   DCHECK(metadata_->compressed_ || metadata_->on_disk_metadata_);
   string_ = UnparkInternal();
-  metadata_->state_ = State::kUnparked;
   if (metadata_->last_disk_parking_time_ != base::TimeTicks()) {
     // Can be quite short, can be multiple hours, hence long times, and 100
     // buckets.
@@ -553,19 +559,16 @@ void ParkableStringImpl::Unpark() {
         base::TimeTicks::Now() - metadata_->last_disk_parking_time_);
     metadata_->last_disk_parking_time_ = base::TimeTicks();
   }
-  ParkableStringManager::Instance().OnUnparked(this);
 }
 
 String ParkableStringImpl::UnparkInternal() {
-  AssertOnValidThread();
-  DCHECK(is_parked() || is_on_disk());
-  // Note: No need for |lock_| to be held, this doesn't touch any member
-  // variable protected by it.
+  DCHECK(is_parked_no_lock() || is_on_disk_no_lock());
 
   base::ElapsedTimer timer;
   auto& manager = ParkableStringManager::Instance();
 
-  if (is_on_disk()) {
+  base::TimeDelta disk_elapsed = base::TimeDelta::Min();
+  if (is_on_disk_no_lock()) {
     TRACE_EVENT("blink", "ParkableStringImpl::ReadFromDisk");
     base::ElapsedTimer disk_read_timer;
     DCHECK(has_on_disk_data());
@@ -574,11 +577,9 @@ String ParkableStringImpl::UnparkInternal() {
         base::checked_cast<wtf_size_t>(metadata_->on_disk_metadata_->size()));
     manager.data_allocator().Read(*metadata_->on_disk_metadata_,
                                   metadata_->compressed_->data());
-    base::TimeDelta elapsed = disk_read_timer.Elapsed();
-    RecordStatistics(metadata_->on_disk_metadata_->size(), elapsed,
+    disk_elapsed = disk_read_timer.Elapsed();
+    RecordStatistics(metadata_->on_disk_metadata_->size(), disk_elapsed,
                      ParkingAction::kRead);
-    manager.OnReadFromDisk(this);
-    manager.RecordDiskReadTime(elapsed);
   }
 
   TRACE_EVENT("blink", "ParkableStringImpl::Decompress");
@@ -632,10 +633,15 @@ String ParkableStringImpl::UnparkInternal() {
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
-  manager.RecordUnparkingTime(elapsed);
   RecordStatistics(CharactersSizeInBytes(), elapsed, ParkingAction::kUnparked);
-
+  metadata_->state_ = State::kUnparked;
+  manager.CompleteUnpark(this, elapsed, disk_elapsed);
   return uncompressed;
+}
+
+void ParkableStringImpl::ReleaseAndRemoveIfNeeded() const {
+  ParkableStringManager::Instance().Remove(
+      const_cast<ParkableStringImpl*>(this));
 }
 
 void ParkableStringImpl::PostBackgroundCompressionTask() {
@@ -838,6 +844,7 @@ void ParkableStringImpl::OnWritingCompleteOnMainThread(
     std::unique_ptr<BackgroundTaskParams> params,
     std::unique_ptr<DiskDataMetadata> on_disk_metadata,
     base::TimeDelta writing_time) {
+  base::AutoLock locker(metadata_->lock_);
   DCHECK(metadata_->background_task_in_progress_);
   DCHECK(!metadata_->on_disk_metadata_);
 
