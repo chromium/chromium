@@ -891,6 +891,11 @@ class SideSearchAutoTriggeringBrowserTest
     });
   }
 
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
+    SideSearchFeatureEngagementTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     SideSearchFeatureEngagementTest::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();
@@ -926,17 +931,8 @@ class SideSearchAutoTriggeringBrowserTest
   feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1368921): Flaky on lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
-  DISABLED_SidePanelAutoTriggersAfterReturningToAPreviousSRP
-#else
-#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
-  SidePanelAutoTriggersAfterReturningToAPreviousSRP
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SideSearchAutoTriggeringBrowserTest,
-    MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
+IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
+                       SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
 
