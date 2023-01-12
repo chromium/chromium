@@ -18,6 +18,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/supervision_resources.h"
+#include "chrome/grit/supervision_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -77,15 +79,14 @@ void ParentAccessUI::SetUpResources() {
   source->AddResourcePath("parent_access_ui_handler.js",
                           IDR_PARENT_ACCESS_UI_HANDLER_JS);
   source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
-  source->AddResourcePath("parent_access_error.js", IDR_PARENT_ACCESS_ERROR_JS);
   source->AddResourcePath("flows/local_web_approvals_after.js",
                           IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
-  source->AddResourcePath("parent_access_offline.js",
-                          IDR_PARENT_ACCESS_OFFLINE_JS);
   source->AddResourcePath("parent_access_ui.mojom-webui.js",
                           IDR_PARENT_ACCESS_UI_MOJOM_WEBUI_JS);
   source->AddResourcePath("webview_manager.js",
                           IDR_PARENT_ACCESS_WEBVIEW_MANAGER_JS);
+  source->AddResourcePaths(
+      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
@@ -101,10 +102,11 @@ void ParentAccessUI::SetUpResources() {
       {"localWebApprovalsAfterDetails",
        IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS},
       {"webviewLoadingMessage", IDS_PARENT_ACCESS_WEBVIEW_LOADING_MESSAGE},
-      {"offlineTitle", IDS_PARENT_ACCESS_OFFLINE_HEADING},
-      {"offlineDescription", IDS_PARENT_ACCESS_OFFLINE_DESCRIPTION},
-      {"errorTitle", IDS_PARENT_ACCESS_ERROR_TITLE},
-      {"errorDescription", IDS_PARENT_ACCESS_ERROR_DESCRIPTION},
+      {"supervisedUserOfflineTitle", IDS_SUPERVISED_USER_OFFLINE_TITLE},
+      {"supervisedUserOfflineDescription",
+       IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION},
+      {"supervisedUserErrorTitle", IDS_SUPERVISED_USER_ERROR_TITLE},
+      {"supervisedUserErrorDescription", IDS_SUPERVISED_USER_ERROR_DESCRIPTION},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

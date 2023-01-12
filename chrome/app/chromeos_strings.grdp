@@ -6028,16 +6028,18 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_PARENT_ACCESS_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the parent access screen is loading.">
     Please wait...
   </message>
-  <message name="IDS_PARENT_ACCESS_ERROR_TITLE" desc="Title for the parent access dialog when an error has occurred.">
+
+  <!-- Strings shared among supervised user experiences -->
+  <message name="IDS_SUPERVISED_USER_ERROR_TITLE" desc="Title for the UI shown to supervised users when an error has occurred.">
     An error occurred
   </message>
-  <message name="IDS_PARENT_ACCESS_ERROR_DESCRIPTION" desc="Message shown if the parent access dialog has failed to load for any reason.">
+  <message name="IDS_SUPERVISED_USER_ERROR_DESCRIPTION" desc="Message shown if UI shown to supervised users has failed to load for any reason.">
     Please try again later
   </message>
-  <message name="IDS_PARENT_ACCESS_OFFLINE_HEADING" desc="Heading string shown in the parent access flow when the network is not available.">
+  <message name="IDS_SUPERVISED_USER_OFFLINE_TITLE" desc="Heading string shown in the UI shown to supervised users when the network is not available.">
     Can’t connect to the internet
   </message>
-  <message name="IDS_PARENT_ACCESS_OFFLINE_DESCRIPTION" desc="Description shown in the parent access flow when the network is not available.">
+  <message name="IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION" desc="Description shown in the UI shown to supervised users when the network is not available.">
     Check your internet connection
   </message>
 

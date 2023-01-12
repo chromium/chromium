@@ -55,6 +55,7 @@ js_library("edu_coexistence_error") {
   deps = [
     ":edu_coexistence_button",
     ":edu_coexistence_template",
+    "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -63,6 +64,7 @@ js_library("edu_coexistence_offline") {
   deps = [
     ":edu_coexistence_button",
     ":edu_coexistence_template",
+    "//chrome/browser/resources/chromeos/supervision:supervised_user_offline",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

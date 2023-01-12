@@ -29,6 +29,7 @@ group("resources") {
     "network_ui:resources",
     "notification_tester:resources",
     "password_change:resources",
+    "supervision:resources",
     "vc_tray_tester:resources",
   ]
 }
@@ -92,6 +93,7 @@ group("closure_compile") {
     "password_change:closure_compile",
     "set_time_dialog:closure_compile",
     "smb_shares:closure_compile",
+    "supervision:closure_compile",
     "sys_internals:closure_compile",
     "vm:closure_compile",
   ]

@@ -50,6 +50,8 @@
 #include "chrome/grit/arc_account_picker_resources_map.h"
 #include "chrome/grit/gaia_action_buttons_resources.h"
 #include "chrome/grit/gaia_action_buttons_resources_map.h"
+#include "chrome/grit/supervision_resources.h"
+#include "chrome/grit/supervision_resources_map.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,14 +94,14 @@ void AddEduStrings(content::WebUIDataSource* source,
                     chrome::kAccountRecoveryURL);
 
   // Strings for server based EDU Coexistence flow.
-  source->AddLocalizedString("eduCoexistenceNetworkDownHeading",
-                             IDS_EDU_COEXISTENCE_NETWORK_DOWN_HEADING);
-  source->AddLocalizedString("eduCoexistenceNetworkDownDescription",
-                             IDS_EDU_COEXISTENCE_NETWORK_DOWN_DESCRIPTION);
-  source->AddLocalizedString("eduCoexistenceErrorHeading",
-                             IDS_EDU_COEXISTENCE_ERROR_HEADING);
-  source->AddLocalizedString("eduCoexistenceErrorDescription",
-                             IDS_EDU_COEXISTENCE_ERROR_DESCRIPTION);
+  source->AddLocalizedString("supervisedUserOfflineTitle",
+                             IDS_SUPERVISED_USER_OFFLINE_TITLE);
+  source->AddLocalizedString("supervisedUserOfflineDescription",
+                             IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION);
+  source->AddLocalizedString("supervisedUserErrorTitle",
+                             IDS_SUPERVISED_USER_ERROR_TITLE);
+  source->AddLocalizedString("supervisedUserErrorDescription",
+                             IDS_SUPERVISED_USER_ERROR_DESCRIPTION);
   source->AddLocalizedString("loadingMessage", IDS_LOGIN_GAIA_LOADING_MESSAGE);
   source->AddLocalizedString(
       "addSchoolAccountLabel",
@@ -126,6 +128,8 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
                                            kArcAccountPickerResourcesSize));
   source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
                                            kGaiaActionButtonsResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Only add a filter when runing as test.

@@ -5,6 +5,7 @@
 import './edu_coexistence_css.js';
 import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
+import './supervision/supervised_user_offline.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

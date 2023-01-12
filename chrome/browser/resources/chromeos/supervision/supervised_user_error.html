@@ -1,5 +1,5 @@
 <style>
-  #offline-screen {
+  #error-screen {
     background-color: var(--cros-bg-color-elevation-1);
     box-sizing: border-box;
     display: flex;
@@ -13,14 +13,14 @@
     width: 100px;
   }
 
-  .offline-text {
+  .error-text {
     align-items: center;
     display: flex;
     font-size: 14px;
     margin-top: 26px;
   }
 
-  .offline-title {
+  .error-title {
     font-family: var(--cros-font-family-google-sans);
     font-size: 24px;
     font-weight: 500;
@@ -28,10 +28,10 @@
   }
 </style>
 
-<div id="offline-screen">
+<div id="error-screen">
   <img class="google-logo" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
     alt="Google">
   </img>
-  <div class="offline-title"> $i18n{offlineTitle} </div>
-  <div class="offline-text"> $i18n{offlineDescription} </div>
+  <div class="error-title">$i18n{supervisedUserErrorTitle}</div>
+  <div class="error-text">$i18n{supervisedUserErrorDescription}</div>
 </div>

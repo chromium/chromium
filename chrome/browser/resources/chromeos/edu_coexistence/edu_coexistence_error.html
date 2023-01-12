@@ -2,23 +2,7 @@
 
 <edu-coexistence-template>
   <span slot="main">
-    <div class="column-layout content-container">
-        <div class="column-layout title-area">
-          <div>
-            <img class="google-full-logo"
-                src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
-          </div>
-          <div>
-            <h1>$i18n{eduCoexistenceErrorHeading}</h1>
-          </div>
-          <div>
-            <p class="secondary">$i18n{eduCoexistenceErrorDescription}</p>
-          </div>
-        </div>
-        <div class="content-area">
-           <img src="an_error_occurred.svg">
-        </div>
-    </div>
+    <supervised-user-error></supervised-user-error>
   </span>
   <span slot="buttons">
     <div class="footer">

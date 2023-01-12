@@ -7,8 +7,8 @@
 // into |loadTimeData|.
 import './strings.m.js';
 import './parent_access_after.js';
-import './parent_access_error.js';
-import './parent_access_offline.js';
+import './supervision/supervised_user_error.js';
+import './supervision/supervised_user_offline.js';
 import './parent_access_ui.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
@@ -21,8 +21,8 @@ import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
 export const Screens = {
   ONLINE_FLOW: 'parent-access-ui',
   AFTER_FLOW: 'parent-access-after',
-  ERROR: 'parent-access-error',
-  OFFLINE: 'parent-access-offline',
+  ERROR: 'supervised-user-error',
+  OFFLINE: 'supervised-user-offline',
 };
 
 class ParentAccessApp extends PolymerElement {
