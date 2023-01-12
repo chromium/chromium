@@ -1069,10 +1069,6 @@
                   'chrome/browser/ash/web_applications/face_ml_system_web_app_info.*|' \
                   'chrome/browser/ash/web_applications/face_ml/'
     },
-    'feature_policy': {
-      'filepath': 'third_party/blink/renderer/platform/feature_policy/|' \
-                  'third_party/blink/renderer/bindings/core/v8/origin_trial_features',
-    },
     'feed': {
       'filepath': 'chrome/android/feed|' \
                   'chrome/browser/feed/|' \
@@ -1660,6 +1656,10 @@
                   '|chrome/browser/content_settings/permission'\
                   '|permission_context',
     },
+    'permissions_policy': {
+      'filepath': 'third_party/blink/renderer/core/permissions_policy/|' \
+                  'third_party/blink/public/(common|mojom)/permissions_policy/'
+    },
     'phonehub': {
       'filepath': 'ash/system/phonehub/'\
                   '|chrome/browser/ash/phonehub/'\
@@ -1672,8 +1672,8 @@
       'filepath': 'chrome/browser/resources/plugin_metadata/'
     },
     'policy_features': {
-      'filepath' : 'third_party/blink/renderer/core/feature_policy/document_policy_features.json5|'\
-                   'third_party/blink/renderer/core/feature_policy/feature_policy_features.json5'
+      'filepath' : 'third_party/blink/renderer/core/permissions_policy/document_policy_features.json5|'\
+                   'third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5'
     },
     'polymer': {
       'filepath': 'third_party/polymer/|'\
@@ -2680,9 +2680,6 @@
     'extension': ['chromium-apps-reviews@chromium.org',
                   'extensions-reviews@chromium.org'],
     'face_ml': ['eora-dc-eng+crrev-watch@google.com'],
-    'feature_policy': ['loonybear@chromium.org',
-                       'iclelland+watch@chromium.org',
-                       'jmedley+watch@chromium.org'],
     'feed': ['carlosk+watch@chromium.org',
              'dewittj+watch@chromium.org',
              'dimich+watch@chromium.org',
@@ -2893,6 +2890,9 @@
                    'teravest+watch@chromium.org'],
     'permissions': ['dominickn+watch-permissions@chromium.org',
                     'permissions-reviews@chromium.org'],
+    'permissions_policy': ['loonybear@chromium.org',
+                           'iclelland+watch@chromium.org',
+                           'jmedley+watch@chromium.org'],
     'phonehub': ['crisrael+watch-phonehub@google.com',
                  'hansberry+watch-phonehub@chromium.org',
                  'jonmann+watch-phonehub@chromium.org',
