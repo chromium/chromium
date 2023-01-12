@@ -19,10 +19,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ICookieManagerDelegate;
+import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegateClient;
@@ -55,42 +58,126 @@ public class WebSandbox {
     private static final String DEFAULT_PROFILE_NAME = "DefaultProfile";
 
     private static WebSandbox sInstance;
-    private static boolean sPendingConnection;
-
-    private ConnectionSetup mConnection;
     private IWebSandboxService mWebSandboxService;
+
+    private SandboxConnection mConnection;
 
     private List<WebEngine> mActiveWebEngines = new ArrayList<>();
 
-    private static class ConnectionSetup implements ServiceConnection {
-        private CallbackToFutureAdapter.Completer<WebSandbox> mCompleter;
+    private static class SandboxConnection implements ServiceConnection {
+        private static ListenableFuture<SandboxConnection> sSandboxConnectionFuture;
+        private static SandboxConnection sSandboxConnectionInstance;
+
+        private CallbackToFutureAdapter.Completer<SandboxConnection> mSandboxConnectionCompleter;
         private IWebSandboxService mWebSandboxService;
+
         private Context mContext;
 
-        private final IWebSandboxCallback mWebSandboxCallback = new IWebSandboxCallback.Stub() {
-            @Override
-            public void onBrowserProcessInitialized() {
-                sInstance = new WebSandbox(ConnectionSetup.this, mWebSandboxService);
-                sPendingConnection = false;
-                mCompleter.set(sInstance);
-                mCompleter = null;
-            }
-        };
+        private static boolean sPendingBrowserProcessInitialization;
 
-        ConnectionSetup(Context context, CallbackToFutureAdapter.Completer<WebSandbox> completer) {
+        private SandboxConnection(
+                Context context, CallbackToFutureAdapter.Completer<SandboxConnection> completer) {
             mContext = context;
-            mCompleter = completer;
+            mSandboxConnectionCompleter = completer;
+
+            Intent intent = new Intent(
+                    isInProcessMode(mContext) ? BROWSER_INPROCESS_ACTION : BROWSER_SANDBOX_ACTION);
+            intent.setPackage(isInProcessMode(mContext) ? mContext.getPackageName()
+                                                        : SANDBOX_BROWSER_SANDBOX_PACKAGE);
+            mContext.bindService(intent, this, Context.BIND_AUTO_CREATE);
+        }
+
+        static ListenableFuture<SandboxConnection> getInstance(Context context) {
+            if (sSandboxConnectionInstance != null) {
+                return Futures.immediateFuture(sSandboxConnectionInstance);
+            }
+            if (sSandboxConnectionFuture == null) {
+                sSandboxConnectionFuture = CallbackToFutureAdapter.getFuture(completer -> {
+                    new SandboxConnection(context, completer);
+                    return "SandboxConnection Future";
+                });
+            }
+            return sSandboxConnectionFuture;
         }
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             mWebSandboxService = IWebSandboxService.Stub.asInterface(service);
+
+            sSandboxConnectionInstance = this;
+            sSandboxConnectionFuture = null;
+
+            mSandboxConnectionCompleter.set(sSandboxConnectionInstance);
+            mSandboxConnectionCompleter = null;
+        }
+
+        private CallbackToFutureAdapter.Completer<WebSandbox> mCompleter;
+
+        void initializeBrowserProcess(CallbackToFutureAdapter.Completer<WebSandbox> completer) {
+            assert !sPendingBrowserProcessInitialization
+                : "SandboxInitialization already in progress";
+
+            mCompleter = completer;
+
+            sPendingBrowserProcessInitialization = true;
             try {
-                mWebSandboxService.initializeBrowserProcess(mWebSandboxCallback);
+                mWebSandboxService.initializeBrowserProcess(new IWebSandboxCallback.Stub() {
+                    @Override
+                    public void onBrowserProcessInitialized() {
+                        sInstance = new WebSandbox(SandboxConnection.this, mWebSandboxService);
+
+                        mCompleter.set(sInstance);
+                        mCompleter = null;
+
+                        sPendingBrowserProcessInitialization = false;
+                    }
+                });
             } catch (RemoteException e) {
                 mCompleter.setException(e);
                 mCompleter = null;
             }
+        }
+
+        void isAvailable(CallbackToFutureAdapter.Completer<Boolean> completer)
+                throws RemoteException {
+            mWebSandboxService.isAvailable(new IBooleanCallback.Stub() {
+                @Override
+                public void onResult(boolean isAvailable) {
+                    completer.set(isAvailable);
+                }
+                @Override
+                public void onException(int type, String msg) {
+                    completer.setException(ExceptionHelper.createException(type, msg));
+                }
+            });
+        }
+
+        void getVersion(CallbackToFutureAdapter.Completer<String> completer)
+                throws RemoteException {
+            mWebSandboxService.getVersion(new IStringCallback.Stub() {
+                @Override
+                public void onResult(String version) {
+                    completer.set(version);
+                }
+                @Override
+                public void onException(int type, String msg) {
+                    completer.setException(ExceptionHelper.createException(type, msg));
+                }
+            });
+        }
+
+        void getProviderPackageName(CallbackToFutureAdapter.Completer<String> completer)
+                throws RemoteException {
+            mWebSandboxService.getProviderPackageName(new IStringCallback.Stub() {
+                @Override
+                public void onResult(String providerPackageName) {
+                    completer.set(providerPackageName);
+                }
+                @Override
+                public void onException(int type, String msg) {
+                    completer.setException(ExceptionHelper.createException(type, msg));
+                }
+            });
         }
 
         void unbind() {
@@ -103,7 +190,7 @@ public class WebSandbox {
         public void onServiceDisconnected(ComponentName name) {}
     }
 
-    private WebSandbox(ConnectionSetup connection, IWebSandboxService service) {
+    private WebSandbox(SandboxConnection connection, IWebSandboxService service) {
         mConnection = connection;
         mWebSandboxService = service;
     }
@@ -115,31 +202,91 @@ public class WebSandbox {
      */
     @NonNull
     public static ListenableFuture<WebSandbox> create(@NonNull Context context) {
+        ThreadCheck.ensureOnUiThread();
         if (sInstance != null) {
             return Futures.immediateFuture(sInstance);
         }
-        if (sPendingConnection) {
+
+        if (SandboxConnection.sPendingBrowserProcessInitialization) {
             return Futures.immediateFailedFuture(
                     new IllegalStateException("WebSandbox is already being created"));
         }
-        sPendingConnection = true;
-        return CallbackToFutureAdapter.getFuture(completer -> {
-            // Use the application context since the WebSandbox might out live the Activity.
-            Context applicationContext = context.getApplicationContext();
+        Context applicationContext = context.getApplicationContext();
+        ListenableFuture<SandboxConnection> sandboxConnectionFuture =
+                SandboxConnection.getInstance(applicationContext);
 
-            ConnectionSetup connectionSetup = new ConnectionSetup(applicationContext, completer);
-            Intent intent =
-                    new Intent(isInProcessMode(applicationContext) ? BROWSER_INPROCESS_ACTION
-                                                                   : BROWSER_SANDBOX_ACTION);
-            intent.setPackage(isInProcessMode(applicationContext)
-                            ? applicationContext.getPackageName()
-                            : SANDBOX_BROWSER_SANDBOX_PACKAGE);
+        AsyncFunction<SandboxConnection, WebSandbox> initializeBrowserProcessTask =
+                sandboxConnection -> {
+            return CallbackToFutureAdapter.getFuture(completer -> {
+                sandboxConnection.initializeBrowserProcess(completer);
 
-            applicationContext.bindService(intent, connectionSetup, Context.BIND_AUTO_CREATE);
+                // Debug string.
+                return "WebSandbox Sandbox Future";
+            });
+        };
 
-            // Debug string.
-            return "WebSandbox Sandbox Future";
-        });
+        return Futures.transformAsync(sandboxConnectionFuture, initializeBrowserProcessTask,
+                applicationContext.getMainExecutor());
+    }
+
+    @NonNull
+    public static ListenableFuture<Boolean> isAvailable(@NonNull Context context) {
+        ThreadCheck.ensureOnUiThread();
+        Context applicationContext = context.getApplicationContext();
+        ListenableFuture<SandboxConnection> sandboxConnectionFuture =
+                SandboxConnection.getInstance(applicationContext);
+
+        AsyncFunction<SandboxConnection, Boolean> isAvailableTask = sandboxConnection -> {
+            return CallbackToFutureAdapter.getFuture(completer -> {
+                sandboxConnection.isAvailable(completer);
+
+                // Debug string.
+                return "Sandbox Available Future";
+            });
+        };
+
+        return Futures.transformAsync(
+                sandboxConnectionFuture, isAvailableTask, applicationContext.getMainExecutor());
+    }
+
+    @NonNull
+    public static ListenableFuture<String> getVersion(@NonNull Context context) {
+        ThreadCheck.ensureOnUiThread();
+        Context applicationContext = context.getApplicationContext();
+        ListenableFuture<SandboxConnection> sandboxConnectionFuture =
+                SandboxConnection.getInstance(applicationContext);
+
+        AsyncFunction<SandboxConnection, String> getVersionTask = sandboxConnection -> {
+            return CallbackToFutureAdapter.getFuture(completer -> {
+                sandboxConnection.getVersion(completer);
+
+                // Debug string.
+                return "Sandbox Version Future";
+            });
+        };
+
+        return Futures.transformAsync(
+                sandboxConnectionFuture, getVersionTask, applicationContext.getMainExecutor());
+    }
+
+    @NonNull
+    public static ListenableFuture<String> getProviderPackageName(@NonNull Context context) {
+        ThreadCheck.ensureOnUiThread();
+        Context applicationContext = context.getApplicationContext();
+        ListenableFuture<SandboxConnection> sandboxConnectionFuture =
+                SandboxConnection.getInstance(applicationContext);
+
+        AsyncFunction<SandboxConnection, String> getProviderPackageNameTask = sandboxConnection -> {
+            return CallbackToFutureAdapter.getFuture(completer -> {
+                sandboxConnection.getProviderPackageName(completer);
+
+                // Debug string.
+                return "Sandbox Provider Package Future";
+            });
+        };
+
+        return Futures.transformAsync(sandboxConnectionFuture, getProviderPackageNameTask,
+                applicationContext.getMainExecutor());
     }
 
     private class WebEngineDelegateClient extends IWebEngineDelegateClient.Stub {
@@ -170,6 +317,7 @@ public class WebSandbox {
      */
     @Nullable
     public ListenableFuture<WebEngine> createWebEngine() {
+        ThreadCheck.ensureOnUiThread();
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -183,6 +331,7 @@ public class WebSandbox {
      */
     @Nullable
     public ListenableFuture<WebEngine> createWebEngine(FragmentParams params) {
+        ThreadCheck.ensureOnUiThread();
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -200,6 +349,7 @@ public class WebSandbox {
      * Enables or disables DevTools remote debugging.
      */
     public void setRemoteDebuggingEnabled(boolean enabled) {
+        ThreadCheck.ensureOnUiThread();
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }

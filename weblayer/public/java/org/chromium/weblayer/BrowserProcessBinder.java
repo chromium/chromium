@@ -9,6 +9,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
 
+import org.chromium.webengine.interfaces.IBooleanCallback;
+import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.IWebEngineDelegateClient;
 import org.chromium.webengine.interfaces.IWebEngineParams;
 import org.chromium.webengine.interfaces.IWebSandboxCallback;
@@ -24,6 +26,30 @@ class BrowserProcessBinder extends IWebSandboxService.Stub {
 
     BrowserProcessBinder(Context context) {
         mContext = context;
+    }
+
+    @Override
+    public void isAvailable(IBooleanCallback callback) {
+        try {
+            callback.onResult(WebLayer.isAvailable(mContext));
+        } catch (RemoteException e) {
+        }
+    }
+
+    @Override
+    public void getVersion(IStringCallback callback) {
+        try {
+            callback.onResult(WebLayer.getSupportedFullVersion(mContext));
+        } catch (RemoteException e) {
+        }
+    }
+
+    @Override
+    public void getProviderPackageName(IStringCallback callback) {
+        try {
+            callback.onResult(WebLayer.getProviderPackageName(mContext));
+        } catch (RemoteException e) {
+        }
     }
 
     @Override

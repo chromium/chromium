@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,6 +63,18 @@ public class WebEngineShellActivity extends AppCompatActivity {
         mContext = getApplicationContext();
 
         setupActivitySpinner((Spinner) findViewById(R.id.activity_nav), this, 0);
+
+        ListenableFuture<String> sandboxVersionFuture = WebSandbox.getVersion(mContext);
+
+        Futures.addCallback(sandboxVersionFuture, new FutureCallback<String>() {
+            @Override
+            public void onSuccess(String version) {
+                ((TextView) findViewById(R.id.version)).setText(version);
+            }
+
+            @Override
+            public void onFailure(Throwable thrown) {}
+        }, mContext.getMainExecutor());
 
         ListenableFuture<WebSandbox> webSandboxFuture = WebSandbox.create(mContext);
         Futures.addCallback(webSandboxFuture, new FutureCallback<WebSandbox>() {

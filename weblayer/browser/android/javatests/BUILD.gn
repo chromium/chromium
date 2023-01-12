@@ -17,6 +17,7 @@ android_library("webengine_java_tests") {
     "src/org/chromium/webengine/test/TabPrerenderTest.java",
     "src/org/chromium/webengine/test/WebEngineTest.java",
     "src/org/chromium/webengine/test/WebFragmentTest.java",
+    "src/org/chromium/webengine/test/WebSandboxTest.java",
   ]
   deps = [
     ":webengine_java_test_support",

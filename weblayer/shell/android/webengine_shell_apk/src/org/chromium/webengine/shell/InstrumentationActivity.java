@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class InstrumentationActivity extends AppCompatActivity {
     private ListenableFuture<WebSandbox> mWebSandboxFuture;
+    private ListenableFuture<String> mWebSandboxVersionFuture;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

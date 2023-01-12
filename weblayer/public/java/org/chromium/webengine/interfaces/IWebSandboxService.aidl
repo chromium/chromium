@@ -4,14 +4,19 @@
 
 package org.chromium.webengine.interfaces;
 
+import org.chromium.webengine.interfaces.IBooleanCallback;
+import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.IWebEngineParams;
 import org.chromium.webengine.interfaces.IWebEngineDelegateClient;
 import org.chromium.webengine.interfaces.IWebSandboxCallback;
 
 oneway interface IWebSandboxService {
-    void initializeBrowserProcess(in IWebSandboxCallback callback) = 1;
+    void isAvailable(IBooleanCallback callback) = 1;
+    void getVersion(IStringCallback callback) = 2;
+    void getProviderPackageName(IStringCallback callback) = 3;
 
-    void createWebEngineDelegate(in IWebEngineParams params, IWebEngineDelegateClient fragmentClient) = 2;
+    void initializeBrowserProcess(in IWebSandboxCallback callback) = 4;
+    void createWebEngineDelegate(in IWebEngineParams params, IWebEngineDelegateClient fragmentClient) = 5;
 
-    void setRemoteDebuggingEnabled(in boolean enabled) = 3;
+    void setRemoteDebuggingEnabled(in boolean enabled) = 6;
 }

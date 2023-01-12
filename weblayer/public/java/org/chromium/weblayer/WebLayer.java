@@ -217,6 +217,12 @@ class WebLayer {
         return WebLayerClientVersionConstants.PRODUCT_VERSION;
     }
 
+    @NonNull
+    static String getProviderPackageName(@NonNull Context context) {
+        ThreadCheck.ensureOnUiThread();
+        return getWebLayerLoader(context).getProviderPackageName();
+    }
+
     /**
      * Encapsulates the state of WebLayer loading and initialization.
      */
@@ -281,6 +287,14 @@ class WebLayer {
             mAvailable = available;
             mMajorVersion = majorVersion;
             mVersion = version;
+        }
+
+        public String getProviderPackageName() {
+            try {
+                return getOrCreateRemoteContext(mContext).getPackageName();
+            } catch (Exception e) {
+                throw new APICallException(e);
+            }
         }
 
         public boolean isAvailable() {
