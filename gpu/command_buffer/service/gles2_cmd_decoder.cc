@@ -66,7 +66,6 @@
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -653,12 +652,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
                          public ErrorStateClient,
                          public ui::GpuSwitchingObserver {
  public:
-  GLES2DecoderImpl(
-      DecoderClient* client,
-      CommandBufferServiceBase* command_buffer_service,
-      Outputter* outputter,
-      ContextGroup* group,
-      std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain);
+  GLES2DecoderImpl(DecoderClient* client,
+                   CommandBufferServiceBase* command_buffer_service,
+                   Outputter* outputter,
+                   ContextGroup* group);
 
   GLES2DecoderImpl(const GLES2DecoderImpl&) = delete;
   GLES2DecoderImpl& operator=(const GLES2DecoderImpl&) = delete;
@@ -2506,9 +2503,11 @@ class GLES2DecoderImpl : public GLES2Decoder,
 #endif
   unsigned int RequiredTextureTypeForAnonymousImage();
 
-  ImageFactory* image_factory_for_nacl_swapchain() {
-    return image_factory_for_nacl_swapchain_.get();
+#if BUILDFLAG(IS_OZONE)
+  ImageFactoryNativePixmap* image_factory_for_nacl_swapchain() {
+    return &image_factory_for_nacl_swapchain_;
   }
+#endif
 
   // Helper method to call glClear workaround.
   void ClearFramebufferForWorkaround(GLbitfield mask);
@@ -2831,7 +2830,9 @@ class GLES2DecoderImpl : public GLES2Decoder,
   std::set<scoped_refptr<TextureRef>> texture_refs_pending_destruction_;
 #endif
 
-  const std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain_;
+#if BUILDFLAG(IS_OZONE)
+  ImageFactoryNativePixmap image_factory_for_nacl_swapchain_;
+#endif
 
   base::WeakPtrFactory<GLES2DecoderImpl> weak_ptr_factory_{this};
 };
@@ -3070,8 +3071,12 @@ BackTexture::BackTexture(GLES2DecoderImpl* decoder)
     : memory_tracker_(decoder->memory_tracker()),
       bytes_allocated_(0),
       decoder_(decoder) {
+#if BUILDFLAG(IS_OZONE)
   DCHECK(!decoder_->should_use_native_gmb_for_backbuffer_ ||
          decoder_->image_factory_for_nacl_swapchain());
+#else
+  DCHECK(!decoder_->should_use_native_gmb_for_backbuffer_);
+#endif
 }
 
 BackTexture::~BackTexture() {
@@ -3469,22 +3474,14 @@ GLES2Decoder* GLES2Decoder::Create(
                                            outputter, group);
   }
 
-  std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain;
-#if BUILDFLAG(IS_OZONE)
-  image_factory_for_nacl_swapchain =
-      std::make_unique<ImageFactoryNativePixmap>();
-#endif
-
-  return new GLES2DecoderImpl(client, command_buffer_service, outputter, group,
-                              std::move(image_factory_for_nacl_swapchain));
+  return new GLES2DecoderImpl(client, command_buffer_service, outputter, group);
 }
 
 GLES2DecoderImpl::GLES2DecoderImpl(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     Outputter* outputter,
-    ContextGroup* group,
-    std::unique_ptr<ImageFactory> image_factory_for_nacl_swapchain)
+    ContextGroup* group)
     : GLES2Decoder(client, command_buffer_service, outputter),
       group_(group),
       logger_(&debug_marker_manager_,
@@ -3550,9 +3547,7 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       gpu_debug_commands_(false),
       validation_fbo_multisample_(0),
       validation_fbo_(0),
-      texture_manager_service_id_generation_(0),
-      image_factory_for_nacl_swapchain_(
-          std::move(image_factory_for_nacl_swapchain)) {
+      texture_manager_service_id_generation_(0) {
   DCHECK(client);
   DCHECK(group);
 }
@@ -3649,23 +3644,22 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   should_use_native_gmb_for_backbuffer_ =
       attrib_helper.should_use_native_gmb_for_backbuffer;
   if (should_use_native_gmb_for_backbuffer_) {
-    gpu::ImageFactory* image_factory = image_factory_for_nacl_swapchain();
     bool supported = false;
-    if (image_factory) {
-      switch (image_factory->RequiredTextureType()) {
-        case GL_TEXTURE_RECTANGLE_ARB:
-          supported = feature_info_->feature_flags().arb_texture_rectangle;
-          break;
-        case GL_TEXTURE_EXTERNAL_OES:
-          supported = feature_info_->feature_flags().oes_egl_image_external;
-          break;
-        case GL_TEXTURE_2D:
-          supported = true;
-          break;
-        default:
-          break;
-      }
+#if BUILDFLAG(IS_OZONE)
+    switch (image_factory_for_nacl_swapchain()->RequiredTextureType()) {
+      case GL_TEXTURE_RECTANGLE_ARB:
+        supported = feature_info_->feature_flags().arb_texture_rectangle;
+        break;
+      case GL_TEXTURE_EXTERNAL_OES:
+        supported = feature_info_->feature_flags().oes_egl_image_external;
+        break;
+      case GL_TEXTURE_2D:
+        supported = true;
+        break;
+      default:
+        break;
     }
+#endif
 
     if (!supported) {
       LOG(ERROR) << "ContextResult::kFatalFailure: "
@@ -19298,8 +19292,11 @@ bool GLES2DecoderImpl::NeedsCopyTextureImageWorkaround(
 }
 
 bool GLES2DecoderImpl::ChromiumImageNeedsRGBEmulation() {
-  gpu::ImageFactory* factory = image_factory_for_nacl_swapchain();
-  return factory ? !factory->SupportsFormatRGB() : false;
+#if BUILDFLAG(IS_OZONE)
+  return image_factory_for_nacl_swapchain()->SupportsFormatRGB();
+#else
+  return false;
+#endif
 }
 
 void GLES2DecoderImpl::ClearFramebufferForWorkaround(GLbitfield mask) {
@@ -19555,32 +19552,28 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
 
 #if BUILDFLAG(IS_OZONE)
 bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
-  if (auto* image_factory_native_pixmap =
-          image_factory_for_nacl_swapchain()->AsImageFactoryNativePixmap()) {
-    return image_factory_native_pixmap->SupportsCreateAnonymousImage();
-  }
-
-  return false;
+  return image_factory_for_nacl_swapchain()->SupportsCreateAnonymousImage();
 }
 
 scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool* is_cleared) {
-  if (auto* image_factory_native_pixmap =
-          image_factory_for_nacl_swapchain()->AsImageFactoryNativePixmap()) {
-    return image_factory_native_pixmap->CreateAnonymousImage(
-        size, format, gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle,
-        is_cleared);
-  }
-
-  return nullptr;
+  return image_factory_for_nacl_swapchain()->CreateAnonymousImage(
+      size, format, gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle,
+      is_cleared);
 }
+
 #endif
 
 // An image can only be bound to a texture with the appropriate type.
 unsigned int GLES2DecoderImpl::RequiredTextureTypeForAnonymousImage() {
+#if BUILDFLAG(IS_OZONE)
   return image_factory_for_nacl_swapchain()->RequiredTextureType();
+#else
+  NOTREACHED();
+  return 0;
+#endif
 }
 
 // Include the auto-generated part of this file. We split this because it means
