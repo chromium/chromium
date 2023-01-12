@@ -22,6 +22,7 @@ import commonjs from '@rollup/plugin-commonjs';
 export default {
   input: 'lib/cjs/bidiTab/bidiTab.js',
   output: {
+    name: 'mapperTab',
     file: 'lib/iife/mapperTab.js',
     sourcemap: true,
     format: 'iife',
