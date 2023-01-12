@@ -20,7 +20,6 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/display/win/screen_win.h"
@@ -256,9 +255,7 @@ void OnScreenKeyboardDetector::HandleKeyboardHidden() {
 // OnScreenKeyboardDisplayManagerTabTip member definitions.
 OnScreenKeyboardDisplayManagerTabTip::OnScreenKeyboardDisplayManagerTabTip(
     HWND hwnd)
-    : hwnd_(hwnd) {
-  DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN8);
-}
+    : hwnd_(hwnd) {}
 
 OnScreenKeyboardDisplayManagerTabTip::~OnScreenKeyboardDisplayManagerTabTip() {}
 

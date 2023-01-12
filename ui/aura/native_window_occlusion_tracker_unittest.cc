@@ -4,17 +4,15 @@
 
 #include "ui/aura/native_window_occlusion_tracker_win.h"
 
+#include <dwmapi.h>
 #include <winuser.h>
 
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/win/window_impl.h"
-
-#include "dwmapi.h"
 
 namespace aura {
 
@@ -230,9 +228,6 @@ TEST_F(NativeWindowOcclusionTrackerTest, PopupWindow) {
 }
 
 TEST_F(NativeWindowOcclusionTrackerTest, CloakedWindow) {
-  // Cloaking is only supported in Windows 8 and above.
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
   HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
   gfx::Rect win_rect;
   BOOL cloak = TRUE;

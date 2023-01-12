@@ -10,10 +10,8 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/task/current_thread.h"
-#include "base/win/windows_version.h"
 
-namespace ui {
-namespace tsf_inputscope {
+namespace ui::tsf_inputscope {
 namespace {
 
 void AppendNonTrivialInputScope(std::vector<InputScope>* input_scopes,
@@ -189,9 +187,8 @@ ITfInputScope* CreateInputScope(TextInputType text_input_type,
                                 bool should_do_learning) {
   std::vector<InputScope> input_scopes;
   // Should set input scope to IS_PRIVATE if we are in "incognito" or "guest"
-  // mode. Note that the IS_PRIVATE input scope is only support from WIN10.
-  if (!should_do_learning &&
-      (base::win::GetVersion() >= base::win::Version::WIN10)) {
+  // mode.
+  if (!should_do_learning) {
     input_scopes.push_back(IS_PRIVATE);
   } else {
     input_scopes = GetInputScopes(text_input_type, text_input_mode);
@@ -211,5 +208,4 @@ void SetInputScopeForTsfUnawareWindow(HWND window_handle,
                      NULL, 0, NULL, NULL);
 }
 
-}  // namespace tsf_inputscope
-}  // namespace ui
+}  // namespace ui::tsf_inputscope

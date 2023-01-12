@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/win/windows_version.h"
 #include "ui/base/win/session_change_observer.h"
 
 namespace ui {
@@ -25,13 +24,8 @@ bool IsSessionLocked() {
                                    WTSSessionInfoEx, &buffer, &buffer_length) &&
       buffer_length >= sizeof(WTSINFOEXW)) {
     auto* info = reinterpret_cast<WTSINFOEXW*>(buffer);
-    auto session_flags = info->Data.WTSInfoExLevel1.SessionFlags;
-    // For Windows 7 SessionFlags has inverted logic:
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/ee621019.
-    if (base::win::GetVersion() == base::win::Version::WIN7)
-      is_locked = session_flags == WTS_SESSIONSTATE_UNLOCK;
-    else
-      is_locked = session_flags == WTS_SESSIONSTATE_LOCK;
+    is_locked =
+        info->Data.WTSInfoExLevel1.SessionFlags == WTS_SESSIONSTATE_LOCK;
   }
   if (buffer)
     ::WTSFreeMemory(buffer);

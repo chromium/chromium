@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <cwctype>
 
+#include <memory>
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -37,11 +40,10 @@ std::unique_ptr<VirtualKeyboardController> CreateKeyboardController(
       base::win::GetVersion() >= base::win::Version::WIN10_RS4) {
     return std::make_unique<OnScreenKeyboardDisplayManagerInputPane>(
         attached_window_handle);
-  } else if (base::win::GetVersion() >= base::win::Version::WIN8) {
+  } else {
     return std::make_unique<OnScreenKeyboardDisplayManagerTabTip>(
         attached_window_handle);
   }
-  return nullptr;
 }
 
 // Checks if a given primary language ID is a RTL language.

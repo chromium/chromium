@@ -22,7 +22,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/win/scoped_gdi_object.h"
-#include "base/win/windows_version.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
@@ -428,10 +427,8 @@ NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
       calculate_occluded_region_(base::FeatureList::IsEnabled(
           features::kApplyNativeOccludedRegionToWindowTracker)),
       update_occlusion_state_callback_(update_occlusion_state_callback) {
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
-                       IID_PPV_ARGS(&virtual_desktop_manager_));
-  }
+  ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
+                     IID_PPV_ARGS(&virtual_desktop_manager_));
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

@@ -18,7 +18,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 #endif
@@ -79,8 +78,7 @@ TouchUiController* TouchUiController::Get() {
 TouchUiController::TouchUiController(TouchUiState touch_ui_state)
     : touch_ui_state_(touch_ui_state) {
 #if BUILDFLAG(IS_WIN)
-  if (base::CurrentUIThread::IsSet() &&
-      base::win::GetVersion() >= base::win::Version::WIN10) {
+  if (base::CurrentUIThread::IsSet()) {
     singleton_hwnd_observer_ =
         std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
             [](HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {

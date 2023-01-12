@@ -2506,7 +2506,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_Target(
 
   // If there is no reverse relation target, IAnnotationProvider
   // should not be exposed in the first place.
-  DCHECK(reverse_relations.size() > 0);
+  DCHECK_GT(reverse_relations.size(), 0u);
   AXPlatformNodeWin* target_node;
   auto iter = reverse_relations.begin();
   target_node = static_cast<AXPlatformNodeWin*>(*iter);
@@ -5244,42 +5244,26 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       // if the internal role cannot be accurately described by its UIA Control
       // Type or aria role, we should instead provide our own localized
       // description.
-      UIALocalizationStrategy localization_strategy =
-          GetUIARoleProperties().localization_strategy;
-      switch (localization_strategy) {
-        case UIALocalizationStrategy::kDeferToControlType:
-          break;
-        case UIALocalizationStrategy::kDeferToAriaRole:
-          if (base::win::GetVersion() >= base::win::Version::WIN8) {
-            // On Windows 8 onward, UIA can provide localization from the
-            // aria role.
-            break;
-          }
-          // On versions before 8, we should not rely on UIA to generate
-          // localization from the aria role, instead we should supply our own
-          // localization.
-          ABSL_FALLTHROUGH_INTENDED;
-        case UIALocalizationStrategy::kSupply:
-          // According to the HTML-AAM, UIA expects <output> to have a
-          // Localized Control Type of "output" whereas the Core-AAM states
-          // the Localized Control Type of the ARIA status role should be
-          // "status".
-          const std::string& html_tag =
-              GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-          std::u16string localized_control_type =
-              html_tag == "output"
-                  ? l10n_util::GetStringUTF16(IDS_AX_ROLE_OUTPUT)
-                  : GetRoleDescription();
+      if (GetUIARoleProperties().localization_strategy ==
+          UIALocalizationStrategy::kSupply) {
+        // According to the HTML-AAM, UIA expects <output> to have a
+        // Localized Control Type of "output" whereas the Core-AAM states
+        // the Localized Control Type of the ARIA status role should be
+        // "status".
+        const std::string& html_tag =
+            GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+        std::u16string localized_control_type =
+            html_tag == "output" ? l10n_util::GetStringUTF16(IDS_AX_ROLE_OUTPUT)
+                                 : GetRoleDescription();
 
-          if (!localized_control_type.empty()) {
-            result->vt = VT_BSTR;
-            result->bstrVal =
-                SysAllocString(base::as_wcstr(localized_control_type));
-          }
-          // If a role description has not been provided, leave as VT_EMPTY.
-      }
-    } break;
-
+        if (!localized_control_type.empty()) {
+          result->vt = VT_BSTR;
+          result->bstrVal =
+              SysAllocString(base::as_wcstr(localized_control_type));
+        }
+      }  // If a role description has not been provided, leave as VT_EMPTY.
+      break;
+    }
     case UIA_NamePropertyId:
       if (IsNameExposed()) {
         result->vt = VT_BSTR;

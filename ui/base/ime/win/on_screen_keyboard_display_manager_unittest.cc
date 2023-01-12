@@ -141,10 +141,6 @@ class OnScreenKeyboardTest : public ::testing::Test {
 // This test validates the on screen keyboard path (tabtip.exe) which is read
 // from the registry.
 TEST_F(OnScreenKeyboardTest, OSKPath) {
-  // The on screen keyboard is only available on Windows 8+.
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return;
-
   std::unique_ptr<OnScreenKeyboardDisplayManagerTabTip>
       keyboard_display_manager(CreateTabTip());
   EXPECT_NE(nullptr, keyboard_display_manager);

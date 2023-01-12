@@ -16,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_gdi_object.h"
-#include "base/win/windows_version.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
@@ -559,13 +558,6 @@ TEST_F(NativeWindowOcclusionTrackerTest,
 // Test that a maximized aura window that is covered by a fullscreen window
 // is marked as occluded.
 TEST_F(NativeWindowOcclusionTrackerTest, MaximizedOccludedByFullscreenWindow) {
-  // Win7 has non rectangular windows and odd padding; this breaks fullscreen
-  // window occlusion of maximized windows, which makes this test fail on Win7.
-  // Win7 support is going away soon and shouldn't get in the way of this test
-  // coverage.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
   // Create an aura window that is maximized.
   base::RunLoop run_loop1;
   MockWindowTreeHostObserver observer(run_loop1.QuitClosure());

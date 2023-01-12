@@ -4,6 +4,9 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_test_helper.h"
 
+#include <string>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -17,9 +20,6 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/base/buildflags.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
 #if BUILDFLAG(USE_ATK)
 extern "C" {
 #include <atk/atk.h>
@@ -352,15 +352,6 @@ FilePath::StringType AXInspectTestHelper::GetExpectedFileSuffix(
 
 FilePath::StringType AXInspectTestHelper::GetVersionSpecificExpectedFileSuffix(
     const base::FilePath::StringType& expectations_qualifier) const {
-#if BUILDFLAG(IS_WIN)
-  if (expectation_type_ == "uia" &&
-      base::win::GetVersion() == base::win::Version::WIN7) {
-    FilePath::StringType suffix;
-    if (!expectations_qualifier.empty())
-      suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;
-    return suffix + FILE_PATH_LITERAL("-expected-uia-win7.txt");
-  }
-#endif
 #if BUILDFLAG(USE_ATK)
   if (expectation_type_ == "linux") {
     FilePath::StringType version_name;

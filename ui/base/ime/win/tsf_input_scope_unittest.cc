@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <wrl/client.h>
 
-#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -134,8 +133,6 @@ const CreateInputScopesTestCase kCreateInputScopesTestCases[] = {
     {TEXT_INPUT_TYPE_NUMBER, TEXT_INPUT_MODE_NUMERIC, false, 1, {IS_PRIVATE}},
 };
 TEST_P(TSFCreateInputScopeTest, CreateInputScopes) {
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return;
   const CreateInputScopesTestCase& test_case = GetParam();
   Microsoft::WRL::ComPtr<ITfInputScope> input_scope =
       tsf_inputscope::CreateInputScope(test_case.input_type,
