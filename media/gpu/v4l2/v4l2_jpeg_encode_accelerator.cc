@@ -1805,16 +1805,16 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::NotifyError(
 
 V4L2JpegEncodeAccelerator::V4L2JpegEncodeAccelerator(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
-    : child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      io_task_runner_(io_task_runner),
+    : io_task_runner_(io_task_runner),
       client_(nullptr),
       encoder_thread_("V4L2JpegEncodeThread"),
       weak_factory_(this) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
 V4L2JpegEncodeAccelerator::~V4L2JpegEncodeAccelerator() {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   if (encoder_thread_.IsRunning()) {
     encoder_task_runner_->PostTask(
@@ -1841,8 +1841,8 @@ void V4L2JpegEncodeAccelerator::DestroyTask() {
 
 void V4L2JpegEncodeAccelerator::VideoFrameReady(int32_t task_id,
                                                 size_t encoded_picture_size) {
-  if (!child_task_runner_->BelongsToCurrentThread()) {
-    child_task_runner_->PostTask(
+  if (!io_task_runner_->BelongsToCurrentThread()) {
+    io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&V4L2JpegEncodeAccelerator::VideoFrameReady,
                                   weak_ptr_, task_id, encoded_picture_size));
     return;
@@ -1853,8 +1853,8 @@ void V4L2JpegEncodeAccelerator::VideoFrameReady(int32_t task_id,
 }
 
 void V4L2JpegEncodeAccelerator::NotifyError(int32_t task_id, Status status) {
-  if (!child_task_runner_->BelongsToCurrentThread()) {
-    child_task_runner_->PostTask(
+  if (!io_task_runner_->BelongsToCurrentThread()) {
+    io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&V4L2JpegEncodeAccelerator::NotifyError,
                                   weak_ptr_, task_id, status));
 
@@ -1867,7 +1867,7 @@ void V4L2JpegEncodeAccelerator::NotifyError(int32_t task_id, Status status) {
 void V4L2JpegEncodeAccelerator::InitializeOnTaskRunner(
     chromeos_camera::JpegEncodeAccelerator::Client* client,
     chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   std::unique_ptr<EncodedInstanceDmaBuf> encoded_device(
       new EncodedInstanceDmaBuf(this));
 
@@ -1895,9 +1895,9 @@ void V4L2JpegEncodeAccelerator::InitializeOnTaskRunner(
 void V4L2JpegEncodeAccelerator::InitializeAsync(
     chromeos_camera::JpegEncodeAccelerator::Client* client,
     chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  child_task_runner_->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&V4L2JpegEncodeAccelerator::InitializeOnTaskRunner,
                      weak_ptr_, client, BindToCurrentLoop(std::move(init_cb))));

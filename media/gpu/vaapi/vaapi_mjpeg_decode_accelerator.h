@@ -119,9 +119,6 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
 
   void CleanUpOnDecoderThread();
 
-  // ChildThread's task runner.
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
   // GPU IO task runner.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

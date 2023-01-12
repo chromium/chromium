@@ -451,10 +451,10 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
 
 VaapiJpegEncodeAccelerator::VaapiJpegEncodeAccelerator(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      io_task_runner_(std::move(io_task_runner)),
+    : io_task_runner_(std::move(io_task_runner)),
       encoder_thread_("VaapiJpegEncoderThread"),
       weak_this_factory_(this) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   VLOGF(2);
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -466,7 +466,7 @@ void VaapiJpegEncodeAccelerator::CleanUpOnEncoderThread() {
 }
 
 VaapiJpegEncodeAccelerator::~VaapiJpegEncodeAccelerator() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   VLOGF(2) << "Destroying VaapiJpegEncodeAccelerator";
 
   weak_this_factory_.InvalidateWeakPtrs();
@@ -483,7 +483,7 @@ VaapiJpegEncodeAccelerator::~VaapiJpegEncodeAccelerator() {
 }
 
 void VaapiJpegEncodeAccelerator::NotifyError(int32_t task_id, Status status) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   VLOGF(1) << "task_id=" << task_id << ", status=" << status;
   DCHECK(client_);
   client_->NotifyError(task_id, status);
@@ -492,7 +492,7 @@ void VaapiJpegEncodeAccelerator::NotifyError(int32_t task_id, Status status) {
 void VaapiJpegEncodeAccelerator::VideoFrameReady(int32_t task_id,
                                                  size_t encoded_picture_size) {
   DVLOGF(4) << "task_id=" << task_id << ", size=" << encoded_picture_size;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   ReportToVAJEAEncodeResultUMA(VAJEAEncoderResult::kSuccess);
 
   client_->VideoFrameReady(task_id, encoded_picture_size);
@@ -541,10 +541,10 @@ void VaapiJpegEncodeAccelerator::InitializeOnEncoderTaskRunner(
   encoder_ = std::make_unique<Encoder>(
       std::move(vaapi_wrapper), std::move(vpp_vaapi_wrapper),
       BindPostTask(
-          task_runner_,
+          io_task_runner_,
           base::BindRepeating(&VaapiJpegEncodeAccelerator::VideoFrameReady,
                               weak_this_)),
-      BindPostTask(task_runner_,
+      BindPostTask(io_task_runner_,
                    base::BindRepeating(&VaapiJpegEncodeAccelerator::NotifyError,
                                        weak_this_)));
 
@@ -554,7 +554,7 @@ void VaapiJpegEncodeAccelerator::InitializeOnEncoderTaskRunner(
 void VaapiJpegEncodeAccelerator::InitializeOnTaskRunner(
     chromeos_camera::JpegEncodeAccelerator::Client* client,
     chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   client_ = client;
 
   if (!encoder_thread_.Start()) {
@@ -578,11 +578,11 @@ void VaapiJpegEncodeAccelerator::InitializeAsync(
     chromeos_camera::JpegEncodeAccelerator::Client* client,
     chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) {
   VLOGF(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   // To guarantee that the caller receives an asynchronous call after the
   // return path, we are making use of InitializeOnTaskRunner.
-  task_runner_->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VaapiJpegEncodeAccelerator::InitializeOnTaskRunner,
                      weak_this_, client,
@@ -607,7 +607,7 @@ void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
   // TODO(shenghao): support other YUV formats.
   if (video_frame->format() != VideoPixelFormat::PIXEL_FORMAT_I420) {
     VLOGF(1) << "Unsupported input format: " << video_frame->format();
-    task_runner_->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                   weak_this_, task_id, INVALID_ARGUMENT));
     return;
@@ -620,14 +620,14 @@ void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
         exif_region.MapAt(exif_buffer->offset(), exif_buffer->size());
     if (!exif_mapping.IsValid()) {
       VLOGF(1) << "Failed to map exif buffer";
-      task_runner_->PostTask(
+      io_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, PLATFORM_FAILURE));
       return;
     }
     if (exif_mapping.size() > kMaxMarkerSizeAllowed) {
       VLOGF(1) << "Exif buffer too big: " << exif_mapping.size();
-      task_runner_->PostTask(
+      io_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, INVALID_ARGUMENT));
       return;
@@ -639,7 +639,7 @@ void VaapiJpegEncodeAccelerator::Encode(scoped_refptr<VideoFrame> video_frame,
       output_region.MapAt(output_buffer.offset(), output_buffer.size());
   if (!output_mapping.IsValid()) {
     VLOGF(1) << "Failed to map output buffer";
-    task_runner_->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError, weak_this_,
                        task_id, INACCESSIBLE_OUTPUT_BUFFER));
@@ -669,14 +669,14 @@ void VaapiJpegEncodeAccelerator::EncodeWithDmaBuf(
   // TODO(wtlee): Supports other formats.
   if (input_frame->format() != VideoPixelFormat::PIXEL_FORMAT_NV12) {
     VLOGF(1) << "Unsupported input format: " << input_frame->format();
-    task_runner_->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                   weak_this_, task_id, INVALID_ARGUMENT));
     return;
   }
   if (output_frame->format() != VideoPixelFormat::PIXEL_FORMAT_MJPEG) {
     VLOGF(1) << "Unsupported output format: " << output_frame->format();
-    task_runner_->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                   weak_this_, task_id, INVALID_ARGUMENT));
     return;
@@ -689,14 +689,14 @@ void VaapiJpegEncodeAccelerator::EncodeWithDmaBuf(
         exif_region.MapAt(exif_buffer->offset(), exif_buffer->size());
     if (!exif_mapping.IsValid()) {
       LOG(ERROR) << "Failed to map exif buffer";
-      task_runner_->PostTask(
+      io_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, PLATFORM_FAILURE));
       return;
     }
     if (exif_mapping.size() > kMaxMarkerSizeAllowed) {
       LOG(ERROR) << "Exif buffer too big: " << exif_mapping.size();
-      task_runner_->PostTask(
+      io_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&VaapiJpegEncodeAccelerator::NotifyError,
                                     weak_this_, task_id, INVALID_ARGUMENT));
       return;

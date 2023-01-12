@@ -404,9 +404,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   // TODO(wtlee): To be deprecated. (crbug.com/944705)
   int latest_quality_legacy_;
 
-  // ChildThread's task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;
-
   // GPU IO task runner.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

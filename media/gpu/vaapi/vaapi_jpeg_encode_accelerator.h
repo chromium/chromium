@@ -97,9 +97,6 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
 
   void VideoFrameReady(int32_t task_id, size_t encoded_picture_size);
 
-  // ChildThread's task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
   // GPU IO task runner.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

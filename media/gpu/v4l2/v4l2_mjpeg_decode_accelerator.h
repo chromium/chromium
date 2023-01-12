@@ -142,9 +142,6 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   // Strides of the output buffers.
   size_t output_strides_[VIDEO_MAX_PLANES];
 
-  // ChildThread's task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;
-
   // GPU IO task runner.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

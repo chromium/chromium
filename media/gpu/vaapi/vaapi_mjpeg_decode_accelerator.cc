@@ -89,8 +89,8 @@ bool VerifyDataSize(const VAImage* image) {
 }  // namespace
 
 void VaapiMjpegDecodeAccelerator::NotifyError(int32_t task_id, Error error) {
-  if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
+  if (!io_task_runner_->BelongsToCurrentThread()) {
+    io_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VaapiMjpegDecodeAccelerator::NotifyError,
                        weak_this_factory_.GetWeakPtr(), task_id, error));
@@ -106,7 +106,7 @@ void VaapiMjpegDecodeAccelerator::NotifyError(int32_t task_id, Error error) {
 }
 
 void VaapiMjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   ReportToVAJDAResponseToClientUMA(
       chromeos_camera::MjpegDecodeAccelerator::Error::NO_ERRORS);
   client_->VideoFrameReady(task_id);
@@ -114,11 +114,12 @@ void VaapiMjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
 
 VaapiMjpegDecodeAccelerator::VaapiMjpegDecodeAccelerator(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
-    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      io_task_runner_(io_task_runner),
+    : io_task_runner_(io_task_runner),
       client_(nullptr),
       decoder_thread_("VaapiMjpegDecoderThread"),
-      weak_this_factory_(this) {}
+      weak_this_factory_(this) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+}
 
 // Some members expect to be destroyed on the |decoder_thread_|.
 void VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread() {
@@ -130,7 +131,7 @@ void VaapiMjpegDecodeAccelerator::CleanUpOnDecoderThread() {
 }
 
 VaapiMjpegDecodeAccelerator::~VaapiMjpegDecodeAccelerator() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   VLOGF(2) << "Destroying VaapiMjpegDecodeAccelerator";
   weak_this_factory_.InvalidateWeakPtrs();
 
@@ -182,7 +183,7 @@ void VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
 void VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner(
     chromeos_camera::MjpegDecodeAccelerator::Client* client,
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   client_ = client;
 
   if (!decoder_thread_.Start()) {
@@ -205,11 +206,11 @@ void VaapiMjpegDecodeAccelerator::InitializeAsync(
     chromeos_camera::MjpegDecodeAccelerator::Client* client,
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
   VLOGF(2);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   // To guarantee that the caller receives an asynchronous call after the
   // return path, we are making use of InitializeOnTaskRunner.
-  task_runner_->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner,
                      weak_this_factory_.GetWeakPtr(), client,
@@ -328,7 +329,7 @@ bool VaapiMjpegDecodeAccelerator::OutputPictureLibYuvOnTaskRunner(
              base::OnceClosure cb, scoped_refptr<VideoFrame> frame) {
             runner->PostTask(FROM_HERE, std::move(cb));
           },
-          task_runner_,
+          io_task_runner_,
           base::BindOnce(&VaapiMjpegDecodeAccelerator::VideoFrameReady,
                          weak_this_factory_.GetWeakPtr(), task_id)));
   return true;
@@ -395,7 +396,7 @@ bool VaapiMjpegDecodeAccelerator::OutputPictureVppOnTaskRunner(
     return false;
   }
 
-  task_runner_->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VaapiMjpegDecodeAccelerator::VideoFrameReady,
                                 weak_this_factory_.GetWeakPtr(), task_id));
 

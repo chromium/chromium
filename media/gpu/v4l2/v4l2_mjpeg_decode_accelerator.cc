@@ -263,7 +263,6 @@ V4L2MjpegDecodeAccelerator::V4L2MjpegDecodeAccelerator(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
     : output_buffer_pixelformat_(0),
       output_buffer_num_planes_(0),
-      child_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       io_task_runner_(io_task_runner),
       client_(nullptr),
       device_(device),
@@ -272,11 +271,12 @@ V4L2MjpegDecodeAccelerator::V4L2MjpegDecodeAccelerator(
       input_streamon_(false),
       output_streamon_(false),
       weak_factory_(this) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
 V4L2MjpegDecodeAccelerator::~V4L2MjpegDecodeAccelerator() {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   if (decoder_thread_.IsRunning()) {
     decoder_task_runner_->PostTask(
@@ -303,18 +303,18 @@ void V4L2MjpegDecodeAccelerator::DestroyTask() {
 }
 
 void V4L2MjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   client_->VideoFrameReady(task_id);
 }
 
 void V4L2MjpegDecodeAccelerator::NotifyError(int32_t task_id, Error error) {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   VLOGF(1) << "Notifying of error " << error << " for task id " << task_id;
   client_->NotifyError(task_id, error);
 }
 
 void V4L2MjpegDecodeAccelerator::PostNotifyError(int32_t task_id, Error error) {
-  child_task_runner_->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2MjpegDecodeAccelerator::NotifyError,
                                 weak_ptr_, task_id, error));
 }
@@ -322,7 +322,7 @@ void V4L2MjpegDecodeAccelerator::PostNotifyError(int32_t task_id, Error error) {
 void V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner(
     chromeos_camera::MjpegDecodeAccelerator::Client* client,
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!device_->Open(V4L2Device::Type::kJpegDecoder, V4L2_PIX_FMT_JPEG)) {
     VLOGF(1) << "Failed to open device";
     std::move(init_cb).Run(false);
@@ -374,11 +374,11 @@ void V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner(
 void V4L2MjpegDecodeAccelerator::InitializeAsync(
     chromeos_camera::MjpegDecodeAccelerator::Client* client,
     chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
-  DCHECK(child_task_runner_->BelongsToCurrentThread());
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
 
   // To guarantee that the caller receives an asynchronous call after the
   // return path, we are making use of InitializeOnTaskRunner.
-  child_task_runner_->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner,
                      weak_factory_.GetWeakPtr(), client,
@@ -1112,7 +1112,7 @@ void V4L2MjpegDecodeAccelerator::Dequeue() {
       // prevent race condition on the buffers.
       const int32_t task_id = job_record->task_id();
       job_record.reset();
-      child_task_runner_->PostTask(
+      io_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&V4L2MjpegDecodeAccelerator::VideoFrameReady,
                          weak_ptr_, task_id));
