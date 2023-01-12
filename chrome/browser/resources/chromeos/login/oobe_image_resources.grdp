@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <!-- OOBE Images -->
-  <include type="BINDATA" name="IDR_SUPERVISION_ICON_PNG" resource_path="supervision_icon.png" file="..\supervision\supervision_icon.png" />
-</grit-part>

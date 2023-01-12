@@ -164,7 +164,6 @@ constexpr char kArcOverlayCSSPath[] = "arc_support/overlay.css";
 constexpr char kArcPlaystoreCSSPath[] = "arc_support/playstore.css";
 constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
-constexpr char kArcSupervisionIconPath[] = "supervision_icon.png";
 constexpr char kDebuggerMJSPath[] = "debug/debug.js";
 
 constexpr char kProductLogoPath[] = "product-logo.png";
@@ -184,9 +183,6 @@ constexpr char kArcAppDownloadingVideoPath[] = "res/arc_app_dowsnloading.mp4";
 
 // Adds various product logo resources.
 void AddProductLogoResources(content::WebUIDataSource* source) {
-  // Required for Assistant OOBE.
-  source->AddResourcePath(kArcSupervisionIconPath, IDR_SUPERVISION_ICON_PNG);
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kLogo24PX1XSvgPath, IDR_PRODUCT_LOGO_24PX_1X);
   source->AddResourcePath(kLogo24PX2XSvgPath, IDR_PRODUCT_LOGO_24PX_2X);
