@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_CROSS_THREAD_HANDLE_INTERNAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_CROSS_THREAD_HANDLE_INTERNAL_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/platform_thread.h"
 #include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"

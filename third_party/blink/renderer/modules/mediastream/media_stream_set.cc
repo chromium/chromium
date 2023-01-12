@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_set.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/screen_capture_media_stream_track.h"

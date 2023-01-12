@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace blink {

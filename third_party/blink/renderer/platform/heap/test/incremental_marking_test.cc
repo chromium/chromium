@@ -4,7 +4,7 @@
 
 #include <initializer_list>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"

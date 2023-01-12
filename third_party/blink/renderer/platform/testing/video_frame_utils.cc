@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "media/base/format_utils.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 

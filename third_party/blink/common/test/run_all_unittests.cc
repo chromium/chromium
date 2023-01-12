@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/test_suite.h"
 #include "mojo/core/embedder/embedder.h"
 #include "v8/include/libplatform/libplatform.h"

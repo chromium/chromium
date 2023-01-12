@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 
 namespace blink {
 

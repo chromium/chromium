@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/queue_report_time_swap_promise.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

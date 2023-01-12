@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"

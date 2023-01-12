@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/base_tracing.h"

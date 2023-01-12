@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_set_description_observer.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace blink {

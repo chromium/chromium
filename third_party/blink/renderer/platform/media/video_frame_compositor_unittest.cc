@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"

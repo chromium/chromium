@@ -7,7 +7,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

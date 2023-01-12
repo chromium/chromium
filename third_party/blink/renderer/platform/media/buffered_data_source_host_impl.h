@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

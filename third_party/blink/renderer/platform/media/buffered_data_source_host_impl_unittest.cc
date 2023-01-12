@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"

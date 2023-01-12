@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"

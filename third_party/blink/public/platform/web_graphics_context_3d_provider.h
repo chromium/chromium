@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_H_
 
 #include <cstdint>
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 class GrDirectContext;

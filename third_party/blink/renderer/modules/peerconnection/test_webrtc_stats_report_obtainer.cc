@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/test_webrtc_stats_report_obtainer.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 
 namespace blink {

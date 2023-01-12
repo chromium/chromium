@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_
 
-#include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/post_job.h"
 #include "base/task/sequenced_task_runner.h"

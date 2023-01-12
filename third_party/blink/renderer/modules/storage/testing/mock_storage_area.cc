@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_BUDGET_POOL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_BUDGET_POOL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/task/common/lazy_now.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

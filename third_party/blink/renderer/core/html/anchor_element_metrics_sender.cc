@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"

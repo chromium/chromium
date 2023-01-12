@@ -8,8 +8,8 @@
 
 #include "base/debug/stack_trace.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/task_features.h"

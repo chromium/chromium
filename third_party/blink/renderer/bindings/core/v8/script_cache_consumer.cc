@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 
 #include <atomic>
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/common/trace_event_common.h"

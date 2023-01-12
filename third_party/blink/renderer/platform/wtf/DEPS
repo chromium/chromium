@@ -3,9 +3,9 @@ include_rules = [
     # directories and files instead of writing 'base/'.
     "+base/atomic_ref_count.h",
     "+base/auto_reset.h",
-    "+base/bind.h",
     "+base/bits.h",
     "+base/compiler_specific.h",
+    "+base/functional/bind.h",
     "+base/logging.h",
     "+base/mac/foundation_util.h",
     "+base/mac/scoped_cftyperef.h",

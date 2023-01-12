@@ -9,8 +9,8 @@
 #include <hb-ot.h>
 // clang-format on
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 
 namespace {

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 
 #include <utility>
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/input/synchronous_compositor_proxy.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"

@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/p2p/empty_network_manager.h"
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
 

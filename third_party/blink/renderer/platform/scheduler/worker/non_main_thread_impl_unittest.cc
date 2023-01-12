@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_executor.h"

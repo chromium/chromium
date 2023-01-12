@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"

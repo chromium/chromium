@@ -7,7 +7,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_VIDEO_CAPTURE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_VIDEO_CAPTURE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 
 #include <memory>
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

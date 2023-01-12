@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/limits.h"

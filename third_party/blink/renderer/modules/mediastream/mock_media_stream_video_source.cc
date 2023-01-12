@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"

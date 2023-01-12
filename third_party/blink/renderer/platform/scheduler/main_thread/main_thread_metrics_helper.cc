@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
-#include "base/bind.h"
 #include "base/cpu_reduction_experiment.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"

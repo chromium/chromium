@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"

@@ -29,7 +29,7 @@
  */
 
 #include <memory>
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"

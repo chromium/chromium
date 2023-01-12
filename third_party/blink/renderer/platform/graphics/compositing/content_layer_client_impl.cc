@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/traced_value.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/paint_flags.h"

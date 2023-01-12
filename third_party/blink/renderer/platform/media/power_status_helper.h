@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom.h"

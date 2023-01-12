@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
-#include "base/bind.h"
 #include "base/debug/stack_trace.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"

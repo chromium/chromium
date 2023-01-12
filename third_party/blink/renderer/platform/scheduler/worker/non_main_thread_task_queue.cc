@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_task_queue.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"

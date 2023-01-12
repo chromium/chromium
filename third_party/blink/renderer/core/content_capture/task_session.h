@@ -7,7 +7,7 @@
 
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/node_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

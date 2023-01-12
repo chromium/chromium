@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_TEST_FRAME_WIDGET_TEST_HELPER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_TEST_FRAME_WIDGET_TEST_HELPER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 

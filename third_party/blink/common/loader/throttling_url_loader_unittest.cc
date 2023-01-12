@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"

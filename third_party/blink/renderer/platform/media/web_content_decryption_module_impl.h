@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/cdm_config.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"

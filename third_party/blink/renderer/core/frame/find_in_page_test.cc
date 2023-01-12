@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"

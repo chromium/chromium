@@ -1,5 +1,5 @@
 include_rules = [
-    "+base/bind.h",
+    "+base/functional/bind.h",
     "+base/strings/string_util.h",
     "+base/test",
     "+base/task/task_traits.h",

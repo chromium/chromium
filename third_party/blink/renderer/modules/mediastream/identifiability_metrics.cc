@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"

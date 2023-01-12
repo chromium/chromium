@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"

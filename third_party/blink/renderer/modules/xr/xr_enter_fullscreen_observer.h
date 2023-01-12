@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_ENTER_FULLSCREEN_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_ENTER_FULLSCREEN_OBSERVER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"

@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 
 #include <memory>
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
 
 #include <memory>
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
