@@ -120,6 +120,13 @@ BASE_FEATURE(kRecordPermissionExpirationTimestamps,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// When enabled "window-management" may be used as an alias for
+// "window-placement". Additionally, reverse mappings (i.e. enum to string) will
+// default to the new alias.
+BASE_FEATURE(kWindowManagementPermissionAlias,
+             "WindowManagementPermissionAlias",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 namespace feature_params {
 

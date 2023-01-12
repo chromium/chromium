@@ -70,6 +70,9 @@ BASE_DECLARE_FEATURE(kRecordPermissionExpirationTimestamps);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kWindowManagementPermissionAlias);
+
 }  // namespace features
 namespace feature_params {
 

@@ -417,7 +417,8 @@
       depends_on: ["WebXR"],
     },
     {
-      name: "WindowPlacement",
+      name: "WindowManagement",
+      // Parser also accepts "window-management" alias (crbug.com/1328581).
       permissions_policy_name: "window-placement",
     },
   ],

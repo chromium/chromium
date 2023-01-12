@@ -12,6 +12,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -24,26 +25,67 @@ namespace policy {
 
 namespace {
 
-constexpr char kGetScreens[] = R"(
+// Test both aliases during migration. See crbug.com/1328581.
+constexpr char kOldPermissionName[] = "window-placement";
+constexpr char kNewPermissionName[] = "window-management";
+
+constexpr char kGetScreensTemplate[] = R"(
   (async () => {
     try {
       const screenDetails = await self.getScreenDetails();
     } catch {
       return 'error';
     }
-    return (await navigator.permissions.query({name:'window-placement'})).state;
+    try {
+      return (await navigator.permissions.query({name:'$1'})).state;
+    } catch {
+      return "permission_error";
+    }
   })();
 )";
 
-constexpr char kCheckPermission[] = R"(
+constexpr char kCheckPermissionTemplate[] = R"(
   (async () => {
-    return (await navigator.permissions.query({name:'window-placement'})).state;
+    try {
+      return (await navigator.permissions.query({name:'$1'})).state;
+     } catch {
+      return 'permission_error';
+    }
   })();
 )";
 
-class PolicyTestWindowManagement : public PolicyTest {};
+typedef std::tuple<bool, bool> PolicyTestParams;
 
-IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, DefaultSetting) {
+class PolicyTestWindowManagement
+    : public PolicyTest,
+      public testing::WithParamInterface<PolicyTestParams> {
+ public:
+  PolicyTestWindowManagement() {
+    scoped_feature_list_.InitWithFeatureState(
+        permissions::features::kWindowManagementPermissionAlias,
+        AliasEnabled());
+  }
+
+ protected:
+  bool AliasEnabled() const { return std::get<0>(GetParam()); }
+  bool UseAlias() const { return std::get<1>(GetParam()); }
+  bool ShouldError() const { return UseAlias() && !AliasEnabled(); }
+  std::string GetScreensScript() const {
+    return base::ReplaceStringPlaceholders(
+        kGetScreensTemplate,
+        {UseAlias() ? kNewPermissionName : kOldPermissionName}, nullptr);
+  }
+  std::string GetCheckPermissionScript() const {
+    return base::ReplaceStringPlaceholders(
+        kCheckPermissionTemplate,
+        {UseAlias() ? kNewPermissionName : kOldPermissionName}, nullptr);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, DefaultSetting) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -57,7 +99,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, DefaultSetting) {
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetContentSetting(
                 url, url, ContentSettingsType::WINDOW_MANAGEMENT));
-  EXPECT_EQ("prompt", EvalJs(tab, kCheckPermission));
+
+  // Should error if and only if alias is used but flag is not enabled.
+  EXPECT_EQ(ShouldError() ? "permission_error" : "prompt",
+            EvalJs(tab, GetCheckPermissionScript()));
 
   PolicyMap policies;
   SetPolicy(&policies, key::kDefaultWindowPlacementSetting, base::Value(2));
@@ -69,8 +114,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, DefaultSetting) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
                 url, url, ContentSettingsType::WINDOW_MANAGEMENT));
-  EXPECT_EQ("denied", EvalJs(tab, kCheckPermission));
-  EXPECT_EQ("error", EvalJs(tab, kGetScreens));
+  // Should error if alias is used but flag is not enabled.
+  EXPECT_EQ(ShouldError() ? "permission_error" : "denied",
+            EvalJs(tab, GetCheckPermissionScript()));
+  EXPECT_EQ("error", EvalJs(tab, GetScreensScript()));
 
   SetPolicy(&policies, key::kDefaultWindowPlacementSetting, base::Value(3));
   UpdateProviderPolicy(policies);
@@ -81,10 +128,13 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, DefaultSetting) {
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetContentSetting(
                 url, url, ContentSettingsType::WINDOW_MANAGEMENT));
-  EXPECT_EQ("prompt", EvalJs(tab, kCheckPermission));
+
+  // Should error if and only if alias is used but flag is not enabled.
+  EXPECT_EQ(ShouldError() ? "permission_error" : "prompt",
+            EvalJs(tab, GetCheckPermissionScript()));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, AllowedForUrlsSettings) {
+IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, AllowedForUrlsSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -105,11 +155,13 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, AllowedForUrlsSettings) {
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
                 url, url, ContentSettingsType::WINDOW_MANAGEMENT));
-  EXPECT_EQ("granted", EvalJs(tab, kCheckPermission));
-  EXPECT_EQ("granted", EvalJs(tab, kGetScreens));
+  // Should error if and only if alias is used but flag is not enabled.
+  std::string expect_str = ShouldError() ? "permission_error" : "granted";
+  EXPECT_EQ(expect_str, EvalJs(tab, GetCheckPermissionScript()));
+  EXPECT_EQ(expect_str, EvalJs(tab, GetScreensScript()));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, BlockedForUrlsSettings) {
+IN_PROC_BROWSER_TEST_P(PolicyTestWindowManagement, BlockedForUrlsSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -130,9 +182,16 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowManagement, BlockedForUrlsSettings) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
                 url, url, ContentSettingsType::WINDOW_MANAGEMENT));
-  EXPECT_EQ("denied", EvalJs(tab, kCheckPermission));
-  EXPECT_EQ("error", EvalJs(tab, kGetScreens));
+  // Should error if alias is used but flag is not enabled.
+  EXPECT_EQ(ShouldError() ? "permission_error" : "denied",
+            EvalJs(tab, GetCheckPermissionScript()));
+  EXPECT_EQ("error", EvalJs(tab, GetScreensScript()));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PolicyTestWindowManagement,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 }  // namespace
 

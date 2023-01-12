@@ -159,7 +159,7 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
     case RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
     case RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT:
-      return "WindowPlacement";
+      return "WindowManagement";
     case RequestTypeForUma::PERMISSION_LOCAL_FONTS:
       return "LocalFonts";
     case RequestTypeForUma::PERMISSION_IDLE_DETECTION:

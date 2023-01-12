@@ -177,7 +177,7 @@ bool Screen::isExtended() const {
     return false;
   auto* context = GetExecutionContext();
   if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWindowPlacement)) {
+          mojom::blink::PermissionsPolicyFeature::kWindowManagement)) {
     return false;
   }
 

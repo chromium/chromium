@@ -136,8 +136,8 @@ enum PermissionsPolicyFeature {
   // Client Hint for the preferred color scheme.
   kClientHintPrefersColorScheme = 85,
 
-  // Controls use of Multi-Screen Window Placement API.
-  kWindowPlacement = 86,
+  // Controls use of Window Management API.
+  kWindowManagement = 86,
 
   kClientHintUABitness = 87,
 

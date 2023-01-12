@@ -208,6 +208,10 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::WAKE_LOCK_SYSTEM;
   } else if (name == "nfc") {
     *permission_type = PermissionType::NFC;
+  } else if (name == "window-management" &&
+             base::FeatureList::IsEnabled(
+                 blink::features::kWindowManagementPermissionAlias)) {
+    *permission_type = PermissionType::WINDOW_MANAGEMENT;
   } else if (name == "window-placement") {
     *permission_type = PermissionType::WINDOW_MANAGEMENT;
   } else if (name == "local-fonts") {

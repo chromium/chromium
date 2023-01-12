@@ -5,10 +5,12 @@
 #include "components/permissions/request_type.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permissions_client.h"
 
@@ -349,7 +351,12 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "vr_session";
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kWindowManagement:
-      return "window_placement";
+      if (base::FeatureList::IsEnabled(
+              features::kWindowManagementPermissionAlias)) {
+        return "window_management";
+      } else {
+        return "window_placement";
+      }
 #endif
   }
 

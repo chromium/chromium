@@ -257,6 +257,11 @@ void ParsingContext::ReportAllowlistTypeUsage() {
 absl::optional<mojom::blink::PermissionsPolicyFeature>
 ParsingContext::ParseFeatureName(const String& feature_name) {
   DCHECK(!feature_name.empty());
+  // window-management is an alias for window-placement (crbug.com/1328581).
+  if (feature_name == "window-management" &&
+      RuntimeEnabledFeatures::WindowManagementPermissionAliasEnabled()) {
+    return ParseFeatureName("window-placement");
+  }
   if (!feature_names_.Contains(feature_name)) {
     logger_.Warn("Unrecognized feature: '" + feature_name + "'.");
     return absl::nullopt;

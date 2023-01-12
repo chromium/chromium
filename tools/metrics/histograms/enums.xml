@@ -41891,7 +41891,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="83" label="SharedAutofill"/>
   <int value="84" label="DirectSockets"/>
   <int value="85" label="ClientHintPrefersColorScheme"/>
-  <int value="86" label="WindowPlacement"/>
+  <int value="86" label="WindowManagement"/>
   <int value="87" label="ClientHintUABitness"/>
   <int value="88" label="ClientHintUAReduced"/>
   <int value="89" label="ClientHintViewportHeight"/>

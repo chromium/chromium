@@ -7237,6 +7237,8 @@ domain Page
       usb
       vertical-scroll
       web-share
+      # Alias for 'window-placement' (crbug.com/1328581).
+      window-management
       window-placement
       xr-spatial-tracking
 

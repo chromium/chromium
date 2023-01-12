@@ -4,7 +4,9 @@
 
 #include "components/permissions/contexts/window_management_permission_context.h"
 
+#include "base/feature_list.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
@@ -17,7 +19,7 @@ WindowManagementPermissionContext::WindowManagementPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::WINDOW_MANAGEMENT,
-          blink::mojom::PermissionsPolicyFeature::kWindowPlacement) {}
+          blink::mojom::PermissionsPolicyFeature::kWindowManagement) {}
 
 WindowManagementPermissionContext::~WindowManagementPermissionContext() =
     default;
