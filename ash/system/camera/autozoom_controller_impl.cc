@@ -34,6 +34,10 @@ AutozoomControllerImpl::~AutozoomControllerImpl() {
 }
 
 bool AutozoomControllerImpl::IsAutozoomControlEnabled() {
+  if (autozoom_supported_for_test_) {
+    return true;
+  }
+  // TODO(b/264472916): Add simon vs. non-simon logic here.
   return autozoom_supported_ && active_camera_client_count_ > 0;
 }
 

@@ -49,6 +49,10 @@ class ASH_EXPORT AutozoomControllerImpl
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  void set_autozoom_supported_for_test(bool value) {
+    autozoom_supported_for_test_ = value;
+  }
+
  private:
   void InitFromUserPrefs();
 
@@ -89,6 +93,9 @@ class ASH_EXPORT AutozoomControllerImpl
   // The number of current active camera clients. Autozoom control should only
   // be shown when there's at least one active camera client.
   int active_camera_client_count_ = 0;
+
+  // Allows tests to force autozoom support.
+  bool autozoom_supported_for_test_ = false;
 
   // All methods of this class should be run on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);

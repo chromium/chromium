@@ -690,6 +690,10 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
     create_tile(std::make_unique<ShelfPartyFeaturePodController>(),
                 feature_pod_controllers_, tiles);
   }
+  if (media::ShouldEnableAutoFraming()) {
+    create_tile(std::make_unique<AutozoomFeaturePodController>(),
+                feature_pod_controllers_, tiles);
+  }
 
   // More placeholder tiles.
   while (tiles.size() < 10) {

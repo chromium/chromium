@@ -3036,6 +3036,7 @@ test("ash_unittests") {
     "system/bluetooth/fake_bluetooth_device_list_controller.cc",
     "system/bluetooth/fake_bluetooth_device_list_controller.h",
     "system/brightness/unified_brightness_view_unittest.cc",
+    "system/camera/autozoom_feature_pod_controller_unittest.cc",
     "system/camera/autozoom_toast_controller_unittest.cc",
     "system/camera/camera_effects_controller_unittest.cc",
     "system/caps_lock_notification_controller_unittest.cc",
