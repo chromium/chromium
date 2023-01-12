@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/task_environment.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
@@ -94,6 +95,7 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
                            media::EmptyExtraData(),
                            media::EncryptionScheme::kUnencrypted),
         stream_handler_(
+            task_environment_.GetMainThreadTaskRunner(),
             &client_,
             base::BindRepeating(&RpcDemuxerStreamHandlerTest::GetHandle,
                                 base::Unretained(this)),
@@ -198,6 +200,9 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
         base::Unretained(this)));
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   openscreen::cast::RpcMessenger::Handle audio_remote_handle_ = 123;
   openscreen::cast::RpcMessenger::Handle video_remote_handle_ = 456;
 
@@ -287,10 +292,15 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreAudioBuffers) {
       });
   OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, absl::nullopt,
                          uint32_t{1});
+
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
           CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 1));
   RequestMoreAudioBuffers();
+  task_environment_.RunUntilIdle();
+
+  RequestMoreAudioBuffers();
+  task_environment_.RunUntilIdle();
 
   EXPECT_CALL(client_, OnNewAudioConfig(_))
       .WillOnce([this](media::AudioDecoderConfig config) {
@@ -298,10 +308,15 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreAudioBuffers) {
       });
   OnRpcReadUntilCallback(audio_local_handle_, test_audio_config_, absl::nullopt,
                          uint32_t{17});
+
+  RequestMoreAudioBuffers();
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
           CheckReadUntilCall(audio_remote_handle_, audio_local_handle_, 17));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
   RequestMoreAudioBuffers();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
@@ -311,10 +326,15 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
       });
   OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, test_video_config_,
                          uint32_t{12});
+
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
           CheckReadUntilCall(video_remote_handle_, video_local_handle_, 12));
   RequestMoreVideoBuffers();
+  task_environment_.RunUntilIdle();
+
+  RequestMoreVideoBuffers();
+  task_environment_.RunUntilIdle();
 
   EXPECT_CALL(client_, OnNewVideoConfig(_))
       .WillOnce([this](media::VideoDecoderConfig config) {
@@ -322,10 +342,15 @@ TEST_F(RpcDemuxerStreamHandlerTest, RequestMoreVideoBuffers) {
       });
   OnRpcReadUntilCallback(video_local_handle_, absl::nullopt, test_video_config_,
                          uint32_t{42});
+
+  RequestMoreVideoBuffers();
   EXPECT_CALL(*this, SendMessage(_, _))
       .WillOnce(
           CheckReadUntilCall(video_remote_handle_, video_local_handle_, 42));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
   RequestMoreVideoBuffers();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(RpcDemuxerStreamHandlerTest, OnAudioError) {

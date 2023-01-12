@@ -71,7 +71,7 @@ void PlaybackCommandDispatcher::OnRemotingSessionNegotiated(
 
   renderer_call_translator_->set_handle(AcquireHandle());
   demuxer_stream_handler_ = std::make_unique<remoting::RpcDemuxerStreamHandler>(
-      this,
+      task_runner_, this,
       base::BindRepeating(&PlaybackCommandDispatcher::AcquireHandle,
                           base::Unretained(this)),
       base::BindRepeating(

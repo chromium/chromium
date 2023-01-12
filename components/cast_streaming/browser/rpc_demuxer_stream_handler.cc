@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/remoting_message_factories.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
@@ -15,17 +16,23 @@ namespace cast_streaming::remoting {
 namespace {
 
 // The number of frames requested in each ReadUntil RPC message.
-constexpr int kNumFramesInEachReadUntil = 16;
+constexpr int kNumFramesInEachReadUntil = 24;
+
+// Minimum frequency with which RPC_DS_READUNTIL RPC messages may be sent.
+constexpr base::TimeDelta kMinReadUntilCallFequency = base::Milliseconds(200);
 
 }  // namespace
 
 RpcDemuxerStreamHandler::RpcDemuxerStreamHandler(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     Client* client,
     HandleFactory handle_factory,
     RpcProcessMessageCB process_message_cb)
-    : client_(client),
+    : task_runner_(std::move(task_runner)),
+      client_(client),
       handle_factory_(std::move(handle_factory)),
       process_message_cb_(std::move(process_message_cb)) {
+  DCHECK(task_runner_);
   DCHECK(handle_factory_);
   DCHECK(process_message_cb_);
 }
@@ -39,7 +46,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
   // initialize the DemuxerStreams.
   if (audio_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
     audio_message_processor_ = std::make_unique<MessageProcessor>(
-        client_, process_message_cb_, handle_factory_.Run(),
+        task_runner_, client_, process_message_cb_, handle_factory_.Run(),
         audio_stream_handle, MessageProcessor::Type::kAudio);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
         remoting::CreateMessageForDemuxerStreamInitialize(
@@ -50,7 +57,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
 
   if (video_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
     video_message_processor_ = std::make_unique<MessageProcessor>(
-        client_, process_message_cb_, handle_factory_.Run(),
+        task_runner_, client_, process_message_cb_, handle_factory_.Run(),
         video_stream_handle, MessageProcessor::Type::kVideo);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
         remoting::CreateMessageForDemuxerStreamInitialize(
@@ -158,17 +165,20 @@ base::WeakPtr<DemuxerStreamClient> RpcDemuxerStreamHandler::GetVideoClient() {
 RpcDemuxerStreamHandler::Client::~Client() = default;
 
 RpcDemuxerStreamHandler::MessageProcessor::MessageProcessor(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     Client* client,
     RpcProcessMessageCB process_message_cb,
     openscreen::cast::RpcMessenger::Handle local_handle,
     openscreen::cast::RpcMessenger::Handle remote_handle,
     Type type)
-    : client_(client),
+    : task_runner_(std::move(task_runner)),
+      client_(client),
       process_message_cb_(std::move(process_message_cb)),
       local_handle_(local_handle),
       remote_handle_(remote_handle),
       type_(type),
       weak_factory_(this) {
+  DCHECK(task_runner_);
   DCHECK(client_);
   DCHECK_NE(local_handle_, openscreen::cast::RpcMessenger::kInvalidHandle);
   DCHECK_NE(remote_handle_, openscreen::cast::RpcMessenger::kInvalidHandle);
@@ -242,7 +252,18 @@ void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
   set_read_until_call_pending();
   auto message = CreateMessageForDemuxerStreamReadUntil(
       local_handle(), total_frames_received() + kNumFramesInEachReadUntil);
-  process_message_cb_.Run(remote_handle(), std::move(message));
+
+  const auto now = base::TimeTicks::Now();
+  auto remaining_time = (last_request_time_ + kMinReadUntilCallFequency) - now;
+  if (remaining_time < base::Microseconds(0)) {
+    remaining_time = base::Microseconds(0);
+  }
+
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(process_message_cb_, remote_handle(), std::move(message)),
+      remaining_time);
+  last_request_time_ = now + remaining_time;
 }
 
 void RpcDemuxerStreamHandler::MessageProcessor::OnError() {

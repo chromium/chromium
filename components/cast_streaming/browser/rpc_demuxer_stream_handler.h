@@ -9,12 +9,18 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/cast_streaming/browser/demuxer_stream_client.h"
 #include "components/cast_streaming/public/rpc_call_message_handler.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace openscreen::cast {
 class RpcMessage;
@@ -44,7 +50,8 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
   using RpcProcessMessageCB = base::RepeatingCallback<void(
       openscreen::cast::RpcMessenger::Handle,
       std::unique_ptr<openscreen::cast::RpcMessage>)>;
-  RpcDemuxerStreamHandler(Client* client,
+  RpcDemuxerStreamHandler(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                          Client* client,
                           HandleFactory handle_factory,
                           RpcProcessMessageCB process_message_cb);
 
@@ -78,7 +85,8 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
     // |remote_handle| is the handle received from the remote sender in the
     // OnRpcAcquiredDemuxer() call and used as the handle for sending messages
     // back to the sender.
-    MessageProcessor(Client* client,
+    MessageProcessor(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                     Client* client,
                      RpcProcessMessageCB process_message_cb,
                      openscreen::cast::RpcMessenger::Handle local_handle,
                      openscreen::cast::RpcMessenger::Handle remote_handle,
@@ -115,6 +123,9 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
     void OnNoBuffersAvailable() override;
     void OnError() override;
 
+    base::TimeTicks last_request_time_;
+
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
     raw_ptr<Client> client_;
     RpcProcessMessageCB process_message_cb_;
     openscreen::cast::RpcMessenger::Handle local_handle_;
@@ -149,6 +160,7 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
       openscreen::cast::RpcMessenger::Handle handle,
       bool succeeded) override;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const raw_ptr<Client> client_;
   HandleFactory handle_factory_;
   RpcProcessMessageCB process_message_cb_;
