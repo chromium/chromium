@@ -4,10 +4,12 @@
 
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -31,27 +33,30 @@ class EcheIconLoadingIndicatorViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+    test_widget_ = CreateTestWidget();
     icon_ = std::make_unique<views::ImageView>();
     eche_icon_loading_indicatior_view_ =
-        std::make_unique<EcheIconLoadingIndicatorView>(icon_.get());
+        test_widget_->GetContentsView()->AddChildView(
+            std::make_unique<EcheIconLoadingIndicatorView>(icon_.get()));
 
     const gfx::Rect initial_bounds(0, 0, kSizeInDip, kSizeInDip);
     eche_icon_loading_indicatior_view_->SetBoundsRect(initial_bounds);
   }
 
   void TearDown() override {
-    eche_icon_loading_indicatior_view_.reset();
+    test_widget_.reset();
+    eche_icon_loading_indicatior_view_ = nullptr;
     AshTestBase::TearDown();
   }
 
  protected:
   EcheIconLoadingIndicatorView* eche_icon_loading_indicatior_view() {
-    return eche_icon_loading_indicatior_view_.get();
+    return eche_icon_loading_indicatior_view_;
   }
 
  private:
-  std::unique_ptr<EcheIconLoadingIndicatorView>
-      eche_icon_loading_indicatior_view_;
+  EcheIconLoadingIndicatorView* eche_icon_loading_indicatior_view_;
+  std::unique_ptr<views::Widget> test_widget_;
   std::unique_ptr<views::ImageView> icon_;
 };
 
@@ -89,8 +94,8 @@ TEST_F(EcheIconLoadingIndicatorViewTest, OnPaintAnimating) {
   eche_icon_loading_indicatior_view()->OnPaint(&canvas);
 
   // Expect the center of animation should be the same as controls layer color.
-  EXPECT_EQ(AshColorProvider::Get()->GetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::kFocusRingColor),
+  EXPECT_EQ(eche_icon_loading_indicatior_view()->GetColorProvider()->GetColor(
+                ui::kColorAshFocusRing),
             canvas.GetBitmap().getColor(kSizeInDip / 2, kSizeInDip / 2));
 }
 

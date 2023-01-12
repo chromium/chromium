@@ -12,7 +12,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -43,8 +43,7 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, public ShellObserver {
               int icon_size,
               int icon_label_spacing,
               int nudge_padding,
-              AshColorProvider::ContentLayerType icon_color_layer_type =
-                  AshColorProvider::ContentLayerType::kIconColorPrimary);
+              ui::ColorId icon_color_id = kColorAshIconColorPrimary);
   SystemNudge(const SystemNudge&) = delete;
   SystemNudge& operator=(const SystemNudge&) = delete;
   ~SystemNudge() override;
@@ -97,9 +96,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, public ShellObserver {
     int icon_label_spacing;
     // The padding which separates the nudge's border with its inner contents.
     int nudge_padding;
-    // The color of the icon.
-    AshColorProvider::ContentLayerType icon_color_layer_type =
-        AshColorProvider::ContentLayerType::kIconColorPrimary;
+    // The color id of the icon.
+    ui::ColorId icon_color_id = kColorAshIconColorPrimary;
   };
 
   // Calculate and set widget bounds based on a fixed width and a variable

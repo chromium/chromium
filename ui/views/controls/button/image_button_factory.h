@@ -9,6 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
 
@@ -65,6 +66,14 @@ VIEWS_EXPORT void SetToggledImageFromVectorIconWithColor(
     int dip_size,
     SkColor icon_color,
     SkColor disabled_color);
+
+// Sets images on |button| for STATE_NORMAL and STATE_DISABLED with the default
+// size from the given vector icon and colors,
+VIEWS_EXPORT void SetImageFromVectorIconWithColorId(
+    ImageButton* button,
+    const gfx::VectorIcon& icon,
+    ui::ColorId icon_color_id,
+    ui::ColorId icon_disabled_color_id);
 
 }  // namespace views
 

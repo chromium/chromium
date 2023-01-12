@@ -5,20 +5,14 @@
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include <algorithm>
 
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_utils.h"
 #include "base/scoped_observation.h"
-#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -68,9 +62,7 @@ void EcheIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetLocalBounds();
   bounds.ClampToCenteredSize(gfx::Size(spinner_size_dip, spinner_size_dip));
   gfx::PaintThrobberSpinning(
-      canvas, bounds,
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor),
+      canvas, bounds, GetColorProvider()->GetColor(ui::kColorAshFocusRing),
       base::TimeTicks::Now() - *throbber_start_time_, kThrobberStrokeWidth);
 }
 

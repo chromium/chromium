@@ -195,10 +195,10 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   // Adds an icon to indicate that the device supports profiles or services that
   // are disabled or blocked by enterprise policy.
   if (device_properties->device_properties->is_blocked_by_policy) {
-    AddRightIcon(
-        CreateVectorIcon(chromeos::kEnterpriseIcon,
-                         kEnterpriseManagedIconSizeDip, gfx::kGoogleGrey100),
-        /*icon_size=*/kEnterpriseManagedIconSizeDip);
+    AddRightIcon(ui::ImageModel::FromVectorIcon(chromeos::kEnterpriseIcon,
+                                                kColorAshIconColorBlocked,
+                                                kEnterpriseManagedIconSizeDip),
+                 /*icon_size=*/kEnterpriseManagedIconSizeDip);
   }
 
   const DeviceConnectionState& connection_state =

@@ -11,7 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
@@ -186,15 +186,6 @@ void InstallRoundedCornerHighlightPathGenerator(
       view, std::make_unique<RoundedCornerHighlightPathGenerator>(corners));
 }
 
-SkColor GetInkDropBaseColor(version_info::Channel channel) {
-  if (features::IsQsRevampEnabled()) {
-    const std::pair<SkColor, float> base_color_and_opacity =
-        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
-    return base_color_and_opacity.first;
-  }
-  return channel_indicator_utils::GetBgColor(channel);
-}
-
 // VersionButton is a base class that provides a styled button, for devices on a
 // non-stable release track, that has a label for the channel and ChromeOS
 // version.
@@ -252,8 +243,7 @@ class VersionButton : public views::LabelButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     if (features::IsQsRevampEnabled()) {
-      flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kSeparatorColor));
+      flags.setColor(GetColorProvider()->GetColor(kColorAshSeparatorColor));
       flags.setStyle(cc::PaintFlags::kStroke_Style);
     } else {
       flags.setColor(channel_indicator_utils::GetBgColor(channel_));
@@ -268,7 +258,10 @@ class VersionButton : public views::LabelButton {
 
   void OnThemeChanged() override {
     views::LabelButton::OnThemeChanged();
-    views::InkDrop::Get(this)->SetBaseColor(GetInkDropBaseColor(channel_));
+    views::InkDrop::Get(this)->SetBaseColor(
+        features::IsQsRevampEnabled()
+            ? GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor)
+            : channel_indicator_utils::GetBgColor(channel_));
     SetBackgroundAndFont();
   }
 
@@ -277,8 +270,8 @@ class VersionButton : public views::LabelButton {
     if (features::IsQsRevampEnabled()) {
       // TODO(b/252873172): Revisit font style and color. For now use the
       // default size (which is obviously too small).
-      SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kTextColorSecondary));
+      SetEnabledTextColors(
+          GetColorProvider()->GetColor(kColorAshTextColorSecondary));
     } else {
       label()->SetFontList(
           gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
@@ -331,20 +324,13 @@ class SubmitFeedbackButton : public IconButton {
       SetIconSize(kSubmitFeedbackButtonRevampIconSize);
       SetPreferredSize(gfx::Size(kSubmitFeedbackButtonRevampWidth,
                                  kSubmitFeedbackButtonRevampHeight));
-      // Enable ink drop on hover.
-      StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                       /*highlight_on_hover=*/true,
-                                       /*highlight_on_focus=*/false,
-                                       GetInkDropBaseColor(channel_));
     } else {
       SetIconSize(kSubmitFeedbackButtonIconSize);
       SetPreferredSize(
           gfx::Size(kSubmitFeedbackButtonWidth, kSubmitFeedbackButtonHeight));
     }
     // Icon colors are set in OnThemeChanged().
-
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetBaseColor(GetInkDropBaseColor(channel_));
     InstallRoundedCornerHighlightPathGenerator(this, highlight_corners);
   }
   SubmitFeedbackButton(const SubmitFeedbackButton&) = delete;
@@ -355,8 +341,7 @@ class SubmitFeedbackButton : public IconButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     if (features::IsQsRevampEnabled()) {
-      flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kSeparatorColor));
+      flags.setColor(GetColorProvider()->GetColor(kColorAshSeparatorColor));
       flags.setStyle(cc::PaintFlags::kStroke_Style);
     } else {
       flags.setColor(channel_indicator_utils::GetBgColor(channel_));
@@ -371,13 +356,24 @@ class SubmitFeedbackButton : public IconButton {
   }
 
   void OnThemeChanged() override {
+    auto* color_provider = GetColorProvider();
     if (features::IsQsRevampEnabled()) {
       // TODO(b/252873172): Revisit icon color.
-      SetIconColor(AshColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kIconColorSecondary));
+      SetIconColor(color_provider->GetColor(kColorAshIconColorSecondary));
+
+      const SkColor ink_drop_base_color =
+          color_provider->GetColor(kColorAshInkDropOpaqueColor);
+      // Enable ink drop on hover.
+      StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                       /*highlight_on_hover=*/true,
+                                       /*highlight_on_focus=*/false,
+                                       ink_drop_base_color);
+      views::InkDrop::Get(this)->SetBaseColor(ink_drop_base_color);
     } else {
       SetIconColor(channel_indicator_utils::GetFgColor(channel_));
       SetBackgroundColor(channel_indicator_utils::GetBgColor(channel_));
+      views::InkDrop::Get(this)->SetBaseColor(color_provider->GetColor(
+          channel_indicator_utils::GetBgColor(channel_)));
     }
     IconButton::OnThemeChanged();
   }

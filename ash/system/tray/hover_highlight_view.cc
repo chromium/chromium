@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
@@ -38,7 +39,7 @@ HoverHighlightView::HoverHighlightView(ViewClickListener* listener)
 
 HoverHighlightView::~HoverHighlightView() = default;
 
-void HoverHighlightView::AddRightIcon(const gfx::ImageSkia& image,
+void HoverHighlightView::AddRightIcon(const ui::ImageModel& image,
                                       int icon_size) {
   DCHECK(is_populated_);
   DCHECK(!right_view_);

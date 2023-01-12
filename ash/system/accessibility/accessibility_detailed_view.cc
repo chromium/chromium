@@ -18,7 +18,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
@@ -27,7 +27,6 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
-#include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -39,6 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -136,7 +136,8 @@ void UpdateFeatureState(bool enabled,
 ////////////////////////////////////////////////////////////////////////////////
 // AccessibilityDetailedView
 
-const char AccessibilityDetailedView::kClassName[] = "AccessibilityDetailedView";
+constexpr char AccessibilityDetailedView::kClassName[] =
+    "AccessibilityDetailedView";
 
 AccessibilityDetailedView::AccessibilityDetailedView(
     DetailedViewDelegate* delegate)
@@ -649,13 +650,10 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
     // Show the enterprise "building" icon on the right.
     item->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED, text));
-    // TODO(b/257315380): The color should update on theme change.
-    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
-    gfx::ImageSkia enterprise_managed_icon =
-        CreateVectorIcon(kSystemMenuBusinessIcon, kMenuIconSize, color);
+    ui::ImageModel enterprise_managed_icon = ui::ImageModel::FromVectorIcon(
+        kSystemMenuBusinessIcon, kColorAshIconColorPrimary, kMenuIconSize);
     item->AddRightIcon(enterprise_managed_icon,
-                       enterprise_managed_icon.width());
+                       enterprise_managed_icon.Size().width());
   } else {
     // Create a non-clickable non-focusable toggle button on the right.
     auto toggle = std::make_unique<TrayToggleButton>(

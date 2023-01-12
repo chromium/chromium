@@ -13,6 +13,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/size_range_layout.h"
@@ -22,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -294,17 +296,15 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
                                               bool checked,
                                               bool enterprise_managed) {
   const int dip_size = GetDefaultSizeOfVectorIcon(kCheckCircleIcon);
-  gfx::ImageSkia check_mark = CreateVectorIcon(
-      kHollowCheckCircleIcon, dip_size,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorProminent));
+  ui::ImageModel check_mark = ui::ImageModel::FromVectorIcon(
+      kHollowCheckCircleIcon, kColorAshIconColorProminent, dip_size);
   if (enterprise_managed) {
-    gfx::ImageSkia enterprise_managed_icon = CreateVectorIcon(
-        chromeos::kEnterpriseIcon, dip_size, gfx::kGoogleGrey100);
+    ui::ImageModel enterprise_managed_icon = ui::ImageModel::FromVectorIcon(
+        chromeos::kEnterpriseIcon, kColorAshIconColorBlocked, dip_size);
     container->AddRightIcon(enterprise_managed_icon,
-                            enterprise_managed_icon.width());
+                            enterprise_managed_icon.Size().width());
   }
-  container->AddRightIcon(check_mark, check_mark.width());
+  container->AddRightIcon(check_mark, check_mark.Size().width());
   UpdateCheckMarkVisibility(container, checked);
 }
 

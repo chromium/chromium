@@ -126,4 +126,19 @@ void SetToggledImageFromVectorIconWithColor(ToggleImageButton* button,
   button->SetToggledImageModel(Button::STATE_DISABLED, disabled_image);
 }
 
+void SetImageFromVectorIconWithColorId(ImageButton* button,
+                                       const gfx::VectorIcon& icon,
+                                       ui::ColorId icon_color_id,
+                                       ui::ColorId icon_disabled_color_id) {
+  int dip_size = GetDefaultSizeOfVectorIcon(icon);
+  const ui::ImageModel& normal_image =
+      ui::ImageModel::FromVectorIcon(icon, icon_color_id, dip_size);
+  const ui::ImageModel& disabled_image =
+      ui::ImageModel::FromVectorIcon(icon, icon_disabled_color_id, dip_size);
+
+  button->SetImageModel(Button::STATE_NORMAL, normal_image);
+  button->SetImageModel(Button::STATE_DISABLED, disabled_image);
+  InkDrop::Get(button)->SetBaseColorId(icon_color_id);
+}
+
 }  // namespace views

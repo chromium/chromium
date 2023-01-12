@@ -12,9 +12,9 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -98,20 +98,9 @@ class SystemNudge::SystemNudgeView : public views::View {
     icon_->SetPaintToLayer();
     icon_->layer()->SetFillsBoundsOpaquely(false);
     icon_->SetSize({nudge->params_.icon_size, nudge->params_.icon_size});
-    icon_->SetImage(ui::ImageModel::FromImageGenerator(
-        base::BindRepeating(
-            [](base::WeakPtr<SystemNudge> nudge, const ui::ColorProvider*) {
-              // If `nudge` does not exist anymore, no image will be displayed.
-              if (!nudge)
-                return gfx::ImageSkia();
-
-              return gfx::CreateVectorIcon(
-                  nudge->GetIcon(),
-                  AshColorProvider::Get()->GetContentLayerColor(
-                      nudge->params_.icon_color_layer_type));
-            },
-            nudge),
-        gfx::Size(nudge->params_.icon_size, nudge->params_.icon_size)));
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(nudge->GetIcon(),
+                                                   nudge->params_.icon_color_id,
+                                                   nudge->params_.icon_size));
     label_ = AddChildView(nudge->CreateLabelView());
     label_->SetPaintToLayer();
     label_->layer()->SetFillsBoundsOpaquely(false);
@@ -129,20 +118,19 @@ class SystemNudge::SystemNudgeView : public views::View {
   views::ImageView* icon_ = nullptr;
 };
 
-SystemNudge::SystemNudge(
-    const std::string& name,
-    NudgeCatalogName catalog_name,
-    int icon_size,
-    int icon_label_spacing,
-    int nudge_padding,
-    AshColorProvider::ContentLayerType icon_color_layer_type)
+SystemNudge::SystemNudge(const std::string& name,
+                         NudgeCatalogName catalog_name,
+                         int icon_size,
+                         int icon_label_spacing,
+                         int nudge_padding,
+                         ui::ColorId icon_color_id)
     : root_window_(Shell::GetRootWindowForNewWindows()) {
   params_.name = name;
   params_.catalog_name = catalog_name;
   params_.icon_size = icon_size;
   params_.icon_label_spacing = icon_label_spacing;
   params_.nudge_padding = nudge_padding;
-  params_.icon_color_layer_type = icon_color_layer_type;
+  params_.icon_color_id = icon_color_id;
 }
 
 SystemNudge::~SystemNudge() = default;

@@ -13,7 +13,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -23,6 +23,7 @@
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -61,10 +62,8 @@ void IMEDetailedView::CreateExtraTitleRowButtons() {
       // kSmall, but IconButton doesn't expose that value, so we inline it here.
       controlled_setting_icon_->SetPreferredSize(gfx::Size(32, 32));
     }
-    controlled_setting_icon_->SetImage(gfx::CreateVectorIcon(
-        kSystemMenuBusinessIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    controlled_setting_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kSystemMenuBusinessIcon, kColorAshIconColorPrimary));
     controlled_setting_icon_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_MANAGED));
     tri_view()->AddView(TriView::Container::END, controlled_setting_icon_);

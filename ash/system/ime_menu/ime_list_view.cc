@@ -16,6 +16,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/rounded_container.h"
 #include "ash/system/tray/actionable_view.h"
@@ -31,6 +32,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -60,7 +62,7 @@ class ImeListItemView : public ActionableView {
                   const std::u16string& id,
                   const std::u16string& label,
                   bool selected,
-                  const SkColor button_color)
+                  const ui::ColorId button_color_id)
       : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
         ime_list_view_(list_view),
         selected_(selected) {
@@ -74,8 +76,7 @@ class ImeListItemView : public ActionableView {
 
     // |id_label| contains the IME short name (e.g., 'US', 'GB', 'IT').
     views::Label* id_label = TrayPopupUtils::CreateDefaultLabel();
-    id_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    id_label->SetEnabledColorId(kColorAshTextColorPrimary);
     id_label->SetAutoColorReadabilityEnabled(false);
     id_label->SetText(id);
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
@@ -98,8 +99,7 @@ class ImeListItemView : public ActionableView {
     // The label shows the IME full name.
     auto* label_view = TrayPopupUtils::CreateDefaultLabel();
     label_view->SetText(label);
-    label_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    label_view->SetEnabledColorId(kColorAshTextColorPrimary);
     TrayPopupUtils::SetLabelFontList(
         label_view, TrayPopupUtils::FontStyle::kDetailedViewLabel);
     label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -107,10 +107,10 @@ class ImeListItemView : public ActionableView {
 
     if (selected) {
       // The checked button indicates the IME is selected.
-      views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView(
-          /*use_wide_layout=*/is_qs_revamp);
-      checked_image->SetImage(gfx::CreateVectorIcon(
-          kHollowCheckCircleIcon, kMenuIconSize, button_color));
+      views::ImageView* checked_image =
+          TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/is_qs_revamp);
+      checked_image->SetImage(ui::ImageModel::FromVectorIcon(
+          kHollowCheckCircleIcon, button_color_id, kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
     SetAccessibleName(label_view->GetText());
@@ -178,22 +178,19 @@ class KeyboardStatusRow : public views::View {
         /*use_wide_layout=*/is_qs_revamp);
     AddChildView(tri_view);
 
-    auto* color_provider = AshColorProvider::Get();
     // The on-screen keyboard image button.
     views::ImageView* keyboard_image =
         TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/is_qs_revamp);
-    keyboard_image->SetImage(gfx::CreateVectorIcon(
-        kImeMenuOnScreenKeyboardIcon, kMenuIconSize,
-        color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    keyboard_image->SetImage(ui::ImageModel::FromVectorIcon(
+        kImeMenuOnScreenKeyboardIcon, kColorAshIconColorPrimary,
+        kMenuIconSize));
     tri_view->AddView(TriView::Container::START, keyboard_image);
 
     // The on-screen keyboard label ('On-screen keyboard').
     auto* label = TrayPopupUtils::CreateDefaultLabel();
     label->SetText(ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-    label->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    label->SetEnabledColorId(kColorAshTextColorPrimary);
     TrayPopupUtils::SetLabelFontList(
         label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
     tri_view->AddView(TriView::Container::CENTER, label);
@@ -292,8 +289,7 @@ void ImeListView::AppendImeListAndProperties(
     views::View* ime_view =
         container_->AddChildView(std::make_unique<ImeListItemView>(
             this, list[i].short_name, list[i].name, selected,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorProminent)));
+            kColorAshIconColorProminent));
 
     ime_map_[ime_view] = list[i].id;
 
@@ -305,15 +301,12 @@ void ImeListView::AppendImeListAndProperties(
       // Adds a separator on the top of property items.
       container_->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
 
-      const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary);
-
       // Adds the property items.
       for (const auto& property : property_list) {
         ImeListItemView* property_view =
             container_->AddChildView(std::make_unique<ImeListItemView>(
                 this, std::u16string(), property.label, property.checked,
-                icon_color));
+                kColorAshIconColorPrimary));
 
         property_map_[property_view] = property.key;
       }

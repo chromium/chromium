@@ -7,7 +7,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -34,6 +34,7 @@ class UnifiedKeyboardBacklightToggleView
     model_->AddObserver(this);
 
     toast_label_ = AddChildView(std::make_unique<views::Label>());
+    toast_label_->SetEnabledColorId(kColorAshTextColorPrimary);
     TrayPopupUtils::SetLabelFontList(toast_label_,
                                      TrayPopupUtils::FontStyle::kPodMenuHeader);
     slider()->SetVisible(false);
@@ -46,14 +47,6 @@ class UnifiedKeyboardBacklightToggleView
 
   ~UnifiedKeyboardBacklightToggleView() override {
     model_->RemoveObserver(this);
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-
-    DCHECK(toast_label_);
-    toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
   // UnifiedSystemTrayModel::Observer:
