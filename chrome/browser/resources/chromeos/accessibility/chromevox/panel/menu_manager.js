@@ -12,6 +12,15 @@ import {PanelMenu, PanelSearchMenu} from './panel_menu.js';
 export class MenuManager {
   constructor() {
     /**
+     * The currently active menu, if any.
+     * @private {?PanelMenu}
+     */
+    this.activeMenu_ = null;
+
+    /** @private {string} */
+    this.lastMenu_ = '';
+
+    /**
      * The array of top-level menus.
      * @private {!Array<!PanelMenu>}
      */
@@ -43,25 +52,37 @@ export class MenuManager {
     return specifiedMenu || this.searchMenu_ || this.menus_[0];
   }
 
-  /**
-   * Temporary method during migration from panel.js.
-   * @return {!Array<!PanelMenu>}
-   */
+  // The following getters and setters are temporary during the migration from
+  // panel.js.
+
+  /** @return {?PanelMenu} */
+  get activeMenu() {
+    return this.activeMenu_;
+  }
+  /** @param {?PanelMenu} menu */
+  set activeMenu(menu) {
+    this.activeMenu_ = menu;
+  }
+
+  /** @return {string} */
+  get lastMenu() {
+    return this.lastMenu_;
+  }
+  /** @param {string} menuMsg */
+  set lastMenu(menuMsg) {
+    this.lastMenu_ = menuMsg;
+  }
+
+  /** @return {!Array<!PanelMenu>} */
   get menus() {
     return this.menus_;
   }
 
-  /**
-   * Temporary method during migration from panel.js.
-   * @return {?PanelSearchMenu}
-   */
+  /** @return {?PanelSearchMenu} */
   get searchMenu() {
     return this.searchMenu_;
   }
-  /**
-   * Temporary method during migration from panel.js.
-   * @param {?PanelSearchMenu} menu
-   */
+  /** @param {?PanelSearchMenu} menu */
   set searchMenu(menu) {
     this.searchMenu_ = menu;
   }

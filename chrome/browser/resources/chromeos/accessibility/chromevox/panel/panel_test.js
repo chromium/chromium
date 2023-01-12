@@ -60,7 +60,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     // to wait until an update has been made. Swap in our hook, wait, then
     // restore after.
     const makeAssertions = () => {
-      const menu = this.getPanel().instance.activeMenu_;
+      const menu = this.getPanel().instance.menuManager_.activeMenu_;
       assertEquals(menuMsg, menu.menuMsg);
     };
 
@@ -77,7 +77,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   assertActiveMenuItem(menuMsg, menuItemTitle, opt_menuItemShortcut) {
-    const menu = this.getPanel().instance.activeMenu_;
+    const menu = this.getPanel().instance.menuManager_.activeMenu_;
     const menuItem = menu.items_[menu.activeIndex_];
     assertEquals(menuMsg, menu.menuMsg);
     assertEquals(menuItemTitle, menuItem.menuItemTitle);
@@ -98,7 +98,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   isMenuTitleMessage(menuTitleMessage) {
-    const menu = this.getPanel().instance.activeMenu_;
+    const menu = this.getPanel().instance.menuManager_.activeMenu_;
     return menuTitleMessage === menu.menuMsg;
   }
 

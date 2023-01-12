@@ -36,15 +36,6 @@ export class Panel extends PanelInterface {
   /** @private */
   constructor() {
     super();
-    /**
-     * The currently active menu, if any.
-     * @private {?PanelMenu}
-     */
-    this.activeMenu_ = null;
-
-    /** @private {string} */
-    this.lastMenu_ = '';
-
     /** @private {!PanelMode} */
     this.mode_ = PanelMode.COLLAPSED;
 
@@ -226,7 +217,7 @@ export class Panel extends PanelInterface {
         this.onOpenMenus_(undefined, String(command.data));
         break;
       case PanelCommandType.OPEN_MENUS_MOST_RECENT:
-        this.onOpenMenus_(undefined, this.lastMenu_);
+        this.onOpenMenus_(undefined, this.menuManager_.lastMenu);
         break;
       case PanelCommandType.SEARCH:
         this.onSearch_();
@@ -554,10 +545,10 @@ export class Panel extends PanelInterface {
       $('menu-bar').removeChild(menu.menuBarItemElement);
       $('menus_background').removeChild(menu.menuContainerElement);
     }
-    if (this.activeMenu_) {
-      this.lastMenu_ = this.activeMenu_.menuMsg;
+    if (this.menuManager_.activeMenu) {
+      this.menuManager_.lastMenu = this.menuManager_.activeMenu.menuMsg;
     }
-    this.activeMenu_ = null;
+    this.menuManager_.activeMenu = null;
   }
 
   /**
@@ -791,20 +782,20 @@ export class Panel extends PanelInterface {
    * @private
    */
   activateMenu_(menu, activateFirstItem) {
-    if (menu === this.activeMenu_) {
+    if (menu === this.menuManager_.activeMenu) {
       return;
     }
 
-    if (this.activeMenu_) {
-      this.activeMenu_.deactivate();
-      this.activeMenu_ = null;
+    if (this.menuManager_.activeMenu) {
+      this.menuManager_.activeMenu.deactivate();
+      this.menuManager_.activeMenu = null;
     }
 
-    this.activeMenu_ = menu;
+    this.menuManager_.activeMenu = menu;
     this.pendingCallback_ = null;
 
-    if (this.activeMenu_) {
-      this.activeMenu_.activate(activateFirstItem);
+    if (this.menuManager_.activeMenu) {
+      this.menuManager_.activeMenu.activate(activateFirstItem);
     }
   }
 
@@ -813,7 +804,7 @@ export class Panel extends PanelInterface {
    * @private
    */
   scrollToTop_() {
-    this.activeMenu_.scrollToTop();
+    this.menuManager_.activeMenu.scrollToTop();
   }
 
   /**
@@ -821,7 +812,7 @@ export class Panel extends PanelInterface {
    * @private
    */
   scrollToBottom_() {
-    this.activeMenu_.scrollToBottom();
+    this.menuManager_.activeMenu.scrollToBottom();
   }
 
   /**
@@ -832,7 +823,7 @@ export class Panel extends PanelInterface {
   advanceActiveMenuBy_(delta) {
     let activeIndex = -1;
     for (let i = 0; i < this.menuManager_.menus.length; i++) {
-      if (this.activeMenu_ === this.menuManager_.menus[i]) {
+      if (this.menuManager_.activeMenu === this.menuManager_.menus[i]) {
         activeIndex = i;
         break;
       }
@@ -883,8 +874,8 @@ export class Panel extends PanelInterface {
    * @private
    */
   advanceItemBy_(delta) {
-    if (this.activeMenu_) {
-      this.activeMenu_.advanceItemBy(delta);
+    if (this.menuManager_.activeMenu) {
+      this.menuManager_.activeMenu.advanceItemBy(delta);
     }
   }
 
@@ -897,7 +888,7 @@ export class Panel extends PanelInterface {
    * @private
    */
   onMouseUp_(event) {
-    if (!this.activeMenu_) {
+    if (!this.menuManager_.activeMenu) {
       return;
     }
 
@@ -912,8 +903,9 @@ export class Panel extends PanelInterface {
       target = target.parentElement;
     }
 
-    if (target && this.activeMenu_) {
-      this.pendingCallback_ = this.activeMenu_.getCallbackForElement(target);
+    if (target && this.menuManager_.activeMenu) {
+      this.pendingCallback_ =
+          this.menuManager_.activeMenu.getCallbackForElement(target);
     }
     this.closeMenusAndRestoreFocus();
   }
@@ -944,7 +936,7 @@ export class Panel extends PanelInterface {
       return;
     }
 
-    if (!this.activeMenu_) {
+    if (!this.menuManager_.activeMenu) {
       return;
     }
 
@@ -1043,8 +1035,8 @@ export class Panel extends PanelInterface {
    * @private
    */
   getCallbackForCurrentItem_() {
-    if (this.activeMenu_) {
-      return this.activeMenu_.getCallbackForCurrentItem();
+    if (this.menuManager_.activeMenu) {
+      return this.menuManager_.activeMenu.getCallbackForCurrentItem();
     }
     return null;
   }
@@ -1064,7 +1056,7 @@ export class Panel extends PanelInterface {
     // Make sure we're not in full-screen mode.
     this.setMode_(PanelMode.COLLAPSED);
 
-    this.activeMenu_ = null;
+    this.menuManager_.activeMenu = null;
 
     await BackgroundBridge.PanelBackground.waitForPanelCollapse();
 
