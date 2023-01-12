@@ -13,23 +13,22 @@ found in the LICENSE file.
         android:summary="@string/settings_fledge_page_toggle_sub_label" />
 
     <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
+        android:key="fledge_heading"
+        android:title="@string/settings_fledge_page_current_sites_heading"
+        android:summary="@string/settings_fledge_page_current_sites_description"
+        app:allowDividerAbove="true" />
+
+    <PreferenceCategory
         android:key="current_fledge_sites"
-        android:title="@string/settings_fledge_page_current_sites_heading"
-        android:summary="@string/settings_fledge_page_current_sites_description" />
+        android:layout="@layout/preference_category_no_title_or_padding" />
 
-    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_disabled"
-        android:title="@string/settings_fledge_page_current_sites_heading"
-        android:summary="@string/settings_fledge_page_current_sites_description_disabled"
-        app:allowDividerAbove="true"
-        app:allowDividerBelow="true" />
+        android:summary="@string/settings_fledge_page_current_sites_description_disabled" />
 
-    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="fledge_empty"
-        android:title="@string/settings_fledge_page_current_sites_heading"
-        android:summary="@string/settings_fledge_page_current_sites_description_empty"
-        app:allowDividerAbove="true"
-        app:allowDividerBelow="true" />
+        android:summary="@string/settings_fledge_page_current_sites_description_empty" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_all_sites"

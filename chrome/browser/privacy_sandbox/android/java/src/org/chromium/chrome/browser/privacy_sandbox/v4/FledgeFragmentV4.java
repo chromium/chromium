@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -25,6 +26,7 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -42,6 +44,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     static final int MAX_DISPLAYED_SITES = 15;
 
     private static final String FLEDGE_TOGGLE_PREFERENCE = "fledge_toggle";
+    private static final String HEADING_PREFERENCE = "fledge_heading";
     private static final String CURRENT_SITES_PREFERENCE = "current_fledge_sites";
     private static final String EMPTY_FLEDGE_PREFERENCE = "fledge_empty";
     private static final String DISABLED_FLEDGE_PREFERENCE = "fledge_disabled";
@@ -49,9 +52,10 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private static final String FOOTER_PREFERENCE = "fledge_page_footer";
 
     private ChromeSwitchPreference mFledgeTogglePreference;
-    private PreferenceCategoryWithClickableSummary mCurrentSitesCategory;
-    private PreferenceCategoryWithClickableSummary mEmptyFledgePreference;
-    private PreferenceCategoryWithClickableSummary mDisabledFledgePreference;
+    private PreferenceCategoryWithClickableSummary mHeadingPreference;
+    private PreferenceCategory mCurrentSitesCategory;
+    private TextMessagePreference mEmptyFledgePreference;
+    private TextMessagePreference mDisabledFledgePreference;
     private ChromeBasePreference mAllSitesPreference;
     private LargeIconBridge mLargeIconBridge;
     private ClickableSpansTextMessagePreference mFooterPreference;
@@ -79,6 +83,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_preference_v4);
 
         mFledgeTogglePreference = findPreference(FLEDGE_TOGGLE_PREFERENCE);
+        mHeadingPreference = findPreference(HEADING_PREFERENCE);
         mCurrentSitesCategory = findPreference(CURRENT_SITES_PREFERENCE);
         mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
         mDisabledFledgePreference = findPreference(DISABLED_FLEDGE_PREFERENCE);
@@ -90,20 +95,8 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mFledgeTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
         mMoreThanMaxSitesToDisplay = false;
 
-        mCurrentSitesCategory.setSummary(SpanApplier.applySpans(
+        mHeadingPreference.setSummary(SpanApplier.applySpans(
                 getResources().getString(R.string.settings_fledge_page_current_sites_description),
-                new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
-
-        mEmptyFledgePreference.setSummary(SpanApplier.applySpans(
-                getResources().getString(
-                        R.string.settings_fledge_page_current_sites_description_empty),
-                new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
-
-        mDisabledFledgePreference.setSummary(SpanApplier.applySpans(
-                getResources().getString(
-                        R.string.settings_fledge_page_current_sites_description_disabled),
                 new SpanApplier.SpanInfo("<link>", "</link>",
                         new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));
 
