@@ -1810,6 +1810,7 @@ enum HistogramValue {
   DECLARATIVENETREQUEST_UPDATESTATICRULES = 1747,
   FILEMANAGERPRIVATEINTERNAL_SEARCHFILES = 1748,
   SYSTEMLOG_ADD = 1749,
+  DECLARATIVENETREQUEST_GETDISABLEDRULEIDS = 1750,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

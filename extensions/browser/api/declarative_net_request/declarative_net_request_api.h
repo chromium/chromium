@@ -128,6 +128,23 @@ class DeclarativeNetRequestUpdateStaticRulesFunction
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class DeclarativeNetRequestGetDisabledRuleIdsFunction
+    : public ExtensionFunction {
+ public:
+  DeclarativeNetRequestGetDisabledRuleIdsFunction();
+  DECLARE_EXTENSION_FUNCTION("declarativeNetRequest.getDisabledRuleIds",
+                             DECLARATIVENETREQUEST_GETDISABLEDRULEIDS)
+
+ protected:
+  ~DeclarativeNetRequestGetDisabledRuleIdsFunction() override;
+
+ private:
+  void OnDisabledRuleIdsRead(std::vector<int> disabled_rule_ids);
+
+  // ExtensionFunction override:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 class DeclarativeNetRequestGetMatchedRulesFunction : public ExtensionFunction {
  public:
   DeclarativeNetRequestGetMatchedRulesFunction();

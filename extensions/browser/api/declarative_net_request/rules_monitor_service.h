@@ -57,6 +57,8 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
  public:
   using ApiCallback =
       base::OnceCallback<void(absl::optional<std::string> error)>;
+  using ApiCallbackToGetDisabledRuleIds =
+      base::OnceCallback<void(std::vector<int> disabled_rule_ids)>;
 
   // An observer used in tests.
   class TestObserver {
@@ -108,6 +110,13 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                          RulesetID ruleset_id,
                          RuleIdsToUpdate rule_ids_to_update,
                          ApiCallback callback);
+
+  // Get the set of disabled rule ids for the |ruleset_id| of the
+  // |extension|. The disabled rule ids will be passed though the argument of
+  // the |callback|.
+  void GetDisabledRuleIds(const Extension& extension,
+                          RulesetID ruleset_id,
+                          ApiCallbackToGetDisabledRuleIds callback);
 
   // Returns the list of session scoped rules for |extension_id| as a
   // base::Value::List.
@@ -189,6 +198,11 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                                  RulesetID ruleset_id,
                                  RuleIdsToUpdate rule_ids_to_update,
                                  ApiCallback callback);
+
+  // Internal helper for GetDisabledRuleIds.
+  void GetDisabledRuleIdsInternal(const ExtensionId& extension_id,
+                                  RulesetID ruleset_id,
+                                  ApiCallbackToGetDisabledRuleIds callback);
 
   // Internal helper for UpdateSessionRules.
   void UpdateSessionRulesInternal(

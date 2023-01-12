@@ -555,6 +555,11 @@ namespace declarativeNetRequest {
     long[]? enableRuleIds;
   };
 
+  dictionary GetDisabledRuleIdsOptions {
+    // The id corresponding to a static $(ref:Ruleset).
+    DOMString rulesetId;
+  };
+
   dictionary TabActionCountUpdate {
     // The tab for which to update the action count.
     long tabId;
@@ -576,6 +581,7 @@ namespace declarativeNetRequest {
   callback GetRulesCallback = void(Rule[] rules);
   callback GetMatchedRulesCallback = void(RulesMatchedDetails details);
   callback GetEnabledRulesetsCallback = void(DOMString[] rulesetIds);
+  callback GetDisabledRuleIdsCallback = void(long[] disabledRuleIds);
   callback IsRegexSupportedCallback = void(IsRegexSupportedResult result);
   callback GetAvailableStaticRuleCountCallback = void(long count);
   callback TestMatchOutcomeCallback = void(TestMatchOutcomeResult result);
@@ -665,6 +671,15 @@ namespace declarativeNetRequest {
     [nodoc, supportsPromises] static void updateStaticRules(
         UpdateStaticRulesOptions options,
         optional EmptyCallback callback);
+
+    // Returns the list of static rules in the given $(ref:Ruleset) that are
+    // currently disabled.
+    // |options|: Specifies the ruleset to query.
+    // |callback|: Called with a list of ids that correspond to the disabled
+    // rules in that ruleset.
+    [nodoc, supportsPromises] static void getDisabledRuleIds(
+        GetDisabledRuleIdsOptions options,
+        GetDisabledRuleIdsCallback callback);
 
     // Returns all rules matched for the extension. Callers can optionally
     // filter the list of matched rules by specifying a |filter|. This method is

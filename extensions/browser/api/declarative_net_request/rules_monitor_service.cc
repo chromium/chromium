@@ -234,9 +234,10 @@ class RulesMonitorService::ApiCallQueue {
   // responsible for invoking `api_callback` upon its completion. Following
   // this, `ApiCallQueue::OnApiCallCompleted()` will be called in the next event
   // cycle, triggering the next call (if any).
+  template <typename ApiCallbackType>
   void ExecuteOrQueueApiCall(
-      base::OnceCallback<void(ApiCallback)> unbound_api_call,
-      ApiCallback api_callback) {
+      base::OnceCallback<void(ApiCallbackType)> unbound_api_call,
+      ApiCallbackType api_callback) {
     // Wrap the `api_callback` in a synthetic callback to ensure
     // `OnApiCallCompleted()` is run after each api call. Note we schedule
     // `OnApiCallCompleted()` to run in the next event cycle to ensure any
@@ -248,7 +249,7 @@ class RulesMonitorService::ApiCallQueue {
     };
     base::OnceClosure async_task = base::BindOnce(
         &ApiCallQueue::OnApiCallCompleted, weak_factory_.GetWeakPtr());
-    ApiCallback wrapped_callback =
+    ApiCallbackType wrapped_callback =
         std::move(api_callback)
             .Then(base::BindOnce(post_async, std::move(async_task)));
 
@@ -355,6 +356,20 @@ void RulesMonitorService::UpdateStaticRules(const Extension& extension,
       base::BindOnce(&RulesMonitorService::UpdateStaticRulesInternal,
                      weak_factory_.GetWeakPtr(), extension.id(),
                      std::move(ruleset_id), std::move(rule_ids_to_update)),
+      std::move(callback));
+}
+
+void RulesMonitorService::GetDisabledRuleIds(
+    const Extension& extension,
+    RulesetID ruleset_id,
+    ApiCallbackToGetDisabledRuleIds callback) {
+  // Sanity check that this is only called for an enabled extension.
+  DCHECK(extension_registry_->enabled_extensions().Contains(extension.id()));
+
+  update_enabled_rulesets_queue_map_[extension.id()].ExecuteOrQueueApiCall(
+      base::BindOnce(&RulesMonitorService::GetDisabledRuleIdsInternal,
+                     weak_factory_.GetWeakPtr(), extension.id(),
+                     std::move(ruleset_id)),
       std::move(callback));
 }
 
@@ -784,6 +799,28 @@ void RulesMonitorService::UpdateStaticRulesInternal(
   }
 
   std::move(callback).Run(absl::nullopt /* error */);
+}
+
+void RulesMonitorService::GetDisabledRuleIdsInternal(
+    const ExtensionId& extension_id,
+    RulesetID ruleset_id,
+    ApiCallbackToGetDisabledRuleIds callback) {
+  const Extension* extension =
+      extension_registry_->enabled_extensions().GetByID(extension_id);
+  if (!extension) {
+    // There is no enabled extension to respond to. While this is probably a
+    // no-op, still dispatch the callback to ensure any related bookkeeping is
+    // done.
+    std::move(callback).Run({});
+    return;
+  }
+
+  base::flat_set<int> disabled_rule_ids =
+      DeclarativeNetRequestPrefsHelper(*prefs_).GetDisabledStaticRuleIds(
+          extension->id(), ruleset_id);
+
+  std::move(callback).Run(
+      std::vector<int>(disabled_rule_ids.begin(), disabled_rule_ids.end()));
 }
 
 void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(

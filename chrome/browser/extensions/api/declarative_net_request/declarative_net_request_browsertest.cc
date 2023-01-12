@@ -465,6 +465,41 @@ class DeclarativeNetRequestBrowserTest
         *ruleset_manager(), *last_loaded_extension(), ruleset_id_string);
   }
 
+  void VerifyGetDisabledRuleIds(
+      const ExtensionId& extension_id,
+      const std::string& ruleset_id_string,
+      const std::vector<int>& expected_disabled_rule_ids) {
+    static constexpr char kScript[] = R"(
+      chrome.declarativeNetRequest.getDisabledRuleIds(
+          {rulesetId: $1},
+          (disabledRuleIds) => {
+            if (chrome.runtime.lastError) {
+              window.domAutomationController.send(
+                  'error: ' + chrome.runtime.lastError.message);
+              return;
+            }
+            if (!disabledRuleIds) {
+              window.domAutomationController.send('no result');
+              return;
+            }
+
+            let actual = JSON.stringify(disabledRuleIds);
+            let expected = JSON.stringify($2);
+            window.domAutomationController.send(actual == expected
+                ? 'success'
+                : ['expected:', expected, '; actual:', actual].join(''));
+          });
+    )";
+    base::Value::List expected = ListBuilder()
+                                     .Append(expected_disabled_rule_ids.begin(),
+                                             expected_disabled_rule_ids.end())
+                                     .Build();
+    std::string result = ExecuteScriptInBackgroundPage(
+        extension_id,
+        content::JsReplace(kScript, ruleset_id_string, std::move(expected)));
+    ASSERT_EQ("success", result);
+  }
+
   void VerifyPublicRulesetIds(
       const Extension* extension,
       const std::vector<std::string>& expected_ruleset_ids) {
@@ -4894,11 +4929,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
               UnorderedElementsAre(ruleset_id));
 
   EXPECT_THAT(GetDisabledRuleIdsFromMatcher(ruleset_id), testing::IsEmpty());
+  VerifyGetDisabledRuleIds(last_loaded_extension_id(), ruleset_id, {});
 
   UpdateStaticRules(last_loaded_extension_id(), ruleset_id,
                     {2} /* rule_ids_to_disable */, {} /* rule_ids_to_enable */);
 
   EXPECT_THAT(GetDisabledRuleIdsFromMatcher(ruleset_id), ElementsAreArray({2}));
+  VerifyGetDisabledRuleIds(last_loaded_extension_id(), ruleset_id, {2});
 
   const char* kDirectory2 = "dir2";
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
@@ -4916,6 +4953,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
               UnorderedElementsAre(ruleset_id));
 
   EXPECT_THAT(GetDisabledRuleIdsFromMatcher(ruleset_id), testing::IsEmpty());
+  VerifyGetDisabledRuleIds(last_loaded_extension_id(), ruleset_id, {});
 }
 
 // Fixture to test the "allowAllRequests" action.

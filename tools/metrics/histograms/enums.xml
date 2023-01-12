@@ -35569,6 +35569,7 @@ Called by update_extension_histograms.py.-->
   <int value="1747" label="DECLARATIVENETREQUEST_UPDATESTATICRULES"/>
   <int value="1748" label="FILEMANAGERPRIVATEINTERNAL_SEARCHFILES"/>
   <int value="1749" label="SYSTEMLOG_ADD"/>
+  <int value="1750" label="DECLARATIVENETREQUEST_GETDISABLEDRULEIDS"/>
 </enum>
 
 <enum name="ExtensionIconState">

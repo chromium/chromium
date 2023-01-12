@@ -32,6 +32,17 @@ async function getActiveRules() {
   return activeRules;
 }
 
+async function getDisabledRuleIds(rulesetId) {
+  return await chrome.declarativeNetRequest.getDisabledRuleIds(
+      {rulesetId: rulesetId});
+}
+
+async function verifyGetDisabledRuleIdsError(rulesetId, expectedError) {
+  await chrome.test.assertPromiseRejects(
+      chrome.declarativeNetRequest.getDisabledRuleIds({rulesetId: rulesetId}),
+      expectedError);
+}
+
 chrome.test.runTests([
   async function enableRulesets() {
     // Enable the extension's rulesets here, instead of by default in the
@@ -43,6 +54,8 @@ chrome.test.runTests([
     chrome.test.assertEq(['rules1-1', 'rules1-2', 'rules1-3', 'rules2-1',
                           'rules2-2', 'rules2-3'],
                          await getActiveRules());
+    chrome.test.assertEq([], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function disableRuleset1Rules() {
@@ -51,6 +64,8 @@ chrome.test.runTests([
 
     chrome.test.assertEq(['rules1-1', 'rules2-1', 'rules2-2', 'rules2-3'],
                          await getActiveRules());
+    chrome.test.assertEq([2, 3], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function disableRulesets() {
@@ -60,6 +75,8 @@ chrome.test.runTests([
         {disableRulesetIds: ['rules1', 'rules2']});
 
     chrome.test.assertEq([], await getActiveRules());
+    chrome.test.assertEq([2, 3], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function enableRuleset1Rule() {
@@ -68,6 +85,8 @@ chrome.test.runTests([
     await updateStaticRules({rulesetId: 'rules1', enableRuleIds: [3]});
 
     chrome.test.assertEq([], await getActiveRules());
+    chrome.test.assertEq([2], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function disableRuleset2Rules() {
@@ -76,6 +95,8 @@ chrome.test.runTests([
     await updateStaticRules({rulesetId: 'rules2', disableRuleIds: [2, 3]});
 
     chrome.test.assertEq([], await getActiveRules());
+    chrome.test.assertEq([2], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([2, 3], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function enableRulesetsAgain() {
@@ -86,6 +107,8 @@ chrome.test.runTests([
 
     chrome.test.assertEq(['rules1-1', 'rules1-3', 'rules2-1'],
                          await getActiveRules());
+    chrome.test.assertEq([2], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([2, 3], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function enableRuleset2Rule() {
@@ -94,6 +117,8 @@ chrome.test.runTests([
 
     chrome.test.assertEq(['rules1-1', 'rules1-3', 'rules2-1', 'rules2-2'],
                          await getActiveRules());
+    chrome.test.assertEq([2], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([3], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function disableInvalidRulesetRules() {
@@ -103,6 +128,8 @@ chrome.test.runTests([
 
     chrome.test.assertEq(['rules1-1', 'rules1-3', 'rules2-1', 'rules2-2'],
                          await getActiveRules());
+    chrome.test.assertEq([2], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([3], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function disableRulesetRulesExceedingLimits() {
@@ -115,6 +142,8 @@ chrome.test.runTests([
 
     chrome.test.assertEq(['rules1-1', 'rules1-3', 'rules2-1', 'rules2-2'],
                          await getActiveRules());
+    chrome.test.assertEq([2], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([3], await getDisabledRuleIds("rules2"));
     chrome.test.succeed();
   },
   async function updateStaticRulesWithEmptyList() {
@@ -124,6 +153,13 @@ chrome.test.runTests([
 
     chrome.test.assertEq(['rules1-1', 'rules1-3', 'rules2-1', 'rules2-2'],
                          await getActiveRules());
+    chrome.test.assertEq([2], await getDisabledRuleIds("rules1"));
+    chrome.test.assertEq([3], await getDisabledRuleIds("rules2"));
+    chrome.test.succeed();
+  },
+  async function getDisabledRuleIdsErrorForInvalidRuleset() {
+    await verifyGetDisabledRuleIdsError(
+        "invalid_rules", "Error: Invalid ruleset id: invalid_rules.");
     chrome.test.succeed();
   },
 ]);

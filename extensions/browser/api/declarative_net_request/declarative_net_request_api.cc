@@ -384,6 +384,52 @@ void DeclarativeNetRequestUpdateStaticRulesFunction::OnStaticRulesUpdated(
   }
 }
 
+DeclarativeNetRequestGetDisabledRuleIdsFunction::
+    DeclarativeNetRequestGetDisabledRuleIdsFunction() = default;
+DeclarativeNetRequestGetDisabledRuleIdsFunction::
+    ~DeclarativeNetRequestGetDisabledRuleIdsFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeclarativeNetRequestGetDisabledRuleIdsFunction::Run() {
+  using Params = dnr_api::GetDisabledRuleIds::Params;
+  using RulesetID = declarative_net_request::RulesetID;
+  using DNRManifestData = declarative_net_request::DNRManifestData;
+
+  std::u16string error;
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(error.empty());
+
+  const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
+      DNRManifestData::GetManifestIDToRulesetMap(*extension());
+  auto it = public_id_map.find(params->options.ruleset_id);
+  if (it == public_id_map.end()) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        declarative_net_request::kInvalidRulesetIDError,
+        params->options.ruleset_id)));
+  }
+  RulesetID ruleset_id = it->second->id;
+
+  auto* rules_monitor_service =
+      declarative_net_request::RulesMonitorService::Get(browser_context());
+  DCHECK(rules_monitor_service);
+  DCHECK(extension());
+
+  rules_monitor_service->GetDisabledRuleIds(
+      *extension(), std::move(ruleset_id),
+      base::BindOnce(&DeclarativeNetRequestGetDisabledRuleIdsFunction::
+                         OnDisabledRuleIdsRead,
+                     this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DeclarativeNetRequestGetDisabledRuleIdsFunction::OnDisabledRuleIdsRead(
+    std::vector<int> disabled_rule_ids) {
+  Respond(ArgumentList(
+      dnr_api::GetDisabledRuleIds::Results::Create(disabled_rule_ids)));
+}
+
 // static
 bool
     DeclarativeNetRequestGetMatchedRulesFunction::disable_throttling_for_test_ =
