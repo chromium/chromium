@@ -347,6 +347,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         TabGroupModelFilter filter =
                 (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
                         .getCurrentTabModelFilter();
+        if (filter.getTabAt(selectedCardIndex) == null) return;
+        if (filter.getTabAt(hoveredCardIndex) == null) return;
         filter.mergeTabsToGroup(filter.getTabAt(selectedCardIndex).getId(),
                 filter.getTabAt(hoveredCardIndex).getId());
 
