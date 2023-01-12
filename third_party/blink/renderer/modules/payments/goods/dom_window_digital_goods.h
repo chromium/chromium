@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -37,6 +38,7 @@ class DOMWindowDigitalGoods final
   void Trace(Visitor* visitor) const override;
 
  private:
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<payments::mojom::blink::DigitalGoodsFactory> mojo_service_;
 
   static DOMWindowDigitalGoods* FromState(LocalDOMWindow*);

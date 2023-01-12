@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h"
 
 namespace blink {
@@ -97,6 +98,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
   absl::optional<bool> close_called_with_;
   std::unique_ptr<FakeDirectUDPSocket> fake_udp_socket_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Receiver<blink::mojom::blink::DirectUDPSocket> receiver_;
   Member<UDPWritableStreamWrapper> stream_wrapper_;
 };

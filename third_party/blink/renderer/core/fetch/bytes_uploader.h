@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -74,6 +75,7 @@ class CORE_EXPORT BytesUploader
 
   Member<BytesConsumer> consumer_;
   Member<Client> client_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Receiver<network::mojom::blink::ChunkedDataPipeGetter> receiver_;
   mojo::ScopedDataPipeProducerHandle upload_pipe_;
   mojo::SimpleWatcher upload_pipe_watcher_;

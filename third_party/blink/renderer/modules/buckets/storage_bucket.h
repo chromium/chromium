@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -77,6 +78,7 @@ class StorageBucket final : public ScriptWrappable,
   void ContextDestroyed() override;
 
   // BucketHost in the browser process.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<mojom::blink::BucketHost> remote_;
 
   Member<IDBFactory> idb_factory_;

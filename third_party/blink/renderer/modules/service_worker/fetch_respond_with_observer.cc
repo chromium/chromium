@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "v8/include/v8.h"
 
 using blink::mojom::ServiceWorkerResponseError;
@@ -189,6 +190,7 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
   mojo::PendingReceiver<mojom::blink::ServiceWorkerStreamCallback>
       callback_receiver_;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<mojom::blink::ServiceWorkerStreamCallback> callback_;
   std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken> token_;
 };

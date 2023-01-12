@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/display/screen_info.h"
 
@@ -520,6 +521,7 @@ class UserMediaProcessorUnderTest : public UserMediaProcessor {
   }
 
   std::unique_ptr<WebMediaStreamDeviceObserver> media_stream_device_observer_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
   MockMediaStreamVideoCapturerSource* video_source_ = nullptr;

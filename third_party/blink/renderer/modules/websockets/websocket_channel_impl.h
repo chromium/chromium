@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -370,6 +371,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   uint64_t identifier_;
   Member<BlobLoader> blob_loader_;
   WTF::Deque<Message> messages_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   WebSocketMessageChunkAccumulator message_chunks_;
   const Member<ExecutionContext> execution_context_;
 

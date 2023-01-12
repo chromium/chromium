@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_transceiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -307,6 +308,7 @@ class MODULES_EXPORT PeerConnectionTracker
   int32_t current_speed_limit_ = mojom::blink::kSpeedLimitMax;
 
   THREAD_CHECKER(main_thread_);
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost>
       peer_connection_tracker_host_;
   HeapMojoReceiver<blink::mojom::blink::PeerConnectionManager,

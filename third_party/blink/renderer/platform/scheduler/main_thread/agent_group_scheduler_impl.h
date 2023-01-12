@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -68,6 +69,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   MainThreadSchedulerImpl& main_thread_scheduler_;  // Not owned.
   HeapHashSet<WeakMember<Agent>> agents_;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   BrowserInterfaceBrokerProxy broker_;
 };
 

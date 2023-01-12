@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -219,6 +220,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
     bool endpoint_defined;
     WTF::String reported_window_url;
   };
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   WTF::Vector<CoopAccessMonitor> coop_access_monitor_;
 };
 

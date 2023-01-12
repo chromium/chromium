@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -117,7 +118,9 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   // Whether we need to cancel the loading of the main script.
   bool has_cancelled_ = false;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<network::mojom::URLLoader> url_loader_remote_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
 
   // Used to notify the loading stats of main script when PlzDedicatedWorker.

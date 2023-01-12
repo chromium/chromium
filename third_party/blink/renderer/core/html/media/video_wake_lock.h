@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -90,6 +91,7 @@ class CORE_EXPORT VideoWakeLock final
   // `video_element_` owns |this|.
   Member<HTMLVideoElement> video_element_;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<device::mojom::blink::WakeLock> wake_lock_service_;
 
   bool playing_ = false;

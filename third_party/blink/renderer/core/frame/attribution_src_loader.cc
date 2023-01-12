@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -229,6 +230,7 @@ class AttributionSrcLoader::ResourceClient
   absl::optional<AttributionSrcToken> attribution_src_token_;
 
   // Remote used for registering responses with the browser-process.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<mojom::blink::AttributionDataHost> data_host_;
 
   SelfKeepAlive<ResourceClient> keep_alive_{this};

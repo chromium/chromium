@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/cache_storage.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -55,6 +56,7 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
  private:
   Member<InspectedFrames> frames_;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   CachesMap caches_;
 };
 

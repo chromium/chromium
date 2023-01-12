@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -108,6 +109,7 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
 
   const Member<WebLocalFrameImpl> frame_;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<mojom::blink::FindInPageClient> client_;
 
   mojo::AssociatedReceiver<mojom::blink::FindInPage> receiver_{this};
