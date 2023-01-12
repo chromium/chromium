@@ -17,6 +17,16 @@ namespace blink {
 
 class CSSValue;
 
+enum class ParseColorResult {
+  kFailure,
+
+  // The string identified a color keyword.
+  kKeyword,
+
+  // The string identified a valid color.
+  kColor,
+};
+
 class CORE_EXPORT CSSParserFastPaths {
   STATIC_ONLY(CSSParserFastPaths);
 
@@ -37,7 +47,11 @@ class CORE_EXPORT CSSParserFastPaths {
 
   static bool IsValidSystemFont(CSSValueID);
 
-  static CSSValue* ParseColor(const String&, CSSParserMode);
+  // Tries parsing a string as a color, returning the result. Sets `color` if
+  // the result is `kColor`.
+  static ParseColorResult ParseColor(const String&,
+                                     CSSParserMode,
+                                     Color& color);
 
  private:
   static CSSBitset handled_by_keyword_fast_paths_properties_;
