@@ -3254,88 +3254,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
-// Test rejection path in the renderer for promise-delivered perBuyerSignals.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionRejectPromisePerBuyerSignals) {
-  GURL test_url = https_server_->GetURL("a.test", "/echo");
-  url::Origin test_origin = url::Origin::Create(test_url);
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
-  GURL decision_url =
-      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
-
-  const char kAuctionConfigTemplate[] = R"({
-      seller: $1,
-      decisionLogicUrl: $2,
-      perBuyerSignals: new Promise((resolve, reject) => { setTimeout(
-          () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
-  })";
-
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
-}
-
-// Exercise error-handling path in the renderer for promise-delivered
-// perBuyerSignals.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionResolvePromiseInvalidPerBuyerSignals) {
-  GURL test_url = https_server_->GetURL("a.test", "/echo");
-  url::Origin test_origin = url::Origin::Create(test_url);
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
-  GURL decision_url =
-      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
-
-  const char kAuctionConfigTemplate[] = R"({
-      seller: $1,
-      decisionLogicUrl: $2,
-      perBuyerSignals: new Promise((resolve, reject) => { setTimeout(
-          () => { resolve(52); }, 10) }),
-      interestGroupBuyers: [$1]
-  })";
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
-      "'NavigatorAuction': Only objects can be converted to record<K,V> types");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  EXPECT_TRUE(console_observer.Wait());
-  WaitForAccessObserved({});
-}
-
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignalsOrigin) {
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
@@ -3349,90 +3267,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       decisionLogicUrl: 'https://test.com',
       perBuyerSignals: {'https://invalid^&': {a:1}}
   })"));
-  WaitForAccessObserved({});
-}
-
-// Test rejection path in the renderer for promise-delivered perBuyerTimeouts.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionRejectPromisePerBuyerTimeouts) {
-  GURL test_url = https_server_->GetURL("a.test", "/echo");
-  url::Origin test_origin = url::Origin::Create(test_url);
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
-  GURL decision_url =
-      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
-
-  const char kAuctionConfigTemplate[] = R"({
-      seller: $1,
-      decisionLogicUrl: $2,
-      perBuyerTimeouts: new Promise((resolve, reject) => { setTimeout(
-          () => { reject('boo'); }, 10) }),
-      interestGroupBuyers: [$1]
-  })";
-
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  WaitForAccessObserved({});
-}
-
-// Exercise error-handling path in the renderer for promise-delivered
-// perBuyerSignals.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAdAuctionResolvePromiseInvalidPerBuyerTimeouts) {
-  GURL test_url = https_server_->GetURL("a.test", "/echo");
-  url::Origin test_origin = url::Origin::Create(test_url);
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
-  GURL decision_url =
-      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
-  // Note: at present at least one bid must be made for promise checking to
-  // be guaranteed to happen; if the auction is (effectively) empty whether
-  // it happens or not is timing-dependent.
-  EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*execution_mode=*/
-          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
-
-  const char kAuctionConfigTemplate[] = R"({
-      seller: $1,
-      decisionLogicUrl: $2,
-      perBuyerTimeouts: new Promise((resolve, reject) => { setTimeout(
-          () => { resolve({'http://b.com': 52}); }, 10) }),
-      interestGroupBuyers: [$1]
-  })";
-
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
-      "'NavigatorAuction': perBuyerTimeouts buyer 'http://b.com' for "
-      "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
-      "or a valid https origin.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
-  EXPECT_TRUE(console_observer.Wait());
   WaitForAccessObserved({});
 }
 
@@ -8049,7 +7883,7 @@ function validateAuctionSignals(auctionSignals) {
 function validatePerBuyerSignals(perBuyerSignals) {
   const perBuyerSignalsJson = JSON.stringify(perBuyerSignals);
   if (perBuyerSignalsJson !== '5')
-    throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
+    throw 'Wrong perBuyerSignas ' + perBuyerSignalsJson;
 }
 
 function validateTrustedBiddingSignals(trustedBiddingSignals) {
@@ -8078,10 +7912,10 @@ function validateAdMetadata(adMetadata) {
 function validateAuctionConfig(auctionConfig) {
   const auctionSignalsJSON = JSON.stringify(auctionConfig.auctionSignals);
   if (auctionSignalsJSON !== '3')
-    throw 'Wrong auctionSignals ' + auctionSignalsJSON;
+    throw 'Wrong auctionSignals ' + auctionConfig.auctionSignalsJSON;
   const sellerSignalsJSON = JSON.stringify(auctionConfig.sellerSignals);
   if (sellerSignalsJSON !== '4')
-    throw 'Wrong sellerSignals ' + sellerSignalsJSON;
+    throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
   const perBuyerSignalsJson = JSON.stringify(auctionConfig.perBuyerSignals);
   if (!perBuyerSignalsJson.includes('a.test') ||
       !perBuyerSignalsJson.includes('5')) {
@@ -8147,8 +7981,8 @@ function validateAuctionConfig(auctionConfig) {
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
 }
 
-// Test for auctionSignals, perBuyerSignals, and sellerSignals being passed to
-// runAdAuction as promises.
+// Test for auctionSignals and sellerSignals being passed to runAdAuction
+// as promises.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, PromiseSignals) {
   // These scripts are generated by this test.
   constexpr char kBiddingLogicPath[] =
@@ -8168,8 +8002,6 @@ function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     unusedBrowserSignals) {
   validateAuctionSignals(auctionSignals);
-  if (perBuyerSignals !== 5)
-    throw 'Wrong perBuyerSignals ' + JSON.stringify(perBuyerSignals);
   const ad = interestGroup.ads[0];
   return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
 }
@@ -8193,22 +8025,10 @@ function scoreAd(
 function validateAuctionConfig(auctionConfig) {
   const auctionSignalsJSON = JSON.stringify(auctionConfig.auctionSignals);
   if (auctionSignalsJSON !== '3')
-    throw 'Wrong auctionSignals ' + auctionSignalsJSON;
+    throw 'Wrong auctionSignals ' + auctionConfig.auctionSignalsJSON;
   const sellerSignalsJSON = JSON.stringify(auctionConfig.sellerSignals);
   if (sellerSignalsJSON !== '4')
-    throw 'Wrong sellerSignals ' + sellerSignalsJSON;
-  let ok = false;
-  const perBuyerSignalsJson = JSON.stringify(auctionConfig.perBuyerSignals);
-  for (key in auctionConfig.perBuyerSignals) {
-    if (key.startsWith("https://a.test")) {
-      ok = (auctionConfig.perBuyerSignals[key] === 5);
-    } else {
-      throw 'Wrong key in perBuyerSignals ' + perBuyerSignalsJson;
-    }
-  }
-  if (!ok) {
-    throw 'Wrong perBuyerSignals ' + perBuyerSignalsJson;
-  }
+    throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
 }
 )";
 
@@ -8257,10 +8077,7 @@ function validateAuctionConfig(auctionConfig) {
       setTimeout(
           () => { resolve(4); }, 1)
     }),
-    perBuyerSignals: new Promise((resolve, reject) => {
-      setTimeout(
-          () => { resolve({$1: 5}); }, 1)
-    })
+    perBuyerSignals: {$1: 5}
   });
 })())",
                       test_origin,
@@ -8310,10 +8127,10 @@ function scoreAd(
 function validateAuctionConfig(auctionConfig) {
   const auctionSignalsJSON = JSON.stringify(auctionConfig.auctionSignals);
   if (auctionSignalsJSON !== '3')
-    throw 'Wrong auctionSignals ' + auctionSignalsJSON;
+    throw 'Wrong auctionSignals ' + auctionConfig.auctionSignalsJSON;
   const sellerSignalsJSON = JSON.stringify(auctionConfig.sellerSignals);
   if (sellerSignalsJSON !== '4')
-    throw 'Wrong sellerSignals ' + sellerSignalsJSON;
+    throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
 }
 )";
 
@@ -8371,8 +8188,8 @@ function validateAuctionConfig(auctionConfig) {
             EvalJs(shell(), script).error);
 }
 
-// Test for auctionSignals, perBuyerSignals, and sellerSignals being passed to
-// runAdAuction as promises... which resolve to nothing.
+// Test for auctionSignals and sellerSignals being passed to runAdAuction
+// as promises... which resolve to nothing.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, PromiseSignalsNothing) {
   // These scripts are generated by this test.
   constexpr char kBiddingLogicPath[] =
@@ -8389,8 +8206,6 @@ function generateBid(
     unusedBrowserSignals) {
   validateAuctionSignals(auctionSignals);
   const ad = interestGroup.ads[0];
-  if (perBuyerSignals !== null)
-    throw 'perBuyerSignals in generateBid not null!';
   return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
 }
 
@@ -8414,8 +8229,6 @@ function validateAuctionConfig(auctionConfig) {
     throw 'Have auctionSignals in scoreAd auctionConfig!';
   if ('sellerSignals' in auctionConfig)
     throw 'Have sellerSignals in scoreAd auctionConfig!';
-  if ('perBuyerSignals' in auctionConfig)
-    throw 'Have perBuyerSignals in scoreAd auctionConfig!';
 }
 )";
 
@@ -8464,117 +8277,7 @@ function validateAuctionConfig(auctionConfig) {
       setTimeout(
           () => { resolve(undefined); }, 1)
     }),
-    perBuyerSignals: new Promise((resolve, reject) => {
-      setTimeout(
-          () => { resolve(undefined); }, 1)
-    }),
-  });
-})())",
-                      test_origin,
-                      https_server_->GetURL("a.test", kDecisionLogicPath)))
-               .ExtractString()),
-      &observer);
-
-  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
-}
-
-// Test for perBuyerTimeouts being passed to runAdAuction as promises.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, PromiseBuyerTimeouts) {
-  // These scripts are generated by this test.
-  constexpr char kBiddingLogicPath[] =
-      "/interest_group/test_generated_bidding_argument_validator.js";
-  constexpr char kDecisionLogicPath[] =
-      "/interest_group/test_generated_decision_argument_validator.js";
-  const GURL test_url = https_server_->GetURL("a.test", "/echo");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  url::Origin test_origin = url::Origin::Create(test_url);
-
-  // In the below JavaScript, if fields are incorrectly passed in as a string
-  // ("2") instead of a number (2), JSON.stringify() will wrap it in another
-  // layer of quotes, causing the test to fail.
-
-  constexpr char kBiddingLogicScript[] = R"(
-function generateBid(
-    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-    unusedBrowserSignals) {
-  const ad = interestGroup.ads[0];
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
-}
-
-)";
-
-  constexpr char kDecisionLogicScript[] = R"(
-function scoreAd(
-    adMetadata, bid, auctionConfig, unusedTrustedScoringSignals,
-    unusedBrowserSignals) {
-  validateAuctionConfig(auctionConfig);
-  return bid;
-}
-
-function validateAuctionConfig(auctionConfig) {
-  const perBuyerTimeoutsJSON = JSON.stringify(auctionConfig.perBuyerTimeouts);
-  let ok = 0;
-  for (key in auctionConfig.perBuyerTimeouts) {
-    if (key.startsWith("https://a.test") &&
-        auctionConfig.perBuyerTimeouts[key] === 50) {
-      ++ok;
-    } else if (key.startsWith("https://b.test") &&
-        auctionConfig.perBuyerTimeouts[key] === 60) {
-      ++ok;
-    } else if (key === '*' &&
-        auctionConfig.perBuyerTimeouts[key] === 56) {
-      ++ok;
-    } else {
-      throw 'Wrong key in perBuyerTimeouts ' + perBuyerTimeoutsJSON;
-    }
-  }
-  if (ok !== 3) {
-    throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJSON;
-  }
-}
-)";
-
-  network_responder_->RegisterNetworkResponse(
-      kBiddingLogicPath, kBiddingLogicScript, "application/javascript");
-  network_responder_->RegisterNetworkResponse(
-      kDecisionLogicPath, kDecisionLogicScript, "application/javascript");
-
-  EXPECT_EQ(
-      "done",
-      EvalJs(shell(), JsReplace(
-                          R"(
-(async function() {
-  try {
-    await navigator.joinAdInterestGroup(
-        {
-          name: 'cars',
-          owner: $1,
-          biddingLogicUrl: $2,
-          ads: [{renderUrl:"https://example.com/render", metadata:2}],
-        },
-        /*joinDurationSec=*/100);
-  } catch (e) {
-    return e.toString();
-  }
-  return 'done';
-})())",
-                          test_origin,
-                          https_server_->GetURL("a.test", kBiddingLogicPath))));
-
-  TestFencedFrameURLMappingResultObserver observer;
-  ConvertFencedFrameURNToURL(
-      GURL(EvalJs(shell(),
-                  JsReplace(
-                      R"(
-(async function() {
-  return await navigator.runAdAuction({
-    seller: $1,
-    decisionLogicUrl: $2,
-    interestGroupBuyers: [$1],
-    perBuyerTimeouts: new Promise((resolve, reject) => {
-      setTimeout(
-          () => { resolve({$1: 50, 'https://b.test': 60, '*': 56}); }, 1)
-    })
+    perBuyerSignals: {$1: 5}
   });
 })())",
                       test_origin,

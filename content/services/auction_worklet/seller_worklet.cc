@@ -152,13 +152,10 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
     return false;
   }
 
-  DCHECK(!auction_ad_config_non_shared_params.per_buyer_signals.is_promise());
-  if (auction_ad_config_non_shared_params.per_buyer_signals.value()
-          .has_value()) {
+  if (auction_ad_config_non_shared_params.per_buyer_signals.has_value()) {
     v8::Local<v8::Object> per_buyer_value = v8::Object::New(isolate);
     for (const auto& kv :
-         auction_ad_config_non_shared_params.per_buyer_signals.value()
-             .value()) {
+         auction_ad_config_non_shared_params.per_buyer_signals.value()) {
       if (!v8_helper->InsertJsonValue(context, kv.first.Serialize(), kv.second,
                                       per_buyer_value)) {
         return false;
@@ -168,12 +165,10 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   }
 
   v8::Local<v8::Object> per_buyer_timeouts;
-  DCHECK(!auction_ad_config_non_shared_params.buyer_timeouts.is_promise());
-  const blink::AuctionConfig::BuyerTimeouts& buyer_timeouts =
-      auction_ad_config_non_shared_params.buyer_timeouts.value();
-  if (buyer_timeouts.per_buyer_timeouts.has_value()) {
+  if (auction_ad_config_non_shared_params.per_buyer_timeouts.has_value()) {
     per_buyer_timeouts = v8::Object::New(isolate);
-    for (const auto& kv : buyer_timeouts.per_buyer_timeouts.value()) {
+    for (const auto& kv :
+         auction_ad_config_non_shared_params.per_buyer_timeouts.value()) {
       if (!v8_helper->InsertJsonValue(
               context, kv.first.Serialize(),
               base::NumberToString(kv.second.InMilliseconds()),
@@ -182,13 +177,14 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
       }
     }
   }
-  if (buyer_timeouts.all_buyers_timeout.has_value()) {
+  if (auction_ad_config_non_shared_params.all_buyers_timeout.has_value()) {
     if (per_buyer_timeouts.IsEmpty())
       per_buyer_timeouts = v8::Object::New(isolate);
     if (!v8_helper->InsertJsonValue(
             context, "*",
             base::NumberToString(
-                buyer_timeouts.all_buyers_timeout.value().InMilliseconds()),
+                auction_ad_config_non_shared_params.all_buyers_timeout.value()
+                    .InMilliseconds()),
             per_buyer_timeouts)) {
       return false;
     }

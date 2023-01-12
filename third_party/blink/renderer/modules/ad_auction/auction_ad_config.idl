@@ -15,11 +15,8 @@ dictionary AuctionAdConfig {
   USVString directFromSellerSignals;
   unsigned long long sellerTimeout;
   unsigned short sellerExperimentGroupId;
-  // Really (record<USVString, any> or Promise<record<USVString, any>>)
-  any perBuyerSignals;
-  // Really (record<USVString, unsigned long long> or
-  //         Promise<record<USVString, unsigned long long>>)
-  any perBuyerTimeouts;
+  record<USVString, any> perBuyerSignals;
+  record<USVString, unsigned long long> perBuyerTimeouts;
   record<USVString, unsigned short> perBuyerGroupLimits;
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
   record<USVString, record<USVString, double>> perBuyerPrioritySignals;

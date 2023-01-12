@@ -2500,18 +2500,15 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   per_buyer_signals[url::Origin::Create(GURL("https://b.com"))] =
       R"({"signals_b": "B"})";
   auction_ad_config_non_shared_params_.per_buyer_signals =
-      blink::AuctionConfig::MaybePromisePerBuyerSignals::FromValue(
-          std::move(per_buyer_signals));
+      std::move(per_buyer_signals);
 
-  blink::AuctionConfig::BuyerTimeouts buyer_timeouts;
-  buyer_timeouts.per_buyer_timeouts.emplace();
-  buyer_timeouts.per_buyer_timeouts
-      .value()[url::Origin::Create(GURL("https://a.com"))] =
+  base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
+  per_buyer_timeouts[url::Origin::Create(GURL("https://a.com"))] =
       base::Milliseconds(100);
-  buyer_timeouts.all_buyers_timeout = base::Milliseconds(150);
-  auction_ad_config_non_shared_params_.buyer_timeouts =
-      blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
-          std::move(buyer_timeouts));
+  auction_ad_config_non_shared_params_.per_buyer_timeouts =
+      std::move(per_buyer_timeouts);
+  auction_ad_config_non_shared_params_.all_buyers_timeout =
+      base::Milliseconds(150);
 
   auction_ad_config_non_shared_params_.per_buyer_priority_signals = {
       {url::Origin::Create(GURL("https://a.com")), {{"signals_c", 0.5}}}};
@@ -2579,36 +2576,25 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
       /*expected_report_url=*/absl::nullopt);
 
-  {
-    blink::AuctionConfig::BuyerTimeouts buyer_timeouts;
-    buyer_timeouts.per_buyer_timeouts.emplace();
-    auction_ad_config_non_shared_params_.buyer_timeouts =
-        blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
-            std::move(buyer_timeouts));
+  base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
+  auction_ad_config_non_shared_params_.per_buyer_timeouts =
+      std::move(per_buyer_timeouts);
 
-    RunReportResultCreatedScriptExpectingResult(
-        "auctionConfig", /*extra_code=*/std::string(),
-        R"({"seller":"https://example.com",)"
-        R"("decisionLogicUrl":"https://example.com/auction.js",)"
-        R"("perBuyerTimeouts":{}})",
-        /*expected_report_url=*/absl::nullopt);
-  }
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", /*extra_code=*/std::string(),
+      R"({"seller":"https://example.com",)"
+      R"("decisionLogicUrl":"https://example.com/auction.js",)"
+      R"("perBuyerTimeouts":{}})",
+      /*expected_report_url=*/absl::nullopt);
 
-  {
-    blink::AuctionConfig::BuyerTimeouts buyer_timeouts;
-    buyer_timeouts.per_buyer_timeouts.emplace();
-    buyer_timeouts.all_buyers_timeout = base::Milliseconds(150);
-    auction_ad_config_non_shared_params_.buyer_timeouts =
-        blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
-            std::move(buyer_timeouts));
-
-    RunReportResultCreatedScriptExpectingResult(
-        "auctionConfig", /*extra_code=*/std::string(),
-        R"({"seller":"https://example.com",)"
-        R"("decisionLogicUrl":"https://example.com/auction.js",)"
-        R"("perBuyerTimeouts":{"*":150}})",
-        /*expected_report_url=*/absl::nullopt);
-  }
+  auction_ad_config_non_shared_params_.all_buyers_timeout =
+      base::Milliseconds(150);
+  RunReportResultCreatedScriptExpectingResult(
+      "auctionConfig", /*extra_code=*/std::string(),
+      R"({"seller":"https://example.com",)"
+      R"("decisionLogicUrl":"https://example.com/auction.js",)"
+      R"("perBuyerTimeouts":{"*":150}})",
+      /*expected_report_url=*/absl::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultExperimentGroupIdParam) {
