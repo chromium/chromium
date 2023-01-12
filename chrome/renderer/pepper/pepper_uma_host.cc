@@ -52,7 +52,7 @@ const char* const kAllowedHistogramPrefixes[] = {
 };
 
 const base::FilePath::CharType* const kAllowedPluginBaseNames[] = {
-    ChromeContentClient::kPDFPluginPath,
+    ChromeContentClient::kPDFInternalPluginPath,
 };
 
 std::string HashPrefix(const std::string& histogram) {

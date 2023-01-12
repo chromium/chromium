@@ -59,11 +59,6 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
 
-#if BUILDFLAG(ENABLE_PDF)
-constexpr base::FilePath::CharType kPdfViewerExtensionPath[] =
-    FILE_PATH_LITERAL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/");
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 }  // namespace
 
 class PluginInfoHostImplTest : public InProcessBrowserTest {
@@ -124,13 +119,16 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, CoverAllPlugins) {
 #endif  // BUILDFLAG_ENABLE_NACL)
 
 #if BUILDFLAG(ENABLE_PDF)
-  EXPECT_THAT(plugins,
-              Contains(Field("path", &WebPluginInfo::path,
-                             base::FilePath(kPdfViewerExtensionPath))));
   EXPECT_THAT(
       plugins,
-      Contains(Field("path", &WebPluginInfo::path,
-                     base::FilePath(ChromeContentClient ::kPDFPluginPath))));
+      Contains(
+          Field("path", &WebPluginInfo::path,
+                base::FilePath(ChromeContentClient::kPDFExtensionPluginPath))));
+  EXPECT_THAT(
+      plugins,
+      Contains(
+          Field("path", &WebPluginInfo::path,
+                base::FilePath(ChromeContentClient ::kPDFInternalPluginPath))));
   expected_plugin_count += 2;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -282,7 +280,8 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
 
   // `WebPluginInfo` fields.
   EXPECT_EQ(kPluginName, plugin_info->plugin.name);
-  EXPECT_EQ(base::FilePath(kPdfViewerExtensionPath), plugin_info->plugin.path);
+  EXPECT_EQ(base::FilePath(ChromeContentClient::kPDFExtensionPluginPath),
+            plugin_info->plugin.path);
   EXPECT_EQ(u"", plugin_info->plugin.version);
   EXPECT_EQ(u"", plugin_info->plugin.desc);
   EXPECT_EQ(WebPluginInfo::PLUGIN_TYPE_BROWSER_PLUGIN,
@@ -338,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
 
   // `WebPluginInfo` fields.
   EXPECT_EQ(kPluginName, plugin_info->plugin.name);
-  EXPECT_EQ(base::FilePath(ChromeContentClient::kPDFPluginPath),
+  EXPECT_EQ(base::FilePath(ChromeContentClient::kPDFInternalPluginPath),
             plugin_info->plugin.path);
   EXPECT_EQ(u"", plugin_info->plugin.version);
   EXPECT_EQ(u"Portable Document Format", plugin_info->plugin.desc);
