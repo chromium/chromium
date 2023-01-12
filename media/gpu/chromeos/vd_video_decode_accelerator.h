@@ -156,6 +156,12 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   bool is_encrypted_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Value of |low_delay| from the most recent initialization (via either Create
+  // or Initialize(const Config&, Client*, bool). When re-initialization happens
+  // via the VideoDecodeAccelerator interface (where we cannot pass
+  // |low_delay|), we use this value.
+  bool low_delay_ = false;
+
   // Main task runner and its sequence checker. All methods should be called
   // on it.
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
