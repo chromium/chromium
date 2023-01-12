@@ -161,6 +161,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAllowNewIncognitoTabIntents,
     &kAndroidScrollOptimizations,
     &kAndroidSearchEngineChoiceNotification,
+    &kAndroidImprovedBookmarks,
     &kAnimatedImageDragShadow,
     &kAssistantConsentSimplifiedText,
     &kAssistantConsentV2,
@@ -434,6 +435,10 @@ BASE_FEATURE(kAndroidScrollOptimizations,
 BASE_FEATURE(kAndroidSearchEngineChoiceNotification,
              "AndroidSearchEngineChoiceNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidImprovedBookmarks,
+             "AndroidImprovedBookmarks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",

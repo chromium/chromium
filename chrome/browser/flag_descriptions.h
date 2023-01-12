@@ -1969,6 +1969,8 @@ extern const char kAndroidSurfaceControlDescription[];
 
 extern const char kAnimatedImageDragShadowName[];
 extern const char kAnimatedImageDragShadowDescription[];
+extern const char kAndroidImprovedBookmarksName[];
+extern const char kAndroidImprovedBookmarksDescription[];
 
 extern const char kAssistantIntentTranslateInfoName[];
 extern const char kAssistantIntentTranslateInfoDescription[];

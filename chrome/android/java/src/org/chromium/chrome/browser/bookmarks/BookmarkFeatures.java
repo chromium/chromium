@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 
 /**
  * Self-documenting feature class for bookmarks.
@@ -52,6 +53,9 @@ public class BookmarkFeatures {
     static final String BOOKMARK_COMPACT_VISUALS_ENABLED = "bookmark_compact_visuals_enabled";
     static final String AUTODISMISS_ENABLED_PARAM_NAME = "autodismiss_enabled";
     static final String AUTODISMISS_LENGTH_PARAM_NAME = "autodismiss_length_ms";
+
+    private static final MutableFlagWithSafeDefault sAndroidImprovedBookmarksFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS, false);
 
     public static boolean isImprovedSaveFlowEnabled() {
         return FeatureList.isInitialized()
@@ -105,5 +109,13 @@ public class BookmarkFeatures {
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.BOOKMARKS_REFRESH, BOOKMARK_COMPACT_VISUALS_ENABLED,
                         BOOKMARK_COMPACT_VISUALS_ENABLED_DEFAULT);
+    }
+
+    /**
+     * More visual changes to the bookmarks surfaces, with more thumbnails and a focus on search
+     * instead of folders/hierarchy.
+     */
+    public static boolean isAndroidImprovedBookmarksEnabled() {
+        return sAndroidImprovedBookmarksFlag.isEnabled();
     }
 }

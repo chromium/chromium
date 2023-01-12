@@ -60714,6 +60714,7 @@ from previous Chrome versions.
   <int value="-131886819"
       label="AutofillEnableMerchantBoundVirtualCards:enabled"/>
   <int value="-131673218" label="FileHandlingAPI:disabled"/>
+  <int value="-131536336" label="AndroidImprovedBookmarks:enabled"/>
   <int value="-131257916" label="OmniboxCompactSuggestions:disabled"/>
   <int value="-130318058" label="ExoGamepadVibration:enabled"/>
   <int value="-129823932" label="HardwareSecureDecryptionFallback:disabled"/>
@@ -61353,6 +61354,7 @@ from previous Chrome versions.
   <int value="237570976" label="CommandLineOnNonRooted:disabled"/>
   <int value="237964589"
       label="enable-manual-fallback-for-password-saving:disabled"/>
+  <int value="238376121" label="AndroidImprovedBookmarks:disabled"/>
   <int value="239330938" label="LauncherAppSort:enabled"/>
   <int value="240856309" label="MimeHandlerViewInCrossProcessFrame:enabled"/>
   <int value="241187301" label="BrowserTouchBar:disabled"/>

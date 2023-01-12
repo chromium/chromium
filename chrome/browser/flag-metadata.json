@@ -147,6 +147,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "android-improved-bookmarks",
+    "owners": ["wylieb", "skym", "bttk"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "android-media-picker",
     "owners": [ "finnur@google.com", "beverloo@google.com" ],
     "expiry_milestone": 140

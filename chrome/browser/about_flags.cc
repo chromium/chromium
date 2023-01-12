@@ -9416,6 +9416,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestServerCardInsteadOfLocalCard)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-improved-bookmarks",
+     flag_descriptions::kAndroidImprovedBookmarksName,
+     flag_descriptions::kAndroidImprovedBookmarksDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBookmarksRefresh)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

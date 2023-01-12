@@ -3437,6 +3437,11 @@ const char kAndroidSurfaceControlDescription[] =
     " DisplayCompositor on Android. This feature is only available on "
     " android Q+ devices";
 
+const char kAndroidImprovedBookmarksName[] = "Android Visual Bookmark Manager";
+const char kAndroidImprovedBookmarksDescription[] =
+    "More visual changes to the bookmarks surfaces, with more thumbnails and a "
+    "focus on search instead of folders/hierarchy";
+
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =
