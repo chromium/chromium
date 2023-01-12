@@ -72,11 +72,25 @@
         user-select: none;
       }
 
+      :host-context([chrome-refresh-2023]):host {
+        border-radius: 100px;
+        line-height: 20px;
+      }
+
       :host([has-icon_]) {
         --iron-icon-height: 16px;
         --iron-icon-width: 16px;
         gap: 8px;
         padding: 8px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([has-icon_]) {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        padding-block-end: 8px;
+        padding-block-start: 8px;
+        padding-inline-end: 16px;
+        padding-inline-start: 12px;
       }
 
       :host-context(.focus-outline-visible):host(:focus) {

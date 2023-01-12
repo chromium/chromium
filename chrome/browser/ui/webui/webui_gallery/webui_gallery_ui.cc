@@ -11,6 +11,7 @@
 #include "chrome/grit/webui_gallery_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -29,6 +30,10 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameAncestors,
       "frame-ancestors 'self';");
+
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 }
 
 }  // namespace

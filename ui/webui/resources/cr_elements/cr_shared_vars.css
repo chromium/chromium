@@ -231,3 +231,7 @@ html {
   --cr-form-field-label-height: 1em;
   --cr-form-field-label-line-height: 1;
 }
+
+html[chrome-refresh-2023] {
+  --cr-button-height: 36px;
+}
