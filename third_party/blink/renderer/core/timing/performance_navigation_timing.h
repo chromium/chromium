@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
 namespace blink {
@@ -21,7 +20,6 @@ class DocumentLoadTiming;
 class LocalDOMWindow;
 class ExecutionContext;
 class ResourceTimingInfo;
-class ResourceLoadTiming;
 
 class CORE_EXPORT PerformanceNavigationTiming final
     : public PerformanceResourceTiming,
@@ -30,20 +28,17 @@ class CORE_EXPORT PerformanceNavigationTiming final
   friend class PerformanceNavigationTimingTest;
 
  public:
-  PerformanceNavigationTiming(LocalDOMWindow*,
-                              ResourceTimingInfo*,
+  PerformanceNavigationTiming(LocalDOMWindow&,
+                              ResourceTimingInfo&,
                               base::TimeTicks time_origin,
                               bool cross_origin_isolated_capability,
-                              HeapVector<Member<PerformanceServerTiming>>,
-                              network::mojom::NavigationDeliveryType);
+                              HeapVector<Member<PerformanceServerTiming>>);
   ~PerformanceNavigationTiming() override;
 
   // Attributes inherited from PerformanceEntry.
   DOMHighResTimeStamp duration() const override;
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
-
-  AtomicString initiatorType() const override;
 
   // PerformanceNavigationTiming's unique attributes.
   DOMHighResTimeStamp unloadEventStart() const;
@@ -75,26 +70,16 @@ class CORE_EXPORT PerformanceNavigationTiming final
   static AtomicString GetNavigationType(WebNavigationType);
 
   const DocumentTiming* GetDocumentTiming() const;
+
   DocumentLoader* GetDocumentLoader() const;
+
   DocumentLoadTiming* GetDocumentLoadTiming() const;
 
-  ResourceLoadTiming* GetResourceLoadTiming() const override;
-  bool AllowTimingDetails() const override;
-  bool DidReuseConnection() const override;
-  uint64_t GetTransferSize() const override;
-  uint64_t GetEncodedBodySize() const override;
-  uint64_t GetDecodedBodySize() const override;
-
-  bool AllowRedirectDetails() const override;
-  bool AllowNegativeValue() const override;
-  AtomicString AlpnNegotiatedProtocol() const override;
-  AtomicString ConnectionInfo() const override;
+  bool AllowNavigationRedirectDetails() const;
 
   ScriptValue NotRestoredReasonsBuilder(
       ScriptState* script_state,
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
-
-  scoped_refptr<ResourceTimingInfo> resource_timing_info_;
 };
 }  // namespace blink
 

@@ -662,7 +662,9 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
                       WebFeature::kPerformanceServerTiming);
   }
 
-  result->render_blocking_status = info.RenderBlockingStatus();
+  result->render_blocking_status =
+      info.RenderBlockingStatus() == RenderBlockingStatusType::kBlocking;
+
   result->content_type = g_empty_string;
   if (PassesCORSConditions(final_response, destination_origin,
                            info.RequestMode(), redirect_chain)) {

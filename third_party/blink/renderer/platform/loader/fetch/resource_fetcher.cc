@@ -677,8 +677,9 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     final_response.SetEncodedDataLength(0);
     info->SetFinalResponse(final_response);
     info->SetLoadResponseEnd(info->InitialTime());
-    if (render_blocking_behavior == RenderBlockingBehavior::kBlocking)
-      info->SetRenderBlockingStatus(/*render_blocking_status=*/true);
+    if (render_blocking_behavior == RenderBlockingBehavior::kBlocking) {
+      info->SetRenderBlockingStatus(RenderBlockingStatusType::kBlocking);
+    }
     scheduled_resource_timing_reports_.push_back(std::move(info));
     if (!resource_timing_report_timer_.IsActive())
       resource_timing_report_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
@@ -1454,8 +1455,9 @@ void ResourceFetcher::StorePerformanceTimingInitiatorInformation(
       resource->GetResourceRequest().GetRequestDestination(),
       resource->GetResourceRequest().GetMode());
 
-  if (render_blocking_behavior == RenderBlockingBehavior::kBlocking)
-    info->SetRenderBlockingStatus(/*render_blocking_status=*/true);
+  if (render_blocking_behavior == RenderBlockingBehavior::kBlocking) {
+    info->SetRenderBlockingStatus(RenderBlockingStatusType::kBlocking);
+  }
 
   resource_timing_info_map_.insert(resource, std::move(info));
 }

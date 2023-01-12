@@ -42,12 +42,11 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_server_timing.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
-enum RenderBlockingStatusType { kBlocking, kNonBlocking };
 
 class ResourceLoadTiming;
 
@@ -56,24 +55,12 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   friend class PerformanceResourceTimingTest;
 
  public:
-  // This constructor is for PerformanceNavigationTiming.
-  // Related doc: https://goo.gl/uNecAj.
-  PerformanceResourceTiming(
-      const AtomicString& name,
-      base::TimeTicks time_origin,
-      bool cross_origin_isolated_capability,
-      mojom::blink::CacheState cache_state,
-      bool is_secure_transport,
-      HeapVector<Member<PerformanceServerTiming>> server_timing,
-      ExecutionContext* context,
-      network::mojom::NavigationDeliveryType delivery_type,
-      DOMWindow* source);
   PerformanceResourceTiming(const mojom::blink::ResourceTimingInfo&,
                             base::TimeTicks time_origin,
                             bool cross_origin_isolated_capability,
                             const AtomicString& initiator_type,
                             ExecutionContext* context,
-                            DOMWindow* source);
+                            LocalDOMWindow* source);
   ~PerformanceResourceTiming() override;
 
   const AtomicString& entryType() const override;
@@ -106,13 +93,24 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   void Trace(Visitor*) const override;
 
  protected:
+  // This constructor is for PerformanceNavigationTiming.
+  // Related doc: https://goo.gl/uNecAj.
+  PerformanceResourceTiming(
+      ResourceTimingInfo& info,
+      const AtomicString& initiator_type,
+      base::TimeTicks time_origin,
+      bool cross_origin_isolated_capability,
+      HeapVector<Member<PerformanceServerTiming>> server_timing,
+      LocalDOMWindow& source_window);
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
   base::TimeTicks TimeOrigin() const { return time_origin_; }
   bool CrossOriginIsolatedCapability() const {
     return cross_origin_isolated_capability_;
   }
-  mojom::blink::CacheState CacheState() const { return cache_state_; }
+  const scoped_refptr<ResourceTimingInfo> Info() const {
+    return resource_timing_info_;
+  }
   static uint64_t GetTransferSize(uint64_t encoded_body_size,
                                   mojom::blink::CacheState cache_state);
 
@@ -125,48 +123,13 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
 
   double WorkerReady() const;
 
-  virtual AtomicString AlpnNegotiatedProtocol() const;
-  virtual AtomicString ConnectionInfo() const;
-
-  virtual ResourceLoadTiming* GetResourceLoadTiming() const;
-  virtual bool AllowTimingDetails() const;
-  virtual bool DidReuseConnection() const;
-  virtual uint64_t GetTransferSize() const;
-  virtual uint64_t GetEncodedBodySize() const;
-  virtual uint64_t GetDecodedBodySize() const;
-
-  virtual mojom::blink::RequestContextType ContextType() const;
-  virtual base::TimeTicks ResponseEnd() const;
-  virtual base::TimeTicks LastRedirectEndTime() const;
-  virtual bool AllowRedirectDetails() const;
-  virtual bool AllowNegativeValue() const;
-  virtual bool IsSecureTransport() const;
-
   // Do not access private fields directly. Use getter methods.
   AtomicString initiator_type_;
-  AtomicString delivery_type_;
-  AtomicString alpn_negotiated_protocol_;
-  AtomicString connection_info_;
-  AtomicString content_type_;
-  RenderBlockingStatusType render_blocking_status_;
   base::TimeTicks time_origin_;
   bool cross_origin_isolated_capability_;
-  scoped_refptr<ResourceLoadTiming> timing_;
-  base::TimeTicks last_redirect_end_time_;
-  base::TimeTicks response_end_;
-  mojom::blink::RequestContextType context_type_ =
-      mojom::blink::RequestContextType::UNSPECIFIED;
-  network::mojom::RequestDestination request_destination_ =
-      network::mojom::RequestDestination::kEmpty;
-  mojom::blink::CacheState cache_state_ = mojom::blink::CacheState::kNone;
-  const uint64_t encoded_body_size_ = 0;
-  const uint64_t decoded_body_size_ = 0;
-  const uint16_t response_status_ = 0;
-  const bool did_reuse_connection_ = false;
-  const bool allow_timing_details_ = false;
-  const bool allow_redirect_details_ = false;
-  const bool allow_negative_value_ = false;
-  const bool is_secure_transport_ = false;
+
+  scoped_refptr<ResourceTimingInfo> resource_timing_info_;
+  scoped_refptr<ResourceLoadTiming> resource_load_timing_;
   HeapVector<Member<PerformanceServerTiming>> server_timing_;
 };
 

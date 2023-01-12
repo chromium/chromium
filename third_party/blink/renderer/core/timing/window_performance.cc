@@ -273,9 +273,8 @@ WindowPerformance::CreateNavigationTimingInstance() {
     document_loader->CountUse(WebFeature::kPerformanceServerTiming);
 
   return MakeGarbageCollected<PerformanceNavigationTiming>(
-      DomWindow(), info, time_origin_,
-      DomWindow()->CrossOriginIsolatedCapability(), std::move(server_timing),
-      document_loader->GetNavigationDeliveryType());
+      *DomWindow(), *info, time_origin_,
+      DomWindow()->CrossOriginIsolatedCapability(), std::move(server_timing));
 }
 
 void WindowPerformance::BuildJSONValue(V8ObjectBuilder& builder) const {

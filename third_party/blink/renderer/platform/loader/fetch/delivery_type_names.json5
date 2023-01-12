@@ -1,7 +1,7 @@
 {
   metadata: {
     namespace: "delivery_type_names",
-    export: "CORE_EXPORT",
+    export: "PLATFORM_EXPORT",
   },
 
   data: [

@@ -962,11 +962,6 @@ make_names("make_core_generated_performance_entry_names") {
   output_dir = blink_core_output_dir
 }
 
-make_names("make_core_generated_delivery_type_names") {
-  in_files = [ "timing/delivery_type_names.json5" ]
-  output_dir = blink_core_output_dir
-}
-
 make_names("make_core_generated_pointer_type_names") {
   in_files = [ "events/pointer_type_names.json5" ]
   output_dir = blink_core_output_dir
@@ -1170,7 +1165,6 @@ targets_generating_sources = [
   ":make_core_generated_css_value_id_mappings",
   ":make_core_generated_css_value_keywords",
   ":make_core_generated_cssom_types",
-  ":make_core_generated_delivery_type_names",
   ":make_core_generated_event_factory",
   ":make_core_generated_event_names",
   ":make_core_generated_event_target_names",

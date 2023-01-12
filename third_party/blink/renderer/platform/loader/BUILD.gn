@@ -11,6 +11,11 @@ make_names("make_platform_loader_generated_fetch_initiator_type_names") {
   output_dir = "$blink_platform_output_dir/loader/fetch"
 }
 
+make_names("make_platform_loader_generated_delivery_type_names") {
+  in_files = [ "fetch/delivery_type_names.json5" ]
+  output_dir = "$blink_platform_output_dir/loader/fetch"
+}
+
 blink_platform_sources("loader") {
   sources = [
     "allowed_by_nosniff.cc",
@@ -160,8 +165,11 @@ blink_platform_sources("loader") {
 
   sources += get_target_outputs(
           ":make_platform_loader_generated_fetch_initiator_type_names")
+  sources +=
+      get_target_outputs(":make_platform_loader_generated_delivery_type_names")
 
   deps = [
+    ":make_platform_loader_generated_delivery_type_names",
     ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
     "//components/variations/net:net",
