@@ -118,7 +118,9 @@ void CreateJavaAXSnapshot(JNIEnv* env,
   // Bounding box.
   ViewStructureBuilder_setViewStructureNodeBounds(
       env, j_view_structure_builder, j_view_structure_node, is_root,
-      node->rect.x(), node->rect.y(), node->rect.width(), node->rect.height());
+      node->rect.x(), node->rect.y(), node->rect.width(), node->rect.height(),
+      node->unclipped_rect.x(), node->unclipped_rect.y(),
+      node->unclipped_rect.width(), node->unclipped_rect.height());
 
   // HTML/CSS attributes.
   ScopedJavaLocalRef<jstring> j_html_tag =

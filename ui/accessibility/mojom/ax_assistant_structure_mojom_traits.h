@@ -40,6 +40,10 @@ struct StructTraits<ax::mojom::AssistantNodeDataView,
       const std::unique_ptr<ui::AssistantNode>& node) {
     return node->children_indices;
   }
+  static const gfx::Rect& unclipped_rect(
+      const std::unique_ptr<ui::AssistantNode>& node) {
+    return node->unclipped_rect;
+  }
   static const gfx::Rect& rect(const std::unique_ptr<ui::AssistantNode>& node) {
     return node->rect;
   }

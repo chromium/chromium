@@ -40,10 +40,15 @@ void ViewStructureBuilder_setViewStructureNodeBounds(
     JniIntWrapper parent_relative_left,
     JniIntWrapper parent_relative_top,
     JniIntWrapper width,
-    JniIntWrapper height) {
+    JniIntWrapper height,
+    JniIntWrapper unclipped_left,
+    JniIntWrapper unclipped_top,
+    JniIntWrapper unclipped_width,
+    JniIntWrapper unclipped_height) {
   Java_ViewStructureBuilder_setViewStructureNodeBounds(
       env, obj, node, is_root_node, parent_relative_left, parent_relative_top,
-      width, height);
+      width, height, unclipped_left, unclipped_top, unclipped_width,
+      unclipped_height);
 }
 
 void ViewStructureBuilder_setViewStructureNodeHtmlInfo(

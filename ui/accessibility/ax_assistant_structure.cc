@@ -267,13 +267,21 @@ void WalkAXTreeDepthFirst(const AXNode* node,
 
   const gfx::Rect& absolute_rect =
       gfx::ToEnclosingRect(tree->GetTreeBounds(node));
+  const gfx::Rect& unclipped_rect = gfx::ToEnclosingRect(
+      tree->GetTreeBounds(node, nullptr, /* clip_bounds = */ false));
+
   gfx::Rect parent_relative_rect = absolute_rect;
+  gfx::Rect parent_relative_unclipped_rect = unclipped_rect;
   bool is_root = !node->GetUnignoredParent();
   if (!is_root) {
     parent_relative_rect.Offset(-rect.OffsetFromOrigin());
+    parent_relative_unclipped_rect.Offset(-rect.OffsetFromOrigin());
   }
   result->rect = gfx::Rect(parent_relative_rect.x(), parent_relative_rect.y(),
                            absolute_rect.width(), absolute_rect.height());
+  result->unclipped_rect = gfx::Rect(
+      parent_relative_unclipped_rect.x(), parent_relative_unclipped_rect.y(),
+      unclipped_rect.width(), unclipped_rect.height());
 
   // Selection state comes from the tree data rather than
   // GetUnignoredSelection() which uses AXPosition, as AXPosition requires a

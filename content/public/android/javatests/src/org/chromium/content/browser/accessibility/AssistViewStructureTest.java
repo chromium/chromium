@@ -4,6 +4,11 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_HEIGHT;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_TOP;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_WIDTH;
+
 import android.app.assist.AssistStructure.ViewNode;
 import android.os.Bundle;
 
@@ -511,5 +516,26 @@ public class AssistViewStructureTest {
         TestViewStructure child = root.getChild(0);
         TestViewStructure grandchild = child.getChild(0);
         Assert.assertEquals("•••", grandchild.getText());
+    }
+
+    /**
+     * Test that the snapshot contains Bundle extras for unclipped bounds.
+     */
+    @Test
+    @MediumTest
+    public void testUnclippedBounds() throws Throwable {
+        TestViewStructure root = getViewStructureFromHtml("<p>Hello world</p>").getChild(0);
+        TestViewStructure paragraph = root.getChild(0);
+
+        Bundle extras = paragraph.getExtras();
+        int unclippedLeft = extras.getInt(EXTRAS_KEY_UNCLIPPED_LEFT, -1);
+        int unclippedTop = extras.getInt(EXTRAS_KEY_UNCLIPPED_TOP, -1);
+        int unclippedWidth = extras.getInt(EXTRAS_KEY_UNCLIPPED_WIDTH, -1);
+        int unclippedHeight = extras.getInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, -1);
+
+        Assert.assertTrue(unclippedLeft > 0);
+        Assert.assertTrue(unclippedTop > 0);
+        Assert.assertTrue(unclippedWidth > 0);
+        Assert.assertTrue(unclippedHeight > 0);
     }
 }

@@ -4,6 +4,11 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_HEIGHT;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_TOP;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_WIDTH;
+
 import android.app.assist.AssistStructure.ViewNode;
 import android.graphics.Rect;
 import android.os.Build;
@@ -58,7 +63,8 @@ public class ViewStructureBuilder {
 
     @CalledByNative
     private void setViewStructureNodeBounds(ViewStructure node, boolean isRootNode,
-            int parentRelativeLeft, int parentRelativeTop, int width, int height) {
+            int parentRelativeLeft, int parentRelativeTop, int width, int height, int unclippedLeft,
+            int unclippedTop, int unclippedWidth, int unclippedHeight) {
         int left = (int) mRenderCoordinates.fromLocalCssToPix(parentRelativeLeft);
         int top = (int) mRenderCoordinates.fromLocalCssToPix(parentRelativeTop);
         width = (int) mRenderCoordinates.fromLocalCssToPix(width);
@@ -70,6 +76,18 @@ public class ViewStructureBuilder {
         }
 
         node.setDimens(boundsInParent.left, boundsInParent.top, 0, 0, width, height);
+
+        // Add unclipped bounds in the Bundle extras for services interested in these values.
+        int unclippedLeftCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedLeft);
+        int unclippedTopCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedTop);
+        int unclippedWidthCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedWidth);
+        int unclippedHeightCSS = (int) mRenderCoordinates.fromLocalCssToPix(unclippedHeight);
+
+        Bundle extras = node.getExtras();
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, unclippedLeftCSS);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, unclippedTopCSS);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, unclippedWidthCSS);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, unclippedHeightCSS);
     }
 
     @CalledByNative
