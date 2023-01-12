@@ -5,10 +5,9 @@
 #include "content/public/test/attribution_simulator.h"
 
 #include <stddef.h>
+
 #include <limits>
 #include <memory>
-#include <ostream>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -46,7 +44,6 @@
 #include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
@@ -75,7 +72,7 @@ namespace content {
 
 namespace {
 
-base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
+base::Time GetEventTime(const AttributionSimulationEvent& event) {
   return absl::visit(
       base::Overloaded{
           [](const StorableSource& source) {
@@ -87,7 +84,7 @@ base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
           },
           [](const AttributionDataClear& clear) { return clear.time; },
       },
-      event.first);
+      event);
 }
 
 class AlwaysSetCookieChecker : public AttributionCookieChecker {
@@ -115,10 +112,8 @@ struct AttributionReportJsonConverter {
                                  base::Time time_origin)
       : options(options), time_origin(time_origin) {}
 
-  base::Value::Dict ToJson(
-      const AttributionReport& report,
-      bool is_debug_report,
-      const absl::optional<base::GUID>& replaced_by = absl::nullopt) const {
+  base::Value::Dict ToJson(const AttributionReport& report,
+                           bool is_debug_report) const {
     base::Value::Dict report_body = report.ReportBody();
     if (options.remove_report_ids)
       report_body.Remove("report_id");
@@ -166,9 +161,7 @@ struct AttributionReportJsonConverter {
               FormatTime(is_debug_report ? report.attribution_info().time
                                          : report.report_time()));
 
-    if (replaced_by) {
-      value.Set("replacement_time", FormatTime(base::Time::Now()));
-    } else if (!options.remove_actual_report_times) {
+    if (!options.remove_actual_report_times) {
       value.Set("report_time", FormatTime(base::Time::Now()));
     }
 
@@ -195,10 +188,6 @@ struct AttributionReportJsonConverter {
       test_info.Set("histograms", std::move(list));
     }
     value.Set("test_info", std::move(test_info));
-
-    if (!options.remove_report_ids && replaced_by) {
-      value.Set("replaced_by", replaced_by->AsLowercaseString());
-    }
 
     return value;
   }
@@ -297,13 +286,8 @@ class AttributionEventHandler : public AttributionObserver {
 
   ~AttributionEventHandler() override = default;
 
-  void Handle(AttributionSimulationEventAndValue event) {
-    // Sources and triggers are handled in order; this includes observer
-    // invocations. Therefore, we can track the original `base::Value`
-    // associated with the event using a queue.
-
-    input_values_.push_back(std::move(event.second));
-    absl::visit(*this, std::move(event.first));
+  void Handle(AttributionSimulationEvent event) {
+    absl::visit(*this, std::move(event));
   }
 
   // For use with `absl::visit()`.
@@ -320,9 +304,6 @@ class AttributionEventHandler : public AttributionObserver {
 
   // For use with `absl::visit()`.
   void operator()(AttributionSimulatorCookie cookie) {
-    DCHECK(!input_values_.empty());
-    input_values_.pop_front();
-
     // TODO(apaseltiner): Consider surfacing `net::CookieAccessResult` in
     // output.
 
@@ -338,9 +319,6 @@ class AttributionEventHandler : public AttributionObserver {
 
   // For use with `absl::visit()`.
   void operator()(AttributionDataClear clear) {
-    DCHECK(!input_values_.empty());
-    input_values_.pop_front();
-
     StoragePartition::StorageKeyMatcherFunction filter;
     if (clear.origins.has_value()) {
       filter =
@@ -387,17 +365,6 @@ class AttributionEventHandler : public AttributionObserver {
                  std::exchange(verbose_debug_reports_, {}));
     }
 
-    if (!rejected_sources_.empty())
-      output.Set("rejected_sources", std::exchange(rejected_sources_, {}));
-
-    if (!rejected_triggers_.empty())
-      output.Set("rejected_triggers", std::exchange(rejected_triggers_, {}));
-
-    if (!replaced_event_level_reports_.empty()) {
-      output.Set("replaced_event_level_reports",
-                 std::exchange(replaced_event_level_reports_, {}));
-    }
-
     return output;
   }
 
@@ -413,109 +380,6 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
   // AttributionObserver:
-
-  void OnSourceHandled(const StorableSource& source,
-                       absl::optional<uint64_t> cleared_debug_key,
-                       StorableSource::Result result) override {
-    DCHECK(!input_values_.empty());
-    base::Value input_value = std::move(input_values_.front());
-    input_values_.pop_front();
-
-    std::ostringstream reason;
-    switch (result) {
-      case StorableSource::Result::kSuccess:
-      case StorableSource::Result::kSuccessNoised:
-        return;
-      case StorableSource::Result::kInternalError:
-      case StorableSource::Result::kInsufficientSourceCapacity:
-      case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
-      case StorableSource::Result::kExcessiveReportingOrigins:
-      case StorableSource::Result::kProhibitedByBrowserPolicy:
-        reason << result;
-        break;
-    }
-
-    base::Value::Dict dict;
-    dict.Set("reason", reason.str());
-    dict.Set("source", std::move(input_value));
-
-    rejected_sources_.Append(std::move(dict));
-  }
-
-  void OnTriggerHandled(const AttributionTrigger& trigger,
-                        absl::optional<uint64_t> cleared_debug_key,
-                        const CreateReportResult& result) override {
-    DCHECK(!input_values_.empty());
-    base::Value input_value = std::move(input_values_.front());
-    input_values_.pop_front();
-
-    std::ostringstream event_level_reason;
-    switch (result.event_level_status()) {
-      case AttributionTrigger::EventLevelResult::kSuccess:
-        break;
-      case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
-        replaced_event_level_reports_.Append(json_converter_.ToJson(
-            *result.replaced_event_level_report(),
-            /*is_debug_report=*/false,
-            result.new_event_level_report()->external_report_id()));
-        break;
-      case AttributionTrigger::EventLevelResult::kInternalError:
-      case AttributionTrigger::EventLevelResult::
-          kNoCapacityForConversionDestination:
-      case AttributionTrigger::EventLevelResult::kNoMatchingImpressions:
-      case AttributionTrigger::EventLevelResult::kDeduplicated:
-      case AttributionTrigger::EventLevelResult::kExcessiveAttributions:
-      case AttributionTrigger::EventLevelResult::kPriorityTooLow:
-      case AttributionTrigger::EventLevelResult::kDroppedForNoise:
-      case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
-      case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
-      case AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy:
-      case AttributionTrigger::EventLevelResult::kNoMatchingConfigurations:
-      case AttributionTrigger::EventLevelResult::kExcessiveReports:
-      case AttributionTrigger::EventLevelResult::kFalselyAttributedSource:
-      case AttributionTrigger::EventLevelResult::kReportWindowPassed:
-        event_level_reason << result.event_level_status();
-        break;
-    }
-
-    std::ostringstream aggregatable_reason;
-    switch (result.aggregatable_status()) {
-      case AttributionTrigger::AggregatableResult::kSuccess:
-      case AttributionTrigger::AggregatableResult::kNotRegistered:
-        break;
-      case AttributionTrigger::AggregatableResult::kInternalError:
-      case AttributionTrigger::AggregatableResult::
-          kNoCapacityForConversionDestination:
-      case AttributionTrigger::AggregatableResult::kNoMatchingImpressions:
-      case AttributionTrigger::AggregatableResult::kExcessiveAttributions:
-      case AttributionTrigger::AggregatableResult::kExcessiveReportingOrigins:
-      case AttributionTrigger::AggregatableResult::kInsufficientBudget:
-      case AttributionTrigger::AggregatableResult::kNoMatchingSourceFilterData:
-      case AttributionTrigger::AggregatableResult::kNoHistograms:
-      case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
-      case AttributionTrigger::AggregatableResult::kDeduplicated:
-      case AttributionTrigger::AggregatableResult::kReportWindowPassed:
-        aggregatable_reason << result.aggregatable_status();
-        break;
-    }
-
-    std::string event_level_reason_str = event_level_reason.str();
-    std::string aggregatable_reason_str = aggregatable_reason.str();
-
-    if (event_level_reason_str.empty() && aggregatable_reason_str.empty())
-      return;
-
-    base::Value::Dict dict;
-    if (!event_level_reason_str.empty())
-      dict.Set("event_level_reason", std::move(event_level_reason_str));
-
-    if (!aggregatable_reason_str.empty())
-      dict.Set("aggregatable_reason", std::move(aggregatable_reason_str));
-
-    dict.Set("trigger", std::move(input_value));
-
-    rejected_triggers_.Append(std::move(dict));
-  }
 
   void OnReportSent(const AttributionReport& report,
                     bool is_debug_report,
@@ -552,17 +416,11 @@ class AttributionEventHandler : public AttributionObserver {
 
   const AttributionReportJsonConverter json_converter_;
 
-  base::Value::List rejected_sources_;
-  base::Value::List rejected_triggers_;
-  base::Value::List replaced_event_level_reports_;
-
   base::Value::List event_level_reports_;
   base::Value::List debug_event_level_reports_;
   base::Value::List aggregatable_reports_;
   base::Value::List debug_aggregatable_reports_;
   base::Value::List verbose_debug_reports_;
-
-  base::circular_deque<base::Value> input_values_;
 };
 
 }  // namespace
@@ -577,7 +435,7 @@ base::Value RunAttributionSimulation(
   TestBrowserContext browser_context;
   const base::Time time_origin = base::Time::Now();
 
-  absl::optional<AttributionSimulationEventAndValues> events =
+  absl::optional<AttributionSimulationEvents> events =
       ParseAttributionSimulationInput(std::move(input), base::Time::Now(),
                                       error_stream);
   if (!events)

@@ -1,22 +1,4 @@
 {
-  "rejected_triggers": [
-    {
-      "event_level_reason": "priorityTooLow",
-      "trigger": {
-        "timestamp": "1643235576000",
-        "reporting_origin": "https://r.test",
-        "destination_origin": "https://d.test",
-        "Attribution-Reporting-Register-Trigger": {
-          "debug_reporting": true,
-          "event_trigger_data": [
-            {
-              "trigger_data": "4"
-            }
-          ]
-        }
-      }
-    }
-  ],
   "verbose_debug_reports": [
     {
       "report_time": "1643235576000",

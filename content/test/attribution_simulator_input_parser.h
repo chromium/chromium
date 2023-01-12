@@ -11,13 +11,16 @@
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace url {
 class Origin;
@@ -61,17 +64,12 @@ using AttributionSimulationEvent = absl::variant<StorableSource,
                                                  AttributionSimulatorCookie,
                                                  AttributionDataClear>;
 
-// The value is the raw JSON associated with the event.
-using AttributionSimulationEventAndValue =
-    std::pair<AttributionSimulationEvent, base::Value>;
+using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
 
-using AttributionSimulationEventAndValues =
-    std::vector<AttributionSimulationEventAndValue>;
-
-absl::optional<AttributionSimulationEventAndValues>
-ParseAttributionSimulationInput(base::Value input,
-                                base::Time offset_time,
-                                std::ostream& error_stream);
+absl::optional<AttributionSimulationEvents> ParseAttributionSimulationInput(
+    base::Value input,
+    base::Time offset_time,
+    std::ostream& error_stream);
 
 }  // namespace content
 
