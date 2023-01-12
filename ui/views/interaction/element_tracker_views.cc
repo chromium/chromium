@@ -34,6 +34,10 @@ TrackedElementViews::TrackedElementViews(View* view,
 
 TrackedElementViews::~TrackedElementViews() = default;
 
+gfx::Rect TrackedElementViews::GetScreenBounds() const {
+  return view()->GetBoundsInScreen();
+}
+
 std::string TrackedElementViews::ToString() const {
   auto result = TrackedElement::ToString();
   result.append(" with view ");

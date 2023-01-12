@@ -48,6 +48,14 @@ void TestElementBase::SendCustomEvent(CustomElementEventType event_type) {
   ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this, event_type);
 }
 
+void TestElementBase::SetScreenBounds(const gfx::Rect& screen_bounds) {
+  screen_bounds_ = screen_bounds;
+}
+
+gfx::Rect TestElementBase::GetScreenBounds() const {
+  return screen_bounds_;
+}
+
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElement)
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElementOtherFramework)
 

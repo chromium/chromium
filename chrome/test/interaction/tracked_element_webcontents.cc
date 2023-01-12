@@ -22,6 +22,10 @@ void TrackedElementWebContents::Init() {
   ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(this);
 }
 
+gfx::Rect TrackedElementWebContents::GetScreenBounds() const {
+  return owner_->web_contents()->GetContainerBounds();
+}
+
 std::string TrackedElementWebContents::ToString() const {
   auto result = TrackedElement::ToString();
   result.append(" with contents ");

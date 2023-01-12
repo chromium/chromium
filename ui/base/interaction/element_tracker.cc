@@ -10,6 +10,7 @@
 #include <sstream>
 
 #include "base/auto_reset.h"
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
@@ -184,6 +185,10 @@ TrackedElement::TrackedElement(ElementIdentifier id, ElementContext context)
     : identifier_(id), context_(context) {}
 
 TrackedElement::~TrackedElement() = default;
+
+gfx::Rect TrackedElement::GetScreenBounds() const {
+  return gfx::Rect();
+}
 
 std::string TrackedElement::ToString() const {
   std::ostringstream oss;

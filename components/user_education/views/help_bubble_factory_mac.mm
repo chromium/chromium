@@ -30,7 +30,7 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryMac::CreateBubble(
       views::ElementTrackerViews::GetInstance()->GetWidgetForContext(
           element_mac->context());
   auto* const anchor_view = widget->GetRootView();
-  gfx::Rect anchor_rect = element_mac->screen_bounds();
+  gfx::Rect anchor_rect = element_mac->GetScreenBounds();
 
   // We don't want the bubble to be flush with either the side or top of the
   // Mac native menu, because it looks funny.

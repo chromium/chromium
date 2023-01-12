@@ -29,7 +29,8 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElementMac : public TrackedElement {
                     const gfx::Rect& screen_bounds);
   ~TrackedElementMac() override;
 
-  gfx::Rect screen_bounds() const { return screen_bounds_; }
+  // TrackedElement:
+  gfx::Rect GetScreenBounds() const override;
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 

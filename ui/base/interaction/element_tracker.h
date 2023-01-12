@@ -19,6 +19,7 @@
 #include "base/observer_list_types.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
@@ -50,6 +51,17 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElement
 
   ElementIdentifier identifier() const { return identifier_; }
   ElementContext context() const { return context_; }
+
+  // Returns the bounds of the element on the screen, or an empty rect if it
+  // cannot be determined.
+  //
+  // Note: it is not yet necessary to set up a general method for listening to
+  // bounds changes, as they are (a) somewhat difficult to track and (b) tend to
+  // be handled correctly by most frameworks in terms of element positioning
+  // (e.g. anchoring logic for User Education help bubbles). Specific
+  // implementations that need to do additional tracking can implement their own
+  // methods.
+  virtual gfx::Rect GetScreenBounds() const;
 
   // FrameworkSpecificImplementation:
   std::string ToString() const override;

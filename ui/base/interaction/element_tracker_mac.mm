@@ -22,6 +22,10 @@ TrackedElementMac::TrackedElementMac(ElementIdentifier identifier,
 
 TrackedElementMac::~TrackedElementMac() = default;
 
+gfx::Rect TrackedElementMac::GetScreenBounds() const {
+  return screen_bounds_;
+}
+
 class ElementTrackerMac::ContextData {
  public:
   explicit ContextData(ElementContext context) : context_(context) {

@@ -86,7 +86,7 @@ class ExpectedCall {
     ASSERT_TRUE(element->IsA<TrackedElementMac>());
     if (expected_bounds_.has_value()) {
       EXPECT_EQ(expected_bounds_.value(),
-                element->AsA<TrackedElementMac>()->screen_bounds());
+                element->AsA<TrackedElementMac>()->GetScreenBounds());
       expected_bounds_.reset();
     }
     EXPECT_EQ(identifier_, element->identifier());

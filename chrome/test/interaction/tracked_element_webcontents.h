@@ -25,6 +25,8 @@ class TrackedElementWebContents : public ui::TrackedElement {
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
+  // TrackedElement:
+  gfx::Rect GetScreenBounds() const override;
   std::string ToString() const override;
 
   WebContentsInteractionTestUtil* owner() { return owner_; }
