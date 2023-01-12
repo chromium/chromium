@@ -23,9 +23,10 @@ namespace test {
 TEST_P(ParameterizedAccessibilityTest, GetWordBoundaries) {
   // &#9728; is the sun emoji symbol.
   // &#2460; is circled digit one.
+  // Full string: "This, ☀ জ is ... a---+++test. <p>word</p>"
   SetBodyInnerHTML(R"HTML(
       <p id="paragraph">
-        &quot;This, &#9728; &#2460; is ... a---+++test.&quot;
+        &quot;This, &#9728; &#2460; is ... a---+++test. &lt;p&gt;word&lt;/p&gt;&quot;
       </p>)HTML");
 
   AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
@@ -38,8 +39,10 @@ TEST_P(ParameterizedAccessibilityTest, GetWordBoundaries) {
   ASSERT_NE(nullptr, ax_inline_text_box);
   ASSERT_EQ(ax::mojom::Role::kInlineTextBox, ax_inline_text_box->RoleValue());
 
-  VectorOf<int> expected_word_starts{0, 1, 5, 9, 11, 14, 18, 19, 25, 29};
-  VectorOf<int> expected_word_ends{1, 5, 6, 10, 13, 17, 19, 22, 29, 31};
+  VectorOf<int> expected_word_starts{0,  1,  5,  7,  9,  11, 14, 18, 19, 22, 23,
+                                     24, 25, 29, 31, 32, 33, 34, 38, 40, 41};
+  VectorOf<int> expected_word_ends{1,  5,  6,  8,  10, 13, 17, 19, 22, 23, 24,
+                                   25, 29, 30, 32, 33, 34, 38, 40, 41, 43};
   VectorOf<int> word_starts, word_ends;
   ax_inline_text_box->GetWordBoundaries(word_starts, word_ends);
   EXPECT_EQ(expected_word_starts, word_starts);

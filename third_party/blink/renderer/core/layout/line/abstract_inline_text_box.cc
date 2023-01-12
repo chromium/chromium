@@ -32,6 +32,9 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
@@ -248,7 +251,80 @@ void LegacyAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
 
 void AbstractInlineTextBox::GetWordBoundaries(
     Vector<WordBoundaries>& words) const {
-  return GetWordBoundariesForText(words, GetText());
+  GetWordBoundariesForText(words, GetText());
+
+// TODO(crbug/1406930): Uncomment the following DCHECK and fix the dozens of
+// failing tests.
+// #if DCHECK_IS_ON()
+//   if (!words.empty()) {
+//     // Validate that our word boundary detection algorithm gives the same output
+//     // as the one from the Editing layer.
+//     const int initial_offset_in_container =
+//         static_cast<int>(TextOffsetInFormattingContext(0));
+
+//     // 1. Compare the word offsets to the ones of the Editing algorithm when
+//     // moving forward.
+//     Position editing_pos(GetNode(), initial_offset_in_container);
+//     int editing_offset =
+//         editing_pos.OffsetInContainerNode() - initial_offset_in_container;
+//     for (WordBoundaries word : words) {
+//       DCHECK_EQ(editing_offset, word.start_index)
+//           << "[Going forward] Word boundaries are different between "
+//              "accessibility and editing in text=\""
+//           << GetText() << "\". Failing at editing text offset \""
+//           << editing_offset << "\" and AX text offset \"" << word.start_index
+//           << "\".";
+//       // See comment in `AbstractInlineTextBox::GetWordBoundariesForText` that
+//       // justify why we only check for kWordSkipSpaces.
+//       editing_pos =
+//           NextWordPosition(editing_pos, PlatformWordBehavior::kWordSkipSpaces)
+//               .GetPosition();
+//       editing_offset =
+//           editing_pos.OffsetInContainerNode() - initial_offset_in_container;
+//     }
+//     // Check for the last word boundary.
+//     DCHECK_EQ(editing_offset, words[words.size() - 1].end_index)
+//         << "[Going forward] Word boundaries are different between "
+//            "accessibility and at the end of the inline text box. Text=\""
+//         << GetText() << "\".";
+
+//     // 2. Compare the word offsets to the ones of the Editing algorithm when
+//     // moving backwards.
+//     //
+//     // TODO(accessibility): Uncomment the following code to validate our word
+//     // boundaries also match the ones from the Editing layer when moving
+//     // backward. This is currently failing because of crbug/1406287.
+//     //
+//     // const int last_text_offset =
+//     //     initial_offset_in_container + GetText().length();
+//     // editing_pos = Position(GetNode(), last_text_offset);
+//     // editing_offset = editing_pos.OffsetInContainerNode() -
+//     // initial_offset_in_container;
+
+//     // // Check for the first word boundary.
+//     // DCHECK_EQ(editing_offset, words[words.size() - 1].end_index)
+//     //     << "[Going backward] Word boundaries are different between "
+//     //        "accessibility and at the end of the inline text box. Text=\""
+//     //     << GetText() << "\".";
+//     // editing_pos = PreviousWordPosition(editing_pos).GetPosition();
+//     // editing_offset = editing_pos.OffsetInContainerNode() -
+//     // initial_offset_in_container;
+
+//     // Vector<WordBoundaries> reverse_words(words);
+//     // reverse_words.Reverse();
+//     // for (WordBoundaries word : reverse_words) {
+//     //   DCHECK_EQ(editing_offset, word.start_index)
+//     //       << "[Going backward] Word boundaries are different between "
+//     //          "accessibility and editing in text=\""
+//     //       << GetText() << "\". Failing at editing text offset \""
+//     //       << editing_offset << "\" and AX text offset \"" << word.start_index
+//     //       << "\".";
+//     //   editing_pos = PreviousWordPosition(editing_pos).GetPosition();
+//     //   editing_offset = editing_pos.OffsetInContainerNode() -
+//     //   initial_offset_in_container;
+//     // }
+//   }
+// #endif
 }
 
 // static
@@ -266,47 +342,63 @@ void AbstractInlineTextBox::GetWordBoundariesForText(
        offset != kTextBreakDone && offset < static_cast<int>(text.length());
        offset = it->following(offset)) {
     // Unlike in ICU's WordBreakIterator, a word boundary is valid only if it is
-    // before, or immediately preceded by, an alphanumeric character, a series
-    // of punctuation marks, an underscore or a line break. We therefore need to
-    // filter the boundaries returned by ICU's WordBreakIterator and return a
-    // subset of them. For example we should exclude a word boundary that is
-    // between two space characters, "Hello | there".
-
-    // Case 1: A new word should start if |offset| is before an alphanumeric
-    // character, an underscore or a hard line break
-    if (WTF::unicode::IsAlphanumeric(text[offset]) ||
-        text[offset] == kLowLineCharacter ||
-        text[offset] == kNewlineCharacter ||
-        text[offset] == kCarriageReturnCharacter) {
-      // We found a new word start or end. Append the previous word (if it
-      // exists) to the results, otherwise save this offset as a word start.
-      if (word_start)
-        words.emplace_back(*word_start, offset);
-      word_start = offset;
-
-      // Case 2: A new word should start before and end after a series of
+    // before, or immediately preceded by a word break as defined by the Editing
+    // code (see `IsWordBreak`). We therefore need to filter the boundaries
+    // returned by ICU's WordBreakIterator and return a subset of them. For
+    // example we should exclude a word boundary that is between two space
+    // characters, "Hello | there".
+    //
+    // IMPORTANT: This algorithm needs to stay in sync with the one used to
+    // find the next/previous word boundary in the Editing layer. See
+    // `NextWordPositionInternal` in `visible_units_word.cc` for more info.
+    //
+    // There's one noticeable difference between our implementation and the one
+    // in the Editing layer: in the Editing layer, we only skip spaces before
+    // word starts when on Windows. However, we skip spaces the accessible word
+    // offsets on all platforms because:
+    //   1. It doesn't have an impact on the screen reader user (ATs never
+    //      announce spaces).
+    //   2. The implementation is simpler. Arguably, this is a bad reason, but
+    //      the reality is that word offsets computation will sooner or later
+    //      move to the browser process where we'll have to reimplement this
+    //      algorithm. Another more near-term possibility is that Editing folks
+    //      could refactor their word boundary algorithm so that we could simply
+    //      reuse it for accessibility. Anyway, we currently do not see a strong
+    //      case to justify spending time to match this behavior perfectly.
+    if (WTF::unicode::IsPunct(text[offset]) || U16_IS_SURROGATE(text[offset])) {
+      // Case 1: A new word should start before and end after a series of
       // punctuation marks, i.e., Consecutive punctuation marks should be
       // accumulated into a single word. For example, "|Hello|+++---|there|".
-    } else if (WTF::unicode::IsPunct(text[offset])) {
-      // At beginning of text, or the previous character was a punctuation
-      // symbol.
-      if (offset == 0 || !WTF::unicode::IsPunct(text[offset - 1])) {
+      // Surrogate pair runs should also be collapsed.
+      //
+      // At beginning of text, or right after an alphanumeric character or a
+      // character that cannot be a word break.
+      if (offset == 0 || WTF::unicode::IsAlphanumeric(text[offset - 1]) ||
+          !IsWordBreak(text[offset - 1])) {
         if (word_start)
           words.emplace_back(*word_start, offset);
         word_start = offset;
+      } else {
+        // Skip to the end of the punctuation/surrogate pair run.
+        continue;
       }
-      continue;  // Skip to the end of the punctuation run.
-
-      // Case 3: A word should end if |offset| is proceeded by an alphanumeric
-      // character, a series of punctuation marks, an underscore or a hard line
-      // break.
+    } else if (IsWordBreak(text[offset])) {
+      // Case 2: A new word should start if `offset` is before an alphanumeric
+      // character, an underscore or a hard line break.
+      //
+      // We found a new word start or end. Append the previous word (if it
+      // exists) to the results, otherwise save this offset as a word start.
+      if (word_start) {
+        words.emplace_back(*word_start, offset);
+      }
+      word_start = offset;
     } else if (offset > 0) {
+      // Case 3: A word should end if `offset` is proceeded by a word break or
+      // a punctuation.
       UChar prev_character = text[offset - 1];
-      if (WTF::unicode::IsAlphanumeric(prev_character) ||
+      if (IsWordBreak(prev_character) ||
           WTF::unicode::IsPunct(prev_character) ||
-          prev_character == kLowLineCharacter ||
-          prev_character == kNewlineCharacter ||
-          prev_character == kCarriageReturnCharacter) {
+          U16_IS_SURROGATE(prev_character)) {
         if (word_start) {
           words.emplace_back(*word_start, offset);
           word_start = absl::nullopt;
@@ -315,10 +407,9 @@ void AbstractInlineTextBox::GetWordBoundariesForText(
     }
   }
 
-  // Case 4: If the character at last |offset| in |text| was an alphanumeric
-  // character, a punctuation mark, an underscore, or a line break, then it
-  // would have started a new word. We need to add its corresponding word end
-  // boundary which should be at |text|'s length.
+  // Case 4: If the character at last `offset` in `text` was a word break, then
+  // it would have started a new word. We need to add its corresponding word end
+  // boundary which should be at `text`'s length.
   if (word_start) {
     words.emplace_back(*word_start, text.length());
     word_start = absl::nullopt;

@@ -90,6 +90,11 @@ PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
   return TextSegments::FindBoundaryForward(position, &finder);
 }
 
+// IMPORTANT: If you update the logic of this algorithm, please also update the
+// one in `AbstractInlineTextBox::GetWordBoundariesForText`. The word offsets
+// computed over there needs to stay in sync with the ones computed here in
+// order for screen readers to announce the right words when using caret
+// navigation (ctrl + left/right arrow).
 PositionInFlatTree NextWordPositionInternal(
     const PositionInFlatTree& position,
     PlatformWordBehavior platform_word_behavior) {
