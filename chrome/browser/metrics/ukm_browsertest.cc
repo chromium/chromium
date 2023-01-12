@@ -139,8 +139,9 @@ class TestUkmRecorderObserver : public ukm::UkmRecorderObserver {
   }
 
   void OnUkmAllowedStateChanged(ukm::UkmConsentState allowed_state) override {
-    if (allowed_state == expected_allowed_)
+    if (allowed_state == expected_allowed_) {
       std::move(quit_closure_).Run();
+    }
   }
 
  private:
@@ -301,8 +302,9 @@ class UkmBrowserTestBase : public SyncTest {
     // the history sync state.
     unified_consent::UnifiedConsentService* consent_service =
         UnifiedConsentServiceFactory::GetForProfile(profile);
-    if (consent_service)
+    if (consent_service) {
       consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+    }
 
     return harness;
   }
@@ -610,8 +612,19 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, OpenNonSyncCheck) {
   CloseBrowserSynchronously(nonsync_browser);
   // TODO(crbug/746076): UKM doesn't actually get re-enabled yet.
   // EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Client ID should not have been reset.
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
+#else
+  // When flag is enabled, removing MSBB consent will cause the client id to be
+  // reset. In this case a new profile with sync turned off is added which also
+  // removes consent.
+  if (base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync)) {
+    EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
+  } else {
+    EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
+  }
+#endif
 
   harness->service()->GetUserSettings()->SetSyncRequested(false);
   CloseBrowserSynchronously(sync_browser);
@@ -898,7 +911,20 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
   Browser* browser2 = CreateBrowser(profile2);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
+#else
+  // If the feature is enabled, then the client id will have been reset. The
+  // client id is reset when the second profile is initially created without any
+  // sync preferences enabled or MSBB. With the feature, any consent on to off
+  // change for MSBB or App Sync will cause the client id to reset.
+  if (base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync)) {
+    EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
+    original_client_id = ukm_test_helper.GetClientId();
+  } else {
+    EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
+  }
+#endif
 
   harness2->DisableSyncForType(syncer::UserSelectableType::kExtensions);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
@@ -1528,12 +1554,25 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, AllowedStateChanged) {
   unified_consent::UnifiedConsentService* consent_service =
       UnifiedConsentServiceFactory::GetForProfile(test_profile);
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(false);
-
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_FALSE(g_browser_process->GetMetricsServicesManager()
                    ->IsUkmAllowedForAllProfiles());
   // Expect nothing to be consented to.
   observer.ExpectAllowedStateChanged(ukm::UkmConsentState());
+#else
+  // Only on ChromeOS, theses values are dependent on whether
+  // kAppMetricsOnlyRelyOnAppSync feature is enabled.
+  EXPECT_THAT(ukm_test_helper.IsRecordingEnabled(),
+              base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync));
+  EXPECT_THAT(g_browser_process->GetMetricsServicesManager()
+                  ->IsUkmAllowedForAllProfiles(),
+              base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync));
+  observer.ExpectAllowedStateChanged(
+      base::FeatureList::IsEnabled(ukm::kAppMetricsOnlyRelyOnAppSync)
+          ? ukm::UkmConsentState(ukm::APPS)
+          : ukm::UkmConsentState());
+#endif
 
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
