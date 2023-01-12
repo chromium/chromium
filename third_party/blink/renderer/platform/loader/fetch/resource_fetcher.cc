@@ -1091,9 +1091,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   if (!is_stale_revalidation && is_static_data) {
     resource = CreateResourceForStaticData(params, factory);
     if (resource) {
-      // https://linear.app/replay/issue/RUN-820
-      recordreplay::Assert("ResourceFetcher::RequestResource #5");
-
       policy =
           DetermineRevalidationPolicy(resource_type, params, *resource, true);
     } else if (!is_data_url && archive_) {
@@ -1110,15 +1107,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   bool in_cached_resources_map = cached_resources_map_.Contains(
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url()));
 
-  // https://linear.app/replay/issue/RUN-820
-  recordreplay::Assert("ResourceFetcher::RequestResource #6 %d %d",
-                       is_stale_revalidation, !!resource);
-
   if (!is_stale_revalidation && !resource) {
     resource = MatchPreload(params, resource_type);
-
-    // https://linear.app/replay/issue/RUN-820
-    recordreplay::Assert("ResourceFetcher::RequestResource #7 %d", !!resource);
 
     if (resource) {
       policy = RevalidationPolicy::kUse;
@@ -1128,21 +1118,16 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     } else if (IsMainThread()) {
       if (base::FeatureList::IsEnabled(features::kScopeMemoryCachePerContext) &&
           !in_cached_resources_map) {
-        // https://linear.app/replay/issue/RUN-820
-        recordreplay::Assert("ResourceFetcher::RequestResource #7.1");
-
         resource = nullptr;
       } else {
         resource = MemoryCache::Get()->ResourceForURL(
             params.Url(), GetCacheIdentifier(params.Url()));
 
         // https://linear.app/replay/issue/RUN-820
-        recordreplay::Assert("ResourceFetcher::RequestResource #7.2 %d", !!resource);
+        recordreplay::Assert("[RUN-820] ResourceFetcher::RequestResource #7.2 resource=%d url=%s",
+          !!resource, params.Url().GetString().Utf8().c_str());
       }
       if (resource) {
-        // https://linear.app/replay/issue/RUN-820
-        recordreplay::Assert("ResourceFetcher::RequestResource #8");
-
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
         scoped_refptr<const SecurityOrigin> top_frame_origin =
@@ -1163,8 +1148,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       MemoryCache::Get()->Remove(resource);
       [[fallthrough]];
     case RevalidationPolicy::kLoad:
-      // https://linear.app/replay/issue/RUN-820
-      recordreplay::Assert("ResourceFetcher::RequestResource #10");
       resource = CreateResourceForLoading(params, factory);
       break;
     case RevalidationPolicy::kRevalidate:
@@ -1180,9 +1163,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
   DCHECK(resource);
   DCHECK_EQ(resource->GetType(), resource_type);
-
-  // https://linear.app/replay/issue/RUN-820
-  recordreplay::Assert("ResourceFetcher::RequestResource #11");
 
   if (policy != RevalidationPolicy::kUse)
     resource->VirtualTimePauser() = std::move(pauser);

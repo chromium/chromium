@@ -340,6 +340,26 @@ void ContainerNode::DidInsertNodeVector(
     const NodeVector& targets,
     Node* next,
     const NodeVector& post_insertion_notification_targets) {
+
+  // https://linear.app/replay/issue/RUN-820
+  {
+    size_t numTargets = targets.size();
+    size_t targetsBufSize = numTargets * 12;
+    char* targetsBuf = (char*)malloc(targetsBufSize);
+    size_t targetsBufIdx = 0;
+    for (const auto& target_node : targets) {
+      targetsBufIdx += snprintf(
+        targetsBuf + targetsBufIdx,
+        targetsBufSize - targetsBufIdx,
+        "%d,", target_node->RecordReplayId());
+    }
+    // Eliminate the trailing comma.
+    targetsBuf[targetsBufIdx - 1] = '\0';
+    recordreplay::Assert(
+      "[RUN-820] ContainerNode::DidInsertNodeVector targets=%s next=%d",
+      targetsBuf, next ? next->RecordReplayId() : -1);
+  }
+
   Node* unchanged_previous =
       targets.size() > 0 ? targets[0]->previousSibling() : nullptr;
   for (const auto& target_node : targets) {
