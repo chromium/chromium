@@ -11,6 +11,7 @@
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -69,6 +70,11 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // the list item.
   virtual NetworkListNetworkItemView* AddNetworkListItem(
       chromeos::network_config::mojom::NetworkType type) = 0;
+
+  // Creates, adds and returns a `HoverHighlightView`, which is the "Join WIFI
+  // network" entry. The client is expected to use the returned pointer for
+  // removing and rearranging this entry.
+  virtual HoverHighlightView* AddJoinNetworkEntry() = 0;
 
   // Creates, adds and returns a Wifi sticky sub-header to the end of the
   // network list. The client is expected to use the returned pointer for

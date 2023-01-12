@@ -59,6 +59,10 @@ FakeNetworkDetailedNetworkView::AddWifiSectionHeader() {
   return network_list_->AddChildView(std::move(wifi_header_view));
 }
 
+HoverHighlightView* FakeNetworkDetailedNetworkView::AddJoinNetworkEntry() {
+  return nullptr;
+}
+
 NetworkListMobileHeaderView*
 FakeNetworkDetailedNetworkView::AddMobileSectionHeader() {
   std::unique_ptr<FakeNetworkListMobileHeaderView> mobile_header_view =

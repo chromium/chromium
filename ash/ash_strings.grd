@@ -2311,6 +2311,9 @@ Connect your device to power.
       <message name="IDS_ASH_QUICK_SETTINGS_UNKNOWN_NETWORKS" desc="The label used in the network detailed page for the unknown networks group">
         Unknown networks
       </message>
+      <message name="IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK" desc="The label used in the network detailed page for the Join Wi-Fi network entry">
+        Join Wi-Fi network
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN" desc="Accessibility label used for a network in quick settings network list that opens network settings page.">
         Open settings for <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph>
       </message>

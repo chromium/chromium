@@ -336,7 +336,10 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     } else {
       RemoveAndResetViewIfExists(&unknown_header_);
     }
-
+    network_item_index = CreateJoinWifiEntry(network_item_index);
+    if (!is_wifi_enabled_) {
+      RemoveAndResetViewIfExists(&join_wifi_entry_);
+    }
     network_detailed_network_view()->ReorderNetworkListView(index++);
 
   } else {
@@ -611,6 +614,18 @@ size_t NetworkListViewControllerImpl::CreateWifiGroupHeader(
                         ->GetNetworkList(NetworkType::kWiFi)
                         ->AddChildViewAt(std::move(header), index++);
   return index;
+}
+
+size_t NetworkListViewControllerImpl::CreateJoinWifiEntry(size_t index) {
+  if (join_wifi_entry_) {
+    network_detailed_network_view()
+        ->GetNetworkList(NetworkType::kWiFi)
+        ->ReorderChildView(join_wifi_entry_, index++);
+    return index;
+  }
+
+  join_wifi_entry_ = network_detailed_network_view()->AddJoinNetworkEntry();
+  return index++;
 }
 
 void NetworkListViewControllerImpl::UpdateMobileSection() {

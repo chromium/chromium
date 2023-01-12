@@ -26735,6 +26735,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="QS_Subpage_Network_JoinNetwork">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <description>
+    User clicked on the Join Wi-Fi network entry in the quick settings network
+    subpage on ChromeOS.
+  </description>
+</action>
+
 <action name="QuickActionSearchWidget.LensQuery">
   <owner>ender@google.com</owner>
   <owner>fgorski@chromium.org</owner>

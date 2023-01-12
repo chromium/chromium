@@ -44,6 +44,7 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   views::View* GetAsView() override;
   NetworkListNetworkItemView* AddNetworkListItem(
       chromeos::network_config::mojom::NetworkType type) override;
+  HoverHighlightView* AddJoinNetworkEntry() override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
   void UpdateScanningBarVisibility(bool visible) override;

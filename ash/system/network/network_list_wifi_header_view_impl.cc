@@ -32,7 +32,9 @@ using chromeos::network_config::mojom::NetworkType;
 NetworkListWifiHeaderViewImpl::NetworkListWifiHeaderViewImpl(
     NetworkListNetworkHeaderView::Delegate* delegate)
     : NetworkListWifiHeaderView(delegate) {
-  AddExtraButtons();
+  if (!features::IsQsRevampEnabled()) {
+    AddExtraButtons();
+  }
 }
 
 NetworkListWifiHeaderViewImpl::~NetworkListWifiHeaderViewImpl() = default;
@@ -53,7 +55,9 @@ void NetworkListWifiHeaderViewImpl::AddExtraButtons() {
 void NetworkListWifiHeaderViewImpl::SetToggleState(bool enabled,
                                                    bool is_on,
                                                    bool animate_toggle) {
-  join_wifi_button_->SetEnabled(enabled && is_on);
+  if (!features::IsQsRevampEnabled()) {
+    join_wifi_button_->SetEnabled(enabled && is_on);
+  }
   NetworkListNetworkHeaderView::SetToggleState(enabled, is_on, animate_toggle);
 }
 
@@ -71,8 +75,9 @@ void NetworkListWifiHeaderViewImpl::JoinWifiButtonPressed() {
 
 void NetworkListWifiHeaderViewImpl::SetJoinWifiButtonState(bool enabled,
                                                            bool visible) {
-  if (!join_wifi_button_)
+  if (!join_wifi_button_) {
     return;
+  }
 
   join_wifi_button_->SetEnabled(enabled);
   join_wifi_button_->SetVisible(visible);

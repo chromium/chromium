@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -21,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/onc/onc_constants.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 
@@ -48,8 +50,17 @@ NetworkDetailedView::NetworkDetailedView(
 NetworkDetailedView::~NetworkDetailedView() = default;
 
 void NetworkDetailedView::HandleViewClicked(views::View* view) {
-  if (login_ == LoginStatus::LOCKED)
+  if (login_ == LoginStatus::LOCKED) {
     return;
+  }
+
+  if (view->GetID() == VIEW_ID_JOIN_NETWORK_ENTRY) {
+    base::RecordAction(
+        base::UserMetricsAction("QS_Subpage_Network_JoinNetwork"));
+    Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+        onc::network_type::kWiFi);
+    return;
+  }
   delegate()->OnNetworkListItemSelected(
       static_cast<NetworkListItemView*>(view)->network_properties());
 }
@@ -91,8 +102,9 @@ void NetworkDetailedView::OnInfoBubbleDestroyed() {
 }
 
 void NetworkDetailedView::OnInfoClicked() {
-  if (CloseInfoBubble())
+  if (CloseInfoBubble()) {
     return;
+  }
 
   info_bubble_ =
       new NetworkInfoBubble(weak_ptr_factory_.GetWeakPtr(), tri_view());
@@ -101,8 +113,9 @@ void NetworkDetailedView::OnInfoClicked() {
 }
 
 bool NetworkDetailedView::CloseInfoBubble() {
-  if (!info_bubble_)
+  if (!info_bubble_) {
     return false;
+  }
 
   info_bubble_->GetWidget()->Close();
   return true;
@@ -125,8 +138,9 @@ void NetworkDetailedView::OnSettingsClicked() {
 
   SystemTrayClient* system_tray_client =
       Shell::Get()->system_tray_model()->client();
-  if (system_tray_client)
+  if (system_tray_client) {
     system_tray_client->ShowNetworkSettings(guid);
+  }
 }
 
 }  // namespace ash

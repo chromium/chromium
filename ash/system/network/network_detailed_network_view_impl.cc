@@ -5,8 +5,12 @@
 #include "ash/system/network/network_detailed_network_view_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_view_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
@@ -15,9 +19,13 @@
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "base/notreached.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -72,6 +80,28 @@ NetworkListNetworkItemView* NetworkDetailedNetworkViewImpl::AddNetworkListItem(
     NetworkType type) {
   return GetNetworkList(type)->AddChildView(
       std::make_unique<NetworkListNetworkItemView>(/*listener=*/this));
+}
+
+HoverHighlightView* NetworkDetailedNetworkViewImpl::AddJoinNetworkEntry() {
+  HoverHighlightView* entry =
+      GetNetworkList(NetworkType::kWiFi)
+          ->AddChildView(
+              std::make_unique<HoverHighlightView>(/*listener=*/this));
+  entry->SetID(VIEW_ID_JOIN_NETWORK_ENTRY);
+
+  auto image_view = std::make_unique<views::ImageView>();
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
+      kSystemMenuPlusIcon, cros_tokens::kCrosSysPrimary));
+  entry->AddViewAndLabel(
+      std::move(image_view),
+      l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_JOIN_WIFI_NETWORK));
+  views::Label* label = entry->text_label();
+  label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+  // TODO(b/253086997): Apply the correct font to the label.
+  TrayPopupUtils::SetLabelFontList(
+      label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+
+  return entry;
 }
 
 NetworkListWifiHeaderView*
