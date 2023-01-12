@@ -71,6 +71,7 @@ export class ComboButton extends MultiMenuButton {
     if (item.bold) {
       menuitem.style.fontWeight = 'bold';
     }
+    menuitem.toggleAttribute('disabled', !!item.isDlpBlocked);
     return menuitem;
   }
 

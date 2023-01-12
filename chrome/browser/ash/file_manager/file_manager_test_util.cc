@@ -207,7 +207,7 @@ std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
         invoked_synchronously = true;
       });
 
-  FindAllTypesOfTasks(profile, entries, file_urls, callback);
+  FindAllTypesOfTasks(profile, entries, file_urls, {""}, callback);
 
   // MIME sniffing requires a run loop, but the mime type must be explicitly
   // available, and is provided in this helper.

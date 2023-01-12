@@ -389,7 +389,7 @@ test.util.sync.execCommand = (contentWindow, command) => {
  */
 test.util.sync
     .overrideTasks = (contentWindow, taskList, isPolicyDefault = false) => {
-  const getFileTasks = (entries, onTasks) => {
+  const getFileTasks = (entries, sourceUrls, onTasks) => {
     // Call onTask asynchronously (same with original getFileTasks).
     setTimeout(() => {
       const policyDefaultHandlerStatus = isPolicyDefault ?

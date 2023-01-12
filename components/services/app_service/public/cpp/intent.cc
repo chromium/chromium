@@ -18,7 +18,8 @@ IntentFile::~IntentFile() = default;
 bool IntentFile::operator==(const IntentFile& other) const {
   return url == other.url && mime_type == other.mime_type &&
          file_name == other.file_name && file_size == other.file_size &&
-         is_directory == other.is_directory;
+         is_directory == other.is_directory &&
+         dlp_source_url == other.dlp_source_url;
 }
 
 bool IntentFile::operator!=(const IntentFile& other) const {
@@ -35,6 +36,7 @@ std::unique_ptr<IntentFile> IntentFile::Clone() const {
   }
   intent_file->file_size = file_size;
   intent_file->is_directory = is_directory;
+  intent_file->dlp_source_url = dlp_source_url;
   return intent_file;
 }
 

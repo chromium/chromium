@@ -365,6 +365,7 @@ export class TaskController {
           console.assert(false);
           return false;
         },
+        isDlpBlocked: false,
       };
 
       tasks.execute(task);
@@ -753,6 +754,7 @@ export interface DropdownItem {
   isDefault: boolean;
   isPolicyDefault: boolean;
   isGenericFileHandler?: boolean;
+  isDlpBlocked?: boolean;
 }
 
 /**
@@ -773,5 +775,6 @@ function createDropdownItem(
     isDefault: isDefault || false,
     isPolicyDefault: isPolicyDefault || false,
     isGenericFileHandler: task.isGenericFileHandler,
+    isDlpBlocked: task.isDlpBlocked,
   };
 }

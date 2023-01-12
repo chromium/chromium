@@ -74,7 +74,9 @@ export async function*
   await selection.computeAdditional(window.fileManager.metadataModel);
   yield;
   try {
-    const resultingTasks = await getFileTasks(filesData.map(fd => fd.entry));
+    const resultingTasks = await getFileTasks(
+        filesData.map(fd => fd.entry),
+        filesData.map(fd => fd.metadata.sourceUrl || ''));
     if (!resultingTasks || !resultingTasks.tasks) {
       return;
     }

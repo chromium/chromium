@@ -359,7 +359,8 @@ chrome.fileManagerPrivate.FileTaskDescriptor;
  *   title: string,
  *   iconUrl: (string|undefined),
  *   isDefault: (boolean|undefined),
- *   isGenericFileHandler: (boolean|undefined)
+ *   isGenericFileHandler: (boolean|undefined),
+ *   isDlpBlocked: (boolean|undefined)
  * }}
  */
 chrome.fileManagerPrivate.FileTask;
@@ -839,12 +840,15 @@ chrome.fileManagerPrivate.setDefaultTask = function(descriptor, entries, mimeTyp
 
 /**
  * Gets the list of tasks that can be performed over selected files. |entries|
- * Array of selected entries |callback|
+ * Array of selected entries. |sourceUrls| Array of source URLs corresponding to
+ * the entries  |callback|
  * @param {!Array<!Entry>} entries
+ * @param {!Array<string>} sourceUrls
  * @param {function((!chrome.fileManagerPrivate.ResultingTasks|undefined))}
  *     callback The list of matched file tasks for the entries.
  */
-chrome.fileManagerPrivate.getFileTasks = function(entries, callback) {};
+chrome.fileManagerPrivate.getFileTasks = function(
+    entries, sourceUrls, callback) {};
 
 /**
  * Gets the MIME type of an entry.

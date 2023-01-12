@@ -66,6 +66,7 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/reporting/util/test_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -2301,6 +2302,47 @@ TEST_F(DlpFilesAppServiceTest, CheckIfLaunchAllowed_EmptyIntent) {
   EXPECT_EQ(launch_cb.Get(), true);
 }
 
+TEST_F(DlpFilesAppServiceTest, IsLaunchBlocked_EmptyIntent) {
+  CreateAndStoreFakeApp("arcApp", apps::AppType::kArc);
+
+  ON_CALL(*rules_manager_, IsRestrictedComponent)
+      .WillByDefault(testing::Return(DlpRulesManager::Level::kBlock));
+
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      kArcAppId, [this, &app_service_intent](const apps::AppUpdate& update) {
+        EXPECT_FALSE(files_controller_->IsLaunchBlocked(
+            update, std::move(app_service_intent)));
+      }));
+}
+
+TEST_F(DlpFilesAppServiceTest, IsLaunchBlocked_NoSourceUrl) {
+  CreateAndStoreFakeApp("arcApp", apps::AppType::kArc);
+
+  ON_CALL(*rules_manager_, IsRestrictedComponent)
+      .WillByDefault(testing::Return(DlpRulesManager::Level::kBlock));
+
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  app_service_intent->mime_type = "*/*";
+  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
+  auto url1 = ToGURL(base::FilePath(storage::kTestDir), "Documents/foo1.txt");
+  EXPECT_TRUE(url1.SchemeIsFileSystem());
+  auto file1 = std::make_unique<apps::IntentFile>(url1);
+  file1->mime_type = "text/plain";
+  app_service_intent->files.push_back(std::move(file1));
+
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      kArcAppId, [this, &app_service_intent](const apps::AppUpdate& update) {
+        EXPECT_FALSE(files_controller_->IsLaunchBlocked(
+            update, std::move(app_service_intent)));
+      }));
+}
+
 class DlpFilesAppLaunchTest : public DlpFilesAppServiceTest,
                               public ::testing::WithParamInterface<
                                   std::tuple<apps::AppType, std::string>> {
@@ -2413,6 +2455,71 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
 
   EXPECT_TRUE(
       display_service_tester.GetNotification(kOpenBlockedNotificationId));
+}
+
+TEST_P(DlpFilesAppLaunchTest, IsLaunchBlocked) {
+  auto [app_type, app_id] = GetParam();
+
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  app_service_intent->mime_type = "*/*";
+  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
+  auto url1 = ToGURL(base::FilePath(storage::kTestDir), "Documents/foo1.txt");
+  EXPECT_TRUE(url1.SchemeIsFileSystem());
+  auto file1 = std::make_unique<apps::IntentFile>(url1);
+  file1->mime_type = "text/plain";
+  file1->dlp_source_url = kExampleUrl1;
+  app_service_intent->files.push_back(std::move(file1));
+
+  std::vector<std::string> urls;
+  urls.push_back(kExampleUrl1);
+
+  if (app_type == apps::AppType::kChromeApp ||
+      app_type == apps::AppType::kWeb) {
+    EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  } else {
+    EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  }
+
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id, [this, &app_service_intent](const apps::AppUpdate& update) {
+        EXPECT_TRUE(files_controller_->IsLaunchBlocked(
+            update, std::move(app_service_intent)));
+      }));
+}
+
+TEST_P(DlpFilesAppLaunchTest, IsLaunchBlocked_Empty) {
+  auto [app_type, app_id] = GetParam();
+
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+  app_service_intent->mime_type = "*/*";
+  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
+  auto url1 = ToGURL(base::FilePath(storage::kTestDir), "Documents/foo1.txt");
+  EXPECT_TRUE(url1.SchemeIsFileSystem());
+  auto file1 = std::make_unique<apps::IntentFile>(url1);
+  file1->mime_type = "text/plain";
+  file1->dlp_source_url = kExampleUrl1;
+  app_service_intent->files.push_back(std::move(file1));
+
+  if (app_type == apps::AppType::kChromeApp ||
+      app_type == apps::AppType::kWeb) {
+    EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  } else {
+    EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
+        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  }
+
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id, [this, &app_service_intent](const apps::AppUpdate& update) {
+        EXPECT_TRUE(files_controller_->IsLaunchBlocked(
+            update, std::move(app_service_intent)));
+      }));
 }
 
 }  // namespace policy

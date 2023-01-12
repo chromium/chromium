@@ -54,6 +54,9 @@ struct IntentFile {
   uint64_t file_size = 0;
   // Whether this is a directory or not.
   absl::optional<bool> is_directory;
+  // Source URL the file was downloaded from. Used to check Data Leak Prevention
+  // (DLP) restrictions when resolving the intent.
+  absl::optional<std::string> dlp_source_url;
 };
 
 using IntentFilePtr = std::unique_ptr<IntentFile>;

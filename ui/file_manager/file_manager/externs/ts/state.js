@@ -132,6 +132,7 @@ export let FileTaskDescriptor;
  *   iconType: string,
  *   isDefault: (boolean|undefined),
  *   isGenericFileHandler: (boolean|undefined),
+ *   isDlpBlocked: (boolean|undefined),
  * }}
  */
 export let FileTask;

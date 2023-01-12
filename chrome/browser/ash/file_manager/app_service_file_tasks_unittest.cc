@@ -12,6 +12,7 @@
 #include "base/strings/escape.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -20,6 +21,9 @@
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -27,10 +31,13 @@
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -66,7 +73,7 @@ using test::AddFakeWebApp;
 
 class AppServiceFileTasksTest : public testing::Test {
  protected:
-  AppServiceFileTasksTest() {}
+  AppServiceFileTasksTest() = default;
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     app_service_test_.SetUp(profile_.get());
@@ -102,6 +109,7 @@ class AppServiceFileTasksTest : public testing::Test {
       const std::vector<FakeFile>& files) {
     std::vector<extensions::EntryInfo> entries;
     std::vector<GURL> file_urls;
+    std::vector<std::string> dlp_source_urls;
     for (const FakeFile& fake_file : files) {
       entries.emplace_back(
           util::GetMyFilesFolderForProfile(profile()).AppendASCII(
@@ -112,10 +120,12 @@ class AppServiceFileTasksTest : public testing::Test {
       } else {
         file_urls.push_back(fake_file.file_url);
       }
+      dlp_source_urls.push_back("");
     }
 
     std::vector<FullTaskDescriptor> tasks;
-    file_tasks::FindAppServiceTasks(profile(), entries, file_urls, &tasks);
+    file_tasks::FindAppServiceTasks(profile(), entries, file_urls,
+                                    dlp_source_urls, &tasks);
     // Sort by app ID so we don't rely on ordering.
     std::sort(
         tasks.begin(), tasks.end(), [](const auto& left, const auto& right) {
@@ -862,6 +872,92 @@ TEST_F(AppServiceFileTasksTestEnabled, NoPluginVmAppsForFileSelection) {
 
   // There shouldn't be any apps available.
   ASSERT_EQ(0U, tasks.size());
+}
+
+// Tests applying policies when listing tasks.
+class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
+ protected:
+  class MockFilesController : public policy::DlpFilesController {
+   public:
+    explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
+        : DlpFilesController(rules_manager) {}
+    ~MockFilesController() override = default;
+
+    MOCK_METHOD(bool,
+                IsLaunchBlocked,
+                (const apps::AppUpdate&, const apps::IntentPtr&),
+                (override));
+  };
+
+  AppServiceFileTasksPolicyTest()
+      : user_manager_(new ash::FakeChromeUserManager()),
+        scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
+            base::WrapUnique(user_manager_))) {}
+
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager =
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+    rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
+  }
+
+  void SetUp() override {
+    AppServiceFileTasksTestEnabled::SetUp();
+
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+    profile_->SetIsNewProfile(true);
+    user_manager::User* user =
+        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+            account_id, /*is_affiliated=*/false,
+            user_manager::USER_TYPE_REGULAR, profile_.get());
+    user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                /*browser_restart=*/false,
+                                /*is_child=*/false);
+    user_manager_->SimulateUserProfileLoad(account_id);
+
+    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindRepeating(&AppServiceFileTasksPolicyTest::SetDlpRulesManager,
+                            base::Unretained(this)));
+    ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+
+    ON_CALL(*rules_manager_, IsFilesPolicyEnabled)
+        .WillByDefault(testing::Return(true));
+    mock_files_controller_ =
+        std::make_unique<MockFilesController>(*rules_manager_);
+    ON_CALL(*rules_manager_, GetDlpFilesController)
+        .WillByDefault(testing::Return(mock_files_controller_.get()));
+  }
+
+  void TearDown() override { scoped_user_manager_.reset(); }
+
+  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
+  ash::FakeChromeUserManager* user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+};
+
+// Test that out of two apps, one can be blocked by DLP and the other allowed.
+TEST_F(AppServiceFileTasksPolicyTest, FindAppServiceFileTasksText_DlpChecked) {
+  EXPECT_CALL(*mock_files_controller_.get(), IsLaunchBlocked)
+      .WillOnce(testing::Return(false))
+      .WillOnce(testing::Return(true));
+
+  AddTextApp();
+  AddAnyApp();
+  // Find apps for a "text/plain" file. First app shouldn't be blocked, but the
+  // second one yes.
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
+  ASSERT_EQ(2U, tasks.size());
+  EXPECT_EQ(kAppIdText, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelText, tasks[0].task_title);
+  EXPECT_FALSE(tasks[0].is_dlp_blocked);
+  EXPECT_EQ(kAppIdAny, tasks[1].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelAny, tasks[1].task_title);
+  EXPECT_TRUE(tasks[1].is_dlp_blocked);
 }
 
 }  // namespace file_tasks

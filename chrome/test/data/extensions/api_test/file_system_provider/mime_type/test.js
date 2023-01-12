@@ -66,7 +66,7 @@ function runTests() {
             test_util.toExternalEntry(entry).then(function(externalEntry) {
               chrome.test.assertTrue(!!externalEntry);
               chrome.fileManagerPrivate.getFileTasks(
-                  [externalEntry],
+                  [externalEntry], [''],
                   chrome.test.callbackPass(function(resultingTasks) {
                     const tasks = resultingTasks.tasks;
                     chrome.test.assertEq(1, tasks.length);
@@ -97,7 +97,7 @@ function runTests() {
                 chrome.test.callbackPass(function(externalEntry) {
                   chrome.test.assertTrue(!!externalEntry);
                   chrome.fileManagerPrivate.getFileTasks(
-                      [externalEntry],
+                      [externalEntry], [''],
                       chrome.test.callbackPass(function(resultingTasks) {
                         const tasks = resultingTasks.tasks;
                         chrome.test.assertEq(1, tasks.length);
@@ -147,7 +147,7 @@ function runTests() {
                 chrome.test.callbackPass(function(externalEntry) {
                   chrome.test.assertTrue(!!externalEntry);
                   chrome.fileManagerPrivate.getFileTasks(
-                      [externalEntry],
+                      [externalEntry], [''],
                       chrome.test.callbackPass(function(resultingTasks) {
                         const tasks = resultingTasks.tasks;
                         chrome.test.assertEq(0, tasks.length);

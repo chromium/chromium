@@ -165,6 +165,10 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
   if (params->urls.empty())
     return RespondNow(Error("No URLs provided"));
 
+  if (params->dlp_source_urls.size() != params->urls.size()) {
+    return RespondNow(Error("Mismatching URLs and DLP source URLs provided"));
+  }
+
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
@@ -181,6 +185,8 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
     urls_.push_back(url);
     local_paths_.push_back(file_system_url.path());
   }
+
+  dlp_source_urls_ = std::move(params->dlp_source_urls);
 
   mime_type_collector_ =
       std::make_unique<app_file_handler_util::MimeTypeCollector>(profile);
@@ -218,6 +224,7 @@ void FileManagerPrivateInternalGetFileTasksFunction::
 
   file_manager::file_tasks::FindAllTypesOfTasks(
       Profile::FromBrowserContext(browser_context()), entries, urls_,
+      dlp_source_urls_,
       base::BindOnce(
           &FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed,
           this));
@@ -238,6 +245,7 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
     converted.title = task.task_title;
     converted.is_default = task.is_default;
     converted.is_generic_file_handler = task.is_generic_file_handler;
+    converted.is_dlp_blocked = task.is_dlp_blocked;
     results.push_back(std::move(converted));
   }
 

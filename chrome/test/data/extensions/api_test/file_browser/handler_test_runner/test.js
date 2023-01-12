@@ -111,8 +111,8 @@ function run() {
                 actionId}`);
             return;
           }
-          chrome.fileManagerPrivate.getFileTasks([entry],
-              onGotTasks.bind(null, entry));
+          chrome.fileManagerPrivate.getFileTasks(
+              [entry], [''], onGotTasks.bind(null, entry));
         });
   }
 
@@ -169,8 +169,7 @@ function run() {
           if (resolvedEntries.length == kTestPaths.length) {
             resolvedEntries.forEach(function(entry) {
               chrome.fileManagerPrivate.getFileTasks(
-                  [entry],
-                  onGotNonDefaultTasks.bind(null, entry));
+                  [entry], [''], onGotNonDefaultTasks.bind(null, entry));
             });
           }
         });

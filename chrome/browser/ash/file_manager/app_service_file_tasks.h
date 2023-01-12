@@ -35,11 +35,14 @@ bool FileHandlerIsEnabled(Profile* profile, const std::string& file_handler_id);
 Profile* GetProfileWithAppService(Profile* profile);
 
 // Finds the app services tasks that can handle |entries|, appends them to
-// |result_list|, and calls back to |callback|.
-// Only support sharing at the moment.
+// |result_list|, and calls back to |callback|. If passed, |dlp_source_urls|
+// should have the same length as |entries| and each element should represent
+// the URL from which the corresponding entry was downloaded from, and are used
+// to check DLP restrictions on the |entries|.
 void FindAppServiceTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
                          const std::vector<GURL>& file_urls,
+                         const std::vector<std::string>& dlp_source_urls,
                          std::vector<FullTaskDescriptor>* result_list);
 
 // Executes the specified task by app service.

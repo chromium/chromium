@@ -10,7 +10,8 @@ import {mountTestFileSystem, promisifyWithLastError, remoteProvider} from '/_tes
  */
 async function getFileTasks(fileEntry) {
   return promisifyWithLastError(
-      resolve => chrome.fileManagerPrivate.getFileTasks([fileEntry], resolve));
+      resolve =>
+          chrome.fileManagerPrivate.getFileTasks([fileEntry], [''], resolve));
 }
 
 /**

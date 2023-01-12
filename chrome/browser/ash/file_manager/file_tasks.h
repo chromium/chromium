@@ -225,7 +225,8 @@ struct FullTaskDescriptor {
                      const GURL& icon_url,
                      bool is_default,
                      bool is_generic_file_handler,
-                     bool is_file_extension_match);
+                     bool is_file_extension_match,
+                     bool is_dlp_blocked = false);
 
   FullTaskDescriptor(const FullTaskDescriptor& other);
   FullTaskDescriptor& operator=(const FullTaskDescriptor& other);
@@ -248,6 +249,8 @@ struct FullTaskDescriptor {
   // that declares no MIME types in its manifest, but matches with the
   // file_handlers "extensions" instead.
   bool is_file_extension_match;
+  // True if this task is blocked by Data Leak Prevention (DLP).
+  bool is_dlp_blocked;
 };
 
 // Describes how admin policy affects the default task in a ResultingTasks.
@@ -365,10 +368,14 @@ typedef base::OnceCallback<void(
 // If |entries| contains a Google document, only the internal tasks of the
 // Files app (i.e., tasks having the app ID of the Files app) are listed.
 // This is to avoid listing normal file handler and file browser handler tasks,
-// which can handle only normal files.
+// which can handle only normal files. If passed, |dlp_source_urls| should have
+// the same length as |entries| and each element should represent the URL from
+// which the corresponding entry was downloaded from, and are used to check DLP
+// restrictions on the |entries|.
 void FindAllTypesOfTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
                          const std::vector<GURL>& file_urls,
+                         const std::vector<std::string>& dlp_source_urls,
                          FindTasksCallback callback);
 
 // Chooses the default task in |resulting_tasks| and sets it as default, if the

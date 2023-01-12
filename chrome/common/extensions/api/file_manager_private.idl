@@ -399,6 +399,9 @@ dictionary FileTask {
   // types: ["*/*"]). Partial wild card (e.g. types: ["image/*"]) is not
   // generic file handler.
   boolean isGenericFileHandler;
+
+  // True if this is task is blocked by Data Leak Prevention (DLP).
+  boolean isDlpBlocked;
 };
 
 // Represents a set of tasks capable of handling file entries.
@@ -1304,9 +1307,11 @@ interface Functions {
 
   // Gets the list of tasks that can be performed over selected files.
   // |entries| Array of selected entries
+  // |dlpSourceUrls| Array of source URLs corresponding to the entries, used to check Data Leak Prevention (DLP) restrictions
   // |callback|
   [nocompile]
   static void getFileTasks([instanceof=Entry] object[] entries,
+                           DOMString[] dlpSourceUrls,
                            GetFileTasksCallback callback);
 
   // Gets the MIME type of an entry.

@@ -761,4 +761,16 @@ void AppServiceProxyAsh::OnIconInstalled(AppType app_type,
                          std::move(callback));
 }
 
+IntentLaunchInfo AppServiceProxyAsh::CreateIntentLaunchInfo(
+    const apps::IntentPtr& intent,
+    const apps::IntentFilterPtr& filter,
+    const apps::AppUpdate& update) {
+  IntentLaunchInfo entry =
+      AppServiceProxyBase::CreateIntentLaunchInfo(intent, filter, update);
+  if (policy::DlpFilesController* files_controller = GetDlpFilesController()) {
+    entry.is_dlp_blocked = files_controller->IsLaunchBlocked(update, intent);
+  }
+  return entry;
+}
+
 }  // namespace apps

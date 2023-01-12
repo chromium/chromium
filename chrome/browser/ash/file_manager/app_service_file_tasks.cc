@@ -184,6 +184,7 @@ bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
 void FindAppServiceTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
                          const std::vector<GURL>& file_urls,
+                         const std::vector<std::string>& dlp_source_urls,
                          std::vector<FullTaskDescriptor>* result_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(entries.size(), file_urls.size());
@@ -225,6 +226,7 @@ void FindAppServiceTasks(Profile* profile,
     auto file = std::make_unique<apps::IntentFile>(file_urls.at(i));
     file->mime_type = entries[i].mime_type;
     file->is_directory = entries[i].is_directory;
+    file->dlp_source_url = dlp_source_urls[i];
     intent_files.push_back(std::move(file));
   }
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
@@ -298,8 +300,9 @@ void FindAppServiceTasks(Profile* profile,
         /* is_default=*/false,
         // TODO(petermarshall): Handle the rest of the logic from FindWebTasks()
         // e.g. prioritise non-generic handlers.
-        /* is_generic=*/launch_entry.is_generic_file_handler,
-        /* is_file_extension_match=*/launch_entry.is_file_extension_match));
+        /* is_generic_file_handler=*/launch_entry.is_generic_file_handler,
+        /* is_file_extension_match=*/launch_entry.is_file_extension_match,
+        /* is_dlp_blocked=*/launch_entry.is_dlp_blocked));
   }
 }
 

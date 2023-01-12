@@ -269,6 +269,13 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        LoadIconCallback callback,
                        bool install_success);
 
+  // Returns an instance of `IntentLaunchInfo` created based on `intent`,
+  // `filter`, and `update`.
+  IntentLaunchInfo CreateIntentLaunchInfo(
+      const apps::IntentPtr& intent,
+      const apps::IntentFilterPtr& filter,
+      const apps::AppUpdate& update) override;
+
   SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;

@@ -110,8 +110,7 @@ function run() {
           if (resolvedEntries.length == kTestPaths.length) {
             resolvedEntries.forEach(function(entry) {
               chrome.fileManagerPrivate.getFileTasks(
-                  [entry],
-                  onGotTasks.bind(null, entry));
+                  [entry], [''], onGotTasks.bind(null, entry));
             });
           }
         });

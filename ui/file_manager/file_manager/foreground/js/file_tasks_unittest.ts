@@ -23,6 +23,7 @@ import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
 import {FileManager} from './file_manager.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
+import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {TaskController} from './task_controller.js';
 import {TaskHistory} from './task_history.js';
@@ -140,7 +141,8 @@ export function setUp() {
   mockChrome = {
     fileManagerPrivate: {
       getFileTasks: function(
-          _entries: Entry[], callback: (tasks: any) => void) {
+          _entries: Entry[], _sourceUrls: string[],
+          callback: (tasks: any) => void) {
         setTimeout(callback.bind(null, {tasks: [mockTask]}), 0);
       },
       executeTask: function(
@@ -204,7 +206,11 @@ function getMockFileManager(): FileManager {
       passwordDialog,
       speakA11yMessage: (_text: string) => {},
     }),
-    metadataModel: {} as unknown as MetadataModel,
+    metadataModel: {
+      getCache: function(_entries: Entry[], _names: string[]) {
+        return _entries.map(_ => new MetadataItem());
+      },
+    } as unknown as MetadataModel,
     directoryModel: {
       getCurrentRootType: function() {
         return null;
@@ -352,7 +358,8 @@ export async function testToOpenRtfFile(done: () => void) {
  */
 export async function testOpenTaskPicker(done: () => void) {
   chrome.fileManagerPrivate.getFileTasks =
-      (_entries: Entry[], callback: (tasks: any) => void) => {
+      (_entries: Entry[], _sourceUrls: string[],
+       callback: (tasks: any) => void) => {
         setTimeout(
             callback.bind(null, {
               tasks: [
@@ -406,7 +413,7 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
   };
 
   chrome.fileManagerPrivate.getFileTasks =
-      (_entries: Entry[],
+      (_entries: Entry[], _sourceUrls: string[],
        callback: (tasks: chrome.fileManagerPrivate.ResultingTasks|undefined) =>
            void) => {
         setTimeout(
@@ -506,7 +513,8 @@ function setUpInstallLinuxPackage() {
     title: '__MSG_INSTALL_LINUX_PACKAGE__',
   };
   chrome.fileManagerPrivate.getFileTasks =
-      (_entries: Entry[], callback: (tasks: any) => void) => {
+      (_entries: Entry[], _sourceUrls: string[],
+       callback: (tasks: any) => void) => {
         setTimeout(callback.bind(null, {tasks: [fileTask]}), 0);
       };
   return fileManager;
@@ -546,7 +554,8 @@ export async function testOpenInstallLinuxPackageDialog(done: () => void) {
 export async function testToOpenTiniFileOpensImportCrostiniImageDialog(
     done: () => void) {
   chrome.fileManagerPrivate.getFileTasks =
-      (_entries: Entry[], callback: (tasks: any) => void) => {
+      (_entries: Entry[], _sourceUrls: string[],
+       callback: (tasks: any) => void) => {
         setTimeout(
             callback.bind(null, {
               tasks: [

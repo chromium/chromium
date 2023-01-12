@@ -34,6 +34,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
@@ -763,9 +765,10 @@ class FileManagerFileTasksComplexTest : public testing::Test {
     void Call(Profile* profile,
               const std::vector<extensions::EntryInfo>& entries,
               const std::vector<GURL>& file_urls,
+              const std::vector<std::string>& source_urls,
               ResultingTasks* resulting_tasks) {
       FindAllTypesOfTasks(
-          profile, entries, file_urls,
+          profile, entries, file_urls, source_urls,
           base::BindOnce(&FindAllTypesOfTasksSynchronousWrapper::OnReply,
                          base::Unretained(this), resulting_tasks));
       run_loop_.Run();
@@ -886,7 +889,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, BasicFiles) {
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+      test_profile_.get(), entries, file_urls, {""}, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(text_app_id_, tasks[0].task_descriptor.app_id);
 
@@ -894,7 +897,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, BasicFiles) {
   entries.emplace_back(crostini_folder_.Append("bar.txt"), "text/plain", false);
   file_urls.emplace_back(PathToURL("dir/bar.txt"));
   FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+      test_profile_.get(), entries, file_urls, {"", ""}, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(text_app_id_, tasks[0].task_descriptor.app_id);
 }
@@ -908,13 +911,13 @@ TEST_F(FileManagerFileTasksCrostiniTest, Directories) {
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+      test_profile_.get(), entries, file_urls, {""}, resulting_tasks.get());
   EXPECT_EQ(0U, tasks.size());
 
   entries.emplace_back(crostini_folder_.Append("foo.txt"), "text/plain", false);
   file_urls.emplace_back(PathToURL("dir/foo.txt"));
   FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+      test_profile_.get(), entries, file_urls, {"", ""}, resulting_tasks.get());
   EXPECT_EQ(0U, tasks.size());
 }
 
@@ -929,7 +932,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, MultipleMatches) {
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+      test_profile_.get(), entries, file_urls, {"", ""}, resulting_tasks.get());
   // The returned values happen to be ordered alphabetically by app_id, so we
   // rely on this to keep the test simple.
   EXPECT_LT(gif_app_id_, image_app_id_);
@@ -949,14 +952,15 @@ TEST_F(FileManagerFileTasksCrostiniTest, MultipleTypes) {
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+      test_profile_.get(), entries, file_urls, {"", ""}, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(image_app_id_, tasks[0].task_descriptor.app_id);
 
   entries.emplace_back(crostini_folder_.Append("qux.mp4"), "video/mp4", false);
   file_urls.emplace_back(PathToURL("dir/qux.mp4"));
-  FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
+                                               file_urls, {"", "", ""},
+                                               resulting_tasks.get());
   EXPECT_EQ(0U, tasks.size());
 }
 
@@ -971,7 +975,7 @@ TEST_F(FileManagerFileTasksCrostiniTest, AlternateMimeTypes) {
   std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
 
   FindAllTypesOfTasksSynchronousWrapper().Call(
-      test_profile_.get(), entries, file_urls, resulting_tasks.get());
+      test_profile_.get(), entries, file_urls, {"", ""}, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(alt_mime_app_id_, tasks[0].task_descriptor.app_id);
 }

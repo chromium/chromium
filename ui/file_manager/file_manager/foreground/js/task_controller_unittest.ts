@@ -102,7 +102,9 @@ function createTaskController(fileSelectionHandler: FileSelectionHandler):
 function setupFileManagerPrivate() {
   mockChrome.fileManagerPrivate = {
     getFileTaskCalledCount_: 0,
-    getFileTasks: function(_entries: Entry[], callback: (tasks: any) => void) {
+    getFileTasks: function(
+        _entries: Entry[], _sourceUrls: string[],
+        callback: (tasks: any) => void) {
       mockChrome.fileManagerPrivate.getFileTaskCalledCount_++;
       const fileTasks = ([
         /** @type {!chrome.fileManagerPrivate.FileTask} */ ({

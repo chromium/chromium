@@ -160,9 +160,10 @@ function launchWithEntries(isolatedEntries) {
          })
       .then(
           function(entries) {
+            const dlpSourceUrls = entries.map(_ => '');
             var tasksPromise = new Promise(function(fulfill) {
                                  chrome.fileManagerPrivate.getFileTasks(
-                                     entries, fulfill);
+                                     entries, dlpSourceUrls, fulfill);
                                }).then(function(resultingTasks) {
               const tasks = resultingTasks.tasks;
               chrome.test.assertEq(1, tasks.length);

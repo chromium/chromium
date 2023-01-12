@@ -119,7 +119,7 @@ void OpenFileWithMimeType(Profile* profile,
   file_urls.push_back(url);
 
   file_tasks::FindAllTypesOfTasks(
-      profile, entries, file_urls,
+      profile, entries, file_urls, {""},
       base::BindOnce(&OpenFileMimeTypeAfterTasksListed, profile, url,
                      std::move(callback)));
 }

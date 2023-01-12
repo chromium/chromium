@@ -499,7 +499,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     return intent_launch_info;
   }
 
-  app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
+  app_registry_cache_.ForEachApp([this, &intent_launch_info, &intent,
                                   &exclude_browsers, &exclude_browser_tab_apps](
                                      const apps::AppUpdate& update) {
     if (update.Readiness() != apps::Readiness::kReady &&
@@ -545,13 +545,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     const auto& filters = update.IntentFilters();
     for (const auto& handler_entry : best_handler_map) {
       const IntentFilterPtr& filter = filters[handler_entry.second.index];
-      IntentLaunchInfo entry;
-      entry.app_id = update.AppId();
-      entry.activity_label = GetActivityLabel(filter, update);
-      entry.activity_name = filter->activity_name.value_or("");
-      entry.is_generic_file_handler =
-          apps_util::IsGenericFileHandler(intent, filter);
-      entry.is_file_extension_match = filter->IsFileExtensionsFilter();
+      IntentLaunchInfo entry = CreateIntentLaunchInfo(intent, filter, update);
       intent_launch_info.push_back(entry);
     }
   });
@@ -710,6 +704,20 @@ void AppServiceProxyBase::OnLaunched(LaunchCallback callback,
 
 bool AppServiceProxyBase::ShouldReadIcons() {
   return false;
+}
+
+IntentLaunchInfo AppServiceProxyBase::CreateIntentLaunchInfo(
+    const apps::IntentPtr& intent,
+    const apps::IntentFilterPtr& filter,
+    const apps::AppUpdate& update) {
+  IntentLaunchInfo entry;
+  entry.app_id = update.AppId();
+  entry.activity_label = GetActivityLabel(filter, update);
+  entry.activity_name = filter->activity_name.value_or("");
+  entry.is_generic_file_handler =
+      apps_util::IsGenericFileHandler(intent, filter);
+  entry.is_file_extension_match = filter->IsFileExtensionsFilter();
+  return entry;
 }
 
 IntentLaunchInfo::IntentLaunchInfo() = default;

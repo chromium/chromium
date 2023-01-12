@@ -542,13 +542,15 @@ FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& in_task_descriptor,
                                        const GURL& in_icon_url,
                                        bool in_is_default,
                                        bool in_is_generic_file_handler,
-                                       bool in_is_file_extension_match)
+                                       bool in_is_file_extension_match,
+                                       bool is_dlp_blocked)
     : task_descriptor(in_task_descriptor),
       task_title(in_task_title),
       icon_url(in_icon_url),
       is_default(in_is_default),
       is_generic_file_handler(in_is_generic_file_handler),
-      is_file_extension_match(in_is_file_extension_match) {}
+      is_file_extension_match(in_is_file_extension_match),
+      is_dlp_blocked(is_dlp_blocked) {}
 
 FullTaskDescriptor::FullTaskDescriptor(const FullTaskDescriptor& other) =
     default;
@@ -903,13 +905,14 @@ bool GetUserFallbackChoice(
 void FindExtensionAndAppTasks(Profile* profile,
                               const std::vector<extensions::EntryInfo>& entries,
                               const std::vector<GURL>& file_urls,
+                              const std::vector<std::string>& dlp_source_urls,
                               FindTasksCallback callback,
                               std::unique_ptr<ResultingTasks> resulting_tasks) {
   auto* tasks = &resulting_tasks->tasks;
 
   // 2. Web tasks file_handlers (View/Open With), Chrome app file_handlers, and
   // extension file_browser_handlers.
-  FindAppServiceTasks(profile, entries, file_urls, tasks);
+  FindAppServiceTasks(profile, entries, file_urls, dlp_source_urls, tasks);
 
   // 3. Find and append Guest OS tasks directly if Guest OS file tasks aren't
   // provided by App Service.
@@ -928,18 +931,20 @@ void FindExtensionAndAppTasks(Profile* profile,
 void FindAllTypesOfTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
                          const std::vector<GURL>& file_urls,
+                         const std::vector<std::string>& dlp_source_urls,
                          FindTasksCallback callback) {
   DCHECK(profile);
   auto resulting_tasks = std::make_unique<ResultingTasks>();
   if (!ash::features::ShouldArcFileTasksUseAppService()) {
     // 1. Find and append ARC handler tasks if ARC file tasks aren't
     // provided by App Service.
-    FindArcTasks(profile, entries, file_urls, std::move(resulting_tasks),
-                 base::BindOnce(&FindExtensionAndAppTasks, profile, entries,
-                                file_urls, std::move(callback)));
+    FindArcTasks(
+        profile, entries, file_urls, std::move(resulting_tasks),
+        base::BindOnce(&FindExtensionAndAppTasks, profile, entries, file_urls,
+                       dlp_source_urls, std::move(callback)));
   } else {
-    FindExtensionAndAppTasks(profile, entries, file_urls, std::move(callback),
-                             std::move(resulting_tasks));
+    FindExtensionAndAppTasks(profile, entries, file_urls, dlp_source_urls,
+                             std::move(callback), std::move(resulting_tasks));
   }
 }
 

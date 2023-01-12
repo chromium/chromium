@@ -79,6 +79,7 @@ class FileManagerPrivateInternalGetFileTasksFunction
       mime_type_collector_;
   std::vector<GURL> urls_;
   std::vector<base::FilePath> local_paths_;
+  std::vector<std::string> dlp_source_urls_;
 };
 
 // Implements the chrome.fileManagerPrivateInternal.setDefaultTask method.

@@ -219,12 +219,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             descriptor, urls, mimeTypes, callback);
       });
 
-  apiFunctions.setHandleRequest('getFileTasks', function(entries, callback) {
-    var urls = entries.map(function(entry) {
-      return getEntryURL(entry);
-    });
-    fileManagerPrivateInternal.getFileTasks(urls, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'getFileTasks', function(entries, dlpSourceUrls, callback) {
+        var urls = entries.map(function(entry) {
+          return getEntryURL(entry);
+        });
+        fileManagerPrivateInternal.getFileTasks(urls, dlpSourceUrls, callback);
+      });
 
   apiFunctions.setHandleRequest('getDownloadUrl', function(entry, callback) {
     var url = getEntryURL(entry);

@@ -281,10 +281,12 @@ export async function getMimeType(entry) {
 
 /**
  * @param {!Array<!Entry|!FilesAppEntry>} entries
+ * @param {!Array<string>} dlpSourceUrls
  * @return {!Promise<chrome.fileManagerPrivate.ResultingTasks>}
  */
-export async function getFileTasks(entries) {
-  return promisify(chrome.fileManagerPrivate.getFileTasks, entries);
+export async function getFileTasks(entries, dlpSourceUrls) {
+  return promisify(
+      chrome.fileManagerPrivate.getFileTasks, entries, dlpSourceUrls);
 }
 
 /**

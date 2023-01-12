@@ -62,6 +62,8 @@ struct IntentLaunchInfo {
   std::string activity_label;
   bool is_generic_file_handler;
   bool is_file_extension_match;
+  // Whether the intent is blocked by DLP. Defaults to false.
+  bool is_dlp_blocked = false;
 };
 
 // Singleton (per Profile) proxy and cache of an App Service's apps.
@@ -394,6 +396,13 @@ class AppServiceProxyBase : public KeyedService,
                          const IconKey& icon_key,
                          IconType icon_type,
                          LoadIconCallback callback) {}
+
+  // Returns an instance of `IntentLaunchInfo` created based on `intent`,
+  // `filter`, and `update`.
+  virtual IntentLaunchInfo CreateIntentLaunchInfo(
+      const apps::IntentPtr& intent,
+      const apps::IntentFilterPtr& filter,
+      const apps::AppUpdate& update);
 
   base::flat_map<AppType, AppPublisher*> publishers_;
 

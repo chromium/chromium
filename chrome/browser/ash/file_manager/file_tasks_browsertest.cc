@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstring>
 #include <memory>
 #include <unordered_map>
 
@@ -33,7 +34,11 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
@@ -65,6 +70,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 
 using web_app::kMediaAppId;
@@ -73,15 +79,21 @@ namespace file_manager {
 namespace file_tasks {
 namespace {
 
+const char* blockedUrl = "https://blocked.com";
+
 // A list of file extensions (`/` delimited) representing a selection of files
 // and the app expected to be the default to open these files.
 // A null app_id indicates there is no preferred default.
 // A mime_type can be set to a result normally given by sniffing when
 // net::GetMimeTypeFromFile() would not provide a result.
+// A source_url can be set when testing DLP restrictions and is also used to
+// determine whether fetched tasks should be blocked. If null, the task should
+// never be blocked.
 struct Expectation {
   const char* file_extensions;
   const char* app_id;
   const char* mime_type = nullptr;
+  const char* dlp_source_url = nullptr;
 };
 
 // Verifies that a single default task expectation (i.e. the expected
@@ -127,11 +139,58 @@ void VerifyAsyncTask(int* remaining,
   std::move(quit_closure).Run();
 }
 
+// Verifies that all tasks are either blocked or not by DLP, according to
+// |expectation|. Decrements the provided |remaining| integer to provide
+// additional verification that this function is invoked an expected number of
+// times (i.e. even if the callback could be invoked asynchronously).
+void VerifyDlpStatus(int* remaining,
+                     Expectation expectation,
+                     std::unique_ptr<ResultingTasks> resulting_tasks) {
+  ASSERT_TRUE(resulting_tasks) << expectation.file_extensions;
+  --*remaining;
+
+  bool expect_dlp_blocked = expectation.dlp_source_url &&
+                            strcmp(expectation.dlp_source_url, blockedUrl) == 0;
+  EXPECT_EQ(expect_dlp_blocked,
+            base::ranges::all_of(resulting_tasks->tasks,
+                                 &FullTaskDescriptor::is_dlp_blocked));
+}
+
 // Installs a chrome app that handles .tiff.
 scoped_refptr<const extensions::Extension> InstallTiffHandlerChromeApp(
     Profile* profile) {
   return test::InstallTestingChromeApp(
       profile, "extensions/api_test/file_browser/app_file_handler");
+}
+
+// Populates |entries|, |file_urls|, and |dlp_source_urls| based on |test|.
+void ConvertExpectation(const Expectation& test,
+                        std::vector<extensions::EntryInfo>& entries,
+                        std::vector<GURL>& file_urls,
+                        std::vector<std::string>& dlp_source_urls) {
+  const base::FilePath prefix = base::FilePath().AppendASCII("file");
+  std::vector<base::StringPiece> all_extensions = base::SplitStringPiece(
+      test.file_extensions, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (base::StringPiece extension : all_extensions) {
+    base::FilePath path = prefix.AddExtension(extension);
+    std::string mime_type;
+    net::GetMimeTypeFromFile(path, &mime_type);
+    if (test.mime_type != nullptr) {
+      // Sniffing isn't used when GetMimeTypeFromFile() succeeds, so there
+      // shouldn't be a hard-coded mime type configured.
+      EXPECT_TRUE(mime_type.empty())
+          << "Did not expect mime match " << mime_type << " for " << path;
+      mime_type = test.mime_type;
+    } else {
+      EXPECT_FALSE(mime_type.empty()) << "No mime type for " << path;
+    }
+    entries.emplace_back(path, mime_type, false);
+    GURL url = GURL(base::JoinString(
+        {"filesystem:https://site.com/isolated/foo.", extension}, ""));
+    ASSERT_TRUE(url.is_valid());
+    file_urls.push_back(url);
+    dlp_source_urls.push_back(test.dlp_source_url ? test.dlp_source_url : "");
+  }
 }
 
 class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
@@ -147,37 +206,17 @@ class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
   void TestExpectationsAgainstDefaultTasks(
       const std::vector<Expectation>& expectations) {
     int remaining = expectations.size();
-    const base::FilePath prefix = base::FilePath().AppendASCII("file");
 
     for (const Expectation& test : expectations) {
       std::vector<extensions::EntryInfo> entries;
       std::vector<GURL> file_urls;
-      std::vector<base::StringPiece> all_extensions =
-          base::SplitStringPiece(test.file_extensions, "/",
-                                 base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      for (base::StringPiece extension : all_extensions) {
-        base::FilePath path = prefix.AddExtension(extension);
-        std::string mime_type;
-        net::GetMimeTypeFromFile(path, &mime_type);
-        if (test.mime_type != nullptr) {
-          // Sniffing isn't used when GetMimeTypeFromFile() succeeds, so there
-          // shouldn't be a hard-coded mime type configured.
-          EXPECT_TRUE(mime_type.empty())
-              << "Did not expect mime match " << mime_type << " for " << path;
-          mime_type = test.mime_type;
-        } else {
-          EXPECT_FALSE(mime_type.empty()) << "No mime type for " << path;
-        }
-        entries.emplace_back(path, mime_type, false);
-        GURL url = GURL(base::JoinString(
-            {"filesystem:https://site.com/isolated/foo.", extension}, ""));
-        ASSERT_TRUE(url.is_valid());
-        file_urls.push_back(url);
-      }
+      std::vector<std::string> dlp_source_urls;
+      ConvertExpectation(test, entries, file_urls, dlp_source_urls);
 
       // task_verifier callback is invoked synchronously from
       // FindAllTypesOfTasks.
       FindAllTypesOfTasks(browser()->profile(), entries, file_urls,
+                          dlp_source_urls,
                           base::BindOnce(&VerifyTasks, &remaining, test));
     }
     EXPECT_EQ(0, remaining);
@@ -419,7 +458,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
       base::BindLambdaForTesting([&](const std::string& mime_type) {
         entries[0].mime_type = mime_type;
         EXPECT_EQ(entries[0].mime_type, "image/gif");
-        FindAllTypesOfTasks(profile, entries, urls, std::move(verifier));
+        FindAllTypesOfTasks(profile, entries, urls, {""}, std::move(verifier));
       }));
   run_loop.Run();
   EXPECT_EQ(remaining_expectations, 0);
@@ -618,6 +657,80 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
                             ash::office_fallback::FallbackReason::kOffline));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// Tests that apply DLP policies before fetching tasks and verify expectations
+// on the blocked status.
+class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
+ public:
+  // Tests that fetched tasks are marked as blocked by DLP, if expected.
+  void TestExpectationsAgainstDlp(
+      const std::vector<Expectation>& expectations) {
+    int remaining = expectations.size();
+
+    for (const Expectation& test : expectations) {
+      std::vector<extensions::EntryInfo> entries;
+      std::vector<GURL> file_urls;
+      std::vector<std::string> dlp_source_urls;
+      ConvertExpectation(test, entries, file_urls, dlp_source_urls);
+
+      // task_verifier callback is invoked synchronously from
+      // FindAllTypesOfTasks.
+      FindAllTypesOfTasks(browser()->profile(), entries, file_urls,
+                          dlp_source_urls,
+                          base::BindOnce(&VerifyDlpStatus, &remaining, test));
+    }
+    EXPECT_EQ(0, remaining);
+  }
+
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager =
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+    rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
+  }
+
+ protected:
+  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
+  if (profile_type() != TestProfileType::kRegular) {
+    // Early return: DLP is only supported for regular profiles.
+    return;
+  }
+
+  Profile* profile = browser()->profile();
+
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      profile,
+      base::BindRepeating(&FileTasksPolicyBrowserTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+
+  ON_CALL(*rules_manager_, IsFilesPolicyEnabled)
+      .WillByDefault(testing::Return(true));
+  std::unique_ptr<policy::DlpFilesController> files_controller_ =
+      std::make_unique<policy::DlpFilesController>(*rules_manager_);
+  ON_CALL(*rules_manager_, GetDlpFilesController)
+      .WillByDefault(testing::Return(files_controller_.get()));
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(testing::Return(policy::DlpRulesManager::Level::kAllow));
+  EXPECT_CALL(*rules_manager_,
+              IsRestrictedDestination(GURL(blockedUrl), testing::_, testing::_,
+                                      testing::_, testing::_))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(testing::Return(policy::DlpRulesManager::Level::kBlock));
+
+  std::vector<Expectation> expectations = {
+      {"jpg/gif", kMediaAppId, nullptr, "https://example.com"},
+      {"jpg/mp4", kMediaAppId, nullptr, "https://blocked.com"},
+  };
+
+  TestExpectationsAgainstDlp(expectations);
+}
 
 // TODO(cassycc): move this class to a more appropriate spot.
 // Fake DriveFs specific to the `DriveTest`. Allows a test file to
@@ -1306,6 +1419,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     FileTasksBrowserTest);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    FileTasksPolicyBrowserTest);
 
 }  // namespace file_tasks
 }  // namespace file_manager

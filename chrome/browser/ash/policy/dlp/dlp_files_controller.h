@@ -210,6 +210,11 @@ class DlpFilesController {
                             apps::IntentPtr intent,
                             CheckIfLaunchAllowedCallback result_callback);
 
+  // Returns true if `app_update` is blocked from opening any of the
+  // files in `intent`.
+  virtual bool IsLaunchBlocked(const apps::AppUpdate& app_update,
+                               const apps::IntentPtr& intent);
+
   // Returns a sublist of |transferred_files| which aren't allowed to be
   // transferred to either |destination_url| or |destination_component| in
   // |result_callback|.

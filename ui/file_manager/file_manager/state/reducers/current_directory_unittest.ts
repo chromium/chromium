@@ -336,7 +336,7 @@ export function testComputeHasDlpDisabledFiles() {
 
 function mockGetFileTasks(tasks: chrome.fileManagerPrivate.FileTask[]) {
   const mocked =
-      (_entries: Entry[],
+      (_entries: Entry[], _sourceUrls: string[],
        callback: (resultingTasks: chrome.fileManagerPrivate.ResultingTasks) =>
            void) => {
         setTimeout(callback, 0, {tasks});
@@ -354,6 +354,7 @@ const fakeFileTasks: chrome.fileManagerPrivate.FileTask = {
   isGenericFileHandler: false,
   title: 'app 1',
   iconUrl: undefined,
+  isDlpBlocked: false,
 };
 
 export async function testFetchTasks(done: () => void) {
@@ -393,6 +394,7 @@ export async function testFetchTasks(done: () => void) {
       isGenericFileHandler: false,
       title: 'app 1',
       iconUrl: undefined,
+      isDlpBlocked: false,
     },
   ];
   want.defaultTask = {...want.tasks[0]!};

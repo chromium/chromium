@@ -86,8 +86,10 @@ export class FileTasks {
 
     // Cannot use fake entries with getFileTasks.
     entries = entries.filter(e => !util.isFakeEntry(e));
+    const dlpSourceUrls = metadataModel.getCache(entries, ['sourceUrl'])
+                              .map(m => m.sourceUrl || '');
     if (entries.length !== 0) {
-      resultingTasks = await getFileTasks(entries);
+      resultingTasks = await getFileTasks(entries, dlpSourceUrls);
       if (!resultingTasks || !resultingTasks.tasks) {
         throw new Error('Cannot get file tasks.');
       }
