@@ -60,6 +60,11 @@ NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
   this->replacements = std::move(replacements);
 }
 
+NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
+    int resource_id) {
+  message_id = resource_id;
+}
+
 // Constructor used for standard accelerators (i.e, it contains at least one
 // modifier and a set of keys).
 NonConfigurableAcceleratorDetails::NonConfigurableAcceleratorDetails(
@@ -87,6 +92,9 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kBrowserNewTab,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_T, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientDragLinkInSameTab,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_DRAG_LINK_IN_SAME_TAB)},
       });
   return *nonConfigurableActionsMap;
 }

@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/shell.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
@@ -356,8 +357,17 @@ AcceleratorConfigurationProvider::CreateAcceleratorInfos(
 mojom::TextAcceleratorPropertiesPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
     const NonConfigurableAcceleratorDetails& details) {
-  DCHECK(details.replacements.has_value());
   DCHECK(details.message_id.has_value());
+  // Ambient accelerators that only contain plain text e.g., Drag the
+  // link to the tab's address bar.
+  if (!details.replacements.has_value() || details.replacements->empty()) {
+    std::vector<mojom::TextAcceleratorPartPtr> parts;
+    parts.push_back(mojom::TextAcceleratorPart::New(
+        l10n_util::GetStringUTF16(details.message_id.value()),
+        mojom::TextAcceleratorPartType::kPlainText));
+    return mojom::TextAcceleratorProperties::New(std::move(parts));
+  }
+
   // Contains the start points of the replaced strings.
   std::vector<size_t> offsets;
   const std::vector<std::u16string> empty_string_replacements(

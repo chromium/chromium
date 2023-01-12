@@ -69,6 +69,8 @@ enum NonConfigurableActions {
   kBrowserFocusToolbar,
   kBrowserFocusInactivePopupForAccessibility,
   kBrowserSelectTabByIndex,
+  // Ambient action id
+  kAmbientDragLinkInSameTab,
 };
 
 // Contains details for UI styling of an accelerator.
@@ -213,6 +215,7 @@ struct NonConfigurableAcceleratorDetails {
   NonConfigurableAcceleratorDetails(
       int message_id,
       std::vector<TextAcceleratorPart> replacements);
+  explicit NonConfigurableAcceleratorDetails(int resource_id);
   explicit NonConfigurableAcceleratorDetails(
       std::vector<ui::Accelerator> accels);
   NonConfigurableAcceleratorDetails(const NonConfigurableAcceleratorDetails&);
@@ -358,7 +361,12 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kGeneral,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
-
+    {NonConfigurableActions::kAmbientDragLinkInSameTab,
+     IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_SAME_TAB,
+     mojom::AcceleratorCategory::kTabsAndWindows,
+     mojom::AcceleratorSubcategory::kGeneral,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
+     mojom::AcceleratorSource::kAmbient},
     // Page and Web Browser.
     {FOCUS_PREVIOUS_PANE, IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE,
      mojom::AcceleratorCategory::kPageAndWebBrowser,

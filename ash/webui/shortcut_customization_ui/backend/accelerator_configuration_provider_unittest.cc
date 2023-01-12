@@ -260,6 +260,18 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
         ->second.replacements.value();
   }
 
+  bool TextAccelContainsReplacements(int action_id) {
+    return non_configurable_actions_map_
+        .find(static_cast<ash::NonConfigurableActions>(action_id))
+        ->second.replacements.has_value();
+  }
+
+  int GetMessageIdForTextAccel(int action_id) {
+    return non_configurable_actions_map_
+        .find(static_cast<ash::NonConfigurableActions>(action_id))
+        ->second.message_id.value();
+  }
+
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
   NonConfigurableActionsMap non_configurable_actions_map_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -627,11 +639,19 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
         // Matching Accelerator was found.
         EXPECT_TRUE(found_match);
       } else {
+        const auto& text_accel =
+            info->layout_properties->get_text_accelerator()->text_accelerator;
+        if (!TextAccelContainsReplacements(id)) {
+          // Ambient accelerators that contain no replacements e.g., Drag the
+          // link to the tab's address bar
+          EXPECT_EQ(text_accel[0]->text,
+                    l10n_util::GetStringUTF16(GetMessageIdForTextAccel(id)));
+          continue;
+        }
         // We're only concerned with validating the replacements
         // (keys/modifiers). Validating the plain text parts is handled by the
         // paramaterized tests below.
-        const auto& text_accel_parts = RemovePlainTextParts(
-            info->layout_properties->get_text_accelerator()->text_accelerator);
+        const auto& text_accel_parts = RemovePlainTextParts(text_accel);
         const auto& replacement_parts = GetReplacementsForAction(id);
         for (size_t i = 0; i < replacement_parts.size(); i++) {
           ValidateTextAccelerators(replacement_parts[i], text_accel_parts[i]);

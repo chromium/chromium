@@ -3654,6 +3654,12 @@ Connect your device to power.
       <message name="IDS_TEXT_ACCELERATOR_GO_TO_TAB_IN_RANGE" translateable="false" desc="Action for accelerator action - Go to tabs 1 through 8.">
         <ph name="MODIFIER">$1<ex>ctrl</ex></ph> + <ph name="KEY_ONE">$2<ex>1</ex></ph> through <ph name="KEY_TWO">$3<ex>8</ex></ph>
       </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DRAG_LINK_IN_SAME_TAB" translateable="false" desc="Label for accelerator description - Open the link in the tab.">
+        Open the link in the tab
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DRAG_LINK_IN_SAME_TAB" translateable="false" desc="Action for accelerator action - Open the link in the tab.">
+        Drag the link to the tab's address bar
+      </message>
 
       <!-- Tray scale strings -->
       <message name="IDS_ASH_STATUS_TRAY_SCALE" desc="The label used in scale setting detailed page of ash tray popup.">
