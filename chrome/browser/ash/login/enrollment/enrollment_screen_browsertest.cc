@@ -351,6 +351,36 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, SkipEnrollmentDialogueGoBack) {
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
+                       SkipEnrollmentDialogueGoBackWithFRE) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+
+  // Set enrollment config to Forced Re-enrollment.
+  enrollment_config.mode = policy::EnrollmentConfig::MODE_LOCAL_FORCED;
+  enrollment_config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  enrollment_config.is_license_packaged_with_device = true;
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+  enrollment_helper_.ResetMock();
+
+  WizardContext context;
+  enrollment_screen()->Show(&context);
+
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+
+  test::OobeJS().ExpectVisiblePath(kEnterpriseEnrollmentDialogue);
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kCancelScreenAction);
+
+  // Check Dialogue is not open and Enrollment Screen is visible.
+  test::OobeJS().ExpectDialogClosed(kEnterpriseEnrollmentSkipDialogue);
+  test::OobeJS().ExpectVisiblePath(kEnterpriseEnrollmentDialogue);
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
                        SkipEnrollmentDialogueSkipConfirmation) {
   enrollment_ui_.SetExitHandler();
   policy::EnrollmentConfig enrollment_config;

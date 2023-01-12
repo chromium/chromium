@@ -490,7 +490,8 @@ void EnrollmentScreen::ProcessRetry() {
 
 bool EnrollmentScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kCancelScreenAction) {
-    if (config_.is_license_packaged_with_device) {
+    if (config_.is_license_packaged_with_device && !config_.is_forced() &&
+        (!(enrollment_helper_ && enrollment_helper_->InProgress()))) {
       ShowSkipEnrollmentDialogue();
       return true;
     } else {
