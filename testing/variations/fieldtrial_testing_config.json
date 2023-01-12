@@ -11738,6 +11738,21 @@
             ]
         }
     ],
+    "UseEcoQoSForBackgroundProcess": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseEcoQoSForBackgroundProcess"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSnappyForParkableStrings": [
         {
             "platforms": [
