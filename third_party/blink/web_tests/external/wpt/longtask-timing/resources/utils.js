@@ -11,3 +11,8 @@ function checkLongTaskEntry(longtask, name='self') {
 function hasUnrelatedTaskName(taskName, expectedTaskName) {
   return (taskName !== expectedTaskName);
 }
+
+function busyWait(millis = 60) {
+  const start = performance.now()
+  while (performance.now() < (start + millis)) {}
+}
