@@ -65,7 +65,7 @@ export class TextEditHandler {
     /** @private {!Array<AutomationIntent>} */
     this.inferredIntents_ = [];
 
-    chrome.automation.getDesktop(function(desktop) {
+    chrome.automation.getDesktop(desktop => {
       const isTextArea = node.htmlTag === 'textarea';
 
       // ChromeVox handles two general groups of text fields:
@@ -105,7 +105,7 @@ export class TextEditHandler {
 
       this.editableText_ = useRichText ? new AutomationRichEditableText(node) :
                                          new AutomationEditableText(node);
-    }.bind(this));
+    });
   }
 
   /** @return {!AutomationNode} */
@@ -420,9 +420,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return true;
     }
     const exited = AutomationUtil.getUniqueAncestors(next, deep);
-    return Boolean(exited.find(function(item) {
-      return item === this.node_;
-    }.bind(this)));
+    return exited.includes(this.node_);
   }
 
   /** @override */
@@ -438,9 +436,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return true;
     }
     const exited = AutomationUtil.getUniqueAncestors(next, deep);
-    return Boolean(exited.find(function(item) {
-      return item === this.node_;
-    }.bind(this)));
+    return exited.includes(this.node_);
   }
 
   /** @override */

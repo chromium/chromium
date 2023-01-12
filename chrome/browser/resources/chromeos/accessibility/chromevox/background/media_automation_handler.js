@@ -55,14 +55,14 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
   /** @override */
   onTtsEnd() {
     const now = new Date();
-    setTimeout(function() {
+    setTimeout(() => {
       const then = this.lastTtsEvent_;
       if (now < then) {
         return;
       }
       this.lastTtsEvent_ = now;
       this.update_({end: true});
-    }.bind(this), MediaAutomationHandler.MIN_WAITTIME_MS);
+    }, MediaAutomationHandler.MIN_WAITTIME_MS);
   }
 
   /** @override */

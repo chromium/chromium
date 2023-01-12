@@ -14,7 +14,7 @@ ChromeVoxDownloadTest = class extends ChromeVoxE2ETest {
   addFakeApi(timeRemainingUnits) {
     // Fake out Chrome Downloads API namespace.
     chrome.downloads = {};
-    chrome.downloads.search = function(query, callback) {
+    chrome.downloads.search = (query, callback) => {
       callback([{
         id: query.id,
         fileName: 'test.pdf',
@@ -22,7 +22,7 @@ ChromeVoxDownloadTest = class extends ChromeVoxE2ETest {
         totalBytes: 10,
         estimatedEndTime: this.getTimeRemaining(timeRemainingUnits),
       }]);
-    }.bind(this);
+    };
     chrome.downloads.onChanged = new FakeChromeEvent();
 
     chrome.downloads.State = {
@@ -35,7 +35,7 @@ ChromeVoxDownloadTest = class extends ChromeVoxE2ETest {
   /** @override */
   setUp() {
     super.setUp();
-    window.simulateEvent = this.simulateEvent.bind(this);
+    window.simulateEvent = item => this.simulateEvent(item);
   }
 
   /** @override */

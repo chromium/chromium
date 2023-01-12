@@ -106,7 +106,7 @@ export class PanelNodeMenuBackground {
         this.nodeCount_++;
         if (this.nodeCount_ >= PanelNodeMenuBackground.MAX_NODES_BEFORE_ASYNC) {
           this.nodeCount_ = 0;
-          setTimeout(this.findMoreNodes_.bind(this), 0);
+          setTimeout(() => this.findMoreNodes_(), 0);
           return;
         }
       }

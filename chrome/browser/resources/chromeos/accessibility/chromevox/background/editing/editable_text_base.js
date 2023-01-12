@@ -114,12 +114,8 @@ export class ChromeVoxEditableTextBase {
      */
     this.value_ = '';
     Object.defineProperty(this, 'value', {
-      get: function() {
-        return this.value_;
-      }.bind(this),
-      set: function(val) {
-        this.value_ = val.replace('\u00a0', ' ');
-      }.bind(this),
+      get: () => this.value_,
+      set: val => this.value_ = val.replace('\u00a0', ' '),
     });
     this.value = value;
 

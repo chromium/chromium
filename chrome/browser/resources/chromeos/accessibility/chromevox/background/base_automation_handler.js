@@ -43,6 +43,7 @@ export class BaseAutomationHandler {
       throw 'Listener already added: ' + eventType;
     }
 
+    // Note: Keeping this bind lets us keep the addListener_ callsites simpler.
     const listener = this.makeListener_(eventCallback.bind(this));
     this.node_.addEventListener(eventType, listener, true);
     this.listeners_[eventType] = listener;

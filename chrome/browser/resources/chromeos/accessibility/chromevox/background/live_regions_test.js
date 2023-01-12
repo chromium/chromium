@@ -171,7 +171,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', async function() {
     }
   };
   const go = rootNode.find({role: RoleType.BUTTON});
-  mockFeedback.call(this.simulateUserInteraction.bind(this))
+  mockFeedback.call(this.simulateUserInteraction)
       .call(go.doDefault.bind(go))
       .expectSpeech(focusOrLive)
       .expectSpeech(focusOrLive);
@@ -194,7 +194,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', async function() {
       </script>
     `);
   const go = rootNode.find({role: RoleType.BUTTON});
-  mockFeedback.call(this.simulateUserInteraction.bind(this))
+  mockFeedback.call(this.simulateUserInteraction)
       .call(go.doDefault.bind(go))
       .expectSpeech('Focus')
       .expectSpeech(candidate => {

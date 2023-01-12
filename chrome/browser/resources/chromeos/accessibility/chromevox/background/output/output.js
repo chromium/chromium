@@ -432,11 +432,11 @@ export class Output {
    */
   onSpeechEnd(callback) {
     this.speechEndCallback_ =
-        /** @type {function(boolean=)} */ (function(opt_cleanupOnly) {
+        /** @type {function(boolean=)} */ (opt_cleanupOnly => {
           if (!opt_cleanupOnly) {
             callback();
           }
-        }.bind(this));
+        });
     return this;
   }
 
@@ -658,7 +658,7 @@ export class Output {
     let prevNode = prevRange.start.node;
     let node = range.start.node;
 
-    const formatNodeAndAncestors = function(node, prevNode) {
+    const formatNodeAndAncestors = (node, prevNode) => {
       const buff = [];
 
       if (addContextBefore) {
@@ -676,7 +676,7 @@ export class Output {
         this.locations_.push(node.location);
       }
       return buff;
-    }.bind(this);
+    };
 
     let lca = null;
     if (range.start.node !== range.end.node) {

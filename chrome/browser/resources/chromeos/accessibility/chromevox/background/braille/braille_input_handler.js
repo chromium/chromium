@@ -79,9 +79,10 @@ export class BrailleInputHandler {
    */
   init_() {
     this.translatorManager_.addChangeListener(
-        this.commitAndClearEntryState_.bind(this));
+        () => this.commitAndClearEntryState_());
 
-    chrome.runtime.onConnectExternal.addListener(this.onImeConnect_.bind(this));
+    chrome.runtime.onConnectExternal.addListener(
+        port => this.onImeConnect_(port));
   }
 
   /**
@@ -302,8 +303,8 @@ export class BrailleInputHandler {
     if (this.imePort_) {
       this.imePort_.disconnect();
     }
-    port.onDisconnect.addListener(this.onImeDisconnect_.bind(this, port));
-    port.onMessage.addListener(this.onImeMessage_.bind(this));
+    port.onDisconnect.addListener(() => this.onImeDisconnect_(port));
+    port.onMessage.addListener(message => this.onImeMessage_(message));
     this.imePort_ = port;
   }
 
@@ -552,7 +553,7 @@ BrailleInputHandler.EntryState_ = class {
     if (!commit && this.usesUncommittedCells) {
       this.inputHandler_.updateUncommittedCells_(cellsBuffer);
     }
-    this.translator_.backTranslate(cellsBuffer, function(result) {
+    this.translator_.backTranslate(cellsBuffer, result => {
       if (result === null) {
         console.error('Error when backtranslating braille cells');
         return;
@@ -565,7 +566,7 @@ BrailleInputHandler.EntryState_ = class {
       if (commit) {
         this.inputHandler_.commitAndClearEntryState_();
       }
-    }.bind(this));
+    });
   }
 
   /**

@@ -252,13 +252,11 @@ export class EarconEngine {
     request.responseType = 'arraybuffer';
 
     // Decode asynchronously.
-    request.onload = (function() {
-                       this.context_.decodeAudioData(
-                           /** @type {!ArrayBuffer} */ (request.response),
-                           (function(buffer) {
-                             this.buffers_[name] = buffer;
-                           }).bind(this));
-                     }).bind(this);
+    request.onload = () => {
+      this.context_.decodeAudioData(
+          /** @type {!ArrayBuffer} */ (request.response),
+          buffer => this.buffers_[name] = buffer);
+    };
     request.send();
   }
 
@@ -770,7 +768,7 @@ export class EarconEngine {
     this.progressTime_ = this.context_.currentTime;
     this.generateProgressTickTocks_();
     this.progressIntervalID_ =
-        setInterval(this.generateProgressTickTocks_.bind(this), 1000);
+        setInterval(() => this.generateProgressTickTocks_(), 1000);
   }
 
   /** Stop playing any tick / tock progress sounds. */

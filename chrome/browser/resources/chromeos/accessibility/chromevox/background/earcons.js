@@ -32,9 +32,9 @@ export class Earcons extends AbstractEarcons {
     if (chrome.audio) {
       chrome.audio.getDevices(
           {isActive: true, streamTypes: [chrome.audio.StreamType.OUTPUT]},
-          this.updateShouldPanForDevices_.bind(this));
+          devices => this.updateShouldPanForDevices_(devices));
       chrome.audio.onDeviceListChanged.addListener(
-          this.updateShouldPanForDevices_.bind(this));
+          devices => this.updateShouldPanForDevices_(devices));
     } else {
       this.shouldPan_ = false;
     }

@@ -49,7 +49,7 @@ export class ISearch {
    */
   search(searchStr, dir, opt_nextObject) {
     clearTimeout(this.callbackId_);
-    const step = function() {
+    const step = () => {
       searchStr = searchStr.toLocaleLowerCase();
       const node = this.cursor.node;
       let result = node;
@@ -75,7 +75,7 @@ export class ISearch {
       }
     };
 
-    this.callbackId_ = setTimeout(step.bind(this), 0);
+    this.callbackId_ = setTimeout(() => step(), 0);
   }
 
   clear() {

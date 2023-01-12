@@ -49,7 +49,7 @@ export class LiveRegions {
 
     chrome.automation.addTreeChangeObserver(
         TreeChangeObserverFilter.LIVE_REGION_TREE_CHANGES,
-        this.onTreeChange.bind(this));
+        treeChange => this.onTreeChange(treeChange));
   }
 
   static init() {

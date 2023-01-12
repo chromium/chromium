@@ -43,10 +43,12 @@ function assertEqualsUint8Array(expected, actual) {
 }
 
 function LIBLOUIS_TEST_F(testName, testFunc, opt_preamble) {
+  // This needs to stay a function - don't convert to arrow function.
   const wrappedTestFunc = function() {
     const liblouis = new LibLouis(
         chrome.extension.getURL(
             'chromevox/background/braille/liblouis_wrapper.js'),
+        // This needs to stay bound - don't convert to arrow function.
         '', testFunc.bind(this));
   };
   TEST_F('ChromeVoxLibLouisTest', testName, wrappedTestFunc, opt_preamble);
@@ -71,15 +73,15 @@ LIBLOUIS_TEST_F('testTranslateComputerBraille', function(liblouis) {
 LIBLOUIS_TEST_F_WITH_PREAMBLE(
     `
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_CheckAllTables DISABLED_CheckAllTables
+#define MAYBE_CheckAllTables CheckAllTables
 #else
 #define MAYBE_CheckAllTables CheckAllTables
 #endif
 `,
     'MAYBE_CheckAllTables', function(liblouis) {
-      BrailleTable.getAll(this.newCallback(function(tables) {
+      BrailleTable.getAll(this.newCallback(tables => {
         let i = 0;
-        const checkNextTable = function() {
+        const checkNextTable = () => {
           const table = tables[i++];
           if (table) {
             this.withTranslator(
@@ -90,9 +92,9 @@ LIBLOUIS_TEST_F_WITH_PREAMBLE(
                   checkNextTable();
                 });
           }
-        }.bind(this);
+        };
         checkNextTable();
-      }.bind(this)));
+      }));
     });
 
 LIBLOUIS_TEST_F('testBackTranslateComputerBraille', function(liblouis) {

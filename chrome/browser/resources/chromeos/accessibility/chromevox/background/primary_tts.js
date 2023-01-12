@@ -127,11 +127,12 @@ export class PrimaryTts extends AbstractTts {
     }
 
     // At startup.
-    chrome.settingsPrivate.getAllPrefs(this.updateFromPrefs_.bind(this, false));
+    chrome.settingsPrivate.getAllPrefs(
+        prefs => this.updateFromPrefs_(false, prefs));
 
     // At runtime.
     chrome.settingsPrivate.onPrefsChanged.addListener(
-        this.updateFromPrefs_.bind(this, true));
+        prefs => this.updateFromPrefs_(true, prefs));
   }
 
   /**

@@ -696,7 +696,7 @@ AX_TEST_F(
       const mockFeedback = this.createMockFeedback();
 
       let running = false;
-      const runTestIfIframeIsLoaded = async function(rootNode) {
+      const runTestIfIframeIsLoaded = async rootNode => {
         if (running) {
           return;
         }
@@ -720,7 +720,7 @@ AX_TEST_F(
         mockFeedback.call(doCmd('previousButton'))
             .expectSpeech('Before', 'Button');
         await mockFeedback.replay();
-      }.bind(this);
+      };
 
       const rootNode = await this.runWithLoadedTree(this.iframesDoc);
       chrome.automation.getDesktop(function(desktopNode) {
@@ -739,7 +739,7 @@ AX_TEST_F(
       const mockFeedback = this.createMockFeedback();
 
       let running = false;
-      const runTestIfIframeIsLoaded = async function(rootNode) {
+      const runTestIfIframeIsLoaded = async rootNode => {
         if (running) {
           return;
         }
@@ -772,7 +772,7 @@ AX_TEST_F(
         mockFeedback.call(doCmd('previousObject'))
             .expectSpeech('Before', 'Button');
         await mockFeedback.replay();
-      }.bind(this);
+      };
 
       const rootNode = await this.runWithLoadedTree(this.iframesDoc);
       chrome.automation.getDesktop(function(desktopNode) {
@@ -1605,43 +1605,43 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NavigationEscapesEdit', async function() {
 
   contentEditable.focus();
   await this.waitForEvent(contentEditable, EventType.FOCUS);
-  mockFeedback.call(assertBeginning.bind(this, true))
-      .call(assertEnd.bind(this, false))
+  mockFeedback.call(() => assertBeginning(true))
+      .call(() => assertEnd(false))
 
       .call(press(KeyCode.DOWN))
       .expectSpeech('is')
-      .call(assertBeginning.bind(this, false))
-      .call(assertEnd.bind(this, false))
+      .call(() => assertBeginning(false))
+      .call(() => assertEnd(false))
 
       .call(press(KeyCode.DOWN))
       .expectSpeech('a')
-      .call(assertBeginning.bind(this, false))
-      .call(assertEnd.bind(this, false))
+      .call(() => assertBeginning(false))
+      .call(() => assertEnd(false))
 
       .call(press(KeyCode.DOWN))
       .expectSpeech('test')
-      .call(assertBeginning.bind(this, false))
-      .call(assertEnd.bind(this, true))
+      .call(() => assertBeginning(false))
+      .call(() => assertEnd(true))
 
       .call(focus(textArea))
       .expectSpeech('Text area')
-      .call(assertBeginning.bind(this, true))
-      .call(assertEnd.bind(this, false))
+      .call(() => assertBeginning(true))
+      .call(() => assertEnd(false))
 
       .call(press(40 /* ArrowDown */))
       .expectSpeech('is')
-      .call(assertBeginning.bind(this, false))
-      .call(assertEnd.bind(this, false))
+      .call(() => assertBeginning(false))
+      .call(() => assertEnd(false))
 
       .call(press(40 /* ArrowDown */))
       .expectSpeech('a')
-      .call(assertBeginning.bind(this, false))
-      .call(assertEnd.bind(this, false))
+      .call(() => assertBeginning(false))
+      .call(() => assertEnd(false))
 
       .call(press(40 /* ArrowDown */))
       .expectSpeech('test')
-      .call(assertBeginning.bind(this, false))
-      .call(assertEnd.bind(this, true));
+      .call(() => assertBeginning(false))
+      .call(() => assertEnd(true));
 
   await mockFeedback.replay();
 

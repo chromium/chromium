@@ -296,7 +296,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         node.parent.root.role === RoleType.ROOT_WEB_AREA;
     if (isRootWebArea && !isFrame && evt.eventFrom !== 'action') {
       chrome.automation.getFocus(
-          this.maybeRecoverFocusAndOutput_.bind(this, evt));
+          focus => this.maybeRecoverFocusAndOutput_(evt, focus));
       return;
     }
 
@@ -407,7 +407,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     this.lastRootUrl_ = '';
-    chrome.automation.getFocus(function(focus) {
+    chrome.automation.getFocus(focus => {
       // In some situations, ancestor windows get focused before a descendant
       // webView/rootWebArea. In particular, a window that gets opened but no
       // inner focus gets set. We catch this generically by re-targetting focus
@@ -439,7 +439,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       }
 
       this.maybeRecoverFocusAndOutput_(evt, focus);
-    }.bind(this));
+    });
   }
 
   /**
@@ -758,7 +758,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   onMenuEnd(evt) {
     // This is a work around for Chrome context menus not firing a focus event
     // after you close them.
-    chrome.automation.getFocus(function(focus) {
+    chrome.automation.getFocus(focus => {
       if (focus) {
         // Directly output the node here; do not go through |onFocus| as it
         // contains a lot of logic that can move the selection (if in an
@@ -769,7 +769,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
             .go();
         ChromeVoxRange.set(range);
       }
-    }.bind(this));
+    });
   }
 
   /**
@@ -878,7 +878,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // Deny recovery for chrome urls.
     if (pos && url.indexOf('chrome://') !== 0) {
       focusedRoot.hitTestWithReply(
-          pos.x, pos.y, this.onHitTestResult.bind(this));
+          pos.x, pos.y, node => this.onHitTestResult(node));
       return;
     }
 

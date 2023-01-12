@@ -146,7 +146,9 @@ export class ExpandingBrailleTranslator {
             text.toString().substring(chunk.start, chunk.end),
             formTypeMap.slice(chunk.start, chunk.end),
             ExpandingBrailleTranslator.nullParamsToEmptyAdapter_(
-                chunk.end - chunk.start, chunkTranslated.bind(null, chunk)));
+                chunk.end - chunk.start,
+                (cells, textToBraille, brailleToText) => chunkTranslated(
+                    chunk, cells, textToBraille, brailleToText)));
       });
     } else {
       finish();
