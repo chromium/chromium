@@ -445,6 +445,9 @@ TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
   ASSERT_TRUE(base::Time::FromString("1 Jan 2023 23:03 GMT", &time));
 
   EXPECT_EQ(u"2023", calendar_utils::GetYear(time));
+
+  // Reset locale to English for other tests.
+  SetDefaultLocale("en");
 }
 
 }  // namespace ash
