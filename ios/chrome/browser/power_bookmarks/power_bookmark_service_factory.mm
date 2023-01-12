@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,6 +47,7 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
       ios::BookmarkModelFactory::GetInstance()->GetForBrowserState(
           chrome_state),
       state->GetStatePath().AppendASCII("power_bookmarks"),
+      web::GetUIThreadTaskRunner({}),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));

@@ -36,7 +36,7 @@ class ShoppingPowerBookmarkDataProviderTest : public testing::Test {
     power_bookmark_service_ =
         std::make_unique<power_bookmarks::PowerBookmarkService>(
             bookmark_model_.get(), temp_directory_.GetPath(),
-            backend_task_runner_);
+            task_environment_.GetMainThreadTaskRunner(), backend_task_runner_);
     shopping_service_ = std::make_unique<MockShoppingService>();
 
     data_provider_ = std::make_unique<ShoppingPowerBookmarkDataProvider>(
