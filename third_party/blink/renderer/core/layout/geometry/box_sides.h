@@ -77,6 +77,7 @@ struct PhysicalBoxSides {
   }
 
   bool IsEmpty() const { return !top && !right && !bottom && !left; }
+  bool HasAllSides() const { return top && right && bottom && left; }
 };
 
 }  // namespace blink
