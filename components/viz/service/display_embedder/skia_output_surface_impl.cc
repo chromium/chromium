@@ -311,9 +311,9 @@ void SkiaOutputSurfaceImpl::DiscardBackbuffer() {
 void SkiaOutputSurfaceImpl::RecreateRootRecorder() {
   DCHECK(characterization_.isValid());
   root_recorder_.emplace(characterization_);
-
   // This will trigger the lazy initialization of the recorder
   std::ignore = root_recorder_->getCanvas();
+  reset_recorder_on_swap_ = false;
 }
 
 void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
@@ -409,7 +409,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
   DCHECK(!current_paint_);
   DCHECK(root_recorder_);
-
+  reset_recorder_on_swap_ = true;
   current_paint_.emplace(&root_recorder_.value());
   return current_paint_->recorder()->getCanvas();
 }
@@ -607,8 +607,10 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
 
   // Recreate |root_recorder_| after SwapBuffers has been scheduled on GPU
   // thread to save some time in BeginPaintCurrentFrame
-  // TODO(vasilyt): reuse root recorder
-  RecreateRootRecorder();
+  // Recreating recorder is expensive. Avoid recreation if there was no paint.
+  if (reset_recorder_on_swap_) {
+    RecreateRootRecorder();
+  }
 }
 
 void SkiaOutputSurfaceImpl::SwapBuffersSkipped(
@@ -631,8 +633,10 @@ void SkiaOutputSurfaceImpl::SwapBuffersSkipped(
   EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                  /*make_current=*/true, /*need_framebuffer=*/false);
 
-  // TODO(vasilyt): reuse root recorder
-  RecreateRootRecorder();
+  // Recreating recorder is expensive. Avoid recreation if there was no paint.
+  if (reset_recorder_on_swap_) {
+    RecreateRootRecorder();
+  }
 }
 
 void SkiaOutputSurfaceImpl::ScheduleOutputSurfaceAsOverlay(

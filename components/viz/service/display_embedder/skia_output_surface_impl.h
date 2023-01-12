@@ -254,6 +254,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gfx::BufferFormat format_;
   int sample_count_ = 1;
   SkSurfaceCharacterization characterization_;
+  bool reset_recorder_on_swap_ = false;
   absl::optional<SkDeferredDisplayListRecorder> root_recorder_;
 
   class ScopedPaint {
