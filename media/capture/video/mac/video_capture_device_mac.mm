@@ -727,6 +727,16 @@ void VideoCaptureDeviceMac::GetPhotoState(GetPhotoStateCallback callback) {
     (*control_interface)->USBInterfaceClose(control_interface);
   }
 
+  if ([capture_device_ isPortraitEffectSupported]) {
+    bool isPortraitEffectActive = [capture_device_ isPortraitEffectActive];
+    photo_state->supported_background_blur_modes = {
+        isPortraitEffectActive ? mojom::BackgroundBlurMode::BLUR
+                               : mojom::BackgroundBlurMode::OFF};
+    photo_state->background_blur_mode = isPortraitEffectActive
+                                            ? mojom::BackgroundBlurMode::BLUR
+                                            : mojom::BackgroundBlurMode::OFF;
+  }
+
   std::move(callback).Run(std::move(photo_state));
 }
 
@@ -740,6 +750,16 @@ void VideoCaptureDeviceMac::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
       (settings->has_height &&
        settings->height != capture_format_.frame_size.height()) ||
       settings->has_fill_light_mode || settings->has_red_eye_reduction) {
+    return;
+  }
+
+  // Abort if background blur does not have already the desired value.
+  if (settings->has_background_blur_mode &&
+      (![capture_device_ isPortraitEffectSupported] ||
+       settings->background_blur_mode !=
+           ([capture_device_ isPortraitEffectActive]
+                ? mojom::BackgroundBlurMode::BLUR
+                : mojom::BackgroundBlurMode::OFF))) {
     return;
   }
 
@@ -865,6 +885,17 @@ void VideoCaptureDeviceMac::LogMessage(const std::string& message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (client_)
     client_->OnLog(message);
+}
+
+void VideoCaptureDeviceMac::SetIsPortraitEffectSupportedForTesting(
+    bool isPortraitEffectSupported) {
+  [capture_device_
+      setIsPortraitEffectSupportedForTesting:isPortraitEffectSupported];
+}
+
+void VideoCaptureDeviceMac::SetIsPortraitEffectActiveForTesting(
+    bool isPortraitEffectActive) {
+  [capture_device_ setIsPortraitEffectActiveForTesting:isPortraitEffectActive];
 }
 
 // static

@@ -146,6 +146,8 @@ CAPTURE_EXPORT
   // For testing.
   base::RepeatingCallback<void()> _onPhotoOutputStopped;
   bool _forceLegacyStillImageApi;
+  absl::optional<bool> _isPortraitEffectSupportedForTesting;
+  absl::optional<bool> _isPortraitEffectActiveForTesting;
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
@@ -228,6 +230,17 @@ CAPTURE_EXPORT
                    captureFormat:(const media::VideoCaptureFormat&)captureFormat
                       colorSpace:(const gfx::ColorSpace&)colorSpace
                        timestamp:(const base::TimeDelta)timestamp;
+
+// Returns whether the format supports the Portrait Effect feature or not.
+- (bool)isPortraitEffectSupported;
+
+// Returns whether the Portrait Effect is active on a device or not.
+- (bool)isPortraitEffectActive;
+
+- (void)setIsPortraitEffectSupportedForTesting:
+    (bool)isPortraitEffectSupportedForTesting;
+- (void)setIsPortraitEffectActiveForTesting:
+    (bool)isPortraitEffectActiveForTesting;
 
 @end
 

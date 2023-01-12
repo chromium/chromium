@@ -1136,6 +1136,38 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
             timestamp:timestamp];
 }
 
+- (void)setIsPortraitEffectSupportedForTesting:
+    (bool)isPortraitEffectSupportedForTesting {
+  _isPortraitEffectSupportedForTesting = isPortraitEffectSupportedForTesting;
+}
+
+- (bool)isPortraitEffectSupported {
+  DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  if (_isPortraitEffectSupportedForTesting.has_value()) {
+    return _isPortraitEffectSupportedForTesting.value();
+  }
+  if (@available(macOS 12.0, *)) {
+    return [[_captureDevice activeFormat] isPortraitEffectSupported];
+  }
+  return false;
+}
+
+- (void)setIsPortraitEffectActiveForTesting:
+    (bool)isPortraitEffectActiveForTesting {
+  _isPortraitEffectActiveForTesting = isPortraitEffectActiveForTesting;
+}
+
+- (bool)isPortraitEffectActive {
+  DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  if (_isPortraitEffectActiveForTesting.has_value()) {
+    return _isPortraitEffectActiveForTesting.value();
+  }
+  if (@available(macOS 12.0, *)) {
+    return [_captureDevice isPortraitEffectActive];
+  }
+  return false;
+}
+
 - (void)onVideoError:(NSNotification*)errorNotification {
   NSError* error = base::mac::ObjCCast<NSError>(
       [errorNotification userInfo][AVCaptureSessionErrorKey]);

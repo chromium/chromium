@@ -51,7 +51,7 @@ namespace media {
 
 // Called by VideoCaptureManager to open, close and start, stop Mac video
 // capture devices.
-class VideoCaptureDeviceMac
+class CAPTURE_EXPORT VideoCaptureDeviceMac
     : public VideoCaptureDevice,
       public VideoCaptureDeviceAVFoundationFrameReceiver {
  public:
@@ -99,6 +99,9 @@ class VideoCaptureDeviceMac
 
   // Forwarder to VideoCaptureDevice::Client::OnLog().
   void LogMessage(const std::string& message);
+
+  void SetIsPortraitEffectSupportedForTesting(bool isPortraitEffectSupported);
+  void SetIsPortraitEffectActiveForTesting(bool isPortraitEffectActive);
 
   static std::string GetDeviceModelId(const std::string& device_id,
                                       VideoCaptureApi capture_api,
