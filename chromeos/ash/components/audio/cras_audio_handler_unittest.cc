@@ -2505,6 +2505,95 @@ TEST_P(CrasAudioHandlerTest, SetInputGainPercent) {
   EXPECT_EQ(kGain, audio_pref_handler_->GetInputGainValue(&internal_mic));
 }
 
+TEST_P(CrasAudioHandlerTest, SetInputGainWithDelayedSignal) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic});
+  SetUpCrasAudioHandler(audio_nodes);
+  EXPECT_EQ(0, test_observer_->input_gain_changed_count());
+
+  const int kDefaultGain = cras_audio_handler_->GetInputGainPercent();
+
+  // Disable the auto InputNodeGainChanged signal.
+  fake_cras_audio_client()->set_notify_gain_change_with_delay(true);
+
+  // Verify the gain state is not changed before InputNodeGainChanged
+  // signal fires.
+  const int kGain = 60;
+  cras_audio_handler_->SetInputGainPercent(kGain);
+  EXPECT_EQ(0, test_observer_->input_gain_changed_count());
+  EXPECT_EQ(kDefaultGain, cras_audio_handler_->GetInputGainPercent());
+
+  // Verify the output gain is changed to the designated value after
+  // OnInputNodeGainChanged cras signal fires, and the gain change event
+  // has been fired to notify the observers.
+  fake_cras_audio_client()->NotifyInputNodeGainChangedForTesting(
+      kInternalMic->id, kGain);
+  EXPECT_EQ(1, test_observer_->input_gain_changed_count());
+  EXPECT_EQ(kGain, cras_audio_handler_->GetInputGainPercent());
+  AudioDevice device;
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&device));
+  EXPECT_EQ(device.id, kInternalMic->id);
+  EXPECT_EQ(kGain, audio_pref_handler_->GetInputGainValue(&device));
+}
+
+TEST_P(CrasAudioHandlerTest,
+       ChangeInputGainsWithDelayedSignalForSingleActiveDevice) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic});
+  SetUpCrasAudioHandler(audio_nodes);
+  EXPECT_EQ(0, test_observer_->input_gain_changed_count());
+
+  const int kDefaultGain = cras_audio_handler_->GetInputGainPercent();
+
+  // Disable the auto InputNodeGainChanged signal.
+  fake_cras_audio_client()->set_notify_gain_change_with_delay(true);
+
+  // Verify the gain state is not changed before InputNodeGainChanged
+  // signal fires.
+  EXPECT_EQ(kDefaultGain, cras_audio_handler_->GetInputGainPercent());
+  const int kGain1 = 10;
+  const int kGain2 = 90;
+  cras_audio_handler_->SetInputGainPercent(kGain1);
+  EXPECT_EQ(0, test_observer_->input_gain_changed_count());
+  EXPECT_EQ(kDefaultGain, cras_audio_handler_->GetInputGainPercent());
+  cras_audio_handler_->SetInputGainPercent(kGain2);
+  EXPECT_EQ(0, test_observer_->input_gain_changed_count());
+  EXPECT_EQ(kDefaultGain, cras_audio_handler_->GetInputGainPercent());
+
+  // Simulate InputNodeGainChanged signal fired with big latency that
+  // it lags behind the SetInputNodeGain requests. Chrome sets the gain
+  // to 50 then 60, but the gain changed signal for 50 comes back after
+  // chrome sets the gain to 60. Verify chrome will sync to the designated
+  // gain level after all signals arrive.
+  fake_cras_audio_client()->NotifyInputNodeGainChangedForTesting(
+      kInternalMic->id, kGain1);
+  EXPECT_EQ(1, test_observer_->input_gain_changed_count());
+  EXPECT_EQ(kGain1, cras_audio_handler_->GetInputGainPercent());
+
+  fake_cras_audio_client()->NotifyInputNodeGainChangedForTesting(
+      kInternalMic->id, kGain2);
+  EXPECT_EQ(2, test_observer_->input_gain_changed_count());
+  EXPECT_EQ(kGain2, cras_audio_handler_->GetInputGainPercent());
+}
+
+TEST_P(CrasAudioHandlerTest,
+       ChangeInputGainFromNonChromeSourceSingleActiveDevice) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic});
+  SetUpCrasAudioHandler(audio_nodes);
+  EXPECT_EQ(0, test_observer_->input_gain_changed_count());
+
+  // Simulate InputNodeGainChanged signal fired by a non-chrome source.
+  // Verify chrome will sync its gain state to the gain from the signal,
+  // and notify its observers for the gain change event.
+  const int kGain = 20;
+  fake_cras_audio_client()->NotifyInputNodeGainChangedForTesting(
+      kInternalMic->id, kGain);
+  EXPECT_EQ(1, test_observer_->input_gain_changed_count());
+  EXPECT_EQ(kGain, cras_audio_handler_->GetInputGainPercent());
+  AudioDevice device;
+  EXPECT_TRUE(cras_audio_handler_->GetPrimaryActiveInputDevice(&device));
+  EXPECT_EQ(device.id, kInternalMic->id);
+  EXPECT_EQ(kGain, audio_pref_handler_->GetInputGainValue(&device));
+}
+
 TEST_P(CrasAudioHandlerTest, SetMuteForDevice) {
   AudioNodeList audio_nodes = GenerateAudioNodeList(
       {kInternalSpeaker, kHeadphone, kInternalMic, kUSBMic1});

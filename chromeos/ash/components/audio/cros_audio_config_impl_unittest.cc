@@ -461,8 +461,9 @@ TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
   // Test default audio node list, which includes one input and one output node.
   SetAudioNodes({kInternalSpeaker, kMicJack});
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events volume, active output, and nodes changed.
-  expected_observer_calls += 4u;
+  // AudioObserver events volume, gain, active output, active input, and nodes
+  // changed
+  expected_observer_calls += 5u;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
@@ -508,7 +509,8 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
   // Consfigure initial node set for test.
   SetAudioNodes({kInternalSpeaker});
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events volume, active output, and nodes changed.
+  // AudioObserver events volume, active input(observer is still called if
+  // there's no input device), active output, and nodes changed.
   expected_observer_calls += 4u;
 
   ASSERT_EQ(expected_observer_calls,
@@ -519,8 +521,8 @@ TEST_F(CrosAudioConfigImplTest, GetInputAudioDevices) {
 
   InsertAudioNode(kMicJack);
   // Multiple calls to observer triggered by setting active nodes triggered by
-  // AudioObserver events active input and nodes changed.
-  expected_observer_calls += 2;
+  // AudioObserver events gain, active input and nodes changed.
+  expected_observer_calls += 3;
 
   ASSERT_EQ(expected_observer_calls,
             fake_observer->num_properties_updated_calls_);
