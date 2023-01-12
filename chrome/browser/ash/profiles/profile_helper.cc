@@ -60,19 +60,6 @@ class ProfileHelperImpl : public ProfileHelper {
       std::unique_ptr<BrowserContextHelper::Delegate> delegate);
   ~ProfileHelperImpl() override;
 
-  // Returns the path that corresponds to the passed profile.
-  base::FilePath GetProfileDir(base::StringPiece profile);
-
-  // Returns true if the signin profile has been initialized.
-  bool IsSigninProfileInitialized();
-
-  // Returns OffTheRecord profile for use during signing phase.
-  Profile* GetSigninProfile();
-
-  // Returns OffTheRecord profile for use during online authentication on the
-  // lock screen.
-  Profile* GetLockScreenProfile();
-
   // ProfileHelper overrides
   base::FilePath GetActiveUserProfileDir() override;
   void Initialize() override;
@@ -109,17 +96,6 @@ class ProfileHelperImpl : public ProfileHelper {
 
   std::unique_ptr<FileFlusher> profile_flusher_;
 };
-
-namespace {
-// Convenient utility to obtain ProfileHelperImpl.
-// Currently ProfileHelper interface is implemented by only ProfileHelperImpl,
-// so safe to cast.
-// TODO(crbug.com/1325210): Remove this after ProfileHelper is moved out from
-// chrome/browser.
-ProfileHelperImpl* GetImpl() {
-  return static_cast<ProfileHelperImpl*>(ProfileHelper::Get());
-}
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // ProfileHelper, public
@@ -158,7 +134,8 @@ base::FilePath ProfileHelper::GetSigninProfileDir() {
 
 // static
 Profile* ProfileHelper::GetSigninProfile() {
-  return GetImpl()->GetSigninProfile();
+  return Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->DeprecatedGetOrCreateSigninBrowserContext());
 }
 
 // static
@@ -181,7 +158,7 @@ bool ProfileHelper::IsSigninProfile(const Profile* profile) {
 
 // static
 bool ProfileHelper::IsSigninProfileInitialized() {
-  return GetImpl()->IsSigninProfileInitialized();
+  return BrowserContextHelper::Get()->GetSigninBrowserContext();
 }
 
 // static
@@ -201,7 +178,8 @@ base::FilePath ProfileHelper::GetLockScreenProfileDir() {
 
 // static
 Profile* ProfileHelper::GetLockScreenProfile() {
-  return GetImpl()->GetLockScreenProfile();
+  return Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetLockScreenBrowserContext());
 }
 
 // static
@@ -284,28 +262,6 @@ ProfileHelperImpl::ProfileHelperImpl(
           std::make_unique<BrowserContextHelper>(std::move(delegate))) {}
 
 ProfileHelperImpl::~ProfileHelperImpl() = default;
-
-base::FilePath ProfileHelperImpl::GetProfileDir(base::StringPiece profile) {
-  const base::FilePath* user_data_dir =
-      browser_context_helper_->delegate()->GetUserDataDir();
-  if (!user_data_dir)
-    return base::FilePath();
-  return user_data_dir->AppendASCII(profile);
-}
-
-bool ProfileHelperImpl::IsSigninProfileInitialized() {
-  return browser_context_helper_->GetSigninBrowserContext();
-}
-
-Profile* ProfileHelperImpl::GetSigninProfile() {
-  return Profile::FromBrowserContext(
-      browser_context_helper_->DeprecatedGetOrCreateSigninBrowserContext());
-}
-
-Profile* ProfileHelperImpl::GetLockScreenProfile() {
-  return Profile::FromBrowserContext(
-      browser_context_helper_->GetLockScreenBrowserContext());
-}
 
 base::FilePath ProfileHelperImpl::GetActiveUserProfileDir() {
   return ProfileHelper::GetUserProfileDir(active_user_id_hash_);
