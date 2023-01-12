@@ -1013,6 +1013,11 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     'os': 'mac'
                 },
                 'results': [],
+            }, {
+                'run_info': {
+                    'os': 'linux'
+                },
+                'results': [],
             })
         # Without result replay, the `FAIL` expectation is erroneously deleted,
         # which will give either:

@@ -26,8 +26,8 @@ from typing import (
     Mapping,
     Optional,
     Set,
-    Tuple,
     TypedDict,
+    Union,
 )
 
 from blinkpy.common import path_finder
@@ -625,32 +625,32 @@ class MetadataUpdater:
 
         The purpose of result replay is to prevent the update backend from
         clobbering expectations for ports without results.
+
+        Missing configs are only detected at the test level so that subtests can
+        still be pruned.
         """
-        for test_id, subtest_id, node in self._iterate_tests_and_subtests(
-                test_file):
-            updated_configs = self._updated_configs(test_file, test_id,
-                                                    subtest_id)
+        expectations = test_file.expected(
+            (self._primary_properties, self._dependent_properties),
+            update_intermittent=(not self._disable_intermittent),
+            remove_intermittent=(not self._keep_statuses))
+        for test in expectations.child_map.values():
+            updated_configs = self._updated_configs(test_file, test.id)
             # Nothing to update. This commonly occurs when every port runs
             # expectedly. As an optimization, skip this file's update entirely
             # instead of replaying every result.
             if not updated_configs:
                 continue
-            self._updater.test_start({'test': test_id})
-            missing_configs = self._enabled_configs(node) - updated_configs
+            missing_configs = self._enabled_configs(test) - updated_configs
             for config in missing_configs:
-                try:
-                    statuses = node.get('expected', config)
-                except KeyError:
-                    statuses = self._default_expected[test_file.item_type,
-                                                      subtest_id is not None]
-                if isinstance(statuses, str):
-                    statuses = [statuses]
-                expected, *known_intermittent = statuses
                 self._updater.suite_start({'run_info': config.data})
-                if subtest_id:
+                self._updater.test_start({'test': test.id})
+                for subtest_id, subtest in test.subtests.items():
+                    expected, *known_intermittent = self._eval_statuses(
+                        subtest, config,
+                        self._default_expected[test_file.item_type, True])
                     self._updater.test_status({
                         'test':
-                        test_id,
+                        test.id,
                         'subtest':
                         subtest_id,
                         'status':
@@ -658,28 +658,28 @@ class MetadataUpdater:
                         'known_intermittent':
                         known_intermittent,
                     })
-                else:
-                    self._updater.test_end({
-                        'test':
-                        test_id,
-                        'status':
-                        expected,
-                        'known_intermittent':
-                        known_intermittent,
-                    })
+                expected, *known_intermittent = self._eval_statuses(
+                    test, config,
+                    self._default_expected[test_file.item_type, False])
+                self._updater.test_end({
+                    'test':
+                    test.id,
+                    'status':
+                    expected,
+                    'known_intermittent':
+                    known_intermittent,
+                })
 
-    def _iterate_tests_and_subtests(
+    def _eval_statuses(
             self,
-            test_file: metadata.TestFileData,
-    ) -> Iterator[Tuple[str, Optional[str], manifestupdate.TestNode]]:
-        expectations = test_file.expected(
-            (self._primary_properties, self._dependent_properties),
-            update_intermittent=(not self._disable_intermittent),
-            remove_intermittent=(not self._keep_statuses))
-        for test in expectations.child_map.values():
-            yield test.id, None, test
-            for subtest_id, subtest in test.subtests.items():
-                yield test.id, subtest_id, subtest
+            node: manifestupdate.TestNode,
+            config: metadata.RunInfo,
+            default_status: str,
+    ) -> List[str]:
+        statuses: Union[str, List[str]] = default_status
+        with contextlib.suppress(KeyError):
+            statuses = node.get('expected', config)
+        return [statuses] if isinstance(statuses, str) else statuses
 
     def _updated_configs(
             self,
