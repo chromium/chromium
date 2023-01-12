@@ -33,7 +33,6 @@ static_library("command_handler") {
 
   deps = [
     "//base",
-    "//base:i18n",
     "//components/devtools/simple_devtools_protocol_client",
     "//content",
     "//content/public/app",
