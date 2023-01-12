@@ -97,11 +97,8 @@ export class PrimaryTts extends AbstractTts {
     this.currentVoice;
 
     if (window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = function() {
-        chrome.storage.local.get({voiceName: ''}, function(items) {
-          this.updateVoice(items.voiceName);
-        }.bind(this));
-      }.bind(this);
+      window.speechSynthesis.onvoiceschanged = () =>
+          this.updateVoice(LocalStorage.getString('voiceName', ''));
     } else {
       // SpeechSynthesis API is not available on chromecast. Call
       // updateVoice to set the one and only voice as the current
@@ -109,11 +106,8 @@ export class PrimaryTts extends AbstractTts {
       this.updateVoice('');
     }
 
-    chrome.storage.onChanged.addListener(function(changes, namespace) {
-      if (changes.voiceName) {
-        this.updateVoice(changes.voiceName.newValue);
-      }
-    }.bind(this));
+    LocalStorage.addListenerForKey(
+        'voiceName', voiceName => this.updateVoice(voiceName));
 
     // Migration: local LocalStorage tts properties -> Chrome pref settings.
     if (LocalStorage.get('rate')) {
