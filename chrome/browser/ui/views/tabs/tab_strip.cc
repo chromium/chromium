@@ -1881,8 +1881,6 @@ void TabStrip::Init() {
   // So we only get enter/exit messages when the mouse enters/exits the whole
   // tabstrip, even if it is entering/exiting a specific Tab, too.
   SetNotifyEnterExitOnChild(true);
-
-  UpdateContrastRatioValues();
 }
 
 void TabStrip::NewTabButtonPressed(const ui::Event& event) {
@@ -2023,6 +2021,8 @@ void TabStrip::UpdateContrastRatioValues() {
   // The contrast ratio for the separator between inactive tabs.
   constexpr float kTabSeparatorContrast = 2.5f;
   separator_color_ = get_blend(inactive_fg, kTabSeparatorContrast).color;
+
+  SchedulePaint();
 }
 
 void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
@@ -2170,13 +2170,16 @@ void TabStrip::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &TabStrip::UpdateContrastRatioValues, base::Unretained(this)));
-  // Set the initial state correctly.
-  UpdateContrastRatioValues();
 }
 
 void TabStrip::RemovedFromWidget() {
   GetWidget()->RemoveObserver(this);
   paint_as_active_subscription_ = {};
+}
+
+void TabStrip::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateContrastRatioValues();
 }
 
 void TabStrip::OnGestureEvent(ui::GestureEvent* event) {

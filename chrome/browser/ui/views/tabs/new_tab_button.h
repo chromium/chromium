@@ -60,6 +60,7 @@ class NewTabButton : public views::ImageButton,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnThemeChanged() override;
 
  private:
   class HighlightPathGenerator;
