@@ -2158,7 +2158,7 @@ crbug.com/1311165 printing/fixed-positioned-but-static-headers-and-footers.html 
 crbug.com/1371431 printing/fixed-positioned-headers-and-footers-clipped.html [ Crash Failure ]
 crbug.com/377696 printing/setPrinting.html [ Failure ]
 
-crbug.com/1204498 external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Pass ]
+crbug.com/1204498 external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Pass Timeout ]
 crbug.com/1223681 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Pass Timeout ]
 
 # crbug.com/1218723 This test fails when SplitCacheByNetworkIsolationKey is enabled.
