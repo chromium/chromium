@@ -189,7 +189,6 @@ source_set("browser_sources") {
     "frame_accept_header.cc",
     "frame_accept_header.h",
     "frame_rate_throttling.h",
-    "frame_type.cc",
     "frame_type.h",
     "generated_code_cache_settings.h",
     "global_request_id.cc",

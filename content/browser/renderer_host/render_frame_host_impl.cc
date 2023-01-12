@@ -1700,6 +1700,14 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   if (was_created)
     delegate_->RenderFrameDeleted(this);
 
+  // Ensure that the render process host has been notified that all audio
+  // streams from this frame have terminated. This is required to ensure the
+  // process host has the correct media stream count, which affects its
+  // background priority.
+  if (is_audible_) {
+    OnAudibleStateChanged(false);
+  }
+
   // Resetting `document_associated_data_` destroys live `DocumentService` and
   // `DocumentUserData` instances. It is important for them to be
   // destroyed before the body of the `RenderFrameHostImpl` destructor
@@ -1707,13 +1715,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // `DocumentService` and `RenderFrameHostUserData` subclasses are still valid
   // when their destructors run.
   document_associated_data_.reset();
-
-  // Ensure that the render process host has been notified that all audio
-  // streams from this frame have terminated. This is required to ensure the
-  // process host has the correct media stream count, which affects its
-  // background priority.
-  if (is_audible_)
-    OnAudibleStateChanged(false);
 
   // If this was the last active frame in the SiteInstanceGroup, the
   // DecrementActiveFrameCount call will trigger the deletion of the
@@ -5550,7 +5551,7 @@ void RenderFrameHostImpl::WriteIntoTrace(
   proto.Set(TraceProto::kRenderFrameHostId, GetGlobalId());
   proto->set_frame_tree_node_id(frame_tree_node_->frame_tree_node_id());
   proto->set_lifecycle_state(LifecycleStateToProto());
-  proto->set_frame_type(FrameTypeToProto(frame_tree_node_->GetFrameType()));
+  proto->set_frame_type(GetFrameTypeProto());
   proto->set_origin(GetLastCommittedOrigin().GetDebugString());
   proto->set_url(GetLastCommittedURL().possibly_invalid_spec());
   proto.Set(TraceProto::kProcess, GetProcess());
@@ -5590,6 +5591,30 @@ RenderFrameHostImpl::LifecycleStateToProto() const {
   }
 
   return RFHProto::UNSPECIFIED;
+}
+
+perfetto::protos::pbzero::FrameTreeNodeInfo::FrameType
+RenderFrameHostImpl::GetFrameTypeProto() const {
+  using RFHProto = perfetto::protos::pbzero::FrameTreeNodeInfo;
+
+  if (GetParent()) {
+    return RFHProto::SUBFRAME;
+  }
+  if (const_cast<RenderFrameHostImpl*>(this)->GetPage().IsPrimary()) {
+    return RFHProto::PRIMARY_MAIN_FRAME;
+  }
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+    return RFHProto::PRERENDER_MAIN_FRAME;
+  }
+  if (IsFencedFrameRoot()) {
+    return RFHProto::FENCED_FRAME_ROOT;
+  }
+
+  // It returns a different value from FrameTreeNode::GetFrameType() when
+  // - `this` is a speculative RFH or
+  // - `this` is not in a frame tree (e.g., IsInBackForwardCache() or
+  // IsPendingDeletion()).
+  return RFHProto::UNSPECIFIED_FRAME_TYPE;
 }
 
 StoragePartitionImpl* RenderFrameHostImpl::GetStoragePartition() {
