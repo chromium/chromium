@@ -249,10 +249,6 @@ tast_disabled_tests_from_chrome_all = [
   "dlp.DataLeakPreventionRulesListScreenshot.ash_allowed",
   "dlp.DataLeakPreventionRulesListScreenshot.ash_blocked",
 
-  # https://crbug.com/1364721
-  "inputs.VirtualKeyboardHandwriting.docked",
-  "inputs.VirtualKeyboardHandwriting.floating",
-
   # https://crbug.com/1365284
   "crostini.RestartApp.clamshell_stable",
 
@@ -304,10 +300,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://b/261363192
   "crostini.*@kevin",
-
-  # http://b/262792309
-  "inputs.PhysicalKeyboardJapaneseTyping.jp",
-  "inputs.PhysicalKeyboardJapaneseTyping.us",
 
   # https://crbug.com/1401605
   "hwsec.CrossVersionLogin.small",
