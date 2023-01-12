@@ -32,11 +32,6 @@ export class EmojiButton extends PolymerElement {
       base: {type: String},
       allVariants: {type: Array, readonly: true},
       tooltip: {type: String, readonly: true},
-      category: {
-        type: String,
-        value: CategoryEnum.EMOJI,
-        readonly: true,
-      },
     };
   }
   emoji: string;
@@ -45,7 +40,6 @@ export class EmojiButton extends PolymerElement {
   private base?: string;
   private allVariants?: Emoji[];
   private tooltip?: string;
-  private category: string;
 
 
   private onClick(): void {
@@ -58,7 +52,7 @@ export class EmojiButton extends PolymerElement {
       baseEmoji: this.base,
       allVariants: this.allVariants ? this.allVariants : [],
       name: this.tooltip,
-      category: this.category,
+      category: CategoryEnum.EMOJI,
     }));
   }
 
