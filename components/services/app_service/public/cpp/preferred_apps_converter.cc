@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_converter.h"

@@ -49,48 +49,11 @@ class IntentFilterUtilTest : public testing::Test {
     return intent_filter;
   }
 
-  // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-  apps::mojom::IntentFilterPtr MakeFilter(
-      std::string scheme,
-      std::string host,
-      std::string path,
-      apps::mojom::PatternMatchType pattern) {
-    auto intent_filter = apps::mojom::IntentFilter::New();
-
-    apps_util::AddSingleValueCondition(
-        apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
-        apps::mojom::PatternMatchType::kLiteral, intent_filter);
-
-    apps_util::AddSingleValueCondition(
-        apps::mojom::ConditionType::kScheme, scheme,
-        apps::mojom::PatternMatchType::kLiteral, intent_filter);
-
-    apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kHost, host,
-                                       apps::mojom::PatternMatchType::kLiteral,
-                                       intent_filter);
-
-    apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kPath, path,
-                                       pattern, intent_filter);
-
-    return intent_filter;
-  }
-
   apps::IntentFilterPtr MakeHostOnlyFilter(std::string host,
                                            apps::PatternMatchType pattern) {
     auto intent_filter = std::make_unique<apps::IntentFilter>();
     intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, host,
                                            pattern);
-
-    return intent_filter;
-  }
-
-  apps::mojom::IntentFilterPtr MakeHostOnlyFilter(
-      std::string host,
-      apps::mojom::PatternMatchType pattern) {
-    auto intent_filter = apps::mojom::IntentFilter::New();
-
-    apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kHost, host,
-                                       pattern, intent_filter);
 
     return intent_filter;
   }
@@ -315,17 +278,6 @@ TEST_F(IntentFilterUtilTest, PathsWithNoSlash) {
   EXPECT_EQ(links.count("m.youtube.com/*"), 1u);
   EXPECT_EQ(links.count("m.youtube.com/.*"), 1u);
   EXPECT_EQ(links.count("m.youtube.com/.*/foo"), 1u);
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentFilterUtilTest, IsSupportedLinkMojom) {
-  auto filter = MakeFilter("https", "www.google.com", "/maps",
-                           apps::mojom::PatternMatchType::kLiteral);
-  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
-
-  filter = MakeFilter("https", "www.google.com", ".*",
-                      apps::mojom::PatternMatchType::kGlob);
-  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
 }
 
 TEST_F(IntentFilterUtilTest, IsSupportedLink) {

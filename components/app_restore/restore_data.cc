@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/i18n/number_formatting.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/app_constants/constants.h"
