@@ -34,6 +34,11 @@ group("api_implementations") {
   if (enable_pdf) {
     public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
   }
+
+  if (is_chromeos) {
+    public_deps +=
+        [ "//chrome/browser/chromeos/extensions/smart_card_provider_private" ]
+  }
 }
 
 # The step necessary to generate the code to register the corresponding

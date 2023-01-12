@@ -838,6 +838,14 @@
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
+  "smartCardProviderPrivate": {
+    "channel": "dev",
+    "platforms": ["chromeos", "lacros"],
+    "extension_types": ["extension", "platform_app"],
+    "allowlist": [
+      "EC3DE21E048B67319893889529354DFBFA96FD23"   // Smart Card Connector
+    ]
+  },
   "speechRecognitionPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],

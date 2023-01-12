@@ -794,6 +794,10 @@
     "dependencies": ["permission:sidePanel"],
     "contexts": ["blessed_extension"]
   },
+  "smartCardProviderPrivate": {
+    "dependencies": ["permission:smartCardProviderPrivate"],
+    "contexts": ["blessed_extension"]
+  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["blessed_extension"]

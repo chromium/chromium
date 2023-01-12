@@ -1,0 +1,126 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use this API to give the browser access to a winscard.h[1] compatible
+// PC/SC[2] implementation, which will be the backend of the browser's
+// Web Smart Card API[3].
+//
+// [1] https://pcsclite.apdu.fr/api/winscard_8h.html
+// [2] https://en.wikipedia.org/wiki/PC/SC
+// [3] https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+//
+// TODO(crbug.com/1386175): Add API for the remaining SCard* functions.
+[platforms=("chromeos", "lacros"),
+ implemented_in="chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"]
+namespace smartCardProviderPrivate {
+
+  // PC/SC error codes we can expect to hit (thus a non-exhaustive list).
+  // UNKNOWN means an SCARD error code that is not mapped in this enum (and
+  // thus should probably be added here).
+  enum ResultCode {
+    SUCCESS,
+    REMOVED_CARD,
+    RESET_CARD,
+    UNPOWERED_CARD,
+    UNRESPONSIVE_CARD,
+    UNSUPPORTED_CARD,
+    READER_UNAVAILABLE,
+    SHARING_VIOLATION,
+    NOT_TRANSACTED,
+    NO_SMARTCARD,
+    PROTO_MISMATCH,
+    SYSTEM_CANCELLED,
+    NOT_READY,
+    CANCELLED,
+    INSUFFICIENT_BUFFER,
+    INVALID_HANDLE,
+    INVALID_PARAMETER,
+    INVALID_VALUE,
+    NO_MEMORY,
+    TIMEOUT,
+    UNKNOWN_READER,
+    UNSUPPORTED_FEATURE,
+    NO_READERS_AVAILABLE,
+    SERVICE_STOPPED,
+    NO_SERVICE,
+    COMM_ERROR,
+    INTERNAL_ERROR,
+    UNKNOWN_ERROR,
+    SERVER_TOO_BUSY,
+    UNEXPECTED,
+    SHUTDOWN,
+    UNKNOWN
+  };
+
+  // Maps to the SCARD_STATE_* flags defined in the winscard.h API.
+  dictionary ReaderStateFlags {
+    boolean? unaware;
+    boolean? ignore;
+    boolean? changed;
+    boolean? unknown;
+    boolean? unavailable;
+    boolean? empty;
+    boolean? present;
+    boolean? exclusive;
+    boolean? inuse;
+    boolean? mute;
+    boolean? unpowered;
+  };
+
+  dictionary ReaderStateIn {
+    DOMString reader;
+    ReaderStateFlags currentState;
+  };
+
+  dictionary ReaderStateOut {
+    DOMString reader;
+    ReaderStateFlags eventState;
+    ArrayBuffer atr;
+  };
+
+  interface Events {
+    // Browser requested a SCardEstablishContext call.
+    // Extension must report the result to the browser by calling
+    // reportEstablishContextResult.
+    [maxListeners=1] static void onEstablishContextRequested(long requestId);
+
+    // Browser requested a SCardReleaseContext call.
+    // Extension must report the result to the browser by calling
+    // reportReleaseContextResult.
+    [maxListeners=1] static void onReleaseContextRequested(long requestId,
+        long scardContext);
+
+    // Browser requested a SCardListReaders call.
+    // Extension must report the result to the browser by calling
+    // reportListReadersResult.
+    [maxListeners=1] static void onListReadersRequested(long requestId,
+        long scardContext);
+
+    // Browser requested a SCardGetStatusChange call.
+    // Extension must report the result to the browser by calling
+    // reportGetStatusChangeResult.
+    [maxListeners=1] static void onGetStatusChangeRequested(long requestId,
+        long scardContext,
+        long timeout,
+        ReaderStateIn[] readerStates);
+  };
+
+  interface Functions {
+      // Reports the result of a SCardEstablishContext call.
+      static void reportEstablishContextResult(long requestId,
+          long scardContext, ResultCode resultCode);
+
+      // Reports the result of a SCardReleaseContext call.
+      static void reportReleaseContextResult(long requestId,
+          ResultCode resultCode);
+
+      // Reports the result of a SCardListReaders call.
+      static void reportListReadersResult(long requestId,
+          DOMString[] readers, ResultCode resultCode);
+
+      // Reports the result of a SCardGetStatusChange call.
+      static void reportGetStatusChangeResult(long requestId,
+          ReaderStateOut[] readerStates, ResultCode resultCode);
+  };
+};

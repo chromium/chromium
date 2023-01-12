@@ -33734,6 +33734,14 @@ Called by update_extension_histograms.py.-->
   <int value="497" label="PASSWORDS_PRIVATE_ON_PASSWORD_MANAGER_AUTH_TIMEOUT"/>
   <int value="498" label="PASSWORDS_PRIVATE_ON_INSECURE_CREDENTIALS_CHANGED"/>
   <int value="499" label="VIRTUAL_KEYBOARD_PRIVATE_ON_COLOR_PROVIDER_CHANGED"/>
+  <int value="500"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_ESTABLISH_CONTEXT_REQUESTED"/>
+  <int value="501"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_RELEASE_CONTEXT_REQUESTED"/>
+  <int value="502"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_LIST_READERS_REQUESTED"/>
+  <int value="503"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_GET_STATUS_CHANGE_REQUESTED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -35570,6 +35578,13 @@ Called by update_extension_histograms.py.-->
   <int value="1748" label="FILEMANAGERPRIVATEINTERNAL_SEARCHFILES"/>
   <int value="1749" label="SYSTEMLOG_ADD"/>
   <int value="1750" label="DECLARATIVENETREQUEST_GETDISABLEDRULEIDS"/>
+  <int value="1751"
+      label="SMARTCARDPROVIDERPRIVATE_REPORTESTABLISHCONTEXTRESULT"/>
+  <int value="1752"
+      label="SMARTCARDPROVIDERPRIVATE_REPORTRELEASECONTEXTRESULT"/>
+  <int value="1753" label="SMARTCARDPROVIDERPRIVATE_REPORTLISTREADERSRESULT"/>
+  <int value="1754"
+      label="SMARTCARDPROVIDERPRIVATE_REPORTGETSTATUSCHANGERESULT"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -36206,6 +36221,7 @@ Called by update_extension_permission.py.-->
   <int value="244" label="kChromeOSTelemetryNetworkInformation"/>
   <int value="245" label="kPdfViewerPrivate"/>
   <int value="246" label="kSystemLog"/>
+  <int value="247" label="kSmartCardProviderPrivate"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">
