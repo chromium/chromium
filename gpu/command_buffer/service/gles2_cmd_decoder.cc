@@ -19291,7 +19291,7 @@ bool GLES2DecoderImpl::NeedsCopyTextureImageWorkaround(
 
 bool GLES2DecoderImpl::ChromiumImageNeedsRGBEmulation() {
 #if BUILDFLAG(IS_OZONE)
-  return image_factory_for_nacl_swapchain()->SupportsFormatRGB();
+  return !image_factory_for_nacl_swapchain()->SupportsFormatRGB();
 #else
   return false;
 #endif
