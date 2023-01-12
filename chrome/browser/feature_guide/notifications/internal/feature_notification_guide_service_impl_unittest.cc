@@ -126,8 +126,8 @@ class FeatureNotificationGuideServiceImplTest : public testing::Test {
 };
 
 TEST_F(FeatureNotificationGuideServiceImplTest, BasicFlow) {
-  EXPECT_CALL(segmentation_platform_service_, GetCachedSegmentResult(_))
-      .WillRepeatedly(Return(GetSegmentResult()));
+  EXPECT_CALL(segmentation_platform_service_, GetSelectedSegment(_, _))
+      .WillOnce(RunOnceCallback<1>(GetSegmentResult()));
 
   EXPECT_CALL(tracker_, WouldTriggerHelpUI(_)).WillRepeatedly(Return(true));
   service_->OnSchedulerInitialized(std::set<std::string>());
@@ -158,8 +158,8 @@ TEST_F(FeatureNotificationGuideServiceImplTest, BasicFlow) {
 }
 
 TEST_F(FeatureNotificationGuideServiceImplTest, SkipAlreadyScheduledFeatures) {
-  EXPECT_CALL(segmentation_platform_service_, GetCachedSegmentResult(_))
-      .WillRepeatedly(Return(GetSegmentResult()));
+  EXPECT_CALL(segmentation_platform_service_, GetSelectedSegment(_, _))
+      .WillOnce(RunOnceCallback<1>(GetSegmentResult()));
   EXPECT_CALL(tracker_, WouldTriggerHelpUI(_)).WillRepeatedly(Return(true));
   std::set<std::string> scheduled_guids;
   scheduled_guids.insert("guid_incognito_tab");
