@@ -23,7 +23,7 @@ import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
 import {RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, SubcategoryData, VisualContent} from './types.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData, VisualContent} from './types.js';
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
@@ -53,6 +53,7 @@ export class EmojiPicker extends PolymerElement {
     return {
       category: {type: String, value: 'emoji', observer: 'onCategoryChanged'},
       emojiGroupTabs: {type: Array},
+      dummyTab: {type: Object, value: () => ({})},
       categoriesData: {type: Array, value: () => ([])},
       categoriesGroupElements: {type: Array, value: () => ([])},
       categoriesHistory: {type: Object, value: () => ({})},
@@ -72,6 +73,7 @@ export class EmojiPicker extends PolymerElement {
   }
   private category: CategoryEnum;
   private emojiGroupTabs: SubcategoryData[];
+  private dummyTab: SubcategoryData;
   private allCategoryTabs: SubcategoryData[];
   categoriesData: EmojiGroupData;
   categoriesGroupElements: EmojiGroupElement[];
@@ -307,7 +309,8 @@ export class EmojiPicker extends PolymerElement {
                 const {gifCategories} = values[1];
                 const categoryTabs = {
                   ...CATEGORY_TABS,
-                  gif: [{name: constants.TRENDING}, ...gifCategories],
+                  gif: this.setGifGroupsPagination(
+                      [{name: constants.TRENDING}, ...gifCategories]),
                 };
                 this.allCategoryTabs = gifCategoryTabs(categoryTabs);
               });
@@ -1084,6 +1087,58 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
+   * Dynamically calculate the pagination for the GIF category groups tabs to
+   * determine the number of tabs that can fit in each page. Existing
+   * emoji/emoticon/symbol tabs pagination is hardcoded since the tabs remain
+   * consistent, but GIF tabs change after every API call.
+   */
+  private setGifGroupsPagination(gifGroupTabs: GifSubcategoryData[]):
+      GifSubcategoryData[] {
+    const gifCategoriesGroupData = gifGroupTabs;
+
+    // Max tabs bar width accounts for the chevron clicks and/or history button
+    const maxTabsWidth = constants.EMOJI_PICKER_WIDTH -
+        2 * constants.EMOJI_PICKER_SIDE_PADDING - 2 * constants.EMOJI_ICON_SIZE;
+
+    let totalTabsWidth = 0;
+    let pagination = 1;
+
+    for (const tabData of gifCategoriesGroupData) {
+      // Calculate maximum number of tabs that can fit within the tabs bar width
+      // to set pagination
+      const tabWidth = this.getTabElementWidth(tabData.name);
+      if (totalTabsWidth + tabWidth > maxTabsWidth) {
+        pagination += 1;
+        totalTabsWidth = 0;
+      }
+      totalTabsWidth += tabWidth;
+      tabData.pagination = pagination;
+    }
+
+    return gifCategoriesGroupData;
+  }
+
+  /**
+   * Calculate the width of the specific tab element before it
+   * is rendered by customising the dummy element with the tab name
+   * and finding width.
+   */
+  private getTabElementWidth(tabName: string): number {
+    this.dummyTab = {
+      name: tabName,
+      groupId: '-1',
+      active: false,
+      disabled: false,
+      category: CategoryEnum.GIF,
+    };
+
+    const dummyTab = this.getDummy();
+    const dummyTabWidth = dummyTab ? dummyTab.clientWidth : 0;
+
+    return dummyTabWidth;
+  }
+
+  /**
    * Returns true if the page is not the first.
    */
   private isNotFirstPage(pageNumber: number) {
@@ -1125,6 +1180,10 @@ export class EmojiPicker extends PolymerElement {
 
   private getTabs() {
     return this.$['tabs'] as HTMLElement | null;
+  }
+
+  private getDummy() {
+    return this.$['dummyTab'] as HTMLElement | null;
   }
 
   private getSearchContainer() {

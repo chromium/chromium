@@ -150,6 +150,17 @@
     width: var(--emoji-size);
   }
 
+  /* Invisible dummy tab used to dynamically calculate width of GIF tabs */
+  #dummyTab {
+    border: 0;
+    height: 1em;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    visibility: hidden;
+  }
+
   .sr-only {
     user-select: none;
   }
@@ -286,6 +297,7 @@
             custom-tab-index="[[getTabIndex(item.pagination,pagination)]]">
           </emoji-group-button>
           <!-- Render non history tab. -->
+          <!-- If text-group-button is changed, update dummyTab below. -->
           <template is="dom-repeat"
             items="[[emojiGroupTabs]]"
             filter="[[filterGroupTabByPagination(1)]]">
@@ -347,5 +359,17 @@
       </div>
     </template>
   </div>
-
+  <!-- Render invisible dummy tab to temporarily calculate width of a tab. -->
+  <div id="dummyTab">
+    <text-group-button data-group$="[[dummyTab]]"
+      group-id="[[dummyTab.groupId]]"
+      active="[[dummyTab.active]]"
+      disabled="[[dummyTab.disabled]]"
+      name="[[dummyTab.name]]"
+      class="tab"
+      on-focus="preventV2TabScrolling"
+      custom-tab-index=
+      "[[getTabIndex(dummyTab.pagination,pagination)]]">
+    </text-group-button>
+  </div>
 </div>
