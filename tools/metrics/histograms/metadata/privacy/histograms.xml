@@ -322,6 +322,22 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"
+    expires_after="2023-04-13">
+  <owner>bcl@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    Tracks certain errors that DIPS may encounter when running on a client.
+
+    This is currently recorded when expected invariants are violated, such as
+    there being an open-ended time range in the database. See `DIPSErrorCode`
+    for all possible codes this histogram can output.
+
+    Since these error codes can be recorded several times by a client, using
+    per-client aggregation when analyzing this metric is recommended.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
     units="ms" expires_after="2023-05-01">
   <owner>bcl@chromium.org</owner>

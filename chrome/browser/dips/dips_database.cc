@@ -39,14 +39,24 @@ absl::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
 
 TimestampRange RangeFromColumns(sql::Statement* statement,
                                 int start_column_idx,
-                                int end_column_idx) {
+                                int end_column_idx,
+                                std::vector<DIPSErrorCode>& errors) {
   absl::optional<base::Time> first_time =
       ColumnOptionalTime(statement, start_column_idx);
   absl::optional<base::Time> last_time =
       ColumnOptionalTime(statement, end_column_idx);
 
-  // TODO(kaklilu): Record to UMA when this happens.
-  if (!first_time.has_value() || !last_time.has_value()) {
+  if (!first_time.has_value() && !last_time.has_value()) {
+    return absl::nullopt;
+  }
+
+  if (!first_time.has_value()) {
+    errors.push_back(DIPSErrorCode::kRead_OpenEndedRange_NullStart);
+    return absl::nullopt;
+  }
+
+  if (!last_time.has_value()) {
+    errors.push_back(DIPSErrorCode::kRead_OpenEndedRange_NullEnd);
     return absl::nullopt;
   }
 
@@ -397,6 +407,14 @@ bool DIPSDatabase::CheckDBInit() {
   return true;
 }
 
+bool DIPSDatabase::ExecuteSqlForTesting(const char* sql) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit()) {
+    return false;
+  }
+  return db_->ExecuteScriptForTesting(sql);  // IN-TEST
+}
+
 bool DIPSDatabase::Write(const std::string& site,
                          const TimestampRange& storage_times,
                          const TimestampRange& interaction_times,
@@ -467,14 +485,19 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
     return absl::nullopt;
   }
 
-  TimestampRange site_storage_times = RangeFromColumns(&statement, 1, 2);
-  TimestampRange user_interaction_times = RangeFromColumns(&statement, 3, 4);
-  TimestampRange stateful_bounce_times = RangeFromColumns(&statement, 5, 6);
-  TimestampRange bounce_times = RangeFromColumns(&statement, 7, 8);
+  std::vector<DIPSErrorCode> errors;
+  TimestampRange site_storage_times =
+      RangeFromColumns(&statement, 1, 2, errors);
+  TimestampRange user_interaction_times =
+      RangeFromColumns(&statement, 3, 4, errors);
+  TimestampRange stateful_bounce_times =
+      RangeFromColumns(&statement, 5, 6, errors);
+  TimestampRange bounce_times = RangeFromColumns(&statement, 7, 8, errors);
 
   if (!IsNullOrWithin(stateful_bounce_times, bounce_times)) {
     DCHECK(stateful_bounce_times.has_value());
-    // TODO(kaklilu): Record to UMA when this happens.
+    errors.push_back(
+        DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces);
     if (!bounce_times.has_value()) {
       bounce_times = stateful_bounce_times;
     } else {
@@ -485,6 +508,16 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
       bounce_times = {start, end};
     }
   }
+
+  if (errors.empty()) {
+    base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes",
+                                  DIPSErrorCode::kRead_None);
+  } else {
+    for (const DIPSErrorCode& error : errors) {
+      base::UmaHistogramEnumeration("Privacy.DIPS.DIPSErrorCodes", error);
+    }
+  }
+
   return StateValue{site_storage_times, user_interaction_times,
                     stateful_bounce_times, bounce_times};
 }

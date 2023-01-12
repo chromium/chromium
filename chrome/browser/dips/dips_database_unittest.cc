@@ -96,6 +96,75 @@ class DIPSDatabaseTest : public testing::Test {
   bool in_memory_;
 };
 
+class DIPSDatabaseErrorHistogramsTest
+    : public DIPSDatabaseTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DIPSDatabaseErrorHistogramsTest() : DIPSDatabaseTest(GetParam()) {}
+
+  void SetUp() override {
+    DIPSDatabaseTest::SetUp();
+    // Use inf ttl to prevent interactions from expiring unintentionally.
+    features_.InitAndEnableFeatureWithParameters(dips::kFeature,
+                                                 {{"interaction_ttl", "inf"}});
+  }
+};
+
+TEST_P(DIPSDatabaseErrorHistogramsTest,
+       StatefulBounceTimesNotWithinBounceTimes) {
+  base::HistogramTester histograms;
+  // `stateful_bounce` start is outside of `bounce_times`.
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      "INSERT INTO "
+      "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
+      "first_bounce_time,last_bounce_time) VALUES ('site.test',1,3,2,5)"));
+  db_->Read("site.test");
+  histograms.ExpectUniqueSample(
+      "Privacy.DIPS.DIPSErrorCodes",
+      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 1);
+  // `stateful_bounce` end is outside of `bounce_times`.
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      "INSERT OR REPLACE INTO "
+      "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
+      "first_bounce_time,last_bounce_time) VALUES ('site.test',2,5,2,3)"));
+  db_->Read("site.test");
+  histograms.ExpectUniqueSample(
+      "Privacy.DIPS.DIPSErrorCodes",
+      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 2);
+
+  // stateful_bounce is set but `bounce_times` is NULL.
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      "INSERT OR REPLACE INTO "
+      "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
+      "first_bounce_time,last_bounce_time) VALUES "
+      "('site.test',2,3,NULL,NULL)"));
+  db_->Read("site.test");
+  histograms.ExpectUniqueSample(
+      "Privacy.DIPS.DIPSErrorCodes",
+      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 3);
+}
+
+// Verifies the histograms logged for the success case.
+TEST_P(DIPSDatabaseErrorHistogramsTest,
+       StatefulBounceTimesIsWithinBounceTimes) {
+  base::HistogramTester histograms;
+  // Both `stateful_bounce_time` fall within the `bounce_time` range.
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      "INSERT INTO "
+      "bounces(site,first_stateful_bounce_time,last_stateful_bounce_time,"
+      "first_bounce_time,last_bounce_time) VALUES ('site.test',2,4,1,5)"));
+  db_->Read("site.test");
+  histograms.ExpectBucketCount(
+      "Privacy.DIPS.DIPSErrorCodes",
+      DIPSErrorCode::kRead_BounceTimesIsntSupersetOfStatefulBounces, 0);
+  histograms.ExpectBucketCount("Privacy.DIPS.DIPSErrorCodes",
+                               DIPSErrorCode::kRead_None, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DIPSDatabaseErrorHistogramsTest,
+                         ::testing::Bool());
+
 // A test class that lets us ensure that we can add, read, update, and delete
 // bounces for all columns in the DIPSDatabase. Parameterized over whether the
 // db is in memory, and what column we're testing.
@@ -140,6 +209,19 @@ class DIPSDatabaseAllColumnTest
         return value->stateful_bounce_times;
       case ColumnType::kBounce:
         return value->bounce_times;
+    }
+  }
+
+  std::pair<std::string, std::string> GetVariableColumnNames() {
+    switch (column_) {
+      case ColumnType::kSiteStorage:
+        return {"first_site_storage_time", "last_site_storage_time"};
+      case ColumnType::kUserInteraction:
+        return {"first_user_interaction_time", "last_user_interaction_time"};
+      case ColumnType::kStatefulBounce:
+        return {"first_stateful_bounce_time", "last_stateful_bounce_time"};
+      case ColumnType::kBounce:
+        return {"first_bounce_time", "last_bounce_time"};
     }
   }
 
@@ -226,6 +308,48 @@ TEST_P(DIPSDatabaseAllColumnTest, ReadBounce) {
   // Query a site that never had DIPS State, verifying that is has no entry.
   EXPECT_FALSE(db_->Read(GetSiteForDIPS(GURL("https://www.not-in-db.com/")))
                    .has_value());
+}
+
+TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      base::StringPrintf(
+          "INSERT INTO bounces(site,%s,%s) VALUES ('site.test',NULL,0)",
+          GetVariableColumnNames().first.c_str(),
+          GetVariableColumnNames().second.c_str())
+          .c_str()));
+  db_->Read("site.test");
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kRead_OpenEndedRange_NullStart,
+                                1);
+}
+
+TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullEnd) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      base::StringPrintf(
+          "INSERT INTO bounces(site,%s,%s) VALUES ('site.test',0,NULL)",
+          GetVariableColumnNames().first.c_str(),
+          GetVariableColumnNames().second.c_str())
+          .c_str()));
+  db_->Read("site.test");
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kRead_OpenEndedRange_NullEnd, 1);
+}
+
+// Verifies the histograms logged for the success case.
+TEST_P(DIPSDatabaseAllColumnTest, ErrorHistograms_EmptyRangeExcluded) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(db_->ExecuteSqlForTesting(
+      base::StringPrintf("INSERT INTO bounces(site,%s,%s) VALUES "
+                         "('empty-site.test',NULL,NULL)",
+                         GetVariableColumnNames().first.c_str(),
+                         GetVariableColumnNames().second.c_str())
+          .c_str()));
+  db_->Read("empty-site.test");
+  histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
+                                DIPSErrorCode::kRead_None, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

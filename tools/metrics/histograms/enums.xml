@@ -26824,6 +26824,19 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="Primary accounts present but different"/>
 </enum>
 
+<enum name="DIPSErrorCode">
+  <int value="0" label="No DIPSDatabase::Read error was encountered"/>
+  <int value="1"
+      label="DIPSDatabase::Read Error: A range in the db has an open-range
+             (NULL, end]."/>
+  <int value="2"
+      label="DIPSDatabase::Read Error: A range in the db has an open-range
+             [start, NULL)."/>
+  <int value="3"
+      label="DIPSDatabase::Read Error: `bounce_times` doesn't fully contain
+             `stateful_bounce_times`."/>
+</enum>
+
 <enum name="DIPSRedirectCategory">
   <int value="0" label="No cookies accessed; no previous site engagement"/>
   <int value="1" label="Cookies only read; no previous site engagement"/>

@@ -158,4 +158,20 @@ enum class RedirectCategory {
   kMaxValue = kUnknownCookies_HasEngagement,
 };
 
+// DIPSErrorCode is used in UMA enum histograms to monitor certain errors and
+// verify that they are being fixed.
+//
+// When adding an error to this enum, update the DIPSErrorCode enum in
+// tools/metrics/histograms/enums.xml as well.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DIPSErrorCode {
+  kRead_None = 0,
+  kRead_OpenEndedRange_NullStart = 1,
+  kRead_OpenEndedRange_NullEnd = 2,
+  kRead_BounceTimesIsntSupersetOfStatefulBounces = 3,
+  kMaxValue = kRead_BounceTimesIsntSupersetOfStatefulBounces,
+};
+
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

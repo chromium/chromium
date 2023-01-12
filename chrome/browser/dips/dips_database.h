@@ -141,6 +141,7 @@ class DIPSDatabase {
   void SetMaxEntriesForTesting(size_t entries) { max_entries_ = entries; }
   void SetPurgeEntriesForTesting(size_t entries) { purge_entries_ = entries; }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
+  bool ExecuteSqlForTesting(const char* sql);
 
  protected:
   // Initialization functions --------------------------------------------------
