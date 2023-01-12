@@ -672,7 +672,8 @@ crbug.com/1241183 [ chromeos chromeos-board-amd64-generic passthrough ] conforma
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 crbug.com/1401968 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/video/tex-3d-rgb16f-rgb-half_float.html [ RetryOnFailure ]
 crbug.com/1401968 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/video/tex-3d-rg32f-rg-float.html [ RetryOnFailure ]
-
+crbug.com/1406875 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/shaderoperator/unary_operator_01.html [ Failure ]
+crbug.com/1406875 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/shaderoperator/unary_operator_02.html [ Failure ]
 
 # Must investigate ChromeOS failures with passthrough command decoder.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
