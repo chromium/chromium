@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
@@ -26,7 +27,7 @@ constexpr uint8_t kData[] = "Message";
 
 class MockNetworkContext;
 
-enum class RecordedCall { kReceiveMore, kSend };
+enum class RecordedCall { kReceiveMore, kSend, kClose };
 
 std::unique_ptr<network::mojom::UDPSocket> CreateMockUDPSocket(
     MockNetworkContext* network_context,
@@ -90,6 +91,8 @@ class MockUDPSocket : public network::TestUDPSocket {
     std::move(callback).Run(net::OK);
   }
 
+  void Close() override { network_context_->Record(RecordedCall::kClose); }
+
   const raw_ptr<MockNetworkContext> network_context_;
   mojo::Receiver<network::mojom::UDPSocket> receiver_{this};
   mojo::Remote<network::mojom::UDPSocketListener> listener_;
@@ -123,54 +126,41 @@ TEST_F(DirectSocketsUDPUnitTest, Sending) {
   mojo::Receiver<network::mojom::UDPSocketListener> socket_listener_receiver{
       &listener};
 
-  DirectUDPSocketImpl socket(
+  auto socket = std::make_unique<DirectUDPSocketImpl>(
       &mock_network_context,
       socket_listener_receiver.BindNewPipeAndPassRemote());
 
   {
-    base::RunLoop run_loop;
+    base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
+        future;
     const net::IPEndPoint remote_addr;
     network::mojom::UDPSocketOptionsPtr options;
-    socket.Connect(
-        remote_addr, std::move(options),
-
-        base::BindLambdaForTesting(
-            [&run_loop](int result, const absl::optional<net::IPEndPoint>&) {
-              EXPECT_EQ(result, net::OK);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    socket->Connect(remote_addr, std::move(options), future.GetCallback());
+    EXPECT_EQ(future.Get<0>(), net::OK);
   }
 
   // Successful calls.
-  socket.ReceiveMore(kNumAdditionalDatagrams);
+  socket->ReceiveMore(kNumAdditionalDatagrams);
   for (unsigned i = 0; i < 3; ++i) {
-    base::RunLoop run_loop;
-    socket.Send(kData, base::BindLambdaForTesting([&run_loop](int32_t result) {
-                  EXPECT_EQ(result, net::OK);
-                  run_loop.Quit();
-                }));
-    run_loop.Run();
+    base::test::TestFuture<int32_t> future;
+    socket->Send(kData, future.GetCallback());
+    EXPECT_EQ(future.Get(), net::OK);
   }
-  socket.Close();
 
-  // Unsuccessful calls after Close.
-  socket.ReceiveMore(kNumAdditionalDatagrams);
   {
-    base::RunLoop run_loop;
-    socket.Send(kData, base::BindLambdaForTesting([&run_loop](int32_t result) {
-                  EXPECT_EQ(result, net::ERR_FAILED);
-                  run_loop.Quit();
-                }));
-    run_loop.Run();
+    // Reset the socket and wait until call to Close() propagates.
+    base::RunLoop loop;
+    socket.reset();
+    loop.RunUntilIdle();
   }
 
   // Only the calls before Close reach the MockUDPSocket.
-  DCHECK_EQ(4U, mock_network_context.history().size());
+  DCHECK_EQ(5U, mock_network_context.history().size());
   EXPECT_EQ(mock_network_context.history()[0], RecordedCall::kReceiveMore);
   EXPECT_EQ(mock_network_context.history()[1], RecordedCall::kSend);
   EXPECT_EQ(mock_network_context.history()[2], RecordedCall::kSend);
   EXPECT_EQ(mock_network_context.history()[3], RecordedCall::kSend);
+  EXPECT_EQ(mock_network_context.history()[4], RecordedCall::kClose);
 }
 
 }  // namespace content
