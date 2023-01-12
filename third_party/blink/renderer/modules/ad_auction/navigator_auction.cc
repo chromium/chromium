@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -76,8 +77,39 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
 
    private:
     Member<AuctionHandle> auction_handle_;
-    mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
-    mojom::blink::AuctionAdConfigField field_;
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const mojom::blink::AuctionAdConfigField field_;
+  };
+
+  class PerBuyerSignalsResolved : public ScriptFunction::Callable {
+   public:
+    PerBuyerSignalsResolved(
+        AuctionHandle* auction_handle,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name);
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    void Trace(Visitor* visitor) const override;
+
+   private:
+    Member<AuctionHandle> auction_handle_;
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const String seller_name_;
+  };
+
+  class BuyerTimeoutsResolved : public ScriptFunction::Callable {
+   public:
+    BuyerTimeoutsResolved(AuctionHandle* auction_handle,
+                          mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+                          const String& seller_name);
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override;
+    void Trace(Visitor* visitor) const override;
+
+   private:
+    Member<AuctionHandle> auction_handle_;
+    const mojom::blink::AuctionAdConfigAuctionIdPtr auction_id_;
+    const String seller_name_;
   };
 
   class Rejected : public ScriptFunction::Callable {
@@ -107,6 +139,21 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                             const String& json_value) {
     abortable_ad_auction_->ResolvedPromiseParam(std::move(auction), field,
                                                 json_value);
+  }
+
+  void ResolvedPerBuyerSignalsPromise(
+      mojom::blink::AuctionAdConfigAuctionIdPtr auction,
+      const absl::optional<WTF::HashMap<scoped_refptr<const SecurityOrigin>,
+                                        String>>& per_buyer_signals) {
+    abortable_ad_auction_->ResolvedPerBuyerSignalsPromise(std::move(auction),
+                                                          per_buyer_signals);
+  }
+
+  void ResolvedBuyerTimeoutsPromise(
+      mojom::blink::AuctionAdConfigAuctionIdPtr auction,
+      mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts) {
+    abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
+        std::move(auction), std::move(buyer_timeouts));
   }
 
   // AbortSignal::Algorithm implementation:
@@ -151,21 +198,34 @@ String ErrorInvalidInterestGroupJson(const AuctionAdInterestGroup& group,
       group.name().Utf8().c_str());
 }
 
+String ErrorInvalidAuctionConfigSeller(const String& seller_name,
+                                       const String& field_name,
+                                       const String& field_value,
+                                       const String& error) {
+  return String::Format("%s '%s' for AuctionAdConfig with seller '%s' %s",
+                        field_name.Utf8().c_str(), field_value.Utf8().c_str(),
+                        seller_name.Utf8().c_str(), error.Utf8().c_str());
+}
+
 String ErrorInvalidAuctionConfig(const AuctionAdConfig& config,
                                  const String& field_name,
                                  const String& field_value,
                                  const String& error) {
-  return String::Format("%s '%s' for AuctionAdConfig with seller '%s' %s",
-                        field_name.Utf8().c_str(), field_value.Utf8().c_str(),
-                        config.seller().Utf8().c_str(), error.Utf8().c_str());
+  return ErrorInvalidAuctionConfigSeller(config.seller(), field_name,
+                                         field_value, error);
+}
+
+String ErrorInvalidAuctionConfigSellerJson(const String& seller_name,
+                                           const String& field_name) {
+  return String::Format(
+      "%s for AuctionAdConfig with seller '%s' must be a JSON-serializable "
+      "object.",
+      field_name.Utf8().c_str(), seller_name.Utf8().c_str());
 }
 
 String ErrorInvalidAuctionConfigJson(const AuctionAdConfig& config,
                                      const String& field_name) {
-  return String::Format(
-      "%s for AuctionAdConfig with seller '%s' must be a JSON-serializable "
-      "object.",
-      field_name.Utf8().c_str(), config.seller().Utf8().c_str());
+  return ErrorInvalidAuctionConfigSellerJson(config.seller(), field_name);
 }
 
 String ErrorInvalidAdRequestConfig(const AdRequestConfig& config,
@@ -947,62 +1007,168 @@ bool CopyDirectFromSellerSignalsFromIdlToMojo(
   return true;
 }
 
-bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
-                                      ExceptionState& exception_state,
-                                      const AuctionAdConfig& input,
-                                      mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasPerBuyerSignals())
-    return true;
-  output.auction_ad_config_non_shared_params->per_buyer_signals.emplace();
-  for (const auto& per_buyer_signal : input.perBuyerSignals()) {
+// Returns nullopt + sets exception on failure, or returns a concrete value.
+absl::optional<HashMap<scoped_refptr<const SecurityOrigin>, String>>
+ConvertNonPromisePerBuyerSignalsFromV8ToMojo(const ScriptState& script_state,
+                                             ExceptionState& exception_state,
+                                             const String& seller_name,
+                                             v8::Local<v8::Value> value) {
+  HeapVector<std::pair<WTF::String, blink::ScriptValue>> decoded =
+      NativeValueTraits<IDLRecord<IDLUSVString, IDLAny>>::NativeValue(
+          script_state.GetIsolate(), value, exception_state);
+  if (exception_state.HadException()) {
+    return absl::nullopt;
+  }
+
+  absl::optional<HashMap<scoped_refptr<const SecurityOrigin>, String>>
+      per_buyer_signals;
+
+  per_buyer_signals.emplace();
+  for (const auto& per_buyer_signal : decoded) {
     scoped_refptr<const SecurityOrigin> buyer =
         ParseOrigin(per_buyer_signal.first);
     if (!buyer) {
-      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-          input, "perBuyerSignals buyer", per_buyer_signal.first,
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
+          seller_name, "perBuyerSignals buyer", per_buyer_signal.first,
           "must be a valid https origin."));
-      return false;
+      return absl::nullopt;
     }
     String buyer_signals_str;
     if (!Jsonify(script_state, per_buyer_signal.second.V8Value(),
                  buyer_signals_str)) {
       exception_state.ThrowTypeError(
-          ErrorInvalidAuctionConfigJson(input, "perBuyerSignals"));
-      return false;
+          ErrorInvalidAuctionConfigSellerJson(seller_name, "perBuyerSignals"));
+      return absl::nullopt;
     }
-    output.auction_ad_config_non_shared_params->per_buyer_signals->insert(
-        buyer, std::move(buyer_signals_str));
+    per_buyer_signals->insert(buyer, std::move(buyer_signals_str));
   }
 
-  return true;
+  return per_buyer_signals;
 }
 
-bool CopyPerBuyerTimeoutsFromIdlToMojo(const ScriptState& script_state,
-                                       ExceptionState& exception_state,
-                                       const AuctionAdConfig& input,
-                                       mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasPerBuyerTimeouts())
+bool CopyPerBuyerSignalsFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    const mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerSignals()) {
+    output.auction_ad_config_non_shared_params->per_buyer_signals =
+        mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::
+            NewPerBuyerSignals(absl::nullopt);
     return true;
-  output.auction_ad_config_non_shared_params->per_buyer_timeouts.emplace();
-  for (const auto& per_buyer_timeout : input.perBuyerTimeouts()) {
+  }
+
+  v8::Local<v8::Value> value = input.perBuyerSignals().V8Value();
+  if (auction_handle && value->IsPromise()) {
+    ScriptPromise promise(&script_state, value);
+    promise.Then(
+        MakeGarbageCollected<ScriptFunction>(
+            &script_state,
+            MakeGarbageCollected<
+                NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved>(
+                auction_handle, auction_id->Clone(), input.seller())),
+        MakeGarbageCollected<ScriptFunction>(
+            &script_state,
+            MakeGarbageCollected<NavigatorAuction::AuctionHandle::Rejected>(
+                auction_handle)));
+    output.auction_ad_config_non_shared_params->per_buyer_signals =
+        mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::NewPromise(0);
+    return true;
+  }
+
+  auto per_buyer_signals = ConvertNonPromisePerBuyerSignalsFromV8ToMojo(
+      script_state, exception_state, input.seller(), value);
+  if (per_buyer_signals.has_value()) {
+    output.auction_ad_config_non_shared_params->per_buyer_signals =
+        mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::
+            NewPerBuyerSignals(per_buyer_signals);
+    return true;
+  }
+
+  return false;
+}
+
+// Returns nullptr + sets exception on failure, or returns a concrete value.
+mojom::blink::AuctionAdConfigBuyerTimeoutsPtr
+ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(const ScriptState& script_state,
+                                              ExceptionState& exception_state,
+                                              const String& seller_name,
+                                              v8::Local<v8::Value> value) {
+  Vector<std::pair<String, uint64_t>> decoded =
+      NativeValueTraits<IDLRecord<IDLUSVString, IDLUnsignedLongLong>>::
+          NativeValue(script_state.GetIsolate(), value, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts =
+      mojom::blink::AuctionAdConfigBuyerTimeouts::New();
+  buyer_timeouts->per_buyer_timeouts.emplace();
+  for (const auto& per_buyer_timeout : decoded) {
     if (per_buyer_timeout.first == "*") {
-      output.auction_ad_config_non_shared_params->all_buyers_timeout =
+      buyer_timeouts->all_buyers_timeout =
           base::Milliseconds(per_buyer_timeout.second);
       continue;
     }
     scoped_refptr<const SecurityOrigin> buyer =
         ParseOrigin(per_buyer_timeout.first);
     if (!buyer) {
-      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-          input, "perBuyerTimeouts buyer", per_buyer_timeout.first,
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
+          seller_name, "perBuyerTimeouts buyer", per_buyer_timeout.first,
           "must be \"*\" (wildcard) or a valid https origin."));
-      return false;
+      return nullptr;
     }
-    output.auction_ad_config_non_shared_params->per_buyer_timeouts->insert(
+    buyer_timeouts->per_buyer_timeouts->insert(
         buyer, base::Milliseconds(per_buyer_timeout.second));
   }
 
-  return true;
+  return buyer_timeouts;
+}
+
+bool CopyPerBuyerTimeoutsFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    const mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerTimeouts()) {
+    output.auction_ad_config_non_shared_params->buyer_timeouts =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerTimeouts::NewValue(
+            mojom::blink::AuctionAdConfigBuyerTimeouts::New());
+    return true;
+  }
+
+  v8::Local<v8::Value> value = input.perBuyerTimeouts().V8Value();
+  if (auction_handle && value->IsPromise()) {
+    ScriptPromise promise(&script_state, value);
+    promise.Then(
+        MakeGarbageCollected<ScriptFunction>(
+            &script_state,
+            MakeGarbageCollected<
+                NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved>(
+                auction_handle, auction_id->Clone(), input.seller())),
+        MakeGarbageCollected<ScriptFunction>(
+            &script_state,
+            MakeGarbageCollected<NavigatorAuction::AuctionHandle::Rejected>(
+                auction_handle)));
+    output.auction_ad_config_non_shared_params->buyer_timeouts =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerTimeouts::NewPromise(0);
+    return true;
+  }
+
+  mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts =
+      ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(
+          script_state, exception_state, input.seller(), value);
+  if (buyer_timeouts) {
+    output.auction_ad_config_non_shared_params->buyer_timeouts =
+        mojom::blink::AuctionAdConfigMaybePromiseBuyerTimeouts::NewValue(
+            std::move(buyer_timeouts));
+    return true;
+  }
+  return false;
 }
 
 bool CopyPerBuyerExperimentIdsFromIdlToMojo(
@@ -1164,9 +1330,11 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                       *mojo_config) ||
       !CopyDirectFromSellerSignalsFromIdlToMojo(
           context, exception_state, config, resource_fetcher, *mojo_config) ||
-      !CopyPerBuyerSignalsFromIdlToMojo(script_state, exception_state, config,
+      !CopyPerBuyerSignalsFromIdlToMojo(auction_handle, auction_id.get(),
+                                        script_state, exception_state, config,
                                         *mojo_config) ||
-      !CopyPerBuyerTimeoutsFromIdlToMojo(script_state, exception_state, config,
+      !CopyPerBuyerTimeoutsFromIdlToMojo(auction_handle, auction_id.get(),
+                                         script_state, exception_state, config,
                                          *mojo_config) ||
       !CopyPerBuyerExperimentIdsFromIdlToMojo(script_state, exception_state,
                                               config, *mojo_config) ||
@@ -1317,6 +1485,90 @@ ScriptValue NavigatorAuction::AuctionHandle::JsonResolved::Call(
 }
 
 void NavigatorAuction::AuctionHandle::JsonResolved::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(auction_handle_);
+  Callable::Trace(visitor);
+}
+
+NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::
+    PerBuyerSignalsResolved(
+        AuctionHandle* auction_handle,
+        mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+        const String& seller_name)
+    : auction_handle_(auction_handle),
+      auction_id_(std::move(auction_id)),
+      seller_name_(seller_name) {}
+
+ScriptValue NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::Call(
+    ScriptState* script_state,
+    ScriptValue value) {
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "NavigatorAuction", "runAdAuction");
+  absl::optional<WTF::HashMap<scoped_refptr<const SecurityOrigin>, String>>
+      per_buyer_signals;
+  if (!value.IsEmpty()) {
+    v8::Local<v8::Value> v8_value = value.V8Value();
+    if (!v8_value->IsUndefined() && !v8_value->IsNull()) {
+      per_buyer_signals = ConvertNonPromisePerBuyerSignalsFromV8ToMojo(
+          *script_state, exception_state, seller_name_, v8_value);
+    }
+  }
+
+  if (!exception_state.HadException()) {
+    auction_handle_->ResolvedPerBuyerSignalsPromise(
+        auction_id_->Clone(), std::move(per_buyer_signals));
+  } else {
+    auction_handle_->Abort();
+  }
+
+  return ScriptValue();
+}
+
+void NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(auction_handle_);
+  Callable::Trace(visitor);
+}
+
+NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::BuyerTimeoutsResolved(
+    AuctionHandle* auction_handle,
+    mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
+    const String& seller_name)
+    : auction_handle_(auction_handle),
+      auction_id_(std::move(auction_id)),
+      seller_name_(seller_name) {}
+
+ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Call(
+    ScriptState* script_state,
+    ScriptValue value) {
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "NavigatorAuction", "runAdAuction");
+  mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts;
+  if (!value.IsEmpty()) {
+    v8::Local<v8::Value> v8_value = value.V8Value();
+    if (!v8_value->IsUndefined() && !v8_value->IsNull()) {
+      buyer_timeouts = ConvertNonPromisePerBuyerTimeoutsFromV8ToMojo(
+          *script_state, exception_state, seller_name_, v8_value);
+    }
+  }
+
+  if (!buyer_timeouts) {
+    buyer_timeouts = mojom::blink::AuctionAdConfigBuyerTimeouts::New();
+  }
+
+  if (!exception_state.HadException()) {
+    auction_handle_->ResolvedBuyerTimeoutsPromise(auction_id_->Clone(),
+                                                  std::move(buyer_timeouts));
+  } else {
+    auction_handle_->Abort();
+  }
+
+  return ScriptValue();
+}
+
+void NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Trace(
     Visitor* visitor) const {
   visitor->Trace(auction_handle_);
   Callable::Trace(visitor);
@@ -1869,7 +2121,9 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
       !CopySellerSignalsFromIdlToMojo(/*auction_handle=*/nullptr,
                                       /*auction_id=*/nullptr, *script_state,
                                       exception_state, *config, *mojo_config) ||
-      !CopyPerBuyerSignalsFromIdlToMojo(*script_state, exception_state, *config,
+      !CopyPerBuyerSignalsFromIdlToMojo(/*auction_handle=*/nullptr,
+                                        /*auction_id=*/nullptr, *script_state,
+                                        exception_state, *config,
                                         *mojo_config)) {
     return ScriptPromise();
   }

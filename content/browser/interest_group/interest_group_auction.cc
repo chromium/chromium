@@ -1763,10 +1763,12 @@ absl::optional<std::string> InterestGroupAuction::GetPerBuyerSignals(
     const url::Origin& buyer) {
   const auto& auction_config_per_buyer_signals =
       config.non_shared_params.per_buyer_signals;
-  if (auction_config_per_buyer_signals.has_value()) {
-    auto it = auction_config_per_buyer_signals.value().find(buyer);
-    if (it != auction_config_per_buyer_signals.value().end())
+  DCHECK(!auction_config_per_buyer_signals.is_promise());
+  if (auction_config_per_buyer_signals.value().has_value()) {
+    auto it = auction_config_per_buyer_signals.value()->find(buyer);
+    if (it != auction_config_per_buyer_signals.value()->end()) {
       return it->second;
+    }
   }
   return absl::nullopt;
 }
@@ -2369,16 +2371,17 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
 
 absl::optional<base::TimeDelta> InterestGroupAuction::PerBuyerTimeout(
     const BidState* state) {
+  DCHECK(!config_->non_shared_params.buyer_timeouts.is_promise());
   const auto& per_buyer_timeouts =
-      config_->non_shared_params.per_buyer_timeouts;
+      config_->non_shared_params.buyer_timeouts.value().per_buyer_timeouts;
   if (per_buyer_timeouts.has_value()) {
-    auto it =
-        per_buyer_timeouts.value().find(state->bidder->interest_group.owner);
-    if (it != per_buyer_timeouts.value().end())
+    auto it = per_buyer_timeouts->find(state->bidder->interest_group.owner);
+    if (it != per_buyer_timeouts->end()) {
       return std::min(it->second, kMaxTimeout);
+    }
   }
   const auto& all_buyers_timeout =
-      config_->non_shared_params.all_buyers_timeout;
+      config_->non_shared_params.buyer_timeouts.value().all_buyers_timeout;
   if (all_buyers_timeout.has_value())
     return std::min(all_buyers_timeout.value(), kMaxTimeout);
   return absl::nullopt;

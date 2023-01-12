@@ -7,6 +7,7 @@ module blink.mojom;
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/parakeet/ad_request.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -32,13 +33,23 @@ enum AuctionAdConfigField {
 
 // Used to provide a way of aborting a call to AdAuctionService.RunAdAuction
 interface AbortableAdAuction {
-  // This method should be called to provide a value for part of auction
+  // These methods should be called to provide a value for part of auction
   // configuration that was passed in as a Promise initially. Has no effect
   // if the auction has already been cancelled (e.g. due to a different
   // promise rejecting).
   ResolvedPromiseParam(AuctionAdConfigAuctionId auction,
                        AuctionAdConfigField field,
                        string? json_value);
+  // Used to provide result of resolving a promise specifying
+  // `per_buyer_signals` field of an AuctionConfig.
+  ResolvedPerBuyerSignalsPromise(
+      AuctionAdConfigAuctionId auction,
+      map<url.mojom.Origin, string>? per_buyer_signals);
+  // Used to provide result of resolving a promise specifying
+  // `per_buyer_timeouts` field of an AuctionConfig.
+  ResolvedBuyerTimeoutsPromise(
+      AuctionAdConfigAuctionId auction,
+      AuctionAdConfigBuyerTimeouts buyer_timeouts);
 
   // Aborts the auction for which the receiver for this pipe was passed to
   // RunAdAuction(), unless the auction has already finished (with at most
