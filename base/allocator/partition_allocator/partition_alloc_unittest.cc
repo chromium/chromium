@@ -1452,62 +1452,101 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
       }
 
       uintptr_t address = UntagPtr(ptr);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, -kFarFarAwayDelta),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, -kSuperPageSize),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, -1),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, 0),
-                PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, requested_size / 2),
-                PtrPosWithinAlloc::kInBounds);
-#if PA_CONFIG(USE_OOB_POISON)
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, requested_size),
-                PtrPosWithinAlloc::kAllocEnd);
-#else
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, requested_size),
-                PtrPosWithinAlloc::kInBounds);
-#endif
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, requested_size + 1),
-                PtrPosWithinAlloc::kFarOOB);
       EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
-                                              requested_size + kSuperPageSize),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
-                    address, requested_size + kFarFarAwayDelta),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              kFarFarAwayDelta),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              kSuperPageSize),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size, 1),
-                PtrPosWithinAlloc::kFarOOB);
-#if PA_CONFIG(USE_OOB_POISON)
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size, 0),
-                PtrPosWithinAlloc::kAllocEnd);
-#else
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size, 0),
-                PtrPosWithinAlloc::kInBounds);
-#endif
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              -(requested_size / 2)),
-                PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              -requested_size),
-                PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              -requested_size - 1),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              -requested_size - kSuperPageSize),
+                                              PtrDelta(-kFarFarAwayDelta, 0)),
                 PtrPosWithinAlloc::kFarOOB);
       EXPECT_EQ(
-          PartitionAllocIsValidPtrDelta(address + requested_size,
-                                        -requested_size - kFarFarAwayDelta),
+          PartitionAllocIsValidPtrDelta(address, PtrDelta(-kSuperPageSize, 0)),
           PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, PtrDelta(-1, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, PtrDelta(0, 0)),
+                PtrPosWithinAlloc::kInBounds);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
+                                              PtrDelta(requested_size / 2, 0)),
+                PtrPosWithinAlloc::kInBounds);
+#if PA_CONFIG(USE_OOB_POISON)
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
+                                              PtrDelta(requested_size - 1, 1)),
+                PtrPosWithinAlloc::kInBounds);
+      EXPECT_EQ(
+          PartitionAllocIsValidPtrDelta(address, PtrDelta(requested_size, 1)),
+          PtrPosWithinAlloc::kAllocEnd);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
+                                              PtrDelta(requested_size - 4, 4)),
+                PtrPosWithinAlloc::kInBounds);
+      for (size_t subtrahend = 0; subtrahend < 4; subtrahend++) {
+        EXPECT_EQ(PartitionAllocIsValidPtrDelta(
+                      address, PtrDelta(requested_size - subtrahend, 4)),
+                  PtrPosWithinAlloc::kAllocEnd);
+      }
+#else
+      EXPECT_EQ(
+          PartitionAllocIsValidPtrDelta(address, PtrDelta(requested_size, 0)),
+          PtrPosWithinAlloc::kInBounds);
+#endif
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
+                                              PtrDelta(requested_size + 1, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
+                    address, PtrDelta(requested_size + kSuperPageSize, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
+                    address, PtrDelta(requested_size + kFarFarAwayDelta, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
+                                              PtrDelta(kFarFarAwayDelta, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
+                                              PtrDelta(kSuperPageSize, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
+                                              PtrDelta(1, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+#if PA_CONFIG(USE_OOB_POISON)
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 1,
+                                              PtrDelta(0, 1)),
+                PtrPosWithinAlloc::kInBounds);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 1,
+                                              PtrDelta(1, 1)),
+                PtrPosWithinAlloc::kAllocEnd);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
+                                              PtrDelta(0, 1)),
+                PtrPosWithinAlloc::kAllocEnd);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 1,
+                                              PtrDelta(1, 1)),
+                PtrPosWithinAlloc::kAllocEnd);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 4,
+                                              PtrDelta(0, 4)),
+                PtrPosWithinAlloc::kInBounds);
+      for (size_t addend = 1; addend < 4; addend++) {
+        EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 4,
+                                                PtrDelta(addend, 4)),
+                  PtrPosWithinAlloc::kAllocEnd);
+      }
+#else
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
+                                              PtrDelta(0, 0)),
+                PtrPosWithinAlloc::kInBounds);
+#endif
+      EXPECT_EQ(
+          PartitionAllocIsValidPtrDelta(address + requested_size,
+                                        PtrDelta(-(requested_size / 2), 0)),
+          PtrPosWithinAlloc::kInBounds);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
+                                              PtrDelta(-requested_size, 0)),
+                PtrPosWithinAlloc::kInBounds);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
+                                              PtrDelta(-requested_size - 1, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
+                    address + requested_size,
+                    PtrDelta(-requested_size - kSuperPageSize, 0)),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
+                    address + requested_size,
+                    PtrDelta(-requested_size - kFarFarAwayDelta, 0)),
+                PtrPosWithinAlloc::kFarOOB);
     }
 
     for (void* ptr : ptrs) {

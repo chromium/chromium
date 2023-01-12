@@ -1561,6 +1561,21 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_CHECK_DEATH(protected_ptr -= 1);
   EXPECT_CHECK_DEATH(--protected_ptr);
 
+#if PA_CONFIG(USE_OOB_POISON)
+  // An array type that should be more than a third the size of the available
+  // memory for the allocation such that incrementing a pointer to this type
+  // twice causes it to point to a memory location that is too small to fit a
+  // complete element of this type.
+  typedef int OverThirdArray[200 / sizeof(int)];
+  raw_ptr<OverThirdArray> protected_arr_ptr =
+      reinterpret_cast<OverThirdArray*>(ptr);
+
+  protected_arr_ptr++;
+  **protected_arr_ptr = 4;
+  protected_arr_ptr++;
+  EXPECT_DEATH_IF_SUPPORTED(** protected_arr_ptr = 4, "");
+#endif
+
   allocator.root()->Free(ptr);
 }
 

@@ -89,14 +89,6 @@
 
 namespace partition_alloc::internal {
 
-// This type trait verifies a type can be used as a pointer offset.
-//
-// We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
-// Smaller types are also allowed.
-template <typename Z>
-static constexpr bool offset_type =
-    std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
-
 // We want this size to be big enough that we have time to start up other
 // scripts _before_ we wrap around.
 static constexpr size_t kAllocInfoSize = 1 << 24;
@@ -1047,9 +1039,9 @@ PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
 //
 // This isn't a general purpose function. The caller is responsible for ensuring
 // that the ref-count is in place for this allocation.
-template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
+template <typename Z>
 PA_ALWAYS_INLINE PtrPosWithinAlloc
-PartitionAllocIsValidPtrDelta(uintptr_t address, Z delta_in_bytes) {
+PartitionAllocIsValidPtrDelta(uintptr_t address, PtrDelta<Z> delta) {
   // Required for pointers right past an allocation. See
   // |PartitionAllocGetSlotStartInBRPPool()|.
   uintptr_t adjusted_address = address - kPartitionPastAllocationAdjustment;
@@ -1068,21 +1060,19 @@ PartitionAllocIsValidPtrDelta(uintptr_t address, Z delta_in_bytes) {
   PA_DCHECK(root->brp_enabled());
 
   uintptr_t object_addr = root->SlotStartToObjectAddr(slot_start);
-  uintptr_t new_address = address + static_cast<uintptr_t>(delta_in_bytes);
+  uintptr_t new_address =
+      address + static_cast<uintptr_t>(delta.delta_in_bytes);
   uintptr_t object_end = object_addr + slot_span->GetUsableSize(root);
+  if (new_address < object_addr || object_end < new_address) {
+    return PtrPosWithinAlloc::kFarOOB;
 #if PA_CONFIG(USE_OOB_POISON)
-  bool below_object_end = new_address < object_end;
-#else
-  bool below_object_end = new_address <= object_end;
-#endif
-  if (object_addr <= new_address && below_object_end) {
-    return PtrPosWithinAlloc::kInBounds;
-#if PA_CONFIG(USE_OOB_POISON)
-  } else if (new_address == object_end) {
+  } else if (object_end - delta.type_size < new_address) {
+    // Not even a single element of the type referenced by the pointer can fit
+    // between the pointer and the end of the object.
     return PtrPosWithinAlloc::kAllocEnd;
 #endif
   } else {
-    return PtrPosWithinAlloc::kFarOOB;
+    return PtrPosWithinAlloc::kInBounds;
   }
 }
 

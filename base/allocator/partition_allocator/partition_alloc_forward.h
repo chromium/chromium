@@ -7,11 +7,12 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <type_traits>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 
 namespace partition_alloc {
 
@@ -43,6 +44,32 @@ struct SlotSpanMetadata;
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void CheckThatSlotOffsetIsZero(uintptr_t address);
 #endif
+
+// This type trait verifies a type can be used as a pointer offset.
+//
+// We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
+// Smaller types are also allowed.
+template <typename Z>
+static constexpr bool offset_type =
+    std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
+
+template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
+struct PtrDelta {
+  Z delta_in_bytes;
+#if PA_CONFIG(USE_OOB_POISON)
+  // Size of the element type referenced by the pointer
+  size_t type_size;
+#endif
+
+  constexpr PtrDelta(Z delta_in_bytes, size_t type_size)
+      : delta_in_bytes(delta_in_bytes)
+#if PA_CONFIG(USE_OOB_POISON)
+        ,
+        type_size(type_size)
+#endif
+  {
+  }
+};
 
 }  // namespace internal
 

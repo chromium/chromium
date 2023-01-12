@@ -19,6 +19,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -110,14 +111,6 @@ namespace internal {
 // These classes/structures are part of the raw_ptr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
-// This type trait verifies a type can be used as a pointer offset.
-//
-// We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
-// Smaller types are also allowed.
-template <typename Z>
-static constexpr bool offset_type =
-    std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
-
 struct RawPtrNoOpImpl {
   // Wraps a pointer.
   template <typename T>
@@ -161,9 +154,11 @@ struct RawPtrNoOpImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T,
-            typename Z,
-            typename = std::enable_if_t<offset_type<Z>, void>>
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
@@ -319,9 +314,11 @@ struct MTECheckedPtrImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T,
-            typename Z,
-            typename = std::enable_if_t<offset_type<Z>, void>>
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
@@ -600,9 +597,11 @@ struct BackupRefPtrImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T,
-            typename Z,
-            typename = std::enable_if_t<offset_type<Z>, void>>
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
@@ -624,8 +623,8 @@ struct BackupRefPtrImpl {
     // TODO(bartekn): Consider adding support for non-BRP pools too (without
     // removing the cross-pool migration check).
     if (IsSupportedAndNotNull(address)) {
-      auto ptr_pos_within_alloc =
-          IsValidDelta(address, delta_elems * static_cast<Z>(sizeof(T)));
+      auto ptr_pos_within_alloc = IsValidDelta(
+          address, delta_elems * static_cast<Z>(sizeof(T)), sizeof(T));
       // No need to check that |new_ptr| is in the same pool, as IsValidDeta()
       // checks that it's within the same allocation, so must be the same pool.
       PA_BASE_CHECK(ptr_pos_within_alloc !=
@@ -681,7 +680,7 @@ struct BackupRefPtrImpl {
     // TODO(bartekn): Consider adding support for non-BRP pool too.
     if (IsSupportedAndNotNull(address1)) {
       PA_BASE_CHECK(IsSupportedAndNotNull(address2));
-      PA_BASE_CHECK(IsValidDelta(address2, address1 - address2) !=
+      PA_BASE_CHECK(IsValidDelta(address2, address1 - address2, sizeof(T)) !=
                     partition_alloc::PtrPosWithinAlloc::kFarOOB);
     } else {
       PA_BASE_CHECK(!IsSupportedAndNotNull(address2));
@@ -723,21 +722,23 @@ struct BackupRefPtrImpl {
       bool IsPointeeAlive(uintptr_t address);
   static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
       void ReportIfDanglingInternal(uintptr_t address);
-  template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE partition_alloc::PtrPosWithinAlloc IsValidDelta(
-      uintptr_t address,
-      Z delta_in_bytes) {
-    if constexpr (std::is_signed_v<Z>)
-      return IsValidSignedDelta(address, ptrdiff_t{delta_in_bytes});
-    else
-      return IsValidUnsignedDelta(address, size_t{delta_in_bytes});
+  template <
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
+  static PA_ALWAYS_INLINE partition_alloc::PtrPosWithinAlloc
+  IsValidDelta(uintptr_t address, Z delta_in_bytes, size_t type_size) {
+    using delta_t = std::conditional_t<std::is_signed_v<Z>, ptrdiff_t, size_t>;
+    partition_alloc::internal::PtrDelta<delta_t> ptr_delta(delta_in_bytes,
+                                                           type_size);
+
+    return IsValidDelta(address, ptr_delta);
   }
+  template <typename Z>
   static PA_COMPONENT_EXPORT(RAW_PTR)
       PA_NOINLINE partition_alloc::PtrPosWithinAlloc
-      IsValidSignedDelta(uintptr_t address, ptrdiff_t delta_in_bytes);
-  static PA_COMPONENT_EXPORT(RAW_PTR)
-      PA_NOINLINE partition_alloc::PtrPosWithinAlloc
-      IsValidUnsignedDelta(uintptr_t address, size_t delta_in_bytes);
+      IsValidDelta(uintptr_t address,
+                   partition_alloc::internal::PtrDelta<Z> delta);
 };
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -816,9 +817,11 @@ struct AsanBackupRefPtrImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T,
-            typename Z,
-            typename = std::enable_if_t<offset_type<Z>, void>>
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
@@ -900,9 +903,11 @@ struct AsanUnownedPtrImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
-  template <typename T,
-            typename Z,
-            typename = std::enable_if_t<offset_type<Z>, void>>
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
@@ -1503,22 +1508,30 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     --(*this);
     return result;
   }
-  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
+  template <
+      typename Z,
+      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
   PA_ALWAYS_INLINE raw_ptr& operator+=(Z delta_elems) {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
-  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
+  template <
+      typename Z,
+      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
   PA_ALWAYS_INLINE raw_ptr& operator-=(Z delta_elems) {
     return *this += -delta_elems;
   }
 
-  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
+  template <
+      typename Z,
+      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
   friend PA_ALWAYS_INLINE raw_ptr operator+(const raw_ptr& p, Z delta_elems) {
     raw_ptr result = p;
     return result += delta_elems;
   }
-  template <typename Z, typename = std::enable_if_t<internal::offset_type<Z>>>
+  template <
+      typename Z,
+      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
   friend PA_ALWAYS_INLINE raw_ptr operator-(const raw_ptr& p, Z delta_elems) {
     raw_ptr result = p;
     return result -= delta_elems;
