@@ -61,6 +61,22 @@ export class PrivacySandboxInterestItemElement extends
     }
   }
 
+  private getButtonAriaLabel_(): string {
+    if (this.interest.topic !== undefined) {
+      assert(!this.interest.site);
+      return this.i18n(
+          this.interest.removed ? 'topicsPageAllowTopicA11yLabel' :
+                                  'topicsPageBlockTopicA11yLabel',
+          this.interest.topic.displayString!);
+    } else {
+      assert(!this.interest.topic);
+      return this.i18n(
+          this.interest.removed ? 'fledgePageAllowSiteA11yLabel' :
+                                  'fledgePageBlockSiteA11yLabel',
+          this.interest.site!);
+    }
+  }
+
   private onInterestChanged_(e: Event) {
     e.stopPropagation();
     this.dispatchEvent(new CustomEvent(

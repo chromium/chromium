@@ -207,6 +207,9 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC" desc="A button associated with each of the user's topics. If the user clicks 'Block', that topic will get moved to the 'Topics you blocked' page.">
     Block
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_A11Y_LABEL" desc="A button label read by screen readers that indicates which topic will get blocked. The full 'pool of topics' is published at https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md">
+    Block <ph name="TOPIC">$1<ex>Movies</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING" desc="A label that serves as a button to open the 'Topics you blocked' page." formatter_data="android_java">
     Topics you blocked
   </message>
@@ -218,6 +221,9 @@
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC" desc="A button associated with each of the user's topics. When the user clicks 'Add', it makes that topic eligible in the 'pool of topics' that Chrome can use to estimate the user's topics of interest. Clicking 'Add' doesn't automatically put the added topic back onto the list of 'Your topics'. For that to happen, a user would have to browse sites associated with the 'Add'ed topic and Chrome would have to estimate the topic as relevant to that user.">
     Add
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC_A11Y_LABEL" desc="A button label read by screen readers that indicates which topic will get added back to the pool of potential topics.">
+    Add <ph name="TOPIC">$1<ex>Movies</ex></ph>
   </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING" desc="The title of a dialog box that offers more information about the Topics setting." formatter_data="android_java">
     More about ad topics

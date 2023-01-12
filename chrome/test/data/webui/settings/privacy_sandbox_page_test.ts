@@ -346,7 +346,11 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     // Block topic.
     const item =
         currentTopicsSection.querySelector('privacy-sandbox-interest-item')!;
-    item.shadowRoot!.querySelector('cr-button')!.click();
+    const blockButton = item.shadowRoot!.querySelector('cr-button');
+    assertEquals(
+        page.i18n('topicsPageBlockTopicA11yLabel', 'test-topic-1'),
+        blockButton!.getAttribute('aria-label'));
+    blockButton!.click();
     assertEquals(
         'Settings.PrivacySandbox.Topics.TopicRemoved',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -369,7 +373,11 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     let blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(2, blockedItems.length);
-    blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
+    const allowButton = blockedItems[0]!.shadowRoot!.querySelector('cr-button');
+    assertEquals(
+        page.i18n('topicsPageAllowTopicA11yLabel', 'test-topic-1'),
+        allowButton!.getAttribute('aria-label'));
+    allowButton!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
     assertEquals(
         'Settings.PrivacySandbox.Topics.TopicAdded',
@@ -629,7 +637,11 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     // Block site.
     const item =
         currentSitesSection.querySelector('privacy-sandbox-interest-item')!;
-    item.shadowRoot!.querySelector('cr-button')!.click();
+    const blockButton = item.shadowRoot!.querySelector('cr-button');
+    assertEquals(
+        page.i18n('fledgePageBlockSiteA11yLabel', 'test-site-one.com'),
+        blockButton!.getAttribute('aria-label'));
+    blockButton!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
     assertEquals(
         'Settings.PrivacySandbox.Fledge.SiteRemoved',
@@ -652,7 +664,11 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     let blockedItems =
         blockedSitesList.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(2, blockedItems.length);
-    blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
+    const allowButton = blockedItems[0]!.shadowRoot!.querySelector('cr-button');
+    assertEquals(
+        page.i18n('fledgePageAllowSiteA11yLabel', 'test-site-one.com'),
+        allowButton!.getAttribute('aria-label'));
+    allowButton!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setFledgeJoiningAllowed');
     assertEquals(
         'Settings.PrivacySandbox.Fledge.SiteAdded',

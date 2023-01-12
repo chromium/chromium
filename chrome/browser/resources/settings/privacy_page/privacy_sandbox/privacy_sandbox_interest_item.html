@@ -17,7 +17,8 @@
   <site-favicon hidden$="[[interest.topic]]" url="[[interest.site]]">
   </site-favicon>
   <div id="label">[[getDisplayString_(interest)]]</div>
-  <cr-button role="button" on-click="onInterestChanged_">
+  <cr-button role="button" on-click="onInterestChanged_"
+      aria-label$="[[getButtonAriaLabel_(interest.removed)]]">
     [[getButtonLabel_(interest.removed)]]
   </cr-button>
 </div>
