@@ -203,7 +203,7 @@ TEST_F(PowerBookmarkServiceTest, GetPowerOverviewsForType) {
   RunUntilIdle();
 }
 
-TEST_F(PowerBookmarkServiceTest, Search) {
+TEST_F(PowerBookmarkServiceTest, SearchPowers) {
   base::MockCallback<SuccessCallback> success_cb;
   EXPECT_CALL(success_cb, Run(IsTrue())).Times(3);
 
@@ -225,11 +225,11 @@ TEST_F(PowerBookmarkServiceTest, Search) {
   EXPECT_CALL(powers_cb, Run(SizeIs(2)));
 
   SearchParams search_params{.query = "/a"};
-  service()->Search(search_params, powers_cb.Get());
+  service()->SearchPowers(search_params, powers_cb.Get());
   RunUntilIdle();
 }
 
-TEST_F(PowerBookmarkServiceTest, SearchNoteText) {
+TEST_F(PowerBookmarkServiceTest, SearchPowersNoteText) {
   base::MockCallback<SuccessCallback> success_cb;
   EXPECT_CALL(success_cb, Run(IsTrue())).Times(2);
 
@@ -259,7 +259,33 @@ TEST_F(PowerBookmarkServiceTest, SearchNoteText) {
   EXPECT_CALL(powers_cb, Run(SizeIs(1)));
 
   SearchParams search_params{.query = "lorem"};
-  service()->Search(search_params, powers_cb.Get());
+  service()->SearchPowers(search_params, powers_cb.Get());
+  RunUntilIdle();
+}
+
+TEST_F(PowerBookmarkServiceTest, SearchPowerOverviews) {
+  base::MockCallback<SuccessCallback> success_cb;
+  EXPECT_CALL(success_cb, Run(IsTrue())).Times(3);
+
+  service()->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"),
+                sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK),
+      success_cb.Get());
+  service()->CreatePower(
+      MakePower(GURL("https://example.com/b1.html"),
+                sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK),
+      success_cb.Get());
+  service()->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"),
+                sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK),
+      success_cb.Get());
+  RunUntilIdle();
+
+  base::MockCallback<PowerOverviewsCallback> result_cb;
+  EXPECT_CALL(result_cb, Run(SizeIs(1)));
+
+  SearchParams search_params{.query = "/a"};
+  service()->SearchPowerOverviews(search_params, result_cb.Get());
   RunUntilIdle();
 }
 

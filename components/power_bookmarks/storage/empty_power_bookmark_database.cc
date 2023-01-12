@@ -40,6 +40,12 @@ EmptyPowerBookmarkDatabase::GetPowersForSearchParams(
   return std::vector<std::unique_ptr<Power>>();
 }
 
+std::vector<std::unique_ptr<PowerOverview>>
+EmptyPowerBookmarkDatabase::GetPowerOverviewsForSearchParams(
+    const SearchParams& search_params) {
+  return std::vector<std::unique_ptr<PowerOverview>>();
+}
+
 bool EmptyPowerBookmarkDatabase::CreatePower(std::unique_ptr<Power> power) {
   return false;
 }

@@ -41,6 +41,8 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type) override;
   std::vector<std::unique_ptr<Power>> GetPowersForSearchParams(
       const SearchParams& search_params) override;
+  std::vector<std::unique_ptr<PowerOverview>> GetPowerOverviewsForSearchParams(
+      const SearchParams& search_params) override;
   bool CreatePower(std::unique_ptr<Power> power) override;
   bool UpdatePower(std::unique_ptr<Power> power) override;
   bool DeletePower(const base::GUID& guid) override;

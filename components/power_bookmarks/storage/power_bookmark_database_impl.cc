@@ -4,6 +4,7 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
@@ -372,6 +373,82 @@ PowerBookmarkDatabaseImpl::GetPowersForSearchParams(
     search_results.emplace_back(CreatePowerFromSpecifics(specifics.value()));
   }
 
+  return search_results;
+}
+
+std::vector<std::unique_ptr<PowerOverview>>
+PowerBookmarkDatabaseImpl::GetPowerOverviewsForSearchParams(
+    const SearchParams& search_params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1382855): Optimize this query to avoid SCAN TABLE.
+  static constexpr char kGetPowerOverviewsForSearchParamsSql[] =
+      // clang-format off
+      "SELECT blobs.id, blobs.specifics, url, power_type "
+          "FROM blobs JOIN saves ON blobs.id=saves.id "
+          "ORDER BY url ASC, power_type ASC, time_modified DESC";
+  // clang-format on
+  DCHECK(db_.IsSQLValid(kGetPowerOverviewsForSearchParamsSql));
+
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, kGetPowerOverviewsForSearchParamsSql));
+
+  std::vector<std::unique_ptr<PowerOverview>> search_results;
+  // Between loop iterations these are the URL and PowerType of the last seen
+  // power.
+  std::string prev_url;
+  sync_pb::PowerBookmarkSpecifics::PowerType prev_power_type =
+      sync_pb::PowerBookmarkSpecifics::POWER_TYPE_UNSPECIFIED;
+  // Between loop iterations this is the matched power that will be used to make
+  // a PowerOverview. If set, it must match `prev_url` and `prev_power_type`.
+  std::unique_ptr<Power> first_matching_power;
+  // Between loop iterations this is the total count powers seen with
+  // `prev_power_type` and `prev_url`.
+  size_t overview_count = 0;
+  while (statement.Step()) {
+    DCHECK_EQ(4, statement.ColumnCount());
+
+    std::string current_url = statement.ColumnString(2);
+    sync_pb::PowerBookmarkSpecifics::PowerType current_power_type =
+        (sync_pb::PowerBookmarkSpecifics::PowerType)statement.ColumnInt(3);
+
+    if (current_url == prev_url && current_power_type == prev_power_type) {
+      overview_count++;
+      // Skip matching, if we already have a match for this URL and PowerType.
+      if (first_matching_power) {
+        continue;
+      }
+    } else {
+      // We've scanned all powers for this URL and PowerType pair - saving the
+      // matched power if we have one.
+      if (first_matching_power) {
+        search_results.emplace_back(std::make_unique<PowerOverview>(
+            std::move(first_matching_power), overview_count));
+      }
+      DCHECK(!first_matching_power);
+      prev_url = current_url;
+      prev_power_type = current_power_type;
+      overview_count = 1;
+    }
+
+    absl::optional<sync_pb::PowerBookmarkSpecifics> specifics =
+        DeserializeOrDelete(
+            statement.ColumnString(1),
+            base::GUID::ParseLowercase(statement.ColumnString(0)));
+    if (!specifics.has_value()) {
+      continue;
+    }
+    if (!MatchesSearchParams(specifics.value(), search_params)) {
+      continue;
+    }
+
+    first_matching_power = CreatePowerFromSpecifics(specifics.value());
+  }
+
+  if (first_matching_power) {
+    search_results.emplace_back(std::make_unique<PowerOverview>(
+        std::move(first_matching_power), overview_count));
+  }
   return search_results;
 }
 

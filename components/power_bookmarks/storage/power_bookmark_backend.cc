@@ -75,10 +75,16 @@ PowerBookmarkBackend::GetPowerOverviewsForType(
   return db_->GetPowerOverviewsForType(power_type);
 }
 
-std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::Search(
+std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::SearchPowers(
     const SearchParams& search_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetPowersForSearchParams(search_params);
+}
+
+std::vector<std::unique_ptr<PowerOverview>>
+PowerBookmarkBackend::SearchPowerOverviews(const SearchParams& search_params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetPowerOverviewsForSearchParams(search_params);
 }
 
 bool PowerBookmarkBackend::CreatePower(std::unique_ptr<Power> power) {

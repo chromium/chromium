@@ -51,7 +51,12 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type);
 
   // Returns a vector of Powers matching the given `search_params`.
-  std::vector<std::unique_ptr<Power>> Search(const SearchParams& search_params);
+  std::vector<std::unique_ptr<Power>> SearchPowers(
+      const SearchParams& search_params);
+
+  // Returns a vector of PowerOverviews matching the given `search_params`.
+  std::vector<std::unique_ptr<PowerOverview>> SearchPowerOverviews(
+      const SearchParams& search_params);
 
   // Create the given `power` in the database. If it already exists, then it
   // will be updated. Returns whether the operation was successful.

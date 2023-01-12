@@ -81,7 +81,18 @@ class PowerBookmarkService : public KeyedService,
 
   // Returns a vector of Powers matching the given `search_params`. The results
   // are ordered by the url they're associated with.
-  void Search(const SearchParams& search_params, PowersCallback callback);
+  void SearchPowers(const SearchParams& search_params, PowersCallback callback);
+
+  // Returns a vector of PowerOverviews matching the given `search_params`. The
+  // results:
+  //   - are ordered by their url and PowerType.
+  //   - have the same `PowerOverview.count` value as if returned by
+  //     GetPowerOverviewsForType - which is the number of Powers with the same
+  //     url and type.
+  //   - have the `PowerOverview.power` that is the most recently modified Power
+  //     which matches the `search_params`.
+  void SearchPowerOverviews(const SearchParams& search_params,
+                            PowerOverviewsCallback callback);
 
   // Create the given `power` in the database. If it already exists, then it
   // will be updated. Success of the operation is returned through the given

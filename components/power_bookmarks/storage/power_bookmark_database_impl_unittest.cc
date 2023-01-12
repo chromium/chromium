@@ -96,6 +96,21 @@ bool ContainsPower(const std::vector<std::unique_ptr<Power>>& list,
   return false;
 }
 
+bool ContainsPowerOverview(
+    const std::vector<std::unique_ptr<PowerOverview>>& list,
+    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
+    GURL url,
+    size_t count) {
+  for (const std::unique_ptr<PowerOverview>& power_overview : list) {
+    if (power_overview->power()->power_type() == power_type &&
+        power_overview->power()->url() == url &&
+        power_overview->count() == count) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 class PowerBookmarkDatabaseImplTest : public testing::Test {
@@ -628,17 +643,15 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForSearchParamsMatchType) {
   EXPECT_TRUE(pbdb->Init());
 
   EXPECT_TRUE(pbdb->CreatePower(
-      MakePower(GURL("https://example.com/a1.html"),
-                sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK)));
+      MakePower(GURL("https://example.com/a1.html"), kMockType)));
 
   {
     std::unique_ptr<sync_pb::PowerEntity> note_specifics =
         std::make_unique<sync_pb::PowerEntity>();
     note_specifics->mutable_note_entity()->set_plain_text("lorem ipsum");
-    EXPECT_TRUE(pbdb->CreatePower(
-        MakePower(GURL("https://example.com/a2.html"),
-                  sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
-                  std::move(note_specifics))));
+    EXPECT_TRUE(
+        pbdb->CreatePower(MakePower(GURL("https://example.com/a2.html"),
+                                    kNoteType, std::move(note_specifics))));
   }
 
   SearchParams search_params{
@@ -647,9 +660,151 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForSearchParamsMatchType) {
       pbdb->GetPowersForSearchParams(search_params);
 
   EXPECT_EQ(1u, search_results.size());
-  EXPECT_TRUE(ContainsPower(search_results,
-                            sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK,
+  EXPECT_TRUE(ContainsPower(search_results, kMockType,
                             GURL("https://example.com/a1.html")));
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForSearchParams) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a3.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a3.html"), kNoteType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a3.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/b1.html"), kMockType)));
+
+  SearchParams search_params{.query = "/a"};
+  std::vector<std::unique_ptr<PowerOverview>> search_results =
+      pbdb->GetPowerOverviewsForSearchParams(search_params);
+
+  EXPECT_EQ(3u, search_results.size());
+  EXPECT_TRUE(ContainsPowerOverview(search_results, kMockType,
+                                    GURL("https://example.com/a3.html"), 2));
+  EXPECT_TRUE(ContainsPowerOverview(search_results, kNoteType,
+                                    GURL("https://example.com/a3.html"), 1));
+  EXPECT_TRUE(ContainsPowerOverview(search_results, kMockType,
+                                    GURL("https://example.com/a1.html"), 1));
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest,
+       GetPowerOverviewsForSearchParamsMatchNoteText) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  {
+    std::unique_ptr<sync_pb::PowerEntity> note_specifics =
+        std::make_unique<sync_pb::PowerEntity>();
+    note_specifics->mutable_note_entity()->set_plain_text("lorem ipsum 1");
+    std::unique_ptr<Power> note_power =
+        MakePower(GURL("https://example.com/a1.html"), kNoteType,
+                  std::move(note_specifics));
+    note_power->set_time_modified(base::Time::FromTimeT(1100000000));
+    EXPECT_TRUE(pbdb->CreatePower(std::move(note_power)));
+  }
+  {
+    std::unique_ptr<sync_pb::PowerEntity> note_specifics =
+        std::make_unique<sync_pb::PowerEntity>();
+    note_specifics->mutable_note_entity()->set_plain_text("lorem ipsum 2");
+    std::unique_ptr<Power> note_power =
+        MakePower(GURL("https://example.com/a1.html"), kNoteType,
+                  std::move(note_specifics));
+    note_power->set_time_modified(base::Time::FromTimeT(1200000000));
+    EXPECT_TRUE(pbdb->CreatePower(std::move(note_power)));
+  }
+  {
+    std::unique_ptr<sync_pb::PowerEntity> note_specifics =
+        std::make_unique<sync_pb::PowerEntity>();
+    note_specifics->mutable_note_entity()->set_plain_text("lorem ipsum 3");
+    std::unique_ptr<Power> note_power =
+        MakePower(GURL("https://example.com/a1.html"), kNoteType,
+                  std::move(note_specifics));
+    note_power->set_time_modified(base::Time::FromTimeT(1300000000));
+    EXPECT_TRUE(pbdb->CreatePower(std::move(note_power)));
+  }
+  {
+    std::unique_ptr<sync_pb::PowerEntity> note_specifics =
+        std::make_unique<sync_pb::PowerEntity>();
+    note_specifics->mutable_note_entity()->set_plain_text("only ipsum");
+    std::unique_ptr<Power> note_power =
+        MakePower(GURL("https://example.com/a1.html"), kNoteType,
+                  std::move(note_specifics));
+    note_power->set_time_modified(base::Time::FromTimeT(1400000000));
+    EXPECT_TRUE(pbdb->CreatePower(std::move(note_power)));
+  }
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/lorem_ipsum.html"), kMockType)));
+
+  // Test matches URL.
+  {
+    SearchParams search_params{.query = "lorem"};
+    std::vector<std::unique_ptr<PowerOverview>> search_results =
+        pbdb->GetPowerOverviewsForSearchParams(search_params);
+
+    EXPECT_EQ(2u, search_results.size());
+    EXPECT_TRUE(
+        ContainsPowerOverview(search_results, kMockType,
+                              GURL("https://example.com/lorem_ipsum.html"), 1));
+    EXPECT_TRUE(ContainsPowerOverview(search_results, kNoteType,
+                                      GURL("https://example.com/a1.html"), 4));
+  }
+  // Test doesn't match the latest power.
+  {
+    SearchParams search_params{
+        .query = "lorem",
+        .power_type = kNoteType,
+    };
+    std::vector<std::unique_ptr<PowerOverview>> search_results =
+        pbdb->GetPowerOverviewsForSearchParams(search_params);
+
+    EXPECT_EQ(1u, search_results.size());
+    EXPECT_TRUE(ContainsPowerOverview(search_results, kNoteType,
+                                      GURL("https://example.com/a1.html"), 4));
+    EXPECT_EQ("lorem ipsum 3", search_results.at(0)
+                                   ->power()
+                                   ->power_entity()
+                                   ->note_entity()
+                                   .plain_text());
+    EXPECT_EQ(base::Time::FromTimeT(1300000000),
+              search_results.at(0)->power()->time_modified());
+  }
+  // Test matches the latest power.
+  {
+    SearchParams search_params{
+        .query = "ipsum",
+        .power_type = kNoteType,
+    };
+    std::vector<std::unique_ptr<PowerOverview>> search_results =
+        pbdb->GetPowerOverviewsForSearchParams(search_params);
+
+    EXPECT_EQ(1u, search_results.size());
+    EXPECT_TRUE(ContainsPowerOverview(search_results, kNoteType,
+                                      GURL("https://example.com/a1.html"), 4));
+    EXPECT_EQ("only ipsum", search_results.at(0)
+                                ->power()
+                                ->power_entity()
+                                ->note_entity()
+                                .plain_text());
+    EXPECT_EQ(base::Time::FromTimeT(1400000000),
+              search_results.at(0)->power()->time_modified());
+  }
+  // Test matches no powers.
+  {
+    SearchParams search_params{
+        .query = "not found anywhere",
+    };
+    std::vector<std::unique_ptr<PowerOverview>> search_results =
+        pbdb->GetPowerOverviewsForSearchParams(search_params);
+
+    EXPECT_EQ(0u, search_results.size());
+  }
 }
 
 TEST_F(PowerBookmarkDatabaseImplTest, DeletePower) {

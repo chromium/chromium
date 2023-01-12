@@ -43,6 +43,10 @@ class PowerBookmarkDatabase : public PowerBookmarkSyncBridge::Delegate {
   virtual std::vector<std::unique_ptr<Power>> GetPowersForSearchParams(
       const SearchParams& search_params) = 0;
 
+  // Returns a vector of PowerOverviews for the given `search_params`.
+  virtual std::vector<std::unique_ptr<PowerOverview>>
+  GetPowerOverviewsForSearchParams(const SearchParams& search_params) = 0;
+
   // Create the given `power` in the database. If it already exists, then it
   // will be updated. Returns whether the operation was successful.
   virtual bool CreatePower(std::unique_ptr<Power> power) = 0;

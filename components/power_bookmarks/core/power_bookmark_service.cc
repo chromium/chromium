@@ -65,10 +65,19 @@ void PowerBookmarkService::GetPowerOverviewsForType(
       .Then(std::move(callback));
 }
 
-void PowerBookmarkService::Search(const SearchParams& search_params,
-                                  PowersCallback callback) {
+void PowerBookmarkService::SearchPowers(const SearchParams& search_params,
+                                        PowersCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_.AsyncCall(&PowerBookmarkBackend::Search)
+  backend_.AsyncCall(&PowerBookmarkBackend::SearchPowers)
+      .WithArgs(search_params)
+      .Then(std::move(callback));
+}
+
+void PowerBookmarkService::SearchPowerOverviews(
+    const SearchParams& search_params,
+    PowerOverviewsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_.AsyncCall(&PowerBookmarkBackend::SearchPowerOverviews)
       .WithArgs(search_params)
       .Then(std::move(callback));
 }
