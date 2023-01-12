@@ -427,7 +427,7 @@ public final class TopicsFragmentV4Test {
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
         // Open a Fledge settings activity.
-        onView(withText(containsString("fledge settings"))).perform(clickOnClickableSpan(0));
+        onView(withText(containsString("Site-suggested ads"))).perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label))
                 .check(matches(isDisplayed()));
         // Close the additional activity by navigating back.

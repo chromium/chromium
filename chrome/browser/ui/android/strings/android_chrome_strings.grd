@@ -1111,20 +1111,20 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 
       <!-- Privacy Sandbox v4 - Topics Page -->
       <!-- Where possible, these strings have been unified on Desktop & Android in privacy_sandox_strings.grdp. The strings here either only appear on one platform, or have platform specific requirements, e.g. the format of placeholders, and so cannot be unified. For the latter case, they have corresponding _CANONICAL representations used when consent is recorded on either platform, and so they must stay in sync -->
-      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_SUB_PAGE_TITLE" translateable="false" desc="">
-        Integer faucibus metus
+      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_SUB_PAGE_TITLE" desc="A page title. Topics that the user blocked appear on this page.">
+        Topics you blocked
       </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" translateable="false" desc="Section description for the current Topics list.">
-        Nulla tincidunt iaculis nulla, sit amet viverra massa luctus nec. Integer eget pellentesque magna, et venenatis lorem. Integer a porta elit, eget bibendum neque.  <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION" desc="A description that appear beneath the 'Your topics' label. * 'You can block': There is a 'Block' button (or an X on mobile) that appears next to each topic in the list. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly.">
+        You can block topics you don't want shared with sites. Chrome also auto-deletes your topics older than 4 weeks. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" translateable="false" desc="Section description for the current Topics list when Topics is disabled in the Topics preferences page.">
-        Sed porta viverra lacus ut euismod. Integer a cursus metus, ac ultricies libero. |Insert learn more link here|.
+      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED" desc="A description that appear beneath the 'Your topics' title. If this setting is off, no interests appear. The link opens a dialog box that provides more information about Ad topics.">
+        When on, a list of topics appears here based on your recent browsing history.
       </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="Section description for the current Topics list when the Topics list is empty in the Topics preferences page.">
-        Curabitur sagittis sapien ut turpis interdum, vitae porttitor sem pretium. Vestibulum sem mauris, ultrices ac massa sit amet, sodales aliquet est. |Insert learn more link here|
+      <message name="IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY" desc="A description that appear beneath the 'Your topics' title. This setting could be on but no topics appear in the list. This text explains why.">
+        It can take up to a week for a list of topics to appear here based on your recent browsing history.
       </message>
-      <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" translateable="false" desc="Footer for the Topics preference page.">
-        Fledge footer. Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>fledge settings<ph name="END_LINK_1">&lt;/link1&gt;</ph>, <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
+      <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
+        As you browse, whether an ad you see is personalized depends on this setting, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>Site-suggested ads<ph name="END_LINK_1">&lt;/link1&gt;</ph>, your <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, and if the site you're viewing personalizes ads.
       </message>
 
       <!-- Privacy Sandbox v4 - Fledge Page -->
