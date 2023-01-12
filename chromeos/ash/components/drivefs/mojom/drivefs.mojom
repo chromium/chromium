@@ -128,6 +128,10 @@ interface DriveFs {
 
   // Pin or unpin an item by the supplied `stable_id`.
   SetPinnedByStableId(int64 stable_id, bool pinned) => (FileError error);
+
+  // Get the metadata for the supplied `stable_id`.
+  GetMetadataByStableId(int64 stable_id) => (
+      FileError error, FileMetadata? metadata);
 };
 
 // Implemented by Chrome, used from DriveFS.

@@ -96,6 +96,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void GetMetadata(const base::FilePath& path,
                    GetMetadataCallback callback) override;
 
+  void GetMetadataByStableId(int64_t stable_id,
+                             GetMetadataCallback callback) override;
+
   void SetPinned(const base::FilePath& path,
                  bool pinned,
                  SetPinnedCallback callback) override;

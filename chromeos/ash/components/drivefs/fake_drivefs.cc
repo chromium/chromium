@@ -389,6 +389,17 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));
 }
 
+void FakeDriveFs::GetMetadataByStableId(int64_t stable_id,
+                                        GetMetadataCallback callback) {
+  for (const auto& [path, metadata] : metadata_) {
+    if (metadata.stable_id == stable_id) {
+      GetMetadata(path, std::move(callback));
+      return;
+    }
+  }
+  std::move(callback).Run(drive::FILE_ERROR_NOT_FOUND, nullptr);
+}
+
 void FakeDriveFs::SetPinned(const base::FilePath& path,
                             bool pinned,
                             SetPinnedCallback callback) {
