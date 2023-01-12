@@ -247,14 +247,12 @@ void LayoutInstabilityTest::WaitForFrameReady() {
   frame_observer.Wait();
 }
 
-// TODO(crbug.com/1400401): Deflake and re-enable this test.
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_SimpleBlockMovement) {
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 
-  // TODO(crbug.com/1403026): Modify the AddPageLayoutShiftExpectation so we can
-  // pass number of layout shift as an argument.
-  waiter->AddPageLayoutShiftExpectation();
+  waiter->AddPageLayoutShiftExpectation(ShiftFrame::LayoutShiftOnlyInMainFrame,
+                                        /*num_layout_shifts=*/1);
   Start();
 
   // Start tracking with layout_shift related information.
@@ -287,8 +285,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_Enclosure) {
          /*num_layout_shifts=*/2);
 }
 
-// TODO(crbug.com/1400401): Deflake and re-enable this test.
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, DISABLED_Sources_MaxImpact) {
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, Sources_MaxImpact) {
   RunWPT("sources-maximpact.html");
 }
 
@@ -310,15 +307,13 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, OOPIFSubframeWeighting) {
       page_load_metrics::LayoutShiftUmaValue(0.03));
 }
 
-// TODO(crbug.com/1400401): Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
-                       DISABLED_CumulativeLayoutShift_OneSecondGap) {
+                       CumulativeLayoutShift_OneSecondGap) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 
-  // TODO(crbug.com/1403026): Modify the AddPageLayoutShiftExpectation so we can
-  // pass number of layout shift as an argument.
-  waiter->AddPageLayoutShiftExpectation();
+  waiter->AddPageLayoutShiftExpectation(ShiftFrame::LayoutShiftOnlyInMainFrame,
+                                        /*num_layout_shifts=*/2);
   Start();
 
   // Start tracking with layout_shift related information.
