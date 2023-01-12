@@ -40,6 +40,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -3232,6 +3233,67 @@ TEST_F(NetworkContextTest, CreateUDPSocket) {
         CreateTestMessage(static_cast<uint8_t>(i), kDatagramSize));
     int result = client_helper.SendSync(test_msg);
     EXPECT_EQ(net::OK, result);
+  }
+
+  listener.WaitForReceivedResults(kDatagramCount);
+  EXPECT_EQ(kDatagramCount, listener.results().size());
+
+  int i = 0;
+  for (const auto& result : listener.results()) {
+    EXPECT_EQ(net::OK, result.net_error);
+    EXPECT_EQ(result.src_addr, client_addr);
+    EXPECT_EQ(CreateTestMessage(static_cast<uint8_t>(i), kDatagramSize),
+              result.data.value());
+    i++;
+  }
+}
+
+TEST_F(NetworkContextTest, CreateRestrictedUDPSocket) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Create a server socket to listen for incoming datagrams.
+  test::UDPSocketListenerImpl listener;
+  mojo::Receiver<mojom::UDPSocketListener> listener_receiver(&listener);
+
+  net::IPEndPoint server_addr(GetLocalHostWithAnyPort());
+  mojo::Remote<mojom::UDPSocket> server_socket;
+  network_context->CreateUDPSocket(
+      server_socket.BindNewPipeAndPassReceiver(),
+      listener_receiver.BindNewPipeAndPassRemote());
+  test::UDPSocketTestHelper helper(&server_socket);
+  ASSERT_EQ(net::OK, helper.BindSync(server_addr, nullptr, &server_addr));
+
+  // Create a client socket to send datagrams.
+  mojo::Remote<mojom::RestrictedUDPSocket> client_socket;
+  net::IPEndPoint client_addr(GetLocalHostWithAnyPort());
+
+  {
+    base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
+        create_future;
+    network_context->CreateRestrictedUDPSocket(
+        server_addr, mojom::RestrictedUDPSocketMode::CONNECTED,
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        /*options=*/nullptr, client_socket.BindNewPipeAndPassReceiver(),
+        mojo::NullRemote(), create_future.GetCallback());
+    ASSERT_EQ(create_future.Get<0>(), net::OK);
+    client_addr = *create_future.Get<1>();
+  }
+
+  // This test assumes that the loopback interface doesn't drop UDP packets for
+  // a small number of packets.
+  const size_t kDatagramCount = 6;
+  const size_t kDatagramSize = 255;
+  server_socket->ReceiveMore(kDatagramCount);
+
+  for (size_t i = 0; i < kDatagramCount; ++i) {
+    std::vector<uint8_t> test_msg(
+        CreateTestMessage(static_cast<uint8_t>(i), kDatagramSize));
+    {
+      base::test::TestFuture<int32_t> send_future;
+      client_socket->Send(test_msg, send_future.GetCallback());
+      ASSERT_EQ(send_future.Get(), net::OK);
+    }
   }
 
   listener.WaitForReceivedResults(kDatagramCount);

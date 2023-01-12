@@ -5,7 +5,6 @@
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 
 #include "build/build_config.h"
-#include "content/browser/direct_sockets/direct_udp_socket_impl.h"
 #include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/isolated_context_util.h"
@@ -23,7 +22,9 @@
 #include "net/base/ip_endpoint.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/restricted_udp_socket.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
+#include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-shared.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
@@ -194,11 +195,6 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
 }
 
 // static
-net::NetworkTrafficAnnotationTag DirectSocketsServiceImpl::TrafficAnnotation() {
-  return kDirectSocketsTrafficAnnotation;
-}
-
-// static
 void DirectSocketsServiceImpl::SetNetworkContextForTesting(
     network::mojom::NetworkContext* network_context) {
   GetNetworkContextForTesting() = network_context;
@@ -232,15 +228,14 @@ void DirectSocketsServiceImpl::OnResolveCompleteForTcpSocket(
   GetNetworkContext()->CreateTCPConnectedSocket(
       std::move(local_addr), *resolved_addresses,
       CreateTCPConnectedSocketOptions(std::move(options)),
-      net::MutableNetworkTrafficAnnotationTag{
-          DirectSocketsServiceImpl::TrafficAnnotation()},
+      net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       std::move(socket), std::move(observer), std::move(callback));
 }
 
 void DirectSocketsServiceImpl::OnResolveCompleteForUdpSocket(
     blink::mojom::DirectSocketOptionsPtr options,
     mojo::PendingReceiver<network::mojom::RestrictedUDPSocket>
-        direct_udp_socket_receiver,
+        restricted_udp_socket_receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenUdpSocketCallback callback,
     int result,
@@ -252,21 +247,20 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUdpSocket(
 
   DCHECK(resolved_addresses && !resolved_addresses->empty());
 
-  net::IPEndPoint peer_addr = resolved_addresses->front();
-  auto direct_udp_socket = std::make_unique<DirectUDPSocketImpl>(
-      GetNetworkContext(), std::move(listener));
-
-  direct_udp_socket->Connect(
-      resolved_addresses->front(), CreateUDPSocketOptions(std::move(options)),
+  const net::IPEndPoint& peer_addr = resolved_addresses->front();
+  GetNetworkContext()->CreateRestrictedUDPSocket(
+      peer_addr,
+      /*mode=*/network::mojom::RestrictedUDPSocketMode::CONNECTED,
+      /*traffic_annotation=*/
+      net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
+      /*options=*/CreateUDPSocketOptions(std::move(options)),
+      std::move(restricted_udp_socket_receiver), std::move(listener),
       base::BindOnce(
           [](OpenUdpSocketCallback callback, net::IPEndPoint peer_addr,
              int result, const absl::optional<net::IPEndPoint>& local_addr) {
             std::move(callback).Run(result, local_addr, peer_addr);
           },
-          std::move(callback), resolved_addresses->front()));
-
-  direct_udp_socket_receivers_.Add(std::move(direct_udp_socket),
-                                   std::move(direct_udp_socket_receiver));
+          std::move(callback), peer_addr));
 }
 
 }  // namespace content

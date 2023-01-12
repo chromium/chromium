@@ -1466,6 +1466,19 @@ void NetworkContext::CreateUDPSocket(
   socket_factory_->CreateUDPSocket(std::move(receiver), std::move(listener));
 }
 
+void NetworkContext::CreateRestrictedUDPSocket(
+    const net::IPEndPoint& addr,
+    mojom::RestrictedUDPSocketMode mode,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+    mojom::UDPSocketOptionsPtr options,
+    mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
+    mojo::PendingRemote<mojom::UDPSocketListener> listener,
+    CreateRestrictedUDPSocketCallback callback) {
+  socket_factory_->CreateRestrictedUDPSocket(
+      addr, mode, traffic_annotation, std::move(options), std::move(receiver),
+      std::move(listener), std::move(callback));
+}
+
 void NetworkContext::CreateTCPServerSocket(
     const net::IPEndPoint& local_addr,
     uint32_t backlog,

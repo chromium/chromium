@@ -20,6 +20,7 @@ import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
+import "services/network/public/mojom/restricted_udp_socket.mojom";
 import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
@@ -1121,6 +1122,30 @@ interface NetworkContext {
   // when NetworkContext goes away.
   CreateUDPSocket(pending_receiver<UDPSocket> receiver,
                   pending_remote<UDPSocketListener>? listener);
+
+  // Creates a Restricted UDP socket that wraps an internal UDP Socket connected
+  // or bound to |addr| with |options| depending on the provided |mode|.
+  //
+  // The socket created can only be used for the purpose specified in
+  // |traffic_annotation|, and cannot be re-used for other purposes.
+  //
+  // Caller can supply a |listener| interface pointer to listen for incoming
+  // datagrams. A null |listener| is acceptable if caller is not interested in
+  // incoming data.
+  //
+  // On success, the resulting local address will be written to |local_addr_out|
+  // and |result| is net::OK. On failure, |result| is a network error code.
+  //
+  // Any sockets that are created but are yet to be destroyed will be destroyed
+  // when NetworkContext goes away.
+  CreateRestrictedUDPSocket(
+      IPEndPoint addr,
+      RestrictedUDPSocketMode mode,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
+      UDPSocketOptions? options,
+      pending_receiver<RestrictedUDPSocket> receiver,
+      pending_remote<UDPSocketListener>? listener)
+      => (int32 result, IPEndPoint? local_addr_out);
 
   // Creates a TCP server socket that listens on |local_addr|. The socket
   // created can only be used for the purpose specified in |traffic_annotation|,

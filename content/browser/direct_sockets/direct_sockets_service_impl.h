@@ -49,8 +49,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
       OpenUdpSocketCallback callback) override;
 
-  static net::NetworkTrafficAnnotationTag TrafficAnnotation();
-
   // Testing:
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
@@ -76,9 +74,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       OpenUdpSocketCallback,
       int result,
       const absl::optional<net::AddressList>& resolved_addresses);
-
-  mojo::UniqueReceiverSet<network::mojom::RestrictedUDPSocket>
-      direct_udp_socket_receivers_;
 
   base::WeakPtrFactory<DirectSocketsServiceImpl> weak_ptr_factory_{this};
 };

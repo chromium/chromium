@@ -13,6 +13,7 @@
 #include "base/types/optional_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "url/origin.h"
 
@@ -89,9 +90,7 @@ void MockHostResolver::OnComplete(int error) {
 // MockUDPSocket implementation
 
 MockUDPSocket::MockUDPSocket(
-    mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener) {
-  receiver_.Bind(std::move(receiver));
   listener_.Bind(std::move(listener));
 }
 
@@ -130,15 +129,32 @@ void MockUDPSocket::MockSend(int32_t result,
   listener_->OnReceived(result, {}, data);
 }
 
+MockRestrictedUDPSocket::MockRestrictedUDPSocket(
+    std::unique_ptr<network::TestUDPSocket> udp_socket,
+    mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver)
+    : network::TestRestrictedUDPSocket(std::move(udp_socket)),
+      receiver_(this, std::move(receiver)) {}
+
+MockRestrictedUDPSocket::~MockRestrictedUDPSocket() = default;
+
 // MockNetworkContext implementation
 
 MockNetworkContext::MockNetworkContext() = default;
 MockNetworkContext::~MockNetworkContext() = default;
 
-void MockNetworkContext::CreateUDPSocket(
-    mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
-    mojo::PendingRemote<network::mojom::UDPSocketListener> listener) {
-  socket_ = CreateMockUDPSocket(std::move(receiver), std::move(listener));
+void MockNetworkContext::CreateRestrictedUDPSocket(
+    const net::IPEndPoint& addr,
+    network::mojom::RestrictedUDPSocketMode mode,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+    network::mojom::UDPSocketOptionsPtr options,
+    mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
+    mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+    CreateRestrictedUDPSocketCallback callback) {
+  auto socket = CreateMockUDPSocket(std::move(listener));
+  DCHECK_EQ(mode, network::mojom::RestrictedUDPSocketMode::CONNECTED);
+  socket->Connect(addr, std::move(options), std::move(callback));
+  restricted_udp_socket_ = std::make_unique<MockRestrictedUDPSocket>(
+      std::move(socket), std::move(receiver));
 }
 
 void MockNetworkContext::CreateHostResolver(
@@ -152,10 +168,8 @@ void MockNetworkContext::CreateHostResolver(
 }
 
 std::unique_ptr<MockUDPSocket> MockNetworkContext::CreateMockUDPSocket(
-    mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener) {
-  return std::make_unique<MockUDPSocket>(std::move(receiver),
-                                         std::move(listener));
+  return std::make_unique<MockUDPSocket>(std::move(listener));
 }
 
 // AsyncJsRunner implementation

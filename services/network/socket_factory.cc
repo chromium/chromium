@@ -4,6 +4,7 @@
 
 #include "services/network/socket_factory.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/restricted_udp_socket.h"
 #include "services/network/tls_client_socket.h"
 #include "services/network/udp_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,13 +41,30 @@ SocketFactory::SocketFactory(net::NetLog* net_log,
     client_socket_factory_ = net::ClientSocketFactory::GetDefaultFactory();
 }
 
-SocketFactory::~SocketFactory() {}
+SocketFactory::~SocketFactory() = default;
 
 void SocketFactory::CreateUDPSocket(
     mojo::PendingReceiver<mojom::UDPSocket> receiver,
     mojo::PendingRemote<mojom::UDPSocketListener> listener) {
   udp_socket_receivers_.Add(
       std::make_unique<UDPSocket>(std::move(listener), net_log_),
+      std::move(receiver));
+}
+
+void SocketFactory::CreateRestrictedUDPSocket(
+    const net::IPEndPoint& addr,
+    mojom::RestrictedUDPSocketMode mode,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+    mojom::UDPSocketOptionsPtr options,
+    mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
+    mojo::PendingRemote<mojom::UDPSocketListener> listener,
+    mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback) {
+  auto udp_socket = std::make_unique<UDPSocket>(std::move(listener), net_log_);
+  DCHECK_EQ(mode, mojom::RestrictedUDPSocketMode::CONNECTED);
+  udp_socket->Connect(addr, std::move(options), std::move(callback));
+  restricted_udp_socket_receivers_.Add(
+      std::make_unique<RestrictedUDPSocket>(std::move(udp_socket),
+                                            traffic_annotation),
       std::move(receiver));
 }
 

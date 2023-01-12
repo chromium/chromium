@@ -26,6 +26,7 @@
 #include "net/dns/host_resolver.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/test/test_network_context.h"
+#include "services/network/test/test_restricted_udp_socket.h"
 #include "services/network/test/test_udp_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -72,8 +73,7 @@ class MockHostResolver : public network::mojom::HostResolver {
 // Mock UDP Socket for Direct Sockets browsertests.
 class MockUDPSocket : public network::TestUDPSocket {
  public:
-  MockUDPSocket(
-      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
+  explicit MockUDPSocket(
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener);
 
   ~MockUDPSocket() override;
@@ -95,10 +95,6 @@ class MockUDPSocket : public network::TestUDPSocket {
     return listener_;
   }
 
-  mojo::Receiver<network::mojom::UDPSocket>& get_receiver() {
-    return receiver_;
-  }
-
   // Sets an additional callback to be run when a call to Send() arrives.
   void SetAdditionalSendCallback(base::OnceClosure additional_send_callback) {
     additional_send_callback_ = std::move(additional_send_callback);
@@ -110,13 +106,23 @@ class MockUDPSocket : public network::TestUDPSocket {
   void SetNextSendResult(int result) { next_send_result_ = result; }
 
  protected:
-  mojo::Receiver<network::mojom::UDPSocket> receiver_{this};
   mojo::Remote<network::mojom::UDPSocketListener> listener_;
 
   absl::optional<int> next_send_result_;
 
   SendCallback callback_;
   base::OnceClosure additional_send_callback_;
+};
+
+class MockRestrictedUDPSocket : public network::TestRestrictedUDPSocket {
+ public:
+  MockRestrictedUDPSocket(
+      std::unique_ptr<network::TestUDPSocket> udp_socket,
+      mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver);
+  ~MockRestrictedUDPSocket() override;
+
+ private:
+  mojo::Receiver<network::mojom::RestrictedUDPSocket> receiver_;
 };
 
 // Mock Network Context for Direct Sockets browsertests.
@@ -129,16 +135,23 @@ class MockNetworkContext : public network::TestNetworkContext {
 
   ~MockNetworkContext() override;
 
-  // network::mojom::NetworkContext implementation:
-  void CreateUDPSocket(
-      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
-      mojo::PendingRemote<network::mojom::UDPSocketListener> listener) override;
+  // network::TestNetworkContext:
+  void CreateRestrictedUDPSocket(
+      const net::IPEndPoint& addr,
+      network::mojom::RestrictedUDPSocketMode mode,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      network::mojom::UDPSocketOptionsPtr options,
+      mojo::PendingReceiver<network::mojom::RestrictedUDPSocket> receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
+      CreateRestrictedUDPSocketCallback callback) override;
 
   void CreateHostResolver(
       const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
 
-  MockUDPSocket* get_udp_socket() { return socket_.get(); }
+  MockUDPSocket* get_udp_socket() {
+    return static_cast<MockUDPSocket*>(restricted_udp_socket_->udp_socket());
+  }
 
   void set_host_mapping_rules(std::string host_mapping_rules) {
     host_mapping_rules_ = std::move(host_mapping_rules);
@@ -146,13 +159,12 @@ class MockNetworkContext : public network::TestNetworkContext {
 
  protected:
   virtual std::unique_ptr<MockUDPSocket> CreateMockUDPSocket(
-      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener);
 
   std::string host_mapping_rules_;
   std::unique_ptr<net::HostResolver> internal_resolver_;
   std::unique_ptr<network::mojom::HostResolver> host_resolver_;
-  std::unique_ptr<MockUDPSocket> socket_;
+  std::unique_ptr<MockRestrictedUDPSocket> restricted_udp_socket_;
 };
 
 // A wrapper class that allows running javascript asynchronously.

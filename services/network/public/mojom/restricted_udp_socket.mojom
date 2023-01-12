@@ -6,6 +6,13 @@ module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 
+// The mode that RestrictedUDPSocket is operating in.
+// See Connect() and Bind() methods of network.mojom.UDPSocket for more details.
+enum RestrictedUDPSocketMode {
+  CONNECTED,
+  BOUND,
+};
+
 // This wraps network.mojom.UDPSocket, exposing only the functionality needed
 // for the Direct Sockets API.
 //

@@ -3044,7 +3044,6 @@ test("content_unittests") {
     # Non-Android.
     sources += [
       "../browser/devtools/protocol/webauthn_handler_unittest.cc",
-      "../browser/direct_sockets/direct_sockets_udp_unittest.cc",
       "../browser/direct_sockets/direct_sockets_unittest.cc",
       "../browser/host_zoom_map_impl_unittest.cc",
       "../browser/serial/serial_unittest.cc",
