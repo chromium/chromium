@@ -1407,7 +1407,6 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
         /*file_path=*/"", WallpaperType::kCustomized, layout,
         allowed_to_show_wallpaper, image,
         base::BindOnce(
-
             &WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo,
             weak_factory_.GetWeakPtr(), account_id));
   }
