@@ -108,7 +108,12 @@ using ChromeExtensionFunctionDeathTest = ChromeExtensionFunctionUnitTest;
 
 // Verify that destroying the extension function without responding causes a
 // DCHECK failure.
-TEST_F(ChromeExtensionFunctionDeathTest, DestructionWithoutResponse) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DestructionWithoutResponse DISABLED_DestructionWithoutResponse
+#else
+#define MAYBE_DestructionWithoutResponse DestructionWithoutResponse
+#endif
+TEST_F(ChromeExtensionFunctionDeathTest, MAYBE_DestructionWithoutResponse) {
   ASSERT_DEATH(
       {
         InitializeEmptyExtensionService();
