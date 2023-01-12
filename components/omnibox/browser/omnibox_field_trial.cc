@@ -1024,6 +1024,13 @@ bool IsLogUrlScoringSignalsEnabled() {
   return enabled;
 }
 
+bool IsMlRelevanceScoringEnabled() {
+  // TODO: This should check if the scoring model is enabled.
+  static bool enabled =
+      base::FeatureList::IsEnabled(omnibox::kMlRelevanceScoring);
+  return enabled;
+}
+
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

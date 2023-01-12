@@ -621,8 +621,16 @@ extern const base::FeatureParam<double> kDomainSuggestionsScoreFactor;
 extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 
 // ---------------------------------------------------------
+// ML Relevance Scoring:
+
 // For logging Omnibox scoring signals for training machine learning models.
 bool IsLogUrlScoringSignalsEnabled();
+
+// If enabled, runs the machine learning scoring model and uses the ML-based
+// relevance scores. This flag enables the omnibox autocomplete system related
+// changes to support ML scoring and moves the responsibility for scoring and
+// trimming results from the providers into the autocomplete controller.
+bool IsMlRelevanceScoringEnabled();
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

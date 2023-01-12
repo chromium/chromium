@@ -1158,6 +1158,9 @@ extern const char kOmniboxKeepSecondaryZeroSuggestDescription[];
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 
+extern const char kOmniboxMlRelevanceScoringName[];
+extern const char kOmniboxMlRelevanceScoringDescription[];
+
 extern const char kOmniboxModernizeVisualUpdateName[];
 extern const char kOmniboxModernizeVisualUpdateDescription[];
 

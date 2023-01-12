@@ -5150,6 +5150,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-ml-relevance-scoring",
+    "owners": ["yoangela", "junzou", "chrome-desktop-search@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-modernize-visual-update",
     "owners": [ "gangwu", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120

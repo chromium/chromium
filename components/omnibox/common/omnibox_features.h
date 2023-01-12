@@ -125,6 +125,7 @@ BASE_DECLARE_FEATURE(kReportSearchboxStats);
 
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
+BASE_DECLARE_FEATURE(kMlRelevanceScoring);
 
 }  // namespace omnibox
 

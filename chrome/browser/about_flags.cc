@@ -5302,6 +5302,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMlLogUrlScoringSignalsName,
      flag_descriptions::kOmniboxMlLogUrlScoringSignalsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kLogUrlScoringSignals)},
+    {"omnibox-ml-relevance-scoring",
+     flag_descriptions::kOmniboxMlRelevanceScoringName,
+     flag_descriptions::kOmniboxMlRelevanceScoringDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kMlRelevanceScoring)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_WIN)

@@ -59402,6 +59402,7 @@ from previous Chrome versions.
   <int value="-905538983" label="SimplifyHttpsIndicator:disabled"/>
   <int value="-903524547" label="DiscoFeedEndpoint:disabled"/>
   <int value="-903359589" label="CrOSEnforceSystemAec:enabled"/>
+  <int value="-902227224" label="MlRelevanceScoring:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
@@ -63336,6 +63337,7 @@ from previous Chrome versions.
   <int value="1386300777"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
+  <int value="1387925207" label="MlRelevanceScoring:enabled"/>
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
   <int value="1389697465" label="OmniboxGroupingFramework:disabled"/>
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>

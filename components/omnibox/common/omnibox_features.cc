@@ -483,4 +483,12 @@ BASE_FEATURE(kLogUrlScoringSignals,
              "LogUrlScoringSignals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, runs the ML scoring model to assign relevance scores to URL
+// suggestions. This enables the autocomplete system related changes to support
+// ML scoring and moves scoring out of the autocomplete providers into
+// autocomplete controller.
+BASE_FEATURE(kMlRelevanceScoring,
+             "MlRelevanceScoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox
