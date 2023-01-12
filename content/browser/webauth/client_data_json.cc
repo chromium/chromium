@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 namespace {
@@ -112,8 +113,11 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
     ret.append(ToJSONString(params.payment_rp));
 
     // TODO(crbug.com/1356224): Remove legacy 'rp' parameter.
-    ret.append(R"(,"rp":)");
-    ret.append(ToJSONString(params.payment_rp));
+    if (!base::FeatureList::IsEnabled(
+            features::kSecurePaymentConfirmationRemoveRpField)) {
+      ret.append(R"(,"rp":)");
+      ret.append(ToJSONString(params.payment_rp));
+    }
 
     ret.append(R"(,"topOrigin":)");
     ret.append(ToJSONString(params.payment_top_origin));

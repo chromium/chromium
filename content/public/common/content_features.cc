@@ -1025,6 +1025,13 @@ BASE_FEATURE(kSecurePaymentConfirmationDebug,
              "SecurePaymentConfirmationDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Remove the 'rp' field from the output SPC
+// CollectedClientAdditionalPaymentData dictionary. See
+// https://crbug.com/1356224 .
+BASE_FEATURE(kSecurePaymentConfirmationRemoveRpField,
+             "SecurePaymentConfirmationRemoveRpField",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Make sendBeacon throw for a Blob with a non simple type.
 BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
              "SendBeaconThrowForBlobWithNonSimpleType",

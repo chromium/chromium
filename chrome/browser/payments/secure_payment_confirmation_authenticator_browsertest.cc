@@ -12,6 +12,7 @@
 #include "components/payments/core/journey_logger.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "content/public/browser/authenticator_environment.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/features.h"
 #include "device/fido/virtual_fido_device_factory.h"
@@ -250,80 +251,6 @@ IN_PROC_BROWSER_TEST_F(
 
 using SecurePaymentConfirmationAuthenticatorGetTest =
     SecurePaymentConfirmationAuthenticatorTestBase;
-
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
-                       ConfirmPaymentInCrossOriginIframe) {
-  NavigateTo("a.com", "/secure_payment_confirmation.html");
-  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
-
-  PaymentCredentialInfo credential_info;
-  CreatePaymentCredential(&credential_info);
-
-  // Load a cross-origin iframe that can initiate SPC.
-  content::WebContents* tab = GetActiveWebContents();
-  GURL iframe_url = https_server()->GetURL(
-      "b.com", "/secure_payment_confirmation_iframe.html");
-  EXPECT_TRUE(content::NavigateIframeToURL(tab, "test", iframe_url));
-
-  test_controller()->SetHasAuthenticator(true);
-  confirm_payment_ = true;
-
-  // Trigger SPC and capture the response.
-  // EvalJs waits for JavaScript promise to resolve.
-  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
-      tab->GetPrimaryPage(),
-      base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
-  std::string response =
-      content::EvalJs(
-          iframe, content::JsReplace("requestPayment($1);", credential_info.id))
-          .ExtractString();
-
-  ASSERT_EQ(std::string::npos, response.find("Error"));
-  absl::optional<base::Value> value = base::JSONReader::Read(response);
-  ASSERT_TRUE(value.has_value());
-  ASSERT_TRUE(value->is_dict());
-
-  std::string* type = value->FindStringKey("type");
-  ASSERT_NE(nullptr, type) << response;
-  EXPECT_EQ("payment.get", *type);
-
-  std::string* origin = value->FindStringKey("origin");
-  ASSERT_NE(nullptr, origin) << response;
-  EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*origin));
-
-  absl::optional<bool> cross_origin = value->FindBoolKey("crossOrigin");
-  ASSERT_TRUE(cross_origin.has_value()) << response;
-  EXPECT_TRUE(cross_origin.value());
-
-  std::string* payee_name = value->FindStringPath("payment.payeeName");
-  ASSERT_EQ(nullptr, payee_name) << response;
-
-  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
-  ASSERT_NE(nullptr, payee_origin) << response;
-  EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
-
-  std::string* top_origin = value->FindStringPath("payment.topOrigin");
-  ASSERT_NE(nullptr, top_origin) << response;
-  EXPECT_EQ(https_server()->GetURL("a.com", "/"), GURL(*top_origin));
-
-  std::string* rpId = value->FindStringPath("payment.rpId");
-  ASSERT_NE(nullptr, rpId) << response;
-  EXPECT_EQ("a.com", *rpId);
-
-  // TODO(crbug.com/1356224): Remove legacy 'rp' parameter.
-  std::string* rp = value->FindStringPath("payment.rp");
-  ASSERT_NE(nullptr, rp) << response;
-  EXPECT_EQ("a.com", *rp);
-
-  ExpectEnrollSystemPromptResult(
-      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectAuthSystemPromptResult(
-      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
-                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
-                         Event2::kRequestMethodSecurePaymentConfirmation,
-                         Event2::kSelectedSecurePaymentConfirmation});
-}
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
                        ConfirmPaymentInCrossOriginIframeWithPayeeName) {
@@ -588,6 +515,117 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
   ExpectAuthSystemPromptResult(
       SecurePaymentConfirmationSystemPromptResult::kAccepted, 4);
 }
+
+// TODO(crbug.com/1356224): Fold back into
+// SecurePaymentConfirmationAuthenticatorGetTest once 'rp' field is completely
+// removed.
+class SecurePaymentConfirmationParameterizedAuthenticatorGetTest
+    : public SecurePaymentConfirmationAuthenticatorGetTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SecurePaymentConfirmationParameterizedAuthenticatorGetTest() {
+    if (IsRpFieldEnabled()) {
+      features_.InitAndDisableFeature(
+          ::features::kSecurePaymentConfirmationRemoveRpField);
+    } else {
+      features_.InitAndEnableFeature(
+          ::features::kSecurePaymentConfirmationRemoveRpField);
+    }
+  }
+
+  ~SecurePaymentConfirmationParameterizedAuthenticatorGetTest() override =
+      default;
+
+  bool IsRpFieldEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    SecurePaymentConfirmationParameterizedAuthenticatorGetTest,
+    ConfirmPaymentInCrossOriginIframe) {
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+
+  PaymentCredentialInfo credential_info;
+  CreatePaymentCredential(&credential_info);
+
+  // Load a cross-origin iframe that can initiate SPC.
+  content::WebContents* tab = GetActiveWebContents();
+  GURL iframe_url = https_server()->GetURL(
+      "b.com", "/secure_payment_confirmation_iframe.html");
+  EXPECT_TRUE(content::NavigateIframeToURL(tab, "test", iframe_url));
+
+  test_controller()->SetHasAuthenticator(true);
+  confirm_payment_ = true;
+
+  // Trigger SPC and capture the response.
+  // EvalJs waits for JavaScript promise to resolve.
+  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
+  std::string response =
+      content::EvalJs(
+          iframe, content::JsReplace("requestPayment($1);", credential_info.id))
+          .ExtractString();
+
+  ASSERT_EQ(std::string::npos, response.find("Error"));
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_dict());
+
+  std::string* type = value->FindStringKey("type");
+  ASSERT_NE(nullptr, type) << response;
+  EXPECT_EQ("payment.get", *type);
+
+  std::string* origin = value->FindStringKey("origin");
+  ASSERT_NE(nullptr, origin) << response;
+  EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*origin));
+
+  absl::optional<bool> cross_origin = value->FindBoolKey("crossOrigin");
+  ASSERT_TRUE(cross_origin.has_value()) << response;
+  EXPECT_TRUE(cross_origin.value());
+
+  std::string* payee_name = value->FindStringPath("payment.payeeName");
+  ASSERT_EQ(nullptr, payee_name) << response;
+
+  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
+  ASSERT_NE(nullptr, payee_origin) << response;
+  EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
+
+  std::string* top_origin = value->FindStringPath("payment.topOrigin");
+  ASSERT_NE(nullptr, top_origin) << response;
+  EXPECT_EQ(https_server()->GetURL("a.com", "/"), GURL(*top_origin));
+
+  std::string* rpId = value->FindStringPath("payment.rpId");
+  ASSERT_NE(nullptr, rpId) << response;
+  EXPECT_EQ("a.com", *rpId);
+
+  // TODO(crbug.com/1356224): Remove legacy 'rp' parameter.
+  if (IsRpFieldEnabled()) {
+    std::string* rp = value->FindStringPath("payment.rp");
+    ASSERT_NE(nullptr, rp) << response;
+    EXPECT_EQ("a.com", *rp);
+  }
+
+  ExpectEnrollSystemPromptResult(
+      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
+  ExpectAuthSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
+  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
+                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
+                         Event2::kRequestMethodSecurePaymentConfirmation,
+                         Event2::kSelectedSecurePaymentConfirmation});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SecurePaymentConfirmationParameterizedAuthenticatorGetTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "RpFieldIncluded" : "RpFieldRemoved";
+    });
 
 }  // namespace
 }  // namespace payments
