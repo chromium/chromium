@@ -117,7 +117,9 @@ class RenderFrameHostOwner {
           subresource_web_bundle_navigation_info,
       int http_response_code) = 0;
 
-  // Cancel ongoing navigation in this frame, if any.
+  // Cancels the navigation owned by the FrameTreeNode.
+  // Note: this does not cancel navigations that are owned by the current or
+  // speculative RenderFrameHosts.
   virtual void CancelNavigation() = 0;
 
   // Return the iframe.credentialless attribute value.
