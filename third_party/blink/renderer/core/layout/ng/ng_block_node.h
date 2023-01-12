@@ -56,18 +56,18 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   //
   // NGConstraintSpace::ShouldRepeat() will tell whether the node is
   // (potentially [1]) going to repeat again (in which case an outgoing "repeat"
-  // break token will be created, or if this is the last time (no outgoing break
-  // token will be created).
+  // break token will be created, or if this is the last time.
+  // FinishRepeatableRoot() will be invoked if it's the last time. It is allowed
+  // to call this function with NGConstraintSpace::ShouldRepeat() set to true
+  // every time, but then the calling code needs to call FinishRepeatableRoot()
+  // when it realizes that we're done.
   //
   // [1] Depending on the type of content, and depending on the way we implement
   // it, we may or may not be able to tell up-front whether it's going to repeat
   // again.
   //
   // Note that we only actually lay it out once - when at the first container
-  // fragment. Any subsequent call will just clone the previous result. When
-  // we're done repeating, when at the last fragment, we'll finalize the cloned
-  // results, by deep-cloning and setting the correct break token sequence
-  // numbers.
+  // fragment. Any subsequent call will just clone the previous result.
   //
   // Ideally, there should only be one fragment subtree generated from a
   // repeated element (which could simply be inserted inside every relevant
@@ -77,6 +77,13 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // including the sequence numbers. This is why we need this.
   const NGLayoutResult* LayoutRepeatableRoot(const NGConstraintSpace&,
                                              const NGBlockBreakToken*) const;
+
+  // Finalize the cloned layout results of a repeatable root. This will
+  // deep-clone and set the correct break token sequence numbers, and make sure
+  // that the final fragment has no outgoing break token.
+  //
+  // To be called when we're done repeating a node, when at the last fragment.
+  void FinishRepeatableRoot() const;
 
   // This method is just for use within the |NGOutOfFlowLayoutPart|.
   //
