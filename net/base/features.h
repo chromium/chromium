@@ -216,6 +216,15 @@ NET_EXPORT extern const base::FeatureParam<int> kChromeRootStoreSysImpl;
 #endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
 
+// When enabled, TrustStore implementations will use TRUSTED_LEAF,
+// TRUSTED_ANCHOR_OR_LEAF, and TRUSTED_ANCHOR as appropriate. When disabled,
+// TrustStore implementation will only use TRUSTED_ANCHOR.
+// TODO(https://crbug.com/1403034): remove this a few milestones after the
+// trusted leaf support has been launched on all relevant platforms.
+#if BUILDFLAG(IS_MAC)
+NET_EXPORT BASE_DECLARE_FEATURE(kTrustStoreTrustedLeafSupport);
+#endif
+
 // Turns off streaming media caching to disk when on battery power.
 NET_EXPORT BASE_DECLARE_FEATURE(kTurnOffStreamingMediaCachingOnBattery);
 

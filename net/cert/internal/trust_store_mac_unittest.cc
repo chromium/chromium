@@ -18,8 +18,10 @@
 #include "base/strings/string_split.h"
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "crypto/mac_security_services_lock.h"
 #include "crypto/sha2.h"
+#include "net/base/features.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -37,10 +39,6 @@ using ::testing::UnorderedElementsAreArray;
 namespace net {
 
 namespace {
-
-constexpr CertificateTrust ExpectedTrustForAnchor() {
-  return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
-}
 
 // The PEM block header used for DER certificates
 const char kCertificateHeader[] = "CERTIFICATE";
@@ -122,7 +120,34 @@ const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
 }  // namespace
 
 class TrustStoreMacImplTest
-    : public testing::TestWithParam<TrustStoreMac::TrustImplType> {};
+    : public testing::TestWithParam<
+          std::tuple<TrustStoreMac::TrustImplType, bool>> {
+ public:
+  TrustStoreMacImplTest() {
+    if (std::get<1>(GetParam())) {
+      feature_list_.InitAndEnableFeature(
+          features::kTrustStoreTrustedLeafSupport);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kTrustStoreTrustedLeafSupport);
+    }
+  }
+
+  TrustStoreMac::TrustImplType GetImplParam() const {
+    return std::get<0>(GetParam());
+  }
+
+  CertificateTrust ExpectedTrustForAnchor() const {
+    if (std::get<1>(GetParam())) {
+      return CertificateTrust::ForTrustAnchorOrLeaf().WithEnforceAnchorExpiry();
+    } else {
+      return CertificateTrust::ForTrustAnchor().WithEnforceAnchorExpiry();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
 // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
@@ -151,7 +176,7 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
 
 #pragma clang diagnostic pop
 
-  const TrustStoreMac::TrustImplType trust_impl = GetParam();
+  const TrustStoreMac::TrustImplType trust_impl = GetImplParam();
   TrustStoreMac trust_store(kSecPolicyAppleSSL, trust_impl);
 
   std::shared_ptr<const ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d,
@@ -255,7 +280,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
       ParseFindCertificateOutputToDerCerts(
           find_certificate_system_roots_output);
 
-  const TrustStoreMac::TrustImplType trust_impl = GetParam();
+  const TrustStoreMac::TrustImplType trust_impl = GetImplParam();
 
   base::HistogramTester histogram_tester;
   TrustStoreMac trust_store(kSecPolicyAppleX509Basic, trust_impl);
@@ -301,8 +326,8 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     // Check if this cert is considered a trust anchor by TrustStoreMac.
     DebugData debug_data;
     CertificateTrust cert_trust = trust_store.GetTrust(cert.get(), &debug_data);
-    bool is_trust_anchor = cert_trust.IsTrustAnchor();
-    if (is_trust_anchor) {
+    bool is_trusted = cert_trust.IsTrustAnchor() || cert_trust.IsTrustLeaf();
+    if (is_trusted) {
       EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
                 cert_trust.ToDebugString());
     }
@@ -328,7 +353,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
         // Just ignore such certificates.
       } else if (!find_certificate_default_search_list_certs.count(cert_der)) {
         // Cert is only in the system domain. It should be untrusted.
-        EXPECT_FALSE(is_trust_anchor);
+        EXPECT_FALSE(is_trusted);
       } else {
         bool trusted;
         if (__builtin_available(macOS 10.14, *)) {
@@ -342,11 +367,11 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
 
         bool expected_trust_anchor =
             trusted && (SecTrustGetCertificateCount(trust) == 1);
-        EXPECT_EQ(expected_trust_anchor, is_trust_anchor);
+        EXPECT_EQ(expected_trust_anchor, is_trusted);
       }
       auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
       ASSERT_TRUE(trust_debug_data);
-      if (is_trust_anchor &&
+      if (is_trusted &&
           trust_impl != TrustStoreMac::TrustImplType::kKeychainCacheFullCerts) {
         // Since this test queries the real trust store, can't know exactly
         // what bits should be set in the trust debug info, but if it's trusted
@@ -422,11 +447,15 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
 INSTANTIATE_TEST_SUITE_P(
     Impl,
     TrustStoreMacImplTest,
-    testing::Values(TrustStoreMac::TrustImplType::kSimple,
-                    TrustStoreMac::TrustImplType::kDomainCacheFullCerts,
-                    TrustStoreMac::TrustImplType::kKeychainCacheFullCerts),
+    testing::Combine(
+        testing::Values(TrustStoreMac::TrustImplType::kSimple,
+                        TrustStoreMac::TrustImplType::kDomainCacheFullCerts,
+                        TrustStoreMac::TrustImplType::kKeychainCacheFullCerts),
+        testing::Values(true, false)),
     [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
-      return TrustImplTypeToString(info.param);
+      return base::StrCat({TrustImplTypeToString(std::get<0>(info.param)),
+                           std::get<1>(info.param) ? "TrustedLeafSupported"
+                                                   : "TrustAnchorOnly"});
     });
 
 }  // namespace net
