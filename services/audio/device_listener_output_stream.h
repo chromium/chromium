@@ -5,7 +5,7 @@
 #ifndef SERVICES_AUDIO_DEVICE_LISTENER_OUTPUT_STREAM_H_
 #define SERVICES_AUDIO_DEVICE_LISTENER_OUTPUT_STREAM_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_io.h"

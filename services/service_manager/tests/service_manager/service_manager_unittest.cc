@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/base_switches.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/process/process.h"

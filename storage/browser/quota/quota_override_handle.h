@@ -5,7 +5,7 @@
 #ifndef STORAGE_BROWSER_QUOTA_QUOTA_OVERRIDE_HANDLE_H_
 #define STORAGE_BROWSER_QUOTA_QUOTA_OVERRIDE_HANDLE_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 #include <utility>
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"

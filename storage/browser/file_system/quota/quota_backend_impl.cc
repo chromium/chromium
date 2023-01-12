@@ -10,10 +10,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/files/file_error_or.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"

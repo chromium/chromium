@@ -5,8 +5,8 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_LOCATION_PROVIDER_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_LOCATION_PROVIDER_H_
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {

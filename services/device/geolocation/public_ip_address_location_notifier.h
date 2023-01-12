@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

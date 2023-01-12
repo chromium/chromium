@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/media_switches.h"
 #include "services/audio/in_process_audio_manager_accessor.h"

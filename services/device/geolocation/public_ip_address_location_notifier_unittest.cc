@@ -4,7 +4,7 @@
 
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"

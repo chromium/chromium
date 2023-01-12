@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"

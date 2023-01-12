@@ -5,7 +5,7 @@
 #include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
 
 #include "base/base64.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"

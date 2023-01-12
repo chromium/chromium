@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/platform_thread.h"
 #include "services/audio/public/cpp/input_ipc.h"
 

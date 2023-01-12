@@ -5,7 +5,7 @@
 #include <memory>
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/test/task_environment.h"

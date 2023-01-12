@@ -4,8 +4,8 @@
 
 #include "storage/browser/blob/blob_builder_from_stream.h"
 
-#include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"

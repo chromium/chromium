@@ -13,8 +13,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

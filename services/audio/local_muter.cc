@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "services/audio/loopback_group_member.h"
 
 namespace audio {

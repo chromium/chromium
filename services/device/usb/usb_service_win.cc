@@ -15,8 +15,8 @@
 #include <stdint.h>
 #include <usbiodef.h>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"

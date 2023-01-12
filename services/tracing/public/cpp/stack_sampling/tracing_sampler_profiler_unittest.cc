@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/at_exit.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/module_cache.h"

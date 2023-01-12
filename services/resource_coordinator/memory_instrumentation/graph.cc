@@ -4,9 +4,9 @@
 
 #include "services/resource_coordinator/memory_instrumentation/graph.h"
 
-#include "base/callback.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/ipc_tags.h"

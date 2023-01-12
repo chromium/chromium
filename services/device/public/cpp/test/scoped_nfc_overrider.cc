@@ -5,7 +5,7 @@
 #include "services/device/public/cpp/test/scoped_nfc_overrider.h"
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "services/device/device_service.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 

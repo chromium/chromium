@@ -5,9 +5,9 @@
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"

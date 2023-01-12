@@ -4,7 +4,7 @@
 
 #include "services/network/cors/cors_url_loader_test_util.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"

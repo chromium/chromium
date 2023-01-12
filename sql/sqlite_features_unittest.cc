@@ -8,11 +8,11 @@
 #include <string>
 #include <tuple>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/statement.h"

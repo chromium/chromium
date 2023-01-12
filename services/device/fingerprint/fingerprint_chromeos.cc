@@ -6,8 +6,8 @@
 
 #include <string.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

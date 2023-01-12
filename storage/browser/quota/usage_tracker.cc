@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "storage/browser/quota/client_usage_tracker.h"
 #include "storage/browser/quota/quota_client_type.h"

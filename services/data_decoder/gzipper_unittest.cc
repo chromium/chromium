@@ -4,7 +4,7 @@
 
 #include "services/data_decoder/gzipper.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

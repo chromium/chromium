@@ -4,8 +4,8 @@
 
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"

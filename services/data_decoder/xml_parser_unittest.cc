@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/test/values_test_util.h"
 #include "services/data_decoder/xml_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"

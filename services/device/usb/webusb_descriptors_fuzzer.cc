@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "base/at_exit.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "services/device/usb/fake_usb_device_handle.h"
 #include "services/device/usb/webusb_descriptors.h"

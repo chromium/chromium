@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/wifi_data.h"

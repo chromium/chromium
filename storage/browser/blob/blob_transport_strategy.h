@@ -5,8 +5,8 @@
 #ifndef STORAGE_BROWSER_BLOB_BLOB_TRANSPORT_STRATEGY_H_
 #define STORAGE_BROWSER_BLOB_BLOB_TRANSPORT_STRATEGY_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/blob/blob_memory_controller.h"

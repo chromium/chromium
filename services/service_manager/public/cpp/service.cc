@@ -4,7 +4,7 @@
 
 #include "services/service_manager/public/cpp/service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 
 namespace service_manager {

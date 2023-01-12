@@ -4,7 +4,7 @@
 
 #include "services/network/tcp_client_socket_brokered.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"

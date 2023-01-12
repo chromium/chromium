@@ -9,7 +9,7 @@
 #include <limits>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "services/network/throttling/network_conditions.h"

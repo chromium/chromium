@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/prefs/pref_name_set.h"

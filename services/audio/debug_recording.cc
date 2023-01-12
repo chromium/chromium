@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "media/audio/audio_manager.h"

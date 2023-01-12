@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"

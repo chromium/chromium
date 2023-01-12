@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

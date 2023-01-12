@@ -4,7 +4,7 @@
 
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"

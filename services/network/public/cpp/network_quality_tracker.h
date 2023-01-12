@@ -5,8 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_QUALITY_TRACKER_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_QUALITY_TRACKER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"

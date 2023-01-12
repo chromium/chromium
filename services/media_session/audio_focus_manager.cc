@@ -7,9 +7,9 @@
 #include <iterator>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/functional/bind.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/unguessable_token.h"

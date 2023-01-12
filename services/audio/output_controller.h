@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/atomic_ref_count.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

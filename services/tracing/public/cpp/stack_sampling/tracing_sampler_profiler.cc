@@ -8,10 +8,10 @@
 #include <set>
 
 #include "base/android/library_loader/anchor_functions.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"

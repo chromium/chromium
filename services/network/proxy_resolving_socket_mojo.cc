@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/socket_data_pump.h"

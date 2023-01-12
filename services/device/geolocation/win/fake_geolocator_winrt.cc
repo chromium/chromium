@@ -4,8 +4,8 @@
 
 #include "services/device/geolocation/win/fake_geolocator_winrt.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/device/geolocation/win/fake_geocoordinate_winrt.h"
 #include "services/device/geolocation/win/fake_position_changed_event_args_winrt.h"

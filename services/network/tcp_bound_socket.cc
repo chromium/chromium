@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/ip_endpoint.h"

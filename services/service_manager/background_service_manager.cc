@@ -4,10 +4,10 @@
 
 #include "services/service_manager/background_service_manager.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/path_service.h"

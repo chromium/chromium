@@ -4,7 +4,7 @@
 
 #include "services/device/device_posture/device_posture_provider_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/device_posture/device_posture_platform_provider.h"
 

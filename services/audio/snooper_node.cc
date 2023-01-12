@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"

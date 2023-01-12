@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"

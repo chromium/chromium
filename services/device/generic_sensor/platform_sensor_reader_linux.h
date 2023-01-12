@@ -5,7 +5,7 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_READER_LINUX_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_READER_LINUX_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 namespace device {

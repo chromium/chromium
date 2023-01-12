@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"

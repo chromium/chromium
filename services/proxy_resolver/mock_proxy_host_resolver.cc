@@ -4,8 +4,8 @@
 
 #include "services/proxy_resolver/mock_proxy_host_resolver.h"
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

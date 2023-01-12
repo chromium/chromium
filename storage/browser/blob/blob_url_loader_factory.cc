@@ -4,7 +4,7 @@
 
 #include "storage/browser/blob/blob_url_loader_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"

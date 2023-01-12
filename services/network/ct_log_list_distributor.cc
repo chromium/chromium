@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "net/cert/ct_log_verifier.h"
 #include "services/network/public/cpp/features.h"
 

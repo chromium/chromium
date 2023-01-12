@@ -4,7 +4,7 @@
 
 #include "services/device/hid/hid_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "services/device/public/mojom/hid.mojom.h"

@@ -5,7 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_MOJO_CERT_VERIFIER_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_MOJO_CERT_VERIFIER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"

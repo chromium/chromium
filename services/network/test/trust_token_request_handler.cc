@@ -5,9 +5,9 @@
 #include "services/network/test/trust_token_request_handler.h"
 
 #include "base/base64.h"
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"

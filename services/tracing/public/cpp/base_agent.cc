@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/trace_event/trace_log.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/mojom/constants.mojom.h"

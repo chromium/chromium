@@ -5,7 +5,7 @@
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
 
 #include "base/base64.h"
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
 #include "services/network/trust_tokens/trust_token_client_data_canonicalization.h"

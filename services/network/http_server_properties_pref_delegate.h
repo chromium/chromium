@@ -5,7 +5,7 @@
 #ifndef SERVICES_NETWORK_HTTP_SERVER_PROPERTIES_PREF_DELEGATE_H_
 #define SERVICES_NETWORK_HTTP_SERVER_PROPERTIES_PREF_DELEGATE_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"

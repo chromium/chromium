@@ -5,7 +5,7 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_TEST_SCOPED_GEOLOCATION_OVERRIDER_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_SCOPED_GEOLOCATION_OVERRIDER_H_
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {

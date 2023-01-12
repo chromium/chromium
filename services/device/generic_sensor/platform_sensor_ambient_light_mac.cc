@@ -8,7 +8,7 @@
 
 #include <IOKit/IOMessage.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "device/base/synchronization/shared_memory_seqlock_buffer.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"

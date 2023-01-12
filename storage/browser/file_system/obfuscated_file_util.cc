@@ -11,11 +11,11 @@
 #include <tuple>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"

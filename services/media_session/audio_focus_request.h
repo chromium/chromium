@@ -5,7 +5,7 @@
 #ifndef SERVICES_MEDIA_SESSION_AUDIO_FOCUS_REQUEST_H_
 #define SERVICES_MEDIA_SESSION_AUDIO_FOCUS_REQUEST_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

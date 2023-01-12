@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/test/test_data_pipe_getter.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 
 #include <algorithm>

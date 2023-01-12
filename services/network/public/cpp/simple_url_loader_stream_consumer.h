@@ -5,8 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_SIMPLE_URL_LOADER_STREAM_CONSUMER_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_SIMPLE_URL_LOADER_STREAM_CONSUMER_H_
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/string_piece.h"
 
 namespace network {

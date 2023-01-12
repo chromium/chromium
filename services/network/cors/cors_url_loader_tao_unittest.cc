@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "mojo/public/cpp/bindings/message.h"

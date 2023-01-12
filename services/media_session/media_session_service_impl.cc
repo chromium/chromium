@@ -4,7 +4,7 @@
 
 #include "services/media_session/media_session_service_impl.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "services/media_session/audio_focus_manager.h"
 
 namespace media_session {

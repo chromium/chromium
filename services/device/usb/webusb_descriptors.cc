@@ -6,9 +6,9 @@
 
 #include <limits>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/device_event_log/device_event_log.h"

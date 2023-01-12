@@ -10,7 +10,7 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/usb/jni_headers/ChromeUsbDevice_jni.h"

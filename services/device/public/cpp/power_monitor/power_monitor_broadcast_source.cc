@@ -4,7 +4,7 @@
 
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"

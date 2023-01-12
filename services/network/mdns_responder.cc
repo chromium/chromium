@@ -12,7 +12,7 @@
 #include "services/network/mdns_responder.h"
 
 #include "base/big_endian.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

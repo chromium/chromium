@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/lacros/device_proxy_lacros.h"

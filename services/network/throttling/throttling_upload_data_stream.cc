@@ -4,7 +4,7 @@
 
 #include "services/network/throttling/throttling_upload_data_stream.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/base/net_errors.h"
 
 namespace network {

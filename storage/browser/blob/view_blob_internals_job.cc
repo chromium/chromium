@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <sstream>
 
-#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"

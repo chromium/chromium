@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"

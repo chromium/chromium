@@ -5,8 +5,8 @@
 #include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
 
 #include "base/android/jni_android.h"
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

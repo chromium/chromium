@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/win/sid.h"
 #include "base/win/win_util.h"

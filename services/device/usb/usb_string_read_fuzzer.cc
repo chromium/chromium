@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/usb/fake_usb_device_handle.h"
 #include "services/device/usb/usb_descriptors.h"

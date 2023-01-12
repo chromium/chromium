@@ -4,7 +4,7 @@
 
 #include "services/audio/public/cpp/audio_system_to_service_adapter.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"

@@ -4,7 +4,7 @@
 
 #include "services/device/geolocation/wifi_data_provider_lacros.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

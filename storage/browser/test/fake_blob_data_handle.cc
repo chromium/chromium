@@ -4,7 +4,7 @@
 
 #include "storage/browser/test/fake_blob_data_handle.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/base/net_errors.h"
 
 namespace storage {

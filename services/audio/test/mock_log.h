@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

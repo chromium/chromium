@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/process/process.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "build/build_config.h"

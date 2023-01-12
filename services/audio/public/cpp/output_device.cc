@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "media/audio/audio_output_device_thread_callback.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"

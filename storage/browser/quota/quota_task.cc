@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <functional>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 

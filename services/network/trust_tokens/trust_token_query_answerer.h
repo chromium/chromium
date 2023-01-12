@@ -5,7 +5,7 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_QUERY_ANSWERER_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_QUERY_ANSWERER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"

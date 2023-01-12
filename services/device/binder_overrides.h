@@ -5,8 +5,8 @@
 #ifndef SERVICES_DEVICE_BINDER_OVERRIDES_H_
 #define SERVICES_DEVICE_BINDER_OVERRIDES_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/consumer_host.h"
 #include "services/tracing/perfetto/perfetto_service.h"

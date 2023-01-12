@@ -7,7 +7,7 @@
 #include <cmath>
 #include <limits>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "services/image_annotation/image_annotation_metrics.h"

@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"

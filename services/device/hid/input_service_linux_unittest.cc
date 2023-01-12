@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "services/device/hid/input_service_linux.h"

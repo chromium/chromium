@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "services/shape_detection/text_detection_impl.h"

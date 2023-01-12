@@ -4,7 +4,7 @@
 
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"

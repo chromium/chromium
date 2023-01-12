@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/mdns_listener_update_type.h"

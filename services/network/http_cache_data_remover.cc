@@ -7,7 +7,7 @@
 #include <set>
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"

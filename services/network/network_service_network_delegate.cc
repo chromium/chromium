@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"

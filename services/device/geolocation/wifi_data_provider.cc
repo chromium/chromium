@@ -4,8 +4,8 @@
 
 #include "services/device/geolocation/wifi_data_provider.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 

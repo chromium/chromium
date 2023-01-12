@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace device {

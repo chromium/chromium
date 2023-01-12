@@ -4,8 +4,8 @@
 
 #include "services/video_capture/video_source_impl.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "services/video_capture/push_video_stream_subscription_impl.h"
 
 namespace video_capture {

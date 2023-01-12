@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/cancelable_callback.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"

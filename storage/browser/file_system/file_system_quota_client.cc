@@ -11,10 +11,10 @@
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"

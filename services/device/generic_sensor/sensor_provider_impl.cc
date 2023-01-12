@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"

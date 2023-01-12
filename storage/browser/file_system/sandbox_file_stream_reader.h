@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include "base/bind.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"

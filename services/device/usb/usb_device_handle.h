@@ -11,7 +11,7 @@
 #include <map>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/usb/usb_descriptors.h"

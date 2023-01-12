@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/debug/crash_logging.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/message.h"

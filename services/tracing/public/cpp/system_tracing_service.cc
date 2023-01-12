@@ -10,8 +10,8 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

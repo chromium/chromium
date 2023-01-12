@@ -4,7 +4,7 @@
 
 #include "services/network/dhcp_pac_file_fetcher_mojo.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "net/proxy_resolution/pac_file_fetcher.h"
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"

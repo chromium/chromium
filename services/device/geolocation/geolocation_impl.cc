@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "services/device/geolocation/geolocation_context.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 

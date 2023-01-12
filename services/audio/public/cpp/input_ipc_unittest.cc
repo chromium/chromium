@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"

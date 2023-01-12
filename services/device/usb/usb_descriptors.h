@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 

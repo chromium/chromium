@@ -5,7 +5,7 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_INTERCEPTABLE_PREF_FILTER_H_
 #define SERVICES_PREFERENCES_TRACKED_INTERCEPTABLE_PREF_FILTER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/prefs/pref_filter.h"

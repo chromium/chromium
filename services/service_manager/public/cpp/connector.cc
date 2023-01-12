@@ -4,8 +4,8 @@
 
 #include "services/service_manager/public/cpp/connector.h"
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 

@@ -10,10 +10,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"

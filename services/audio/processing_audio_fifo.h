@@ -5,7 +5,7 @@
 #ifndef SERVICES_AUDIO_PROCESSING_AUDIO_FIFO_H_
 #define SERVICES_AUDIO_PROCESSING_AUDIO_FIFO_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"

@@ -5,7 +5,7 @@
 #ifndef SERVICES_DEVICE_HID_HID_MANAGER_IMPL_H_
 #define SERVICES_DEVICE_HID_HID_MANAGER_IMPL_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

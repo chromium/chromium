@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "net/base/ip_address.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"

@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "components/webrtc/fake_ssl_client_socket.h"

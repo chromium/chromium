@@ -6,9 +6,9 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"

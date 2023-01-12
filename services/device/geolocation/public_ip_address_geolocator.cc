@@ -4,7 +4,7 @@
 
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
 

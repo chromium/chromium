@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

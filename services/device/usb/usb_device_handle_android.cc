@@ -4,7 +4,7 @@
 
 #include "services/device/usb/usb_device_handle_android.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "services/device/usb/jni_headers/ChromeUsbConnection_jni.h"
 #include "services/device/usb/usb_device.h"

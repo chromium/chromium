@@ -5,7 +5,7 @@
 #ifndef SANDBOX_LINUX_SERVICES_SCOPED_PROCESS_H_
 #define SANDBOX_LINUX_SERVICES_SCOPED_PROCESS_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "base/process/process_handle.h"
 #include "sandbox/sandbox_export.h"
 

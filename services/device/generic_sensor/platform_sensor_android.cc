@@ -4,7 +4,7 @@
 
 #include "services/device/generic_sensor/platform_sensor_android.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "services/device/generic_sensor/jni_headers/PlatformSensor_jni.h"
 #include "services/device/public/cpp/device_features.h"

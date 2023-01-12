@@ -4,7 +4,7 @@
 
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

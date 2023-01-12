@@ -5,7 +5,7 @@
 #ifndef SERVICES_AUDIO_LOCAL_MUTER_H_
 #define SERVICES_AUDIO_LOCAL_MUTER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

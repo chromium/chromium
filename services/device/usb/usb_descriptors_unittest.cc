@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/usb/mock_usb_device_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"

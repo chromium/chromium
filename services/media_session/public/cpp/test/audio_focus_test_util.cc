@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace media_session {
 namespace test {

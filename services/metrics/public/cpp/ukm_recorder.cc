@@ -4,8 +4,8 @@
 
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"

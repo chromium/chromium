@@ -14,11 +14,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"

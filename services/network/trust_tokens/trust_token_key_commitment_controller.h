@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "services/network/public/cpp/simple_url_loader.h"

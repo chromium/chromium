@@ -4,8 +4,8 @@
 
 #include "storage/browser/blob/blob_url_store_impl.h"
 
-#include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

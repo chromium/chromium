@@ -5,7 +5,7 @@
 #ifndef SERVICES_IMAGE_ANNOTATION_PUBLIC_CPP_IMAGE_PROCESSOR_H_
 #define SERVICES_IMAGE_ANNOTATION_PUBLIC_CPP_IMAGE_PROCESSOR_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"

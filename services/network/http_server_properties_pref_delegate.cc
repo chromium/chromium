@@ -4,7 +4,7 @@
 
 #include "services/network/http_server_properties_pref_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"

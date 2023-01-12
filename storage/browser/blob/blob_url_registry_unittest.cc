@@ -4,7 +4,7 @@
 
 #include "storage/browser/blob/blob_url_registry.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

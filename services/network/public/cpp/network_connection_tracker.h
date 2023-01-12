@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/atomicops.h"
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/scoped_observation_traits.h"

@@ -4,7 +4,7 @@
 
 #include "services/device/public/cpp/test/scoped_pressure_manager_overrider.h"
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "services/device/device_service.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
 

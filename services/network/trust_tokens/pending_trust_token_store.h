@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 
 namespace network {

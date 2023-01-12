@@ -10,10 +10,10 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_error_or.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"

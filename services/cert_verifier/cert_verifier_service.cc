@@ -4,7 +4,7 @@
 
 #include "services/cert_verifier/cert_verifier_service.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"

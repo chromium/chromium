@@ -4,7 +4,7 @@
 
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_test.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"

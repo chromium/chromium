@@ -5,7 +5,7 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_REQUEST_HELPER_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_REQUEST_HELPER_H_
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
 namespace net {

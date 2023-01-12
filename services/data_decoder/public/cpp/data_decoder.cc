@@ -4,7 +4,7 @@
 
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"

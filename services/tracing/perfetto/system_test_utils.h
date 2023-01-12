@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "services/tracing/public/cpp/perfetto/posix_system_producer.h"
 
 namespace base {

@@ -4,7 +4,7 @@
 
 #include "services/shape_detection/face_detection_impl_win.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/win/post_async_results.h"
 #include "services/shape_detection/detection_utils_win.h"

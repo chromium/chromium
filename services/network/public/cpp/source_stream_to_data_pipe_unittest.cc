@@ -4,7 +4,7 @@
 
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/filter/mock_source_stream.h"

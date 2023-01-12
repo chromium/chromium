@@ -4,7 +4,7 @@
 
 #include "services/device/geolocation/geolocation_config.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace device {

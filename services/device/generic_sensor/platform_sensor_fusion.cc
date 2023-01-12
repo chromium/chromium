@@ -4,8 +4,8 @@
 
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"

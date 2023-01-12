@@ -11,8 +11,8 @@
 #include <string>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "services/device/usb/scoped_libusb_device_ref.h"

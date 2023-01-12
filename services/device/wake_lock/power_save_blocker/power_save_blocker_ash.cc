@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"

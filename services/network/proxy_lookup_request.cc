@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"

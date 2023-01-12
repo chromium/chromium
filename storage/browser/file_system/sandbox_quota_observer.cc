@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/bind.h"
 #include "base/files/file_error_or.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"

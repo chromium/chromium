@@ -6,7 +6,7 @@
 #include <sensors.h>
 #include <wrl/implements.h>
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/math_constants.h"

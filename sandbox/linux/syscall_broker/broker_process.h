@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "sandbox/linux/syscall_broker/broker_sandbox_config.h"
 #include "sandbox/sandbox_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

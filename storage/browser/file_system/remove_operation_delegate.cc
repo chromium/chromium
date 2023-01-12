@@ -4,7 +4,7 @@
 
 #include "storage/browser/file_system/remove_operation_delegate.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 

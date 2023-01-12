@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-#include "base/callback_forward.h"
+#include "base/functional/callback_forward.h"
 #include "components/prefs/pref_name_set.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 

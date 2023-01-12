@@ -4,8 +4,8 @@
 
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"

@@ -4,7 +4,7 @@
 
 #include "services/image_annotation/public/cpp/image_processor.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "services/image_annotation/image_annotation_metrics.h"

@@ -4,7 +4,7 @@
 
 #include "services/device/geolocation/public_ip_address_geolocation_provider.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

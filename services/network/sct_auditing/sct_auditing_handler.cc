@@ -5,11 +5,11 @@
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 
 #include "base/base64.h"
-#include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"

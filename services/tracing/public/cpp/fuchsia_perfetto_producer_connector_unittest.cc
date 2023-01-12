@@ -10,10 +10,10 @@
 #include <zircon/types.h>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

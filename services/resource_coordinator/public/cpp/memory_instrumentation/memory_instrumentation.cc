@@ -4,7 +4,7 @@
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 
 namespace memory_instrumentation {
 namespace {

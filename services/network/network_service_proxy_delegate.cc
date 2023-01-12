@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/network_service_proxy_delegate.h"
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"

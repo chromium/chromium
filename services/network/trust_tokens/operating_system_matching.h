@@ -5,7 +5,7 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_OPERATING_SYSTEM_MATCHING_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_OPERATING_SYSTEM_MATCHING_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
 namespace network {

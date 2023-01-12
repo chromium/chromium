@@ -7,9 +7,9 @@
 #include <functional>
 #include <iterator>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"

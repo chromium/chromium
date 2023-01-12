@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 

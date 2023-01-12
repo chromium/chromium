@@ -5,8 +5,8 @@
 #ifndef SERVICES_AUDIO_TESTING_API_BINDER_H_
 #define SERVICES_AUDIO_TESTING_API_BINDER_H_
 
-#include "base/callback.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
 #include "services/audio/public/mojom/testing_api.mojom.h"
 

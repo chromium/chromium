@@ -4,7 +4,7 @@
 
 #include "sql/test/scoped_error_expecter.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/types/pass_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -7,9 +7,9 @@
 
 #include <list>
 
-#include "base/bind.h"
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"

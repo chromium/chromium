@@ -4,7 +4,7 @@
 
 #include "services/network/websocket_factory.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/isolation_info.h"
 #include "net/base/url_util.h"

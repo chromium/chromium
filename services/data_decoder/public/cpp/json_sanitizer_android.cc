@@ -5,8 +5,8 @@
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 
 #include "base/android/jni_string.h"
-#include "base/bind.h"
-#include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/data_decoder/public/cpp/android/safe_json_jni_headers/JsonSanitizer_jni.h"

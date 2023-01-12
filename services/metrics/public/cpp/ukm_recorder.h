@@ -5,8 +5,8 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_H_
 
-#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/metrics_export.h"

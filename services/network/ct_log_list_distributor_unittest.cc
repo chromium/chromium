@@ -5,9 +5,9 @@
 
 #include "services/network/ct_log_list_distributor.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "crypto/sha2.h"
 #include "net/cert/ct_log_verifier.h"
