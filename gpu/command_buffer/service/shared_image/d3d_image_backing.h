@@ -119,10 +119,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
       WGPUDevice device,
       WGPUBackendType backend_type,
       std::vector<WGPUTextureFormat> view_formats) override;
-  void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override;
 
   bool BeginAccessD3D11(bool write_access);
   void EndAccessD3D11();

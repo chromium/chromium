@@ -692,19 +692,6 @@ D3DImageBacking::ProduceVideoDecode(SharedImageManager* manager,
       manager, this, tracker, d3d11_texture_);
 }
 
-void D3DImageBacking::OnMemoryDump(
-    const std::string& dump_name,
-    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-    base::trace_event::ProcessMemoryDump* pmd,
-    uint64_t client_tracing_id) {
-  SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
-                                   client_tracing_id);
-
-  // Swap chain textures only have one level backed by an image.
-  if (auto* gl_image = GetGLImage())
-    gl_image->OnMemoryDump(pmd, client_tracing_id, dump_name);
-}
-
 #if BUILDFLAG(USE_DAWN)
 WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
                                              WGPUTextureUsage wgpu_usage) {
