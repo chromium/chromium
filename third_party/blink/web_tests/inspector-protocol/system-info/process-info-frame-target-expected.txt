@@ -1,0 +1,10 @@
+Tests that ProcessInfo is not available from frame target
+{
+    error : {
+        code : -32000
+        message : SystemInfo.getProcessInfo is only supported on the browser target
+    }
+    id : <number>
+    sessionId : <string>
+}
+

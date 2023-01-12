@@ -197,7 +197,8 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->CreateAndAddHandler<protocol::SecurityHandler>();
   session->CreateAndAddHandler<protocol::StorageHandler>(
       session->GetClient()->IsTrusted());
-  session->CreateAndAddHandler<protocol::SystemInfoHandler>();
+  session->CreateAndAddHandler<protocol::SystemInfoHandler>(
+      /* is_browser_sessoin= */ true);
   if (tethering_task_runner_) {
     session->CreateAndAddHandler<protocol::TetheringHandler>(
         socket_callback_, tethering_task_runner_);

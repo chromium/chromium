@@ -42,6 +42,7 @@
 #include "content/browser/devtools/protocol/security_handler.h"
 #include "content/browser/devtools/protocol/service_worker_handler.h"
 #include "content/browser/devtools/protocol/storage_handler.h"
+#include "content/browser/devtools/protocol/system_info_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -347,6 +348,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       /* allow_inspect_worker= */ may_attach_to_brower);
   session->CreateAndAddHandler<protocol::StorageHandler>(
       session->GetClient()->IsTrusted());
+  session->CreateAndAddHandler<protocol::SystemInfoHandler>(
+      /* is_browser_session= */ false);
   auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(
       may_attach_to_brower
           ? protocol::TargetHandler::AccessMode::kRegular

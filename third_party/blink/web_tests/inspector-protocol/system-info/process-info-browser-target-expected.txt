@@ -1,4 +1,4 @@
-Tests ProcessInfo retrieval
+Tests ProcessInfo retrieval from browser target
 Process:{
     cpuTime : <number>
     id : <number>
