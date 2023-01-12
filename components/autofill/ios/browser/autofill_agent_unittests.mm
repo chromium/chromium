@@ -5,11 +5,13 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 
 #include "base/mac/bundle_locations.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/ui/mock_autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -30,19 +32,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using autofill::POPUP_ITEM_ID_CLEAR_FORM;
-using autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS;
-using autofill::FormRendererId;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
+using autofill::FormRendererId;
+using autofill::POPUP_ITEM_ID_CLEAR_FORM;
+using autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS;
+using autofill::PopupType;
 using base::test::ios::WaitUntilCondition;
 
 @interface AutofillAgent (Testing)
@@ -222,13 +223,16 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   __block NSArray<FormSuggestion*>* completion_handler_suggestions = nil;
   __block BOOL completion_handler_called = NO;
 
+  autofill::MockAutofillPopupDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetPopupType);
+  EXPECT_CALL(mock_delegate, OnPopupShown);
+
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS));
-  [autofill_agent_
-      showAutofillPopup:autofillSuggestions
-          popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
 
   // Retrieves the suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -259,6 +263,49 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   EXPECT_EQ(1U, completion_handler_suggestions.count);
   EXPECT_EQ(POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
             completion_handler_suggestions[0].identifier);
+}
+
+// Tests that only credit card suggestions would have icons.
+TEST_F(AutofillAgentTests,
+       showAutofillPopup_ShowIconForCreditCardSuggestionsOnly) {
+  __block NSString* completion_handler_icon_name = nil;
+
+  // Mock different popup types.
+  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  EXPECT_CALL(mock_delegate, GetPopupType)
+      .WillOnce(testing::Return(PopupType::kCreditCards))
+      .WillOnce(testing::Return(PopupType::kAddresses))
+      .WillOnce(testing::Return(PopupType::kUnspecified));
+  // Initialize suggestion.
+  std::vector<autofill::Suggestion> autofillSuggestions = {
+      autofill::Suggestion("", "", "icon", POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS)};
+  // Completion handler to retrieve suggestions.
+  auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    completion_handler_icon_name = [suggestions[0].icon copy];
+  };
+
+  // Make credit card suggestion.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_NSEQ(@"icon", completion_handler_icon_name);
+  // Make address suggestion.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_EQ(nil, completion_handler_icon_name);
+  // Make unspecified suggestion.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_EQ(nil, completion_handler_icon_name);
 }
 
 // Tests that when Autofill suggestions are made available to AutofillAgent

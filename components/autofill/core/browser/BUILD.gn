@@ -710,6 +710,8 @@ static_library("test_support") {
     "test_utils/test_profiles.cc",
     "test_utils/test_profiles.h",
     "test_utils/vote_uploads_test_matchers.h",
+    "ui/mock_autofill_popup_delegate.cc",
+    "ui/mock_autofill_popup_delegate.h",
     "ui/suggestion_test_helpers.h",
     "webdata/autofill_sync_bridge_test_util.cc",
     "webdata/autofill_sync_bridge_test_util.h",

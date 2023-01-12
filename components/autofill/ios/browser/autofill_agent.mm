@@ -644,11 +644,15 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         popup_suggestion.acceptance_a11y_announcement.has_value()
             ? SysUTF16ToNSString(*popup_suggestion.acceptance_a11y_announcement)
             : nil;
+    // Only show icon for credit card suggestions.
+    NSString* icon = delegate && delegate->GetPopupType() ==
+                                     autofill::PopupType::kCreditCards
+                         ? base::SysUTF8ToNSString(popup_suggestion.icon)
+                         : nil;
     FormSuggestion* suggestion =
         [FormSuggestion suggestionWithValue:value
                          displayDescription:displayDescription
-                                       icon:base::SysUTF8ToNSString(
-                                                popup_suggestion.icon)
+                                       icon:icon
                                  identifier:popup_suggestion.frontend_id
                              requiresReauth:NO
                  acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];

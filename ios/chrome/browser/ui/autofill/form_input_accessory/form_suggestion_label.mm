@@ -36,12 +36,6 @@ const CGFloat kBorderWidth = 14.0f;
 // The space between items in the label.
 const CGFloat kSpacing = 4.0f;
 
-// Structure that record the image for each icon.
-struct IconImageMap {
-  const char* const icon_name;
-  NSString* image_name;
-};
-
 // Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
 UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
