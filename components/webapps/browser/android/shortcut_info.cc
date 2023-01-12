@@ -111,7 +111,9 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
     display = manifest.display;
 
   for (DisplayMode display_mode : manifest.display_override) {
-    if (display_mode == DisplayMode::kStandalone ||
+    if (display_mode == DisplayMode::kBrowser ||
+        display_mode == DisplayMode::kMinimalUi ||
+        display_mode == DisplayMode::kStandalone ||
         display_mode == DisplayMode::kFullscreen) {
       display = display_mode;
       break;
