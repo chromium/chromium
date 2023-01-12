@@ -295,7 +295,7 @@ crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation rend
 # devices or Lacros FYI x64 Release (Intel) yet.
 crbug.com/1230619 [ android android-pixel-2 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-pixel-4 ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android android-pixel-6 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A135M ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ linux intel display-server-wayland  ] Pixel_WebGLFloat [ Failure ]
@@ -323,7 +323,7 @@ crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGL
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
-crbug.com/1297636 [ mac ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
+crbug.com/1297636 [ mac mac-x86_64 ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 
 # Pixel_WebGPUDisplayP3 socket timeout on Mac FYI Retina Release (NVIDIA)
 crbug.com/1392819 [ mac nvidia no-asan ] Pixel_WebGPUDisplayP3 [ Failure ]
@@ -395,7 +395,7 @@ crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationCle
 
 # Pixel_MediaRecorderFromVideoElement fails on several FYI bots
 crbug.com/1382332 [ amd-0x7340 release-x64 target-cpu-64 win10 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/1382332 [ mac ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ amd-0x6821 asan mac-x86_64 monterey release ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ amd-0x6821 asan mac-x86_64 monterey release ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ chromeos ] Pixel_MediaRecorderFromVideoElement [ Failure ]
