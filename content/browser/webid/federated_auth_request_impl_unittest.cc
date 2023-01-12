@@ -141,6 +141,7 @@ struct IdentityProviderParameters {
 struct RequestParameters {
   std::vector<IdentityProviderParameters> identity_providers;
   bool prefer_auto_sign_in;
+  blink::mojom::RpContext rp_context;
 };
 
 // Expected return values from a call to RequestToken.
@@ -221,7 +222,7 @@ static const IdentityProviderParameters kDefaultIdentityProviderConfig{
 
 static const RequestParameters kDefaultRequestParameters{
     std::vector<IdentityProviderParameters>{kDefaultIdentityProviderConfig},
-    /*prefer_auto_sign_in=*/false};
+    /*prefer_auto_sign_in=*/false, blink::mojom::RpContext::kSignIn};
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
     {kWellKnown},
@@ -272,7 +273,8 @@ static const RequestParameters kDefaultMultiIdpRequestParameters{
     std::vector<IdentityProviderParameters>{
         {kProviderUrlFull, kClientId, kNonce, /*login_hint=*/""},
         {kProviderTwoUrlFull, kClientId, kNonce, /*login_hint=*/""}},
-    /*prefer_auto_sign_in=*/false};
+    /*prefer_auto_sign_in=*/false,
+    /*rp_context=*/blink::mojom::RpContext::kSignIn};
 
 MockConfiguration kConfigurationMultiIdpValid{
     kToken,
@@ -473,6 +475,7 @@ class TestDialogController
     AccountList displayed_accounts;
     absl::optional<IdentityRequestAccount::SignInMode> sign_in_mode;
     bool did_show_idp_signin_status_mismatch_dialog{false};
+    blink::mojom::RpContext rp_context;
   };
 
   explicit TestDialogController(MockConfiguration config)
@@ -499,6 +502,7 @@ class TestDialogController
     }
 
     state_->sign_in_mode = sign_in_mode;
+    state_->rp_context = identity_provider_data[0].rp_context;
 
     base::span<const content::IdentityRequestAccount> accounts =
         identity_provider_data[0].accounts;
@@ -655,7 +659,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(
-              std::move(idp_ptrs), request_parameters.prefer_auto_sign_in);
+              std::move(idp_ptrs), request_parameters.prefer_auto_sign_in,
+              request_parameters.rp_context);
       idp_get_params.push_back(std::move(get_params));
     }
 
@@ -1121,7 +1126,8 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
       "http://idp.example/fedcm.json", kClientId, kNonce, /*login_hint=*/""};
   RequestParameters request{
       std::vector<IdentityProviderParameters>{identity_provider},
-      /*prefer_auto_sign_in=*/false};
+      /*prefer_auto_sign_in=*/false,
+      /*rp_context=*/blink::mojom::RpContext::kSignIn};
   MockConfiguration configuration = kConfigurationValid;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -2550,6 +2556,38 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
   // We should not expect ShowAccountsDialog() because there are no accounts
   // matching the provided login hint.
   EXPECT_FALSE(did_show_accounts_dialog());
+}
+
+// Test that when FedCmRpContext flag is enabled and rp_context is specified,
+// the FedCM request succeeds with the specified rp_context.
+TEST_F(FederatedAuthRequestImplTest, RpContextIsSetToNonDefaultValue) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmRpContext);
+
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  request_parameters.rp_context = blink::mojom::RpContext::kContinue;
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action =
+      AccountsDialogAction::kSelectFirstAccount;
+  RunAuthTest(request_parameters, kExpectationSuccess, configuration);
+
+  EXPECT_EQ(dialog_controller_state_.rp_context,
+            blink::mojom::RpContext::kContinue);
+}
+
+// Test that when FedCmRpContext flag is at its default setting and rp_context
+// is specified, the FedCM request ignores the specified rp_context and defaults
+// to sign in.
+TEST_F(FederatedAuthRequestImplTest, RpContextIsDefaultToSignIn) {
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  request_parameters.rp_context = blink::mojom::RpContext::kContinue;
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action =
+      AccountsDialogAction::kSelectFirstAccount;
+  RunAuthTest(request_parameters, kExpectationSuccess, configuration);
+
+  EXPECT_EQ(dialog_controller_state_.rp_context,
+            blink::mojom::RpContext::kSignIn);
 }
 
 }  // namespace content

@@ -1242,6 +1242,11 @@
       public: true,
     },
     {
+      name: "FedCmRpContext",
+      depends_on: ["FedCm"],
+      public: true,
+    },
+    {
       name: "FedCmSelectiveDisclosure",
       depends_on: ["FedCm"],
       public: true,

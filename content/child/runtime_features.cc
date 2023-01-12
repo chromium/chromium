@@ -222,6 +222,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableFedCmLoginHint, features::kFedCmLoginHint, kSetOnlyIfOverridden},
     {wf::EnableFedCmMultipleIdentityProviders,
      features::kFedCmMultipleIdentityProviders, kDefault},
+    {wf::EnableFedCmRpContext, features::kFedCmRpContext, kDefault},
     {wf::EnableFedCmUserInfo, features::kFedCmUserInfo, kDefault},
     {wf::EnableFedCmSelectiveDisclosure, features::kFedCmSelectiveDisclosure,
      kDefault},

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
@@ -64,11 +65,15 @@ void FedCmAccountSelectionView::Show(
     browser->tab_strip_model()->AddObserver(this);
 
   size_t accounts_size = 0u;
+  blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
   for (const auto& identity_provider : identity_provider_data) {
     idp_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
         identity_provider.idp_metadata, identity_provider.client_metadata,
         identity_provider.accounts);
+    // TODO(crbug.com/1406014): Decide what we should display if the IdPs use
+    // different contexts here.
+    rp_context = identity_provider.rp_context;
     accounts_size += identity_provider.accounts.size();
   }
   state_ = accounts_size == 1u ? State::PERMISSION : State::ACCOUNT_PICKER;
@@ -79,8 +84,8 @@ void FedCmAccountSelectionView::Show(
                 base::UTF8ToUTF16(identity_provider_data[0].idp_for_display))
           : absl::nullopt;
   rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
-  bubble_widget_ =
-      CreateBubble(browser, rp_for_display_, idp_title)->GetWeakPtr();
+  bubble_widget_ = CreateBubble(browser, rp_for_display_, idp_title, rp_context)
+                       ->GetWeakPtr();
   GetBubbleView()->ShowAccountPicker(idp_data_list_,
                                      /*show_back_button=*/false);
   bubble_widget_->Show();
@@ -104,8 +109,12 @@ void FedCmAccountSelectionView::ShowFailureDialog(
   if (browser)
     browser->tab_strip_model()->AddObserver(this);
 
+  // TODO(crbug.com/1406016): Refactor ShowFailureDialog to avoid calling
+  // CreateBubble with parameters we don't care about (e.g. the relying party
+  // context).
   bubble_widget_ = CreateBubble(browser, base::UTF8ToUTF16(rp_etld_plus_one),
-                                base::UTF8ToUTF16(idp_etld_plus_one))
+                                base::UTF8ToUTF16(idp_etld_plus_one),
+                                blink::mojom::RpContext::kSignIn)
                        ->GetWeakPtr();
   GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(rp_etld_plus_one),
                                      base::UTF8ToUTF16(idp_etld_plus_one));
@@ -155,12 +164,14 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
 views::Widget* FedCmAccountSelectionView::CreateBubble(
     Browser* browser,
     const std::u16string& rp_etld_plus_one,
-    const absl::optional<std::u16string>& idp_title) {
+    const absl::optional<std::u16string>& idp_title,
+    blink::mojom::RpContext rp_context) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* anchor_view = browser_view->contents_web_view();
 
   return views::BubbleDialogDelegateView::CreateBubble(
-      new AccountSelectionBubbleView(rp_etld_plus_one, idp_title, anchor_view,
+      new AccountSelectionBubbleView(rp_etld_plus_one, idp_title, rp_context,
+                                     anchor_view,
                                      SystemNetworkContextManager::GetInstance()
                                          ->GetSharedURLLoaderFactory(),
                                      this));

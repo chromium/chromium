@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink-forward.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -30,6 +31,7 @@ class PublicKeyCredentialRpEntity;
 class PublicKeyCredentialUserEntity;
 class RemoteDesktopClientOverride;
 class UserVerificationRequirement;
+class V8IdentityCredentialRequestOptionsContext;
 class V8UnionArrayBufferOrArrayBufferView;
 }  // namespace blink
 
@@ -197,6 +199,14 @@ struct TypeConverter<blink::mojom::blink::IdentityProviderConfigPtr,
                      blink::IdentityProviderConfig> {
   static blink::mojom::blink::IdentityProviderConfigPtr Convert(
       const blink::IdentityProviderConfig&);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::RpContext,
+                  blink::V8IdentityCredentialRequestOptionsContext> {
+  static blink::mojom::blink::RpContext Convert(
+      const blink::V8IdentityCredentialRequestOptionsContext&);
 };
 
 template <>

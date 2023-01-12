@@ -12,6 +12,7 @@
 #include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -61,6 +62,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   AccountSelectionBubbleView(
       const std::u16string& rp_for_display,
       const absl::optional<std::u16string>& idp_title,
+      blink::mojom::RpContext rp_context,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Observer* observer);
@@ -129,7 +131,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // button visibiltiy. `idp_metadata` is not null when we need to set a header
   // image based on the IDP.
   void UpdateHeader(const content::IdentityProviderMetadata& idp_metadata,
-                    const std::u16string title,
+                    const std::u16string subpage_title,
                     bool show_back_button);
 
   // Sets the brand views::ImageView visibility and image. Initiates the
@@ -146,6 +148,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // The accessible title.
   std::u16string accessible_title_;
+
+  blink::mojom::RpContext rp_context_;
 
   // The images for the IDP icons. Stored so that they can be reused upon
   // pressing the back button after choosing an account on the multi IDP

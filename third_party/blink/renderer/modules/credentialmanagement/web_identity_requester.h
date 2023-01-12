@@ -35,7 +35,8 @@ class WebIdentityRequester final
   void AppendGetCall(
       ScriptPromiseResolver* resolver,
       const HeapVector<Member<IdentityProviderConfig>>& providers,
-      bool prefer_auto_sign_in);
+      bool prefer_auto_sign_in,
+      mojom::blink::RpContext rp_context);
   void Trace(Visitor* visitor) const;
 
  private:

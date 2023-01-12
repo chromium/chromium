@@ -27,6 +27,9 @@ FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode();
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();
 
+// Whether the Relying Party Context API is enabled.
+bool IsFedCmRpContextEnabled();
+
 // Whether the UserInfo API is enabled.
 bool IsFedCmUserInfoEnabled();
 

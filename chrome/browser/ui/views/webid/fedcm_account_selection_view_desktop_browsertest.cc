@@ -32,7 +32,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     account_selection_view()->Show(
         "rp-example.com",
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL())}},
+          content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL()),
+          blink::mojom::RpContext::kSignIn}},
         Account::SignInMode::kExplicit);
   }
 

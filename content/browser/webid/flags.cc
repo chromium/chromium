@@ -45,6 +45,10 @@ bool IsFedCmMetricsEndpointEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmMetricsEndpoint);
 }
 
+bool IsFedCmRpContextEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmRpContext);
+}
+
 bool IsFedCmUserInfoEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmUserInfo);
 }

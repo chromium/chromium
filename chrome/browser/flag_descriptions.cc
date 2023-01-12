@@ -1494,6 +1494,11 @@ const char kFedCmWithoutThirdPartyCookiesName[] =
 const char kFedCmWithoutThirdPartyCookiesDescription[] =
     "Allows the FedCM API to be enabled when third party cookies are disabled.";
 
+const char kFedCmRpContextName[] = "FedCmRpContext";
+const char kFedCmRpContextDescription[] =
+    "Allows relying parties to describe which context (e.g. sign-up vs "
+    "sign-in) the FedCM is executing on.";
+
 const char kFileHandlingIconsName[] = "File Handling Icons";
 const char kFileHandlingIconsDescription[] =
     "Allows websites using the file handling API to also register file type "

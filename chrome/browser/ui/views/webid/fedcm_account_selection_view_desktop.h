@@ -58,7 +58,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   virtual views::Widget* CreateBubble(
       Browser* browser,
       const std::u16string& rp_etld_plus_one,
-      const absl::optional<std::u16string>& idp_title);
+      const absl::optional<std::u16string>& idp_title,
+      blink::mojom::RpContext rp_context);
 
   // Returns AccountSelectionBubbleViewInterface for bubble views::Widget.
   virtual AccountSelectionBubbleViewInterface* GetBubbleView();

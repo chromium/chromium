@@ -7941,6 +7941,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmSelectiveDisclosure)},
 
+    {"fedcm-rp-context", flag_descriptions::kFedCmRpContextName,
+     flag_descriptions::kFedCmRpContextDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFedCmRpContext)},
+
     {"fedcm-user-info", flag_descriptions::kFedCmUserInfoName,
      flag_descriptions::kFedCmUserInfoDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmUserInfo)},

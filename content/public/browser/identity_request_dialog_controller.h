@@ -12,6 +12,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_account.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -46,7 +47,8 @@ struct CONTENT_EXPORT IdentityProviderData {
   IdentityProviderData(const std::string& idp_url_for_display,
                        const std::vector<IdentityRequestAccount>& accounts,
                        const IdentityProviderMetadata& idp_metadata,
-                       const ClientMetadata& client_metadata);
+                       const ClientMetadata& client_metadata,
+                       const blink::mojom::RpContext& rp_context);
   IdentityProviderData(const IdentityProviderData& other);
   ~IdentityProviderData();
 
@@ -54,6 +56,7 @@ struct CONTENT_EXPORT IdentityProviderData {
   std::vector<IdentityRequestAccount> accounts;
   IdentityProviderMetadata idp_metadata;
   ClientMetadata client_metadata;
+  blink::mojom::RpContext rp_context;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI

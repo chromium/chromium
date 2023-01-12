@@ -119,8 +119,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         exclude_title ? absl::nullopt
                       : absl::make_optional<std::u16string>(kIdpETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
-        kRpETLDPlusOne, title, anchor_widget_->GetContentsView(),
-        shared_url_loader_factory(), /*observer=*/nullptr);
+        kRpETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
+        anchor_widget_->GetContentsView(), shared_url_loader_factory(),
+        /*observer=*/nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 

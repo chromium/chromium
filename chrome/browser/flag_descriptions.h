@@ -826,6 +826,9 @@ extern const char kFedCmMultiIdpDescription[];
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];
 
+extern const char kFedCmRpContextName[];
+extern const char kFedCmRpContextDescription[];
+
 extern const char kFedCmUserInfoName[];
 extern const char kFedCmUserInfoDescription[];
 

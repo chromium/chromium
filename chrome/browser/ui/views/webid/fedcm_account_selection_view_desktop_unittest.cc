@@ -84,10 +84,10 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
       const TestFedCmAccountSelectionView&) = delete;
 
  protected:
-  views::Widget* CreateBubble(
-      Browser* browser,
-      const std::u16string& rp_etld_plus_one,
-      const absl::optional<std::u16string>& idp_title) override {
+  views::Widget* CreateBubble(Browser* browser,
+                              const std::u16string& rp_etld_plus_one,
+                              const absl::optional<std::u16string>& idp_title,
+                              blink::mojom::RpContext rp_context) override {
     return widget_;
   }
 
@@ -159,7 +159,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     controller->Show(
         kRpEtldPlusOne,
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL(), GURL())}},
+          content::ClientMetadata(GURL(), GURL()),
+          blink::mojom::RpContext::kSignIn}},
         SignInMode::kExplicit);
     return controller;
   }

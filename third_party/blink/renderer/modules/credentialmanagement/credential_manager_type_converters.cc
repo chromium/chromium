@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_registration_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
@@ -72,6 +73,7 @@ using blink::mojom::blink::PublicKeyCredentialUserEntityPtr;
 using blink::mojom::blink::RemoteDesktopClientOverride;
 using blink::mojom::blink::RemoteDesktopClientOverridePtr;
 using blink::mojom::blink::ResidentKeyRequirement;
+using blink::mojom::blink::RpContext;
 using blink::mojom::blink::UserVerificationRequirement;
 
 namespace {
@@ -703,6 +705,22 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
           ? provider.getLoginHintOr("")
           : "";
   return mojo_provider;
+}
+
+// static
+RpContext
+TypeConverter<RpContext, blink::V8IdentityCredentialRequestOptionsContext>::
+    Convert(const blink::V8IdentityCredentialRequestOptionsContext& context) {
+  switch (context.AsEnum()) {
+    case blink::V8IdentityCredentialRequestOptionsContext::Enum::kSignin:
+      return RpContext::kSignIn;
+    case blink::V8IdentityCredentialRequestOptionsContext::Enum::kSignup:
+      return RpContext::kSignUp;
+    case blink::V8IdentityCredentialRequestOptionsContext::Enum::kUse:
+      return RpContext::kUse;
+    case blink::V8IdentityCredentialRequestOptionsContext::Enum::kContinue:
+      return RpContext::kContinue;
+  }
 }
 
 // static

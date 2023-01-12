@@ -349,8 +349,11 @@ void FilterAccountsWithLoginHint(
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
     blink::mojom::IdentityProviderConfig provider,
-    bool prefer_auto_signin)
-    : provider(std::move(provider)), prefer_auto_signin(prefer_auto_signin) {}
+    bool prefer_auto_signin,
+    blink::mojom::RpContext rp_context)
+    : provider(std::move(provider)),
+      prefer_auto_signin(prefer_auto_signin),
+      rp_context(rp_context) {}
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::~IdentityProviderGetInfo() =
     default;
@@ -361,11 +364,13 @@ FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
     blink::mojom::IdentityProviderConfig provider,
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata metadata,
-    bool prefer_auto_signin)
+    bool prefer_auto_signin,
+    blink::mojom::RpContext rp_context)
     : provider(std::move(provider)),
       endpoints(std::move(endpoints)),
       metadata(std::move(metadata)),
-      prefer_auto_signin(prefer_auto_signin) {}
+      prefer_auto_signin(prefer_auto_signin),
+      rp_context(rp_context) {}
 
 FederatedAuthRequestImpl::IdentityProviderInfo::~IdentityProviderInfo() =
     default;
@@ -558,10 +563,15 @@ void FederatedAuthRequestImpl::RequestToken(
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       idp_order_.push_back(idp_ptr->config_url);
-      get_infos.emplace(idp_ptr->config_url,
-                        IdentityProviderGetInfo(
-                            *idp_ptr, idp_get_params_ptr->prefer_auto_sign_in &&
-                                          IsFedCmAutoSigninEnabled()));
+      blink::mojom::RpContext rp_context =
+          IsFedCmRpContextEnabled() ? idp_get_params_ptr->context
+                                    : blink::mojom::RpContext::kSignIn;
+      get_infos.emplace(
+          idp_ptr->config_url,
+          IdentityProviderGetInfo(*idp_ptr,
+                                  idp_get_params_ptr->prefer_auto_sign_in &&
+                                      IsFedCmAutoSigninEnabled(),
+                                  rp_context));
     }
   }
 
@@ -690,7 +700,8 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             std::move(fetch_result.endpoints),
             fetch_result.metadata ? std::move(*fetch_result.metadata)
                                   : IdentityProviderMetadata(),
-            get_info_it->second.prefer_auto_signin);
+            get_info_it->second.prefer_auto_signin,
+            get_info_it->second.rp_context);
 
     if (fetch_result.error) {
       const FederatedProviderFetcher::FetchError& fetch_error =
@@ -753,7 +764,8 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   idp_info->data = IdentityProviderData(
       idp_for_display, accounts, idp_info->metadata,
       ClientMetadata{GURL(client_metadata.terms_of_service_url),
-                     GURL(client_metadata.privacy_policy_url)});
+                     GURL(client_metadata.privacy_policy_url)},
+      idp_info->rp_context);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
   pending_idps_.erase(idp_config_url);

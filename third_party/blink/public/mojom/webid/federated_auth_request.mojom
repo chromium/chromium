@@ -35,6 +35,13 @@ enum IdpSigninStatus {
   kSignedOut
 };
 
+enum RpContext {
+  kSignIn,
+  kSignUp,
+  kUse,
+  kContinue
+};
+
 // The details of a single logout request from an identity provider.
 struct LogoutRpsRequest {
   // URL to which the request will be sent. The origin is validated to
@@ -68,6 +75,11 @@ struct IdentityProviderGetParameters {
 
   // Whether auto sign in is preferred by the caller.
   bool prefer_auto_sign_in;
+
+  // Controls the wording of the FedCM prompt.
+  // TODO(crbug.com/1335237): consider moving this up to IdentityProviderConfig
+  // when/if we support the Context API for Multiple IdPs at a time.
+  RpContext context;
 };
 
 // Create a federated sign-in request using the specified provider.
