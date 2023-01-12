@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -37,15 +39,17 @@ import java.util.List;
 public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
+    private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
     private static final String CURRENT_TOPICS_PREFERENCE = "current_topics";
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
     private static final String DISABLED_TOPICS_PREFERENCE = "topics_disabled";
     private static final String TOPICS_PAGE_FOOTER_PREFERENCE = "topics_page_footer";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
-    private PreferenceCategoryWithClickableSummary mCurrentTopicsCategory;
-    private PreferenceCategoryWithClickableSummary mEmptyTopicsPreference;
-    private PreferenceCategoryWithClickableSummary mDisabledTopicsPreference;
+    private PreferenceCategoryWithClickableSummary mTopicsHeadingPreference;
+    private PreferenceCategory mCurrentTopicsCategory;
+    private TextMessagePreference mEmptyTopicsPreference;
+    private TextMessagePreference mDisabledTopicsPreference;
     private ClickableSpansTextMessagePreference mTopicsPageFooterPreference;
 
     static boolean isTopicsPrefEnabled() {
@@ -70,6 +74,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v4);
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
+        mTopicsHeadingPreference = findPreference(TOPICS_HEADING_PREFERENCE);
         mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         mDisabledTopicsPreference = findPreference(DISABLED_TOPICS_PREFERENCE);
@@ -79,7 +84,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
         mTopicsTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
 
-        mCurrentTopicsCategory.setSummary(SpanApplier.applySpans(
+        mTopicsHeadingPreference.setSummary(SpanApplier.applySpans(
                 getResources().getString(R.string.settings_topics_page_current_topics_description),
                 new SpanApplier.SpanInfo("<link>", "</link>",
                         new NoUnderlineClickableSpan(getContext(), this::onLearnMoreClicked))));

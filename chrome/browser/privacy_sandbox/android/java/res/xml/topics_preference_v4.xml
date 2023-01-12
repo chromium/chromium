@@ -13,23 +13,22 @@ found in the LICENSE file.
         android:summary="@string/settings_topics_page_toggle_sub_label" />
 
     <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
+        android:key="topics_heading"
+        android:title="@string/settings_topics_page_current_topics_heading"
+        android:summary="@string/settings_topics_page_current_topics_description"
+        app:allowDividerAbove="true" />
+
+    <PreferenceCategory
         android:key="current_topics"
-        android:title="@string/settings_topics_page_current_topics_heading"
-        android:summary="@string/settings_topics_page_current_topics_description" />
+        android:layout="@layout/preference_category_no_title_or_padding" />
 
-    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_disabled"
-        android:title="@string/settings_topics_page_current_topics_heading"
-        android:summary="@string/settings_topics_page_current_topics_description_disabled"
-        app:allowDividerAbove="true"
-        app:allowDividerBelow="true" />
+        android:summary="@string/settings_topics_page_current_topics_description_disabled" />
 
-    <org.chromium.chrome.browser.privacy_sandbox.v4.PreferenceCategoryWithClickableSummary
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_empty"
-        android:title="@string/settings_topics_page_current_topics_heading"
-        android:summary="@string/settings_topics_page_current_topics_description_empty"
-        app:allowDividerAbove="true"
-        app:allowDividerBelow="true" />
+        android:summary="@string/settings_topics_page_current_topics_description_empty" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="blocked_topics"
