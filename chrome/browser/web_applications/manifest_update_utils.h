@@ -37,15 +37,14 @@ enum ManifestUpdateResult {
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result);
 
-enum ManifestUpdateStage {
-  kPendingInstallableData = 0,
-  kPendingIconDownload = 1,
-  kPendingIconReadFromDisk = 2,
-  kPendingAppIdentityCheck = 3,
-  kPendingMaybeReadExistingIcons = 4,
-  kPendingAssociationsUpdate = 5,
-  kAppWindowsClosed = 6,
-  kPendingFinalizerUpdate = 7,
+enum class ManifestUpdateStage {
+  kPendingInstallableData,
+  kPendingIconDownload,
+  kPendingIconReadFromDisk,
+  kPendingAppIdentityCheck,
+  kPendingAssociationsUpdate,
+  kAppWindowsClosed,
+  kPendingFinalizerUpdate,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateStage stage);

@@ -79,8 +79,6 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateStage stage) {
       return os << "kPendingIconReadFromDisk";
     case ManifestUpdateStage::kPendingAppIdentityCheck:
       return os << "kPendingAppIdentityCheck";
-    case ManifestUpdateStage::kPendingMaybeReadExistingIcons:
-      return os << "kPendingMaybeReadExistingIcons";
     case ManifestUpdateStage::kPendingAssociationsUpdate:
       return os << "kPendingAssociationsUpdate";
     case ManifestUpdateStage::kAppWindowsClosed:
