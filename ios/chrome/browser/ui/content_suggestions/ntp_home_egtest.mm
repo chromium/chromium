@@ -677,6 +677,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that tapping the fake omnibox and then scrolling defocuses the the
 // omnibox.
 - (void)testTapFakeOmniboxAndScrollDefocuses {
+  // Clear pasteboard so that omnibox doesn't cover the NTP on focus.
+  [ChromeEarlGrey clearPasteboard];
   // Get the collection and its layout.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
