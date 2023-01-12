@@ -64,7 +64,6 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,

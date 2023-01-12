@@ -85,7 +85,6 @@ WrappedSkImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 WrappedSkImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,

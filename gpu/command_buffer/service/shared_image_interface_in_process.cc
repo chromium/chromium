@@ -20,7 +20,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/ipc/common/gpu_client_ids.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -354,8 +353,8 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
 
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, kDisplayCompositorClientId, std::move(handle), format, plane,
-          size, color_space, surface_origin, alpha_type, usage)) {
+          mailbox, std::move(handle), format, plane, size, color_space,
+          surface_origin, alpha_type, usage)) {
     context_state_->MarkContextLost();
     return;
   }

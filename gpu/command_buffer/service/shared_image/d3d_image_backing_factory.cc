@@ -421,7 +421,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,

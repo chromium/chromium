@@ -50,7 +50,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
       const Mailbox& mailbox);
 
   bool CreateSharedImage(const Mailbox& mailbox,
-                         int client_id,
                          gfx::GpuMemoryBufferHandle handle,
                          gfx::BufferFormat format,
                          gfx::BufferPlane plane,

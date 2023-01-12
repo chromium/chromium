@@ -50,7 +50,6 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 SharedMemoryImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,

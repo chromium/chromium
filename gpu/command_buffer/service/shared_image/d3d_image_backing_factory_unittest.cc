@@ -1241,8 +1241,8 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   auto dup_handle = gpu_memory_buffer_handle.Clone();
 
   auto backing = shared_image_factory_->CreateSharedImage(
-      mailbox, 0, std::move(gpu_memory_buffer_handle), buffer_format, plane,
-      size, color_space, surface_origin, alpha_type, usage);
+      mailbox, std::move(gpu_memory_buffer_handle), buffer_format, plane, size,
+      color_space, surface_origin, alpha_type, usage);
   ASSERT_NE(backing, nullptr);
 
   EXPECT_EQ(backing->format(), format);
@@ -1262,7 +1262,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   // shared handle state and texture with the first backing.
   auto dup_mailbox = Mailbox::GenerateForSharedImage();
   auto dup_backing = shared_image_factory_->CreateSharedImage(
-      dup_mailbox, 0, std::move(dup_handle), buffer_format, plane, size,
+      dup_mailbox, std::move(dup_handle), buffer_format, plane, size,
       color_space, surface_origin, alpha_type, usage);
   ASSERT_NE(dup_backing, nullptr);
 
@@ -1618,7 +1618,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
 
     for (size_t plane = 0; plane < kNumPlanes; plane++) {
       auto backing = shared_image_factory_->CreateSharedImage(
-          mailboxes[plane], 0, std::move(gmb_handles[plane]),
+          mailboxes[plane], std::move(gmb_handles[plane]),
           gfx::BufferFormat::YUV_420_BIPLANAR, planes[plane], size,
           gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
           usage);

@@ -14,7 +14,6 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -69,9 +68,8 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
     DCHECK(shared_image_stub);
 
     if (!shared_image_stub->CreateSharedImage(
-            mailbox, gpu::kPlatformVideoFramePoolClientId, std::move(handle),
-            format, plane, size, color_space, surface_origin, alpha_type,
-            usage)) {
+            mailbox, std::move(handle), format, plane, size, color_space,
+            surface_origin, alpha_type, usage)) {
       return base::NullCallback();
     }
 

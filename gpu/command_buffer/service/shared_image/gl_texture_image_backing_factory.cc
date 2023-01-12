@@ -79,7 +79,6 @@ GLTextureImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 GLTextureImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,

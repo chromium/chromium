@@ -76,7 +76,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          uint32_t usage,
                          gfx::GpuMemoryBufferHandle buffer_handle);
   bool CreateSharedImage(const Mailbox& mailbox,
-                         int client_id,
                          gfx::GpuMemoryBufferHandle handle,
                          gfx::BufferFormat format,
                          gfx::BufferPlane plane,

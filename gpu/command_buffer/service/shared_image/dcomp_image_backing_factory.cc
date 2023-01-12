@@ -87,7 +87,6 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat format,
     gfx::BufferPlane plane,

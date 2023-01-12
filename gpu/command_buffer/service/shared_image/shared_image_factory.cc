@@ -431,7 +431,6 @@ bool SharedImageFactory::CreateSharedImage(
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
-                                           int client_id,
                                            gfx::GpuMemoryBufferHandle handle,
                                            gfx::BufferFormat format,
                                            gfx::BufferPlane plane,
@@ -478,8 +477,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
         factory, kAllowShmOverlays, mailbox, std::move(handle), format, plane,
         size, color_space, surface_origin, alpha_type, usage);
   } else {
-    backing = factory->CreateSharedImage(mailbox, client_id, std::move(handle),
-                                         format, plane, size, color_space,
+    backing = factory->CreateSharedImage(mailbox, std::move(handle), format,
+                                         plane, size, color_space,
                                          surface_origin, alpha_type, usage);
   }
 
