@@ -114,13 +114,13 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
           current_color_getter(
               CSSProperty::Get(CSSPropertyID::kWebkitTextFillColor),
               state.StyleBuilder())
-              .Access();
+              .value();
     }
     if (current_style_color.IsCurrentColor()) {
       current_style_color =
           current_color_getter(CSSProperty::Get(CSSPropertyID::kColor),
                                state.StyleBuilder())
-              .Access();
+              .value();
     }
     std::tie(param0, param1, param2, alpha) = AddPremultipliedColor(
         param0, param1, param2, alpha, currentcolor_fraction,
@@ -174,7 +174,7 @@ class InheritedColorChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedColorChecker(const CSSProperty& property,
-                        const OptionalStyleColor& color)
+                        const absl::optional<StyleColor>& color)
       : property_(property), color_(color) {}
 
  private:
@@ -185,7 +185,7 @@ class InheritedColorChecker
   }
 
   const CSSProperty& property_;
-  const OptionalStyleColor color_;
+  const absl::optional<StyleColor> color_;
 };
 
 InterpolationValue CSSColorInterpolationType::MaybeConvertNeutral(
@@ -198,11 +198,13 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertNeutral(
 InterpolationValue CSSColorInterpolationType::MaybeConvertInitial(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  OptionalStyleColor initial_color = ColorPropertyFunctions::GetInitialColor(
-      CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
-  if (initial_color.IsNull())
+  absl::optional<StyleColor> initial_color =
+      ColorPropertyFunctions::GetInitialColor(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
+  if (!initial_color.has_value()) {
     return nullptr;
-  return ConvertStyleColorPair(initial_color.Access(), initial_color.Access());
+  }
+  return ConvertStyleColorPair(initial_color.value(), initial_color.value());
 }
 
 InterpolationValue CSSColorInterpolationType::MaybeConvertInherit(
@@ -212,7 +214,7 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertInherit(
     return nullptr;
   // Visited color can never explicitly inherit from parent visited color so
   // only use the unvisited color.
-  OptionalStyleColor inherited_color =
+  absl::optional<StyleColor> inherited_color =
       ColorPropertyFunctions::GetUnvisitedColor(CssProperty(),
                                                 *state.ParentStyle());
   conversion_checkers.push_back(
@@ -277,16 +279,21 @@ PairwiseInterpolationValue CSSColorInterpolationType::MaybeMergeSingles(
 }
 
 InterpolationValue CSSColorInterpolationType::ConvertStyleColorPair(
-    const OptionalStyleColor& unvisited_color,
-    const OptionalStyleColor& visited_color) const {
-  if (unvisited_color.IsNull() || visited_color.IsNull()) {
+    const absl::optional<StyleColor>& unvisited_color,
+    const absl::optional<StyleColor>& visited_color) {
+  if (!unvisited_color.has_value() || !visited_color.has_value()) {
     return nullptr;
   }
+  return ConvertStyleColorPair(unvisited_color.value(), visited_color.value());
+}
+
+InterpolationValue CSSColorInterpolationType::ConvertStyleColorPair(
+    const StyleColor& unvisited_color,
+    const StyleColor& visited_color) {
   auto color_pair =
       std::make_unique<InterpolableList>(kInterpolableColorPairIndexCount);
-  color_pair->Set(kUnvisited,
-                  CreateInterpolableColor(unvisited_color.Access()));
-  color_pair->Set(kVisited, CreateInterpolableColor(visited_color.Access()));
+  color_pair->Set(kUnvisited, CreateInterpolableColor(unvisited_color));
+  color_pair->Set(kVisited, CreateInterpolableColor(visited_color));
   return InterpolationValue(std::move(color_pair));
 }
 

@@ -8,20 +8,20 @@
 
 namespace blink {
 
-OptionalStyleColor ColorPropertyFunctions::GetInitialColor(
+absl::optional<StyleColor> ColorPropertyFunctions::GetInitialColor(
     const CSSProperty& property,
     const ComputedStyle& initial_style) {
   return GetUnvisitedColor(property, initial_style);
 }
 
 template <typename ComputedStyleOrBuilder>
-OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
+absl::optional<StyleColor> ColorPropertyFunctions::GetUnvisitedColor(
     const CSSProperty& property,
     const ComputedStyleOrBuilder& style) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kAccentColor:
       if (style.AccentColor().IsAutoColor())
-        return nullptr;
+        return absl::nullopt;
       return style.AccentColor().ToStyleColor();
     case CSSPropertyID::kBackgroundColor:
       return style.BackgroundColor();
@@ -35,7 +35,7 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
       return style.BorderBottomColor();
     case CSSPropertyID::kCaretColor:
       if (style.CaretColor().IsAutoColor())
-        return nullptr;
+        return absl::nullopt;
       return style.CaretColor().ToStyleColor();
     case CSSPropertyID::kColor:
       return style.Color();
@@ -61,18 +61,18 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
       return style.TextDecorationColor();
     default:
       NOTREACHED();
-      return nullptr;
+      return absl::nullopt;
   }
 }
 
-template OptionalStyleColor
+template absl::optional<StyleColor>
 ColorPropertyFunctions::GetUnvisitedColor<ComputedStyle>(const CSSProperty&,
                                                          const ComputedStyle&);
-template OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor<
+template absl::optional<StyleColor> ColorPropertyFunctions::GetUnvisitedColor<
     ComputedStyleBuilder>(const CSSProperty&, const ComputedStyleBuilder&);
 
 template <typename ComputedStyleOrBuilder>
-OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
+absl::optional<StyleColor> ColorPropertyFunctions::GetVisitedColor(
     const CSSProperty& property,
     const ComputedStyleOrBuilder& style) {
   switch (property.PropertyID()) {
@@ -118,14 +118,14 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
       return style.InternalVisitedTextDecorationColor();
     default:
       NOTREACHED();
-      return nullptr;
+      return absl::nullopt;
   }
 }
 
-template OptionalStyleColor
+template absl::optional<StyleColor>
 ColorPropertyFunctions::GetVisitedColor<ComputedStyle>(const CSSProperty&,
                                                        const ComputedStyle&);
-template OptionalStyleColor ColorPropertyFunctions::GetVisitedColor<
+template absl::optional<StyleColor> ColorPropertyFunctions::GetVisitedColor<
     ComputedStyleBuilder>(const CSSProperty&, const ComputedStyleBuilder&);
 
 void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,

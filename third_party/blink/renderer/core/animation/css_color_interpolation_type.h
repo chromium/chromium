@@ -15,7 +15,6 @@
 namespace blink {
 
 class StyleColor;
-struct OptionalStyleColor;
 
 class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
  public:
@@ -67,8 +66,12 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertValue(const CSSValue&,
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
-  InterpolationValue ConvertStyleColorPair(const OptionalStyleColor&,
-                                           const OptionalStyleColor&) const;
+  static InterpolationValue ConvertStyleColorPair(
+      const absl::optional<StyleColor>&,
+      const absl::optional<StyleColor>&);
+  static InterpolationValue ConvertStyleColorPair(
+      const StyleColor& unvisited_color,
+      const StyleColor& visited_color);
 
   const CSSValue* CreateCSSValue(const InterpolableValue&,
                                  const NonInterpolableValue*,
