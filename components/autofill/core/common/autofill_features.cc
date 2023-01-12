@@ -80,7 +80,7 @@ const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
 // TODO(crbug.com/1362472): Cleanup when launched.
 BASE_FEATURE(kAutofillIgnoreInvalidCountryOnImport,
              "AutofillIgnoreInvalidCountryOnImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the country calling code for nationally formatted phone numbers
 // is inferred from the profile's country, if available.

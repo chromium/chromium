@@ -810,6 +810,9 @@ TEST_P(FormDataImporterTest, ComplementCountry) {
         ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                                    expected_profiles);
       };
+
+  AutofillProfile kDefaultUSProfile =
+      ConstructDefaultProfileWithOverriddenCountry("US");
   // The German profile doesn't expect a state.
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
@@ -818,13 +821,21 @@ TEST_P(FormDataImporterTest, ComplementCountry) {
   // Country part of the form:
   // If a valid country was entered, use that.
   ImportWithCountry("Germany", {kDefaultGermanProfile});
-  // Reject the profile if an invalid country was entered.
-  ImportWithCountry("Somewhere", {});
+  // Depending on AutofillIgnoreInvalidCountryOnImport, profiles with an
+  // invalid observed country are (not) rejected.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIgnoreInvalidCountryOnImport)) {
+    // In this case, `FormDataImporter::GetPredictedCountryCode()` defaults to
+    // the locale.
+    ImportWithCountry("Somewhere", {kDefaultUSProfile});
+  } else {
+    ImportWithCountry("Somewhere", {});
+  }
   // Country not part of the form: Complement using
-  // FormDataImporter::GetPredictedCountryCode
-  // If no variation config country code is available, default to locale (US)
-  ImportWithCountry("", {ConstructDefaultProfileWithOverriddenCountry("US")});
-  // Prefer variation config country code over locale
+  // `FormDataImporter::GetPredictedCountryCode()`. Since no variation config
+  // country code is available, it defaults to the locale (US).
+  ImportWithCountry("", {kDefaultUSProfile});
+  // Prefer the variation config country code over locale.
   autofill_client_->SetVariationConfigCountryCode("DE");
   ImportWithCountry("", {kDefaultGermanProfile});
 }
@@ -1918,105 +1929,33 @@ TEST_P(FormDataImporterTest,
   EXPECT_THAT(*results[0], ComparesEqual(profile));
 }
 
-// Tests that no profile is inferred if the country is not recognized.
-TEST_P(FormDataImporterTest, ImportAddressProfiles_UnrecognizedCountry) {
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  FormFieldData field;
-  test::CreateTestFormField("First name:", "first_name", "George", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("State:", "state", "California", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Country:", "country", "Notacountry", "text",
-                            &field);
-  form.fields.push_back(field);
-
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  ExtractAddressProfiles(/*extraction_successful=*/false, form_structure);
-
-  // Since no refresh is expected, reload the data from the database to make
-  // sure no changes were written out.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-
-  ASSERT_EQ(0U, personal_data_manager_->GetProfiles().size());
-  ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
-}
-
 // Tests that a profile is imported if the country can be translated using the
 // page language.
 TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
-  FormData form;
-  form.url = GURL("https://www.foo.com");
-
-  // Create a form with all important fields.
-  FormFieldData field;
-  test::CreateTestFormField("First name:", "first_name", "George", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("State:", "state", "California", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
-  form.fields.push_back(field);
-  // The country field has a localized value.
-  test::CreateTestFormField("Country:", "country", "Armenien", "text", &field);
-  form.fields.push_back(field);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry("Armenien"));
 
   // Set up language state mock.
   autofill_client_->GetLanguageState()->SetSourceLanguage("");
-
   // Verify that the country code is not determined from the country value if
-  // the page language is not set.
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  ExtractAddressProfiles(/*extraction_successful=*/false, form_structure);
-
-  ASSERT_EQ(0U, personal_data_manager_->GetProfiles().size());
-  ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
+  // the page language is not set. Depending on
+  // AutofillIgnoreInvalidCountryOnImport, a profile with an incorrect country
+  // might still be imported.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIgnoreInvalidCountryOnImport)) {
+    ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+    // Remove the imported profile again, so it doesn't affect the expectation
+    // below.
+    personal_data_manager_->ClearAllLocalData();
+  } else {
+    ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+  }
 
   // Set the page language to match the localized country value and try again.
   autofill_client_->GetLanguageState()->SetSourceLanguage("de");
-
-  ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
-
-  // There should be one imported address profile.
-  ASSERT_EQ(1U, personal_data_manager_->GetProfiles().size());
-  ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
-
-  // Check that the correct profile was stored.
-  AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);
-  test::SetProfileInfo(&expected, "George", nullptr, "Washington",
-                       "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
-                       "San Francisco", "California", "94102", "AM", nullptr);
-  const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
-  EXPECT_THAT(*results[0], ComparesEqual(expected));
+  ExtractAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructDefaultProfileWithOverriddenCountry("AM")});
 }
 
 // Tests that a profile is created for countries with composed names.
@@ -2060,48 +1999,22 @@ TEST_P(FormDataImporterTest,
 }
 
 // TODO(crbug.com/634131): Create profiles if part of a standalone part of a
-// composed country name is present.
-// Tests that a profile is created if a standalone part of a composed country
-// name is present.
+// composed country name is present. Currently this results in either no import
+// or an import with an incorrect country, depending on
+// AutofillIgnoreInvalidCountryOnImport.
 TEST_P(FormDataImporterTest,
        ImportAddressProfiles_IncompleteComposedCountryName) {
-  FormData form;
-  form.url = GURL("https://www.foo.com");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry(
+              "Myanmar"));  // Missing the [Burma] part
 
-  FormFieldData field;
-  test::CreateTestFormField("First name:", "first_name", "George", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
-                            &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("State:", "state", "California", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
-  form.fields.push_back(field);
-  test::CreateTestFormField("Country:", "country",
-                            "Myanmar",  // Missing the [Burma] part
-                            "text", &field);
-  form.fields.push_back(field);
-
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  ExtractAddressProfiles(/*extraction_successful=*/false, form_structure);
-
-  // Since no refresh is expected, reload the data from the database to make
-  // sure no changes were written out.
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-
-  ASSERT_EQ(0U, personal_data_manager_->GetProfiles().size());
-  ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIgnoreInvalidCountryOnImport)) {
+    ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+  } else {
+    ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+  }
 }
 
 // ExtractCreditCard tests.

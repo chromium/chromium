@@ -1003,7 +1003,8 @@ TEST_F(AutofillMetricsTest, QualityMetrics) {
 
 // Test that the ProfileImportStatus logs a no import.
 TEST_F(AutofillMetricsTest, ProfileImportStatus_NoImport) {
-  // Set up our form data.
+  // Set up our form data. Since a ZIP code is required for US profiles, this
+  // import fails.
   FormData form = GetAndAddSeenForm(
       {.description_for_logging = "ProfileImportStatus_NoImport",
        .fields = {
@@ -1012,8 +1013,7 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_NoImport) {
            {.role = ADDRESS_HOME_CITY, .value = u"New York"},
            {.role = PHONE_HOME_CITY_AND_NUMBER, .value = u"2345678901"},
            {.role = ADDRESS_HOME_STATE, .value = u"Invalid State"},
-           {.role = ADDRESS_HOME_ZIP, .value = u"00000000000000000"},
-           {.role = ADDRESS_HOME_COUNTRY, .value = u"NoACountry"}}});
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
   FillTestProfile(form);
 
