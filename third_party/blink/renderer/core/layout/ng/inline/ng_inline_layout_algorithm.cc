@@ -1207,17 +1207,16 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     is_pushed_by_floats = true;
   }
 
-  // For initial letter, we should clear previous block's initial letter[1]
+  // For initial letter, we should clear previous block's initial letter[1][2]
   // if:
   //   - new formatting context
   //   - starts with an initial letter
   //   - `clear` in start direction of initial letter containing block.
   //
   // [1] https://drafts.csswg.org/css-inline/#short-para-initial-letter
-  // TODO(crbug.com/1402001): `LogicalLineItems()` is unused, and thus is always
-  // empty. Replace it with the correct condition, then remove
-  // `LogicalLineItems()`.
-  if (context_->LogicalLineItems()->IsEmpty()) {
+  // [2]
+  // https://wpt.live/css/css-inline/initial-letter/initial-letter-short-para-initial-letter-clears.html
+  if (!context_->ItemsBuilder()->Size()) {
     const EClear clear_type =
         UNLIKELY(Node().HasInitialLetterBox())
             ? EClear::kBoth
