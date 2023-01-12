@@ -893,9 +893,10 @@ void ShellSurfaceBase::OnSurfaceCommit() {
   if (!OnPreWidgetCommit())
     return;
 
+  WillCommit();
+
   CommitWidget();
   OnPostWidgetCommit();
-  DidCommit();
   SubmitCompositorFrame();
 }
 

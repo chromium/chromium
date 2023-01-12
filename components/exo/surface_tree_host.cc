@@ -274,7 +274,7 @@ void SurfaceTreeHost::UpdateDisplayOnTree() {
   }
 }
 
-void SurfaceTreeHost::DidCommit() {
+void SurfaceTreeHost::WillCommit() {
   scale_factor_ = pending_scale_factor_;
 }
 

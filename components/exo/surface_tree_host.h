@@ -139,7 +139,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // Call this after a buffer has been committed but before a compositor frame
   // has been submitted.
-  void DidCommit();
+  void WillCommit();
 
   // Call this to submit a compositor frame.
   void SubmitCompositorFrame();
