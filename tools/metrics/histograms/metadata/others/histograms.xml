@@ -11103,64 +11103,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReportingAndNEL.BackingStoreUpdateOutcome"
-    enum="NetReportingAndNelBackingStoreUpdateOutcome"
-    expires_after="2020-09-09">
-  <owner>yhirano@chromium.org</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    The outcome of updating the backing store. This is recorded whenever a batch
-    of pending operations is committed to the backing store. Success occurs when
-    all operations are committed successfully. Trouble is recorded when some
-    operations are unsuccessful but committing the batch succeeds. Failure is
-    recorded when the commit fails.
-  </summary>
-</histogram>
-
-<histogram name="ReportingAndNEL.CorruptMetaTable" units="units"
-    expires_after="2021-06-25">
-  <obsolete>
-    Removed June 2021 in favor of a local histogram. See
-    Net.SQLite.CorruptMetaTableRecovered (which is a local histogram only logged
-    to, and viewable from, chrome://histograms).
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
-  <summary>
-    Records the detection of a corrupted meta table for the Reporting and NEL
-    DB. This is recorded when database migration fails to update the database to
-    the current version.
-  </summary>
-</histogram>
-
-<histogram name="ReportingAndNEL.CorruptMetaTableRecoveryFailed" units="units"
-    expires_after="2021-06-25">
-  <obsolete>
-    Removed June 2021 in favor of a local histogram. See
-    Net.SQLite.CorruptMetaTableRecovered (which is a local histogram only logged
-    to, and viewable from, chrome://histograms).
-  </obsolete>
-  <owner>chlily@chromium.org</owner>
-  <owner>sburnett@chromium.org</owner>
-  <summary>
-    Records a failure to recover a corrupted meta table for the Reporting and
-    NEL DB. This is recorded when a corrupt meta table is detected (see
-    ReportingAndNEL.CorruptMetaTable), and attempting to recover by deleting and
-    reinitializing the database fails.
-  </summary>
-</histogram>
-
-<histogram name="ReportingAndNEL.InitializeDBOutcome"
-    enum="NetReportingAndNelInitializeDbOutcome" expires_after="2020-09-09">
-  <owner>yhirano@chromium.org</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    The outcome of initializing the SQLite database. This is recorded upon the
-    first load request after startup, which will typically occur upon the first
-    network request.
-  </summary>
-</histogram>
-
 <histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies"
     units="policy count" expires_after="2023-06-25">
   <owner>yhirano@chromium.org</owner>
@@ -11183,18 +11125,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpointGroups"
-    units="endpoint group count" expires_after="2023-01-01">
-  <owner>yhirano@chromium.org</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    The number of Reporting endpoint groups loaded from the store. This is
-    recorded when the ReportingCache requests a load from the backing store,
-    which happens upon receipt of the first Report-To header or queued report
-    after startup.
-  </summary>
-</histogram>
-
 <histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpointGroups2"
     units="endpoint group count" expires_after="2023-07-09">
   <owner>yhirano@chromium.org</owner>
@@ -11207,18 +11137,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpoints"
-    units="endpoint count" expires_after="2023-01-01">
-  <owner>yhirano@chromium.org</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    The number of Reporting endpoints loaded from the store. This is recorded
-    when the ReportingCache requests a load from the backing store, which
-    happens upon receipt of the first Report-To header or queued report after
-    startup.
-  </summary>
-</histogram>
-
 <histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpoints2"
     units="endpoint count" expires_after="2023-07-09">
   <owner>yhirano@chromium.org</owner>
@@ -11228,20 +11146,6 @@ chromium-metrics-reviews@google.com.
     when the ReportingCache requests a load from the backing store, which
     happens upon receipt of the first Report-To header or queued report after
     startup.
-  </summary>
-</histogram>
-
-<histogram name="ReportingAndNEL.TimeInitializeDB" units="ms"
-    expires_after="2020-09-09">
-  <obsolete>
-    Removed Jan 2022: no longer needed and expired.
-  </obsolete>
-  <owner>yhirano@chromium.org</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    The time (ms) taken to initialize the Reporting and NEL DB. This is recorded
-    when the DB is initialized, which typically occurs upon the first network
-    request after startup.
   </summary>
 </histogram>
 

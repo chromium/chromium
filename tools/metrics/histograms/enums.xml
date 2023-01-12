@@ -70393,22 +70393,6 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="subresource and used"/>
 </enum>
 
-<enum name="NetReportingAndNelBackingStoreUpdateOutcome">
-  <int value="0" label="Success: Committing all operations succeeded"/>
-  <int value="1"
-      label="Trouble: Committing some operations failed but committing batch
-             succeeded"/>
-  <int value="2" label="Failure: Committing batch failed"/>
-</enum>
-
-<enum name="NetReportingAndNelInitializeDbOutcome">
-  <int value="0" label="Failed: Path does not exist"/>
-  <int value="1" label="Failed: Open DB problem"/>
-  <int value="2" label="Failed: Migrate DB problem"/>
-  <int value="3" label="Succeeded: New DB file created"/>
-  <int value="4" label="Succeeded: Existing DB file loaded"/>
-</enum>
-
 <enum name="NetReportingHeaderEndpointGroupOutcome">
   <obsolete>
     Removed from code, June 2020.

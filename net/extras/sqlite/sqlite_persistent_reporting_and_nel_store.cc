@@ -47,39 +47,9 @@ namespace {
 const int kCurrentVersionNumber = 2;
 const int kCompatibleVersionNumber = 2;
 
-// Enums for histograms:
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-
-// Outcome of initializing database
-enum class InitializeDbOutcome {
-  kFailedPathDoesNotExist = 0,
-  kFailedOpenDbProblem = 1,
-  kFailedMigrateDbProblem = 2,
-  kSucceededNewDbFileCreated = 3,
-  kSucceededExistingDbFileLoaded = 4,
-  kMaxValue = kSucceededExistingDbFileLoaded,
-};
-
-// Outcome of updating the backing store
-enum class BackingStoreUpdateOutcome {
-  kSuccess = 0,
-  kTrouble = 1,
-  kFailure = 2,
-  kMaxValue = kFailure
-};
-
 // Histogram names
-const char kInitializeDbOutcomeHistogramName[] =
-    "ReportingAndNEL.InitializeDBOutcome";
-const char kBackingStoreUpdateOutcomeHistogramName[] =
-    "ReportingAndNEL.BackingStoreUpdateOutcome";
 const char kNumberOfLoadedNelPoliciesHistogramName[] =
     "ReportingAndNEL.NumberOfLoadedNELPolicies";
-const char kNumberOfLoadedReportingEndpointsHistogramName[] =
-    "ReportingAndNEL.NumberOfLoadedReportingEndpoints";
-const char kNumberOfLoadedReportingEndpointGroupsHistogramName[] =
-    "ReportingAndNEL.NumberOfLoadedReportingEndpointGroups";
 const char kNumberOfLoadedNelPolicies2HistogramName[] =
     "ReportingAndNEL.NumberOfLoadedNELPolicies2";
 const char kNumberOfLoadedReportingEndpoints2HistogramName[] =
@@ -287,15 +257,6 @@ class SQLitePersistentReportingAndNelStore::Backend
       std::vector<CachedReportingEndpointGroup> loaded_endpoint_groups,
       bool load_success);
 
-  // SQLitePersistentStoreBackendBase:
-  void RecordPathDoesNotExistProblem() override;
-  void RecordOpenDBProblem() override;
-  void RecordDBMigrationProblem() override;
-  void RecordNewDBFile() override;
-  void RecordDBLoaded() override;
-
-  void RecordInitializeDBOutcome(InitializeDbOutcome outcome);
-  void RecordBackingStoreUpdateOutcome(BackingStoreUpdateOutcome outcome);
   void RecordNumberOfLoadedNelPolicies(size_t count);
   void RecordNumberOfLoadedReportingEndpoints(size_t count);
   void RecordNumberOfLoadedReportingEndpointGroups(size_t count);
@@ -855,15 +816,13 @@ void SQLitePersistentReportingAndNelStore::Backend::DoCommit() {
   if (!transaction.Begin())
     return;
 
-  bool ops_success = true;
-
   // Commit all the NEL policy operations.
   for (const auto& origin_and_nel_policy_ops : nel_policy_ops) {
     const PendingOperationsVector<NelPolicyInfo>& ops_for_origin =
         origin_and_nel_policy_ops.second;
     for (const std::unique_ptr<PendingOperation<NelPolicyInfo>>& nel_policy_op :
          ops_for_origin) {
-      ops_success &= CommitNelPolicyOperation(nel_policy_op.get());
+      CommitNelPolicyOperation(nel_policy_op.get());
     }
   }
 
@@ -873,8 +832,7 @@ void SQLitePersistentReportingAndNelStore::Backend::DoCommit() {
         key_and_reporting_endpoint_ops.second;
     for (const std::unique_ptr<PendingOperation<ReportingEndpointInfo>>&
              reporting_endpoint_op : ops_for_key) {
-      ops_success &=
-          CommitReportingEndpointOperation(reporting_endpoint_op.get());
+      CommitReportingEndpointOperation(reporting_endpoint_op.get());
     }
   }
 
@@ -885,20 +843,13 @@ void SQLitePersistentReportingAndNelStore::Backend::DoCommit() {
         key_and_reporting_endpoint_group_ops.second;
     for (const std::unique_ptr<PendingOperation<ReportingEndpointGroupInfo>>&
              reporting_endpoint_group_op : ops_for_key) {
-      ops_success &= CommitReportingEndpointGroupOperation(
-          reporting_endpoint_group_op.get());
+      CommitReportingEndpointGroupOperation(reporting_endpoint_group_op.get());
     }
   }
 
   // TODO(chlily): Commit operations pertaining to Reporting reports.
 
-  bool commit_success = transaction.Commit();
-  BackingStoreUpdateOutcome outcome =
-      (commit_success && ops_success)
-          ? BackingStoreUpdateOutcome::kSuccess
-          : commit_success ? BackingStoreUpdateOutcome::kTrouble
-                           : BackingStoreUpdateOutcome::kFailure;
-  RecordBackingStoreUpdateOutcome(outcome);
+  transaction.Commit();
 }
 
 bool SQLitePersistentReportingAndNelStore::Backend::CommitNelPolicyOperation(
@@ -1507,38 +1458,6 @@ void SQLitePersistentReportingAndNelStore::Backend::
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::
-    RecordPathDoesNotExistProblem() {
-  RecordInitializeDBOutcome(InitializeDbOutcome::kFailedPathDoesNotExist);
-}
-
-void SQLitePersistentReportingAndNelStore::Backend::RecordOpenDBProblem() {
-  RecordInitializeDBOutcome(InitializeDbOutcome::kFailedOpenDbProblem);
-}
-
-void SQLitePersistentReportingAndNelStore::Backend::RecordDBMigrationProblem() {
-  RecordInitializeDBOutcome(InitializeDbOutcome::kFailedMigrateDbProblem);
-}
-
-void SQLitePersistentReportingAndNelStore::Backend::RecordNewDBFile() {
-  RecordInitializeDBOutcome(InitializeDbOutcome::kSucceededNewDbFileCreated);
-}
-
-void SQLitePersistentReportingAndNelStore::Backend::RecordDBLoaded() {
-  RecordInitializeDBOutcome(
-      InitializeDbOutcome::kSucceededExistingDbFileLoaded);
-}
-
-void SQLitePersistentReportingAndNelStore::Backend::RecordInitializeDBOutcome(
-    InitializeDbOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION(kInitializeDbOutcomeHistogramName, outcome);
-}
-
-void SQLitePersistentReportingAndNelStore::Backend::
-    RecordBackingStoreUpdateOutcome(BackingStoreUpdateOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION(kBackingStoreUpdateOutcomeHistogramName, outcome);
-}
-
-void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedNelPolicies(size_t count) {
   // The NetworkErrorLoggingService stores up to 1000 policies.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedNelPoliciesHistogramName, count);
@@ -1548,9 +1467,6 @@ void SQLitePersistentReportingAndNelStore::Backend::
 
 void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedReportingEndpoints(size_t count) {
-  // The ReportingCache stores up to 1000 endpoints.
-  UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedReportingEndpointsHistogramName,
-                            count);
   // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
   UMA_HISTOGRAM_COUNTS_10000(kNumberOfLoadedReportingEndpoints2HistogramName,
                              count);
@@ -1558,10 +1474,6 @@ void SQLitePersistentReportingAndNelStore::Backend::
 
 void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedReportingEndpointGroups(size_t count) {
-  // The ReportingCache stores up to 1000 endpoints, and there is at least one
-  // endpoint per group.
-  UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedReportingEndpointGroupsHistogramName,
-                            count);
   // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
   UMA_HISTOGRAM_COUNTS_10000(
       kNumberOfLoadedReportingEndpointGroups2HistogramName, count);
