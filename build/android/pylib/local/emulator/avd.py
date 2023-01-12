@@ -31,8 +31,12 @@ from pylib.local.emulator.proto import avd_pb2
 # the emulator instance, e.g. emulator binary, system images, AVDs.
 COMMON_CIPD_ROOT = os.path.join(constants.DIR_SOURCE_ROOT, '.android_emulator')
 
-# All the packages that are needed for runtime.
-_ALL_PACKAGES = object()
+# Packages that are needed for runtime.
+_PACKAGES_RUNTIME = object()
+# Packages that are needed during AVD creation.
+_PACKAGES_CREATION = object()
+# All the packages that could exist in the AVD config file.
+_PACKAGES_ALL = object()
 
 # These files are used as backing files for corresponding qcow2 images.
 _BACKING_FILES = ('system.img', 'vendor.img')
@@ -224,6 +228,22 @@ class _AvdManagerAgent:
       # avd.py is executed with python2.
       # pylint: disable=W0707
       raise AvdException('AVD deletion failed: %s' % str(e), command=delete_cmd)
+
+  def List(self):
+    """List existing AVDs by the name."""
+    list_cmd = [
+        _DEFAULT_AVDMANAGER_PATH,
+        '-v',
+        'list',
+        'avd',
+        '-c',
+    ]
+    output = cmd_helper.GetCmdOutput(list_cmd, env=self._env)
+    return output.splitlines()
+
+  def IsAvailable(self, avd_name):
+    """Check if an AVD exists or not."""
+    return avd_name in self.List()
 
 
 class AvdConfig:
@@ -423,13 +443,7 @@ class AvdConfig:
         after creating the AVD.
     """
     logging.info('Installing required packages.')
-    self._InstallCipdPackages(packages=[
-        self._config.emulator_package,
-        self._config.system_image_package,
-        # privileged_apk and additional_apk are needed only during create time.
-        *self._config.privileged_apk,
-        *self._config.additional_apk,
-    ])
+    self._InstallCipdPackages(_PACKAGES_CREATION)
 
     avd_manager = _AvdManagerAgent(avd_home=self.avd_home,
                                    sdk_root=self.emulator_sdk_root)
@@ -627,12 +641,15 @@ class AvdConfig:
         logging.info('Deleting AVD.')
         avd_manager.Delete(avd_name=self.avd_name)
 
-  def IsAvailable(self, packages=_ALL_PACKAGES):
+  def IsAvailable(self):
     """Returns whether emulator is up-to-date."""
     if not os.path.exists(self._config_ini_path):
       return False
 
-    for cipd_root, pkgs in self._IterVersionedCipdPackages(packages):
+    # Skip when no version exists to prevent "IsAvailable()" returning False
+    # for emualtors set up using Create() (rather than Install()).
+    for cipd_root, pkgs in self._IterCipdPackages(_PACKAGES_RUNTIME,
+                                                  check_version=False):
       stdout = subprocess.run(['cipd', 'installed', '--root', cipd_root],
                               capture_output=True,
                               check=False,
@@ -647,7 +664,50 @@ class AvdConfig:
         return False
     return True
 
-  def Install(self, packages=_ALL_PACKAGES):
+  def Uninstall(self):
+    """Uninstall all the artifacts associated with the given config.
+
+    Artifacts includes:
+     - CIPD packages specified in the avd config.
+     - The local AVD created by `Create`, if present.
+
+    """
+    # Delete any existing local AVD. This must occur before deleting CIPD
+    # packages because a AVD needs system image to be recognized by avdmanager.
+    avd_manager = _AvdManagerAgent(avd_home=self.avd_home,
+                                   sdk_root=self.emulator_sdk_root)
+    if avd_manager.IsAvailable(self.avd_name):
+      logging.info('Deleting local AVD %s', self.avd_name)
+      avd_manager.Delete(self.avd_name)
+
+    # Delete installed CIPD packages.
+    for cipd_root, _ in self._IterCipdPackages(_PACKAGES_ALL,
+                                               check_version=False):
+      logging.info('Uninstalling packages in %s', cipd_root)
+      if not os.path.exists(cipd_root):
+        continue
+      # Create an empty ensure file to removed any installed CIPD packages.
+      ensure_path = os.path.join(cipd_root, '.ensure')
+      with open(ensure_path, 'w') as ensure_file:
+        ensure_file.write('$ParanoidMode CheckIntegrity\n\n')
+      ensure_cmd = [
+          'cipd',
+          'ensure',
+          '-ensure-file',
+          ensure_path,
+          '-root',
+          cipd_root,
+      ]
+      try:
+        for line in cmd_helper.IterCmdOutputLines(ensure_cmd):
+          logging.info('    %s', line)
+      except subprocess.CalledProcessError as e:
+        # avd.py is executed with python2.
+        # pylint: disable=W0707
+        raise AvdException('Failed to uninstall CIPD packages: %s' % str(e),
+                           command=ensure_cmd)
+
+  def Install(self):
     """Installs the requested CIPD packages and prepares them for use.
 
     This includes making files writeable and revising some of the
@@ -656,7 +716,7 @@ class AvdConfig:
     Returns: None
     Raises: AvdException on failure to install.
     """
-    self._InstallCipdPackages(packages=packages)
+    self._InstallCipdPackages(_PACKAGES_RUNTIME)
     self._MakeWriteable()
     self._UpdateConfigs()
     self._RebaseQcow2Images()
@@ -687,26 +747,52 @@ class AvdConfig:
           qcow2_image_path,
       ])
 
-  def _IterVersionedCipdPackages(self, packages):
-    pkgs_by_dir = collections.defaultdict(list)
-    if packages is _ALL_PACKAGES:
+  def _ListPackages(self, packages):
+    if packages is _PACKAGES_RUNTIME:
       packages = [
           self._config.avd_package,
           self._config.emulator_package,
           self._config.system_image_package,
       ]
-    for pkg in packages:
-      # Skip when no version exists to prevent "IsAvailable()" returning False
-      # for emualtors set up using Create() (rather than Install()).
+    elif packages is _PACKAGES_CREATION:
+      packages = [
+          self._config.emulator_package,
+          self._config.system_image_package,
+          *self._config.privileged_apk,
+          *self._config.additional_apk,
+      ]
+    elif packages is _PACKAGES_ALL:
+      packages = [
+          self._config.avd_package,
+          self._config.emulator_package,
+          self._config.system_image_package,
+          *self._config.privileged_apk,
+          *self._config.additional_apk,
+      ]
+    return packages
+
+  def _IterCipdPackages(self, packages, check_version=True):
+    """Iterate a list of CIPD packages by their CIPD roots.
+
+    Args:
+      packages: a list of packages from an AVD config.
+      check_version: If set, raise Exception when a package has no version.
+    """
+    pkgs_by_dir = collections.defaultdict(list)
+    for pkg in self._ListPackages(packages):
       if pkg.version:
         pkgs_by_dir[pkg.dest_path].append(pkg)
+      elif check_version:
+        raise AvdException('Expecting a version for the package %s' %
+                           pkg.package_name)
 
     for pkg_dir, pkgs in pkgs_by_dir.items():
       cipd_root = os.path.join(COMMON_CIPD_ROOT, pkg_dir)
       yield cipd_root, pkgs
 
-  def _InstallCipdPackages(self, packages):
-    for cipd_root, pkgs in self._IterVersionedCipdPackages(packages):
+  def _InstallCipdPackages(self, packages, check_version=True):
+    for cipd_root, pkgs in self._IterCipdPackages(packages,
+                                                  check_version=check_version):
       logging.info('Installing packages in %s', cipd_root)
       if not os.path.exists(cipd_root):
         os.makedirs(cipd_root)
