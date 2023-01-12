@@ -11,16 +11,12 @@ if (is_android) {
 
 source_set("embedder") {
   sources = [
-    "input_delegate/price_tracking_input_delegate.cc",
-    "input_delegate/price_tracking_input_delegate.h",
     "model_provider_factory_impl.cc",
     "model_provider_factory_impl.h",
   ]
 
   deps = [
     "//base",
-    "//components/bookmarks/browser",
-    "//components/commerce/core:shopping_service",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/segmentation_platform/internal",
@@ -39,18 +35,13 @@ source_set("unit_tests") {
 
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
-  sources = [
-    "input_delegate/price_tracking_input_delegate_unittest.cc",
-    "model_provider_factory_impl_unittest.cc",
-  ]
+  sources = [ "model_provider_factory_impl_unittest.cc" ]
 
   deps = [
     ":embedder",
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
-    "//components/commerce/core:shopping_service",
-    "//components/commerce/core:shopping_service_test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/segmentation_platform/internal",

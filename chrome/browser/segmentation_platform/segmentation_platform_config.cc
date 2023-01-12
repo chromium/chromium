@@ -38,7 +38,6 @@
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
-#include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
 #endif
 
 namespace segmentation_platform {
@@ -97,16 +96,6 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
       std::make_unique<ContextualPageActionsModel>());
-
-  auto shopping_service_getter = base::BindRepeating(
-      commerce::ShoppingServiceFactory::GetForBrowserContextIfExists, context);
-  auto bookmark_model_getter =
-      base::BindRepeating(BookmarkModelFactory::GetForBrowserContext, context);
-  auto price_tracking_input_delegate =
-      std::make_unique<processing::PriceTrackingInputDelegate>(
-          shopping_service_getter, bookmark_model_getter);
-  config->input_delegates[proto::CustomInput_FillPolicy_PRICE_TRACKING_HINTS] =
-      std::move(price_tracking_input_delegate);
   config->on_demand_execution = true;
   return config;
 }

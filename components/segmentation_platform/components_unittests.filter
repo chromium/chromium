@@ -1,3 +1,4 @@
+ClientResultPrefsTest.*
 ConfigParserTest.*
 ContextualPageActionsModelTest.*
 CrossDeviceUserModelTest.*
@@ -23,7 +24,6 @@ ModelProviderFactoryImplTest.*
 OptimizationGuideSegmentationModelProviderTest.*
 PostProcessorTest.*
 PowerUserModelTest.*
-PriceTrackingInputDelegateTest.*
 QueryTilesModelTest.*
 RequestDispatcherTest.*
 RequestHandlerTest.*
