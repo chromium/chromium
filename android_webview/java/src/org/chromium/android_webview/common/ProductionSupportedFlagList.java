@@ -357,6 +357,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
                     "Controls whether a log is allowed to be closed when Chrome"
                             + " is backgrounded/foregrounded early."),
+            Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_ASYNC_COLLECTION,
+                    "Controls whether the metrics service creates periodic logs"
+                            + " in a background thread or on the main thread."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
