@@ -727,6 +727,7 @@ class BASE_EXPORT GSL_OWNER Value {
   // a pointer to the element. Otherwise it returns nullptr.
   //
   // DEPRECATED: prefer `Value::Dict::Find()`.
+  // TODO(https://crbug.com/1406815): Remove this API.
   Value* FindKey(StringPiece key);
   const Value* FindKey(StringPiece key) const;
 
