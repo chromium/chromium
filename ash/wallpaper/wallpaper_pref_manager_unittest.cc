@@ -181,6 +181,12 @@ class WallpaperPrefManagerTest : public testing::Test {
     profile_helper_->RegisterPrefsForAccount(id);
   }
 
+  void StoreWallpaper(const AccountId& account_id, base::StringPiece location) {
+    WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+    info.location = std::string(location);
+    ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id, info));
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -390,15 +396,46 @@ TEST_F(WallpaperPrefManagerTest, CacheProminentColors) {
 TEST_F(WallpaperPrefManagerTest, CacheKMeansColor) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
-  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
   const char location[] = "/test/location";
-  info.location = location;
-  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+  StoreWallpaper(account_id_1, location);
 
   const SkColor expected_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
-
   pref_manager_->CacheKMeanColor(account_id_1, expected_color);
   EXPECT_EQ(expected_color, *pref_manager_->GetCachedKMeanColor(location));
+}
+
+TEST_F(WallpaperPrefManagerTest, RemoveKMeansColor) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+  const char location[] = "/test/location";
+  StoreWallpaper(account_id_1, location);
+
+  pref_manager_->CacheKMeanColor(account_id_1, SkColorSetRGB(0xFF, 0xFF, 0xFF));
+  pref_manager_->RemoveKMeanColor(account_id_1);
+  EXPECT_FALSE(pref_manager_->GetCachedKMeanColor(location));
+}
+
+TEST_F(WallpaperPrefManagerTest, CacheCelebiColor) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+
+  const char location[] = "/test/location";
+  StoreWallpaper(account_id_1, location);
+
+  const SkColor expected_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
+  pref_manager_->CacheCelebiColor(account_id_1, expected_color);
+  absl::optional<SkColor> color = pref_manager_->GetCelebiColor(location);
+  ASSERT_TRUE(color);
+  EXPECT_EQ(expected_color, *color);
+}
+
+TEST_F(WallpaperPrefManagerTest, RemoveCelebiColor) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+  const char location[] = "/test/location";
+  StoreWallpaper(account_id_1, location);
+
+  pref_manager_->CacheCelebiColor(account_id_1,
+                                  SkColorSetRGB(0xFF, 0xFF, 0xFF));
+  pref_manager_->RemoveCelebiColor(account_id_1);
+  EXPECT_FALSE(pref_manager_->GetCelebiColor(location));
 }
 
 }  // namespace

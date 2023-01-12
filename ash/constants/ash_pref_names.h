@@ -369,6 +369,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kRecentDailyGooglePhotosWallpapers[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kWallpaperColors[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kWallpaperMeanColors[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kWallpaperCelebiColors[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSyncableWallpaperInfo[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -826,6 +826,9 @@ const char kWallpaperColors[] = "ash.wallpaper.prominent_colors";
 // A dictionary pref that maps wallpaper file paths to their k mean colors.
 const char kWallpaperMeanColors[] = "ash.wallpaper.k_mean_colors";
 
+// A dictionary pref that maps wallpaper file paths to their celebi colors.
+const char kWallpaperCelebiColors[] = "ash.wallpaper.celebi_colors";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 const char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";

@@ -138,6 +138,14 @@ class ASH_EXPORT WallpaperPrefManager
 
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
+  // Cache the prominent color sampled with the 'Celebi' algorithm.
+  virtual void CacheCelebiColor(const AccountId& account_id,
+                                SkColor celebi_color) = 0;
+  // Returns the cached celebi color for the wallpaper at `location`.
+  virtual absl::optional<SkColor> GetCelebiColor(
+      const base::StringPiece location) const = 0;
+  virtual void RemoveCelebiColor(const AccountId& account_id) = 0;
+
   virtual bool SetDailyGooglePhotosWallpaperIdCache(
       const AccountId& account_id,
       const WallpaperController::DailyGooglePhotosIdCache& ids) = 0;
