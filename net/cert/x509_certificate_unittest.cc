@@ -919,6 +919,12 @@ TEST(X509CertificateTest, IsSelfSigned) {
       ImportCertFromFile(certs_dir, "self-signed-invalid-sig.pem"));
   ASSERT_NE(static_cast<X509Certificate*>(nullptr), bad_sig.get());
   EXPECT_FALSE(X509Certificate::IsSelfSigned(bad_sig->cert_buffer()));
+
+  constexpr char invalid_cert_data[] = "this is not a certificate";
+  bssl::UniquePtr<CRYPTO_BUFFER> invalid_cert_handle =
+      x509_util::CreateCryptoBuffer(base::StringPiece(invalid_cert_data));
+  ASSERT_TRUE(invalid_cert_handle);
+  EXPECT_FALSE(X509Certificate::IsSelfSigned(invalid_cert_handle.get()));
 }
 
 TEST(X509CertificateTest, IsIssuedByEncodedWithIntermediates) {

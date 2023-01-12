@@ -265,7 +265,7 @@ class NET_EXPORT X509Certificate
   SHA256HashValue CalculateChainFingerprint256() const;
 
   // Returns true if the certificate is self-signed.
-  static bool IsSelfSigned(const CRYPTO_BUFFER* cert_buffer);
+  static bool IsSelfSigned(CRYPTO_BUFFER* cert_buffer);
 
  private:
   friend class base::RefCountedThreadSafe<X509Certificate>;

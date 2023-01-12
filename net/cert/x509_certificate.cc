@@ -32,6 +32,7 @@
 #include "net/cert/pki/name_constraints.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/pki/verify_certificate_chain.h"
 #include "net/cert/pki/verify_name_match.h"
 #include "net/cert/pki/verify_signed_data.h"
 #include "net/cert/x509_util.h"
@@ -709,49 +710,16 @@ SHA256HashValue X509Certificate::CalculateChainFingerprint256() const {
 }
 
 // static
-bool X509Certificate::IsSelfSigned(const CRYPTO_BUFFER* cert_buffer) {
-  der::Input tbs_certificate_tlv;
-  der::Input signature_algorithm_tlv;
-  der::BitString signature_value;
-  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert_buffer),
-                                   CRYPTO_BUFFER_len(cert_buffer)),
-                        &tbs_certificate_tlv, &signature_algorithm_tlv,
-                        &signature_value, nullptr)) {
+bool X509Certificate::IsSelfSigned(CRYPTO_BUFFER* cert_buffer) {
+  std::shared_ptr<const ParsedCertificate> parsed_cert =
+      ParsedCertificate::Create(bssl::UpRef(cert_buffer),
+                                x509_util::DefaultParseCertificateOptions(),
+                                /*errors=*/nullptr);
+  if (!parsed_cert) {
     return false;
   }
-  ParsedTbsCertificate tbs;
-  if (!ParseTbsCertificate(tbs_certificate_tlv,
-                           x509_util::DefaultParseCertificateOptions(), &tbs,
-                           nullptr)) {
-    return false;
-  }
-
-  der::Input subject_value;
-  CertErrors errors;
-  std::string normalized_subject;
-  if (!ParseSequenceValue(tbs.subject_tlv, &subject_value) ||
-      !NormalizeName(subject_value, &normalized_subject, &errors)) {
-    return false;
-  }
-  der::Input issuer_value;
-  std::string normalized_issuer;
-  if (!ParseSequenceValue(tbs.issuer_tlv, &issuer_value) ||
-      !NormalizeName(issuer_value, &normalized_issuer, &errors)) {
-    return false;
-  }
-
-  if (normalized_subject != normalized_issuer)
-    return false;
-
-  absl::optional<SignatureAlgorithm> signature_algorithm =
-      ParseSignatureAlgorithm(signature_algorithm_tlv);
-  if (!signature_algorithm)
-    return false;
-
-  // Don't enforce any minimum key size or restrict the algorithm, since when
-  // self signed not very relevant.
-  return VerifySignedData(*signature_algorithm, tbs_certificate_tlv,
-                          signature_value, tbs.spki_tlv, /*cache=*/nullptr);
+  return VerifyCertificateIsSelfSigned(*parsed_cert, /*cache=*/nullptr,
+                                       /*errors=*/nullptr);
 }
 
 X509Certificate::X509Certificate(

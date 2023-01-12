@@ -4,6 +4,9 @@
 
 #include "net/cert/pki/verify_certificate_chain.h"
 
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/common_cert_errors.h"
+#include "net/cert/pki/mock_signature_verify_cache.h"
 #include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/test_helpers.h"
 #include "net/cert/pki/trust_store.h"
@@ -38,5 +41,88 @@ class VerifyCertificateChainTestDelegate {
 INSTANTIATE_TYPED_TEST_SUITE_P(VerifyCertificateChain,
                                VerifyCertificateChainSingleRootTest,
                                VerifyCertificateChainTestDelegate);
+
+TEST(VerifyCertificateIsSelfSigned, TargetOnly) {
+  auto cert = ReadCertFromFile(
+      "net/data/verify_certificate_chain_unittest/target-only/chain.pem");
+  ASSERT_TRUE(cert);
+
+  // Test with null cache and errors.
+  EXPECT_FALSE(VerifyCertificateIsSelfSigned(*cert, /*cache=*/nullptr,
+                                             /*errors=*/nullptr));
+
+  // Test with cache and errors.
+  CertErrors errors;
+  MockSignatureVerifyCache cache;
+  EXPECT_FALSE(VerifyCertificateIsSelfSigned(*cert, &cache, &errors));
+
+  EXPECT_TRUE(
+      errors.ContainsAnyErrorWithSeverity(CertError::Severity::SEVERITY_HIGH));
+  EXPECT_TRUE(errors.ContainsError(cert_errors::kSubjectDoesNotMatchIssuer));
+
+  // Should not try to verify signature if names don't match.
+  EXPECT_EQ(cache.CacheHits(), 0U);
+  EXPECT_EQ(cache.CacheMisses(), 0U);
+  EXPECT_EQ(cache.CacheStores(), 0U);
+}
+
+TEST(VerifyCertificateIsSelfSigned, SelfIssued) {
+  auto cert = ReadCertFromFile(
+      "net/data/verify_certificate_chain_unittest/target-selfissued/chain.pem");
+  ASSERT_TRUE(cert);
+
+  // Test with null cache and errors.
+  EXPECT_FALSE(VerifyCertificateIsSelfSigned(*cert, /*cache=*/nullptr,
+                                             /*errors=*/nullptr));
+
+  // Test with cache and errors.
+  CertErrors errors;
+  MockSignatureVerifyCache cache;
+  EXPECT_FALSE(VerifyCertificateIsSelfSigned(*cert, &cache, &errors));
+
+  EXPECT_TRUE(
+      errors.ContainsAnyErrorWithSeverity(CertError::Severity::SEVERITY_HIGH));
+  EXPECT_TRUE(errors.ContainsError(cert_errors::kVerifySignedDataFailed));
+
+  EXPECT_EQ(cache.CacheHits(), 0U);
+  EXPECT_EQ(cache.CacheMisses(), 1U);
+  EXPECT_EQ(cache.CacheStores(), 1U);
+
+  // Trying again should use cached signature verification result.
+  EXPECT_FALSE(VerifyCertificateIsSelfSigned(*cert, &cache, &errors));
+  EXPECT_EQ(cache.CacheHits(), 1U);
+  EXPECT_EQ(cache.CacheMisses(), 1U);
+  EXPECT_EQ(cache.CacheStores(), 1U);
+}
+
+TEST(VerifyCertificateIsSelfSigned, SelfSigned) {
+  auto cert = ReadCertFromFile(
+      "net/data/verify_certificate_chain_unittest/target-selfsigned/chain.pem");
+  ASSERT_TRUE(cert);
+
+  // Test with null cache and errors.
+  EXPECT_TRUE(VerifyCertificateIsSelfSigned(*cert, /*cache=*/nullptr,
+                                            /*errors=*/nullptr));
+
+  // Test with cache and errors.
+  CertErrors errors;
+  MockSignatureVerifyCache cache;
+  EXPECT_TRUE(VerifyCertificateIsSelfSigned(*cert, &cache, &errors));
+
+  EXPECT_FALSE(errors.ContainsAnyErrorWithSeverity(
+      CertError::Severity::SEVERITY_WARNING));
+  EXPECT_FALSE(
+      errors.ContainsAnyErrorWithSeverity(CertError::Severity::SEVERITY_HIGH));
+
+  EXPECT_EQ(cache.CacheHits(), 0U);
+  EXPECT_EQ(cache.CacheMisses(), 1U);
+  EXPECT_EQ(cache.CacheStores(), 1U);
+
+  // Trying again should use cached signature verification result.
+  EXPECT_TRUE(VerifyCertificateIsSelfSigned(*cert, &cache, &errors));
+  EXPECT_EQ(cache.CacheHits(), 1U);
+  EXPECT_EQ(cache.CacheMisses(), 1U);
+  EXPECT_EQ(cache.CacheStores(), 1U);
+}
 
 }  // namespace net

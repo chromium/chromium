@@ -1511,4 +1511,36 @@ void VerifyCertificateChain(
                user_constrained_policy_set, errors);
 }
 
+bool VerifyCertificateIsSelfSigned(const ParsedCertificate& cert,
+                                   SignatureVerifyCache* cache,
+                                   CertErrors* errors) {
+  if (cert.normalized_subject() != cert.normalized_issuer()) {
+    if (errors) {
+      errors->AddError(cert_errors::kSubjectDoesNotMatchIssuer);
+    }
+    return false;
+  }
+
+  // Note that we do not restrict the available algorithms when determining if
+  // something is a self-signed cert. The signature isn't very important on a
+  // self-signed cert so just allow any supported algorithm here, to avoid
+  // breakage.
+  if (!cert.signature_algorithm().has_value()) {
+    if (errors) {
+      errors->AddError(cert_errors::kUnacceptableSignatureAlgorithm);
+    }
+    return false;
+  }
+
+  if (!VerifySignedData(*cert.signature_algorithm(), cert.tbs_certificate_tlv(),
+                        cert.signature_value(), cert.tbs().spki_tlv, cache)) {
+    if (errors) {
+      errors->AddError(cert_errors::kVerifySignedDataFailed);
+    }
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace net

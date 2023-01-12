@@ -252,6 +252,14 @@ NET_EXPORT void VerifyCertificateChain(
     std::set<der::Input>* user_constrained_policy_set,
     CertPathErrors* errors);
 
+// Returns true if `cert` is self-signed. Returns false `cert` is not
+// self-signed or there was an error. If `errors` is non-null, it will contain
+// additional information about the problem. If `cache` is non-null, it will be
+// used to cache the signature verification step.
+NET_EXPORT bool VerifyCertificateIsSelfSigned(const ParsedCertificate& cert,
+                                              SignatureVerifyCache* cache,
+                                              CertErrors* errors);
+
 }  // namespace net
 
 #endif  // NET_CERT_PKI_VERIFY_CERTIFICATE_CHAIN_H_
