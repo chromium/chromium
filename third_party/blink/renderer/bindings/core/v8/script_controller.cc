@@ -70,14 +70,33 @@ namespace blink {
 
 namespace {
 bool IsTrivialScript(const String& script) {
-  if (script.length() > 20)
+  if (script.length() > 25) {
     return false;
+  }
 
-  DEFINE_STATIC_LOCAL(
-      Vector<String>, trivial_scripts,
-      ({"void(0)", "void0", "void(false)", "void(null)", "void(-1)", "false",
-        "true", "''", "\"\"", "undefined", "0", "1", "'1'", "print()",
-        "window.print()", "close()", "window.close()"}));
+  DEFINE_STATIC_LOCAL(Vector<String>, trivial_scripts,
+                      ({"void(0)",
+                        "void0",
+                        "void(false)",
+                        "void(null)",
+                        "void(-1)",
+                        "false",
+                        "true",
+                        "",
+                        "''",
+                        "\"\"",
+                        "undefined",
+                        "0",
+                        "1",
+                        "'1'",
+                        "print()",
+                        "window.print()",
+                        "close()",
+                        "window.close()",
+                        "history.back()",
+                        "window.history.back()",
+                        "history.go(-1)",
+                        "window.history.go(-1)"}));
   String processed_script = script.StripWhiteSpace().Replace(";", "");
   return trivial_scripts.Contains(processed_script);
 }
