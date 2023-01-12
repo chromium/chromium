@@ -31,8 +31,10 @@ public class IPHCommandBuilder {
     private boolean mDismissOnTouch = true;
     @StringRes
     private int mStringId;
+    private Object[] mStringArgs;
     @StringRes
     private int mAccessibilityStringId;
+    private Object[] mAccessibilityStringArgs;
     private View mAnchorView;
     private Runnable mOnShowCallback;
     private Runnable mOnBlockedCallback;
@@ -52,8 +54,8 @@ public class IPHCommandBuilder {
      * Constructor for IPHCommandBuilder when you would like your strings to be resolved for you.
      * @param resources Resources object used to resolve strings and dimensions.
      * @param featureName String identifier for the feature from FeatureConstants.
-     * @param stringId Resource id of the string displayed to the use.
-     * @param accessibilityStringId resource id of the string to use for accessibility.
+     * @param stringId Resource id of the string displayed to the user.
+     * @param accessibilityStringId Resource id of the string to use for accessibility.
      */
     public IPHCommandBuilder(Resources resources, String featureName, @StringRes int stringId,
             @StringRes int accessibilityStringId) {
@@ -61,6 +63,29 @@ public class IPHCommandBuilder {
         mFeatureName = featureName;
         mStringId = stringId;
         mAccessibilityStringId = accessibilityStringId;
+    }
+
+    /**
+     * Constructor for IPHCommandBuilder when you would like your parameterized strings to be
+     * resolved for you.
+     * @param resources Resources object used to resolve strings and dimensions.
+     * @param featureName String identifier for the feature from FeatureConstants.
+     * @param stringId Resource id of the string displayed to the user.
+     * @param stringArgs Ordered arguments to use during parameterized string resolution of
+     *         stringId.
+     * @param accessibilityStringId Resource id of the string to use for accessibility.
+     * @param accessibilityStringArgs Ordered arguments to use during parameterized string
+     *         resolution of accessibilityStringId.
+     */
+    public IPHCommandBuilder(Resources resources, String featureName, @StringRes int stringId,
+            Object[] stringArgs, @StringRes int accessibilityStringId,
+            Object[] accessibilityStringArgs) {
+        mResources = resources;
+        mFeatureName = featureName;
+        mStringId = stringId;
+        mStringArgs = stringArgs;
+        mAccessibilityStringId = accessibilityStringId;
+        mAccessibilityStringArgs = accessibilityStringArgs;
     }
 
     /**
@@ -264,10 +289,11 @@ public class IPHCommandBuilder {
                 mOnBlockedCallback = NO_OP_RUNNABLE;
             }
 
-            return new IPHCommand(mResources, mFeatureName, mStringId, mAccessibilityStringId,
-                    mDismissOnTouch, mAnchorView, mOnDismissCallback, mOnShowCallback,
-                    mOnBlockedCallback, mAutoDismissTimeout, mViewRectProvider, mHighlightParams,
-                    mAnchorRect, mRemoveArrow, mPreferredVerticalOrientation);
+            return new IPHCommand(mResources, mFeatureName, mStringId, mStringArgs,
+                    mAccessibilityStringId, mAccessibilityStringArgs, mDismissOnTouch, mAnchorView,
+                    mOnDismissCallback, mOnShowCallback, mOnBlockedCallback, mAutoDismissTimeout,
+                    mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow,
+                    mPreferredVerticalOrientation);
         }
     }
 }

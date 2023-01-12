@@ -21,8 +21,10 @@ public class IPHCommand {
     private Resources mResources;
     public final String featureName;
     public final int stringId;
+    public Object[] stringArgs;
     public String contentString;
     public final int accessibilityStringId;
+    public Object[] accessibilityStringArgs;
     public String accessibilityText;
     public final boolean dismissOnTouch;
     public final View anchorView;
@@ -45,12 +47,21 @@ public class IPHCommand {
     public void fetchFromResources() {
         if (contentString == null) {
             assert mResources != null;
-            contentString = mResources.getString(stringId);
+            if (stringArgs != null) {
+                contentString = mResources.getString(stringId, stringArgs);
+            } else {
+                contentString = mResources.getString(stringId);
+            }
         }
 
         if (accessibilityText == null) {
             assert mResources != null;
-            accessibilityText = mResources.getString(accessibilityStringId);
+            if (accessibilityStringArgs != null) {
+                accessibilityText =
+                        mResources.getString(accessibilityStringId, accessibilityStringArgs);
+            } else {
+                accessibilityText = mResources.getString(accessibilityStringId);
+            }
         }
 
         if (insetRect == null && anchorRect == null) {
@@ -60,16 +71,18 @@ public class IPHCommand {
         }
     }
 
-    IPHCommand(Resources resources, String featureName, int stringId, int accessibilityStringId,
-            boolean dismissOnTouch, View anchorView, Runnable onDismissCallback,
-            Runnable onShowCallback, Runnable onBlockedCallback, long autoDismissTimeout,
-            ViewRectProvider viewRectProvider, HighlightParams params, Rect anchorRect,
-            boolean removeArrow,
+    IPHCommand(Resources resources, String featureName, int stringId, Object[] stringArgs,
+            int accessibilityStringId, Object[] accessibilityStringArgs, boolean dismissOnTouch,
+            View anchorView, Runnable onDismissCallback, Runnable onShowCallback,
+            Runnable onBlockedCallback, long autoDismissTimeout, ViewRectProvider viewRectProvider,
+            HighlightParams params, Rect anchorRect, boolean removeArrow,
             @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation) {
         this.mResources = resources;
         this.featureName = featureName;
         this.stringId = stringId;
+        this.stringArgs = stringArgs;
         this.accessibilityStringId = accessibilityStringId;
+        this.accessibilityStringArgs = accessibilityStringArgs;
         this.dismissOnTouch = dismissOnTouch;
         this.anchorView = anchorView;
         this.onDismissCallback = onDismissCallback;
