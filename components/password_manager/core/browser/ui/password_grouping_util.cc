@@ -43,6 +43,29 @@ PasswordGroupingInfo& PasswordGroupingInfo::operator=(
 PasswordGroupingInfo& PasswordGroupingInfo::operator=(
     PasswordGroupingInfo&& other) = default;
 
+std::vector<PasswordForm> PasswordGroupingInfo::GetPasswordFormsVector(
+    const CredentialUIEntry& credential) const {
+  std::vector<PasswordForm> forms;
+  auto group_id_iterator = map_signon_realm_to_group_id.find(
+      SignonRealm(credential.GetFirstSignonRealm()));
+  if (group_id_iterator == map_signon_realm_to_group_id.end()) {
+    return forms;
+  }
+  GroupId group_id = group_id_iterator->second;
+  auto group_iterator = map_group_id_to_forms.find(group_id);
+  if (group_iterator == map_group_id_to_forms.end()) {
+    return forms;
+  }
+  std::map<UsernamePasswordKey, std::vector<PasswordForm>> map =
+      group_iterator->second;
+  auto forms_iterator =
+      map.find(UsernamePasswordKey(CreateUsernamePasswordSortKey(credential)));
+  if (forms_iterator != map.end()) {
+    forms = forms_iterator->second;
+  }
+  return forms;
+}
+
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     const CredentialUIEntry& credential) {
   FacetBrandingInfo branding_info;

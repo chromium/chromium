@@ -129,6 +129,7 @@ SavedPasswordsPresenter::~SavedPasswordsPresenter() {
 void SavedPasswordsPresenter::Init() {
   // Clear old cache.
   sort_key_to_password_forms_.clear();
+  password_grouping_info_.clear();
 
   profile_store_->AddObserver(this);
   if (account_store_)
@@ -155,24 +156,21 @@ void SavedPasswordsPresenter::RemoveObservers() {
 
 bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
-  const auto range =
-      sort_key_to_password_forms_.equal_range(CreateSortKey(credential));
-  bool removed = false;
+  std::vector<PasswordForm> forms_to_delete =
+      GetCorrespondingPasswordForms(credential);
   undo_helper_->StartGroupingActions();
-  std::for_each(range.first, range.second, [&](const auto& pair) {
-    const auto& current_form = pair.second;
+  for (const auto& current_form : forms_to_delete) {
     // Make sure |credential| and |current_form| share the same store.
     if (credential.stored_in.contains(current_form.in_store)) {
       // |current_form| is unchanged result obtained from
-      // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one store
-      // at a time..
+      // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one
+      // store at a time.
       GetStoreFor(current_form).RemoveLogin(current_form);
       undo_helper_->PasswordRemoved(current_form);
-      removed = true;
     }
-  });
+  }
   undo_helper_->EndGroupingActions();
-  return removed;
+  return !forms_to_delete.empty();
 }
 
 void SavedPasswordsPresenter::UndoLastRemoval() {
@@ -463,11 +461,17 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetBlockedSites() {
 std::vector<PasswordForm>
 SavedPasswordsPresenter::GetCorrespondingPasswordForms(
     const CredentialUIEntry& credential) const {
-  const auto range =
-      sort_key_to_password_forms_.equal_range(CreateSortKey(credential));
   std::vector<PasswordForm> forms;
-  base::ranges::transform(range.first, range.second, std::back_inserter(forms),
-                          [](const auto& pair) { return pair.second; });
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordsGrouping)) {
+    forms = password_grouping_info_.GetPasswordFormsVector(credential);
+  } else {
+    const auto range =
+        sort_key_to_password_forms_.equal_range(CreateSortKey(credential));
+    base::ranges::transform(range.first, range.second,
+                            std::back_inserter(forms),
+                            [](const auto& pair) { return pair.second; });
+  }
   return forms;
 }
 

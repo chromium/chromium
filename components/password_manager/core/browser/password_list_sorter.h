@@ -37,6 +37,8 @@ std::string CreateSortKey(const CredentialUIEntry& credential);
 // Creates a key to map passwords within an affiliated group with the same
 // username and password.
 std::string CreateUsernamePasswordSortKey(const PasswordForm& form);
+// Same as |CreateUsernamePasswordSortKey| for |PasswordForm|.
+std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential);
 
 // Sort entries of |list| based on sort key. The key is the concatenation of
 // origin, entry type (non-Android credential, Android w/ affiliated web realm

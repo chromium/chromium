@@ -89,22 +89,27 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
 }
 
 std::string CreateUsernamePasswordSortKey(const PasswordForm& form) {
+  return CreateUsernamePasswordSortKey(CredentialUIEntry(form));
+}
+
+std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential) {
   std::string key;
   // The origin isn't taken into account for normal credentials since we want to
   // group them together.
-  if (!form.blocked_by_user) {
-    key += base::UTF16ToUTF8(form.username_value) + kSortKeyPartsSeparator +
-           base::UTF16ToUTF8(form.password_value);
+  if (!credential.blocked_by_user) {
+    key += base::UTF16ToUTF8(credential.username) + kSortKeyPartsSeparator +
+           base::UTF16ToUTF8(credential.password);
 
     key += kSortKeyPartsSeparator;
-    if (!form.federation_origin.opaque())
-      key += form.federation_origin.host();
-    else
+    if (!credential.federation_origin.opaque()) {
+      key += credential.federation_origin.host();
+    } else {
       key += kSortKeyNoFederationSymbol;
+    }
   } else {
     // Key for blocked by user credential since it does not store username and
     // password. These credentials are not grouped together.
-    key = GetShownOrigin(CredentialUIEntry(form));
+    key = GetShownOrigin(credential);
   }
   return key;
 }

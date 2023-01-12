@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -1511,6 +1512,98 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,
                                ElementsAre(profile_store_form))));
+}
+
+// Tests whether editing passwords in a credential group modify them properly.
+TEST_F(SavedPasswordsPresenterTest, EditPasswordsInCredentialGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
+
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  PasswordForm form2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form2.url = GURL("https://m.test0.com");
+  form2.signon_realm = form2.url.spec();
+
+  store().AddLogin(form);
+  store().AddLogin(form2);
+
+  std::vector<password_manager::GroupedFacets> grouped_facets(1);
+  Facet facet;
+  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  grouped_facets[0].facets.push_back(std::move(facet));
+  Facet facet2;
+  facet2.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
+  grouped_facets[0].facets.push_back(std::move(facet2));
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+
+  RunUntilIdle();
+
+  std::vector<PasswordForm> original_forms = {form, form2};
+  CredentialUIEntry original_credential(original_forms);
+
+  // Prepare updated credential.
+  const std::u16string new_password = u"new_password";
+  CredentialUIEntry updated_credential(original_forms);
+  updated_credential.password = new_password;
+
+  // Expect successful passwords editing.
+  EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
+            presenter().EditSavedCredentials(CredentialUIEntry({form, form2}),
+                                             updated_credential));
+  base::Time date_password_modified = base::Time::Now();
+  RunUntilIdle();
+
+  // Prepare expected updated forms.
+  PasswordForm updated1 = form;
+  updated1.password_value = new_password;
+  updated1.date_password_modified = date_password_modified;
+  PasswordForm updated2 = form2;
+  updated2.password_value = new_password;
+  updated2.date_password_modified = date_password_modified;
+
+  EXPECT_THAT(store().stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(form.signon_realm, UnorderedElementsAre(updated1)),
+                  Pair(form2.signon_realm, ElementsAre(updated2))));
+}
+
+// Tests whether deleting passwords in a credential group works properly.
+TEST_F(SavedPasswordsPresenterTest, DeletePasswordsInCredentialGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
+
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  PasswordForm form2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form2.url = GURL("https://m.test0.com");
+  form2.signon_realm = form2.url.spec();
+
+  store().AddLogin(form);
+  store().AddLogin(form2);
+
+  std::vector<password_manager::GroupedFacets> grouped_facets(1);
+  Facet facet;
+  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  grouped_facets[0].facets.push_back(std::move(facet));
+  Facet facet2;
+  facet2.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
+  grouped_facets[0].facets.push_back(std::move(facet2));
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+
+  RunUntilIdle();
+
+  // Delete credential with multiple facets.
+  presenter().RemoveCredential(CredentialUIEntry({form, form2}));
+  RunUntilIdle();
+
+  EXPECT_TRUE(store().IsEmpty());
 }
 
 // Tests that duplicates of credentials are removed only from the store that

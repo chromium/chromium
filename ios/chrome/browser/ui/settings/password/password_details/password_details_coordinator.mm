@@ -255,7 +255,7 @@
                 isEqualToString:base::SysUTF16ToNSString(credential.password)];
       });
   if (it != self.mediator.credentials.end()) {
-    int index = it - self.mediator.credentials.begin();
+    int index = std::distance(self.mediator.credentials.begin(), it);
     DCHECK((unsigned long)index < self.mediator.credentials.size());
     [self showPasswordDeleteDialogWithOrigin:password.origin
                          compromisedPassword:password.isCompromised
