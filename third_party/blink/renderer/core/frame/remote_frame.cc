@@ -420,9 +420,14 @@ void RemoteFrame::AddResourceTimingFromChild(
   HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(Owner());
   DCHECK(owner_element);
 
+  if (!owner_element->HasPendingFallbackTimingInfo()) {
+    return;
+  }
+
   DOMWindowPerformance::performance(*owner_element->GetDocument().domWindow())
       ->AddResourceTiming(std::move(timing), owner_element->localName(),
                           owner_element->GetDocument().GetExecutionContext());
+  owner_element->DidReportResourceTiming();
 }
 
 void RemoteFrame::DidStartLoading() {

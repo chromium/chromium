@@ -23,6 +23,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
@@ -63,6 +64,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -478,11 +481,56 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
 void HTMLFrameOwnerElement::AddResourceTiming(const ResourceTimingInfo& info) {
   // Resource timing info should only be reported if the subframe is attached.
   DCHECK(ContentFrame() && ContentFrame()->IsLocalFrame());
+
+  // Make sure we don't double-report, e.g. in the case of restored iframes.
+  if (!HasPendingFallbackTimingInfo()) {
+    return;
+  }
+
   DOMWindowPerformance::performance(*GetDocument().domWindow())
       ->GenerateAndAddResourceTiming(info, localName());
+  DidReportResourceTiming();
+}
+
+bool HTMLFrameOwnerElement::HasPendingFallbackTimingInfo() const {
+  return !!fallback_timing_info_;
+}
+
+void HTMLFrameOwnerElement::DidReportResourceTiming() {
+  fallback_timing_info_.reset();
+}
+
+void HTMLFrameOwnerElement::WillPerformContainerInitiatedNavigation(
+    const KURL& url) {
+  if (!url.ProtocolIsInHTTPFamily() &&
+      !url.ProtocolIs(url::kUuidInPackageScheme)) {
+    return;
+  }
+
+  fallback_timing_info_ = ResourceTimingInfo::Create(
+      fetch_initiator_type_names::kDocument, base::TimeTicks::Now(),
+      mojom::blink::RequestContextType::IFRAME,
+      network::mojom::RequestDestination::kIframe,
+      network::mojom::RequestMode::kNavigate);
+  fallback_timing_info_->SetInitialURL(url);
+}
+
+// This will report fallback timing only if the "real" resource timing had not
+// been previously reported: e.g. a cross-origin iframe without TAO.
+void HTMLFrameOwnerElement::ReportFallbackResourceTimingIfNeeded() {
+  if (!fallback_timing_info_) {
+    return;
+  }
+  scoped_refptr<ResourceTimingInfo> resource_timing_info;
+  resource_timing_info.swap(fallback_timing_info_);
+  resource_timing_info->SetLoadResponseEnd(base::TimeTicks::Now());
+
+  DOMWindowPerformance::performance(*GetDocument().domWindow())
+      ->GenerateAndAddResourceTiming(*resource_timing_info, localName());
 }
 
 void HTMLFrameOwnerElement::DispatchLoad() {
+  ReportFallbackResourceTimingIfNeeded();
   DispatchScopedEvent(*Event::Create(event_type_names::kLoad));
 }
 

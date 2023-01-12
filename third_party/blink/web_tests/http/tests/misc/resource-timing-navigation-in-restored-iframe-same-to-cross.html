@@ -22,7 +22,7 @@ function runTest() {
             if (window.testRunner)
                 finishJSTest();
         });
-      iframe.contentWindow.postMessage('post-message-to-parent.html', '*');
+      iframe.contentWindow.postMessage('http://127.0.0.1:8080/misc/resources/post-message-to-parent.html', '*');
     }
 }
 
@@ -31,7 +31,7 @@ window.onload = runTest;
 </script>
 
 <p>Back-forward cache keeps and restores the resource timing of the iframe on
-back navigation. Back-forward cache needs to be disabled to run this test.
+  back navigation. Back-forward cache needs to be disabled to run this test.
 </p>
 
-<iframe id="target-iframe" src="http://localhost:8080/misc/resources/navigate-on-message.html"></iframe>
+<iframe id="target-iframe" src="resources/navigate-on-message.html"></iframe>

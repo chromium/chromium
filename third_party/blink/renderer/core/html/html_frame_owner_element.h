@@ -120,6 +120,10 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool IsDisplayNone() const override { return !embedded_content_view_; }
   mojom::blink::ColorScheme GetColorScheme() const override;
   bool ShouldLazyLoadChildren() const final;
+  void DidReportResourceTiming();
+  bool HasPendingFallbackTimingInfo() const;
+
+  void WillPerformContainerInitiatedNavigation(const KURL&);
 
   // For unit tests, manually trigger the UpdateContainerPolicy method.
   void UpdateContainerPolicyForTests() { UpdateContainerPolicy(); }
@@ -232,6 +236,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
       bool is_loading_attr_lazy,
       AutomaticLazyLoadReason auto_lazy_load_reason);
 
+  void ReportFallbackResourceTimingIfNeeded();
   // Check if the frame should be lazy-loaded and apply when conditions are
   // passed. Return true when lazy-load is applied.
   bool LazyLoadIfPossible(const KURL&,
@@ -247,6 +252,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   FramePolicy frame_policy_;
 
   Member<LazyLoadFrameObserver> lazy_load_frame_observer_;
+  scoped_refptr<ResourceTimingInfo> fallback_timing_info_;
   bool should_lazy_load_children_;
   bool is_swapping_frames_{false};
 };

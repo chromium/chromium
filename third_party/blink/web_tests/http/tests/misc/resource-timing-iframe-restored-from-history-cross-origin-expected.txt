@@ -2,7 +2,7 @@ ALERT: Initial URL loaded.
 ALERT: Final URL loaded.
 ALERT: Going back.
 ALERT: Final URL loaded.
-Tests that iframe restored from history without explicit navigation does not report resource timing.
+Tests that iframe restored from history does not report resource timing without explicitly setting src.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 

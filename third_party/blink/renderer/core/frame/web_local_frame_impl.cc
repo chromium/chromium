@@ -2718,7 +2718,6 @@ void WebLocalFrameImpl::SetIsNotOnInitialEmptyDocument() {
   DCHECK(GetFrame());
   GetFrame()->GetDocument()->OverrideIsInitialEmptyDocument();
   GetFrame()->Loader().SetIsNotOnInitialEmptyDocument();
-  GetFrame()->SetShouldSendResourceTimingInfoToParent(false);
 }
 
 bool WebLocalFrameImpl::IsOnInitialEmptyDocument() {

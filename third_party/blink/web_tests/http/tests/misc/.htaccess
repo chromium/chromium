@@ -10,8 +10,18 @@ ForceType "text/css; charset=utf-8"
 <Files "resource-timing-iframe-restored-from-history.html">
 Header set Cache-Control "no-store"
 </Files>
+# The following setting disables back-forward cache.
+<Files "resource-timing-iframe-restored-from-history-cross-origin.html">
+Header set Cache-Control "no-store"
+</Files>
 # resource-timing-navigation-in-restored-iframe.html is not compatible with back-forward cache.
 # The following setting disables back-forward cache.
 <Files "resource-timing-navigation-in-restored-iframe.html">
+Header set Cache-Control "no-store"
+</Files>
+<Files "resource-timing-navigation-in-restored-iframe-same-to-cross.html">
+Header set Cache-Control "no-store"
+</Files>
+<Files "resource-timing-navigation-in-restored-iframe-cross-to-same.html">
 Header set Cache-Control "no-store"
 </Files>

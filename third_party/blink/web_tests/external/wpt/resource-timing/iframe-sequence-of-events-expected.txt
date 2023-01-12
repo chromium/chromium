@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS A iframe should report its RT entry when the response is done and before it is completely loaded
-FAIL A iframe should report separate RT entries if its src changed from the outside assert_equals: expected 2 but got 1
-Harness: the test ran to completion.
-

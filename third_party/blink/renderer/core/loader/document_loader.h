@@ -553,8 +553,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void InitializeEmptyResponse();
 
-  bool ShouldReportTimingInfoToParent();
-
   void CommitData(BodyData& data);
   // Processes the data stored in |data_buffer_| or |decoded_data_buffer_|, used
   // to avoid appending data to the parser in a nested message loop.
@@ -741,7 +739,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   CommitReason commit_reason_ = CommitReason::kRegular;
   uint64_t main_resource_identifier_ = 0;
   scoped_refptr<ResourceTimingInfo> navigation_timing_info_;
-  bool report_timing_info_to_parent_ = false;
   WebScopedVirtualTimePauser virtual_time_pauser_;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager_;
   const KURL web_bundle_physical_url_;

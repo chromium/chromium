@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <script src="/js-test-resources/js-test.js"></script>
 <script>
-description('Tests that iframe restored from history without explicit navigation does not report resource timing.');
+description('Tests that iframe restored from history does not report resource timing without explicitly setting src.');
 window.jsTestIsAsync = true;
 
 function runTest() {
@@ -30,6 +30,6 @@ if (!sessionStorage.didNav) {
 </script>
 
 <p>Back-forward cache keeps and restores the resource timing of the iframe on
-back navigation. Back-forward cache needs to be disabled to run this test.
+  back navigation. Back-forward cache needs to be disabled to run this test.
 </p>
 <iframe></iframe>

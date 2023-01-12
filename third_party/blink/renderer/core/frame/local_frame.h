@@ -534,13 +534,6 @@ class CORE_EXPORT LocalFrame final
   void ForceSynchronousDocumentInstall(const AtomicString& mime_type,
                                        scoped_refptr<const SharedBuffer> data);
 
-  bool should_send_resource_timing_info_to_parent() const {
-    return should_send_resource_timing_info_to_parent_;
-  }
-  void SetShouldSendResourceTimingInfoToParent(bool value) {
-    should_send_resource_timing_info_to_parent_ = value;
-  }
-
   // Called when certain event listeners are added for the first time/last time,
   // making it possible/not possible to terminate the frame suddenly.
   void UpdateSuddenTerminationStatus(
@@ -961,7 +954,6 @@ class CORE_EXPORT LocalFrame final
   // FrameLoaderStateMachine if a real load has committed. Unfortunately, the
   // internal state tracked there is incorrect today. See
   // https://crbug.com/778318.
-  unsigned should_send_resource_timing_info_to_parent_ : 1;
   unsigned in_view_source_mode_ : 1;
   // Whether this frame is frozen or not. This is a copy of Page::IsFrozen()
   // and is stored here to ensure that we do not dispatch onfreeze() twice

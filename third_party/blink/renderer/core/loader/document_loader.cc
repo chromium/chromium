@@ -284,7 +284,6 @@ struct SameSizeAsDocumentLoader
   CommitReason commit_reason;
   uint64_t main_resource_identifier;
   scoped_refptr<ResourceTimingInfo> navigation_timing_info;
-  bool report_timing_info_to_parent;
   WebScopedVirtualTimePauser virtual_time_pauser;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager;
   const KURL web_bundle_physical_url;
@@ -1100,13 +1099,17 @@ void DocumentLoader::BodyLoadingFinished(
         probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
         completion_time, total_encoded_data_length, total_decoded_body_length,
         should_report_corb_blocking);
+
     if (response_.ShouldPopulateResourceTiming() ||
         is_error_page_for_failed_navigation_) {
-      // The response is being copied here to pass the Encoded and Decoded
-      // sizes.
-      // TODO(yoav): copy the sizes info directly.
       navigation_timing_info_->SetFinalResponse(response_);
-      if (report_timing_info_to_parent_) {
+
+      // We only automatically report resource timing when Timing-Allow-Origin
+      // passes, to avoid exposing cross-origin navigation behavior.
+      if (frame_->Owner() && (response_.TimingAllowPassed())) {
+        // The response is being copied here to pass the Encoded and Decoded
+        // sizes.
+        // TODO(yoav): copy the sizes info directly.
         navigation_timing_info_->SetLoadResponseEnd(completion_time);
         if (state_ >= kCommitted) {
           // Note that we currently lose timing info for empty documents,
@@ -1116,7 +1119,6 @@ void DocumentLoader::BodyLoadingFinished(
 
           frame_->Owner()->AddResourceTiming(*navigation_timing_info_);
         }
-        frame_->SetShouldSendResourceTimingInfoToParent(false);
       }
     }
     FinishedLoading(completion_time);
@@ -1250,26 +1252,6 @@ void DocumentLoader::HandleRedirect(
 
   DCHECK(!GetTiming().FetchStart().is_null());
   GetTiming().AddRedirect(url_before_redirect, url_after_redirect);
-}
-
-bool DocumentLoader::ShouldReportTimingInfoToParent() {
-  DCHECK(frame_);
-  // <iframe>s should report the initial navigation requested by the parent
-  // document, but not subsequent navigations.
-  if (!frame_->Owner())
-    return false;
-  // Note that this can be racy since this information is forwarded over IPC
-  // when crossing process boundaries.
-  if (!frame_->should_send_resource_timing_info_to_parent())
-    return false;
-  // Do not report iframe navigation that restored from history, since its
-  // location may have been changed after initial navigation,
-  if (load_type_ == WebFrameLoadType::kBackForward) {
-    // ...and do not report subsequent navigations in the iframe too.
-    frame_->SetShouldSendResourceTimingInfoToParent(false);
-    return false;
-  }
-  return true;
 }
 
 void DocumentLoader::ConsoleError(const String& message) {
@@ -1727,8 +1709,6 @@ void DocumentLoader::StartLoadingInternal() {
       network::mojom::RequestDestination::kIframe,
       network::mojom::RequestMode::kNavigate);
   navigation_timing_info_->SetInitialURL(url_);
-  report_timing_info_to_parent_ = ShouldReportTimingInfoToParent();
-
   virtual_time_pauser_ =
       frame_->GetFrameScheduler()->CreateWebScopedVirtualTimePauser(
           url_.GetString(),
