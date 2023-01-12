@@ -51,7 +51,7 @@ public class SafeBrowsingFragment extends Fragment
 
     private void initialRadioButtonConfig() {
         @SafeBrowsingState
-        int safeBrowsingState = SafeBrowsingBridge.getSafeBrowsingState();
+        int safeBrowsingState = PrivacyGuideUtils.getSafeBrowsingState();
         switch (safeBrowsingState) {
             case (SafeBrowsingState.ENHANCED_PROTECTION):
                 mEnhancedProtection.setChecked(true);

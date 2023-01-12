@@ -40,7 +40,7 @@ public class HistorySyncFragment
         mInitialKeepEverythingSynced = mSyncService.hasKeepEverythingSynced();
 
         SwitchCompat historySyncSwitch = view.findViewById(R.id.history_sync_switch);
-        historySyncSwitch.setChecked(isHistoryEnabled());
+        historySyncSwitch.setChecked(PrivacyGuideUtils.isHistorySyncEnabled());
 
         historySyncSwitch.setOnCheckedChangeListener(this);
     }
@@ -59,10 +59,5 @@ public class HistorySyncFragment
         }
 
         mSyncService.setSelectedTypes(keepEverythingSynced, syncTypes);
-    }
-
-    private boolean isHistoryEnabled() {
-        Set<Integer> syncTypes = mSyncService.getSelectedTypes();
-        return syncTypes.contains(UserSelectableType.HISTORY);
     }
 }

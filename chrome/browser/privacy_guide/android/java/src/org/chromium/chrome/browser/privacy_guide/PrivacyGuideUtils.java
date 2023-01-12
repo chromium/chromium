@@ -19,8 +19,6 @@ import java.util.Set;
 /**
  * A utility class for Privacy Guide that fetches the current state of {@link
  * PrivacyGuideFragment.FragmentType}s.
- *
- * TODO(crbug.com/1393960): Utilize the methods on this class on the PG fragments
  */
 class PrivacyGuideUtils {
     public static boolean isMsbbEnabled() {

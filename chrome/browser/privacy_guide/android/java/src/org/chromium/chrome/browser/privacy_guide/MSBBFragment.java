@@ -28,8 +28,7 @@ public class MSBBFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         SwitchCompat msbbSwitch = view.findViewById(R.id.msbb_switch);
-        msbbSwitch.setChecked(UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile()));
+        msbbSwitch.setChecked(PrivacyGuideUtils.isMsbbEnabled());
 
         msbbSwitch.setOnCheckedChangeListener((button, isChecked) -> {
             PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(isChecked);

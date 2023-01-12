@@ -68,7 +68,7 @@ public class CookiesFragment extends Fragment implements RadioGroup.OnCheckedCha
         }
 
         @CookieControlsMode
-        int cookieControlsMode = getCookieControlsMode();
+        int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode();
         switch (cookieControlsMode) {
             case CookieControlsMode.INCOGNITO_ONLY:
                 mBlockThirdPartyIncognito.setChecked(true);
@@ -88,10 +88,5 @@ public class CookiesFragment extends Fragment implements RadioGroup.OnCheckedCha
         PrivacyGuideMetricsDelegate.recordMetricsOnCookieControlsChange(cookieControlsMode);
         UserPrefs.get(Profile.getLastUsedRegularProfile())
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, cookieControlsMode);
-    }
-
-    private @CookieControlsMode int getCookieControlsMode() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                .getInteger(PrefNames.COOKIE_CONTROLS_MODE);
     }
 }
