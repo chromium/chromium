@@ -442,37 +442,12 @@ try_.builder(
     ),
 )
 
-# TODO(crbug/1182468) Remove when experiment is done.
-try_.builder(
-    name = "android-pie-arm64-coverage-experimental-rel",
-    mirrors = ["ci/android-pie-arm64-coverage-experimental-rel"],
-    builderless = True,
-    cores = 16,
-    ssd = True,
-    main_list_view = "try",
-    goma_backend = None,
-    tryjob = try_.job(
-        experiment_percentage = 3,
-    ),
-    use_clang_coverage = True,
-)
-
 try_.builder(
     name = "android-pie-x86-rel",
     mirrors = [
         "ci/android-pie-x86-rel",
     ],
     goma_backend = None,
-)
-
-# TODO(crbug/1182468) Remove when coverage is enabled on CQ.
-try_.builder(
-    name = "android-pie-arm64-coverage-rel",
-    mirrors = ["ci/android-code-coverage-native"],
-    cores = 16,
-    ssd = True,
-    goma_backend = None,
-    use_clang_coverage = True,
 )
 
 try_.builder(

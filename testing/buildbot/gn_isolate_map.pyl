@@ -1934,10 +1934,6 @@
     "label": "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
     "type": "console_test_launcher",
   },
-  "validate_expectations": {
-    "label": "//chrome/android:validate_expectations",
-    "type": "additional_compile_target",
-  },
   "views_examples_unittests": {
     "label": "//ui/views/examples:views_examples_unittests",
     "type": "windowed_test_launcher",

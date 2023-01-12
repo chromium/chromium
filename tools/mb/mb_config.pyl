@@ -110,9 +110,6 @@
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-nougat-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      # TODO(crbug/1182468) Remove android coverage bots after coverage is
-      # running on CQ.
-      'android-pie-arm64-coverage-experimental-rel': 'android_release_bot_arm64_webview_monochrome_expectations_reclient',
       'android-pie-arm64-rel': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
       'android-pie-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-weblayer-with-aosp-webview-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
@@ -1004,10 +1001,6 @@
       'android-nougat-x86-rel-inverse-fyi': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
       'android-perfetto-rel': 'perfetto_release_trybot_android',
-      # TODO(crbug/1182468) Remove android coverage bots after coverage is
-      # running on CQ.
-      'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage_reclient',
-      'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_monochrome_native_coverage_reclient',
       'android-pie-arm64-dbg': 'android_debug_trybot_arm64_reclient',
       # TODO(crbug.com/1367393): Remove after android-arm64-rel is fully enabled.
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
@@ -1600,13 +1593,6 @@
       'official_optimize_reclient_trybot', 'android_without_codecs',
     ],
 
-    # TODO(crbug/1182468) Remove these android coverage expectations after
-    # existing CQ bot is running them.
-    'android_release_bot_arm64_webview_monochrome_expectations_reclient': [
-      'android', 'release_bot_reclient', 'arm64', 'strip_debug_info',
-      'webview_monochrome', 'fail_on_android_expectations',
-    ],
-
     'android_release_bot_minimal_symbols': [
       'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
     ],
@@ -1703,20 +1689,6 @@
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
       'no_secondary_abi', 'no_goma', 'no_reclient',
-    ],
-
-    # TODO(crbug/1182468) Remove these android coverage expectations after
-    # existing CQ bot is running them.
-    'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'webview_monochrome', 'fail_on_android_expectations',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome_native_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'webview_monochrome',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'android_release_trybot_arm64_webview_monochrome_reclient': [

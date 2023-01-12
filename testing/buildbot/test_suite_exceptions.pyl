@@ -1242,14 +1242,12 @@
   'chrome_public_smoke_test': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
   },
   'chrome_public_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
       'Oreo Phone Tester': {
@@ -1393,7 +1391,6 @@
       'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
   },
   'chrome_public_test_vr_apk-vega': {
@@ -1415,7 +1412,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
       'android-12-x64-rel': {
@@ -1708,11 +1704,6 @@
           ],
         },
       },
-      'android-pie-arm64-coverage-experimental-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
-        ],
-      },
       'android-pie-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter',
@@ -1837,7 +1828,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
       'android-11-x86-rel': {
@@ -2087,12 +2077,6 @@
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
     ],
     'modifications': {
-      'android-pie-arm64-coverage-experimental-rel': {
-        'args': [
-          # https://crbug.com/1404782
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests_coverage.filter',
-        ],
-      },
       'fuchsia-fyi-x64-asan': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.gin_unittests.filter',
@@ -2214,11 +2198,6 @@
       'android-nougat-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.gl_tests.filter',
-        ],
-      },
-      'android-pie-arm64-coverage-experimental-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter', # https://crbug.com/1034007
         ],
       },
       'android-pie-arm64-rel': {
@@ -2688,7 +2667,6 @@
   'mojo_test_apk': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
   },
   'mojo_unittests': {
@@ -2976,7 +2954,6 @@
       'android-asan',
       'android-code-coverage',
       'android-code-coverage-native',
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
       'android-pie-arm64-rel',
       'android-pie-x86-rel',
       'android-11-x86-rel',
@@ -4045,7 +4022,6 @@
       'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
       'Oreo Phone Tester': {
