@@ -9,7 +9,9 @@
 
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
+import {Msgs} from '../common/msgs.js';
 import {TtsInterface} from '../common/tts_interface.js';
+import {Personality, QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
 import {CompositeTts} from './composite_tts.js';
@@ -66,6 +68,32 @@ export class TtsBackground {
           'initialized.');
     }
     return TtsBackground.primaryTts_;
+  }
+
+  static resetTextToSpeechSettings() {
+    const rate = ChromeVox.tts.getDefaultProperty('rate');
+    const pitch = ChromeVox.tts.getDefaultProperty('pitch');
+    const volume = ChromeVox.tts.getDefaultProperty('volume');
+    chrome.settingsPrivate.setPref('settings.tts.speech_rate', rate);
+    chrome.settingsPrivate.setPref('settings.tts.speech_pitch', pitch);
+    chrome.settingsPrivate.setPref('settings.tts.speech_volume', volume);
+    chrome.storage.local.remove('voiceName');
+    TtsBackground.primary.updateVoice('', () => {
+      // Ensure this announcement doesn't get cut off by speech triggered by
+      // updateFromPrefs_().
+      // Copy properties from Personality.ANNOTATION and add the
+      // doNotInterrupt property.
+      const speechProperties = {};
+      const sourceProperties = Personality.ANNOTATION || {};
+      for (const [key, value] of Object.entries(sourceProperties)) {
+        speechProperties[key] = value;
+      }
+      speechProperties['doNotInterrupt'] = true;
+
+      ChromeVox.tts.speak(
+          Msgs.getMsg('announce_tts_default_settings'), QueueMode.FLUSH,
+          new TtsSpeechProperties(speechProperties));
+    });
   }
 }
 

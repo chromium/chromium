@@ -87,9 +87,4 @@ export class TtsInterface {
    * @return {boolean} Whether speech is now on or off.
    */
   toggleSpeechOnOrOff() {}
-
-  /**
-   * Sets the rate, pitch, and volume TTS Settings to their defaults.
-   */
-  resetTextToSpeechSettings() {}
 }

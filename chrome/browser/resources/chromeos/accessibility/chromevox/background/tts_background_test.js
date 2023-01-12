@@ -118,7 +118,7 @@ TEST_F('ChromeVoxBackgroundTtsTest', 'UpdateVoice', function() {
     if (task.setup) {
       task.setup();
     }
-    tts.updateVoice_(task.testVoice, this.newCallback(function(actualVoice) {
+    tts.updateVoice(task.testVoice, this.newCallback(function(actualVoice) {
       assertEquals(task.expectedVoice, actualVoice);
       flushNextTask();
     }));

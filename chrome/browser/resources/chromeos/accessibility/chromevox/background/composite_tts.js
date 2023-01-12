@@ -114,9 +114,4 @@ export class CompositeTts {
         engine => value = value || engine.toggleSpeechOnOrOff());
     return value;
   }
-
-  /** @override */
-  resetTextToSpeechSettings() {
-    this.ttsEngines_.forEach(engine => engine.resetTextToSpeechSettings());
-  }
 }

@@ -92,7 +92,4 @@ export class ConsoleTts {
    * @override
    */
   toggleSpeechOnOrOff() {}
-
-  /** @override */
-  resetTextToSpeechSettings() {}
 }

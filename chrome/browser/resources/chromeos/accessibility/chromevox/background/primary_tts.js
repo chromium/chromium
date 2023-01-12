@@ -99,19 +99,19 @@ export class PrimaryTts extends AbstractTts {
     if (window.speechSynthesis) {
       window.speechSynthesis.onvoiceschanged = function() {
         chrome.storage.local.get({voiceName: ''}, function(items) {
-          this.updateVoice_(items.voiceName);
+          this.updateVoice(items.voiceName);
         }.bind(this));
       }.bind(this);
     } else {
       // SpeechSynthesis API is not available on chromecast. Call
-      // updateVoice_ to set the one and only voice as the current
+      // updateVoice to set the one and only voice as the current
       // voice.
-      this.updateVoice_('');
+      this.updateVoice('');
     }
 
     chrome.storage.onChanged.addListener(function(changes, namespace) {
       if (changes.voiceName) {
-        this.updateVoice_(changes.voiceName.newValue);
+        this.updateVoice(changes.voiceName.newValue);
       }
     }.bind(this));
 
@@ -593,7 +593,7 @@ export class PrimaryTts extends AbstractTts {
    * @private
    */
   onError_(errorMessage) {
-    this.updateVoice_(this.currentVoice);
+    this.updateVoice(this.currentVoice);
   }
 
   /**
@@ -773,9 +773,8 @@ export class PrimaryTts extends AbstractTts {
    * @param {string} voiceName Voice name to set.
    * @param {function(string) : void=} opt_callback Called when the voice is
    * determined.
-   * @private
    */
-  updateVoice_(voiceName, opt_callback) {
+  updateVoice(voiceName, opt_callback) {
     chrome.tts.getVoices(voices => {
       const systemVoice = {voiceName: constants.SYSTEM_VOICE};
       voices.unshift(systemVoice);
@@ -832,36 +831,6 @@ export class PrimaryTts extends AbstractTts {
       ChromeVox.tts.speak(
           announcement, ttsTypes.QueueMode.FLUSH,
           ttsTypes.Personality.ANNOTATION);
-    });
-  }
-
-  /** @override */
-  resetTextToSpeechSettings() {
-    super.resetTextToSpeechSettings();
-
-    const rate = ChromeVox.tts.getDefaultProperty('rate');
-    const pitch = ChromeVox.tts.getDefaultProperty('pitch');
-    const volume = ChromeVox.tts.getDefaultProperty('volume');
-    chrome.settingsPrivate.setPref('settings.tts.speech_rate', rate);
-    chrome.settingsPrivate.setPref('settings.tts.speech_pitch', pitch);
-    chrome.settingsPrivate.setPref('settings.tts.speech_volume', volume);
-    chrome.storage.local.remove('voiceName');
-    this.updateVoice_('', () => {
-      // Ensure this announcement doesn't get cut off by speech triggered by
-      // updateFromPrefs_().
-      // Copy properties from ttsTypes.Personality.ANNOTATION and add the
-      // doNotInterrupt property.
-      const speechProperties = {};
-      const sourceProperties = ttsTypes.Personality.ANNOTATION || {};
-      for (const [key, value] of Object.entries(sourceProperties)) {
-        speechProperties[key] = value;
-      }
-      speechProperties['doNotInterrupt'] = true;
-
-      ChromeVox.tts.speak(
-          Msgs.getMsg('announce_tts_default_settings'),
-          ttsTypes.QueueMode.FLUSH,
-          new ttsTypes.TtsSpeechProperties(speechProperties));
     });
   }
 
