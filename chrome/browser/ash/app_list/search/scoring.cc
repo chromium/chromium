@@ -14,14 +14,15 @@ double Scoring::FinalScore() const {
   if (filtered_ && !override_filter_for_test_) {
     return -1.0;
   }
-  return ftrl_result_score_;
+  return ftrl_result_score_ * keyword_multiplier_;
 }
 
 double Scoring::BestMatchScore() const {
   if (filtered_) {
     return -1.0;
   } else {
-    return std::max(mrfu_result_score_, normalized_relevance_);
+    return std::max(mrfu_result_score_, normalized_relevance_) *
+           keyword_multiplier_;
   }
 }
 
@@ -51,6 +52,10 @@ void Scoring::set_mrfu_result_score(double mrfu_result_score) {
 
 void Scoring::set_ftrl_result_score(double ftrl_result_score) {
   ftrl_result_score_ = ftrl_result_score;
+}
+
+void Scoring::set_keyword_multiplier(double keyword_multiplier) {
+  keyword_multiplier_ = keyword_multiplier;
 }
 
 void Scoring::set_continue_rank(int continue_rank) {

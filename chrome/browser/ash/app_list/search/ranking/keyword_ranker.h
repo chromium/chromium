@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_KEYWORD_RANKER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_KEYWORD_RANKER_H_
 
+#include <vector>
+
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
@@ -25,6 +27,10 @@ class KeywordRanker : public Ranker {
              ResultsMap& results,
              CategoriesList& categories) override;
   void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
+
+ private:
+  std::u16string last_query_;
+  std::vector<ProviderType> matched_providers_;
 };
 
 }  // namespace app_list

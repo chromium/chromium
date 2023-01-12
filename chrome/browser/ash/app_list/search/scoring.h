@@ -36,6 +36,9 @@ class Scoring {
   void set_ftrl_result_score(double ftrl_result_score);
   double ftrl_result_score() const { return ftrl_result_score_; }
 
+  void set_keyword_multiplier(double keyword_multiplier);
+  double keyword_multiplier() const { return keyword_multiplier_; }
+
   void set_continue_rank(int continue_rank);
   int continue_rank() const { return continue_rank_; }
 
@@ -58,6 +61,7 @@ class Scoring {
   // due to a race condition with the test beginning before the
   // RemovedResultsRanker is initialized.
   bool override_filter_for_test_ = false;
+  double keyword_multiplier_ = 1.0;
 
   // Used only for results in the Continue section. Continue results are first
   // ordered by |continue_rank|, and then by their display score. -1 indicates

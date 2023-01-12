@@ -7421,6 +7421,7 @@ test("unit_tests") {
       "../browser/ash/app_list/search/ranking/best_match_ranker_unittest.cc",
       "../browser/ash/app_list/search/ranking/filtering_ranker_unittest.cc",
       "../browser/ash/app_list/search/ranking/ftrl_ranker_unittest.cc",
+      "../browser/ash/app_list/search/ranking/keyword_ranker_unittest.cc",
       "../browser/ash/app_list/search/ranking/mrfu_ranker_unittest.cc",
       "../browser/ash/app_list/search/ranking/query_highlighter_unittest.cc",
       "../browser/ash/app_list/search/ranking/removed_results_proto_unittest.cc",
