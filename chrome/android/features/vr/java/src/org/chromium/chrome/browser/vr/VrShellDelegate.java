@@ -15,7 +15,6 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -374,8 +373,6 @@ public class VrShellDelegate
      * platform that this app would like to be launched in VR when the device enters VR.
      */
     public static void maybeRegisterVrEntryHook(final Activity activity) {
-        // Daydream is not supported on pre-N devices.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
         if (sInstance != null) return; // Will be handled in onResume.
         if (!VrModuleProvider.getDelegate().activitySupportsVrBrowsing(activity)
                 && sRegisteredVrAssetsComponent) {
@@ -1241,7 +1238,6 @@ public class VrShellDelegate
             // animation of the stale screenshot finishes and our black overlay is shown. We then
             // cancel the stay_hidden animation, revealing our black overlay, which we then replace
             // with VR UI.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
             // Just in case any platforms/users modify the window animation scale, we'll multiply
             // our wait time by that scale value.
             float scale = Settings.Global.getFloat(

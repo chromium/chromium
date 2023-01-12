@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Pair;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.Callback;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -172,7 +170,6 @@ public final class AuthenticatorImpl implements Authenticator {
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.N)
     public void isUserVerifyingPlatformAuthenticatorAvailable(
             final IsUserVerifyingPlatformAuthenticatorAvailable_Response callback) {
         IsUserVerifyingPlatformAuthenticatorAvailable_Response decoratedCallback = (isUvpaa) -> {

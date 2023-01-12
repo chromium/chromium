@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
-import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -38,7 +37,6 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.components.messages.MessageStateHandler.Position;
@@ -427,9 +425,7 @@ public class MessageQueueManagerTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
     public void testMessageOnMultipleScopeTypes() {
-        // DO not mock WindowAndroid on L
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(delegate);

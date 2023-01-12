@@ -645,9 +645,6 @@
       </message>
 
       <!-- Media Capture and Streams -->
-      <message name="IDS_MEDIA_CAPTURE_NOTIFICATION_APP_NAME_SEPARATOR" desc="A separator between the app name and notification message.">
-        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> - <ph name="NOTIFICATION_MESSAGE">%2$s<ex>Accessing video input</ex></ph>
-      </message>
       <message name="IDS_VIDEO_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a WebRTC video call is in progress.">
         A site is using your camera
       </message>

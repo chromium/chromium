@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.isTrustedWebActivity;
 
 import android.net.Uri;
-import android.os.Build;
 import android.os.RemoteException;
 
 import androidx.test.filters.MediumTest;
@@ -25,7 +24,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -99,7 +97,6 @@ public class TrustedWebActivityLocationDelegationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "crbug.com/1115568")
     public void getLocationFromChrome_noTwaService() throws TimeoutException, Exception {
         String packageName = "other.package.name";
         String testPage = mCustomTabActivityTestRule.getTestServer().getURLWithHostName(

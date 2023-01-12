@@ -167,9 +167,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // This code should not be reachable on older Android versions.
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
-
         super.onCreate(savedInstanceState);
         final Context context = getContext();
 

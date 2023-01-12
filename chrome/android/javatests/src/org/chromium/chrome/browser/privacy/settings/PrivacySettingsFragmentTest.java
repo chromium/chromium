@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -40,7 +39,6 @@ import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
@@ -233,11 +231,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
-            message = "Invokes IncognitoReauthSettingUtils#isDeviceScreenLockEnabled internally"
-                    + "which is available only from M.")
-    public void
-    testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
+    public void testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
 
@@ -252,11 +246,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
-            message = "Invokes IncognitoReauthSettingUtils#isDeviceScreenLockEnabled internally"
-                    + "which is available only from M.")
-    public void
-    testRenderIncognitoLockView_DeviceScreenLockEnabled() throws IOException {
+    public void testRenderIncognitoLockView_DeviceScreenLockEnabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
 

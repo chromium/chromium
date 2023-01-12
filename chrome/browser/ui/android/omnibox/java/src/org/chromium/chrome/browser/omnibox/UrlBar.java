@@ -453,19 +453,11 @@ public abstract class UrlBar extends AutocompleteEditText {
             return true;
         }
 
+        // Working around a platform bug (b/25562038) that was fixed in N that can throw
+        // NullPointerException during text selection. We let it happen rather than catching it
+        // since there can be a different issue here that we might want to know about.
         try {
             return super.onTouchEvent(event);
-        } catch (NullPointerException e) {
-            // Working around a platform bug (b/25562038) that was fixed in N that can throw an
-            // exception during text selection. We just swallow the exception. The outcome is that
-            // the text selection handle doesn't show.
-
-            // If this happens on N or later, there's a different issue here that we might want to
-            // know about.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) throw e;
-
-            Log.w(TAG, "Ignoring NPE in UrlBar#onTouchEvent.", e);
-            return true;
         } catch (IndexOutOfBoundsException e) {
             // Work around crash of unknown origin (https://crbug.com/837419).
             Log.w(TAG, "Ignoring IndexOutOfBoundsException in UrlBar#onTouchEvent.", e);

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.portals;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -35,7 +34,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -587,7 +585,6 @@ public class PortalsTest {
     @Test
     @LargeTest
     @Feature({"Portals"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @DisabledTest(message = "https://crbug.com/1174005")
     public void testMediaCaptureNotificationVisibleAfterAdoption() throws Exception {
         String mainUrl = mTestServer.getURL("/chrome/test/data/android/portals/media-capture.html");
@@ -622,7 +619,6 @@ public class PortalsTest {
     @Test
     @LargeTest
     @Feature({"Portals"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @DisabledTest(message = "https://crbug.com/1184291")
     public void testMediaNotificationDisappearsAfterActivation() throws Exception {
         String mainUrl =

@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.signin;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.os.Build.VERSION_CODES;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -23,7 +21,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -45,7 +42,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(sdk_is_less_than = VERSION_CODES.LOLLIPOP_MR1)
 public class SigninCheckerTest {
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("test@gmail.com");

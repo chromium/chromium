@@ -142,9 +142,7 @@ public class ClearBrowsingDataFragmentTest {
     /**  Waits for the progress dialog to disappear from the given CBD preference. */
     private void waitForProgressToComplete(final ClearBrowsingDataFragment preferences) {
         // For pre-M, give it a bit more time to complete.
-        final long kDelay = Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-                ? 10000L
-                : CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+        final long kDelay = CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(preferences.getProgressDialog(), Matchers.nullValue());

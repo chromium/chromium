@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.os.Build;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -65,10 +64,6 @@ public class VrViewContainer extends FrameLayout {
     public void draw(Canvas canvas) {
         if (mSurface == null) return;
         try (TraceEvent e = TraceEvent.scoped("VrViewContainer.dispatchDraw")) {
-            // The linter doesn't understand O_MR1+, so we need this line here to prevent the
-            // linter from complaining about lockHardwareCanvas. This won't be reached pre-N
-            // anyways.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
             // This should be replaced with using HardwareCanvas once HardwareCanvas is more
             // stable. HardwareCanvas can be >10x faster than the software canvas rendering
             // for Android UI.

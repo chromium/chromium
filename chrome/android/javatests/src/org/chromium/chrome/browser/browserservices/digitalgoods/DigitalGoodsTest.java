@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivity
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_NAME;
 
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 
@@ -135,33 +134,6 @@ public class DigitalGoodsTest {
             }
         });
         helper.waitForFirst();
-    }
-
-    /**
-     * Tests that calling JavaScript methods correctly navigates all the way through to the TWA.
-     */
-    @Test
-    @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N)
-    @DisableIf.Device(type = {UiDisableIf.TABLET})
-    public void
-    jsToTwaConnected() throws TimeoutException {
-        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
-
-        // Note: The response code much be 0 for success otherwise it doesn't propagate through to
-        // JS.
-        setTwaServiceResponse(GetDetailsConverter.RESPONSE_COMMAND,
-                GetDetailsConverter.createResponseBundle(0,
-                        GetDetailsConverter.createItemDetailsBundle(
-                                "id1", "Item 1", "Desc 1", "GBP", "10")));
-
-        exec("populateDigitalGoodsService()");
-        waitForNonNull("digitalGoodsService");
-        exec("populateItemDetails(['id1'])");
-        waitForNonNull("itemDetails");
-
-        assertEquals("\"Item 1\"", exec("itemDetails[0].title"));
     }
 
     private DigitalGoodsImpl createFixedDigitalGoods() {

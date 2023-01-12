@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
-import static android.os.Build.VERSION_CODES.N;
 import static android.os.Build.VERSION_CODES.N_MR1;
 
 import static org.hamcrest.Matchers.is;
@@ -298,7 +297,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipeOnlyTab() {
         initializeLayoutManagerPhone(1, 0, 0, TabModel.INVALID_TAB_INDEX, false);
@@ -311,7 +309,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipeOnlyTabIncognito() {
         initializeLayoutManagerPhone(0, 1, TabModel.INVALID_TAB_INDEX, 0, true);
@@ -324,7 +321,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipeNextTab() {
         initializeLayoutManagerPhone(2, 0, 0, TabModel.INVALID_TAB_INDEX, false);
@@ -336,7 +332,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipePrevTab() {
         initializeLayoutManagerPhone(2, 0, 1, TabModel.INVALID_TAB_INDEX, false);
@@ -348,7 +343,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipeNextTabNone() {
         initializeLayoutManagerPhone(2, 0, 1, TabModel.INVALID_TAB_INDEX, false);
@@ -360,7 +354,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipePrevTabNone() {
         initializeLayoutManagerPhone(2, 0, 0, TabModel.INVALID_TAB_INDEX, false);
@@ -372,7 +365,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipeNextTabIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 0, true);
@@ -384,7 +376,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipePrevTabIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 1, true);
@@ -396,7 +387,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipeNextTabNoneIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 1, true);
@@ -408,7 +398,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @UiThreadTest
     public void testToolbarSideSwipePrevTabNoneIncognito() {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 0, true);
@@ -507,7 +496,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     // TODO(crbug.com/1108496): Update the test to use Assert.assertThat for better failure message.
     @Test
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @MediumTest
     public void testLayoutObserverNotification_ShowAndHide_ToolbarSwipe() throws TimeoutException {
         LayoutObserverCallbackHelper startedShowingCallback = new LayoutObserverCallbackHelper();
@@ -553,7 +541,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_is_greater_than = N_MR1, message = "crbug.com/1139943")
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @DisabledTest(message = "crbug.com/1216438") // Failures on N.
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
     public void testLayoutObserverNotification_ShowAndHide_TabSwitcher() throws TimeoutException {
@@ -609,7 +596,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     @Test
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     @MediumTest
     public void testLayoutObserverNotification_ShowAndHide_SimpleAnimation()
             throws TimeoutException {
@@ -721,7 +707,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_is_greater_than = N_MR1, message = "crbug.com/1139943")
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1190231")
     public void testLayoutObserverNotification_TabSelectionHinted() throws TimeoutException {
         CallbackHelper tabSelectionHintedCallback = new CallbackHelper();
 

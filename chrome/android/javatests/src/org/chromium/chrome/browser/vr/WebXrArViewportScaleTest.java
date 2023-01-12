@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.WebXrArTestFramework.PAGE_LOAD_TIMEOUT_S;
 
-import android.os.Build;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -21,7 +19,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.ArPlaybackFile;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -39,7 +36,6 @@ import java.util.concurrent.Callable;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=WebXR,WebXRARModule,WebXRHitTest,LogJsConsoleMessages"})
-@MinAndroidSdkLevel(Build.VERSION_CODES.N) // WebXR for AR is only supported on N+
 public class WebXrArViewportScaleTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =

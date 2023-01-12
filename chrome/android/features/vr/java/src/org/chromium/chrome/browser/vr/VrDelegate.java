@@ -99,9 +99,6 @@ public abstract class VrDelegate implements VrHandler, BackPressHandler {
     public abstract boolean isDaydreamCurrentViewer();
 
     public boolean willChangeDensityInVr(WindowAndroid window) {
-        // Only N+ support launching in VR at all, other OS versions don't care about this.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false;
-
         // If the screen density changed while in VR, we have to disable the VR browser as java UI
         // used or created by VR browsing will be broken.
         // TODO: make work.

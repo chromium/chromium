@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -23,7 +22,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.vr.ndk.base.AndroidCompat;
@@ -413,7 +411,6 @@ public class VrShell extends GvrLayout
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     public void initializeNative(boolean forWebVr, boolean isStandaloneVrDevice) {
         Tab tab = mCurrentTabSupplier.get();
         if (mIsInOverviewModeSupplier.get() || tab == null) {
