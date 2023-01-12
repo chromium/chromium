@@ -186,14 +186,14 @@ public class BackgroundTaskJobServiceTest {
             int taskId, Long schedulingTimeMs, Long windowEndTimeForDeadlineMs) {
         PersistableBundle extras = new PersistableBundle();
         if (windowEndTimeForDeadlineMs != null) {
-            extras.putLong(BackgroundTaskSchedulerJobService.BACKGROUND_TASK_SCHEDULE_TIME_KEY,
+            extras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_SCHEDULE_TIME_KEY,
                     schedulingTimeMs);
-            extras.putLong(BackgroundTaskSchedulerJobService.BACKGROUND_TASK_END_TIME_KEY,
+            extras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY,
                     windowEndTimeForDeadlineMs);
         }
         PersistableBundle taskExtras = new PersistableBundle();
         extras.putPersistableBundle(
-                BackgroundTaskSchedulerJobService.BACKGROUND_TASK_EXTRAS_KEY, taskExtras);
+                BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_EXTRAS_KEY, taskExtras);
 
         return new JobParameters(null /* callback */, taskId, extras, null /* transientExtras */,
                 null /* clipData */, 0 /* clipGrantFlags */, false /* overrideDeadlineExpired */,
@@ -205,20 +205,18 @@ public class BackgroundTaskJobServiceTest {
             int taskId, Long schedulingTimeMs, Long intervalForDeadlineMs, Long flexForDeadlineMs) {
         PersistableBundle extras = new PersistableBundle();
         if (schedulingTimeMs != null) {
-            extras.putLong(BackgroundTaskSchedulerJobService.BACKGROUND_TASK_SCHEDULE_TIME_KEY,
+            extras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_SCHEDULE_TIME_KEY,
                     schedulingTimeMs);
-            extras.putLong(
-                    BackgroundTaskSchedulerGcmNetworkManager.BACKGROUND_TASK_INTERVAL_TIME_KEY,
+            extras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_INTERVAL_TIME_KEY,
                     intervalForDeadlineMs);
             if (flexForDeadlineMs != null) {
-                extras.putLong(
-                        BackgroundTaskSchedulerGcmNetworkManager.BACKGROUND_TASK_FLEX_TIME_KEY,
+                extras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_FLEX_TIME_KEY,
                         flexForDeadlineMs);
             }
         }
         PersistableBundle taskExtras = new PersistableBundle();
         extras.putPersistableBundle(
-                BackgroundTaskSchedulerJobService.BACKGROUND_TASK_EXTRAS_KEY, taskExtras);
+                BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_EXTRAS_KEY, taskExtras);
 
         return new JobParameters(null /* callback */, taskId, extras, null /* transientExtras */,
                 null /* clipData */, 0 /* clipGrantFlags */, false /* overrideDeadlineExpired */,

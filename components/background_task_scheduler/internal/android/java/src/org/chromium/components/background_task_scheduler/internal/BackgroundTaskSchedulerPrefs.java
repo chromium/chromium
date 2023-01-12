@@ -6,7 +6,6 @@ package org.chromium.components.background_task_scheduler.internal;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 
@@ -275,26 +274,6 @@ public class BackgroundTaskSchedulerPrefs {
     private static SharedPreferences getSharedPreferences() {
         return ContextUtils.getApplicationContext().getSharedPreferences(
                 PREF_PACKAGE, Context.MODE_PRIVATE);
-    }
-
-    /** Gets the last SDK version on which this instance ran. Defaults to current SDK version. */
-    public static int getLastSdkVersion() {
-        try (TraceEvent te = TraceEvent.scoped("BackgroundTaskSchedulerPrefs.getLastSdkVersion")) {
-            int sdkInt = ContextUtils.getAppSharedPreferences().getInt(
-                    KEY_LAST_SDK_VERSION, Build.VERSION.SDK_INT);
-            return sdkInt;
-        }
-    }
-
-    /** Gets the last SDK version on which this instance ran. */
-    public static void setLastSdkVersion(int sdkVersion) {
-        try (TraceEvent te = TraceEvent.scoped("BackgroundTaskSchedulerPrefs.setLastSdkVersion",
-                     Integer.toString(sdkVersion))) {
-            ContextUtils.getAppSharedPreferences()
-                    .edit()
-                    .putInt(KEY_LAST_SDK_VERSION, sdkVersion)
-                    .apply();
-        }
     }
 
     private static ScheduledTaskProto.ScheduledTask.RequiredNetworkType

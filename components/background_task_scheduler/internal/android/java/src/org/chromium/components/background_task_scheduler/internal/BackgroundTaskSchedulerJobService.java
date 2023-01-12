@@ -9,7 +9,6 @@ import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
@@ -62,12 +61,6 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
             return TaskInfo.OneOffInfo.getExpirationStatus(
                     scheduleTimeMs, endTimeMs, currentTimeMs);
         } else {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                // Before Android N, there was no control over when the job will execute within
-                // the given interval. This makes it impossible to check for an expiration time.
-                return false;
-            }
-
             long intervalTimeMs = extras.getLong(BACKGROUND_TASK_INTERVAL_TIME_KEY);
             // Based on the JobInfo documentation, attempting to declare a smaller period than
             // this when scheduling a job will result in a job that is still periodic, but will
@@ -179,7 +172,7 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
             }
             mBuilder.setExtras(mJobExtras);
 
-            if (periodicInfo.hasFlex() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (periodicInfo.hasFlex()) {
                 mBuilder.setPeriodic(periodicInfo.getIntervalMs(), periodicInfo.getFlexMs());
                 return;
             }

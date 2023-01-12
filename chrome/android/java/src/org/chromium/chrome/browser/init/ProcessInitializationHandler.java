@@ -416,9 +416,7 @@ public class ProcessInitializationHandler {
         });
 
         deferredStartupHandler.addDeferredTask(
-                ()
-                        -> BackgroundTaskSchedulerFactory.getScheduler().checkForOSUpgrade(
-                                ContextUtils.getApplicationContext()));
+                () -> BackgroundTaskSchedulerFactory.getScheduler().doMaintenance());
 
         deferredStartupHandler.addDeferredTask(
                 () -> MediaViewerUtils.updateMediaLauncherActivityEnabled());

@@ -13,10 +13,6 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.os.Build;
-
-import com.google.android.gms.gcm.GcmNetworkManager;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,23 +20,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadow.api.Shadow;
-import org.robolectric.util.ReflectionHelpers;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
-import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BackgroundTaskScheduler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowGcmNetworkManager.class, ShadowChromiumPlayServicesAvailability.class})
+@Config(manifest = Config.NONE)
 public class BackgroundTaskSchedulerImplTest {
     @Mock
     private BackgroundTaskSchedulerDelegate mDelegate;
@@ -48,7 +39,6 @@ public class BackgroundTaskSchedulerImplTest {
     private BackgroundTaskSchedulerDelegate mAlarmManagerDelegate;
     @Mock
     private BackgroundTaskSchedulerUma mBackgroundTaskSchedulerUma;
-    private ShadowGcmNetworkManager mGcmNetworkManager;
 
     private TaskInfo mTask;
     private TaskInfo mExpirationTask;
@@ -61,11 +51,6 @@ public class BackgroundTaskSchedulerImplTest {
                 new BackgroundTaskSchedulerImpl(mDelegate, mAlarmManagerDelegate));
         BackgroundTaskSchedulerUma.setInstanceForTesting(mBackgroundTaskSchedulerUma);
         TestBackgroundTask.reset();
-
-        // Initialize Google Play Services and GCM Network Manager for upgrade testing.
-        ShadowChromiumPlayServicesAvailability.setIsGooglePlayServicesAvailable(true);
-        mGcmNetworkManager = (ShadowGcmNetworkManager) Shadow.extract(
-                GcmNetworkManager.getInstance(ContextUtils.getApplicationContext()));
 
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create().setWindowEndTimeMs(TimeUnit.DAYS.toMillis(1)).build();
@@ -192,53 +177,5 @@ public class BackgroundTaskSchedulerImplTest {
         verify(mDelegate, times(0)).cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
         verify(mAlarmManagerDelegate, times(0))
                 .cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testCheckForOSUpgrade_PreMToMPlus() {
-        BackgroundTaskSchedulerPrefs.setLastSdkVersion(Build.VERSION_CODES.LOLLIPOP);
-        BackgroundTaskSchedulerPrefs.addScheduledTask(mTask);
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
-
-        BackgroundTaskSchedulerFactoryInternal.getScheduler().checkForOSUpgrade(
-                RuntimeEnvironment.application);
-
-        assertEquals(Build.VERSION_CODES.M, BackgroundTaskSchedulerPrefs.getLastSdkVersion());
-        assertTrue(mGcmNetworkManager.getCanceledTaskTags().contains(
-                Integer.toString(mTask.getTaskId())));
-        assertEquals(1, TestBackgroundTask.getRescheduleCalls());
-    }
-
-    /** This scenario tests upgrade from pre-M to pre-M OS, which requires no rescheduling. */
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testCheckForOSUpgrade_PreMToPreM() {
-        BackgroundTaskSchedulerPrefs.setLastSdkVersion(Build.VERSION_CODES.KITKAT);
-        BackgroundTaskSchedulerPrefs.addScheduledTask(mTask);
-        ReflectionHelpers.setStaticField(
-                Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.LOLLIPOP);
-
-        BackgroundTaskSchedulerFactoryInternal.getScheduler().checkForOSUpgrade(
-                RuntimeEnvironment.application);
-
-        assertEquals(
-                Build.VERSION_CODES.LOLLIPOP, BackgroundTaskSchedulerPrefs.getLastSdkVersion());
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
-    }
-
-    /** This scenario tests upgrade from M+ to M+ OS, which requires no rescheduling. */
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testCheckForOSUpgrade_MPlusToMPlus() {
-        BackgroundTaskSchedulerPrefs.setLastSdkVersion(Build.VERSION_CODES.M);
-        BackgroundTaskSchedulerPrefs.addScheduledTask(mTask);
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.N);
-
-        BackgroundTaskSchedulerFactoryInternal.getScheduler().checkForOSUpgrade(
-                RuntimeEnvironment.application);
-
-        assertEquals(Build.VERSION_CODES.N, BackgroundTaskSchedulerPrefs.getLastSdkVersion());
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 }

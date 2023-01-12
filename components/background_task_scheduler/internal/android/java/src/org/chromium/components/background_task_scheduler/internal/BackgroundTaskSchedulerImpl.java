@@ -5,19 +5,16 @@
 package org.chromium.components.background_task_scheduler.internal;
 
 import android.content.Context;
-import android.os.Build;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.build.BuildConfig;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This {@link BackgroundTaskScheduler} is the only one used in production code, and it is used to
@@ -158,40 +155,19 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     }
 
     @Override
-    public void checkForOSUpgrade(Context context) {
+    public void doMaintenance() {
         try (TraceEvent te = TraceEvent.scoped("BackgroundTaskScheduler.checkForOSUpgrade")) {
             ThreadUtils.assertOnUiThread();
-            int oldSdkInt = BackgroundTaskSchedulerPrefs.getLastSdkVersion();
-            int newSdkInt = Build.VERSION.SDK_INT;
 
             // Update tasks stored in the old format to the proto format at Chrome Startup, if
             // tasks are found to be stored in the old format. This allows to keep only one
             // implementation of the storage methods.
+            // This proto store was added in M78, and should be deleted when upgrades from that
+            // of Chrome is no longer considered a core user journey.
+            // TODO(crbug.com/1406114) Remove this migration and the underlying preferences.
             BackgroundTaskSchedulerPrefs.migrateStoredTasksToProto();
 
-            if (oldSdkInt != newSdkInt) {
-                // Save the current SDK version to preferences.
-                BackgroundTaskSchedulerPrefs.setLastSdkVersion(newSdkInt);
-            }
-
-            // No OS upgrade detected or OS upgrade does not change delegate.
-            if (oldSdkInt == newSdkInt || !osUpgradeChangesDelegateType(oldSdkInt, newSdkInt)) {
-                BackgroundTaskSchedulerUma.getInstance().flushStats();
-                return;
-            }
-
-            BackgroundTaskSchedulerUma.getInstance().removeCachedStats();
-
-            // Explicitly create and invoke old delegate type to cancel all scheduled tasks.
-            // All preference entries are kept until reschedule call, which removes then then.
-            BackgroundTaskSchedulerDelegate oldDelegate =
-                    BackgroundTaskSchedulerFactoryInternal.getSchedulerDelegateForSdk(oldSdkInt);
-            Set<Integer> scheduledTaskIds = BackgroundTaskSchedulerPrefs.getScheduledTaskIds();
-            for (int taskId : scheduledTaskIds) {
-                oldDelegate.cancel(context, taskId);
-            }
-
-            reschedule(context);
+            BackgroundTaskSchedulerUma.getInstance().flushStats();
         }
     }
 
@@ -221,13 +197,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
                 backgroundTask.reschedule(context);
             }
         }
-    }
-
-    private boolean osUpgradeChangesDelegateType(int oldSdkInt, int newSdkInt) {
-        // Assuming no upgrades from L->N (without going through M) allows us to remove
-        // GCMNetworkManager codepaths for Monochrome and above.
-        return BuildConfig.MIN_SDK_VERSION < Build.VERSION_CODES.N
-                && oldSdkInt < Build.VERSION_CODES.M && newSdkInt >= Build.VERSION_CODES.M;
     }
 
     private void selectDelegateAndCancel(

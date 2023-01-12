@@ -10,14 +10,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -168,18 +166,6 @@ public class BackgroundTaskSchedulerPrefsTest {
         BackgroundTaskSchedulerPrefs.removeAllTasks();
         assertTrue("We are expecting a all tasks to be gone.",
                 BackgroundTaskSchedulerPrefs.getScheduledTaskIds().isEmpty());
-    }
-
-    @Test
-    @Feature("BackgroundTaskScheduler")
-    public void testLastSdkVersion() {
-        ReflectionHelpers.setStaticField(
-                Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.KITKAT);
-        assertEquals("Current SDK version should be default.", Build.VERSION_CODES.KITKAT,
-                BackgroundTaskSchedulerPrefs.getLastSdkVersion());
-        BackgroundTaskSchedulerPrefs.setLastSdkVersion(Build.VERSION_CODES.LOLLIPOP);
-        assertEquals(
-                Build.VERSION_CODES.LOLLIPOP, BackgroundTaskSchedulerPrefs.getLastSdkVersion());
     }
 
     @Test

@@ -8,7 +8,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -16,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
@@ -109,14 +107,7 @@ public class BackgroundTaskSchedulerAlarmManager implements BackgroundTaskSchedu
         // TODO(crbug.com/1190755): Either remove this or make sure it's compatible with Android S.
         @Override
         public void visit(TaskInfo.ExactInfo exactInfo) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ApiHelperForM.setAlarmManagerExactAndAllowWhileIdle(mAlarmManager,
-                        /*type= */ AlarmManager.RTC_WAKEUP, exactInfo.getTriggerAtMs(),
-                        mPendingIntent);
-                return;
-            }
-
-            mAlarmManager.setExact(
+            mAlarmManager.setExactAndAllowWhileIdle(
                     /*type= */ AlarmManager.RTC_WAKEUP, exactInfo.getTriggerAtMs(), mPendingIntent);
         }
     }

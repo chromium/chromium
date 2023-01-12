@@ -8,40 +8,14 @@ Java, the exact same API is available in C++ as well.
 
 ## Background
 
-In Android M+ it is encouraged to use `JobScheduler` for all background jobs,
+In Android it is encouraged to use `JobScheduler` for all background jobs,
 instead of using things like `IntentService` or polling using alarms. Using the
 system API is beneficial as it has a full view of what goes on in the system and
 can schedule jobs accordingly.
 
-However, that leaves an API gap for Android L and below. Prior to Android L, the
-`JobScheduler` API was not available at all. It was introduced in Android L; but
-is not recommended on that platform, because it limits task execution time to 1
-minute. This is not really practically usable. For example, merely setting up a
-network connection will often burn through much of that budget. Android M+
-extends this execution time limit to 10 minutes.
-
-For these older platforms, we can leverage the GcmNetworkManager API provided by
-Google Play services to implement a suitable replacement for the JobScheduler
-API. The `background_task_scheduler` component provides a new framework for use
-within Chromium to schedule and execute background jobs using the frameworks
-available on a given version of Android. The public API of the framework is
-similar to that of the Android `JobScheduler`, but it is backed by either the
-system `JobScheduler` API or by GcmNetworkManager. What service is used to back
-the framework remains a black box to callers of the API.
-
-In practice, we prefer to use system APIs, since they do not require including
-external libraries, which would bloat the APK size of Chrome and add unnecessary
-complexity. Thus, the GcmNetworkManager is only used when the system API is not
-available (or available but not considered stable enough). That is, the
-JobScheduler API is used on Android M+; and the GcmNetworkManager is used
-otherwise.
-
-> NOTE: Some of the pre-M devices do not include Google Play services and
-> therefore remain unsupported by `background_task_scheduler`.
-> Ultimately, this component hopes to provide a full compatibility
-> layer on top of `JobScheduler`. However, until that is implemented, please be
-> thoughtful about whether this component provides the coverage that your
-> background task needs.
+The `background_task_scheduler` component provides a framework for use within
+Chromium to schedule and execute background jobs using the system API. The
+API of the framework is similar to that of the Android `JobScheduler`.
 
 ## What is a task
 

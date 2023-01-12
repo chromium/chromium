@@ -11,12 +11,10 @@ if (is_android) {
   android_library("internal_java") {
     sources = [
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskBroadcastReceiver.java",
-      "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskGcmTaskService.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskJobService.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerAlarmManager.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerDelegate.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerFactoryInternal.java",
-      "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerGcmNetworkManager.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerImpl.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerJobService.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerPrefs.java",
@@ -27,10 +25,6 @@ if (is_android) {
 
     deps = [
       ":proto_java",
-      "$google_play_services_package:google_play_services_base_java",
-      "$google_play_services_package:google_play_services_basement_java",
-      "$google_play_services_package:google_play_services_gcm_java",
-      "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
       "//build/android:build_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",

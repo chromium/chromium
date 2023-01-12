@@ -10,8 +10,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /**
  * The internal representation of a {@link BackgroundTaskScheduler} to make it possible to use
- * system APIs ({@link android.app.job.JobScheduler} on newer platforms and GCM
- * ({@link com.google.android.gms.gcm.GcmNetworkManager}) on older platforms.
+ * system API ({@link android.app.job.JobScheduler}.
  */
 interface BackgroundTaskSchedulerDelegate {
     String BACKGROUND_TASK_ID_KEY = "_background_task_id";

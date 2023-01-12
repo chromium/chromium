@@ -972,14 +972,6 @@
         <action android:name="org.chromium.intent.action.INSTALL_WEB_APK"/>
       </intent-filter>  # DIFF-ANCHOR: 875093ee
     </service>  # DIFF-ANCHOR: 878b448b
-    <service  # DIFF-ANCHOR: 8fc286d0
-        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskGcmTaskService"
-        android:exported="true"
-        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
-      <intent-filter>  # DIFF-ANCHOR: 99686c45
-        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
-      </intent-filter>  # DIFF-ANCHOR: 99686c45
-    </service>  # DIFF-ANCHOR: 8fc286d0
     <service  # DIFF-ANCHOR: a550decc
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
         android:exported="false"

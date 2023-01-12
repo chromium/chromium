@@ -20,24 +20,17 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
-import java.util.concurrent.TimeUnit;
-
 /** Unit tests for {@link BackgroundTaskSchedulerAlarmManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BackgroundTaskSchedulerAlarmManagerTest {
     private static final long CLOCK_TIME_MS = 1415926535000L;
-    private static final long TIME_200_MIN_TO_MS = TimeUnit.MINUTES.toMillis(200);
-
-    private BackgroundTaskSchedulerGcmNetworkManager.Clock mClock = () -> CLOCK_TIME_MS;
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testExactTaskParameters() {
         TaskInfo.TimingInfo timingInfo =
-                TaskInfo.ExactInfo.create()
-                        .setTriggerAtMs(mClock.currentTimeMillis() + TIME_200_MIN_TO_MS)
-                        .build();
+                TaskInfo.ExactInfo.create().setTriggerAtMs(CLOCK_TIME_MS).build();
         TaskInfo exactTaskInfo = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
         PendingIntent pendingIntent =
                 BackgroundTaskSchedulerAlarmManager.createPendingIntentFromTaskId(

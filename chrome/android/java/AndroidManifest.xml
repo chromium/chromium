@@ -1009,15 +1009,6 @@ by a child template that "extends" this file.
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
-        <!-- Background Task Scheduler GCM task service -->
-        <service android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskGcmTaskService"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-            </intent-filter>
-        </service>
-
         <!-- Background Task Scheduler alarm receiver -->
         <receiver android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
             android:exported="false" />

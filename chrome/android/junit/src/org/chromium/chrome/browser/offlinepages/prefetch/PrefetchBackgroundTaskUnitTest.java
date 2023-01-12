@@ -78,7 +78,7 @@ public class PrefetchBackgroundTaskUnitTest {
         }
 
         @Override
-        public void checkForOSUpgrade(Context context) {}
+        public void doMaintenance() {}
 
         @Override
         public void reschedule(Context context) {}

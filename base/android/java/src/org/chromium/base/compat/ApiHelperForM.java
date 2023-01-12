@@ -5,7 +5,6 @@
 package org.chromium.base.compat;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,7 +25,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.RequiresPermission;
 
 /**
  * Utility class to use new APIs that were added in M (API level 23). These need to exist in a
@@ -138,13 +136,6 @@ public final class ApiHelperForM {
     /** See {@link MotionEvent#getActionButton() }. */
     public static int getActionButton(MotionEvent event) {
         return event.getActionButton();
-    }
-
-    /** See {@link AlarmManager#setExactAndAllowWhileIdle(int, long, PendingIntent) }.  */
-    @RequiresPermission(android.Manifest.permission.SCHEDULE_EXACT_ALARM)
-    public static void setAlarmManagerExactAndAllowWhileIdle(AlarmManager alarmManager, int type,
-            long triggerAtMillis, PendingIntent pendingIntent) {
-        alarmManager.setExactAndAllowWhileIdle(type, triggerAtMillis, pendingIntent);
     }
 
     /** See {@link Display.Mode#getPhysicalWidth() }. */

@@ -4,7 +4,6 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
@@ -13,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +19,6 @@ import java.util.Set;
 
 /** Tests for {@link BundleToPersistableBundleConverter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class BundleToPersistableBundleConverterTest {
     @Test
     public void testAllValidConversions() {

@@ -5,7 +5,6 @@
 package org.chromium.components.background_task_scheduler.internal;
 
 import android.app.job.JobInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
@@ -16,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
@@ -26,7 +24,6 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link BackgroundTaskSchedulerJobService}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class BackgroundTaskSchedulerJobServiceTest {
     private static final long CLOCK_TIME_MS = 1415926535000L;
     private static final long TIME_50_MIN_TO_MS = TimeUnit.MINUTES.toMillis(50);
@@ -65,11 +62,11 @@ public class BackgroundTaskSchedulerJobServiceTest {
                 RuntimeEnvironment.getApplication(), oneOffTask);
         Assert.assertEquals(END_TIME_WITH_DEADLINE_MS, jobInfo.getMaxExecutionDelayMillis());
         Assert.assertEquals(CLOCK_TIME_MS,
-                jobInfo.getExtras().getLong(BackgroundTaskSchedulerGcmNetworkManager
-                                                    .BACKGROUND_TASK_SCHEDULE_TIME_KEY));
+                jobInfo.getExtras().getLong(
+                        BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_SCHEDULE_TIME_KEY));
         Assert.assertEquals(TIME_200_MIN_TO_MS,
                 jobInfo.getExtras().getLong(
-                        BackgroundTaskSchedulerGcmNetworkManager.BACKGROUND_TASK_END_TIME_KEY));
+                        BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY));
     }
 
     @Test
@@ -101,11 +98,11 @@ public class BackgroundTaskSchedulerJobServiceTest {
                 oneOffTask.getOneOffInfo().getWindowStartTimeMs(), jobInfo.getMinLatencyMillis());
         Assert.assertEquals(END_TIME_WITH_DEADLINE_MS, jobInfo.getMaxExecutionDelayMillis());
         Assert.assertEquals(CLOCK_TIME_MS,
-                jobInfo.getExtras().getLong(BackgroundTaskSchedulerGcmNetworkManager
-                                                    .BACKGROUND_TASK_SCHEDULE_TIME_KEY));
+                jobInfo.getExtras().getLong(
+                        BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_SCHEDULE_TIME_KEY));
         Assert.assertEquals(TIME_200_MIN_TO_MS,
                 jobInfo.getExtras().getLong(
-                        BackgroundTaskSchedulerGcmNetworkManager.BACKGROUND_TASK_END_TIME_KEY));
+                        BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY));
     }
 
     @Test
@@ -130,9 +127,7 @@ public class BackgroundTaskSchedulerJobServiceTest {
         JobInfo jobInfo = BackgroundTaskSchedulerJobService.createJobInfoFromTaskInfo(
                 RuntimeEnvironment.getApplication(), periodicTask);
         Assert.assertEquals(TIME_200_MIN_TO_MS, jobInfo.getIntervalMillis());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Assert.assertEquals(TIME_50_MIN_TO_MS, jobInfo.getFlexMillis());
-        }
+        Assert.assertEquals(TIME_50_MIN_TO_MS, jobInfo.getFlexMillis());
     }
 
     @Test
