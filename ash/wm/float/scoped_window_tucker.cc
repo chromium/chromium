@@ -15,6 +15,7 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
@@ -248,6 +249,8 @@ void ScopedWindowTucker::AnimateTuck() {
       .SetTransform(window_, gfx::Transform(), gfx::Tween::ACCEL_20_DECEL_100)
       .SetTransform(tuck_handle, gfx::Transform(),
                     gfx::Tween::ACCEL_20_DECEL_100);
+
+  base::RecordAction(base::UserMetricsAction(kTuckUserAction));
 }
 
 void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
@@ -278,6 +281,8 @@ void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
       .SetTransform(window_, gfx::Transform(), gfx::Tween::ACCEL_5_70_DECEL_90)
       .SetTransform(tuck_handle, gfx::Transform(),
                     gfx::Tween::ACCEL_5_70_DECEL_90);
+
+  base::RecordAction(base::UserMetricsAction(kUntuckUserAction));
 }
 
 void ScopedWindowTucker::OnWindowActivated(ActivationReason reason,

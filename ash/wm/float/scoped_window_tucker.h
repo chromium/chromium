@@ -19,6 +19,9 @@ class ScopedWindowTargeter;
 
 namespace ash {
 
+constexpr char kTuckUserAction[] = "FloatWindowTucked";
+constexpr char kUntuckUserAction[] = "FloatWindowUntucked";
+
 // Scoped class which makes modifications while a window is tucked. It owns a
 // tuck handle widget that will bring the hidden window back onscreen. Users of
 // the class need to ensure that window outlives instance of this class.

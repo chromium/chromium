@@ -9072,6 +9072,22 @@ should be able to be added at any place in this file.
   <description>Count of Flash plugin instances.</description>
 </action>
 
+<action name="FloatWindowTucked">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
+  <description>
+    Recorded when a floated window is tucked in tablet mode.
+  </description>
+</action>
+
+<action name="FloatWindowUntucked">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
+  <description>
+    Recorded when a floated window is untucked in tablet mode.
+  </description>
+</action>
+
 <action name="FocusAppMenu">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
