@@ -19,12 +19,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.commerce.core.CommerceSubscription;
-import org.chromium.components.commerce.core.IdentifierType;
-import org.chromium.components.commerce.core.ManagementType;
-import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ProductPrice;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
@@ -58,12 +55,14 @@ public class PowerBookmarkUtilsTest {
         CommerceSubscription subscription =
                 PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
 
-        Assert.assertEquals(IdentifierType.PRODUCT_CLUSTER_ID, subscription.idType);
-        Assert.assertEquals(ManagementType.USER_MANAGED, subscription.managementType);
-        Assert.assertEquals("123", subscription.id);
-        Assert.assertEquals("456", subscription.userSeenOffer.offerId);
-        Assert.assertEquals(100L, subscription.userSeenOffer.userSeenPrice);
-        Assert.assertEquals("us", subscription.userSeenOffer.countryCode);
+        Assert.assertEquals(CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID,
+                subscription.getTrackingIdType());
+        Assert.assertEquals(CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
+                subscription.getManagementType());
+        Assert.assertEquals("123", subscription.getTrackingId());
+        Assert.assertEquals("456", subscription.getSeenOffer().offerId);
+        Assert.assertEquals("100", subscription.getSeenOffer().currentPrice);
+        Assert.assertEquals("us", subscription.getSeenOffer().countryCode);
     }
 
     /**
@@ -71,8 +70,9 @@ public class PowerBookmarkUtilsTest {
      * @return A user-managed subscription with the specified ID.
      */
     private CommerceSubscription buildSubscription(String clusterId) {
-        return new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        return new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
+                clusterId, CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
+                CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID);
     }
 
     /**

@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,8 +53,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.commerce.core.CommerceSubscription;
-import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.content_public.browser.test.util.ClickUtils;
@@ -81,7 +81,7 @@ public class BookmarkSaveFlowTest {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    ShoppingService mShoppingService;
+    SubscriptionsManager mSubscriptionsManager;
 
     @Mock
     PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
@@ -107,7 +107,7 @@ public class BookmarkSaveFlowTest {
                     cta.getRootUiCoordinatorForTesting().getBottomSheetController();
             mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
             mBookmarkSaveFlowCoordinator = new BookmarkSaveFlowCoordinator(
-                    cta, mBottomSheetController, mShoppingService, mUserEducationHelper);
+                    cta, mBottomSheetController, mSubscriptionsManager, mUserEducationHelper);
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
         });
 
@@ -120,16 +120,18 @@ public class BookmarkSaveFlowTest {
                 .setPriceTrackingStateForBookmark(
                         any(Profile.class), anyLong(), anyBoolean(), any());
         doAnswer((invocation) -> {
-            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+            ((Callback<Integer>) invocation.getArgument(1))
+                    .onResult(SubscriptionsManager.StatusCode.OK);
             return null;
         })
-                .when(mShoppingService)
+                .when(mSubscriptionsManager)
                 .subscribe(any(CommerceSubscription.class), any());
         doAnswer((invocation) -> {
-            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+            ((Callback<Integer>) invocation.getArgument(1))
+                    .onResult(SubscriptionsManager.StatusCode.OK);
             return null;
         })
-                .when(mShoppingService)
+                .when(mSubscriptionsManager)
                 .unsubscribe(any(CommerceSubscription.class), any());
     }
 
@@ -232,10 +234,11 @@ public class BookmarkSaveFlowTest {
                 .setPriceTrackingStateForBookmark(
                         any(Profile.class), anyLong(), anyBoolean(), any());
         doAnswer((invocation) -> {
-            ((Callback<Boolean>) invocation.getArgument(1)).onResult(false);
+            ((Callback<Integer>) invocation.getArgument(1))
+                    .onResult(SubscriptionsManager.StatusCode.NETWORK_ERROR);
             return null;
         })
-                .when(mShoppingService)
+                .when(mSubscriptionsManager)
                 .subscribe(any(CommerceSubscription.class), any());
         onView(withId(R.id.notification_switch)).perform(click());
         mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),

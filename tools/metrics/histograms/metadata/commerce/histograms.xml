@@ -524,9 +524,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.SignIn.AccountWaaStatus"
     enum="AccountWaaStatusForCommerce" expires_after="2023-06-25">
-  <obsolete>
-    Deprecated in 01/2023. It's no longer needed.
-  </obsolete>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -575,10 +572,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.Subscriptions.{ManagementType}.Count"
     units="subscriptions" expires_after="2023-04-25">
-  <obsolete>
-    Deprecated in 01/2023. Replaced by
-    Commerce.PriceTracking.PriceTrackedProductCount.
-  </obsolete>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

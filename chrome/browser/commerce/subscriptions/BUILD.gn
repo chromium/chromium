@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("commerce_subscription_db") {
+  sources = [
+    "commerce_subscription_db.cc",
+    "commerce_subscription_db.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//chrome/browser/commerce/subscriptions/android:jni_headers",
+    "//chrome/browser/persisted_state_db:persisted_state_db",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/keyed_service/content",
+    "//components/leveldb_proto",
+    "//content/public/browser:browser",
+    "//third_party/leveldatabase",
+  ]
+}

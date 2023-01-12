@@ -20,13 +20,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -55,12 +55,13 @@ public class BookmarkSaveFlowCoordinator {
     /**
      * @param context The {@link Context} associated with this cooridnator.
      * @param bottomSheetController Allows displaying content in the bottom sheet.
-     * @param shoppingService Allows un/subscribing for product updates, used for
+     * @param subscriptionsManager Allows un/subscribing for product updates, used for
      *         price-tracking.
      * @param userEducationHelper A means of triggering IPH.
      */
     public BookmarkSaveFlowCoordinator(@NonNull Context context,
-            @NonNull BottomSheetController bottomSheetController, ShoppingService shoppingService,
+            @NonNull BottomSheetController bottomSheetController,
+            @Nullable SubscriptionsManager subscriptionsManager,
             @NonNull UserEducationHelper userEducationHelper) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
@@ -71,7 +72,7 @@ public class BookmarkSaveFlowCoordinator {
         mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
                 org.chromium.chrome.R.layout.bookmark_save_flow, /*root=*/null);
         mMediator = new BookmarkSaveFlowMediator(
-                mBookmarkModel, mPropertyModel, mContext, this::close, shoppingService);
+                mBookmarkModel, mPropertyModel, mContext, this::close, subscriptionsManager);
         mChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
                 (ViewLookupCachingFrameLayout) mBookmarkSaveFlowView,
                 new BookmarkSaveFlowViewBinder());

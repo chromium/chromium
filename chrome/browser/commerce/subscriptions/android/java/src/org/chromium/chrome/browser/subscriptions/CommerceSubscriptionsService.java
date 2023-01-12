@@ -12,37 +12,47 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Commerce Subscriptions Service.
- * TODO(crbug.com/1382191): This service is now only used to manage implicit tracking and to record
- * notification metrics, both of which are Android-specific. The
- * ImplicitPriceDropSubscriptionsManager should be profile-independent and we should decouple
- * subscriptions and notifications. Some logic here like observing Android activity lifecycle can be
- * moved to ShoppingServiceFactory.
  */
 public class CommerceSubscriptionsService {
     @VisibleForTesting
     public static final String CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP =
             ChromePreferenceKeys.COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP;
 
+    private final SubscriptionsManagerImpl mSubscriptionManager;
+    private final IdentityManager mIdentityManager;
+    private final IdentityManager.Observer mIdentityManagerObserver;
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
+    private final CommerceSubscriptionsMetrics mMetrics;
     private ImplicitPriceDropSubscriptionsManager mImplicitPriceDropSubscriptionsManager;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
-    private ShoppingService mShoppingService;
 
     /** Creates a new instance. */
-    CommerceSubscriptionsService(ShoppingService shoppingService,
+    CommerceSubscriptionsService(SubscriptionsManagerImpl subscriptionsManager,
+            IdentityManager identityManager,
             PriceDropNotificationManager priceDropNotificationManager) {
-        mShoppingService = shoppingService;
+        mSubscriptionManager = subscriptionsManager;
+        mIdentityManager = identityManager;
+        mIdentityManagerObserver = new IdentityManager.Observer() {
+            @Override
+            public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+                mSubscriptionManager.onIdentityChanged();
+            }
+        };
+        mIdentityManager.addObserver(mIdentityManagerObserver);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mPriceDropNotificationManager = priceDropNotificationManager;
+        mMetrics = new CommerceSubscriptionsMetrics();
     }
 
     /** Performs any deferred startup tasks required by {@link Subscriptions}. */
@@ -62,15 +72,21 @@ public class CommerceSubscriptionsService {
 
         if (CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()
                 && mImplicitPriceDropSubscriptionsManager == null) {
-            mImplicitPriceDropSubscriptionsManager =
-                    new ImplicitPriceDropSubscriptionsManager(tabModelSelector, mShoppingService);
+            mImplicitPriceDropSubscriptionsManager = new ImplicitPriceDropSubscriptionsManager(
+                    tabModelSelector, mSubscriptionManager);
         }
+    }
+
+    /** Returns the subscriptionsManager. */
+    public SubscriptionsManagerImpl getSubscriptionsManager() {
+        return mSubscriptionManager;
     }
 
     /**
      * Cleans up internal resources. Currently this method calls SubscriptionsManagerImpl#destroy.
      */
     public void destroy() {
+        mIdentityManager.removeObserver(mIdentityManagerObserver);
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
         }
@@ -90,6 +106,7 @@ public class CommerceSubscriptionsService {
         }
         mSharedPreferencesManager.writeLong(
                 CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
+        mMetrics.recordAccountWaaStatus();
         if (!PriceTrackingFeatures.isPriceDropNotificationEligible()) return;
         recordMetricsForEligibleAccount();
         if (mImplicitPriceDropSubscriptionsManager != null) {
@@ -101,6 +118,8 @@ public class CommerceSubscriptionsService {
         // Record notification opt-in metrics.
         mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
         mPriceDropNotificationManager.recordMetricsForNotificationCounts();
+        mSubscriptionManager.getSubscriptions(
+                CommerceSubscriptionType.PRICE_TRACK, false, mMetrics::recordSubscriptionCounts);
     }
 
     @VisibleForTesting
