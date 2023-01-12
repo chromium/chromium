@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/singleton.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -98,23 +98,30 @@ std::unique_ptr<PluginMetadata> GetPluginMetadata(const WebPluginInfo& plugin) {
   // Gets the plugin group name as the plugin name if it is not empty, or the
   // filename without extension if the name is empty.
   std::u16string group_name = plugin.name;
-  if (group_name.empty())
+  if (group_name.empty()) {
     group_name = plugin.path.BaseName().RemoveExtension().AsUTF16Unsafe();
+  } else {
+    // Remove any unwanted locale direction characters from the group name.
+    // For extension-based plugins, the plugin name is derived from the
+    // extension name, and `extensions::Extension::LoadName()` may add locale
+    // direction characters to the extension name.
+    base::i18n::UnadjustStringForLocaleDirection(&group_name);
+  }
 
   // Treat plugins as requiring authorization by default.
   PluginMetadata::SecurityStatus security_status =
       PluginMetadata::SECURITY_STATUS_REQUIRES_AUTHORIZATION;
 
   // Handle the PDF plugins specially.
-  std::string plugin_name = base::UTF16ToUTF8(plugin.name);
-  if (plugin_name == ChromeContentClient::kPDFExtensionPluginName) {
+  if (plugin.path.value() == ChromeContentClient::kPDFExtensionPluginPath) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     identifier = "google-chrome-pdf";
 #else
     identifier = "chromium-pdf";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     security_status = PluginMetadata::SECURITY_STATUS_FULLY_TRUSTED;
-  } else if (plugin_name == ChromeContentClient::kPDFInternalPluginName) {
+  } else if (plugin.path.value() ==
+             ChromeContentClient::kPDFInternalPluginPath) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     identifier = "google-chrome-pdf-plugin";
 #else

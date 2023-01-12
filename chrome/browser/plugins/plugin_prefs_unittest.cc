@@ -4,8 +4,8 @@
 
 #include "chrome/browser/plugins/plugin_prefs.h"
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/common/chrome_content_client.h"
 #include "content/public/common/webplugininfo.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,8 +24,8 @@ class PluginPrefsTest : public ::testing::Test {
 
 TEST_F(PluginPrefsTest, AlwaysOpenPdfExternally) {
   content::WebPluginInfo pdf_plugin_info;
-  pdf_plugin_info.name =
-      base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName);
+  pdf_plugin_info.path =
+      base::FilePath(ChromeContentClient::kPDFExtensionPluginPath);
 
   EXPECT_TRUE(plugin_prefs_->IsPluginEnabled(pdf_plugin_info));
 

@@ -40,8 +40,8 @@ class ChromePluginServiceFilterTest : public ChromeRenderViewHostTestHarness {
 
 content::WebPluginInfo GetFakePdfPluginInfo() {
   return content::WebPluginInfo(
-      base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName),
-      base::FilePath(), u"", u"");
+      u"", base::FilePath(ChromeContentClient::kPDFExtensionPluginPath), u"",
+      u"");
 }
 
 }  // namespace
