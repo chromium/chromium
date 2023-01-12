@@ -9,7 +9,6 @@
 import argparse
 import logging
 import os
-import posixpath
 import shutil
 import sys
 import tempfile
@@ -179,8 +178,7 @@ def _ExpandPaths(paths):
 def _GetAssetsToAdd(path_tuples,
                     fast_align,
                     disable_compression=False,
-                    allow_reads=True,
-                    apk_root_dir=''):
+                    allow_reads=True):
   """Returns the list of file_detail tuples for assets in the apk.
 
   Args:
@@ -209,11 +207,7 @@ def _GetAssetsToAdd(path_tuples,
         if allow_reads and compress and os.path.getsize(src_path) < 16:
           compress = False
 
-        if dest_path.startswith('../'):
-          # posixpath.join('', 'foo') == 'foo'
-          apk_path = posixpath.join(apk_root_dir, dest_path[3:])
-        else:
-          apk_path = 'assets/' + dest_path
+        apk_path = 'assets/' + dest_path
         alignment = 0 if compress and not fast_align else 4
         assets_to_add.append((apk_path, src_path, compress, alignment))
   return assets_to_add
@@ -353,14 +347,12 @@ def main(args):
     ret = _GetAssetsToAdd(assets,
                           fast_align,
                           disable_compression=False,
-                          allow_reads=allow_reads,
-                          apk_root_dir=apk_root_dir)
+                          allow_reads=allow_reads)
     ret.extend(
         _GetAssetsToAdd(uncompressed_assets,
                         fast_align,
                         disable_compression=True,
-                        allow_reads=allow_reads,
-                        apk_root_dir=apk_root_dir))
+                        allow_reads=allow_reads))
     return ret
 
   libs_to_add = _GetNativeLibrariesToAdd(native_libs, options.android_abi,

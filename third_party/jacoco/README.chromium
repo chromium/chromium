@@ -8,6 +8,3 @@ License Android Compatible: no
 
 Description:
 JaCoCo is a Java code coverage tool.
-
-Local Modifications:
-* Added jacoco-agent.properties for use on Android.

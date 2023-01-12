@@ -773,9 +773,10 @@ def _MergeAssets(all_assets):
         locale_paks.add(dest)
 
   def create_list(asset_map):
+    ret = ['%s:%s' % (src, dest) for dest, src in asset_map.items()]
     # Sort to ensure deterministic ordering.
-    items = sorted(asset_map.items())
-    return [f'{src}:{dest}' for dest, src in items]
+    ret.sort()
+    return ret
 
   return create_list(compressed), create_list(uncompressed), locale_paks
 

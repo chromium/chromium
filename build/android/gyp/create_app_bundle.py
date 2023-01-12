@@ -11,7 +11,6 @@ import concurrent.futures
 import json
 import logging
 import os
-import posixpath
 import shutil
 import sys
 import zipfile
@@ -132,13 +131,15 @@ def _ParseArgs(args):
 
   # Merge all uncompressed assets into a set.
   uncompressed_list = []
-  for entry in build_utils.ParseGnList(options.uncompressed_assets):
-    # Each entry has the following format: 'zipPath' or 'srcPath:zipPath'
-    pos = entry.find(':')
-    if pos >= 0:
-      uncompressed_list.append(entry[pos + 1:])
-    else:
-      uncompressed_list.append(entry)
+  if options.uncompressed_assets:
+    for l in options.uncompressed_assets:
+      for entry in build_utils.ParseGnList(l):
+        # Each entry has the following format: 'zipPath' or 'srcPath:zipPath'
+        pos = entry.find(':')
+        if pos >= 0:
+          uncompressed_list.append(entry[pos + 1:])
+        else:
+          uncompressed_list.append(entry)
 
   options.uncompressed_assets = set(uncompressed_list)
 
@@ -202,9 +203,7 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
   uncompressed_globs = [
       'assets/locales#lang_*/*.pak', 'assets/fallback-locales/*.pak'
   ]
-  # normpath to allow for ../ prefix.
-  uncompressed_globs.extend(
-      posixpath.normpath('assets/' + x) for x in uncompressed_assets)
+  uncompressed_globs.extend('assets/' + x for x in uncompressed_assets)
   # NOTE: Use '**' instead of '*' to work through directories!
   uncompressed_globs.extend('**.' + ext for ext in _UNCOMPRESSED_FILE_EXTS)
   if not compress_dex:
