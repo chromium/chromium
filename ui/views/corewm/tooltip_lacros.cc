@@ -103,8 +103,7 @@ void TooltipLacros::Show() {
 }
 
 void TooltipLacros::Hide() {
-  // If tooltip is not visible, skip sending hide_tooltip.
-  if (!parent_window_ || !is_visible_) {
+  if (!parent_window_) {
     return;
   }
 
