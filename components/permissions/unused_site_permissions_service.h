@@ -86,6 +86,10 @@ class UnusedSitePermissionsService
   // from revoked permissions list.
   void RegrantPermissionsForOrigin(const url::Origin& origin);
 
+  // Clear the list of revoked permissions so they will no longer be shown to
+  // the user. Does not change permissions themselves.
+  void ClearRevokedPermissionsList();
+
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();

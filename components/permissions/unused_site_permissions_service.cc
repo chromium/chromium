@@ -174,6 +174,19 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
 }
 
+void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
+  ContentSettingsForOneType settings;
+  hcsm_->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &settings);
+
+  for (const auto& revoked_permissions : settings) {
+    hcsm_->SetWebsiteSettingCustomScope(
+        revoked_permissions.primary_pattern,
+        revoked_permissions.secondary_pattern,
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
+  }
+}
+
 void UnusedSitePermissionsService::UpdateUnusedPermissionsAsync(
     base::RepeatingClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -223,9 +223,8 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     await flushTasks();
 
     // Ensure the browser proxy call is done.
-    const [unusedSitePermissionsList] = await browserProxy.whenCalled(
+    await browserProxy.whenCalled(
         'acknowledgeRevokedUnusedSitePermissionsList');
-    assertEqualsMockData(unusedSitePermissionsList);
   });
 
   test('Undo Got It', async function() {
