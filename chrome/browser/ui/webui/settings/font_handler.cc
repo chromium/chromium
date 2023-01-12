@@ -45,7 +45,9 @@ void FontHandler::RegisterMessages() {
 
 void FontHandler::OnJavascriptAllowed() {}
 
-void FontHandler::OnJavascriptDisallowed() {}
+void FontHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
 
 void FontHandler::HandleFetchFontsData(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
