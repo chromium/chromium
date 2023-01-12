@@ -85,6 +85,11 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
 
   const PlatformThreadId created_thread_id_;
 
+  // An atomic pointer that allows to call task_runner methods without lock.
+  // It's possible because the pointer starts as null, is set to a non-null
+  // value only once, and is never changed again.
+  // This is used to implement a lock-free RunsTasksInCurrentSequence method.
+  std::atomic<SequencedTaskRunner*> task_runner_atomic_ptr_{nullptr};
   bool started_ GUARDED_BY(lock_) = false;
   scoped_refptr<SequencedTaskRunner> target_task_runner_ GUARDED_BY(lock_);
   std::vector<DeferredTask> deferred_tasks_queue_ GUARDED_BY(lock_);
