@@ -477,6 +477,7 @@ void DriveFsPinManager::Start(CompletionCallback complete_callback,
 }
 
 void DriveFsPinManager::Stop() {
+  VLOG(1) << "Stopping";
   Complete(SetupStage::kStopped);
 }
 
@@ -577,18 +578,26 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
 void DriveFsPinManager::Complete(const SetupStage stage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(stage));
+
   progress_.stage = stage;
-  if (stage == SetupStage::kSuccess) {
-    LOG_IF(ERROR, progress_.errors > 0)
-        << "Failed to pin " << progress_.errors << " files";
-    VLOG(1) << "Pinned " << progress_.pinned_files << " files and downloaded "
-            << HumanReadableSize(progress_.transferred_bytes) << " in "
-            << timer_.Elapsed().InMilliseconds() << " ms";
-    VLOG(2) << "Useful events: " << progress_.useful_events;
-    VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
-    VLOG(1) << "Finished with success";
-  } else {
-    LOG(ERROR) << "Finished with error: " << stage;
+  switch (stage) {
+    case SetupStage::kSuccess:
+      LOG_IF(ERROR, progress_.errors > 0)
+          << "Failed to pin " << progress_.errors << " files";
+      VLOG(1) << "Pinned " << progress_.pinned_files << " files and downloaded "
+              << HumanReadableSize(progress_.transferred_bytes) << " in "
+              << timer_.Elapsed().InMilliseconds() << " ms";
+      VLOG(2) << "Useful events: " << progress_.useful_events;
+      VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
+      VLOG(1) << "Finished with success";
+      break;
+
+    case SetupStage::kStopped:
+      VLOG(1) << "Stopped";
+      break;
+
+    default:
+      LOG(ERROR) << "Finished with error: " << stage;
   }
 
   NotifyProgress();
@@ -747,7 +756,9 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
   PinSomeFiles();
 }
 
-void DriveFsPinManager::OnUnmounted() {}
+void DriveFsPinManager::OnUnmounted() {
+  LOG(ERROR) << "DriveFS got unmounted";
+}
 
 void DriveFsPinManager::OnFilesChanged(
     const std::vector<mojom::FileChange>& changes) {
