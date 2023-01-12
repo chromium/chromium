@@ -12,7 +12,8 @@
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/policy_resources.h"
+#include "components/grit/policy_resources_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -88,26 +89,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddResourcePath("policy.css", IDR_POLICY_CSS);
-  source->AddResourcePath("policy_base.js", IDR_POLICY_BASE_JS);
-  source->AddResourcePath("policy.js", IDR_POLICY_JS);
-  source->AddResourcePath("policy_conflict.html.js",
-                          IDR_POLICY_POLICY_CONFLICT_HTML_JS);
-  source->AddResourcePath("policy_conflict.js", IDR_POLICY_POLICY_CONFLICT_JS);
-  source->AddResourcePath("policy_row.html.js", IDR_POLICY_POLICY_ROW_HTML_JS);
-  source->AddResourcePath("policy_row.js", IDR_POLICY_POLICY_ROW_JS);
-  source->AddResourcePath("policy_precedence_row.html.js",
-                          IDR_POLICY_POLICY_PRECEDENCE_ROW_HTML_JS);
-  source->AddResourcePath("policy_precedence_row.js",
-                          IDR_POLICY_POLICY_PRECEDENCE_ROW_JS);
-  source->AddResourcePath("policy_table.html.js",
-                          IDR_POLICY_POLICY_TABLE_HTML_JS);
-  source->AddResourcePath("policy_table.js", IDR_POLICY_POLICY_TABLE_JS);
-  source->AddResourcePath("status_box.html.js", IDR_POLICY_STATUS_BOX_HTML_JS);
-  source->AddResourcePath("status_box.js", IDR_POLICY_STATUS_BOX_JS);
-  source->SetDefaultResource(IDR_POLICY_HTML);
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kPolicyResources, kPolicyResourcesSize),
+      IDR_POLICY_POLICY_HTML);
 
-  source->EnableReplaceI18nInJS();
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");

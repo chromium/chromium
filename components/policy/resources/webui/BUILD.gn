@@ -2,16 +2,102 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_dir = "${target_gen_dir}/preprocessed"
+tsc_dir = "${target_gen_dir}/tsc"
+
+static_files = [
+  "policy.css",
+  "policy.html",
+]
+
+# TODO(b/265198461): Migrate to TypeScript and then simplify the build setup by
+# leveraging build_webui().
+web_component_files = [
+  "policy_conflict.js",
+  "policy_row.js",
+  "policy_precedence_row.js",
+  "policy_table.js",
+  "status_box.js",
+]
+
+html_files = []
+foreach(f, web_component_files) {
+  html_files += [ string_replace(f, ".js", ".html") ]
+}
+
+html_wrapper_files = []
+foreach(f, html_files) {
+  html_wrapper_files += [ f + ".js" ]
+}
+
+non_web_component_files = [
+  "policy_base.js",
+  "policy.js",
+]
+
+preprocess_if_expr("preprocess_static_files") {
+  in_folder = "."
+  out_folder = preprocess_dir
+  in_files = static_files
+  out_manifest = "${target_gen_dir}/preprocess_static_files_manifest.json"
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = preprocess_dir
+  in_files = html_files + web_component_files + non_web_component_files
+}
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = [
-    "policy_conflict.html",
-    "policy_row.html",
-    "policy_precedence_row.html",
-    "policy_table.html",
-    "status_box.html",
-  ]
+  in_folder = preprocess_dir
+  out_folder = preprocess_dir
+  in_files = html_files
   template = "native"
   use_js = true
+  deps = [ ":preprocess" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_dir
+  out_dir = tsc_dir
+  tsconfig_base = "tsconfig_base.json"
+
+  in_files = html_wrapper_files + web_component_files + non_web_component_files
+
+  extra_deps = [
+    ":html_wrapper_files",
+    ":preprocess",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "policy"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  deps = [ ":preprocess_static_files" ]
+  manifest_files = [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
+
+  deps += [ ":build_ts" ]
+  manifest_files +=
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/policy_resources.h",
+    "grit/policy_resources_map.cc",
+    "grit/policy_resources_map.h",
+    "policy_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/components"
 }

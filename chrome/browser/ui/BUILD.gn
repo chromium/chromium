@@ -540,6 +540,7 @@ static_library("ui") {
     "//components/performance_manager",
     "//components/permissions",
     "//components/policy/core/browser",
+    "//components/policy/resources/webui:resources",
     "//components/pref_registry",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",

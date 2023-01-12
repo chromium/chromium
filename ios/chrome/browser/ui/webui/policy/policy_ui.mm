@@ -7,7 +7,7 @@
 #import <memory>
 #import <string>
 
-#import "components/grit/dev_ui_components_resources.h"
+#import "components/grit/policy_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
@@ -91,9 +91,9 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
 
   source->AddBoolean("hideExportButton", true);
 
-  source->AddResourcePath("policy.css", IDR_POLICY_CSS);
-  source->AddResourcePath("policy_base.js", IDR_POLICY_BASE_JS);
-  source->AddResourcePath("policy.js", IDR_POLICY_JS);
+  source->AddResourcePath("policy.css", IDR_POLICY_POLICY_CSS);
+  source->AddResourcePath("policy_base.js", IDR_POLICY_POLICY_BASE_JS);
+  source->AddResourcePath("policy.js", IDR_POLICY_POLICY_JS);
   source->AddResourcePath("policy_conflict.html.js",
                           IDR_POLICY_POLICY_CONFLICT_HTML_JS);
   source->AddResourcePath("policy_conflict.js", IDR_POLICY_POLICY_CONFLICT_JS);
@@ -108,7 +108,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
   source->AddResourcePath("policy_table.js", IDR_POLICY_POLICY_TABLE_JS);
   source->AddResourcePath("status_box.html.js", IDR_POLICY_STATUS_BOX_HTML_JS);
   source->AddResourcePath("status_box.js", IDR_POLICY_STATUS_BOX_JS);
-  source->SetDefaultResource(IDR_POLICY_HTML);
+  source->SetDefaultResource(IDR_POLICY_POLICY_HTML);
   source->EnableReplaceI18nInJS();
   return source;
 }

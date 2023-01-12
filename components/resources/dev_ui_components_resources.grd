@@ -22,7 +22,6 @@ Feature Module (DevUI DFM) for Android Chrome. More info:
       <part file="local_state.grdp" />
       <part file="net_log_resources.grdp" />
       <part file="ntp_tiles_dev_ui_resources.grdp" />
-      <part file="policy_resources.grdp" />
       <part file="security_interstitials_dev_ui_resources.grdp" />
       <part file="signin_resources.grdp" />
       <part file="user_actions_ui_resources.grdp" />

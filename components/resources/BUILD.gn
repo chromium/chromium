@@ -81,7 +81,6 @@ grit("dev_ui_components_resources") {
   deps = [
     "//components/crash/core/browser/resources:build_ts",
     "//components/local_state:build",
-    "//components/policy/resources/webui:html_wrapper_files",
   ]
   output_dir = "$root_gen_dir/components"
 }

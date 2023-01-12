@@ -417,6 +417,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2330],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/policy/resources/webui/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [2335],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/app_home/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [2340],
