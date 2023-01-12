@@ -310,8 +310,6 @@ Refer to README.md for content description and update process.
  <item id="customtabs_parallel_request" added_in_milestone="98" content_hash_code="02c6bf11" os_list="android" file_path="chrome/browser/android/customtabs/detached_resource_request.cc" />
  <item id="explore_sites" added_in_milestone="98" content_hash_code="05256b51" os_list="android" file_path="chrome/browser/android/explore_sites/explore_sites_fetcher.cc" />
  <item id="rlz" added_in_milestone="98" content_hash_code="0839c21d" os_list="android" file_path="chrome/browser/android/rlz/rlz_ping_handler.cc" />
- <item id="chrome_android_hats" added_in_milestone="98" content_hash_code="021cd5b5" os_list="android" file_path="chrome/browser/android/survey/http_client_type.cc" />
- <item id="chime_sdk" added_in_milestone="98" content_hash_code="0114ec9a" os_list="android" file_path="chrome/browser/android/survey/http_client_type.cc" />
  <item id="download_manager_service_retry" added_in_milestone="98" content_hash_code="01044c58" os_list="android" file_path="chrome/browser/download/android/download_manager_service.cc" />
  <item id="download_bitmap" added_in_milestone="98" content_hash_code="0632ef37" os_list="android" file_path="chrome/browser/share/bitmap_download_request.cc" />
  <item id="family_info" added_in_milestone="98" content_hash_code="01831b1a" os_list="android,chromeos" file_path="chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc" />

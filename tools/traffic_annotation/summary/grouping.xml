@@ -21,8 +21,6 @@ after discussions on the right group.
       <annotation id="query_tiles_fetcher"/>
       <annotation id="query_tiles_image_loader"/>
       <annotation id="cached_image_fetcher"/>
-      <annotation id="chime_sdk"/>
-      <annotation id="chrome_android_hats"/>
       <annotation id="chrome_variations_android"/>
       <annotation id="customtabs_parallel_request"/>
       <annotation id="download_bitmap"/>

@@ -1945,20 +1945,6 @@ chromium-metrics-reviews@google.com.
   <summary>The count of HTTP Response codes encountered.</summary>
 </histogram>
 
-<histogram name="Net.HttpResponseCode.CustomHttpClient" enum="HttpResponseCode"
-    expires_after="2022-10-04">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Http response code accepted by the request sent from a custom HttpClient, if
-    a valid response code is received. Recorded when a http response is received
-    by the custom HttpClient. Android Only. The source of traffic of the
-    targeted services is added as suffix to this histogram.
-  </summary>
-</histogram>
-
-<!-- Name completed by histogram_suffixes name="CustomHttpClientType" -->
-
 <histogram name="Net.HttpServerProperties.CountOfServers" units="units"
     expires_after="M85">
   <owner>mmenke@chromium.org</owner>

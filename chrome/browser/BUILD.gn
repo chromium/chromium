@@ -2844,12 +2844,6 @@ static_library("browser") {
       "android/signin/web_signin_bridge.h",
       "android/startup_bridge.cc",
       "android/startup_bridge.h",
-      "android/survey/http_client_type.cc",
-      "android/survey/http_client_type.h",
-      "android/survey/survey_http_client.cc",
-      "android/survey/survey_http_client.h",
-      "android/survey/survey_http_client_bridge.cc",
-      "android/survey/survey_http_client_bridge.h",
       "android/tab_android.cc",
       "android/tab_android.h",
       "android/tab_android_user_data.h",
@@ -8240,9 +8234,6 @@ if (is_android) {
   }
   java_cpp_enum("screenshot_mode_enum") {
     sources = [ "android/feedback/screenshot_mode.h" ]
-  }
-  java_cpp_enum("survey_http_client_type_enum") {
-    sources = [ "android/survey/http_client_type.h" ]
   }
 }
 
