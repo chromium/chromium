@@ -14,6 +14,7 @@ import {ContentScriptBridge} from '../common/content_script_bridge.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {PermissionChecker} from '../common/permission_checker.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
@@ -146,6 +147,7 @@ export class Background extends ChromeVoxState {
     await Promise.all([
       DesktopAutomationHandler.init(),
       EventStreamLogger.init(),
+      PermissionChecker.init(),
     ]);
     ChromeVoxState.resolveReadyPromise_();
   }

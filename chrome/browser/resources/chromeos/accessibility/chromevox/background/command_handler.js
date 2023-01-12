@@ -26,6 +26,7 @@ import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {PermissionChecker} from '../common/permission_checker.js';
 import {TreeDumper} from '../common/tree_dumper.js';
 import {Personality, QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
@@ -55,7 +56,6 @@ const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
-const SessionType = chrome.chromeosInfoPrivate.SessionType;
 
 /**
  * @typedef {{
@@ -76,12 +76,6 @@ export class CommandHandler extends CommandHandlerInterface {
     this.imageNode_;
 
     /** @private {boolean} */
-    this.isIncognito_ = Boolean(chrome.runtime.getManifest()['incognito']);
-
-    /** @private {boolean} */
-    this.isKioskSession_ = false;
-
-    /** @private {boolean} */
     this.languageLoggingEnabled_ = false;
 
     this.init_();
@@ -95,14 +89,6 @@ export class CommandHandler extends CommandHandlerInterface {
     this.languageLoggingEnabled_ |= flagEnabled;
   }
 
-  /**
-   * @param {!SessionType} sessionType
-   * @private
-   */
-  updateIsKioskSession_(sessionType) {
-    this.isKioskSession_ = (sessionType === SessionType.KIOSK);
-  }
-
   /** @private */
   init_() {
     chrome.commandLinePrivate.hasSwitch(
@@ -111,16 +97,12 @@ export class CommandHandler extends CommandHandlerInterface {
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-language-detection-dynamic',
         enabled => this.updateLanguageLoggingEnabled_(enabled));
-
-    chrome.chromeosInfoPrivate.get(
-        ['sessionType'],
-        result => this.updateIsKioskSession_(result['sessionType']));
   }
 
   /** @override */
   onCommand(command) {
     // Check for a command denied in incognito contexts and kiosk.
-    if (!this.isAllowed_(command)) {
+    if (!PermissionChecker.isAllowed(command)) {
       return true;
     }
 
@@ -1420,20 +1402,6 @@ export class CommandHandler extends CommandHandlerInterface {
       current = current.parent;
     }
     return current;
-  }
-
-  /**
-   * @param {!Command} command
-   * @return {boolean}
-   * @private
-   */
-  isAllowed_(command) {
-    if (!this.isIncognito_ && !this.isKioskSession_) {
-      return true;
-    }
-
-    return !CommandStore.CMD_ALLOWLIST[command] ||
-        !CommandStore.CMD_ALLOWLIST[command].denySignedOut;
   }
 
   /**

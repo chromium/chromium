@@ -144,6 +144,7 @@ chromevox_es6_modules = [
   "common/panel_bridge.js",
   "common/panel_command.js",
   "common/panel_menu_data.js",
+  "common/permission_checker.js",
   "common/role_type.js",
   "common/spannable.js",
   "common/tree_dumper.js",
