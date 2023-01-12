@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "content/public/common/content_switches.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/test/headless_browser_test_utils.h"

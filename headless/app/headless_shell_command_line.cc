@@ -47,7 +47,7 @@ void HandleDeterministicModeSwitch(base::CommandLine& command_line) {
 
 bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
                                HeadlessBrowser::Options::Builder& builder) {
-  DCHECK(command_line.HasSwitch(switches::kRemoteDebuggingPort));
+  DCHECK(command_line.HasSwitch(::switches::kRemoteDebuggingPort));
 
   net::IPAddress address;
   std::string address_str = kLocalHost;
@@ -199,8 +199,8 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
 bool IsRemoteDebuggingEnabled() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  return command_line.HasSwitch(switches::kRemoteDebuggingPort) ||
-         command_line.HasSwitch(switches::kRemoteDebuggingPipe);
+  return command_line.HasSwitch(::switches::kRemoteDebuggingPort) ||
+         command_line.HasSwitch(::switches::kRemoteDebuggingPipe);
 }
 
 }  // namespace headless

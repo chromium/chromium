@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/app/headless_shell.h"
+#include "headless/public/headless_shell.h"
 
 #include <memory>
 
@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main.h"
+#include "content/public/common/content_switches.h"
 #include "headless/app/headless_shell_command_line.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -25,7 +26,6 @@
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_web_contents.h"
 #include "net/base/filename_util.h"
-#include "net/http/http_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -70,10 +70,25 @@ GURL ConvertArgumentToURL(const base::CommandLine::StringType& arg) {
       base::MakeAbsoluteFilePath(base::FilePath(arg)));
 }
 
-}  // namespace
+// An application which implements a simple headless browser.
+class HeadlessShell {
+ public:
+  HeadlessShell() = default;
 
-HeadlessShell::HeadlessShell() = default;
-HeadlessShell::~HeadlessShell() = default;
+  HeadlessShell(const HeadlessShell&) = delete;
+  HeadlessShell& operator=(const HeadlessShell&) = delete;
+
+  ~HeadlessShell() = default;
+
+  void OnBrowserStart(HeadlessBrowser* browser);
+
+ private:
+  void ShutdownSoon();
+  void Shutdown();
+
+  raw_ptr<HeadlessBrowser> browser_ = nullptr;
+  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;
+};
 
 void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   browser_ = browser;
@@ -144,18 +159,96 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   HeadlessCommandHandler::ProcessCommands(
       HeadlessWebContentsImpl::From(web_contents)->web_contents(),
       std::move(target_url),
-      base::BindOnce(&HeadlessShell::ShutdownSoon, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&HeadlessShell::ShutdownSoon, base::Unretained(this)));
 #endif
 }
 
 void HeadlessShell::ShutdownSoon() {
   browser_->BrowserMainThread()->PostTask(
       FROM_HERE,
-      base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&HeadlessShell::Shutdown, base::Unretained(this)));
 }
 
 void HeadlessShell::Shutdown() {
   browser_->Shutdown();
+}
+
+int RunContentMain(
+    HeadlessBrowser::Options options,
+    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
+  content::ContentMainParams params(nullptr);
+#if BUILDFLAG(IS_WIN)
+  // Sandbox info has to be set and initialized.
+  CHECK(options.sandbox_info);
+  params.instance = options.instance;
+  params.sandbox_info = std::move(options.sandbox_info);
+#elif !BUILDFLAG(IS_ANDROID)
+  params.argc = options.argc;
+  params.argv = options.argv;
+#endif
+
+  auto browser = std::make_unique<HeadlessBrowserImpl>(
+      std::move(on_browser_start_callback), std::move(options));
+  HeadlessContentMainDelegate delegate(std::move(browser));
+  params.delegate = &delegate;
+  return content::ContentMain(std::move(params));
+}
+
+#if BUILDFLAG(IS_WIN)
+void RunChildProcessIfNeeded(HINSTANCE instance,
+                             sandbox::SandboxInterfaceInfo* sandbox_info) {
+  base::CommandLine::Init(0, nullptr);
+  HeadlessBrowser::Options::Builder builder(0, nullptr);
+  builder.SetInstance(instance);
+  builder.SetSandboxInfo(std::move(sandbox_info));
+#else
+void RunChildProcessIfNeeded(int argc, const char** argv) {
+  base::CommandLine::Init(argc, argv);
+  HeadlessBrowser::Options::Builder builder(argc, argv);
+#endif  // BUILDFLAG(IS_WIN)
+  const base::CommandLine& command_line(
+      *base::CommandLine::ForCurrentProcess());
+
+  if (!command_line.HasSwitch(::switches::kProcessType))
+    return;
+
+  int rc = RunContentMain(builder.Build(),
+                          base::OnceCallback<void(HeadlessBrowser*)>());
+
+  // Note that exiting from here means that base::AtExitManager objects will not
+  // have a chance to be destroyed (typically in main/WinMain).
+  // Use TerminateCurrentProcessImmediately instead of exit to avoid shutdown
+  // crashes and slowdowns on shutdown.
+  base::Process::TerminateCurrentProcessImmediately(rc);
+}
+
+int HeadlessBrowserMain(HeadlessBrowser::Options options) {
+#if DCHECK_IS_ON()
+  // The browser can only be initialized once.
+  static bool browser_was_initialized;
+  DCHECK(!browser_was_initialized);
+  browser_was_initialized = true;
+
+  // Child processes should not end up here.
+  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kProcessType));
+#endif
+  HeadlessShell shell;
+
+  return RunContentMain(
+      std::move(options),
+      base::BindOnce(&HeadlessShell::OnBrowserStart, base::Unretained(&shell)));
+}
+
+}  // namespace
+
+// An entry point for chrome.
+int HeadlessShellMain(const content::ContentMainParams& params) {
+#if BUILDFLAG(IS_WIN)
+  return HeadlessShellMain(params.instance, params.sandbox_info);
+#else
+  return HeadlessShellMain(params.argc, params.argv);
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -212,90 +305,7 @@ int HeadlessShellMain(int argc, const char** argv) {
     return EXIT_FAILURE;
   }
 
-  HeadlessShell shell;
-
-  return HeadlessBrowserMain(
-      builder.Build(),
-      base::BindOnce(&HeadlessShell::OnBrowserStart, base::Unretained(&shell)));
-}
-
-int HeadlessShellMain(const content::ContentMainParams& params) {
-#if BUILDFLAG(IS_WIN)
-  return HeadlessShellMain(params.instance, params.sandbox_info);
-#else
-  return HeadlessShellMain(params.argc, params.argv);
-#endif
-}
-
-namespace {
-
-int RunContentMain(
-    HeadlessBrowser::Options options,
-    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
-  content::ContentMainParams params(nullptr);
-#if BUILDFLAG(IS_WIN)
-  // Sandbox info has to be set and initialized.
-  CHECK(options.sandbox_info);
-  params.instance = options.instance;
-  params.sandbox_info = std::move(options.sandbox_info);
-#elif !BUILDFLAG(IS_ANDROID)
-  params.argc = options.argc;
-  params.argv = options.argv;
-#endif
-
-  auto browser = std::make_unique<HeadlessBrowserImpl>(
-      std::move(on_browser_start_callback), std::move(options));
-  HeadlessContentMainDelegate delegate(std::move(browser));
-  params.delegate = &delegate;
-  return content::ContentMain(std::move(params));
-}
-
-}  // namespace
-
-#if BUILDFLAG(IS_WIN)
-void RunChildProcessIfNeeded(HINSTANCE instance,
-                             sandbox::SandboxInterfaceInfo* sandbox_info) {
-  base::CommandLine::Init(0, nullptr);
-  HeadlessBrowser::Options::Builder builder(0, nullptr);
-  builder.SetInstance(instance);
-  builder.SetSandboxInfo(std::move(sandbox_info));
-#else
-void RunChildProcessIfNeeded(int argc, const char** argv) {
-  base::CommandLine::Init(argc, argv);
-  HeadlessBrowser::Options::Builder builder(argc, argv);
-#endif  // BUILDFLAG(IS_WIN)
-  const base::CommandLine& command_line(
-      *base::CommandLine::ForCurrentProcess());
-
-  if (!command_line.HasSwitch(::switches::kProcessType))
-    return;
-
-  int rc = RunContentMain(builder.Build(),
-                          base::OnceCallback<void(HeadlessBrowser*)>());
-
-  // Note that exiting from here means that base::AtExitManager objects will not
-  // have a chance to be destroyed (typically in main/WinMain).
-  // Use TerminateCurrentProcessImmediately instead of exit to avoid shutdown
-  // crashes and slowdowns on shutdown.
-  base::Process::TerminateCurrentProcessImmediately(rc);
-}
-
-int HeadlessBrowserMain(
-    HeadlessBrowser::Options options,
-    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
-  DCHECK(!on_browser_start_callback.is_null());
-#if DCHECK_IS_ON()
-  // The browser can only be initialized once.
-  static bool browser_was_initialized;
-  DCHECK(!browser_was_initialized);
-  browser_was_initialized = true;
-
-  // Child processes should not end up here.
-  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kProcessType));
-#endif
-  return RunContentMain(std::move(options),
-                        std::move(on_browser_start_callback));
+  return HeadlessBrowserMain(builder.Build());
 }
 
 }  // namespace headless

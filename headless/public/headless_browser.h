@@ -10,9 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "headless/public/headless_browser_context.h"
@@ -215,47 +213,6 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
  private:
   Options options_;
 };
-
-#if !BUILDFLAG(IS_WIN)
-// The headless browser may need to create child processes (e.g., a renderer
-// which runs web content). This is done by re-executing the parent process as
-// a zygote[1] and forking each child process from that zygote.
-//
-// For this to work, the embedder should call RunChildProcess as soon as
-// possible (i.e., before creating any threads) to pass control to the headless
-// library. In a browser process this function will return immediately, but in a
-// child process it will never return. For example:
-//
-// int main(int argc, const char** argv) {
-//   headless::RunChildProcessIfNeeded(argc, argv);
-//   headless::HeadlessBrowser::Options::Builder builder(argc, argv);
-//   return headless::HeadlessBrowserMain(
-//       builder.Build(),
-//       base::OnceCallback<void(headless::HeadlessBrowser*)>());
-// }
-//
-// [1]
-// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/zygote.md
-void RunChildProcessIfNeeded(int argc, const char** argv);
-#else
-// In Windows, the headless browser may need to create child processes. This is
-// done by re-executing the parent process which may have been initialized with
-// different libraries (e.g. child_dll). In this case, the embedder has to pass
-// the appropiate HINSTANCE and initalization sandbox_info to properly launch
-// the child process.
-void RunChildProcessIfNeeded(HINSTANCE instance,
-                             sandbox::SandboxInterfaceInfo* sandbox_info);
-#endif  // !BUILDFLAG(IS_WIN)
-
-// Main entry point for running the headless browser. This function constructs
-// the headless browser instance, passing it to the given
-// |on_browser_start_callback| callback. Note that since this function executes
-// the main loop, it will only return after HeadlessBrowser::Shutdown() is
-// called, returning the exit code for the process. It is not possible to
-// initialize the browser again after it has been torn down.
-int HeadlessBrowserMain(
-    HeadlessBrowser::Options options,
-    base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback);
 
 }  // namespace headless
 

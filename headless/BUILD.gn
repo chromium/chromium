@@ -835,7 +835,6 @@ if (is_win) {
   static_library("headless_shell_browser_lib") {
     sources = [
       "app/headless_shell.cc",
-      "app/headless_shell.h",
       "app/headless_shell_command_line.cc",
       "app/headless_shell_command_line.h",
       "app/headless_shell_switches.h",
@@ -875,7 +874,6 @@ if (is_win) {
 static_library("headless_shell_lib") {
   sources = [
     "app/headless_shell.cc",
-    "app/headless_shell.h",
     "app/headless_shell_command_line.cc",
     "app/headless_shell_command_line.h",
     "app/headless_shell_switches.h",
