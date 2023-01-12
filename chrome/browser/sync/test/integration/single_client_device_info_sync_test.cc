@@ -24,6 +24,7 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_server.h"
+#include "components/sync/test/fake_server_http_post_provider.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -41,6 +42,7 @@ using syncer::ModelTypeSet;
 using testing::AllOf;
 using testing::Contains;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::IsSupersetOf;
 using testing::Not;
 using testing::UnorderedElementsAre;
@@ -525,16 +527,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_THAT(server_device_infos,
               ElementsAre(HasCacheGuid(GetLocalCacheGuid())));
 
-  GetClient(0)->StopSyncServiceWithoutClearingData();
-  // Add a DeviceInfo tombstone to cause a commit request within the same sync
-  // cycle (removing local DeviceInfo will cause its reupload).
+  // Simulate going offline to have both downloading and committing updates in
+  // the same sync cycle.
+  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+
+  // Add a DeviceInfo tombstone to cause a commit request (removing local
+  // DeviceInfo will cause its reupload).
   GetFakeServer()->InjectEntity(
       syncer::PersistentTombstoneEntity::CreateFromEntity(
           server_device_infos.front()));
-  // Add a new remote device to verify that single_client flag is not set.
-  InjectDeviceInfoEntityToServer(/*suffix=*/1);
-  GetClient(0)->StartSyncService();
 
+  // Simulate DeviceInfo update from a new remote client.
+  InjectDeviceInfoEntityToServer(/*suffix=*/1);
+
+  // Simulate going online. This starts a new sync cycle with both GetUpdates
+  // and Commit requests.
+  fake_server::FakeServerHttpPostProvider::EnableNetwork();
+
+  // Waiting for a local DeviceInfo reupload.
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
                   UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid()),
                                        HasCacheGuid(CacheGuidForSuffix(1))))
@@ -543,10 +553,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   sync_pb::ClientToServerMessage message;
   GetFakeServer()->GetLastCommitMessage(&message);
 
+  // Verify that all the optimization flags are omitted.
   EXPECT_FALSE(message.commit().config_params().single_client());
   EXPECT_FALSE(message.commit()
                    .config_params()
                    .single_client_with_standalone_invalidations());
+  EXPECT_THAT(message.commit()
+                  .config_params()
+                  .fcm_registration_tokens_for_interested_clients(),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
