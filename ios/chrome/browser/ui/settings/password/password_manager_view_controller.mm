@@ -1428,7 +1428,12 @@ NSInteger kTrailingSymbolSize = 18;
         [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
                               withRowAnimation:UITableViewRowAnimationTop];
 
-        self.navigationController.toolbarHidden = NO;
+        //  We want to restart the toolbar (display it) when the search bar is
+        //  dismissed only if the current view is the Password Manager.
+        if ([self.navigationController.topViewController
+                isKindOfClass:[PasswordManagerViewController class]]) {
+          self.navigationController.toolbarHidden = NO;
+        }
 
         // Add "On-device encryption" section.
         [self updateOnDeviceEncryptionSessionWithUpdateTableView:YES
