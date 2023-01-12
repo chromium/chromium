@@ -343,7 +343,4 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1376638
   "lacros.AudioRecord",
-
-  # https://crbug.com/1399370
-  "security.ChromeSandboxed.lacros",
 ]
