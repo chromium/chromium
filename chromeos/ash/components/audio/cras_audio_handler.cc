@@ -1019,11 +1019,7 @@ void CrasAudioHandler::NodesChanged() {
 
 void CrasAudioHandler::OutputNodeVolumeChanged(uint64_t node_id, int volume) {
   const AudioDevice* device = this->GetDeviceFromId(node_id);
-
-  // If this is not an active output node, ignore this event. Because when this
-  // node set to active, it will be applied with the volume value stored in
-  // preference.
-  if (!device || !device->active || device->is_input) {
+  if (!device || device->is_input) {
     LOG(ERROR) << "Unexpexted OutputNodeVolumeChanged received on node: 0x"
                << std::hex << node_id;
     return;
@@ -1034,7 +1030,9 @@ void CrasAudioHandler::OutputNodeVolumeChanged(uint64_t node_id, int volume) {
   // set the volume, i.e., volume could be set from non-chrome source, like
   // Bluetooth headset, etc. Assume all active output devices share a single
   // volume.
-  output_volume_ = volume;
+  if (device->active) {
+    output_volume_ = volume;
+  }
   audio_pref_handler_->SetVolumeGainValue(*device, volume);
 
   if (initializing_audio_state_) {
