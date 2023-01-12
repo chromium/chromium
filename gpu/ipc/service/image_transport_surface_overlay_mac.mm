@@ -27,6 +27,7 @@
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/scoped_cgl.h"
 
@@ -54,6 +55,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
       delegate_(delegate),
       use_remote_layer_api_(ui::RemoteLayerAPISupported()),
       scale_factor_(1),
+      vsync_callback_(delegate->GetGpuVSyncCallback()),
       gl_renderer_id_(0),
       weak_ptr_factory_(this) {
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
@@ -306,6 +308,21 @@ void ImageTransportSurfaceOverlayMacEGL::OnGpuSwitched(
 void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
     gfx::CALayerResult ca_layer_error_code) {
   ca_layer_error_code_ = ca_layer_error_code;
+}
+
+void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
+}
+
+bool ImageTransportSurfaceOverlayMacEGL::SupportsGpuVSync() const {
+  return features::UseGpuVsync();
+}
+
+void ImageTransportSurfaceOverlayMacEGL::SetGpuVSyncEnabled(bool enabled) {
+  if (gpu_vsync_enabled_ == enabled) {
+    return;
+  }
+
+  gpu_vsync_enabled_ = enabled;
 }
 
 }  // namespace gpu

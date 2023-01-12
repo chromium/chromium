@@ -256,6 +256,8 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Enable or disable vsync callback based on whether begin frames are needed.
   virtual void SetGpuVSyncEnabled(bool enabled);
 
+  virtual void SetVSyncDisplayID(int64_t display_id) {}
+
   // When the device is rotated, the scene prepared by the UI is in the logical
   // screen space as seen by the user. However, attempting to scanout a buffer
   // with its content in this logical space may be unsupported or inefficient

@@ -143,6 +143,8 @@ class SkiaOutputDevice {
 
   virtual void SetGpuVSyncEnabled(bool enabled);
 
+  virtual void SetVSyncDisplayID(int64_t display_id) {}
+
   // Whether the output device's primary plane is an overlay. This returns true
   // is the SchedulePrimaryPlane function is implemented.
   virtual bool IsPrimaryPlaneOverlay() const;

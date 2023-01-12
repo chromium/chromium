@@ -69,6 +69,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/presenter.h"
@@ -1652,6 +1653,10 @@ void SkiaOutputSurfaceImplOnGpu::SetGpuVSyncEnabled(bool enabled) {
   output_device_->SetGpuVSyncEnabled(enabled);
 }
 
+void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id) {
+  output_device_->SetVSyncDisplayID(display_id);
+}
+
 void SkiaOutputSurfaceImplOnGpu::SetFrameRate(float frame_rate) {
   if (gl_surface_)
     gl_surface_->SetFrameRate(frame_rate);
@@ -1736,6 +1741,12 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         return false;
       }
     }
+
+#if BUILDFLAG(IS_MAC)
+    if (features::UseGpuVsync()) {
+      presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
+    }
+#endif
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
       if (presenter_) {

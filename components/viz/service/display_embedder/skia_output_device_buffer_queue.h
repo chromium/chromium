@@ -65,6 +65,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
 
+  // SkiaOutputDevice override
+  void SetGpuVSyncEnabled(bool enabled) override;
+  void SetVSyncDisplayID(int64_t display_id) override;
+
  private:
   friend class SkiaOutputDeviceBufferQueueTest;
 

@@ -35,6 +35,9 @@ namespace gpu {
 class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
                                            public ui::GpuSwitchingObserver {
  public:
+  using VSyncCallback =
+      base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
+
   ImageTransportSurfaceOverlayMacEGL(
       gl::GLDisplayEGL* display,
       base::WeakPtr<ImageTransportSurfaceDelegate> delegate);
@@ -68,6 +71,11 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
 
   void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) override;
 
+  // GLSurface override
+  bool SupportsGpuVSync() const override;
+  void SetGpuVSyncEnabled(bool enabled) override;
+  void SetVSyncDisplayID(int64_t display_id) override;
+
  private:
   ~ImageTransportSurfaceOverlayMacEGL() override;
 
@@ -91,6 +99,9 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
   // A GLFence marking the end of the previous frame, used for applying
   // backpressure.
   uint64_t previous_frame_fence_ = 0;
+
+  const VSyncCallback vsync_callback_;
+  bool gpu_vsync_enabled_ = false;
 
   // The renderer ID that all contexts made current to this surface should be
   // targeting.

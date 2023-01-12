@@ -25,7 +25,11 @@
 namespace features {
 namespace {
 
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_DISABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 const base::FeatureParam<std::string>

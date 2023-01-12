@@ -380,6 +380,12 @@ void SkiaOutputSurfaceImpl::SetGpuVSyncCallback(GpuVSyncCallback callback) {
   gpu_vsync_callback_ = std::move(callback);
 }
 
+void SkiaOutputSurfaceImpl::SetVSyncDisplayID(int64_t display_id) {
+  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID,
+                             base::Unretained(impl_on_gpu_.get()), display_id);
+  gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(task), {});
+}
+
 void SkiaOutputSurfaceImpl::SetDisplayTransformHint(
     gfx::OverlayTransform transform) {
   display_transform_ = transform;

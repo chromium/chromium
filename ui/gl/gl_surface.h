@@ -334,6 +334,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   virtual void SetGpuVSyncEnabled(bool enabled);
 
+  virtual void SetVSyncDisplayID(int64_t display_id) {}
+
   virtual void SetDisplayTransform(gfx::OverlayTransform transform) {}
   virtual void SetFrameRate(float frame_rate) {}
   virtual void SetChoreographerVsyncIdForNextFrame(

@@ -156,6 +156,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.preserve_buffer_content = true;
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
+  capabilities_.supports_gpu_vsync = presenter_->SupportsGpuVSync();
 
   capabilities_.renderer_allocates_images =
       ::features::ShouldRendererAllocateImages();
@@ -735,6 +736,14 @@ bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(
     const gpu::Mailbox& lhs,
     const OverlayData& rhs) const {
   return lhs < rhs.mailbox();
+}
+
+void SkiaOutputDeviceBufferQueue::SetGpuVSyncEnabled(bool enabled) {
+  presenter_->SetGpuVSyncEnabled(enabled);
+}
+
+void SkiaOutputDeviceBufferQueue::SetVSyncDisplayID(int64_t display_id) {
+  presenter_->SetVSyncDisplayID(display_id);
 }
 
 }  // namespace viz

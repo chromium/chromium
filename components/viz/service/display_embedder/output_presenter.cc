@@ -157,4 +157,8 @@ std::unique_ptr<OutputPresenter::Image> OutputPresenter::AllocateSingleImage(
   return nullptr;
 }
 
+bool OutputPresenter::SupportsGpuVSync() const {
+  return false;
+}
+
 }  // namespace viz

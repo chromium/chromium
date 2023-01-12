@@ -206,9 +206,13 @@ class SkiaOutputSurfaceImplOnGpu
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays);
 
   void SetEnableDCLayers(bool enable);
+
   void SetGpuVSyncEnabled(bool enabled);
 
+  void SetVSyncDisplayID(int64_t display_id);
+
   void SetFrameRate(float frame_rate);
+
   bool was_context_lost() { return context_state_->context_lost(); }
 
   void SetCapabilitiesForTesting(
