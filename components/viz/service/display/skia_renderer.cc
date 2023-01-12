@@ -1050,6 +1050,9 @@ void SkiaRenderer::BuffersPresented() {
 
 void SkiaRenderer::DidReceiveReleasedOverlays(
     const std::vector<gpu::Mailbox>& released_overlays) {
+  DisplayResourceProvider::ScopedBatchReturnResources returner(
+      resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
+
   // This method is only called on macOS and Ozone right now.
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   for (const auto& mailbox : released_overlays) {
