@@ -50,6 +50,8 @@ static void GetNativeThemeExtraParams(
           extra_params->text_field.background_color;
       native_theme_extra_params->text_field.has_border =
           extra_params->text_field.has_border;
+      native_theme_extra_params->text_field.auto_complete_active =
+          extra_params->text_field.auto_complete_active;
       native_theme_extra_params->text_field.zoom =
           extra_params->text_field.zoom;
       break;
