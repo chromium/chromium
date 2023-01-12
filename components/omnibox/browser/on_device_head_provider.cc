@@ -265,7 +265,8 @@ void OnDeviceHeadProvider::SearchDone(
           template_url_service->GetDefaultSearchProvider(),
           /*search_terms_data=*/
           template_url_service->search_terms_data(),
-          /*accepted_suggestion=*/TemplateURLRef::NO_SUGGESTION_CHOSEN));
+          /*accepted_suggestion=*/TemplateURLRef::NO_SUGGESTION_CHOSEN,
+          /*is_tail_suggestion=*/false));
     }
     UMA_HISTOGRAM_TIMES("Omnibox.OnDeviceHeadSuggest.AsyncQueryTime",
                         base::TimeTicks::Now() - params->creation_time);

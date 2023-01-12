@@ -81,7 +81,7 @@ class BaseSearchProvider : public AutocompleteProvider {
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data);
 
-  // A helper function to return an AutocompleteMatch for OnDeviceHeadProvider.
+  // A helper function to return an AutocompleteMatch for on device provider.
   static AutocompleteMatch CreateOnDeviceSearchSuggestion(
       AutocompleteProvider* autocomplete_provider,
       const AutocompleteInput& input,
@@ -89,7 +89,8 @@ class BaseSearchProvider : public AutocompleteProvider {
       int relevance,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
-      int accepted_suggestion);
+      int accepted_suggestion,
+      bool is_tail_suggestion);
 
   // Appends specific suggest client based on page |page_classification| to
   // the additional query params of |search_terms_args| only for Google template

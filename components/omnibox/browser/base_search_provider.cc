@@ -41,6 +41,40 @@ bool MatchTypeAndContentsAreEqual(const AutocompleteMatch& lhs,
   return lhs.contents == rhs.contents && lhs.type == rhs.type;
 }
 
+std::u16string GetMatchContentsForOnDeviceTailSuggestion(
+    const std::u16string& input_text,
+    const std::u16string& sanitized_suggestion) {
+  std::u16string sanitized_input;
+
+  base::TrimWhitespace(input_text, base::TRIM_TRAILING, &sanitized_input);
+  sanitized_input = AutocompleteMatch::SanitizeString(sanitized_input);
+
+  if (!base::StartsWith(sanitized_suggestion, sanitized_input,
+                        base::CompareCase::SENSITIVE)) {
+    return sanitized_suggestion;
+  }
+
+  // If there is no space inside the suggestion, show the entire suggestion in
+  // UI. Otherwise replace the completed prefix of the suggestion with tail UI
+  // symbols e.g. "...".
+  // Examples (input/suggestion -> result):
+  // 1. [googl]/[google] -> [google]
+  // 2. [google]/[google map] -> [google map]
+  // 3. [google ma]/[google map login] -> [...map login]
+  // 4. [google map ]/[google map login] -> [...map login]
+  size_t suggestion_last_space_index =
+      sanitized_suggestion.find_last_of(base::kWhitespaceUTF16);
+  size_t input_last_space_index =
+      sanitized_input.find_last_of(base::kWhitespaceUTF16);
+  if (suggestion_last_space_index == std::u16string::npos ||
+      input_last_space_index == std::u16string::npos) {
+    return sanitized_suggestion;
+  }
+  size_t start_index = input_last_space_index + 1;
+
+  return sanitized_suggestion.substr(start_index);
+}
+
 }  // namespace
 
 using OEP = metrics::OmniboxEventProto;
@@ -284,12 +318,36 @@ AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
     int relevance,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
-    int accepted_suggestion) {
+    int accepted_suggestion,
+    bool is_tail_suggestion) {
+  AutocompleteMatchType::Type match_type;
+  std::u16string match_contents, match_contents_prefix;
+
+  if (is_tail_suggestion) {
+    match_type = AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
+    std::u16string sanitized_suggestion =
+        AutocompleteMatch::SanitizeString(suggestion);
+    match_contents = GetMatchContentsForOnDeviceTailSuggestion(
+        input.text(), sanitized_suggestion);
+
+    DCHECK_GE(sanitized_suggestion.size(), match_contents.size());
+    match_contents_prefix = sanitized_suggestion.substr(
+        0, sanitized_suggestion.size() - match_contents.size());
+  } else {
+    match_type = AutocompleteMatchType::SEARCH_SUGGEST;
+    match_contents = suggestion;
+  }
+
   SearchSuggestionParser::SuggestResult suggest_result(
-      suggestion, AutocompleteMatchType::SEARCH_SUGGEST,
-      /*subtypes=*/{omnibox::SUBTYPE_SUGGEST_2G_LITE},
+      suggestion, match_type, /*subtypes=*/{omnibox::SUBTYPE_SUGGEST_2G_LITE},
+      match_contents, match_contents_prefix,
+      /*annotation=*/std::u16string(),
+      /*entity_info=*/omnibox::EntityInfo(),
+      /*deletion_url=*/"",
       /*from_keyword=*/false, relevance,
       /*relevance_from_server=*/false,
+      /*should_prefetch=*/false,
+      /*should_prerender=*/false,
       base::CollapseWhitespace(input.text(), false));
   // On device providers are asynchronous.
   suggest_result.set_received_after_last_keystroke(true);
