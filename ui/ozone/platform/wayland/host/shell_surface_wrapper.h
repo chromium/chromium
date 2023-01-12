@@ -15,7 +15,12 @@ namespace ui {
 
 class XDGSurfaceWrapperImpl;
 
-// Wrapper interface for different wayland xdg-shell surface versions.
+// Wrapper interface for shell surfaces.
+//
+// This is one of three wrapper classes: Shell{Surface,Toplevel,Popup}Wrapper.
+// It has the only sub-class in Chromium, but should not be removed because it
+// eases downstream implementations.
+// See https://crbug.com/1402672
 class ShellSurfaceWrapper {
  public:
   virtual ~ShellSurfaceWrapper() = default;

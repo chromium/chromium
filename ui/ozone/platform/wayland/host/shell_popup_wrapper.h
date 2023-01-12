@@ -34,7 +34,15 @@ struct ShellPopupParams {
   absl::optional<OwnedWindowAnchor> anchor;
 };
 
-// A wrapper around different versions of xdg popups.
+// Wrapper interface for shell popups.
+//
+// This is one of three wrapper classes: Shell{Surface,Toplevel,Popup}Wrapper.
+// It has the only sub-class in Chromium, but should not be removed because it
+// eases downstream implementations.
+// See https://crbug.com/1402672
+//
+// Allows WaylandPopup to do stuff specific to popups, such as anchoring the
+// window and grabbing the pointer.
 class ShellPopupWrapper {
  public:
   virtual ~ShellPopupWrapper() = default;
