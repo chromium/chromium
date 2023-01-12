@@ -751,8 +751,29 @@ void DriveFsPinManager::OnUnmounted() {}
 
 void DriveFsPinManager::OnFilesChanged(
     const std::vector<mojom::FileChange>& changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   for (const mojom::FileChange& change : changes) {
     VLOG(2) << "Got FileChange " << Quote(change);
+
+    const StableId id = StableId(change.stable_id);
+    const Files::const_iterator it = files_to_track_.find(id);
+    if (it == files_to_track_.end()) {
+      continue;
+    }
+
+    const Progress& progress = it->second;
+    if (progress.in_progress) {
+      continue;
+    }
+
+    const std::string& path = progress.path;
+    VLOG(2) << "Checking changed " << id << " " << Quote(path);
+    // TODO(b/264932920) Use stable ID instead of path.
+    drivefs_interface_->GetMetadata(
+        base::FilePath(path),
+        base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
+                       weak_ptr_factory_.GetWeakPtr(), id, path));
   }
 }
 
