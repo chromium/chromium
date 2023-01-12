@@ -813,16 +813,16 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
   if ((type & DIPSEventRemovalType::kHistory) ==
       DIPSEventRemovalType::kHistory) {
     static constexpr char kUpdateFirstInteractionSql[] =  // clang-format off
-        "UPDATE bounces SET first_user_interaction_time=?1 "
-            "WHERE first_user_interaction_time>=?2 AND "
-                  "first_user_interaction_time<?1";
+        "UPDATE bounces SET first_user_interaction_time=?2 "
+            "WHERE first_user_interaction_time>=?1 AND "
+                  "first_user_interaction_time<?2";
     // clang-format on
     DCHECK(db_->IsSQLValid(kUpdateFirstInteractionSql));
 
     sql::Statement s_first_interaction(
         db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstInteractionSql));
-    s_first_interaction.BindTime(0, delete_end);
-    s_first_interaction.BindTime(1, delete_begin);
+    s_first_interaction.BindTime(0, delete_begin);
+    s_first_interaction.BindTime(1, delete_end);
 
     if (!s_first_interaction.Run()) {
       return false;
@@ -832,48 +832,48 @@ bool DIPSDatabase::AdjustFirstTimestamps(const base::Time& delete_begin,
   if ((type & DIPSEventRemovalType::kStorage) ==
       DIPSEventRemovalType::kStorage) {
     static constexpr char kUpdateFirstStorageSql[] =  // clang-format off
-        "UPDATE bounces SET first_site_storage_time=?1 "
-            "WHERE first_site_storage_time>=?2 AND "
-                  "first_site_storage_time<?1";
+        "UPDATE bounces SET first_site_storage_time=?2 "
+            "WHERE first_site_storage_time>=?1 AND "
+                  "first_site_storage_time<?2";
     // clang-format on
     DCHECK(db_->IsSQLValid(kUpdateFirstStorageSql));
 
     sql::Statement s_first_storage(
         db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstStorageSql));
-    s_first_storage.BindTime(0, delete_end);
-    s_first_storage.BindTime(1, delete_begin);
+    s_first_storage.BindTime(0, delete_begin);
+    s_first_storage.BindTime(1, delete_end);
 
     if (!s_first_storage.Run()) {
       return false;
     }
 
     static constexpr char kUpdateFirstStatefulSql[] =  // clang-format off
-        "UPDATE bounces SET first_stateful_bounce_time=?1 "
-            "WHERE first_stateful_bounce_time>=?2 AND "
-                  "first_stateful_bounce_time<?1";
+        "UPDATE bounces SET first_stateful_bounce_time=?2 "
+            "WHERE first_stateful_bounce_time>=?1 AND "
+                  "first_stateful_bounce_time<?2";
     // clang-format on
     DCHECK(db_->IsSQLValid(kUpdateFirstStatefulSql));
 
     sql::Statement s_first_stateful(
         db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstStatefulSql));
-    s_first_stateful.BindTime(0, delete_end);
-    s_first_stateful.BindTime(1, delete_begin);
+    s_first_stateful.BindTime(0, delete_begin);
+    s_first_stateful.BindTime(1, delete_end);
 
     if (!s_first_stateful.Run()) {
       return false;
     }
 
     static constexpr char kUpdateFirstBounceSql[] =  // clang-format off
-        "UPDATE bounces SET first_bounce_time=?1 "
-            "WHERE first_bounce_time>=?2 AND "
-                  "first_bounce_time<?1";
+        "UPDATE bounces SET first_bounce_time=?2 "
+            "WHERE first_bounce_time>=?1 AND "
+                  "first_bounce_time<?2";
     // clang-format on
     DCHECK(db_->IsSQLValid(kUpdateFirstBounceSql));
 
     sql::Statement s_first_bounce(
         db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFirstBounceSql));
-    s_first_bounce.BindTime(0, delete_end);
-    s_first_bounce.BindTime(1, delete_begin);
+    s_first_bounce.BindTime(0, delete_begin);
+    s_first_bounce.BindTime(1, delete_end);
 
     if (!s_first_bounce.Run()) {
       return false;
