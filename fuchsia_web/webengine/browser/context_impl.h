@@ -86,6 +86,8 @@ class WEB_ENGINE_EXPORT ContextImpl final : public fuchsia::web::Context {
   // |frame_ptr| client.
   FrameImpl* GetFrameImplForTest(fuchsia::web::FramePtr* frame_ptr) const;
 
+  network::mojom::NetworkContext* GetNetworkContextForTest();
+
   content::BrowserContext* browser_context() const {
     return browser_context_.get();
   }

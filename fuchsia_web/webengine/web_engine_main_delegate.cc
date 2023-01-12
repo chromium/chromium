@@ -9,10 +9,12 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/intl_profile_watcher.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "fuchsia_web/common/init_logging.h"
@@ -87,6 +89,20 @@ absl::optional<int> WebEngineMainDelegate::BasicStartupComplete() {
 #else
     LOG(WARNING) << "Ignored " << switches::kGoogleApiKey;
 #endif
+  }
+
+  // Configure SysInfo to report total/free space under "/data" based on the
+  // requested soft-quota, if any. This only affects persistent instances.
+  if (command_line->HasSwitch(switches::kDataQuotaBytes)) {
+    uint64_t quota_bytes = 0;
+    if (!base::StringToUint64(
+            command_line->GetSwitchValueASCII(switches::kDataQuotaBytes),
+            &quota_bytes)) {
+      LOG(ERROR) << "Invalid value for --" << switches::kDataQuotaBytes;
+      return 1;
+    }
+    base::SysInfo::SetAmountOfTotalDiskSpace(
+        base::FilePath(base::kPersistedDataDirectoryPath), quota_bytes);
   }
 
   SetCorsExemptHeaders(base::SplitString(

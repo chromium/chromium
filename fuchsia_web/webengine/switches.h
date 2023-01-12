@@ -69,6 +69,18 @@ extern const char kContextProvider[];
 // manifest.
 extern const char kEnableCfv2[];
 
+// Quota to apply to the on-disk HTTP cache, in bytes.
+// On-disk cache is activated when:
+// * the quota is non-zero;
+// * /cache is available;
+// * the Context is non-incognito/OTR.
+extern const char kOnDiskHttpCacheSize[];
+
+// Quota to apply to the in-memory HTTP cache, in bytes.
+// Applies to the primary Context if the instance is configured without
+// on-disk caching, and to all Incognito/OTR Contexts.
+extern const char kInMemoryHttpCacheSize[];
+
 }  // namespace switches
 
 #endif  // FUCHSIA_WEB_WEBENGINE_SWITCHES_H_

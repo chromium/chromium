@@ -217,6 +217,10 @@ FrameImpl* ContextImpl::GetFrameImplForTest(
   return nullptr;
 }
 
+network::mojom::NetworkContext* ContextImpl::GetNetworkContextForTest() {
+  return GetNetworkContext();
+}
+
 network::mojom::NetworkContext* ContextImpl::GetNetworkContext() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return browser_context_->GetDefaultStoragePartition()->GetNetworkContext();

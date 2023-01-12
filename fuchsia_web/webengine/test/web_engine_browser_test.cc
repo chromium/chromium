@@ -34,8 +34,7 @@ void WebEngineBrowserTest::SetUp() {
 }
 
 void WebEngineBrowserTest::PreRunTestOnMainThread() {
-  zx_status_t status = published_services().Connect(context_.NewRequest());
-  ZX_CHECK(status == ZX_OK, status) << "Connect fuchsia.web.Context";
+  ConnectContext();
 
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
   if (!test_server_root_.empty()) {
@@ -91,6 +90,16 @@ ContextImpl* WebEngineBrowserTest::context_impl() const {
   CHECK(context) << "context_impl() called before Context connected.";
 
   return context;
+}
+
+void WebEngineBrowserTest::ConnectContext() {
+  zx_status_t status = published_services().Connect(context_.NewRequest());
+  ZX_CHECK(status == ZX_OK, status) << "Connect fuchsia.web.Context";
+}
+
+void WebEngineBrowserTest::DisconnectContext() {
+  DCHECK(context_);
+  context_.Unbind();
 }
 
 std::vector<FrameHostImpl*> WebEngineBrowserTest::frame_host_impls() const {

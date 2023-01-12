@@ -82,6 +82,16 @@ class WebEngineContentBrowserClient final
  private:
   const std::vector<std::string> cors_exempt_headers_;
 
+  void MaybeConfigurePersistentData(
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params);
+
+  // Set up the in-memory or on-disk HTTP cache.
+  void MaybeConfigureHttpCache(
+      bool in_memory,
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params);
+
   // Owned by content::BrowserMainLoop.
   WebEngineBrowserMainParts* main_parts_;
 };

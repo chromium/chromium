@@ -8,20 +8,22 @@
 
 namespace switches {
 
-const char kEnableContentDirectories[] = "enable-content-directories";
-const char kEnableWidevine[] = "enable-widevine";
-const char kIncognito[] = "incognito";
-const char kPlayreadyKeySystem[] = "playready-key-system";
-const char kEnableRemoteDebugMode[] = "remote-debug-mode";
-const char kUserAgentProductAndVersion[] = "user-agent-product";
-const char kCorsExemptHeaders[] = "cors-exempt-headers";
-const char kEnableCastStreamingReceiver[] = "enable-cast-streaming-receiver";
 const char kCdmDataDirectory[] = "cdm-data-directory";
 const char kCdmDataQuotaBytes[] = "cdm-data-quota-bytes";
-const char kDataQuotaBytes[] = "data-quota-bytes";
-const char kGoogleApiKey[] = "google-api-key";
 const char kContextProvider[] = "context-provider";
+const char kCorsExemptHeaders[] = "cors-exempt-headers";
+const char kDataQuotaBytes[] = "data-quota-bytes";
+const char kEnableCastStreamingReceiver[] = "enable-cast-streaming-receiver";
 const char kEnableCfv2[] = "enable-cfv2";
+const char kEnableContentDirectories[] = "enable-content-directories";
+const char kEnableRemoteDebugMode[] = "remote-debug-mode";
+const char kEnableWidevine[] = "enable-widevine";
+const char kGoogleApiKey[] = "google-api-key";
+const char kInMemoryHttpCacheSize[] = "in-mem-http-cache-size";
+const char kIncognito[] = "incognito";
+const char kOnDiskHttpCacheSize[] = "on-disk-http-cache-size";
+const char kPlayreadyKeySystem[] = "playready-key-system";
+const char kUserAgentProductAndVersion[] = "user-agent-product";
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 const char kAllowRunningInsecureContent[] = "allow-running-insecure-content";
