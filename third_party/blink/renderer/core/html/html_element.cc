@@ -1425,7 +1425,6 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
   // to `:open` matching, so that transitions can start on the change to
   // top layer.
   document.UpdateStyleAndLayoutTreeForNode(this);
-  EnsureComputedStyle();
 
   // Make the popover match `:open`:
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kShowing);
