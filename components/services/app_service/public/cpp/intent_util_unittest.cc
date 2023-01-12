@@ -218,35 +218,6 @@ TEST_F(IntentUtilTest, GlobMatchType) {
       apps_util::ConditionValueMatches("/acb", condition_value_escape_star));
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, FilterMatchLevelMojom) {
-  auto filter_scheme_only = apps_util::CreateSchemeOnlyFilter("http");
-  auto filter_scheme_and_host_only =
-      apps_util::CreateSchemeAndHostOnlyFilter("https", "www.abc.com");
-  auto filter_url = apps_util::CreateIntentFilterForUrlScope(
-      GURL("https:://www.google.com/"));
-  auto filter_empty = apps::mojom::IntentFilter::New();
-
-  EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_url),
-            static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kHost) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kPath));
-  EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_scheme_and_host_only),
-            static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kHost));
-  EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_scheme_only),
-            static_cast<int>(apps::IntentFilterMatchLevel::kScheme));
-  EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_empty),
-            static_cast<int>(apps::IntentFilterMatchLevel::kNone));
-
-  EXPECT_TRUE(apps_util::GetFilterMatchLevel(filter_url) >
-              apps_util::GetFilterMatchLevel(filter_scheme_and_host_only));
-  EXPECT_TRUE(apps_util::GetFilterMatchLevel(filter_scheme_and_host_only) >
-              apps_util::GetFilterMatchLevel(filter_scheme_only));
-  EXPECT_TRUE(apps_util::GetFilterMatchLevel(filter_scheme_only) >
-              apps_util::GetFilterMatchLevel(filter_empty));
-}
-
 TEST_F(IntentUtilTest, FilterMatchLevel) {
   auto filter_scheme_only = apps_util::MakeSchemeOnlyFilter("http");
   auto filter_scheme_and_host_only =

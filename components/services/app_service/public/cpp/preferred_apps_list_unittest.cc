@@ -32,16 +32,6 @@ class PreferredAppListTest : public testing::Test {
     return intent_filter;
   }
 
-  apps::mojom::IntentFilterPtr CreatePathFilter(
-      const std::string& pattern,
-      apps::mojom::PatternMatchType match_type) {
-    auto intent_filter =
-        apps_util::CreateSchemeAndHostOnlyFilter("https", "www.google.com");
-    apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kPath,
-                                       pattern, match_type, intent_filter);
-    return intent_filter;
-  }
-
   apps::PreferredAppsList preferred_apps_;
 };
 
