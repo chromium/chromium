@@ -8765,7 +8765,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
     // Reset navigations only when entering "pending deletion" state due to
     // frame detach if the kStopCancellingNavigationsOnCommitAndNewNavigation
     // flag is enabled, or for all pending deletion cases otherwise.
-    frame_tree_node_->ResetAllNavigationsForFrameDetach();
+    GetFrameTreeNodeForUnload()->ResetAllNavigationsForFrameDetach();
   } else {
     CHECK(
         pending_deletion_reason == PendingDeletionReason::kSwappedOut ||
