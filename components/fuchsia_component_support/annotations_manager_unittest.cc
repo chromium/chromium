@@ -80,6 +80,95 @@ TEST_F(AnnotationsManagerTest, MultipleClients) {
   annotations.Connect(ptr2.NewRequest());
 }
 
+// Verifies that WatchAnnotations() hanging-get behaviour:
+// - first call returns all annotations.
+// - watch when nothing has changed "hangs" until the next change.
+// - watch after a change returns immediately.
+TEST_F(AnnotationsManagerTest, WatchAnnotationsHangingGet) {
+  AnnotationsManager annotations;
+
+  fuchsia::element::AnnotationControllerPtr controller;
+  annotations.Connect(controller.NewRequest());
+
+  // Dispatch an initial watch, that will return immediately.
+  bool received_annotations = false;
+  controller->WatchAnnotations([&received_annotations](auto annotations) {
+    EXPECT_EQ(annotations.response().annotations.size(), 0u);
+    received_annotations = true;
+  });
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(received_annotations);
+
+  // Set a new watch, which should not return immediately, since nothing has
+  // changed.
+  received_annotations = false;
+  controller->WatchAnnotations([&received_annotations](auto annotations) {
+    EXPECT_EQ(annotations.response().annotations.size(), 1u);
+    received_annotations = true;
+  });
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(received_annotations);
+
+  // Set an annotation and spin the loop, to verify that the update is reported.
+  std::vector<fuchsia::element::Annotation> to_set;
+  to_set.push_back(MakeAnnotation(kAnnotationName1, kAnnotationValue1));
+  annotations.UpdateAnnotations(std::move(to_set));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(received_annotations);
+
+  // Change the annotation and spin the loop, then call WatchAnnotations() to
+  // verify that it returns immediately.
+  to_set.clear();
+  to_set.push_back(MakeAnnotation(kAnnotationName1, kAnnotationValue2));
+  annotations.UpdateAnnotations(std::move(to_set));
+  received_annotations = false;
+  controller->WatchAnnotations([&received_annotations](auto annotations) {
+    EXPECT_EQ(annotations.response().annotations.size(), 1u);
+    received_annotations = true;
+  });
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(received_annotations);
+}
+
+// Verifies that WatchAnnotations() returns all annotations when any annotation
+// is updated, not just the changed one.
+TEST_F(AnnotationsManagerTest, WatchAnnotationsReturnsAllAnnotations) {
+  AnnotationsManager annotations;
+
+  fuchsia::element::AnnotationControllerPtr controller;
+  annotations.Connect(controller.NewRequest());
+
+  // Set multiple annotations.
+  std::vector<fuchsia::element::Annotation> annotations_to_set;
+  annotations_to_set.push_back(
+      MakeAnnotation(kAnnotationName1, kAnnotationValue1));
+  annotations_to_set.push_back(
+      MakeAnnotation(kAnnotationName2, kAnnotationValue2));
+  annotations.UpdateAnnotations(std::move(annotations_to_set));
+
+  // Dispatch an initial watch, that will return immediately.
+  bool received_annotations = false;
+  controller->WatchAnnotations([&received_annotations](auto annotations) {
+    EXPECT_EQ(annotations.response().annotations.size(), 2u);
+    received_annotations = true;
+  });
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(received_annotations);
+
+  // Update a single annotation, then call WatchAnnotations() again to verify
+  // that all annotations including unchanged ones are returned.
+  std::vector<fuchsia::element::Annotation> to_set;
+  to_set.push_back(MakeAnnotation(kAnnotationName1, kAnnotationValue2));
+  annotations.UpdateAnnotations(std::move(to_set));
+  received_annotations = false;
+  controller->WatchAnnotations([&received_annotations](auto annotations) {
+    EXPECT_EQ(annotations.response().annotations.size(), 2u);
+    received_annotations = true;
+  });
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(received_annotations);
+}
+
 // Verifies insertion of a new annotation via UpdateAnnotations().
 TEST_F(AnnotationsManagerTest, UpdateAnnotationsSetsAnnotations) {
   AnnotationsManager annotations;

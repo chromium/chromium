@@ -87,31 +87,23 @@ class AnnotationsManager::ControllerImpl
   }
   void WatchAnnotations(WatchAnnotationsCallback callback) override {
     DVLOG(2) << __func__;
-    if (first_watch_) {
-      first_watch_ = false;
+
+    if (have_changes_) {
+      have_changes_ = false;
       callback(fpromise::ok(manager_->GetAnnotations()));
       return;
     }
-    if (changed_.empty()) {
-      if (on_annotations_changed_) {
-        manager_->bindings_.CloseBinding(this, ZX_ERR_BAD_STATE);
-        return;
-      }
-      on_annotations_changed_ = std::move(callback);
+
+    if (on_annotations_changed_) {
+      manager_->bindings_.CloseBinding(this, ZX_ERR_BAD_STATE);
       return;
     }
 
-    std::vector<fuchsia::element::Annotation> result;
-    result.reserve(changed_.size());
-    for (const auto& key : std::exchange(changed_, {})) {
-      result.push_back(manager_->GetAnnotation(key));
-    }
-    callback(fpromise::ok(std::move(result)));
+    on_annotations_changed_ = std::move(callback);
   }
 
-  void OnAnnotationsChanged(const AnnotationKeySet& changed) {
-    changed_.merge(AnnotationKeySet(changed));
-    DCHECK(!changed_.empty());
+  void OnAnnotationsChanged() {
+    have_changes_ = true;
     if (on_annotations_changed_) {
       WatchAnnotations(std::exchange(on_annotations_changed_, {}));
     }
@@ -120,8 +112,10 @@ class AnnotationsManager::ControllerImpl
  private:
   const raw_ref<AnnotationsManager> manager_;
 
-  bool first_watch_ = true;
-  AnnotationKeySet changed_;
+  // Initially true so that the first call to WatchAnnotations() will
+  // return results immediately.
+  bool have_changes_ = true;
+
   WatchAnnotationsCallback on_annotations_changed_;
 };
 
@@ -152,7 +146,7 @@ bool AnnotationsManager::UpdateAnnotations(
 
   if (!changed.empty()) {
     for (auto& binding : bindings_.bindings()) {
-      binding->impl()->OnAnnotationsChanged(changed);
+      binding->impl()->OnAnnotationsChanged();
     }
   }
 
@@ -166,16 +160,6 @@ std::vector<fuchsia::element::Annotation> AnnotationsManager::GetAnnotations()
   for (const auto& [key, value] : annotations_) {
     result.push_back(fuchsia::element::Annotation{.key = key});
     zx_status_t status = value.Clone(&result.back().value);
-    ZX_CHECK(status == ZX_OK, status);
-  }
-  return result;
-}
-
-fuchsia::element::Annotation AnnotationsManager::GetAnnotation(
-    const fuchsia::element::AnnotationKey& key) const {
-  fuchsia::element::Annotation result{.key = key};
-  if (auto it = annotations_.find(key); it != annotations_.end()) {
-    zx_status_t status = it->second.Clone(&result.value);
     ZX_CHECK(status == ZX_OK, status);
   }
   return result;

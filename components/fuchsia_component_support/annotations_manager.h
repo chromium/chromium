@@ -49,10 +49,6 @@ class AnnotationsManager {
   // Returns a copy of the current set of Annotations.
   std::vector<fuchsia::element::Annotation> GetAnnotations() const;
 
-  // Returns an individual Annotation.
-  fuchsia::element::Annotation GetAnnotation(
-      const fuchsia::element::AnnotationKey& key) const;
-
   // Connects a new `AnnotationController` client to this manager.
   void Connect(
       fidl::InterfaceRequest<fuchsia::element::AnnotationController> request);
