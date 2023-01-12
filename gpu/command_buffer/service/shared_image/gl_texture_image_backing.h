@@ -42,7 +42,6 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
   GLenum GetGLTarget() const;
   GLuint GetGLServiceId() const;
-  void CreateGLImageNativePixmap();
 
  private:
   // SharedImageBacking:

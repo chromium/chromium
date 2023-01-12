@@ -595,9 +595,16 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
 #if BUILDFLAG(USE_DAWN)
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation =
+        ProduceGLTexturePassthrough(manager, tracker);
+    gpu::TextureBase* texture = gl_representation->GetTextureBase();
+    const gl::GLImage* image =
+        static_cast<gles2::TexturePassthrough*>(texture)->GetLevelImage(
+            texture->target(), 0u);
+    DCHECK(image);
     return std::make_unique<DawnEGLImageRepresentation>(
-        ProduceGLTexturePassthrough(manager, tracker), manager, this, tracker,
-        device);
+        std::move(gl_representation), image->GetEGLImage(), manager, this,
+        tracker, device);
   }
 #endif
   D3D11_TEXTURE2D_DESC desc;

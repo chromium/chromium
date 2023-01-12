@@ -16,6 +16,7 @@ class GPU_GLES2_EXPORT DawnEGLImageRepresentation
  public:
   DawnEGLImageRepresentation(
       std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
+      void* egl_image,
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
@@ -28,6 +29,7 @@ class GPU_GLES2_EXPORT DawnEGLImageRepresentation
 
  private:
   std::unique_ptr<GLTextureImageRepresentationBase> gl_representation_;
+  raw_ptr<void> egl_image_ = nullptr;  // EGLImageKHR
   WGPUDevice device_;
   DawnProcTable dawn_procs_;
   WGPUTexture texture_ = nullptr;

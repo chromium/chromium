@@ -390,19 +390,35 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {
+    // GLImageNativePixmap is only compiled on below os.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
     if (!gl_image_native_pixmap_) {
-      CreateGLImageNativePixmap();
+      SharedContextState* shared_context_state =
+          factory()->GetSharedContextState();
+      ui::ScopedMakeCurrent smc(shared_context_state->context(),
+                                shared_context_state->surface());
+      gl_image_native_pixmap_ = gl::GLImageNativePixmap::CreateFromTexture(
+          size(), ToBufferFormat(format()), GetGLServiceId());
+      if (!gl_image_native_pixmap_) {
+        DLOG(ERROR) << "Unable to create a GLImage";
+        return nullptr;
+      }
     }
-    std::unique_ptr<GLTextureImageRepresentationBase> texture;
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
     if (IsPassthrough()) {
-      texture = ProduceGLTexturePassthrough(manager, tracker);
+      gl_representation = ProduceGLTexturePassthrough(manager, tracker);
     } else {
-      texture = ProduceGLTexture(manager, tracker);
+      gl_representation = ProduceGLTexture(manager, tracker);
     }
     return std::make_unique<DawnEGLImageRepresentation>(
-        std::move(texture), manager, this, tracker, device);
+        std::move(gl_representation), gl_image_native_pixmap_->GetEGLImage(),
+        manager, this, tracker, device);
+#else
+    DLOG(ERROR) << "Dawn representation not supported";
+    return nullptr;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
   }
-#endif
+#endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
@@ -465,24 +481,6 @@ void GLTextureImageBacking::InitializeGLTexture(
                            is_cleared ? gfx::Rect(size()) : gfx::Rect());
     texture_->SetImmutable(true, format_info.supports_storage);
   }
-}
-
-void GLTextureImageBacking::CreateGLImageNativePixmap() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
-  SharedContextState* shared_context_state = factory()->GetSharedContextState();
-  ui::ScopedMakeCurrent smc(shared_context_state->context(),
-                            shared_context_state->surface());
-  gl_image_native_pixmap_ = gl::GLImageNativePixmap::CreateFromTexture(
-      size(), ToBufferFormat(format()), GetGLServiceId());
-  if (passthrough_texture_) {
-    passthrough_texture_->SetLevelImage(passthrough_texture_->target(), 0,
-                                        gl_image_native_pixmap_.get());
-  } else if (texture_) {
-    texture_->SetLevelImage(texture_->target(), 0,
-                            gl_image_native_pixmap_.get(),
-                            gles2::Texture::ImageState::BOUND);
-  }
-#endif
 }
 
 void GLTextureImageBacking::SetCompatibilitySwizzle(

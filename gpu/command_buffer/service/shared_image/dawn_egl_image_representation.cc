@@ -26,12 +26,14 @@ namespace gpu {
 
 DawnEGLImageRepresentation::DawnEGLImageRepresentation(
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
+    void* egl_image,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     WGPUDevice device)
     : DawnImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
+      egl_image_(std::move(egl_image)),
       device_(device),
       dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
@@ -61,16 +63,7 @@ WGPUTexture DawnEGLImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
   texture_descriptor.sampleCount = 1;
   dawn::native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
   externalImageDesc.cTextureDescriptor = &texture_descriptor;
-  const gl::GLImage* image;
-  gpu::TextureBase* texture = gl_representation_->GetTextureBase();
-  if (texture->GetType() == gpu::TextureBase::Type::kPassthrough) {
-    image = static_cast<gles2::TexturePassthrough*>(texture)->GetLevelImage(
-        texture->target(), 0u);
-  } else {
-    image = static_cast<gles2::Texture*>(texture)->GetLevelImage(
-        texture->target(), 0u);
-  }
-  externalImageDesc.image = image->GetEGLImage();
+  externalImageDesc.image = egl_image_;
   DCHECK(externalImageDesc.image);
   externalImageDesc.isInitialized = true;
   texture_ =

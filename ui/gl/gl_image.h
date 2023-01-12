@@ -33,6 +33,7 @@ namespace gpu {
 class DawnEGLImageRepresentation;
 class D3DImageBacking;
 class D3DImageBackingFactoryTest;
+class GLTextureImageBacking;
 class GLTexturePassthroughD3DImageRepresentation;
 FORWARD_DECLARE_TEST(CALayerTreeTest, HDRTrigger);
 FORWARD_DECLARE_TEST(D3DImageBackingFactoryTestSwapChain,
@@ -145,6 +146,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class gpu::DawnEGLImageRepresentation;
   friend class gpu::D3DImageBacking;
   friend class gpu::D3DImageBackingFactoryTest;
+  friend class gpu::GLTextureImageBacking;
   friend class gpu::GLTexturePassthroughD3DImageRepresentation;
   friend class gpu::gles2::BackTexture;
   friend class gpu::gles2::GLES2DecoderImpl;
