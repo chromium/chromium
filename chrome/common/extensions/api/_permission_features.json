@@ -355,8 +355,7 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "platforms": ["chromeos"],
     "allowlist": [
-      "74E2D32A61B08D29521A8C4E360F581DE78F5CA5",  // Image loader
-      "A948368FC53BE437A55FEB414106E207925482F5"   // Files app
+      "74E2D32A61B08D29521A8C4E360F581DE78F5CA5"  // Image loader
     ]
   },
   "fileSystemProvider": [{

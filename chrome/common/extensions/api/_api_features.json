@@ -449,24 +449,12 @@
     "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
     "max_manifest_version": 2
   },
-  "extension.getViews": [
-    {
-      "channel": "stable",
-      "contexts": ["blessed_extension"],
-      "extension_types": ["extension", "legacy_packaged_app"],
-      "disallow_for_service_workers": true
-    },
-    {
-      // TODO(yoz): Eliminate this usage.
-      "channel": "stable",
-      "contexts": ["blessed_extension"],
-      "extension_types": ["platform_app"],
-      "allowlist": [
-        "A948368FC53BE437A55FEB414106E207925482F5"  // File manager
-      ],
-      "disallow_for_service_workers": true
-    }
-  ],
+  "extension.getViews": {
+    "channel": "stable",
+    "contexts": ["blessed_extension"],
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "disallow_for_service_workers": true
+  },
   "extension.inIncognitoContext": {
     "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
   },
