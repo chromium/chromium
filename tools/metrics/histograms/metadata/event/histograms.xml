@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="EventLatencyVersion">
+  <variant name=""
+      summary="This histogram will eventually be replaced by its
+               TotalLatency2 equivalent which uses an improved bucketing"/>
+  <variant name="2"
+      summary="This histogram is similar to its TotalLatency (non-v2)
+               equivalent except that it uses an improved bucketing. We will
+               eventually remove the non-v2 version"/>
+</variants>
+
 <variants name="TopControlsState">
   <variant name=".NoTopControlsMoved" summary="Top controls did not change."/>
   <variant name=".TopControlsMoved" summary="Top controls changed."/>
@@ -1870,13 +1880,37 @@ chromium-metrics-reviews@google.com.
     when the touch-move causing a gesture-scroll-update is generated until when
     the changes caused by the event are successfully presented on the screen.
 
+    This histogram will eventually be replaced by its TotalLatency2 equivalent
+    which uses an improved bucketing.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2"
+    units="microseconds" expires_after="2024-01-16">
+  <owner>mohsen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When a user performs a scroll using touchscreen, a sequence of touch-move
+    events are generated leading to a sequence of gesture-scroll-update events.
+    This metric measures total latency of those gesture-scroll-update events
+    excluding the first one in the sequence and those that are inertial (i.e.
+    generated as a result of a user fling). Total latency means the time from
+    when the touch-move causing a gesture-scroll-update is generated until when
+    the changes caused by the event are successfully presented on the screen.
+
+    This histogram is similar to its TotalLatency (non-v2) equivalent except
+    that it uses an improved bucketing. We will eventually remove the non-v2
+    version.
+
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
 <histogram
-    name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency"
-    units="microseconds" expires_after="2023-01-16">
+    name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency{Version}"
+    units="microseconds" expires_after="2024-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1887,6 +1921,8 @@ chromium-metrics-reviews@google.com.
     event is submitted by the GPU service and presented successfully on the
     screen.
 
+    {Version}.
+
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="NonTouchscreenScrollInputType">
@@ -1894,10 +1930,11 @@ chromium-metrics-reviews@google.com.
     <variant name="Scrollbar" summary="scrollbar"/>
     <variant name="Wheel" summary="mouse wheel or touchpad"/>
   </token>
+  <token key="Version" variants="EventLatencyVersion"/>
 </histogram>
 
 <histogram name="EventLatency.TotalLatency" units="microseconds"
-    expires_after="2023-06-04">
+    expires_after="2024-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1910,8 +1947,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="EventLatency.{NonGsuScrollEventType}.{ScrollInputType}.TotalLatency"
-    units="microseconds" expires_after="2023-01-16">
+    name="EventLatency.{NonGsuScrollEventType}.{ScrollInputType}.TotalLatency{Version}"
+    units="microseconds" expires_after="2024-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1919,6 +1956,8 @@ chromium-metrics-reviews@google.com.
     the user input causing the event is performed until the frame caused by the
     event is submitted by the GPU service and presented successfully on the
     screen.
+
+    {Version}.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
@@ -1938,29 +1977,24 @@ chromium-metrics-reviews@google.com.
     <variant name="Touchscreen" summary="touchscreen"/>
     <variant name="Wheel" summary="mouse wheel or touchpad"/>
   </token>
+  <token key="Version" variants="EventLatencyVersion"/>
 </histogram>
 
-<histogram name="EventLatency.{NonPinchEventType}.TotalLatency"
-    units="microseconds" expires_after="2023-01-16">
+<histogram name="EventLatency.{NonScrollPinchEventType}.TotalLatency"
+    units="microseconds" expires_after="2024-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks total latency of {NonPinchEventType}, from when the user input
+    Tracks total latency of {NonScrollPinchEventType}, from when the user input
     causing the event is performed generated until the frame caused by the event
     is submitted by the GPU service and presented successfully on the screen.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
-  <token key="NonPinchEventType">
-    <variant name="FirstGestureScrollUpdate"
-        summary="gesture-scroll-update events that are the first one in a
-                 scroll sequence"/>
+  <token key="NonScrollPinchEventType">
     <variant name="GestureDoubleTap" summary="gesture-double-tap events"/>
     <variant name="GestureLongPress" summary="gesture-long-press events"/>
     <variant name="GestureLongTap" summary="gesture-long-tap events"/>
-    <variant name="GestureScrollBegin" summary="gesture-scroll-begin events"/>
-    <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
-    <variant name="GestureScrollUpdate" summary="gesture-scroll-update events"/>
     <variant name="GestureShowPress" summary="gesture-show-press events"/>
     <variant name="GestureTap" summary="gesture-tap events"/>
     <variant name="GestureTapCancel" summary="gesture-tap-cancel events"/>
@@ -1969,9 +2003,6 @@ chromium-metrics-reviews@google.com.
         summary="gesture-tap-unconfirmed events"/>
     <variant name="GestureTwoFingerTap"
         summary="gesture-two-finger-tap events"/>
-    <variant name="InertialGestureScrollUpdate"
-        summary="gesture-scroll-update events that are inertial (i.e.
-                 generated due to a user fling)"/>
     <variant name="KeyPressed" summary="key-pressed events"/>
     <variant name="KeyReleased" summary="key-released events"/>
     <variant name="MouseDragged" summary="mouse-dragged events"/>
@@ -1985,7 +2016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{PinchEventType}.{PinchInputType}.TotalLatency"
-    units="microseconds" expires_after="2023-01-16">
+    units="microseconds" expires_after="2024-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -2006,6 +2037,36 @@ chromium-metrics-reviews@google.com.
     <variant name="Touchpad" summary="touchpad"/>
     <variant name="Touchscreen" summary="touchscreen"/>
   </token>
+</histogram>
+
+<histogram name="EventLatency.{ScrollEventType}.TotalLatency{Version}"
+    units="microseconds" expires_after="2024-01-16">
+  <owner>mohsen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks total latency of {ScrollEventType}, from when the user input causing
+    the event is performed generated until the frame caused by the event is
+    submitted by the GPU service and presented successfully on the screen.
+
+    {Version}.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="ScrollEventType">
+    <variant name="FirstGestureScrollUpdate"
+        summary="gesture-scroll-update events that are the first one in a
+                 scroll sequence"/>
+    <variant name="GestureScrollBegin" summary="gesture-scroll-begin events"/>
+    <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
+    <variant name="GestureScrollUpdate"
+        summary="gesture-scroll-update events that are non-inertial (i.e. not
+                 generated due to a user fling) and not the first one in a
+                 scroll sequence"/>
+    <variant name="InertialGestureScrollUpdate"
+        summary="gesture-scroll-update events that are inertial (i.e.
+                 generated due to a user fling)"/>
+  </token>
+  <token key="Version" variants="EventLatencyVersion"/>
 </histogram>
 
 </histograms>

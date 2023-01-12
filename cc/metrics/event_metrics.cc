@@ -18,16 +18,28 @@
 namespace cc {
 namespace {
 
+// Histogram bucketing for scroll event metrics.
+constexpr base::TimeDelta kScrollHistogramMin = base::Milliseconds(4);
+constexpr base::TimeDelta kScrollHistogramMax = base::Milliseconds(500);
+constexpr size_t kScrollHistogramBucketCount = 50;
+
 constexpr struct {
   EventMetrics::EventType metrics_event_type;
-  ui::EventType ui_event_type;
   const char* name;
+
+  ui::EventType ui_event_type;
   absl::optional<bool> scroll_is_inertial = absl::nullopt;
   absl::optional<ScrollUpdateEventMetrics::ScrollUpdateType>
       scroll_update_type = absl::nullopt;
+
+  absl::optional<EventMetrics::HistogramBucketing> histogram_bucketing =
+      absl::nullopt;
 } kInterestingEvents[] = {
-#define EVENT_TYPE(name, ui_type, ...) \
-  { EventMetrics::EventType::k##name, ui_type, #name, __VA_ARGS__ }
+#define EVENT_TYPE(type_name, ui_type, ...)                      \
+  {                                                              \
+    .metrics_event_type = EventMetrics::EventType::k##type_name, \
+    .name = #type_name, .ui_event_type = ui_type, __VA_ARGS__    \
+  }
     EVENT_TYPE(MousePressed, ui::ET_MOUSE_PRESSED),
     EVENT_TYPE(MouseReleased, ui::ET_MOUSE_RELEASED),
     EVENT_TYPE(MouseWheel, ui::ET_MOUSEWHEEL),
@@ -36,12 +48,29 @@ constexpr struct {
     EVENT_TYPE(TouchPressed, ui::ET_TOUCH_PRESSED),
     EVENT_TYPE(TouchReleased, ui::ET_TOUCH_RELEASED),
     EVENT_TYPE(TouchMoved, ui::ET_TOUCH_MOVED),
-    EVENT_TYPE(GestureScrollBegin, ui::ET_GESTURE_SCROLL_BEGIN, false),
+    EVENT_TYPE(GestureScrollBegin,
+               ui::ET_GESTURE_SCROLL_BEGIN,
+               .scroll_is_inertial = false,
+               .histogram_bucketing = {{.min = kScrollHistogramMin,
+                                        .max = kScrollHistogramMax,
+                                        .count = kScrollHistogramBucketCount,
+                                        .version_suffix = "2"}}),
     EVENT_TYPE(GestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
-               false,
-               ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
-    EVENT_TYPE(GestureScrollEnd, ui::ET_GESTURE_SCROLL_END, false),
+               .scroll_is_inertial = false,
+               .scroll_update_type =
+                   ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+               .histogram_bucketing = {{.min = kScrollHistogramMin,
+                                        .max = kScrollHistogramMax,
+                                        .count = kScrollHistogramBucketCount,
+                                        .version_suffix = "2"}}),
+    EVENT_TYPE(GestureScrollEnd,
+               ui::ET_GESTURE_SCROLL_END,
+               .scroll_is_inertial = false,
+               .histogram_bucketing = {{.min = kScrollHistogramMin,
+                                        .max = kScrollHistogramMax,
+                                        .count = kScrollHistogramBucketCount,
+                                        .version_suffix = "2"}}),
     EVENT_TYPE(GestureDoubleTap, ui::ET_GESTURE_DOUBLE_TAP),
     EVENT_TYPE(GestureLongPress, ui::ET_GESTURE_LONG_PRESS),
     EVENT_TYPE(GestureLongTap, ui::ET_GESTURE_LONG_TAP),
@@ -53,16 +82,26 @@ constexpr struct {
     EVENT_TYPE(GestureTwoFingerTap, ui::ET_GESTURE_TWO_FINGER_TAP),
     EVENT_TYPE(FirstGestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
-               false,
-               ScrollUpdateEventMetrics::ScrollUpdateType::kStarted),
+               .scroll_is_inertial = false,
+               .scroll_update_type =
+                   ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
+               .histogram_bucketing = {{.min = kScrollHistogramMin,
+                                        .max = kScrollHistogramMax,
+                                        .count = kScrollHistogramBucketCount,
+                                        .version_suffix = "2"}}),
     EVENT_TYPE(MouseDragged, ui::ET_MOUSE_DRAGGED),
     EVENT_TYPE(GesturePinchBegin, ui::ET_GESTURE_PINCH_BEGIN),
     EVENT_TYPE(GesturePinchEnd, ui::ET_GESTURE_PINCH_END),
     EVENT_TYPE(GesturePinchUpdate, ui::ET_GESTURE_PINCH_UPDATE),
     EVENT_TYPE(InertialGestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
-               true,
-               ScrollUpdateEventMetrics::ScrollUpdateType::kContinued),
+               .scroll_is_inertial = true,
+               .scroll_update_type =
+                   ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+               .histogram_bucketing = {{.min = kScrollHistogramMin,
+                                        .max = kScrollHistogramMax,
+                                        .count = kScrollHistogramBucketCount,
+                                        .version_suffix = "2"}}),
 #undef EVENT_TYPE
 };
 static_assert(std::size(kInterestingEvents) ==
@@ -286,6 +325,11 @@ const char* EventMetrics::GetTypeName() const {
 // static
 const char* EventMetrics::GetTypeName(EventMetrics::EventType type) {
   return kInterestingEvents[static_cast<int>(type)].name;
+}
+
+const absl::optional<EventMetrics::HistogramBucketing>&
+EventMetrics::GetHistogramBucketing() const {
+  return kInterestingEvents[static_cast<int>(type_)].histogram_bucketing;
 }
 
 void EventMetrics::SetHighLatencyStage(const std::string& stage) {

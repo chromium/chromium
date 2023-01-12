@@ -109,6 +109,16 @@ class CC_EXPORT EventMetrics {
   const char* GetTypeName() const;
   static const char* GetTypeName(EventType type);
 
+  // Returns custom histogram bucketing for the metric. If returns `nullopt`,
+  // default bucketing will be used.
+  struct HistogramBucketing {
+    base::TimeDelta min;
+    base::TimeDelta max;
+    size_t count;
+    const char* version_suffix;
+  };
+  const absl::optional<HistogramBucketing>& GetHistogramBucketing() const;
+
   void SetHighLatencyStage(const std::string& stage);
   const std::vector<std::string>& GetHighLatencyStages() const {
     return high_latency_stages_;

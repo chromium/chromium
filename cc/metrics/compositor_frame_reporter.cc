@@ -146,9 +146,11 @@ std::string GetCompositorLatencyHistogramName(
 // Helper function to record UMA histogram for an EventLatency metric. There
 // should be a 1:1 mapping between `name` and `index` to allow the use of
 // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
-void ReportEventLatencyMetric(const std::string& name,
-                              int index,
-                              base::TimeDelta latency) {
+void ReportEventLatencyMetric(
+    const std::string& name,
+    int index,
+    base::TimeDelta latency,
+    const absl::optional<EventMetrics::HistogramBucketing>& bucketing) {
   STATIC_HISTOGRAM_POINTER_GROUP(
       name, index, kMaxEventLatencyHistogramIndex,
       AddTimeMicrosecondsGranularity(latency),
@@ -156,6 +158,15 @@ void ReportEventLatencyMetric(const std::string& name,
           name, kEventLatencyHistogramMin, kEventLatencyHistogramMax,
           kEventLatencyHistogramBucketCount,
           base::HistogramBase::kUmaTargetedHistogramFlag));
+  if (bucketing) {
+    std::string versioned_name = name + bucketing->version_suffix;
+    STATIC_HISTOGRAM_POINTER_GROUP(
+        versioned_name, index, kMaxEventLatencyHistogramIndex,
+        AddTimeMicrosecondsGranularity(latency),
+        base::Histogram::FactoryMicrosecondsTimeGet(
+            versioned_name, bucketing->min, bucketing->max, bucketing->count,
+            base::HistogramBase::kUmaTargetedHistogramFlag));
+  }
 }
 
 constexpr char kTraceCategory[] =
@@ -1059,7 +1070,8 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
         const std::string event_total_latency_histogram_name = base::JoinString(
             {histogram_base_name, total_latency_stage_name}, ".");
         ReportEventLatencyMetric(event_total_latency_histogram_name,
-                                 event_histogram_index, total_latency);
+                                 event_histogram_index, total_latency,
+                                 event_metrics->GetHistogramBucketing());
       }
 
       // For scroll and pinch events, report metrics for each device type
@@ -1081,7 +1093,8 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
                               total_latency_stage_name},
                              ".");
         ReportEventLatencyMetric(gesture_total_latency_histogram_name,
-                                 gesture_histogram_index, total_latency);
+                                 gesture_histogram_index, total_latency,
+                                 event_metrics->GetHistogramBucketing());
       }
 
       // Finally, report total latency up to presentation for all event types in
