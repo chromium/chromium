@@ -4,12 +4,15 @@
 
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/values.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 
 using CacheEntry = ZeroSuggestCacheService::CacheEntry;
@@ -20,18 +23,45 @@ ZeroSuggestCacheService::ZeroSuggestCacheService(PrefService* prefs,
   DCHECK_GT(cache_size, 0u);
 
   if (prefs_) {
+    if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+      return;
+    }
+
     // Load cached ZPS response for NTP from prior session via prefs.
     ntp_entry_.response_json =
         omnibox::GetUserPreferenceForZeroSuggestCachedResponse(prefs_,
                                                                /*page_url=*/"");
+
+    // Load cached ZPS responses for SRP/Web from prior session via prefs.
+    const auto& prefs_dict =
+        prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
+    for (auto it = prefs_dict.begin(); it != prefs_dict.end(); ++it) {
+      const auto& page_url = it->first;
+      const auto& response_json = (it->second).GetString();
+      StoreZeroSuggestResponse(page_url, CacheEntry(response_json));
+    }
   }
 }
 
 ZeroSuggestCacheService::~ZeroSuggestCacheService() {
   if (prefs_) {
+    if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+      return;
+    }
+
     // Dump cached ZPS response for NTP to prefs.
     omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
         prefs_, /*page_url=*/"", /*response=*/ntp_entry_.response_json);
+
+    // Dump cached ZPS responses for SRP/Web to prefs.
+    base::Value::Dict prefs_dict;
+    for (const auto& item : cache_) {
+      const auto& page_url = item.first;
+      const auto& response_json = item.second.response_json;
+      prefs_dict.Set(page_url, response_json);
+    }
+    prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                    std::move(prefs_dict));
   }
 }
 
@@ -69,11 +99,12 @@ void ZeroSuggestCacheService::StoreZeroSuggestResponse(
 }
 
 void ZeroSuggestCacheService::ClearCache() {
+  ntp_entry_.response_json.clear();
   cache_.Clear();
 }
 
 bool ZeroSuggestCacheService::IsCacheEmpty() const {
-  return cache_.empty();
+  return ntp_entry_.response_json.empty() && cache_.empty();
 }
 
 void ZeroSuggestCacheService::AddObserver(Observer* observer) {
