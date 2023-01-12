@@ -92,9 +92,8 @@ bool GLImageEGLPixmap::BindTexImage(unsigned target) {
   return true;
 }
 
-void GLImageEGLPixmap::ReleaseTexImage(unsigned target) {
+void GLImageEGLPixmap::ReleaseEGLImage() {
   DCHECK_NE(nullptr, surface_);
-  DCHECK_EQ(static_cast<GLenum>(GL_TEXTURE_2D), target);
 
   eglReleaseTexImage(display_, surface_, EGL_BACK_BUFFER);
 }

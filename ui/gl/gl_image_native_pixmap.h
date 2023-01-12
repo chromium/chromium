@@ -51,7 +51,6 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
   gfx::Size GetSize() override;
   void* GetEGLImage() const override;
   bool BindTexImage(unsigned target) override;
-  void ReleaseTexImage(unsigned target) override {}
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

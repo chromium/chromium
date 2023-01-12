@@ -12,7 +12,7 @@
 #include "ui/ozone/demo/gl_renderer.h"
 
 namespace gl {
-class GLImage;
+class GLImageNativePixmap;
 class Presenter;
 }
 
@@ -59,7 +59,7 @@ class SurfacelessGlRenderer : public RendererBase {
     gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
     gfx::Size size_;
 
-    scoped_refptr<gl::GLImage> image_;
+    scoped_refptr<gl::GLImageNativePixmap> image_;
     unsigned int gl_fb_ = 0;
     unsigned int gl_tex_ = 0;
   };

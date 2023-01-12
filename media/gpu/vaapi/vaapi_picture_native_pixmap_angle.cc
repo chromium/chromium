@@ -76,7 +76,7 @@ VaapiPictureNativePixmapAngle::VaapiPictureNativePixmapAngle(
 VaapiPictureNativePixmapAngle::~VaapiPictureNativePixmapAngle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (gl_image_ && make_context_current_cb_.Run()) {
-    gl_image_->ReleaseTexImage(texture_target_);
+    gl_image_->ReleaseEGLImage();
     DCHECK_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 
@@ -145,7 +145,7 @@ bool VaapiPictureNativePixmapAngle::DownloadFromSurface(
 
   // GL needs to re-bind the texture after the pixmap content is updated so that
   // the compositor sees the updated contents (we found this out experimentally)
-  gl_image_->ReleaseTexImage(texture_target_);
+  gl_image_->ReleaseEGLImage();
 
   DCHECK(gfx::Rect(va_surface->size()).Contains(gfx::Rect(visible_size_)));
   if (!vaapi_wrapper_->PutSurfaceIntoPixmap(va_surface->id(), x_pixmap_,

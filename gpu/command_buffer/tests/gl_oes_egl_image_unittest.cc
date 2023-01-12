@@ -170,13 +170,11 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
                                  nullptr);
   EXPECT_TRUE(GL_NO_ERROR == glGetError());
 
-  // Release the image.
   // TODO(crbug.com/1323341): This call is likely unnecessary, but it's not
   // currently possible to actually run the test to completion to verify. See
   // https://chromium-review.googlesource.com/c/chromium/src/+/4055269/comment/e8eed809_ffcdfc9c/.
   gl_.decoder()->AttachImageToTextureWithClientBinding(
       texture_id, GL_TEXTURE_2D, image.get());
-  image->ReleaseTexImage(GL_TEXTURE_2D);
 
   // Clean up.
   glDeleteProgram(program);

@@ -55,22 +55,12 @@ void PassthroughAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   const GLuint target = texture_passthrough_->target();
   const GLuint level = 0;
 
-  // If the previous execution of SetUnboundImage() set an image, check if the
-  // image has since been bound and release it if so.
-  if (decoder_managed_image_) {
-    gl::GLImage* current_image =
-        texture_passthrough_->GetLevelImage(target, level);
-    bool is_bound = !texture_passthrough_->is_bind_pending();
-    if (current_image && is_bound)
-      current_image->ReleaseTexImage(target);
-  }
-
   // Configure the new image.
-  decoder_managed_image_ = (image != nullptr);
-  if (decoder_managed_image_)
+  if (image) {
     texture_passthrough_->set_bind_pending();
-  else
+  } else {
     texture_passthrough_->clear_bind_pending();
+  }
   texture_passthrough_->SetLevelImage(target, level, image);
 }
 #else

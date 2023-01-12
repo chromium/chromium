@@ -74,7 +74,6 @@ SurfacelessGlRenderer::BufferWrapper::~BufferWrapper() {
     glDeleteFramebuffersEXT(1, &gl_fb_);
 
   if (gl_tex_) {
-    image_->ReleaseTexImage(GL_TEXTURE_2D);
     glDeleteTextures(1, &gl_tex_);
   }
 }

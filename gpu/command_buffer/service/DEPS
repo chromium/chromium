@@ -13,4 +13,5 @@ include_rules = [
   "+components/viz/common/resources/resource_format_utils.h",
   "+components/viz/common/resources/resource_sizes.h",
   "+components/viz/common/resources/shared_image_format.h",
+  "+ui/ozone/buildflags.h",
 ]

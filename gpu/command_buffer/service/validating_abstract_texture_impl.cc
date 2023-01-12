@@ -60,18 +60,7 @@ void ValidatingAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   const GLuint target = texture_ref_->texture()->target();
   const GLint level = 0;
 
-  // If the previous execution of SetUnboundImage() set an image, check if the
-  // image has since been bound and release it if so.
-  if (decoder_managed_image_) {
-    Texture::ImageState image_state;
-    gl::GLImage* current_image =
-        texture_ref_->texture()->GetLevelImage(target, 0, &image_state);
-    if (current_image && image_state == Texture::BOUND)
-      current_image->ReleaseTexImage(target);
-  }
-
   // Configure the new image.
-  decoder_managed_image_ = (image != nullptr);
   Texture::ImageState state = Texture::ImageState::UNBOUND;
   GetTextureManager()->SetLevelImage(texture_ref_.get(), target, level, image,
                                      state);

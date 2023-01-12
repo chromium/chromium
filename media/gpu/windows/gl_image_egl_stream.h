@@ -28,7 +28,6 @@ class GLImageEGLStream : public gl::GLImage {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
-  void ReleaseTexImage(unsigned target) override;
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture() { return texture_; }
   size_t level() const { return level_; }

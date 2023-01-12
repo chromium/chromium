@@ -46,9 +46,6 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
 
  private:
   scoped_refptr<TexturePassthrough> texture_passthrough_;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  bool decoder_managed_image_ = false;
-#endif
   raw_ptr<gl::GLApi> gl_api_;
   raw_ptr<GLES2DecoderPassthroughImpl> decoder_;
   CleanupCallback cleanup_cb_;

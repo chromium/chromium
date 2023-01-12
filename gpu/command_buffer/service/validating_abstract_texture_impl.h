@@ -61,9 +61,6 @@ class GPU_GLES2_EXPORT ValidatingAbstractTextureImpl : public AbstractTexture {
   void SetLevelInfo();
 
   scoped_refptr<TextureRef> texture_ref_;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  bool decoder_managed_image_ = false;
-#endif
 
   raw_ptr<DecoderContext> decoder_context_ = nullptr;
   DestructionCB destruction_cb_;

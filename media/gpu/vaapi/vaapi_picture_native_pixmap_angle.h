@@ -16,7 +16,7 @@
 #include "ui/gl/gl_bindings.h"
 
 namespace gl {
-class GLImage;
+class GLImageEGLPixmap;
 }
 
 namespace media {
@@ -57,7 +57,7 @@ class VaapiPictureNativePixmapAngle : public VaapiPictureNativePixmap {
   x11::Pixmap x_pixmap_ = x11::Pixmap::None;
 
   // GLImage bound to the GL textures used by the VDA client.
-  scoped_refptr<gl::GLImage> gl_image_;
+  scoped_refptr<gl::GLImageEGLPixmap> gl_image_;
 };
 
 }  // namespace media

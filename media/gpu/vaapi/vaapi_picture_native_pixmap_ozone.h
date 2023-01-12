@@ -18,7 +18,7 @@ class NativePixmap;
 }  // namespace gfx
 
 namespace gl {
-class GLImage;
+class GLImageNativePixmap;
 }
 
 namespace media {
@@ -55,7 +55,7 @@ class VaapiPictureNativePixmapOzone : public VaapiPictureNativePixmap {
   VaapiStatus Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
 
   // GLImage bound to the GL textures used by the VDA client.
-  scoped_refptr<gl::GLImage> gl_image_;
+  scoped_refptr<gl::GLImageNativePixmap> gl_image_;
 };
 
 }  // namespace media

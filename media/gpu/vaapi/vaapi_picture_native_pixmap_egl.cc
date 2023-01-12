@@ -44,7 +44,6 @@ VaapiPictureNativePixmapEgl::VaapiPictureNativePixmapEgl(
 VaapiPictureNativePixmapEgl::~VaapiPictureNativePixmapEgl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (gl_image_ && make_context_current_cb_.Run()) {
-    gl_image_->ReleaseTexImage(texture_target_);
     DCHECK_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 

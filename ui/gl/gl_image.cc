@@ -86,10 +86,6 @@ bool GLImage::BindTexImage(unsigned target) {
   return false;
 }
 
-void GLImage::ReleaseTexImage(unsigned target) {
-  NOTREACHED();
-}
-
 void GLImage::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                            uint64_t process_tracing_id,
                            const std::string& dump_name) {

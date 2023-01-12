@@ -109,15 +109,11 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // It is valid for an implementation to always return false.
   virtual bool BindTexImage(unsigned target);
 
-  // Release image from texture currently bound to |target|.
-  virtual void ReleaseTexImage(unsigned target);
-
  public:
   // Allow usage of these methods from text sites that are inconvenient to
   // friend.
   gfx::Size GetSizeForTesting() { return GetSize(); }
   bool BindTexImageForTesting(unsigned target) { return BindTexImage(target); }
-  void ReleaseTexImageForTesting(unsigned target) { ReleaseTexImage(target); }
 
  protected:
   // Dumps information about the memory backing the GLImage to a dump named

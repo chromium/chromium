@@ -25,7 +25,6 @@ class GLImagePbuffer final : public gl::GLImage {
   unsigned GetDataType() override;
   gl::GLImage::Type GetType() const override;
   bool BindTexImage(unsigned target) override;
-  void ReleaseTexImage(unsigned target) override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override {}

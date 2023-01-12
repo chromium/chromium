@@ -30,7 +30,6 @@ gl::GLImage::Type GLImagePbuffer::GetType() const {
 bool GLImagePbuffer::BindTexImage(unsigned target) {
   return true;
 }
-void ReleaseTexImage(unsigned target) {}
 void SetColorSpace(const gfx::ColorSpace& color_space) {}
 void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                   uint64_t process_tracing_id,
