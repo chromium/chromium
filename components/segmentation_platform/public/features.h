@@ -53,6 +53,9 @@ BASE_DECLARE_FEATURE(kShoppingUserSegmentFeature);
 // Feature flag for enabling `SegmentInfoCache` for `SegmentInfoDatabase`.
 BASE_DECLARE_FEATURE(kSegmentationPlatformSegmentInfoCache);
 
+// Feature flag for enabling default reporting segments.
+BASE_DECLARE_FEATURE(kSegmentationDefaultReportingSegments);
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

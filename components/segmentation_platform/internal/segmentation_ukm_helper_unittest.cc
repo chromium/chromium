@@ -92,10 +92,10 @@ class SegmentationUkmHelperTest : public testing::Test {
   }
 
   void InitializeAllowedSegmentIds(const std::string& allowed_ids) {
-    std::map<std::string, std::string> params = {
-        {kSegmentIdsAllowedForReportingKey, allowed_ids}};
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSegmentationStructuredMetricsFeature, params);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSegmentationStructuredMetricsFeature,
+          {{kSegmentIdsAllowedForReportingKey, allowed_ids}}}},
+        {features::kSegmentationDefaultReportingSegments});
     SegmentationUkmHelper::GetInstance()->Initialize();
   }
 

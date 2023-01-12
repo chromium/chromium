@@ -89,6 +89,18 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult6};
 
 base::flat_set<SegmentId> GetSegmentIdsAllowedForReporting() {
+  // TODO(crbug.com/1406404): Get allowed segment Ids from database.
+  if (base::FeatureList::IsEnabled(segmentation_platform::features::
+                                       kSegmentationDefaultReportingSegments)) {
+    return std::vector<SegmentId>{
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT};
+  }
   std::vector<std::string> segment_ids = base::SplitString(
       base::GetFieldTrialParamValueByFeature(
           segmentation_platform::features::
