@@ -21,10 +21,11 @@ public interface SegmentationPlatformService {
 
     /**
      * Called to get the segment selection result synchronously from the backend.
-     *
+     * @deprecated in favor of {@link getSelectedSegment}.
      * @param segmentationKey The key to be used to distinguish between different segmentation
      *         usages.
      * @return The result of segment selection
      */
+    @Deprecated
     SegmentSelectionResult getCachedSegmentResult(String segmentationKey);
 }

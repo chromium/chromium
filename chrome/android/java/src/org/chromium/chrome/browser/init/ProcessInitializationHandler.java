@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
 import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
+import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
@@ -256,7 +257,7 @@ public class ProcessInitializationHandler {
         FeatureNotificationGuideService.setDelegate(new FeatureNotificationGuideDelegate());
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
-
+        refreshCachedSegmentationResult();
         setProcessStateSummaryForAnrs(true);
     }
 
@@ -661,6 +662,11 @@ public class ProcessInitializationHandler {
                 prefs.writeBoolean(ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED, true);
             }
         }
+    }
+
+    private void refreshCachedSegmentationResult() {
+        FeedPositionUtils.cacheSegmentationResult();
+        QueryTileUtils.cacheSegmentationResult();
     }
 
     private void startBindingManagementIfNeeded() {

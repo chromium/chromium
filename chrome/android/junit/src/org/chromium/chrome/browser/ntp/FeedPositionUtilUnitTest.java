@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import static org.chromium.chrome.browser.ntp.FeedPositionUtils.FEED_USER_SEGMENT_KEY;
 
@@ -18,9 +19,11 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -51,13 +54,24 @@ public class FeedPositionUtilUnitTest {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfile);
         SegmentationPlatformServiceFactory.setForTests(mSegmentationPlatformService);
-        when(mSegmentationPlatformService.getCachedSegmentResult(FEED_USER_SEGMENT_KEY))
-                .thenReturn(new SegmentSelectionResult(false, null));
+        setSegmentationResult(new SegmentSelectionResult(false, null));
     }
 
     @After
     public void tearDown() {
         FeatureList.setTestValues(null);
+    }
+
+    private void setSegmentationResult(SegmentSelectionResult segmentSelectionResult) {
+        Mockito.doAnswer(invocation -> {
+                   Callback<SegmentSelectionResult> callback = invocation.getArgument(1);
+                   callback.onResult(segmentSelectionResult);
+                   return null;
+               })
+                .when(mSegmentationPlatformService)
+                .getSelectedSegment(eq(FEED_USER_SEGMENT_KEY), any());
+
+        FeedPositionUtils.cacheSegmentationResult();
     }
 
     @Test
@@ -69,9 +83,8 @@ public class FeedPositionUtilUnitTest {
         setFeedPositionFlags(FeedPositionUtils.PUSH_DOWN_FEED_SMALL, "active");
         Assert.assertFalse(FeedPositionUtils.isFeedPushDownSmallEnabled());
 
-        when(mSegmentationPlatformService.getCachedSegmentResult(FEED_USER_SEGMENT_KEY))
-                .thenReturn(new SegmentSelectionResult(
-                        true, SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER));
+        setSegmentationResult(new SegmentSelectionResult(
+                true, SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER));
         Assert.assertTrue(FeedPositionUtils.isFeedPushDownSmallEnabled());
     }
 
@@ -84,9 +97,8 @@ public class FeedPositionUtilUnitTest {
         setFeedPositionFlags(FeedPositionUtils.PUSH_DOWN_FEED_SMALL, "active");
         Assert.assertFalse(FeedPositionUtils.isFeedPushDownLargeEnabled());
 
-        when(mSegmentationPlatformService.getCachedSegmentResult(FEED_USER_SEGMENT_KEY))
-                .thenReturn(new SegmentSelectionResult(
-                        true, SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER));
+        setSegmentationResult(new SegmentSelectionResult(
+                true, SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER));
         Assert.assertTrue(FeedPositionUtils.isFeedPushDownLargeEnabled());
     }
 
@@ -99,14 +111,12 @@ public class FeedPositionUtilUnitTest {
         setFeedPositionFlags(FeedPositionUtils.PULL_UP_FEED, "non-active");
         Assert.assertFalse(FeedPositionUtils.isFeedPullUpEnabled());
 
-        when(mSegmentationPlatformService.getCachedSegmentResult(FEED_USER_SEGMENT_KEY))
-                .thenReturn(new SegmentSelectionResult(
-                        true, SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER));
+        setSegmentationResult(new SegmentSelectionResult(
+                true, SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER));
         Assert.assertFalse(FeedPositionUtils.isFeedPullUpEnabled());
 
-        when(mSegmentationPlatformService.getCachedSegmentResult(FEED_USER_SEGMENT_KEY))
-                .thenReturn(
-                        new SegmentSelectionResult(true, SegmentId.OPTIMIZATION_TARGET_UNKNOWN));
+        setSegmentationResult(
+                new SegmentSelectionResult(true, SegmentId.OPTIMIZATION_TARGET_UNKNOWN));
         Assert.assertTrue(FeedPositionUtils.isFeedPullUpEnabled());
     }
 

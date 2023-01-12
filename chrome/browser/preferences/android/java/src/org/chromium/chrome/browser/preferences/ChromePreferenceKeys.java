@@ -816,6 +816,10 @@ public final class ChromePreferenceKeys {
     public static final String SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE =
             "org.chromium.chrome.browser.searchwidget.IS_INCOGNITO_AVAILABLE";
 
+    // Segmentation platform related prefs.
+    public static final String SEGMENTATION_FEED_ACTIVE_USER = "Chrome.Segmentation.FeedActiveUser";
+    public static final String SEGMENTATION_SHOW_QUERY_TILES = "Chrome.Segmentation.ShowQueryTiles";
+
     // Tracks which GUIDs there is an active notification for.
     public static final String SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS =
             "send_tab_to_self.notification.active";
@@ -1145,6 +1149,8 @@ public final class ChromePreferenceKeys {
                 QUERY_TILES_SHOW_SEGMENTATION_RESULT,
                 QUERY_TILES_SHOWN_ON_START_SURFACE,
                 REGULAR_TAB_COUNT,
+                SEGMENTATION_FEED_ACTIVE_USER,
+                SEGMENTATION_SHOW_QUERY_TILES,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,

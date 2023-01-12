@@ -9,9 +9,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
-import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
@@ -107,24 +108,36 @@ public class FeedPositionUtils {
     }
 
     /**
-     * Called to get segment selection result from segmentation platform service.
+     * Called to get segment selection result from shared prefs.
      * @return The segmentation result.
      */
-    private static @FeedPositionSegmentationResult int getSegmentationResult() {
-        @FeedPositionSegmentationResult
-        int resultEnum;
+    public static @FeedPositionSegmentationResult int getSegmentationResult() {
+        return SharedPreferencesManager.getInstance().readInt(
+                ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER,
+                FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER);
+    }
+
+    /**
+     * Called to cache segment selection result from segmentation platform service into prefs for
+     * synchronous API calls. Called early during initialization.
+     */
+    public static void cacheSegmentationResult() {
         SegmentationPlatformService segmentationPlatformService =
                 SegmentationPlatformServiceFactory.getForProfile(
                         Profile.getLastUsedRegularProfile());
-        SegmentSelectionResult result =
-                segmentationPlatformService.getCachedSegmentResult(FEED_USER_SEGMENT_KEY);
-        if (!result.isReady) {
-            resultEnum = FeedPositionSegmentationResult.UNINITIALIZED;
-        } else if (result.selectedSegment == SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-            resultEnum = FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER;
-        } else {
-            resultEnum = FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER;
-        }
-        return resultEnum;
+        segmentationPlatformService.getSelectedSegment(FEED_USER_SEGMENT_KEY, result -> {
+            @FeedPositionSegmentationResult
+            int resultEnum;
+            if (!result.isReady) {
+                resultEnum = FeedPositionSegmentationResult.UNINITIALIZED;
+            } else if (result.selectedSegment
+                    == SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
+                resultEnum = FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER;
+            } else {
+                resultEnum = FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER;
+            }
+            SharedPreferencesManager.getInstance().writeInt(
+                    ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER, resultEnum);
+        });
     }
 }

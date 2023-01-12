@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
-import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
@@ -241,7 +240,7 @@ public class QueryTileUtils {
     }
 
     /**
-     * Called to get segment selection result from segmentation platform service.
+     * Called to get segment selection result from shared prefs.
      * @return The segmentation result.
      */
     private static @ShowQueryTilesSegmentationResult int getSegmentationResult() {
@@ -249,24 +248,40 @@ public class QueryTileUtils {
         @ShowQueryTilesSegmentationResult
         int segmentationResult;
         if (sSegmentationResultsForTesting == -1) {
-            SegmentationPlatformService segmentationPlatformService =
-                    SegmentationPlatformServiceFactory.getForProfile(
-                            Profile.getLastUsedRegularProfile());
-            SegmentSelectionResult result = segmentationPlatformService.getCachedSegmentResult(
-                    QUERY_TILES_SEGMENTATION_PLATFORM_KEY);
-            if (!result.isReady) {
-                segmentationResult = ShowQueryTilesSegmentationResult.UNINITIALIZED;
-            } else if (result.selectedSegment
-                    == SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES) {
-                segmentationResult = ShowQueryTilesSegmentationResult.SHOW;
-            } else {
-                segmentationResult = ShowQueryTilesSegmentationResult.DONT_SHOW;
-            }
+            segmentationResult = SharedPreferencesManager.getInstance().readInt(
+                    ChromePreferenceKeys.SEGMENTATION_SHOW_QUERY_TILES,
+                    ShowQueryTilesSegmentationResult.DONT_SHOW);
         } else {
             segmentationResult = sSegmentationResultsForTesting;
         }
 
         return segmentationResult;
+    }
+
+    /**
+     * Called to cache segment selection result from segmentation platform service into shared
+     * prefs.
+     */
+    public static void cacheSegmentationResult() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_SEGMENTATION)) return;
+        SegmentationPlatformService segmentationPlatformService =
+                SegmentationPlatformServiceFactory.getForProfile(
+                        Profile.getLastUsedRegularProfile());
+        segmentationPlatformService.getSelectedSegment(
+                QUERY_TILES_SEGMENTATION_PLATFORM_KEY, result -> {
+                    @ShowQueryTilesSegmentationResult
+                    int segmentationResult;
+                    if (!result.isReady) {
+                        segmentationResult = ShowQueryTilesSegmentationResult.UNINITIALIZED;
+                    } else if (result.selectedSegment
+                            == SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES) {
+                        segmentationResult = ShowQueryTilesSegmentationResult.SHOW;
+                    } else {
+                        segmentationResult = ShowQueryTilesSegmentationResult.DONT_SHOW;
+                    }
+                    SharedPreferencesManager.getInstance().writeInt(
+                            ChromePreferenceKeys.SEGMENTATION_SHOW_QUERY_TILES, segmentationResult);
+                });
     }
 
     /**
