@@ -184,7 +184,8 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
 
   std::vector<history::Cluster> ClusterVisits(
       ClusteringRequestSource clustering_request_source,
-      const std::vector<history::AnnotatedVisit>& visits) {
+      const std::vector<history::AnnotatedVisit>& visits,
+      bool requires_ui_and_triggerability = true) {
     std::vector<history::Cluster> clusters;
 
     base::RunLoop run_loop;
@@ -198,7 +199,7 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
               run_loop->Quit();
             },
             &run_loop, &clusters),
-        visits);
+        visits, requires_ui_and_triggerability);
     run_loop.Run();
 
     // Sort clusters here for easier verification.
@@ -264,6 +265,24 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
 TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterNoVisits) {
   EXPECT_TRUE(
       ClusterVisits(ClusteringRequestSource::kJourneysPage, {}).empty());
+}
+
+TEST_F(OnDeviceClusteringWithoutContentBackendTest,
+       ClusterOneVisitNoRequiresUiAndTriggerability) {
+  std::vector<history::AnnotatedVisit> visits;
+
+  // Fill in the visits vector with 1 visit.
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  visits.push_back(visit);
+
+  std::vector<history::Cluster> result_clusters =
+      ClusterVisits(ClusteringRequestSource::kJourneysPage, visits,
+                    /*requires_ui_and_triggerability=*/false);
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0))));
+  // Make sure triggerability was not calculated.
+  EXPECT_FALSE(result_clusters[0].triggerability_calculated);
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterOneVisit) {
@@ -569,6 +588,65 @@ class OnDeviceClusteringWithContentBackendTest
   std::unique_ptr<TestEntityMetadataProvider> entity_metadata_provider_;
   Config config_;
 };
+
+TEST_F(OnDeviceClusteringWithContentBackendTest,
+       ClusterNoRequiresUIAndTriggerability) {
+  std::vector<history::AnnotatedVisit> visits;
+
+  // Visit2's referrer is visit 1 and visit 4 is a back navigation from visit 2.
+  // Visit 3 is a different journey altogether. Visit 10 is referring to a
+  // missing visit and should be considered as in its own cluster.
+  // Also, make sure these aren't sorted so we test that we are sorting the
+  // visits by visit ID.
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://github.com/"), base::Time::FromTimeT(1));
+  visit.content_annotations.model_annotations.entities = {{"github", 100}};
+  visits.push_back(visit);
+
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
+  visit2.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit2.referring_visit_of_redirect_chain_start = 1;
+  // Set the visit duration to be 2x the default so it has the same duration
+  // after |visit| and |visit4| are deduped.
+  visit2.visit_row.visit_duration = base::Seconds(20);
+  visits.push_back(visit2);
+
+  history::AnnotatedVisit visit4 = testing::CreateDefaultAnnotatedVisit(
+      4, GURL("https://github.com/"), base::Time::FromTimeT(4));
+  visit4.content_annotations.model_annotations.entities = {{"github", 100}};
+  visits.push_back(visit4);
+
+  // After the context clustering, visit5 will not be in the same cluster as
+  // visit, visit2, and visit4 but all of the visits have the same entities
+  // so they will be clustered in the content pass.
+  history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
+      10,
+      GURL("https://shouldskip.com/butnotsincehostcheckingisfalse/"
+           "andhasnonexistentreferrer"),
+      base::Time::FromTimeT(10));
+  visit5.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit5.referring_visit_of_redirect_chain_start = 6;
+  visits.push_back(visit5);
+
+  std::vector<history::Cluster> result_clusters =
+      ClusterVisits(ClusteringRequestSource::kJourneysPage, visits,
+                    /*requires_ui_and_triggerability=*/false);
+
+  // The clusters should not be grouped by content and visits are not deduped or
+  // scored if `requires_ui_and_triggerability` is false.
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(10, 1.0)),
+                          ElementsAre(testing::VisitResult(4, 1.0),
+                                      testing::VisitResult(2, 1.0),
+                                      testing::VisitResult(1, 1.0))));
+  // The clusters should not have keywords or triggerability calculated.
+  EXPECT_EQ(result_clusters.size(), 2u);
+  EXPECT_TRUE(result_clusters[0].GetKeywords().empty());
+  EXPECT_FALSE(result_clusters[0].triggerability_calculated);
+  EXPECT_TRUE(result_clusters[1].GetKeywords().empty());
+  EXPECT_FALSE(result_clusters[1].triggerability_calculated);
+}
 
 TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   std::vector<history::AnnotatedVisit> visits;

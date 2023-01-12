@@ -141,7 +141,8 @@ TEST_F(FileClusteringBackendTest, Success) {
                              run_loop->Quit();
                            },
                            &run_loop, &result_clusters),
-                       annotated_visits);
+                       annotated_visits,
+                       /*unused_requires_ui_and_triggerability=*/true);
   run_loop.Run();
 
   EXPECT_THAT(testing::ToVisitResults(result_clusters),

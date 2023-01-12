@@ -51,7 +51,8 @@ class TestClusteringBackend : public ClusteringBackend {
  public:
   void GetClusters(ClusteringRequestSource clustering_request_source,
                    ClustersCallback callback,
-                   std::vector<history::AnnotatedVisit> visits) override {
+                   std::vector<history::AnnotatedVisit> visits,
+                   bool unused_requires_ui_and_triggerability) override {
     callback_ = std::move(callback);
     last_clustered_visits_ = visits;
 

@@ -229,7 +229,8 @@ FileClusteringBackend::CreateIfEnabled() {
 void FileClusteringBackend::GetClusters(
     ClusteringRequestSource clustering_request_source,
     ClustersCallback callback,
-    std::vector<history::AnnotatedVisit> visits) {
+    std::vector<history::AnnotatedVisit> visits,
+    bool unused_requires_ui_and_triggerability) {
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetClustersOnBackgroundThread, std::move(visits)),

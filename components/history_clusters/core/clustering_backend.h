@@ -21,13 +21,17 @@ class ClusteringBackend {
   virtual ~ClusteringBackend() = default;
 
   // The backend clusters `visits` and returns the results asynchronously via
-  // `callback`.
+  // `callback`. If `requires_ui_and_triggerability` is true, this runs
+  // additional processing steps to calculate metadata about the clusters
+  // required for the UI and triggering.
   //
-  // This method will get removed after persisting context clusters at
-  // navigation is rolled out.
+  // TODO(b/259466296): This method will get removed after persisting context
+  // clusters at navigation is rolled out. The below two methods will be the
+  // only remaining methods in this interface.
   virtual void GetClusters(ClusteringRequestSource clustering_request_source,
                            ClustersCallback callback,
-                           std::vector<history::AnnotatedVisit> visits) = 0;
+                           std::vector<history::AnnotatedVisit> visits,
+                           bool requires_ui_and_triggerability) = 0;
 
   // Gets the displayable variant of `clusters` that will be shown on various UI
   // surfaces. This will merge similar clusters, rank visits within the cluster,

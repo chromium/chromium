@@ -28,9 +28,12 @@ class FileClusteringBackend : public ClusteringBackend {
   ~FileClusteringBackend() override;
 
   // ClusteringBackend:
+  // `unused_requires_ui_and_triggerability` as this function just sends back
+  // the clusters as is from the file.
   void GetClusters(ClusteringRequestSource clustering_request_source,
                    ClustersCallback callback,
-                   std::vector<history::AnnotatedVisit> visits) override;
+                   std::vector<history::AnnotatedVisit> visits,
+                   bool unused_requires_ui_and_triggerability) override;
   void GetClustersForUI(ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override;
   void GetClusterTriggerability(

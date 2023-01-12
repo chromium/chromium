@@ -163,7 +163,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
         base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
                            OnGotModelClusters,
                        weak_ptr_factory_.GetWeakPtr(), continuation_params),
-        std::move(annotated_visits));
+        std::move(annotated_visits), /*requires_ui_and_triggerability=*/true);
   }
 }
 

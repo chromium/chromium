@@ -108,7 +108,7 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
       base::BindOnce(
           &HistoryClustersServiceTaskUpdateClusters::OnGotModelClusters,
           weak_ptr_factory_.GetWeakPtr(), old_clusters, continuation_params),
-      annotated_visits);
+      annotated_visits, /*requires_ui_and_triggerability=*/true);
 }
 
 void HistoryClustersServiceTaskUpdateClusters::OnGotModelClusters(
