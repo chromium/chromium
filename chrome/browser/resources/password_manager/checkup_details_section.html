@@ -8,12 +8,39 @@
   #header {
     align-items: center;
     display: flex;
-    margin-bottom: 28px;
+    padding-top: 28px;
+  }
+
+  #title {
+    font-family: 'Roboto';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  #body {
+    margin-top: 40px;
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
+  }
+
+  #subtitle {
+    color: var(--cr-secondary-text-color);
+    font-weight: 500;
+  }
+
+  #description {
+    margin-top: 12px;
   }
 
   #backButton {
     --cr-icon-button-margin-end: 6px;
     --cr-icon-button-margin-start: 0px;
+  }
+
+  #insecureCredentials {
+    margin-top: 24px;
   }
 </style>
 <div id="header">
@@ -22,3 +49,22 @@
   </cr-icon-button>
   <h2 id="title" class="page-title">[[pageTitle_]]</h2>
 </div>
+<div id="body">
+    <div id="subtitle" class="label">
+      [[getSubTitle_(insecurityType_)]]
+    </div>
+    <div id="description" class="cr-secondary-text label">
+      [[getDescription_(insecurityType_)]]
+    </div>
+  </template>
+</div>
+<template is="dom-if" if="[[!isReusedSection(insecurityType_)]]">
+  <template id="insecureCredentials" is="dom-repeat"
+      items="[[shownInsecureCredentials_]]" initial-count="50">
+    <checkup-list-item item="[[item]]" first="[[!index]]"
+        show-details="[[isCompromisedSection(insecurityType_)]]">
+    </checkup-list-item>
+  </template>
+  <!-- TODO(crbug.com/1401001): Display muted compromised credentials -->
+</template>
+<!-- TODO(crbug.com/1401001): Display reused credentials -->

@@ -1,0 +1,84 @@
+<style include="shared-style cr-shared-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  site-favicon {
+    margin-inline-end: 20px;
+  }
+
+  #list-item {
+    align-items: center;
+    display: flex;
+    padding: 16px 20px;
+  }
+
+  #credentialInfo {
+    display: flex;
+    flex: 2;
+  }
+
+  #insecurePassword {
+    background-color: transparent;
+    border: none;
+    color: var(--cr-secondary-text-color);
+    font-size: inherit;
+    margin-inline-start: 4px;
+  }
+
+  #changeButton {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #change-password-link-icon {
+    --iron-icon-width: 16px;
+    margin-inline-start: 10px;
+  }
+
+  #separator {
+    margin-inline-start: 56px;
+  }
+</style>
+<div id="separator" class="hr" hidden="[[first]]"></div>
+<div id="list-item" focus-row-container>
+  <!-- TODO(crbug.com/): Consider using group icon. -->
+  <site-favicon domain="[[item.changePasswordUrl]]"></site-favicon>
+  <div id="credentialInfo">
+    <div id="infoColumn">
+      <div id="shownUrl" class="label">
+        [[getShownDomain_(item)]]
+      </div>
+      <div class="cr-secondary-text label">
+        <span id="username">[[item.username]]</span>
+        <input id="insecurePassword" focus-row-control
+                  focus-type="passwordField" readonly
+                  type="[[getPasswordInputType(isPasswordVisible)]]"
+                  value="[[getPasswordValue_(item, isPasswordVisible)]]">
+      </div>
+      <template is="dom-if" if="[[showDetails]]">
+        <div class="cr-secondary-text label" id="compromiseType">
+          [[getCompromiseDescription_(item)]]
+        </div>
+        <div class="cr-secondary-text label" id="elapsedTime">
+          [[item.compromisedInfo.elapsedTimeSinceCompromise]]
+        </div>
+      </template>
+    </div>
+  </div>
+  <div id="changeButton">
+    <!-- TODO(crbug.com/): Open change password URL. -->
+    <!-- TODO(crbug.com/): Add already changed dialog. -->
+    <!-- TODO(crbug.com/): Hide change password button for android apps. -->
+    <cr-button id="changePasswordButton" on-click="onChangePasswordClick_">
+      $i18n{changePassword}
+      <iron-icon icon="cr:open-in-new" id="change-password-link-icon">
+      </iron-icon>
+    </cr-button>
+  </div>
+  <!-- TODO(crbug.com/): Implement more actions. -->
+  <cr-icon-button class="icon-more-vert" id="more" title="$i18n{moreActions}">
+  </cr-icon-button>
+</div>

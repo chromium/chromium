@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './shared_style.css.js';
+import './checkup_list_item.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -12,8 +14,15 @@ import {getTemplate} from './checkup_details_section.html.js';
 import {CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {CheckupSubpage, Page, Route, RouteObserverMixin, Router} from './router.js';
 
+export interface CheckupDetailsSectionElement {
+  $: {
+    subtitle: HTMLElement,
+    description: HTMLElement,
+  };
+}
 
-const CheckupDetailsSectionElementBase = RouteObserverMixin(PolymerElement);
+const CheckupDetailsSectionElementBase =
+    I18nMixin(RouteObserverMixin(PolymerElement));
 
 export class CheckupDetailsSectionElement extends
     CheckupDetailsSectionElementBase {
@@ -34,12 +43,12 @@ export class CheckupDetailsSectionElement extends
         observer: 'updateShownCredentials_',
       },
 
-      allInsecureCredentials: {
+      allInsecureCredentials_: {
         type: Array,
         observer: 'updateShownCredentials_',
       },
 
-      shownInsecureCredentials: {
+      shownInsecureCredentials_: {
         type: Array,
         observer: 'onCredentialsChanged_',
       },
@@ -48,8 +57,8 @@ export class CheckupDetailsSectionElement extends
 
   private pageTitle_: string;
   private insecurityType_: CheckupSubpage|undefined;
-  private allInsecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[];
-  private shownInsecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[];
+  private allInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
+  private shownInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 
@@ -57,7 +66,7 @@ export class CheckupDetailsSectionElement extends
     super.connectedCallback();
 
     this.insecureCredentialsChangedListener_ = insecureCredentials => {
-      this.allInsecureCredentials = insecureCredentials;
+      this.allInsecureCredentials_ = insecureCredentials;
     };
 
     PasswordManagerImpl.getInstance().getInsecureCredentials().then(
@@ -79,22 +88,23 @@ export class CheckupDetailsSectionElement extends
   }
 
   private updateShownCredentials_() {
-    if (!this.insecurityType_ || !this.allInsecureCredentials) {
+    if (!this.insecurityType_ || !this.allInsecureCredentials_) {
       return;
     }
-    this.shownInsecureCredentials = this.allInsecureCredentials.filter(cred => {
-      return !cred.compromisedInfo!.isMuted &&
-          cred.compromisedInfo!.compromiseTypes.some(type => {
-            return this.getInsecurityType_().includes(type);
-          });
-    });
+    this.shownInsecureCredentials_ =
+        this.allInsecureCredentials_.filter(cred => {
+          return !cred.compromisedInfo!.isMuted &&
+              cred.compromisedInfo!.compromiseTypes.some(type => {
+                return this.getInsecurityType_().includes(type);
+              });
+        });
   }
 
   private async onCredentialsChanged_() {
     assert(this.insecurityType_);
     this.pageTitle_ = await PluralStringProxyImpl.getInstance().getPluralString(
         this.insecurityType_.concat('Passwords'),
-        this.shownInsecureCredentials.length);
+        this.shownInsecureCredentials_.length);
   }
 
   private getInsecurityType_(): chrome.passwordsPrivate.CompromiseType[] {
@@ -110,6 +120,24 @@ export class CheckupDetailsSectionElement extends
       case CheckupSubpage.WEAK:
         return [chrome.passwordsPrivate.CompromiseType.WEAK];
     }
+  }
+
+  private getSubTitle_() {
+    assert(this.insecurityType_);
+    return this.i18n(`${this.insecurityType_}PasswordsTitle`);
+  }
+
+  private getDescription_() {
+    assert(this.insecurityType_);
+    return this.i18n(`${this.insecurityType_}PasswordsDescription`);
+  }
+
+  private isCompromisedSection(): boolean {
+    return this.insecurityType_ === CheckupSubpage.COMPROMISED;
+  }
+
+  private isReusedSection(): boolean {
+    return this.insecurityType_ === CheckupSubpage.REUSED;
   }
 }
 
