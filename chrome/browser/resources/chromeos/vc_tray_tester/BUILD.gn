@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "vc_tray_tester"
+
+  static_files = [ "main.html" ]
+  web_component_files = [ "vc_tray_tester.ts" ]
+
+  html_to_wrapper_template = "native"
+
+  ts_deps = [ "//ui/webui/resources:library" ]
+}

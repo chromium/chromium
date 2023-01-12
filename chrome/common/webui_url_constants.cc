@@ -390,6 +390,8 @@ const char kChromeUIUntrustedTerminalHost[] = "terminal";
 const char kChromeUIUntrustedTerminalURL[] = "chrome-untrusted://terminal/";
 const char kChromeUIUserImageHost[] = "userimage";
 const char kChromeUIUserImageURL[] = "chrome://userimage/";
+const char kChromeUIVcTrayTesterHost[] = "vc-tray-tester";
+const char kChromeUIVcTrayTesterURL[] = "chrome://vc-tray-tester";
 const char kChromeUIVmHost[] = "vm";
 const char kChromeUIVmUrl[] = "chrome://vm";
 const char kChromeUIEmojiPickerURL[] = "chrome://emoji-picker/";
@@ -464,6 +466,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUISetTimeHost,
     kChromeUISmbCredentialsHost,
     kChromeUISmbShareHost,
+    kChromeUIVcTrayTesterHost,
     kChromeUIEmojiPickerHost,
 #if BUILDFLAG(PLATFORM_CFM)
     kCfmNetworkSettingsHost,

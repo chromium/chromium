@@ -1,0 +1,106 @@
+<!-- Copyright 2023 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  app-header {
+    background-color: royalblue;
+    color: white;
+    font-size: 200%;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .input-field {
+    margin: 2.5% 5%;
+  }
+
+  .input-field ol {
+    margin: 0 0 8px 0;
+    padding: 0 16px;
+  }
+
+  .input-field ol>li {
+    align-items: center;
+    border-bottom: none;
+    display: flex;
+    padding: 0 0 8px 0;
+  }
+
+  .padded-text {
+    margin-inline-start: 5px;
+  }
+
+  .row {
+    display: flex;
+    flex: 0 1 100%;
+  }
+</style>
+
+<app-header>
+  <app-toolbar>Video Conference Tray Tester</app-toolbar>
+</app-header>
+
+<div class="input-field">
+  <ol>
+    <h2>Video Conference Media State</h2>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="has_media_app"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          has_media_app
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="has_camera_permission"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          has_camera_permission
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="has_microphone_permission"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          has_microphone_permission
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="is_capturing_camera"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          is_capturing_camera
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="is_capturing_microphone"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          is_capturing_microphone
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="is_capturing_screen"></cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          is_capturing_screen
+        </span>
+      </div>
+    </li>
+    <li>
+      <button type="button">Update </button>
+    </li>
+  </ol>
+</div>

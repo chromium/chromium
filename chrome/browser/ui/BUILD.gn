@@ -2926,6 +2926,8 @@ static_library("ui") {
       "webui/ash/system_web_dialog_delegate.h",
       "webui/ash/user_image_source.cc",
       "webui/ash/user_image_source.h",
+      "webui/ash/vc_tray_tester/vc_tray_tester_ui.cc",
+      "webui/ash/vc_tray_tester/vc_tray_tester_ui.h",
       "webui/ash/vm/vm_ui.cc",
       "webui/ash/vm/vm_ui.h",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",

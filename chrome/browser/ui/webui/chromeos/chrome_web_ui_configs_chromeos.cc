@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/vc_tray_tester/vc_tray_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -147,6 +148,7 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<ash::SystemExtensionsInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::UrgentPasswordExpiryNotificationUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::VcTrayTesterUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::VmUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());

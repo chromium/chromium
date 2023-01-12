@@ -362,6 +362,8 @@ extern const char kChromeUIUrgentPasswordExpiryNotificationHost[];
 extern const char kChromeUIUrgentPasswordExpiryNotificationUrl[];
 extern const char kChromeUIUserImageHost[];
 extern const char kChromeUIUserImageURL[];
+extern const char kChromeUIVcTrayTesterURL[];
+extern const char kChromeUIVcTrayTesterHost[];
 extern const char kChromeUIVmHost[];
 extern const char kChromeUIVmUrl[];
 

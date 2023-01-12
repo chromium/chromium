@@ -29,6 +29,7 @@ group("resources") {
     "network_ui:resources",
     "notification_tester:resources",
     "password_change:resources",
+    "vc_tray_tester:resources",
   ]
 }
 
