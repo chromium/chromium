@@ -13,7 +13,7 @@
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/src/core/SkEndian.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace image_annotation {
@@ -42,9 +42,8 @@ SkBitmap GenCheckerboardBitmap(const int dim) {
       uint8_t* const byte_pos =
           pixels + row * out.rowBytes() + col * out.bytesPerPixel();
 
-      // RGBA refers to big endian ordering.
       *reinterpret_cast<uint32_t*>(byte_pos) =
-          black ? SkEndian_SwapBE32(0x000000FF) : 0xFFFFFFFF;
+          black ? SK_ColorBLACK : SK_ColorWHITE;
     }
   }
 
