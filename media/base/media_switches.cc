@@ -407,23 +407,15 @@ BASE_FEATURE(kCdmProcessSiteIsolation,
 // playback going to a specific output device in the audio service.
 BASE_FEATURE(kChromeWideEchoCancellation,
              "ChromeWideEchoCancellation",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // If non-zero, audio processing is done on a dedicated processing thread which
 // receives audio from the audio capture thread via a fifo of a specified size.
 // Zero fifo size means the usage of such processing thread is disabled and
 // processing is done on the audio capture thread itself.
 const base::FeatureParam<int> kChromeWideEchoCancellationProcessingFifoSize{
-  &kChromeWideEchoCancellation, "processing_fifo_size",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-      110  // Default value for the enabled feature.
-#else
-      0
-#endif
+    &kChromeWideEchoCancellation, "processing_fifo_size",
+    110  // Default value for the enabled feature.
 };
 
 // When audio processing is done in the audio process, at the renderer side IPC
