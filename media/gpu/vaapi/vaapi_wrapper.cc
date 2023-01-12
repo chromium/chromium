@@ -2514,6 +2514,9 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
     case VA_FOURCC_NV12:
       buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
       break;
+    case VA_FOURCC_ARGB:
+      buffer_format = gfx::BufferFormat::BGRA_8888;
+      break;
     default:
       LOG(ERROR) << "Cannot export a surface with FOURCC "
                  << FourccToString(descriptor.fourcc);
