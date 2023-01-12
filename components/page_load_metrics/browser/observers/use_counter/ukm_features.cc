@@ -147,7 +147,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kTrustTokenXhr,
           WebFeature::kTrustTokenFetch,
           WebFeature::kTrustTokenIframe,
-          WebFeature::kV8Document_HasTrustToken_Method,
+          WebFeature::kV8Document_HasPrivateToken_Method,
           WebFeature::kV8HTMLVideoElement_RequestVideoFrameCallback_Method,
           WebFeature::kV8HTMLVideoElement_CancelVideoFrameCallback_Method,
           WebFeature::kSchemefulSameSiteContextDowngrade,
