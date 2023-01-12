@@ -10,14 +10,10 @@
 function assertHasEntries(wantPathList, gotEntryList) {
   chrome.test.assertEq(
       wantPathList.length, gotEntryList.length,
-      `Expected ${wantPathList.length}, found ${gotEntryList.length}`);
-  for (let i = 0; i < wantPathList.length; ++i) {
-    const wantPath = wantPathList[i];
-    const gotEntry = gotEntryList[i];
-    chrome.test.assertEq(
-        wantPath, gotEntry.fullPath,
-        `entry[${i}]: ${wantPath} != ${gotEntry.fullPath}`);
-  }
+      `Expected ${wantPathList.length} entries, found ${gotEntryList.length}`);
+  chrome.test.assertTrue(
+      gotEntryList.every(e => wantPathList.includes(e.fullPath)),
+      `${wantPathList.sort()} != ${gotEntryList.map(e => e.fullPath)}`);
 }
 
 /**
@@ -88,5 +84,68 @@ chrome.test.runTests([
             assertHasEntries(['/images/foo.jpg'], entryList);
           }));
     });
+  },
+
+  async function testSearchWithDateFilter() {
+    const anyTimeEntries = await new Promise((resolve) => {
+      chrome.fileManagerPrivate.searchFiles(
+          {
+            query: 'bar',
+            types: 'ALL',
+            maxResults: 10,
+            // undefined timestamp finds everything older than Jan 01, 1970.
+          },
+          (entryList) => {
+            resolve(entryList);
+          });
+    });
+    assertHasEntries(
+        ['/bar_01012020.jpg', '/bar_15012020.jpg'], anyTimeEntries);
+
+    // NOTE: Some filesystems use 1s resolution for modified time. Thus we add
+    // 1s rather than 1ms when setting date higher than known modified time.
+    const delta = 1000;
+
+    const jan15Entries = await new Promise((resolve) => {
+      chrome.fileManagerPrivate.searchFiles(
+          {
+            query: 'bar',
+            types: 'ALL',
+            maxResults: 10,
+            timestamp: 1579089600000 - delta,  // Jan 15 2020, noon - 1s
+          },
+          (entryList) => {
+            resolve(entryList);
+          });
+    });
+    assertHasEntries(['/bar_15012020.jpg'], jan15Entries);
+    const jan01Entries = await new Promise((resolve) => {
+      chrome.fileManagerPrivate.searchFiles(
+          {
+            query: 'bar',
+            types: 'ALL',
+            maxResults: 10,
+            timestamp: 1577880000000 - delta,  // Jan 01 2020, noon - 1s
+          },
+          (entryList) => {
+            resolve(entryList);
+          });
+    });
+    assertHasEntries(
+        ['/bar_01012020.jpg', '/bar_15012020.jpg'], jan01Entries);
+    const noEntries = await new Promise((resolve) => {
+      chrome.fileManagerPrivate.searchFiles(
+          {
+            query: 'bar',
+            types: 'ALL',
+            maxResults: 10,
+            timestamp: 1579089600000 + delta,  // Jan 15 2020, noon + 1s
+          },
+          (entryList) => {
+            resolve(entryList);
+          });
+    });
+    assertHasEntries([], noEntries);
+    chrome.test.succeed();
   },
 ]);

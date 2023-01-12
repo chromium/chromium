@@ -28,6 +28,7 @@ namespace fileManagerPrivateInternal {
     DOMString query;
     fileManagerPrivate.SearchType types;
     long maxResults;
+    double timestamp;
   };
 
   callback SimpleCallback = void();

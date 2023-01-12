@@ -806,6 +806,10 @@ dictionary SearchMetadataParams {
 
   // Maximum number of results.
   long maxResults;
+
+  // Modified timestamp. The file must have modified timestamp more recent
+  // than this to be included in results.
+  double? timestamp;
 };
 
 // Entry and Drive-related properties representing a search result.

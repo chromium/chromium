@@ -129,6 +129,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       query: params.query,
       types: params.types,
       maxResults: params.maxResults,
+      timestamp: params.timestamp || 0,
     };
     if (params.rootDir) {
       newParams.rootUrl = getEntryURL(params.rootDir);

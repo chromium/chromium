@@ -213,7 +213,8 @@ std::string CreateFnmatchQuery(const std::string& query) {
 std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
     const base::FilePath& root,
     const std::string& query,
-    size_t max_results) {
+    size_t max_results,
+    const base::Time& min_timestamp) {
   std::vector<std::pair<base::FilePath, bool>> prefix_matches;
   std::vector<std::pair<base::FilePath, bool>> other_matches;
 
@@ -224,6 +225,9 @@ std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
 
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
+    if (enumerator.GetInfo().GetLastModifiedTime() < min_timestamp) {
+      continue;
+    }
     if (base::StartsWith(path.BaseName().value(), query,
                          base::CompareCase::INSENSITIVE_ASCII)) {
       prefix_matches.emplace_back(path, enumerator.GetInfo().IsDirectory());
@@ -1378,15 +1382,16 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
   using api::file_manager_private_internal::SearchFiles::Params;
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
+  const auto& search_params = params->search_params;
 
-  if (params->search_params.max_results < 0) {
+  if (search_params.max_results < 0) {
     return RespondNow(Error("maxResults must be non-negative"));
   }
 
   base::FilePath root;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  const std::string root_url = params->search_params.root_url.value_or("");
+  const std::string root_url = search_params.root_url.value_or("");
   if (root_url.empty()) {
     root = file_manager::util::GetMyFilesFolderForProfile(profile);
   } else {
@@ -1400,9 +1405,10 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&SearchByPattern, root, params->search_params.query,
-                     base::internal::checked_cast<size_t>(
-                         params->search_params.max_results)),
+      base::BindOnce(
+          &SearchByPattern, root, search_params.query,
+          base::internal::checked_cast<size_t>(search_params.max_results),
+          base::Time::FromJsTime(search_params.timestamp)),
       base::BindOnce(
           &FileManagerPrivateInternalSearchFilesFunction::OnSearchByPattern,
           this));
