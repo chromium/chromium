@@ -14,7 +14,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderWidgetHostView;

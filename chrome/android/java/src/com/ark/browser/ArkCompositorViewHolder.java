@@ -29,7 +29,6 @@ import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ActionMenuView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -43,7 +42,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.ark.browser.core.ArkContentView;
 import com.ark.browser.tab.ArkTabImpl;
+import com.ark.browser.tab.ArkTabViewAndroidDelegate;
 import com.ark.browser.tab.ArkTabWebContentsObserver;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.dao.ArkTabStore;
@@ -53,7 +54,6 @@ import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -75,10 +75,8 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -87,13 +85,11 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.selection.FloatingActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
@@ -197,7 +193,7 @@ public class ArkCompositorViewHolder extends FrameLayout
              * We wait for layout to happen as the newly created ContentView currently has a
              * width and height of zero, which would result in the event not being dispatched.
              */
-            mView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            mContentView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                            int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -278,16 +274,16 @@ public class ArkCompositorViewHolder extends FrameLayout
     @VisibleForTesting
     Tab mTabVisible;
 
-    /**
-     * The currently attached View.
-     */
-    private View mView;
+//    /**
+//     * The currently attached View.
+//     */
+//    private View mView;
 
     /**
      * Current ContentView. Updates when active tab is switched or WebContents is swapped
      * in the current Tab.
      */
-    private ContentView mContentView;
+    private final ArkContentView mContentView;
 
     // Cache objects that should not be created frequently.
     private final Rect mCacheRect = new Rect();
@@ -388,8 +384,9 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     public ArkCompositorViewHolder(Context c) {
         super(c);
-
         internalInit();
+        mContentView = ArkContentView.createContentView(c, null);
+        initContentView();
     }
 
     /**
@@ -400,14 +397,35 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     public ArkCompositorViewHolder(Context c, AttributeSet attrs) {
         super(c, attrs);
-
         internalInit();
+        mContentView = ArkContentView.createContentView(c, null);
+        initContentView();
+    }
+
+    private void initContentView() {
+        addView(mContentView, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mContentView.addOnHierarchyChangeListener(this);
+        mContentView.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View view) {
+                if (mTabVisible != null) {
+                    ((ArkTabImpl) mTabVisible).onViewAttachedToWindow(view);
+                }
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View view) {
+                if (mTabVisible != null) {
+                    ((ArkTabImpl) mTabVisible).onViewDetachedFromWindow(view);
+                }
+            }
+        });
     }
 
     @Override
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return null;
-        View activeView = getContentView();
+        View activeView = mContentView;
         if (activeView == null || !ViewCompat.isAttachedToWindow(activeView)) return null;
         return ApiHelperForN.onResolvePointerIcon(activeView, event, pointerIndex);
     }
@@ -441,9 +459,9 @@ public class ArkCompositorViewHolder extends FrameLayout
                 Tab tab = getCurrentTab();
                 // Set the size of NTP if we're in the attached state as it may have not been sized
                 // properly when initializing tab. See the comment in #initializeTab() for why.
-                if (tab != null && tab.isNativePage() && isAttachedToWindow(tab.getView())) {
+                if (tab != null && tab.isNativePage() && isAttachedToWindow(mContentView)) {
                     Point viewportSize = getViewportSize();
-                    setSize(tab.getWebContents(), tab.getView(), viewportSize.x, viewportSize.y);
+                    setSize(tab.getWebContents(), mContentView, viewportSize.x, viewportSize.y);
                 }
                 onViewportChanged();
 
@@ -506,7 +524,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     private void handleSystemUiVisibilityChange() {
-        View view = getContentView();
+        View view = mContentView;
         if (view == null || !ViewCompat.isAttachedToWindow(view)) view = this;
 
         int uiVisibility = 0;
@@ -584,7 +602,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     private void handleWindowInsetChanged() {
         // Notify the WebContents that the size has changed.
-        View contentView = getContentView();
+        View contentView = mContentView;
         if (contentView != null) {
             Point viewportSize = getViewportSize();
             setSize(getWebContents(), contentView, viewportSize.x, viewportSize.y);
@@ -618,9 +636,7 @@ public class ArkCompositorViewHolder extends FrameLayout
             mInsetObserverView = null;
         }
         if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
-        if (mContentView != null) {
-            mContentView.removeOnHierarchyChangeListener(this);
-        }
+        mContentView.removeOnHierarchyChangeListener(this);
 
         if (mTabContentManager != null) {
             mTabContentManager.destroy();
@@ -807,9 +823,8 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     @Nullable
-    public ViewGroup getContentView() {
-        Tab tab = getCurrentTab();
-        return tab != null ? tab.getContentView() : null;
+    public ContentView getContentView() {
+        return mContentView;
     }
 
     protected WebContents getWebContents() {
@@ -825,7 +840,7 @@ public class ArkCompositorViewHolder extends FrameLayout
             return;
         }
         Point viewportSize = getViewportSize();
-        setSize(tab.getWebContents(), tab.getContentView(), viewportSize.x, viewportSize.y);
+        setSize(tab.getWebContents(), mContentView, viewportSize.x, viewportSize.y);
     }
 
     /**
@@ -928,7 +943,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     @Override
     public void onSurfaceResized(int width, int height) {
-        View view = getContentView();
+        View view = mContentView;
         WebContents webContents = getWebContents();
         if (view == null || webContents == null) return;
         onPhysicalBackingSizeChanged(webContents, width, height);
@@ -990,7 +1005,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (mTabVisible == null) return;
         onBrowserControlsHeightChanged();
         Point viewportSize = getViewportSize();
-        setSize(mTabVisible.getWebContents(), mTabVisible.getContentView(), viewportSize.x,
+        setSize(mTabVisible.getWebContents(), mContentView, viewportSize.x,
                 viewportSize.y);
         onViewportChanged();
     }
@@ -1000,7 +1015,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (mTabVisible == null) return;
         onBrowserControlsHeightChanged();
         Point viewportSize = getViewportSize();
-        setSize(mTabVisible.getWebContents(), mTabVisible.getContentView(), viewportSize.x,
+        setSize(mTabVisible.getWebContents(), mContentView, viewportSize.x,
                 viewportSize.y);
         onViewportChanged();
     }
@@ -1023,7 +1038,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         boolean controlsResizeViewChanged = false;
         // Reflect the changes that may have happened in in view/control size.
         Point viewportSize = getViewportSize();
-        setSize(getWebContents(), getContentView(), viewportSize.x, viewportSize.y);
+        setSize(getWebContents(), mContentView, viewportSize.x, viewportSize.y);
         if (controlsResizeViewChanged) {
             // Send this after setSize, so that RenderWidgetHost doesn't SynchronizeVisualProperties
             // in a partly-updated state.
@@ -1045,7 +1060,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     private void updateContentViewChildrenDimension() {
         TraceEvent.begin("CompositorViewHolder:updateContentViewChildrenDimension");
-        ViewGroup view = getContentView();
+        ViewGroup view = mContentView;
         if (view != null) {
             float topViewsTranslation = getOverlayTranslateY();
             float bottomMargin = 0f;
@@ -1208,7 +1223,11 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (show != mContentOverlayVisiblity || canBeFocusable != mCanBeFocusable) {
             mContentOverlayVisiblity = show;
             mCanBeFocusable = canBeFocusable;
-            updateContentOverlayVisibility(mContentOverlayVisiblity);
+//            updateContentOverlayVisibility(mContentOverlayVisiblity);
+            if (!mContentOverlayVisiblity) {
+                setFocusable(mCanBeFocusable);
+                setFocusableInTouchMode(mCanBeFocusable);
+            }
         }
     }
 
@@ -1369,49 +1388,49 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     }
 
-    private void updateContentOverlayVisibility(boolean show) {
-        if (mView == null) return;
-        WebContents webContents = getWebContents();
-        if (show) {
-            if (mView != getCurrentTab().getView() || mView.getParent() == this) return;
-            // During tab creation, we temporarily add the new tab's view to a FrameLayout to
-            // measure and lay it out. This way we could show the animation in the stack view.
-            // Therefore we should remove the view from that temporary FrameLayout here.
-            UiUtils.removeViewFromParent(mView);
-
-            if (webContents != null) {
-                assert !webContents.isDestroyed();
-                getContentView().setVisibility(View.VISIBLE);
-                updateViewportSize();
-            }
-
-            ArkLogger.e(TAG, "updateContentOverlayVisibility addView");
-
-            // CompositorView always has index of 0.
-            // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
-            addView(mView, 1);
-
-            setFocusable(false);
-            setFocusableInTouchMode(false);
-
-            // Claim focus for the new view unless the user is currently using the URL bar.
-            mView.requestFocus();
-        } else {
-            if (mView.getParent() == this) {
-                setFocusable(mCanBeFocusable);
-                setFocusableInTouchMode(mCanBeFocusable);
-
-                if (webContents != null && !webContents.isDestroyed()) {
-                    View contentView = getContentView();
-                    if (contentView != null) {
-                        contentView.setVisibility(INVISIBLE);
-                    }
-                }
-                removeView(mView);
-                mView = null;
-            }
-        }
-    }
+//    private void updateContentOverlayVisibility(boolean show) {
+//        if (mView == null) return;
+//        WebContents webContents = getWebContents();
+//        if (show) {
+//            if (mView != getCurrentTab().getView() || mView.getParent() == this) return;
+//            // During tab creation, we temporarily add the new tab's view to a FrameLayout to
+//            // measure and lay it out. This way we could show the animation in the stack view.
+//            // Therefore we should remove the view from that temporary FrameLayout here.
+//            UiUtils.removeViewFromParent(mView);
+//
+//            if (webContents != null) {
+//                assert !webContents.isDestroyed();
+//                mContentView.setVisibility(View.VISIBLE);
+//                updateViewportSize();
+//            }
+//
+//            ArkLogger.e(TAG, "updateContentOverlayVisibility addView");
+//
+//            // CompositorView always has index of 0.
+//            // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
+//            addView(mView, 1);
+//
+//            setFocusable(false);
+//            setFocusableInTouchMode(false);
+//
+//            // Claim focus for the new view unless the user is currently using the URL bar.
+//            mView.requestFocus();
+//        } else {
+//            if (mView.getParent() == this) {
+//                setFocusable(mCanBeFocusable);
+//                setFocusableInTouchMode(mCanBeFocusable);
+//
+//                if (webContents != null && !webContents.isDestroyed()) {
+//                    View contentView = mContentView;
+//                    if (contentView != null) {
+//                        contentView.setVisibility(INVISIBLE);
+//                    }
+//                }
+//                removeView(mView);
+//                mView = null;
+//            }
+//        }
+//    }
 
     private final ArkTabWebContentsObserver.Callback mInitWebContentsObserver = (tab, webContents) -> {
         SelectionPopupController controller =
@@ -1562,21 +1581,25 @@ public class ArkCompositorViewHolder extends FrameLayout
 //            tab.loadIfNeeded();
 //        }
 
-        View newView = tab != null ? tab.getView() : null;
-        ArkLogger.d(TAG, "setTab tab=" + tab + " view=" + newView + " mContentOverlayVisiblity=" + mContentOverlayVisiblity);
-        if (newView != null && mView == newView) {
-            if (mCallback != null) {
-                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
-                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
-            } else {
-                setEnabled(false);
-            }
+        if (mTabVisible == null && tab == null) {
             return;
         }
 
+//        View newView = tab != null ? tab.getView() : null;
+//        ArkLogger.d(TAG, "setTab tab=" + tab + " view=" + newView + " mContentOverlayVisiblity=" + mContentOverlayVisiblity);
+//        if (newView != null && mView == newView) {
+//            if (mCallback != null) {
+//                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
+//                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
+//            } else {
+//                setEnabled(false);
+//            }
+//            return;
+//        }
+
         // TODO(dtrainor): Look into changing this only if the views differ, but still parse the
         // WebContents list even if they're the same.
-        updateContentOverlayVisibility(false);
+//        updateContentOverlayVisibility(false);
 
         if (mTabVisible != tab) {
             // Reset the geometrychange event flag so it can fire on the current active tab.
@@ -1593,11 +1616,10 @@ public class ArkCompositorViewHolder extends FrameLayout
                     mCallback.onPageDetached(mTabVisible);
                 }
                 ((ArkTabImpl) mTabVisible).updateWindowAndroid(null);
-                mView = null;
+//                mView = null;
             }
 
             mTabVisible = tab;
-            updateViewStateListener(tab != null ? tab.getContentView() : null);
             if (mTabVisible != null) {
                 mTabVisible.addObserver(mTabObserver);
                 ((ArkTabImpl) mTabVisible).updateWindowAndroid(mWindowAndroid);
@@ -1609,10 +1631,6 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
         }
 
-
-
-
-
         if (mTabVisible != null) {
             mTabVisible.loadIfNeeded();
             initializeTab(mTabVisible);
@@ -1621,9 +1639,13 @@ public class ArkCompositorViewHolder extends FrameLayout
             if (mCallback != null) {
                 mCallback.onPageAttached(mTabVisible);
             }
-            mView = mTabVisible.getView();
+//            mView = mTabVisible.getView();
         }
-        updateContentOverlayVisibility(mContentOverlayVisiblity);
+//        updateContentOverlayVisibility(mContentOverlayVisiblity);
+
+        setFocusable(false);
+        setFocusableInTouchMode(false);
+        mContentView.requestFocus();
 
         if (mOnscreenContentProvider == null) {
             mOnscreenContentProvider =
@@ -1634,7 +1656,6 @@ public class ArkCompositorViewHolder extends FrameLayout
 
 //        mLayoutManager.showLayout(LayoutType.BROWSING, false);
 
-
         if (mCallback != null) {
             ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
             onBackPressedCallback.setEnabled(tabGroup.canGoBack());
@@ -1642,16 +1663,6 @@ public class ArkCompositorViewHolder extends FrameLayout
             setEnabled(false);
         }
 
-    }
-
-    private void updateViewStateListener(ContentView newContentView) {
-        if (mContentView != null) {
-            mContentView.removeOnHierarchyChangeListener(this);
-        }
-        if (newContentView != null) {
-            newContentView.addOnHierarchyChangeListener(this);
-        }
-        mContentView = newContentView;
     }
 
     /**
@@ -1664,19 +1675,21 @@ public class ArkCompositorViewHolder extends FrameLayout
         WebContents webContents = tab.getWebContents();
         ArkLogger.e(TAG, "initializeTab webContents=" + webContents);
         if (webContents != null) {
+            webContents.setViewAndroidDelegate(new ArkTabViewAndroidDelegate(tab, mContentView));
+            webContents.setAccessDelegate(mContentView);
             onPhysicalBackingSizeChanged(
                     webContents, mCompositorView.getWidth(), mCompositorView.getHeight());
             onControlsResizeViewChanged(webContents, mControlsResizeView);
         }
-        ArkLogger.d(TAG, "initializeTab tab=" + tab + " view=" + tab.getView());
-        if (tab.getView() == null) return;
+        ArkLogger.d(TAG, "initializeTab tab=" + tab + " view=" + mContentView);
+//        if (tab.getView() == null) return;
 
         // TextView with compound drawables in the NTP gets a wrong width when measure/layout is
         // performed in the unattached state. Delay the layout till #onLayoutChange().
         // See https://crbug.com/876686.
-        if (tab.isNativePage() && !isAttachedToWindow(tab.getView())) return;
+        if (tab.isNativePage() && !isAttachedToWindow(mContentView)) return;
         Point viewportSize = getViewportSize();
-        setSize(webContents, tab.getView(), viewportSize.x, viewportSize.y);
+        setSize(webContents, mContentView, viewportSize.x, viewportSize.y);
     }
 
     /**

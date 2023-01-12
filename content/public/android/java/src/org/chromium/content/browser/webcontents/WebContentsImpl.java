@@ -251,13 +251,20 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         mInitialized = true;
         Log.e(TAG, "initialize mInitialized=" + mInitialized);
 
-        setViewAndroidDelegate(viewDelegate);
+        if (viewDelegate != null) {
+            setViewAndroidDelegate(viewDelegate);
+        }
         setTopLevelNativeWindow(windowAndroid);
 
-        if (accessDelegate == null) {
-            accessDelegate = new EmptyInternalAccessDelegate();
+        if (accessDelegate != null) {
+            setAccessDelegate(accessDelegate);
         }
-        ViewEventSinkImpl.from(this).setAccessDelegate(accessDelegate);
+
+
+//        if (accessDelegate == null) {
+//            accessDelegate = new EmptyInternalAccessDelegate();
+//        }
+//        ViewEventSinkImpl.from(this).setAccessDelegate(accessDelegate);
 
         if (windowAndroid != null) {
             getRenderCoordinates().setDeviceScaleFactor(windowAndroid.getDisplay().getDipScale());
@@ -357,13 +364,22 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         return ((WebContentsInternalsImpl) internals).viewAndroidDelegate;
     }
 
-    private void setViewAndroidDelegate(ViewAndroidDelegate viewDelegate) {
+    @Override
+    public void setViewAndroidDelegate(ViewAndroidDelegate viewDelegate) {
         checkNotDestroyed();
         WebContentsInternals internals = mInternalsHolder.get();
         assert internals != null;
         WebContentsInternalsImpl impl = (WebContentsInternalsImpl) internals;
         impl.viewAndroidDelegate = viewDelegate;
         WebContentsImplJni.get().setViewAndroidDelegate(mNativeWebContentsAndroid, viewDelegate);
+    }
+
+    @Override
+    public void setAccessDelegate(InternalAccessDelegate accessDelegate) {
+        if (accessDelegate == null) {
+            accessDelegate = new EmptyInternalAccessDelegate();
+        }
+        ViewEventSinkImpl.from(this).setAccessDelegate(accessDelegate);
     }
 
     @Override

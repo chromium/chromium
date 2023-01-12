@@ -133,6 +133,10 @@ public interface WebContents extends Parcelable {
     @Nullable
     ViewAndroidDelegate getViewAndroidDelegate();
 
+    void setViewAndroidDelegate(ViewAndroidDelegate viewDelegate);
+
+    void setAccessDelegate(ViewEventSink.InternalAccessDelegate accessDelegate);
+
     /**
      * Deletes the Web Contents object.
      */

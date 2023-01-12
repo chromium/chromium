@@ -28,6 +28,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/adblock/RulePart.java",
   "java/src/com/ark/browser/adblock/RuleTree.java",
 
+  "java/src/com/ark/browser/core/ArkContentView.java",
   "java/src/com/ark/browser/core/ArkWebContents.java",
   "java/src/com/ark/browser/core/ArkWebManager.java",
   "java/src/com/ark/browser/core/BadFlagsSnackbarManager.java",

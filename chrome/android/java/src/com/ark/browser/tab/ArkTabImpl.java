@@ -192,6 +192,16 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         return tab;
     }
 
+    public void onViewAttachedToWindow(View view) {
+        mIsViewAttachedToWindow = true;
+        updateInteractableState();
+    }
+
+    public void onViewDetachedFromWindow(View view) {
+        mIsViewAttachedToWindow = false;
+        updateInteractableState();
+    }
+
     private ArkTabImpl(ITab tab) {
 
         mTab = tab;
@@ -435,8 +445,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         WindowAndroid old = mWindowAndroid;
         mWindowAndroid = (ArkWindowAndroid) window;
 
+
+
         if (mArkWeb != null) {
-            mArkWeb.setTopLevelNativeWindow(window);
+            mArkWeb.attach(this);
+//            mArkWeb.setTopLevelNativeWindow(window);
         }
 
         if (tabDelegateFactory == null) {
@@ -475,7 +488,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public ContentView getContentView() {
-        return mArkWeb == null ? null : mArkWeb.getContentView();
+        if (mWindowAndroid == null) {
+            return null;
+        }
+        return mWindowAndroid.getCompositorViewHolder().getContentView();
+//        return mArkWeb == null ? null : mArkWeb.getContentView();
     }
 
     @Override
@@ -1210,9 +1227,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             ArkLogger.e(TAG, "swapWebContents same web!");
             return;
         }
-        boolean hasWebContents = mArkWeb != null && mArkWeb.getContentView() != null;
+        boolean hasWebContents = mArkWeb != null && !mArkWeb.getWebContents().isDestroyed();
         Rect original = hasWebContents
-                ? new Rect(0, 0, mArkWeb.getContentView().getWidth(), mArkWeb.getContentView().getHeight())
+                ? new Rect(0, 0, mArkWeb.getWebContents().getWidth(), mArkWeb.getWebContents().getHeight())
                 : new Rect();
         for (TabObserver observer : mObservers) {
             observer.webContentsWillSwap(this);

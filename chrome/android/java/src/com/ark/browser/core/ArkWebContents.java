@@ -50,8 +50,8 @@ public class ArkWebContents {
     @NonNull
     private final WebContents mWebContents;
 
-    /** The parent view of the ContentView and the InfoBarContainer. */
-    private ContentView mContentView;
+//    /** The parent view of the ContentView and the InfoBarContainer. */
+//    private ContentView mContentView;
 
     /**
      * Importance of the WebContents currently attached to this tab. Note the key difference from
@@ -232,10 +232,6 @@ public class ArkWebContents {
         return title;
     }
 
-    public ContentView getContentView() {
-        return mContentView;
-    }
-
     public void setPendingLoadParams(LoadUrlParams loadUrlParams) {
         mPendingLoadParams = loadUrlParams;
     }
@@ -259,25 +255,22 @@ public class ArkWebContents {
     }
 
     public void attach(ArkTabImpl tab) {
-        ContentView cv = ContentView.createContentView(
-                ContextUtils.getApplicationContext(), null /* eventOffsetHandler */, mWebContents);
-        cv.setContentDescription(ContextUtils.getApplicationContext().getResources().getString(
-                org.chromium.chrome.R.string.accessibility_content_view));
-        mContentView = cv;
-        mWebContents.initialize(VersionInfo.getProductVersion(), new ArkTabViewAndroidDelegate(tab, cv), cv,
-                tab.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
+        ContentView cv = tab.getContentView();
+        ViewAndroidDelegate delegate;
+        if (cv == null) {
+            delegate = ViewAndroidDelegate.createBasicDelegate(/* containerView */ null);
+        } else {
+            delegate = new ArkTabViewAndroidDelegate(tab, cv);
+        }
+        mWebContents.initialize(VersionInfo.getProductVersion(),
+                delegate, cv, tab.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
 
         mWebContents.setImportance(mImportance);
-        mContentView.addOnAttachStateChangeListener(tab.mAttachStateChangeListener);
     }
 
     public void detach(ArkTabImpl tab) {
         setImportance(ChildProcessImportance.NORMAL);
         WebContentsAccessibility.fromWebContents(mWebContents).setObscuredByAnotherView(false);
-        if (mContentView != null) {
-            mContentView.removeOnAttachStateChangeListener(tab.mAttachStateChangeListener);
-            mContentView = null;
-        }
     }
 
 //    public void destroy() {
@@ -312,11 +305,11 @@ public class ArkWebContents {
         return Tab.TabLoadStatus.DEFAULT_PAGE_LOAD;
     }
 
-    public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
-        if (mContentView != null) {
-            mContentView.addOnAttachStateChangeListener(listener);
-        }
-    }
+//    public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
+//        if (mContentView != null) {
+//            mContentView.addOnAttachStateChangeListener(listener);
+//        }
+//    }
 
     /**
      * Notify that web preferences needs update for various properties.
