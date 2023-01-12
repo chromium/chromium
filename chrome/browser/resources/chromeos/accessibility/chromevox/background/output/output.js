@@ -876,6 +876,9 @@ export class Output {
         continue;
       }
 
+      // Reset the rule to DEFAULT so we don't unintentionally use a value from
+      // the last iteration.
+      rule.role = CustomRole.DEFAULT;
       rule.populateRole(formatNode.role, roleInfo.inherits, formatName);
 
       if (eventBlock[rule.role][formatName]) {
@@ -939,11 +942,8 @@ export class Output {
     rule.populateRole(node.role, parentRole, rule.output);
     if (this.formatOptions_.braille) {
       // Overwrite rule by braille rule if exists.
-      if (node.role && (eventBlock[node.role] || {}).braille !== undefined) {
-        rule.role = node.role;
-        rule.output = outputTypes.OutputFormatType.BRAILLE;
-      } else if ((eventBlock[parentRole] || {}).braille !== undefined) {
-        rule.role = parentRole;
+      if (rule.populateRole(
+              node.role, parentRole, outputTypes.OutputFormatType.BRAILLE)) {
         rule.output = outputTypes.OutputFormatType.BRAILLE;
       }
     }

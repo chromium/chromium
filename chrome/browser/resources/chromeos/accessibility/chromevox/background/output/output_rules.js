@@ -60,18 +60,20 @@ export class OutputRule {
    * @param {ChromeVoxRole|undefined} role
    * @param {ChromeVoxRole|undefined} parentRole
    * @param {string} formatName
+   * @return {boolean} true if the role was set, false otherwise.
    */
   populateRole(role, parentRole, formatName) {
     const eventBlock = OutputRule.RULES[this.event_];
     if (role && eventBlock[role] && eventBlock[role][formatName]) {
       this.role_ = role;
+      return true;
     } else if (
         parentRole && eventBlock[parentRole] &&
         eventBlock[parentRole][formatName]) {
       this.role_ = parentRole;
-    } else {
-      this.role_ = CustomRole.DEFAULT;
+      return true;
     }
+    return false;
   }
 
   // The following setter functions are a temporary measure.
@@ -82,6 +84,7 @@ export class OutputRule {
   set role(role) {
     this.role_ = role;
   }
+
   /** @param {string|undefined} navigation */
   set navigation(navigation) {
     this.navigation_ = navigation;
