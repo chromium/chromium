@@ -21,7 +21,7 @@
 namespace remoting::protocol {
 
 struct ClientVideoDispatcher::PendingFrame {
-  PendingFrame(int frame_id) : frame_id(frame_id), done(false) {}
+  explicit PendingFrame(int frame_id) : frame_id(frame_id), done(false) {}
   int frame_id;
   bool done;
 };

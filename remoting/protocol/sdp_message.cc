@@ -61,16 +61,15 @@ bool SdpMessage::PreferVideoCodec(const std::string& codec) {
     return false;
   }
 
-  for (size_t i = 0; i < sdp_lines_.size(); i++) {
-    if (!base::StartsWith(sdp_lines_[i], "m=video",
-                          base::CompareCase::SENSITIVE)) {
+  for (auto& sdp_line : sdp_lines_) {
+    if (!base::StartsWith(sdp_line, "m=video", base::CompareCase::SENSITIVE)) {
       continue;
     }
 
     // A valid SDP contains only one "m=video" line. So instead of continue, if
     // this line is invalid, we should return false immediately.
     std::vector<base::StringPiece> fields = base::SplitStringPiece(
-        sdp_lines_[i], " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+        sdp_line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     // The first three fields are "m=video", port and proto.
     static constexpr int kSkipFields = 3;
     if (fields.size() <= kSkipFields) {
@@ -90,7 +89,7 @@ bool SdpMessage::PreferVideoCodec(const std::string& codec) {
       std::rotate(first_codec_pos, pos, pos + 1);
     }
 
-    sdp_lines_[i] = base::JoinString(fields, " ");
+    sdp_line = base::JoinString(fields, " ");
     return true;
   }
 

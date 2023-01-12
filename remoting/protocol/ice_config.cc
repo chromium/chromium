@@ -71,7 +71,7 @@ bool AddServerToConfig(std::string url,
     if (port == -1) {
       port = kDefaultStunTurnPort;
     }
-    config->stun_servers.push_back(rtc::SocketAddress(host, port));
+    config->stun_servers.emplace_back(host, port);
   } else if (protocol == "turn") {
     if (port == -1) {
       port = kDefaultStunTurnPort;
@@ -79,8 +79,8 @@ bool AddServerToConfig(std::string url,
     if (turn_transport_type == cricket::PROTO_LAST) {
       turn_transport_type = cricket::PROTO_UDP;
     }
-    config->turn_servers.push_back(cricket::RelayServerConfig(
-        host, port, username, password, turn_transport_type, false));
+    config->turn_servers.emplace_back(host, port, username, password,
+                                      turn_transport_type, false);
   } else if (protocol == "turns") {
     if (port == -1) {
       port = kDefaultTurnsPort;
@@ -88,8 +88,8 @@ bool AddServerToConfig(std::string url,
     if (turn_transport_type == cricket::PROTO_LAST) {
       turn_transport_type = cricket::PROTO_TCP;
     }
-    config->turn_servers.push_back(cricket::RelayServerConfig(
-        host, port, username, password, turn_transport_type, true));
+    config->turn_servers.emplace_back(host, port, username, password,
+                                      turn_transport_type, true);
   } else {
     return false;
   }
