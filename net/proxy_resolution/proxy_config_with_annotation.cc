@@ -29,9 +29,8 @@ constexpr NetworkTrafficAnnotationTag kDirectProxyTrafficAnnotation =
         "This isn't a real network request. A proxy can be selected in "
         "settings."
       policy_exception_justification:
-        "Using either of 'ProxyMode', 'ProxyServer', or 'ProxyPacUrl' policies "
-        "can set Chrome to use a specific proxy settings and avoid directly "
-        "connecting to the websites."
+        "Using 'ProxySettings' policy can set Chrome to use specific proxy "
+        "settings and avoid directly connecting to the websites."
     })");
 
 }  // namespace

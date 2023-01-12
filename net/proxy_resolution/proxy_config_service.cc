@@ -55,9 +55,8 @@ constexpr net::NetworkTrafficAnnotationTag kSystemProxyConfigTrafficAnnotation =
           "User cannot override system proxy settings, but can change them "
           "through 'Advanced/System/Open proxy settings'."
         policy_exception_justification:
-          "Using either of 'ProxyMode', 'ProxyServer', or 'ProxyPacUrl' "
-          "policies can set Chrome to use a specific proxy settings and avoid "
-          "system proxy."
+          "Using 'ProxySettings' policy can set Chrome to use specific "
+          "proxy settings and avoid system proxy."
       })");
 #endif
 

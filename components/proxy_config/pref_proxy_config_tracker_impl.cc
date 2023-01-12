@@ -45,8 +45,8 @@ constexpr net::NetworkTrafficAnnotationTag
           "Users can choose the proxy configurations in settings under "
           "'Advanced/Network/Change proxy settings...'."
         policy_exception_justification:
-          "Using either of 'ProxyMode', 'ProxyServer', or 'ProxyPacUrl' "
-          "policies can set Chrome to use a specific proxy settings."
+          "Using 'ProxySettings' policy can set Chrome to use specific "
+          "proxy settings."
       })");
 }  // namespace
 
