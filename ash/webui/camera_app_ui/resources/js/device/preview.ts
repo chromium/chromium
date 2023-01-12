@@ -312,6 +312,10 @@ export class Preview {
       this.watchdog = setInterval(() => {
         if (!this.isStreamAlive()) {
           this.clearWatchdog();
+          const deviceOperator = DeviceOperator.getInstance();
+          if (deviceOperator !== null && this.deviceId !== null) {
+            deviceOperator.dropConnection(this.deviceId);
+          }
           this.onNewStreamNeeded();
         }
       }, 100);
