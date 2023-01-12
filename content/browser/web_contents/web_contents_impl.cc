@@ -1429,7 +1429,7 @@ bool WebContentsImpl::IsPrerenderedFrame(int frame_tree_node_id) {
                ->lifecycle_state() ==
            RenderFrameHostImpl::LifecycleStateImpl::kPrerendering;
   }
-  return frame_tree_node->frame_tree().type() == FrameTree::Type::kPrerender;
+  return frame_tree_node->GetFrameType() == FrameType::kPrerenderMainFrame;
 }
 
 RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(

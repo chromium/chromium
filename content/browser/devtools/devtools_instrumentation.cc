@@ -361,7 +361,7 @@ void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node) {
 }
 
 void WillInitiatePrerender(FrameTree& frame_tree) {
-  DCHECK_EQ(FrameTree::Type::kPrerender, frame_tree.type());
+  DCHECK(frame_tree.is_prerendering());
   auto* wc = WebContentsImpl::FromFrameTreeNode(frame_tree.root());
   if (auto* host = WebContentsDevToolsAgentHost::GetFor(wc))
     host->WillInitiatePrerender(frame_tree.root());

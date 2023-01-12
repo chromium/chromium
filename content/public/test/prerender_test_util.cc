@@ -470,10 +470,16 @@ void PrerenderTestHelper::NavigatePrimaryPage(const GURL& gurl) {
         RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
       return ::testing::AssertionFailure() << "subframe in incorrect state";
     }
-    if (rfhi->frame_tree()->type() != FrameTree::Type::kPrerender) {
-      return ::testing::AssertionFailure() << "frame tree had incorrect type";
-    }
   }
+
+  // Make sure that all the PrerenderHost frame trees are prerendering.
+  const std::vector<FrameTree*> prerender_frame_trees =
+      registry.GetPrerenderFrameTrees();
+  std::for_each(std::begin(prerender_frame_trees),
+                std::end(prerender_frame_trees), [](auto const& frame_tree) {
+                  ASSERT_TRUE(frame_tree->is_prerendering());
+                });
+
   return ::testing::AssertionSuccess();
 }
 
