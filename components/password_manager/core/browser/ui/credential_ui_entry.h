@@ -124,6 +124,8 @@ struct CredentialUIEntry {
   // Information about password insecurities.
   bool IsLeaked() const;
   bool IsPhished() const;
+  bool IsWeak() const;
+  bool IsReused() const;
 
   const base::Time GetLastLeakedOrPhishedTime() const;
 

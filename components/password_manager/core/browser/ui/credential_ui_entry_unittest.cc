@@ -24,6 +24,17 @@ auto ExpectDomain(const std::string& name, const GURL& url) {
                testing::Field(&CredentialUIEntry::DomainInfo::url, url));
 }
 
+// Creates a CredentialUIEntry with the given insecurity issue.
+CredentialUIEntry CreateInsecureCredential(InsecureType insecure_type) {
+  base::flat_map<InsecureType, InsecurityMetadata> form_issues;
+  form_issues[insecure_type] = InsecurityMetadata();
+
+  PasswordForm form;
+  form.password_issues = form_issues;
+
+  return CredentialUIEntry(form);
+}
+
 }  // namespace
 
 TEST(CredentialUIEntryTest, CredentialUIEntryFromForm) {
@@ -162,6 +173,28 @@ TEST(CredentialUIEntryTest,
 
   // Notes are concatenated alphabetically.
   EXPECT_EQ(entry.note, kNotes[2] + u"\n" + kNotes[0]);
+}
+
+TEST(CredentialUIEntryTest, CredentialUIEntryInsecureHelpers) {
+  PasswordForm form;
+  auto entry = CredentialUIEntry(form);
+
+  EXPECT_FALSE(entry.IsLeaked());
+  EXPECT_FALSE(entry.IsPhished());
+  EXPECT_FALSE(entry.IsWeak());
+  EXPECT_FALSE(entry.IsReused());
+
+  auto leaked_entry = CreateInsecureCredential(InsecureType::kLeaked);
+  EXPECT_TRUE(leaked_entry.IsLeaked());
+
+  auto phished_entry = CreateInsecureCredential(InsecureType::kPhished);
+  EXPECT_TRUE(phished_entry.IsPhished());
+
+  auto weak_entry = CreateInsecureCredential(InsecureType::kWeak);
+  EXPECT_TRUE(weak_entry.IsWeak());
+
+  auto reused_entry = CreateInsecureCredential(InsecureType::kReused);
+  EXPECT_TRUE(reused_entry.IsReused());
 }
 
 }  // namespace password_manager

@@ -157,6 +157,14 @@ bool CredentialUIEntry::IsPhished() const {
   return password_issues.contains(InsecureType::kPhished);
 }
 
+bool CredentialUIEntry::IsReused() const {
+  return password_issues.contains(InsecureType::kReused);
+}
+
+bool CredentialUIEntry::IsWeak() const {
+  return password_issues.contains(InsecureType::kWeak);
+}
+
 const base::Time CredentialUIEntry::GetLastLeakedOrPhishedTime() const {
   DCHECK(IsLeaked() || IsPhished());
   base::Time compromise_time;
