@@ -135,6 +135,9 @@ CORE_EXPORT Position StartOfWordPosition(const Position&,
 CORE_EXPORT PositionInFlatTree
 StartOfWordPosition(const PositionInFlatTree&,
                     WordSide = kNextWordIfOnBoundary);
+CORE_EXPORT Position MiddleOfWordPosition(const Position&, const Position&);
+CORE_EXPORT PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree&,
+                                                    const PositionInFlatTree&);
 CORE_EXPORT Position EndOfWordPosition(const Position&,
                                        WordSide = kNextWordIfOnBoundary);
 CORE_EXPORT PositionInFlatTree

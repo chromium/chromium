@@ -177,6 +177,27 @@ absl::optional<PlainTextRange> GetTextRangeForSpaces(
   return PlainTextRange(space_start + gesture_range.Start(),
                         space_end + gesture_range.Start());
 }
+
+PlainTextRange ExpandWithWordGranularity(
+    EphemeralRange ephemeral_range,
+    Element* const root_editable_element,
+    InputMethodController& input_method_controller) {
+  SelectionInDOMTree expanded_selection = ExpandWithGranularity(
+      SelectionInDOMTree::Builder().SetBaseAndExtent(ephemeral_range).Build(),
+      TextGranularity::kWord, WordInclusion::kMiddle);
+  PlainTextRange expanded_range = PlainTextRange::Create(
+      *root_editable_element, expanded_selection.ComputeRange());
+  String input_text = input_method_controller.TextInputInfo().value;
+  if (expanded_range.length() > 2 &&
+      IsHTMLSpace(input_text[expanded_range.Start()]) &&
+      IsHTMLSpace(input_text[expanded_range.End() - 1])) {
+    // Special case, we don't want to delete spaces both sides of the
+    // selection as that will join words together.
+    return PlainTextRange(expanded_range.Start() + 1, expanded_range.End());
+  }
+  return expanded_range;
+}
+
 }  // namespace
 
 // static
@@ -253,21 +274,13 @@ absl::optional<PlainTextRange> StylusWritingTwoPointGesture::GestureRange(
     return absl::nullopt;
   }
   switch (granularity) {
-    case mojom::blink::StylusWritingGestureGranularity::CHARACTER: {
+    case mojom::blink::StylusWritingGestureGranularity::CHARACTER:
       return gesture_range;
-    }
-    case mojom::blink::StylusWritingGestureGranularity::WORD: {
-      SelectionInDOMTree expanded_selection =
-          ExpandWithGranularity(SelectionInDOMTree::Builder()
-                                    .SetBaseAndExtent(ephemeral_range)
-                                    .Build(),
-                                TextGranularity::kWord);
-      return PlainTextRange::Create(*root_editable_element,
-                                    expanded_selection.ComputeRange());
-    }
-    default: {
+    case mojom::blink::StylusWritingGestureGranularity::WORD:
+      return ExpandWithWordGranularity(ephemeral_range, root_editable_element,
+                                       local_frame->GetInputMethodController());
+    default:
       return absl::nullopt;
-    }
   }
 }
 

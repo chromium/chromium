@@ -129,22 +129,22 @@ TEST_F(StylusWritingGestureTest, TestGestureDelete) {
 
 // Re-enable once https://crbug.com/1404969 is fixed and the middle of word
 // logic is implemented in stylus_writing_gesture.cc.
-TEST_F(StylusWritingGestureTest,
-       DISABLED_TestGestureDeleteWithWordGranularity) {
+TEST_F(StylusWritingGestureTest, TestGestureDeleteWithWordGranularity) {
   auto* input = SetUpSingleInput();
 
   std::vector<TestCase> test_cases{
       // Crossing out the first word and half of the second should delete both
-      // words. There should also be no space left at the beginning of the text.
-      TestCase(0, 30, "A BC DEF", "DEF"),
+      // words. Because the selection doesn't include the space between BC and
+      // DEF, it remains after the deletion.
+      TestCase(0, 30, "A BC DEF", " DEF"),
       // Deleting a word and its trailing space in between two other words
       // should leave the words either side with a single space between them.
       TestCase(28, 52, "A BC DEF", "A DEF"),
-      // Same as above but with the preceding space instead.
+      // Same as above but with the spaces on both sides.
       TestCase(12, 48, "A BC DEF", "A DEF"),
       // Removing the last word is an edge case as there's no word past it to
       // check.
-      TestCase(32, 72, "ABCDE FGH", "ABCDE "),
+      TestCase(32, 72, "ABCDE FGH", "ABCDE"),
       // Crossing out inside a word without crossing over the middle should not
       // affect the word.
       TestCase(0, 24, "ABCDEFG", "ABCDEFG"),

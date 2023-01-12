@@ -68,7 +68,8 @@ class VisibleSelectionTemplate<Strategy>::Creator {
 
   static SelectionTemplate<Strategy> ComputeVisibleSelection(
       const SelectionTemplate<Strategy>& passed_selection,
-      TextGranularity granularity) {
+      TextGranularity granularity,
+      const WordInclusion& inclusion = WordInclusion::kDefault) {
     DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Base()));
     DCHECK(!NeedsLayoutTreeUpdate(passed_selection.Extent()));
 
@@ -80,7 +81,7 @@ class VisibleSelectionTemplate<Strategy>::Creator {
 
     const SelectionTemplate<Strategy>& granularity_adjusted_selection =
         SelectionAdjuster::AdjustSelectionRespectingGranularity(
-            canonicalized_selection, granularity);
+            canonicalized_selection, granularity, inclusion);
     const SelectionTemplate<Strategy>& shadow_adjusted_selection =
         SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
             granularity_adjusted_selection);
@@ -109,15 +110,17 @@ VisibleSelectionInFlatTree CreateVisibleSelection(
 }
 
 SelectionInDOMTree ExpandWithGranularity(const SelectionInDOMTree& selection,
-                                         TextGranularity granularity) {
-  return VisibleSelection::Creator::ComputeVisibleSelection(selection,
-                                                            granularity);
+                                         TextGranularity granularity,
+                                         const WordInclusion& inclusion) {
+  return VisibleSelection::Creator::ComputeVisibleSelection(
+      selection, granularity, inclusion);
 }
 
 SelectionInFlatTree ExpandWithGranularity(const SelectionInFlatTree& selection,
-                                          TextGranularity granularity) {
+                                          TextGranularity granularity,
+                                          const WordInclusion& inclusion) {
   return VisibleSelectionInFlatTree::Creator::ComputeVisibleSelection(
-      selection, granularity);
+      selection, granularity, inclusion);
 }
 
 template <typename Strategy>

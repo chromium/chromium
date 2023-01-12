@@ -56,6 +56,12 @@ class VisibleUnitsWordTest : public EditingTestBase {
     return GetCaretTextFromBody(result);
   }
 
+  std::string DoMiddleOfWord(const std::string& selection_text) {
+      SelectionInDOMTree selection = SetSelectionTextToBody(selection_text);
+      return GetCaretTextFromBody(
+              MiddleOfWordPosition(selection.Base(), selection.Extent()));
+  }
+
   // To avoid name conflict in jumbo build, following functions should be here.
   static VisiblePosition CreateVisiblePositionInDOMTree(
       Node& anchor,
@@ -805,6 +811,30 @@ TEST_P(ParameterizedVisibleUnitsWordTest, PreviousWordSkipTextControl) {
             DoPreviousWord("foo<input value=\"bla\">ba|r"));
   EXPECT_EQ("foo<input value=\"bla\">|bar",
             DoPreviousWord("foo<input value=\"bla\">bar|"));
+}
+
+TEST_P(ParameterizedVisibleUnitsWordTest, MiddleOfWord) {
+  // Default case with one element.
+  EXPECT_EQ("<p>This is a test sent|ence</p>",
+            DoMiddleOfWord("<p>This is a test s^entenc|e</p>"));
+  // Positions in different elements.
+  EXPECT_EQ("<p>This is a <span>te|st</span> sentence.</p>",
+            DoMiddleOfWord("<p>This is a <span>^test</span>| sentence.</p>"));
+  // Middle is first character after element.
+  EXPECT_EQ("<p>This is a <span>test</span>| sentence.</p>",
+            DoMiddleOfWord("<p>This is a <span>^test</span> sen|tence.</p>"));
+  // Middle is first character in element.
+  EXPECT_EQ("<p>This is a t</p><span>|esting sentence</span>",
+            DoMiddleOfWord("<p>This i^s a t</p><span>esti|ng sentence</span>"));
+  // Middle is last character in element.
+  EXPECT_EQ("<p>This is a <span>tes|t</span> sentence.</p>",
+            DoMiddleOfWord("<p>This is ^a <span>test</span> sen|tence.</p>"));
+  // Positions and middle are all in outer element.
+  EXPECT_EQ("<p>This is a <span>test</span> |sentence.</p>",
+            DoMiddleOfWord("<p>This is ^a <span>test</span> sentenc|e.</p>"));
+  // Positions and middle all in inner element.
+  EXPECT_EQ("<p>This is a <span>tes|ting</span> sentence.</p>",
+            DoMiddleOfWord("<p>This is a <span>^testin|g</span> sentence.</p>"));
 }
 
 }  // namespace blink

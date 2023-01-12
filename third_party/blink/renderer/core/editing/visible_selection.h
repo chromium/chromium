@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/editing/selection_adjuster.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_granularity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
@@ -126,11 +127,15 @@ CORE_EXPORT VisibleSelection CreateVisibleSelection(const SelectionInDOMTree&);
 CORE_EXPORT VisibleSelectionInFlatTree
 CreateVisibleSelection(const SelectionInFlatTree&);
 
-CORE_EXPORT SelectionInDOMTree ExpandWithGranularity(const SelectionInDOMTree&,
-                                                     TextGranularity);
+CORE_EXPORT SelectionInDOMTree
+ExpandWithGranularity(const SelectionInDOMTree&,
+                      TextGranularity,
+                      const WordInclusion& = WordInclusion::kDefault);
 
 CORE_EXPORT SelectionInFlatTree
-ExpandWithGranularity(const SelectionInFlatTree&, TextGranularity);
+ExpandWithGranularity(const SelectionInFlatTree&,
+                      TextGranularity,
+                      const WordInclusion& = WordInclusion::kDefault);
 
 // We don't yet support multi-range selections, so we only ever have one range
 // to return.

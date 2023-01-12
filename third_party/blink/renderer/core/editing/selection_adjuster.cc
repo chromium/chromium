@@ -103,7 +103,8 @@ class GranularityAdjuster final {
   template <typename Strategy>
   static PositionTemplate<Strategy> ComputeStartRespectingGranularityAlgorithm(
       const PositionWithAffinityTemplate<Strategy>& passed_start,
-      TextGranularity granularity) {
+      TextGranularity granularity,
+      WordInclusion inclusion = WordInclusion::kDefault) {
     DCHECK(passed_start.IsNotNull());
 
     switch (granularity) {
@@ -124,6 +125,16 @@ class GranularityAdjuster final {
             CreateVisiblePosition(passed_start);
         const PositionTemplate<Strategy> word_start = StartOfWordPosition(
             passed_start.GetPosition(), ChooseWordSide(visible_start));
+        if (inclusion == WordInclusion::kMiddle) {
+            // Check if the middle of the word is within the passed selection.
+            const PositionTemplate<Strategy> word_end = EndOfWordPosition(
+                passed_start.GetPosition(), ChooseWordSide(visible_start));
+            const PositionTemplate<Strategy> word_middle =
+                MiddleOfWordPosition(word_start, word_end);
+            if (passed_start.GetPosition() > word_middle) {
+                return word_end;
+            }
+        }
         return CreateVisiblePosition(word_start).DeepEquivalent();
       }
       case TextGranularity::kSentence:
@@ -160,7 +171,8 @@ class GranularityAdjuster final {
   static PositionTemplate<Strategy> ComputeEndRespectingGranularityAlgorithm(
       const PositionTemplate<Strategy>& start,
       const PositionWithAffinityTemplate<Strategy>& passed_end,
-      TextGranularity granularity) {
+      TextGranularity granularity,
+      WordInclusion inclusion = WordInclusion::kDefault) {
     DCHECK(passed_end.IsNotNull());
 
     switch (granularity) {
@@ -188,6 +200,15 @@ class GranularityAdjuster final {
                 ? original_end
                 : CreateVisiblePosition(EndOfWordPosition(
                       passed_end.GetPosition(), ChooseWordSide(original_end)));
+        if (inclusion == WordInclusion::kMiddle) {
+          const PositionTemplate<Strategy> word_start = StartOfWordPosition(
+              passed_end.GetPosition(), ChooseWordSide(original_end));
+          const PositionTemplate<Strategy> word_middle =
+              MiddleOfWordPosition(word_start, word_end.DeepEquivalent());
+          if (word_middle > passed_end.GetPosition()) {
+              return word_start;
+          }
+        }
         if (!is_end_of_paragraph)
           return word_end.DeepEquivalent();
         if (IsEmptyTableCell(start.AnchorNode()))
@@ -285,7 +306,8 @@ class GranularityAdjuster final {
   template <typename Strategy>
   static SelectionTemplate<Strategy> AdjustSelection(
       const SelectionTemplate<Strategy>& canonicalized_selection,
-      TextGranularity granularity) {
+      TextGranularity granularity,
+      const WordInclusion inclusion) {
     const TextAffinity affinity = canonicalized_selection.Affinity();
 
     const PositionTemplate<Strategy> start =
@@ -293,7 +315,7 @@ class GranularityAdjuster final {
     const PositionTemplate<Strategy> new_start =
         ComputeStartRespectingGranularityAlgorithm(
             PositionWithAffinityTemplate<Strategy>(start, affinity),
-            granularity);
+            granularity, inclusion);
     const PositionTemplate<Strategy> expanded_start =
         new_start.IsNotNull() ? new_start : start;
 
@@ -302,7 +324,8 @@ class GranularityAdjuster final {
     const PositionTemplate<Strategy> new_end =
         ComputeEndRespectingGranularityAlgorithm(
             expanded_start,
-            PositionWithAffinityTemplate<Strategy>(end, affinity), granularity);
+            PositionWithAffinityTemplate<Strategy>(end, affinity), granularity,
+            inclusion);
     const PositionTemplate<Strategy> expanded_end =
         new_end.IsNotNull() ? new_end : end;
 
@@ -356,14 +379,18 @@ PositionInFlatTree ComputeEndRespectingGranularity(
 
 SelectionInDOMTree SelectionAdjuster::AdjustSelectionRespectingGranularity(
     const SelectionInDOMTree& selection,
-    TextGranularity granularity) {
-  return GranularityAdjuster::AdjustSelection(selection, granularity);
+    TextGranularity granularity,
+    const WordInclusion inclusion = WordInclusion::kDefault) {
+  return GranularityAdjuster::AdjustSelection(selection, granularity,
+                                              inclusion);
 }
 
 SelectionInFlatTree SelectionAdjuster::AdjustSelectionRespectingGranularity(
     const SelectionInFlatTree& selection,
-    TextGranularity granularity) {
-  return GranularityAdjuster::AdjustSelection(selection, granularity);
+    TextGranularity granularity,
+    const WordInclusion inclusion = WordInclusion::kDefault) {
+  return GranularityAdjuster::AdjustSelection(selection, granularity,
+                                              inclusion);
 }
 
 class ShadowBoundaryAdjuster final {

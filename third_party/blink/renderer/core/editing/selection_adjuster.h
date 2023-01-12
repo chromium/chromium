@@ -12,6 +12,14 @@
 
 namespace blink {
 
+enum class WordInclusion {
+  // Default behaviour. Include a word if selection is touching it.
+  kDefault,
+  // Only include a word in the adjusted selection if the middle of the word
+  // is within the selection.
+  kMiddle
+};
+
 // |SelectionAdjuster| adjusts positions in |VisibleSelection| directly without
 // calling |validate()|. Users of |SelectionAdjuster| should keep invariant of
 // |VisibleSelection|, e.g. all positions are canonicalized.
@@ -21,10 +29,12 @@ class CORE_EXPORT SelectionAdjuster final {
  public:
   static SelectionInDOMTree AdjustSelectionRespectingGranularity(
       const SelectionInDOMTree&,
-      TextGranularity);
+      TextGranularity,
+      const WordInclusion);
   static SelectionInFlatTree AdjustSelectionRespectingGranularity(
       const SelectionInFlatTree&,
-      TextGranularity);
+      TextGranularity,
+      const WordInclusion);
   static SelectionInDOMTree AdjustSelectionToAvoidCrossingShadowBoundaries(
       const SelectionInDOMTree&);
   static SelectionInFlatTree AdjustSelectionToAvoidCrossingShadowBoundaries(
