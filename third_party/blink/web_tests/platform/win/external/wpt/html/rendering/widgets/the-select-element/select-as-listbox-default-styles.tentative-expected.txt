@@ -152,7 +152,7 @@ PASS <option>3 (in <select multiple=""><optgroup label="2">) - margin-left
 PASS <option>3 (in <select multiple=""><optgroup label="2">) - padding-top
 FAIL <option>3 (in <select multiple=""><optgroup label="2">) - padding-right assert_equals: expected "0px" but got "2px"
 FAIL <option>3 (in <select multiple=""><optgroup label="2">) - padding-bottom assert_equals: expected "0px" but got "1px"
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - padding-left assert_equals: expected "0px" but got "2px"
+FAIL <option>3 (in <select multiple=""><optgroup label="2">) - padding-left assert_equals: expected "0px" but got "20px"
 PASS <option>3 (in <select multiple=""><optgroup label="2">) - letter-spacing
 PASS <option>3 (in <select multiple=""><optgroup label="2">) - word-spacing
 PASS <option>3 (in <select multiple=""><optgroup label="2">) - text-transform

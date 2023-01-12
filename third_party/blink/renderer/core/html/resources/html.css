@@ -927,8 +927,11 @@ select:not(:-internal-list-box) {
     overflow: visible !important;
 }
 
-select:-internal-list-box optgroup option:before {
-    content: "\00a0\00a0\00a0\00a0";;
+/* The padding here should match the value of
+   |extraPaddingForOptionInsideOptgroup| in list_picker.js, which is the
+   padding for select optgroup option. */
+select:-internal-list-box optgroup option {
+    padding-inline-start: 20px;
 }
 
 select:-internal-list-box option,
